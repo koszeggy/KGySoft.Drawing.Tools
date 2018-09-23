@@ -4,12 +4,12 @@ using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
-using KGySoft.DebuggerVisualizers.Common.Properties;
 
 #endregion
 
 namespace KGySoft.DebuggerVisualizers.Common
 {
+    using Resources = KGySoft.DebuggerVisualizers.Common.Properties.Resources;
     internal partial class GraphicsDebuggerVisualizerForm : ImageDebuggerVisualizerForm
     {
         #region Fields
