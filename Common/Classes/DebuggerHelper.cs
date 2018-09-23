@@ -8,7 +8,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 
 using KGySoft.Controls;
-using KGySoft.Libraries.Serialization;
+using KGySoft.Serialization;
 
 #endregion
 

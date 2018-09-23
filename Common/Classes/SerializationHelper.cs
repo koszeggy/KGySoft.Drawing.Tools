@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 
 using KGySoft.Drawing;
-using KGySoft.Libraries.Serialization;
+using KGySoft.Serialization;
 
 #endregion
 
