@@ -6,8 +6,8 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using KGySoft.Controls;
+using KGySoft.CoreLibraries;
 using KGySoft.Drawing;
-using KGySoft.Libraries;
 
 #endregion
 

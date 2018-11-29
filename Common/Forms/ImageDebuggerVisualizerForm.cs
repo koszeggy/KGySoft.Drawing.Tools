@@ -10,8 +10,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-using KGySoft.Libraries;
 using KGySoft.Controls;
+using KGySoft.CoreLibraries;
 using KGySoft.Drawing;
 
 using Encoder = System.Drawing.Imaging.Encoder;
