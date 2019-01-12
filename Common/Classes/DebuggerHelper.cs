@@ -28,7 +28,7 @@ namespace KGySoft.DebuggerVisualizers.Common
         /// </summary>
         /// <param name="imageInfo">The image infos for debugging returned by <see cref="SerializationHelper.DeserializeImage"/></param>
         /// <param name="isReplaceable">Indicates whether the image is replaceable.</param>
-        /// <returns>A non-<see langword="null"/> instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
+        /// <returns>A non-<see langword="null"/>&#160;instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
         public static object DebugImage(object[] imageInfo, bool isReplaceable)
         {
             return DebugImage(imageInfo, isReplaceable, new ImageDebuggerVisualizerForm());
@@ -39,7 +39,7 @@ namespace KGySoft.DebuggerVisualizers.Common
         /// </summary>
         /// <param name="imageInfo">The image infos for debugging returned by <see cref="SerializationHelper.DeserializeImage"/></param>
         /// <param name="isReplaceable">Indicates whether the image is replaceable.</param>
-        /// <returns>A non-<see langword="null"/> instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
+        /// <returns>A non-<see langword="null"/>&#160;instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
         public static object DebugBitmap(object[] imageInfo, bool isReplaceable)
         {
             ImageDebuggerVisualizerForm form = new ImageDebuggerVisualizerForm();
@@ -52,7 +52,7 @@ namespace KGySoft.DebuggerVisualizers.Common
         /// </summary>
         /// <param name="imageInfo">The image infos for debugging returned by <see cref="SerializationHelper.DeserializeImage"/></param>
         /// <param name="isReplaceable">Indicates whether the image is replaceable.</param>
-        /// <returns>A non-<see langword="null"/> instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
+        /// <returns>A non-<see langword="null"/>&#160;instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
         public static object DebugMetafile(object[] imageInfo, bool isReplaceable)
         {
             ImageDebuggerVisualizerForm form = new ImageDebuggerVisualizerForm();
@@ -65,7 +65,7 @@ namespace KGySoft.DebuggerVisualizers.Common
         /// </summary>
         /// <param name="imageInfo">The image infos for debugging returned by <see cref="SerializationHelper.DeserializeImage"/></param>
         /// <param name="isReplaceable">Indicates whether the image is replaceable.</param>
-        /// <returns>A non-<see langword="null"/> instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
+        /// <returns>A non-<see langword="null"/>&#160;instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
         public static object DebugIcon(object[] imageInfo, bool isReplaceable)
         {
             ImageDebuggerVisualizerForm form = new ImageDebuggerVisualizerForm();
@@ -126,7 +126,7 @@ namespace KGySoft.DebuggerVisualizers.Common
         /// </summary>
         /// <param name="obj">The palette object to debug returned by <see cref="SerializationHelper.DeserializeAnyObject"/>.</param>
         /// <param name="isReplaceable">Indicates whether the palette is replaceable.</param>
-        /// <returns>A non-<see langword="null"/> instance, when the palette has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
+        /// <returns>A non-<see langword="null"/>&#160;instance, when the palette has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
         public static object DebugPalette(object obj, bool isReplaceable)
         {
             using (PaletteVisualizerForm frm = new PaletteVisualizerForm())
@@ -162,7 +162,7 @@ namespace KGySoft.DebuggerVisualizers.Common
         /// </summary>
         /// <param name="obj">The color object to debug.</param>
         /// <param name="isReplaceable">Indicates whether the color is replaceable.</param>
-        /// <returns>A non-<see langword="null"/> instance, when the color has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
+        /// <returns>A non-<see langword="null"/>&#160;instance, when the color has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
         public static object DebugColor(object obj, bool isReplaceable)
         {
             if (!(obj is Color))
