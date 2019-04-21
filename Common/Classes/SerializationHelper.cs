@@ -144,7 +144,7 @@ namespace KGySoft.DebuggerVisualizers.Common
             GraphicsState state = g.Save();
             g.Transform = new Matrix();
             g.PageUnit = GraphicsUnit.Pixel;
-            bw.Write(BinarySerializer.SerializeStruct(Rectangle.Truncate(g.VisibleClipBounds)));
+            bw.Write(BinarySerializer.SerializeValueType(Rectangle.Truncate(g.VisibleClipBounds)));
             g.Restore(state);
 
             // 4. Info (as seen by user's transformation)
@@ -309,7 +309,7 @@ namespace KGySoft.DebuggerVisualizers.Common
             float[] elements = (float[])BinarySerializer.DeserializeByReader(br);
 
             // 3. Visible rect in pixels
-            Rectangle visibleRect = (Rectangle)BinarySerializer.DeserializeStruct(typeof(Rectangle), br.ReadBytes(Marshal.SizeOf(typeof(Rectangle))));
+            Rectangle visibleRect = (Rectangle)BinarySerializer.DeserializeValueType(typeof(Rectangle), br.ReadBytes(Marshal.SizeOf(typeof(Rectangle))));
 
             // 4. Info
             string specialInfo = br.ReadString();
