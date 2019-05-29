@@ -704,60 +704,79 @@ namespace KGySoft.DebuggerVisualizers.Common
             }
         }
 
-        private void SaveGif(string fileName, ImageCodecInfo gifEncoder)
+        private void SaveGif(string fileName)
         {
             ImageData currentImage = GetCurrentImage();
+            int realBpp = currentImage.Image.GetBitsPerPixel();
+            int theoreticBpp = Image.GetPixelFormatSize(currentImage.PixelFormat);
 
-            // single gif image
-            if (image.RawFormat != ImageFormat.Gif.Guid || frames == null || frames.Length == 0 || currentImage != image && image.RawFormat == ImageFormat.Gif.Guid)
-            {
-                int realBpp = currentImage.Image.GetBitsPerPixel();
-
-                // saving with encoder if image to save is indexed or when cannot have (easily handled) transparency
-                bool hasTransparency = (realBpp == 32 && currentImage.Image.PixelFormat != PixelFormat.Format32bppRgb) || realBpp == 64;
-                if (realBpp == 8 || (!hasTransparency && currentImage.Image is Bitmap))
-                {
-                    // converting even if source and target pixel formats are both 8 bpp to apply palette
-                    // converting to 8 bpp even if source is 1 or 4 bpp to use palette
-                    Image toSave = currentImage.Palette.Length > 0 ? currentImage.Image.ConvertPixelFormat(PixelFormat.Format8bppIndexed, currentImage.Palette) : currentImage.Image;
-
-                    // TODO: quantitazing, dithering
-                    toSave.Save(fileName, gifEncoder, null);
-
-                    if (ReferenceEquals(toSave, currentImage.Image))
-                        toSave.Dispose();
-                    return;
-                }
-
-                Debug.Assert(currentImage.Image.PixelFormat == PixelFormat.Format32bppArgb || currentImage.Image is Metafile);
-                int theoreticBpp = Image.GetPixelFormatSize(currentImage.PixelFormat);
-
-                // 1/4 bpp or high color image or metafile with alpha: auto convert, and generating palette with transparent color
-                // 1 and 4 bpp images are need to be converted, too; otherwise, gif encoder encodes the image from 32 bpp image resulting 256 color, no transparency
-                if (realBpp < 8 || theoreticBpp > 8 || currentImage.Image is Metafile)
-                {
-                    using (Image image8Bpp = currentImage.Image.ConvertPixelFormat(PixelFormat.Format8bppIndexed, null))
-                    {
-                        image8Bpp.Save(fileName, gifEncoder, null);
-                        return;
-                    }
-                }
-
-                // 32 bpp bitmap with up to 256 colors (multipage image frame or icon): obtaining the correct colors
-                // Converting always to 8 bpp pixel format; otherwise, gif encoder would convert it to 32 bpp first. With 8 bpp, gif encoder will preserve transparency and will save compact palette
-                Color[] palette = ((Bitmap)currentImage.Image).GetColors(1 << theoreticBpp);
-                using (Image imageIndexed = currentImage.Image.ConvertPixelFormat(PixelFormat.Format8bppIndexed, palette))
-                {
-                    imageIndexed.Save(fileName, gifEncoder, null);
-                    return;
-                }
-            }
-
-            // animated gif
             using (Stream stream = File.Create(fileName))
             {
-                SaveAnimGif(stream);
+                // we know that image is indexed but in .NET it is loaded as hi-res (eg. GIF frames, icon images)
+                if (theoreticBpp <= 8 && realBpp > 8 && currentImage.Image is Bitmap bmp)
+                {
+                    Color[] palette = bmp.GetColors(1 << theoreticBpp);
+                    bmp.SaveAsGif(stream, palette);
+                    return;
+                }
+
+                // saving with or without original palette with transparency
+                // TODO: Allow dithering on SaveAs dialog (which replaces palette), or implement quantizing and dithering in this tool
+                GetCurrentImage().Image.SaveAsGif(stream, false);
             }
+
+            //ImageData currentImage = GetCurrentImage();
+            
+            //// single gif image
+            //if (image.RawFormat != ImageFormat.Gif.Guid || frames == null || frames.Length == 0 || currentImage != image && image.RawFormat == ImageFormat.Gif.Guid)
+            //{
+            //    int realBpp = currentImage.Image.GetBitsPerPixel();
+
+            //    // saving with encoder if image to save is indexed or when cannot have (easily handled) transparency
+            //    bool hasTransparency = (realBpp == 32 && currentImage.Image.PixelFormat != PixelFormat.Format32bppRgb) || realBpp == 64;
+            //    if (realBpp == 8 || (!hasTransparency && currentImage.Image is Bitmap))
+            //    {
+            //        // converting even if source and target pixel formats are both 8 bpp to apply palette
+            //        // converting to 8 bpp even if source is 1 or 4 bpp to use palette
+            //        Image toSave = currentImage.Palette.Length > 0 ? currentImage.Image.ConvertPixelFormat(PixelFormat.Format8bppIndexed, currentImage.Palette) : currentImage.Image;
+
+            //        // TODO: quantitazing, dithering
+            //        toSave.Save(fileName, gifEncoder, null);
+
+            //        if (ReferenceEquals(toSave, currentImage.Image))
+            //            toSave.Dispose();
+            //        return;
+            //    }
+
+            //    Debug.Assert(currentImage.Image.PixelFormat == PixelFormat.Format32bppArgb || currentImage.Image is Metafile);
+            //    int theoreticBpp = Image.GetPixelFormatSize(currentImage.PixelFormat);
+
+            //    // 1/4 bpp or high color image or metafile with alpha: auto convert, and generating palette with transparent color
+            //    // 1 and 4 bpp images are need to be converted, too; otherwise, gif encoder encodes the image from 32 bpp image resulting 256 color, no transparency
+            //    if (realBpp < 8 || theoreticBpp > 8 || currentImage.Image is Metafile)
+            //    {
+            //        using (Image image8Bpp = currentImage.Image.ConvertPixelFormat(PixelFormat.Format8bppIndexed, null))
+            //        {
+            //            image8Bpp.Save(fileName, gifEncoder, null);
+            //            return;
+            //        }
+            //    }
+
+            //    // 32 bpp bitmap with up to 256 colors (multipage image frame or icon): obtaining the correct colors
+            //    // Converting always to 8 bpp pixel format; otherwise, gif encoder would convert it to 32 bpp first. With 8 bpp, gif encoder will preserve transparency and will save compact palette
+            //    Color[] palette = ((Bitmap)currentImage.Image).GetColors(1 << theoreticBpp);
+            //    using (Image imageIndexed = currentImage.Image.ConvertPixelFormat(PixelFormat.Format8bppIndexed, palette))
+            //    {
+            //        imageIndexed.Save(fileName, gifEncoder, null);
+            //        return;
+            //    }
+            //}
+
+            //// animated gif
+            //using (Stream stream = File.Create(fileName))
+            //{
+            //    SaveAnimGif(stream);
+            //}
         }
 
         private void SaveAnimGif(Stream stream)
@@ -984,7 +1003,7 @@ namespace KGySoft.DebuggerVisualizers.Common
                 // gif
                 else if (encoderCodecs[dlgSave.FilterIndex - 1].FormatID == ImageFormat.Gif.Guid)
                 {
-                    SaveGif(dlgSave.FileName, encoderCodecs[dlgSave.FilterIndex - 1]);
+                    SaveGif(dlgSave.FileName);
                 }
                 // built-in encoders
                 else
