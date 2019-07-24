@@ -7,14 +7,13 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
-using KGySoft.Controls;
 using KGySoft.Drawing;
 
 #endregion
 
 namespace KGySoft.DebuggerVisualizers.Common
 {
-    internal partial class PaletteVisualizerForm : BaseForm
+    internal partial class PaletteVisualizerForm : Form
     {
         #region Fields
 

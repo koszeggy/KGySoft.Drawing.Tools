@@ -10,7 +10,6 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-using KGySoft.Controls;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing;
 
@@ -20,7 +19,7 @@ using Encoder = System.Drawing.Imaging.Encoder;
 
 namespace KGySoft.DebuggerVisualizers.Common
 {
-    internal partial class ImageDebuggerVisualizerForm : BaseForm
+    internal partial class ImageDebuggerVisualizerForm : Form
     {
         #region Nested classes
 
@@ -177,15 +176,15 @@ namespace KGySoft.DebuggerVisualizers.Common
         public ImageDebuggerVisualizerForm()
         {
             InitializeComponent();
-            btnAutoZoom.Image = Images.Magnifier;
-            btnSave.Image = Images.Save;
-            btnOpen.Image = Images.Browse;
-            btnClear.Image = Images.Clear;
-            btnCompound.Image = Images.Merge;
-            btnPrev.Image = Images.NavBack;
-            btnNext.Image = Images.NavForward;
-            btnColorSettings.Image = Images.Palette;
-            lblWarning.Image = Images.Warning;
+            //btnAutoZoom.Image = Images.Magnifier;
+            //btnSave.Image = Images.Save;
+            //btnOpen.Image = Images.Browse;
+            //btnClear.Image = Images.Clear;
+            //btnCompound.Image = Images.Merge;
+            //btnPrev.Image = Images.NavBack;
+            //btnNext.Image = Images.NavForward;
+            //btnColorSettings.Image = Images.Palette;
+            //lblWarning.Image = Images.Warning;
             tsMenu.Renderer = new ButtonRenderer();
 
             SetImage(null, null);
@@ -323,7 +322,7 @@ namespace KGySoft.DebuggerVisualizers.Common
                 else
                 {
                     ImageData[] iconImages = frameImages ?? new[] { mainImage };
-                    Icon tmpIcon = IconTools.Combine(iconImages.Select(i => (Bitmap)i.Image).ToArray());
+                    Icon tmpIcon = Icons.Combine(iconImages.Select(i => (Bitmap)i.Image).ToArray());
                     mainImage.Image = tmpIcon.ToMultiResBitmap();
                     tmpIcon.Dispose();
                 }
@@ -575,7 +574,7 @@ namespace KGySoft.DebuggerVisualizers.Common
                         warning += " and has been resized";
                     }
 
-                    icon = IconTools.Combine(iconImage);
+                    icon = Icons.Combine(iconImage);
                     iconImage.Dispose();
                     Warning = warning;
                 }
@@ -655,13 +654,13 @@ namespace KGySoft.DebuggerVisualizers.Common
                     icon.SaveHighQuality(stream);
                 // single image icon without raw data
                 else if (frames == null || frames.Length <= 1)
-                    using (Icon i = IconTools.Combine((Bitmap)image.Image))
+                    using (Icon i = Icons.Combine((Bitmap)image.Image))
                     {
                         i.Save(stream);
                     }
                 // multi image icon without raw data
                 else
-                    using (Icon i = IconTools.Combine(frames.Select(f => (Bitmap)f.Image).ToArray()))
+                    using (Icon i = Icons.Combine(frames.Select(f => (Bitmap)f.Image).ToArray()))
                     {
                         i.Save(stream);
                     }
@@ -677,7 +676,7 @@ namespace KGySoft.DebuggerVisualizers.Common
                     i.Save(stream);
                 }
             else
-                using (Icon i = IconTools.Combine((Bitmap)currentImage.Image))
+                using (Icon i = Icons.Combine((Bitmap)currentImage.Image))
                 {
                     i.Save(stream);
                 }
@@ -781,7 +780,7 @@ namespace KGySoft.DebuggerVisualizers.Common
 
         private void SaveAnimGif(Stream stream)
         {
-            Dialogs.ErrorMessage("Saving animgif has not benn implemented yet");
+            Dialogs.ErrorMessage("Saving animgif has not been implemented yet");
             return;
             throw new NotImplementedException("animgif");
         }

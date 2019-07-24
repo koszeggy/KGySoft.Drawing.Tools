@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using KGySoft.Controls;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing;
 
@@ -135,13 +134,13 @@ namespace KGySoft.DebuggerVisualizers.Common
         public ucColorVisualizer()
         {
             InitializeComponent();
-            btnEdit.Image = Images.Palette;
-            pnlColor.SetDoubleBuffered(true);
-            tbAlpha.SetDoubleBuffered(true);
-            tbRed.SetDoubleBuffered(true);
-            tbGreen.SetDoubleBuffered(true);
-            tbBlue.SetDoubleBuffered(true);
-            txtColor.SetDoubleBuffered(true);
+            //btnEdit.Image = Images.Palette;
+            //pnlColor.SetDoubleBuffered(true);
+            //tbAlpha.SetDoubleBuffered(true);
+            //tbRed.SetDoubleBuffered(true);
+            //tbGreen.SetDoubleBuffered(true);
+            //tbBlue.SetDoubleBuffered(true);
+            //txtColor.SetDoubleBuffered(true);
 
             SystemColorsChanged += new EventHandler(ucColorVisualizer_SystemColorsChanged);
         }
