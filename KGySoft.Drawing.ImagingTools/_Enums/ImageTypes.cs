@@ -1,0 +1,14 @@
+﻿using System;
+
+namespace KGySoft.Drawing.ImagingTools
+{
+    [Flags]
+    internal enum ImageTypes
+    {
+        None = 0,
+        Bitmap = 1,
+        Metafile = 1 << 1,
+        Icon = 1 << 2,
+        All = Bitmap | Metafile | Icon
+    }
+}

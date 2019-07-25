@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.329
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KGySoft.Drawing.ImagingTools", "KGySoft.Drawing.ImagingTools\KGySoft.Drawing.ImagingTools.csproj", "{9080594A-56AA-41E5-9D9A-A23C39A1648A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KGySoft.Drawing.DebuggerVisualizers", "KGySoft.Drawing.DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.csproj", "{6415C328-A2C2-49C3-B113-B3B8C4E09C22}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug_NET35|Any CPU = Debug_NET35|Any CPU
+		Debug_NET40|Any CPU = Debug_NET40|Any CPU
+		Debug_NET45|Any CPU = Debug_NET45|Any CPU
+		Release_NET35|Any CPU = Release_NET35|Any CPU
+		Release_NET40|Any CPU = Release_NET40|Any CPU
+		Release_NET45|Any CPU = Release_NET45|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9080594A-56AA-41E5-9D9A-A23C39A1648A}.Debug_NET35|Any CPU.ActiveCfg = Debug_NET35|Any CPU
+		{9080594A-56AA-41E5-9D9A-A23C39A1648A}.Debug_NET35|Any CPU.Build.0 = Debug_NET35|Any CPU
+		{9080594A-56AA-41E5-9D9A-A23C39A1648A}.Debug_NET40|Any CPU.ActiveCfg = Debug_NET40|Any CPU
+		{9080594A-56AA-41E5-9D9A-A23C39A1648A}.Debug_NET40|Any CPU.Build.0 = Debug_NET40|Any CPU
+		{9080594A-56AA-41E5-9D9A-A23C39A1648A}.Debug_NET45|Any CPU.ActiveCfg = Debug_NET45|Any CPU
+		{9080594A-56AA-41E5-9D9A-A23C39A1648A}.Debug_NET45|Any CPU.Build.0 = Debug_NET45|Any CPU
+		{9080594A-56AA-41E5-9D9A-A23C39A1648A}.Release_NET35|Any CPU.ActiveCfg = Release_NET35|Any CPU
+		{9080594A-56AA-41E5-9D9A-A23C39A1648A}.Release_NET35|Any CPU.Build.0 = Release_NET35|Any CPU
+		{9080594A-56AA-41E5-9D9A-A23C39A1648A}.Release_NET40|Any CPU.ActiveCfg = Release_NET40|Any CPU
+		{9080594A-56AA-41E5-9D9A-A23C39A1648A}.Release_NET40|Any CPU.Build.0 = Release_NET40|Any CPU
+		{9080594A-56AA-41E5-9D9A-A23C39A1648A}.Release_NET45|Any CPU.ActiveCfg = Release_NET45|Any CPU
+		{9080594A-56AA-41E5-9D9A-A23C39A1648A}.Release_NET45|Any CPU.Build.0 = Release_NET45|Any CPU
+		{6415C328-A2C2-49C3-B113-B3B8C4E09C22}.Debug_NET35|Any CPU.ActiveCfg = Debug_NET35|Any CPU
+		{6415C328-A2C2-49C3-B113-B3B8C4E09C22}.Debug_NET35|Any CPU.Build.0 = Debug_NET35|Any CPU
+		{6415C328-A2C2-49C3-B113-B3B8C4E09C22}.Debug_NET40|Any CPU.ActiveCfg = Debug_NET40|Any CPU
+		{6415C328-A2C2-49C3-B113-B3B8C4E09C22}.Debug_NET40|Any CPU.Build.0 = Debug_NET40|Any CPU
+		{6415C328-A2C2-49C3-B113-B3B8C4E09C22}.Debug_NET45|Any CPU.ActiveCfg = Debug_NET45|Any CPU
+		{6415C328-A2C2-49C3-B113-B3B8C4E09C22}.Debug_NET45|Any CPU.Build.0 = Debug_NET45|Any CPU
+		{6415C328-A2C2-49C3-B113-B3B8C4E09C22}.Release_NET35|Any CPU.ActiveCfg = Release_NET35|Any CPU
+		{6415C328-A2C2-49C3-B113-B3B8C4E09C22}.Release_NET35|Any CPU.Build.0 = Release_NET35|Any CPU
+		{6415C328-A2C2-49C3-B113-B3B8C4E09C22}.Release_NET40|Any CPU.ActiveCfg = Release_NET40|Any CPU
+		{6415C328-A2C2-49C3-B113-B3B8C4E09C22}.Release_NET40|Any CPU.Build.0 = Release_NET40|Any CPU
+		{6415C328-A2C2-49C3-B113-B3B8C4E09C22}.Release_NET45|Any CPU.ActiveCfg = Release_NET45|Any CPU
+		{6415C328-A2C2-49C3-B113-B3B8C4E09C22}.Release_NET45|Any CPU.Build.0 = Release_NET45|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1C6D13FB-5E94-4260-96B6-74BDDFA8F815}
+	EndGlobalSection
+EndGlobal
