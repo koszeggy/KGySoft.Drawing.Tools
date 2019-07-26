@@ -67,6 +67,9 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>ImagingTools.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="KGySoft.CoreLibraries, Version=4.6.1.0, Culture=neutral, PublicKeyToken=b45eba277439ddfe, processorArchitecture=MSIL">
       <HintPath>..\..\packages\KGySoft.CoreLibraries.4.6.1\lib\net35\KGySoft.CoreLibraries.dll</HintPath>
@@ -167,6 +170,9 @@
     <EmbeddedResource Include="Controls\PalettePanel.resx">
       <DependentUpon>PalettePanel.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AppMainForm.resx">
+      <DependentUpon>AppMainForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ColorVisualizerForm.resx">
       <DependentUpon>ColorVisualizerForm.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -224,6 +230,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Save.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Gear.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ImagingTools.ico" />
+    <None Include="Resources\ImagingTools.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

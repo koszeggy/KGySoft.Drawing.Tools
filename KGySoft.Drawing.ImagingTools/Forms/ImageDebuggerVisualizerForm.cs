@@ -147,9 +147,9 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
         #region Protected Properties
 
-        protected string Warning
+        protected string Notification
         {
-            set => lblWarning.Text = value;
+            set => lblNotification.Text = value;
         }
 
         protected virtual bool IsPaletteReadOnly
@@ -171,6 +171,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         public ImageDebuggerVisualizerForm()
         {
             InitializeComponent();
+            base.Icon = Images.ImagingTools;
             btnAutoZoom.Image = Images.Magnifier;
             btnSave.Image = Images.Save;
             btnOpen.Image = Images.Browse;
@@ -180,7 +181,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             btnNext.Image = Images.Next;
             btnColorSettings.Image = Images.Palette;
             tsMenu.Renderer = new ButtonRenderer();
-            lblWarning.Text = null;
+            lblNotification.Text = null;
 
             SetImage(null, null);
         }
@@ -539,7 +540,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             {
                 image = new Bitmap(stream);
                 if (image.RawFormat.Guid == ImageFormat.MemoryBmp.Guid)
-                    Warning = "The loaded metafile has been converted to Bitmap. To load it as a Metafile, choose the Image Debugger Visualizer instead.";
+                    Notification = "The loaded metafile has been converted to Bitmap. To load it as a Metafile, choose the Image Debugger Visualizer instead.";
             }
 
             // icon is allowed and an image has been loaded
@@ -570,7 +571,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
                     icon = Icons.Combine(iconImage);
                     iconImage.Dispose();
-                    Warning = warning;
+                    Notification = warning;
                 }
             }
 
@@ -1018,9 +1019,9 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
             try
             {
-                Warning = null;
+                Notification = null;
                 FromStream(new MemoryStream(File.ReadAllBytes(dlgOpen.FileName)));
-                isUpToDate = !lblWarning.Visible;
+                isUpToDate = !lblNotification.Visible;
                 fileName = isUpToDate ? dlgOpen.FileName : null;
             }
             catch (Exception ex)

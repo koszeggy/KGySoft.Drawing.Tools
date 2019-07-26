@@ -13,6 +13,8 @@ namespace KGySoft.Drawing.ImagingTools.Controls
             BackColor = Color.FromArgb(255, 255, 128);
             ForeColor = Color.Black;
             Image = Icons.Warning.ToMultiResBitmap();
+            TextAlign = ContentAlignment.MiddleLeft;
+            ImageAlign = ContentAlignment.MiddleRight;
         }
 
         private Size lastProposedSize;

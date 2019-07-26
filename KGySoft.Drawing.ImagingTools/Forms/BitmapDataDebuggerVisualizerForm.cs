@@ -28,7 +28,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             if (image == null || image.Image == null)
                 return;
             if (Image.GetPixelFormatSize(GetCurrentImage().PixelFormat) <= 8)
-                Warning = "The palette of an indexed BitmapData cannot be reconstructed, therefore a default palette is used. You can change palette colors in the menu.";
+                Notification = "The palette of an indexed BitmapData cannot be reconstructed, therefore a default palette is used. You can change palette colors in the menu.";
         }
 
         protected override bool IsPaletteReadOnly

@@ -19,9 +19,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ImageDebuggerVisualizerForm));
             this.txtInfo = new System.Windows.Forms.TextBox();
-            this.pbImage = new System.Windows.Forms.PictureBox();
             this.tsMenu = new System.Windows.Forms.ToolStrip();
             this.btnAutoZoom = new System.Windows.Forms.ToolStripButton();
             this.btnColorSettings = new System.Windows.Forms.ToolStripDropDownButton();
@@ -42,10 +40,11 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             this.dlgSave = new System.Windows.Forms.SaveFileDialog();
             this.splitter = new System.Windows.Forms.Splitter();
             this.timerPlayer = new System.Windows.Forms.Timer(this.components);
-            this.lblWarning = new KGySoft.Drawing.ImagingTools.Controls.NotificationLabel();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            ((System.ComponentModel.ISupportInitialize)(this.pbImage)).BeginInit();
+            this.pbImage = new System.Windows.Forms.PictureBox();
+            this.lblNotification = new KGySoft.Drawing.ImagingTools.Controls.NotificationLabel();
             this.tsMenu.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbImage)).BeginInit();
             this.SuspendLayout();
             // 
             // txtInfo
@@ -61,19 +60,6 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             this.txtInfo.WordWrap = false;
             this.txtInfo.TextChanged += new System.EventHandler(this.txtInfo_TextChanged);
             this.txtInfo.Enter += new System.EventHandler(this.txtInfo_Enter);
-            // 
-            // pbImage
-            // 
-            this.pbImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pbImage.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pbImage.ImageLocation = "";
-            this.pbImage.Location = new System.Drawing.Point(0, 44);
-            this.pbImage.Name = "pbImage";
-            this.pbImage.Size = new System.Drawing.Size(334, 146);
-            this.pbImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
-            this.pbImage.TabIndex = 1;
-            this.pbImage.TabStop = false;
-            this.pbImage.SizeChanged += new System.EventHandler(this.pbImage_SizeChanged);
             // 
             // tsMenu
             // 
@@ -249,22 +235,31 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             this.timerPlayer.Interval = 10;
             this.timerPlayer.Tick += new System.EventHandler(this.timerPlayer_Tick);
             // 
-            // lblWarning
+            // pbImage
             // 
-            this.lblWarning.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
-            this.lblWarning.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lblWarning.Dock = System.Windows.Forms.DockStyle.Top;
-            this.lblWarning.ForeColor = System.Drawing.Color.Black;
-            this.lblWarning.Image = ((System.Drawing.Image)(resources.GetObject("lblWarning.Image")));
-            this.lblWarning.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.lblWarning.Location = new System.Drawing.Point(0, 25);
-            this.lblWarning.Name = "lblWarning";
-            this.lblWarning.Padding = new System.Windows.Forms.Padding(3, 3, 20, 3);
-            this.lblWarning.Size = new System.Drawing.Size(334, 19);
-            this.lblWarning.TabIndex = 4;
-            this.lblWarning.Text = "x";
-            this.lblWarning.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.toolTip.SetToolTip(this.lblWarning, "Click to hide");
+            this.pbImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pbImage.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pbImage.ImageLocation = "";
+            this.pbImage.Location = new System.Drawing.Point(0, 49);
+            this.pbImage.Name = "pbImage";
+            this.pbImage.Size = new System.Drawing.Size(334, 141);
+            this.pbImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pbImage.TabIndex = 1;
+            this.pbImage.TabStop = false;
+            this.pbImage.SizeChanged += new System.EventHandler(this.pbImage_SizeChanged);
+            // 
+            // lblNotification
+            // 
+            this.lblNotification.AutoSize = true;
+            this.lblNotification.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.lblNotification.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblNotification.ForeColor = System.Drawing.Color.Black;
+            this.lblNotification.Location = new System.Drawing.Point(0, 25);
+            this.lblNotification.Name = "lblNotification";
+            this.lblNotification.Padding = new System.Windows.Forms.Padding(3, 3, 20, 3);
+            this.lblNotification.Size = new System.Drawing.Size(334, 24);
+            this.lblNotification.TabIndex = 4;
+            this.toolTip.SetToolTip(this.lblNotification, "Click to hide");
             // 
             // ImageDebuggerVisualizerForm
             // 
@@ -272,7 +267,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(334, 316);
             this.Controls.Add(this.pbImage);
-            this.Controls.Add(this.lblWarning);
+            this.Controls.Add(this.lblNotification);
             this.Controls.Add(this.splitter);
             this.Controls.Add(this.tsMenu);
             this.Controls.Add(this.txtInfo);
@@ -281,9 +276,9 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             this.Name = "ImageDebuggerVisualizerForm";
             this.Text = "ImageDebuggerVisualizerForm";
             this.Load += new System.EventHandler(this.ImageDebuggerVisualizerForm_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.pbImage)).EndInit();
             this.tsMenu.ResumeLayout(false);
             this.tsMenu.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbImage)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -313,7 +308,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         private System.Windows.Forms.ToolStripMenuItem miShowPalette;
         protected System.Windows.Forms.ToolStrip tsMenu;
         protected System.Windows.Forms.TextBox txtInfo;
-        private NotificationLabel lblWarning;
+        private NotificationLabel lblNotification;
         private ToolTip toolTip;
     }
 }
