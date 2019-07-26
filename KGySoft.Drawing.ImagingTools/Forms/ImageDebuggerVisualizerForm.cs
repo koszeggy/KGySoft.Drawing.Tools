@@ -149,11 +149,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
         protected string Warning
         {
-            set
-            {
-                lblWarning.Text = value;
-                lblWarning.Visible = !String.IsNullOrEmpty(value);
-            }
+            set => lblWarning.Text = value;
         }
 
         protected virtual bool IsPaletteReadOnly
@@ -183,8 +179,8 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             btnPrev.Image = Images.Prev;
             btnNext.Image = Images.Next;
             btnColorSettings.Image = Images.Palette;
-            lblWarning.Image = Icons.Warning.ToMultiResBitmap();
             tsMenu.Renderer = new ButtonRenderer();
+            lblWarning.Text = null;
 
             SetImage(null, null);
         }
@@ -215,7 +211,6 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             miShowPalette.Click -= miShowPalette_Click;
             txtInfo.TextChanged -= txtInfo_TextChanged;
             txtInfo.Enter -= txtInfo_Enter;
-            lblWarning.Click -= lblWarning_Click;
 
             if (disposing && (components != null))
             {
@@ -1139,11 +1134,6 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         private void txtInfo_TextChanged(object sender, EventArgs e)
         {
             txtInfo.SelectionLength = 0;
-        }
-
-        private void lblWarning_Click(object sender, EventArgs e)
-        {
-            lblWarning.Visible = false;
         }
 
         private void ImageDebuggerVisualizerForm_Load(object sender, EventArgs e)

@@ -5,7 +5,7 @@
         public AppMainForm()
         {
             InitializeComponent();
-            Warning = "App";
+            Warning = "kahdsakf asjfdha sfdasjhf jskalfh kasfh kasfhsajk fksah fjakshfsa ft wert wetr wert wert";
         }
     }
 }

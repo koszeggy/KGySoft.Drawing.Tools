@@ -99,6 +99,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\NotificationLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="PublicApi\DebuggerHelper.cs" />
     <Compile Include="_Classes\Dialogs.cs" />
     <Compile Include="_Classes\ImageData.cs" />
@@ -233,7 +236,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties LastExportedMakefileHash="Lc9DFBa2QeJU6LkEO19XOA==" ED14F191-6CDA-4bbb-BB1B-C329DD754E20_OutputCondition="" ExternalBuildIntegrationEnabled="True" />
+      <UserProperties ExternalBuildIntegrationEnabled="True" ED14F191-6CDA-4bbb-BB1B-C329DD754E20_OutputCondition="" LastExportedMakefileHash="Lc9DFBa2QeJU6LkEO19XOA==" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

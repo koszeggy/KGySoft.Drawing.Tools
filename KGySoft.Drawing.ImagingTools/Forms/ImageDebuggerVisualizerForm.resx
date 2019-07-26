@@ -112,24 +112,39 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="tsMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+  <metadata name="tsMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>228, 17</value>
   </metadata>
-  <metadata name="dlgOpen.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+  <metadata name="dlgOpen.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>320, 17</value>
   </metadata>
-  <metadata name="dlgSave.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+  <metadata name="dlgSave.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>134, 17</value>
   </metadata>
-  <metadata name="timerPlayer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+  <metadata name="timerPlayer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>419, 17</value>
   </metadata>
-  <metadata name="toolTip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="lblWarning.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAHjSURBVDhPpVJNTxNRFJ3ExBXB2M4UTA2kRIoKGKNsiPix
+        IRZJJLjEPyBLd/wDN/4B/4B0RsPeuECpDM7UxshnamM0thipXzOdmVbaxfHdO6+jMWAInuRkXu6959zz
+        Jk/ZD5Z+fNTKxr8wxVmWDw47Gy9uPEnhnTkEOsvywWA91DJ2VoW7PY7g6yTyugaqyfa/YRjKEdq4+fQU
+        WsEtZjsF9eTY/rDm4zO2rsL7nIkM6t9kCtGTY3tj3VCO0qbiYhqt+m2IEjNMMcwpaIaH94LYMEub/OoE
+        Wv50ZNCsTaFezbRTzPLw31g3tA7aUFo6g5Y3haZ787fBjxvM9+agTKF1sOhPCOe5vJEQm66j6Uxi9/tE
+        ZLBbHWcG29dAMzTLojZMvTNGzrTh56eraFSuoFG+jLt3TjIbHy+FLI/hw8pZTkEaKadHo94rPO6CXxpB
+        UDyPYGsY/uYQM9g6F9aIpQvw3l7kFKRhsanHkuRYMdPw3qRRK6RQy/eiZvdEV/AKfdzzVwfgr51Geblf
+        poglFfHWH7xe6BbCPrgvk3CXu+G+SMDJJSID1zzBPTIluq9SKDwS/0Jo+c3vWP085CxpcJ7H4TyLhd+I
+        atjLERNiQRcquRSnUOx5dUW/fwyHIWlFwv+BovwC5P6biLHiTvsAAAAASUVORK5CYII=
+</value>
+  </data>
+  <metadata name="toolTip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>42, 18</value>
   </metadata>
 </root>

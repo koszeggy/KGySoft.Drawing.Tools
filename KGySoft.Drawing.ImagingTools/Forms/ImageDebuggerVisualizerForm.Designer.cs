@@ -1,4 +1,5 @@
 ﻿using System.Windows.Forms;
+using KGySoft.Drawing.ImagingTools.Controls;
 
 namespace KGySoft.Drawing.ImagingTools.Forms
 {
@@ -18,6 +19,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ImageDebuggerVisualizerForm));
             this.txtInfo = new System.Windows.Forms.TextBox();
             this.pbImage = new System.Windows.Forms.PictureBox();
             this.tsMenu = new System.Windows.Forms.ToolStrip();
@@ -40,7 +42,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             this.dlgSave = new System.Windows.Forms.SaveFileDialog();
             this.splitter = new System.Windows.Forms.Splitter();
             this.timerPlayer = new System.Windows.Forms.Timer(this.components);
-            this.lblWarning = new System.Windows.Forms.Label();
+            this.lblWarning = new KGySoft.Drawing.ImagingTools.Controls.NotificationLabel();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pbImage)).BeginInit();
             this.tsMenu.SuspendLayout();
@@ -249,17 +251,20 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             // 
             // lblWarning
             // 
+            this.lblWarning.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+            this.lblWarning.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.lblWarning.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblWarning.ForeColor = System.Drawing.Color.Black;
+            this.lblWarning.Image = ((System.Drawing.Image)(resources.GetObject("lblWarning.Image")));
             this.lblWarning.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.lblWarning.Location = new System.Drawing.Point(0, 25);
             this.lblWarning.Name = "lblWarning";
             this.lblWarning.Padding = new System.Windows.Forms.Padding(3, 3, 20, 3);
             this.lblWarning.Size = new System.Drawing.Size(334, 19);
             this.lblWarning.TabIndex = 4;
+            this.lblWarning.Text = "x";
             this.lblWarning.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.toolTip.SetToolTip(this.lblWarning, "Click to hide");
-            this.lblWarning.Visible = false;
-            this.lblWarning.Click += new System.EventHandler(this.lblWarning_Click);
             // 
             // ImageDebuggerVisualizerForm
             // 
@@ -308,7 +313,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         private System.Windows.Forms.ToolStripMenuItem miShowPalette;
         protected System.Windows.Forms.ToolStrip tsMenu;
         protected System.Windows.Forms.TextBox txtInfo;
-        private Label lblWarning;
+        private NotificationLabel lblWarning;
         private ToolTip toolTip;
     }
 }
