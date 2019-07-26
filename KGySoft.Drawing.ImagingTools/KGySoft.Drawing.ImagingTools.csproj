@@ -158,6 +158,7 @@
     <Compile Include="UserControls\ucColorVisualizer.Designer.cs">
       <DependentUpon>ucColorVisualizer.cs</DependentUpon>
     </Compile>
+    <Compile Include="_Extensions\ControlExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Controls\PalettePanel.resx">
@@ -196,6 +197,30 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\HighlightVisibleClip.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Browse.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Clear.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Magnifier.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Merge.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Next.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Palette.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Prev.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Save.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

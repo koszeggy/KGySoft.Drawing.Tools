@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 using KGySoft.Drawing.ImagingTools.Forms;
 
 namespace KGySoft.Drawing.ImagingTools
@@ -8,6 +9,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>
         /// When executed as a standalone application, this is the entry point.
         /// </summary>
+        [STAThread]
         internal static void Main()
         {
             Application.EnableVisualStyles();

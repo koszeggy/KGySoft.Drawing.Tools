@@ -10,7 +10,9 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using KGySoft.CoreLibraries;
+
 using Encoder = System.Drawing.Imaging.Encoder;
+using Images = KGySoft.Drawing.ImagingTools.Properties.Resources;
 
 #endregion
 
@@ -173,15 +175,15 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         public ImageDebuggerVisualizerForm()
         {
             InitializeComponent();
-            //btnAutoZoom.Image = Images.Magnifier;
-            //btnSave.Image = Images.Save;
-            //btnOpen.Image = Images.Browse;
-            //btnClear.Image = Images.Clear;
-            //btnCompound.Image = Images.Merge;
-            //btnPrev.Image = Images.NavBack;
-            //btnNext.Image = Images.NavForward;
-            //btnColorSettings.Image = Images.Palette;
-            //lblWarning.Image = Images.Warning;
+            btnAutoZoom.Image = Images.Magnifier;
+            btnSave.Image = Images.Save;
+            btnOpen.Image = Images.Browse;
+            btnClear.Image = Images.Clear;
+            btnCompound.Image = Images.Merge;
+            btnPrev.Image = Images.Prev;
+            btnNext.Image = Images.Next;
+            btnColorSettings.Image = Images.Palette;
+            lblWarning.Image = Icons.Warning.ToMultiResBitmap();
             tsMenu.Renderer = new ButtonRenderer();
 
             SetImage(null, null);

@@ -133,13 +133,13 @@ namespace KGySoft.Drawing.ImagingTools.UserControls
         public ucColorVisualizer()
         {
             InitializeComponent();
-            //btnEdit.Image = Images.Palette;
-            //pnlColor.SetDoubleBuffered(true);
-            //tbAlpha.SetDoubleBuffered(true);
-            //tbRed.SetDoubleBuffered(true);
-            //tbGreen.SetDoubleBuffered(true);
-            //tbBlue.SetDoubleBuffered(true);
-            //txtColor.SetDoubleBuffered(true);
+            btnEdit.Image = Properties.Resources.Palette;
+            pnlColor.SetDoubleBuffered(true);
+            tbAlpha.SetDoubleBuffered(true);
+            tbRed.SetDoubleBuffered(true);
+            tbGreen.SetDoubleBuffered(true);
+            tbBlue.SetDoubleBuffered(true);
+            txtColor.SetDoubleBuffered(true);
 
             SystemColorsChanged += new EventHandler(ucColorVisualizer_SystemColorsChanged);
         }
