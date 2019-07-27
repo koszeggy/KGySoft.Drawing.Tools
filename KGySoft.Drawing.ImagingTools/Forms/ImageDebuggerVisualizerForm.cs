@@ -315,7 +315,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             ImageTypes imageType;
             if (icon != null && imageTypes == ImageTypes.Icon)
                 imageType = ImageTypes.Icon;
-            else if (image == null || image.Image == null)
+            else if (image?.Image == null)
                 imageType = ImageTypes.None;
             else if (image.Image is Metafile)
                 imageType = ImageTypes.Metafile;
@@ -696,68 +696,16 @@ namespace KGySoft.Drawing.ImagingTools.Forms
                     return;
                 }
 
-                // saving with or without original palette with transparency
+                // saving with or without original palette with transparency - works also for animGif if no change has been made (and now even the palette cannot be changed due to the GIF decoder)
+                // TODO: if changing frames/palette will be available, SaveAnimGif if needed
                 // TODO: Allow dithering on SaveAs dialog (which replaces palette), or implement quantizing and dithering in this tool
-                GetCurrentImage().Image.SaveAsGif(stream, false);
+                currentImage.Image.SaveAsGif(stream, false);
             }
-
-            //ImageData currentImage = GetCurrentImage();
-
-            //// single gif image
-            //if (image.RawFormat != ImageFormat.Gif.Guid || frames == null || frames.Length == 0 || currentImage != image && image.RawFormat == ImageFormat.Gif.Guid)
-            //{
-            //    int realBpp = currentImage.Image.GetBitsPerPixel();
-
-            //    // saving with encoder if image to save is indexed or when cannot have (easily handled) transparency
-            //    bool hasTransparency = (realBpp == 32 && currentImage.Image.PixelFormat != PixelFormat.Format32bppRgb) || realBpp == 64;
-            //    if (realBpp == 8 || (!hasTransparency && currentImage.Image is Bitmap))
-            //    {
-            //        // converting even if source and target pixel formats are both 8 bpp to apply palette
-            //        // converting to 8 bpp even if source is 1 or 4 bpp to use palette
-            //        Image toSave = currentImage.Palette.Length > 0 ? currentImage.Image.ConvertPixelFormat(PixelFormat.Format8bppIndexed, currentImage.Palette) : currentImage.Image;
-
-            //        // TODO: quantitazing, dithering
-            //        toSave.Save(fileName, gifEncoder, null);
-
-            //        if (ReferenceEquals(toSave, currentImage.Image))
-            //            toSave.Dispose();
-            //        return;
-            //    }
-
-            //    Debug.Assert(currentImage.Image.PixelFormat == PixelFormat.Format32bppArgb || currentImage.Image is Metafile);
-            //    int theoreticBpp = Image.GetPixelFormatSize(currentImage.PixelFormat);
-
-            //    // 1/4 bpp or high color image or metafile with alpha: auto convert, and generating palette with transparent color
-            //    // 1 and 4 bpp images are need to be converted, too; otherwise, gif encoder encodes the image from 32 bpp image resulting 256 color, no transparency
-            //    if (realBpp < 8 || theoreticBpp > 8 || currentImage.Image is Metafile)
-            //    {
-            //        using (Image image8Bpp = currentImage.Image.ConvertPixelFormat(PixelFormat.Format8bppIndexed, null))
-            //        {
-            //            image8Bpp.Save(fileName, gifEncoder, null);
-            //            return;
-            //        }
-            //    }
-
-            //    // 32 bpp bitmap with up to 256 colors (multipage image frame or icon): obtaining the correct colors
-            //    // Converting always to 8 bpp pixel format; otherwise, gif encoder would convert it to 32 bpp first. With 8 bpp, gif encoder will preserve transparency and will save compact palette
-            //    Color[] palette = ((Bitmap)currentImage.Image).GetColors(1 << theoreticBpp);
-            //    using (Image imageIndexed = currentImage.Image.ConvertPixelFormat(PixelFormat.Format8bppIndexed, palette))
-            //    {
-            //        imageIndexed.Save(fileName, gifEncoder, null);
-            //        return;
-            //    }
-            //}
-
-            //// animated gif
-            //using (Stream stream = File.Create(fileName))
-            //{
-            //    SaveAnimGif(stream);
-            //}
         }
 
         private void SaveAnimGif(Stream stream)
         {
-            Dialogs.ErrorMessage("Saving animgif has not been implemented yet");
+            Dialogs.ErrorMessage("Saving animated GIF has not been implemented yet");
             return;
             throw new NotImplementedException("animgif");
         }
@@ -946,10 +894,13 @@ namespace KGySoft.Drawing.ImagingTools.Forms
                 // icon
                 if (dlgSave.FilterIndex == encoderCodecs.Length + 1 && (icon != null || image.RawFormat == ImageFormat.Icon.Guid))
                     SaveIcon(dlgSave.FileName);
+                // metafile
                 else if (dlgSave.FilterIndex >= encoderCodecs.Length + 1 && image.Image is Metafile)
                     SaveMetafile(dlgSave.FileName, dlgSave.FilterIndex == encoderCodecs.Length + 1);
+                // JPG
                 else if (encoderCodecs[dlgSave.FilterIndex - 1].FormatID == ImageFormat.Jpeg.Guid)
                     SaveJpeg(dlgSave.FileName, encoderCodecs[dlgSave.FilterIndex - 1]);
+                // Multipage tiff
                 else if (frames != null && frames.Length > 1 && encoderCodecs[dlgSave.FilterIndex - 1].FormatID == ImageFormat.Tiff.Guid
                     && (image.RawFormat == ImageFormat.Tiff.Guid || GetCurrentImage() == image))
                 {
