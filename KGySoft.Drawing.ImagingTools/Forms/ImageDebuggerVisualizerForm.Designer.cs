@@ -299,6 +299,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             this.Name = "ImageDebuggerVisualizerForm";
             this.Text = "ImageDebuggerVisualizerForm";
             this.Load += new System.EventHandler(this.ImageDebuggerVisualizerForm_Load);
+            this.Resize += new System.EventHandler(this.ImageDebuggerVisualizerForm_Resize);
             this.tsMenu.ResumeLayout(false);
             this.tsMenu.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbImage)).EndInit();

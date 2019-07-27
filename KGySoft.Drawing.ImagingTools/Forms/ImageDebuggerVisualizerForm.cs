@@ -335,6 +335,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         protected override void Dispose(bool disposing)
         {
             Load -= ImageDebuggerVisualizerForm_Load;
+            Resize -= ImageDebuggerVisualizerForm_Resize;
             btnAutoZoom.CheckedChanged -= btnAutoZoom_CheckedChanged;
             miDeafult.Click -= miBackColor_Click;
             miWhite.Click -= miBackColor_Click;
@@ -966,6 +967,15 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             }
         }
 
+        private void AdjustSize()
+        {
+            if (pbImage.Height < 16)
+            {
+                txtInfo.Height = ClientSize.Height - tsMenu.Height - 16 - splitter.Height;
+                PerformLayout();
+            }
+        }
+
         #endregion
 
         #region Event handlers
@@ -1026,9 +1036,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
         private void pbImage_SizeChanged(object sender, EventArgs e)
         {
-            if (pbImage.Height < 16)
-                txtInfo.Height = ClientSize.Height - tsMenu.Height - 16 - splitter.Height;
-
+            AdjustSize();
             if (image != null && image.RawFormat == ImageFormat.Icon.Guid && currentFrame == -1)
             {
                 UpdateIconImage();
@@ -1091,6 +1099,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         private void txtInfo_TextChanged(object sender, EventArgs e) => txtInfo.SelectionLength = 0;
         private void ImageDebuggerVisualizerForm_Load(object sender, EventArgs e) => InitAutoZoom();
         private void txtInfo_Enter(object sender, EventArgs e) => txtInfo.SelectionLength = 0;
+        private void ImageDebuggerVisualizerForm_Resize(object sender, EventArgs e) => AdjustSize();
 
         private void btnConfiguration_Click(object sender, EventArgs e)
         {

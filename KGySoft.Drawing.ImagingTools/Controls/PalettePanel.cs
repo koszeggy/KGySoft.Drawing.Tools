@@ -83,7 +83,7 @@ namespace KGySoft.Drawing.ImagingTools.Controls
 
         internal int SelectedColorIndex
         {
-            get { return selectedColorIndex; }
+            get => selectedColorIndex;
             set
             {
                 if (selectedColorIndex == value)
@@ -144,10 +144,7 @@ namespace KGySoft.Drawing.ImagingTools.Controls
 
         #region Private Properties
 
-        private int ColorCount
-        {
-            get { return palette == null ? 0 : palette.Count; }
-        }
+        private int ColorCount => palette?.Count ?? 0;
 
         #endregion
 
@@ -235,9 +232,7 @@ namespace KGySoft.Drawing.ImagingTools.Controls
 
                 // color
                 using (Brush b = new SolidBrush(c))
-                {
                     e.Graphics.FillRectangle(b, rect);
-                }
             }
         }
 
@@ -324,8 +319,8 @@ namespace KGySoft.Drawing.ImagingTools.Controls
             int newValue = sbPalette.Value - e.Delta / SystemInformation.MouseWheelScrollDelta;
             if (newValue < 0)
                 newValue = 0;
-            else if (newValue > sbPalette.Maximum - sbPalette.LargeChange)
-                newValue = sbPalette.Maximum - sbPalette.LargeChange;
+            else if (newValue > sbPalette.Maximum - sbPalette.LargeChange + 1)
+                newValue = sbPalette.Maximum - sbPalette.LargeChange + 1;
 
             sbPalette.Value = newValue;
         }
@@ -399,21 +394,13 @@ namespace KGySoft.Drawing.ImagingTools.Controls
         }
 
         private Rectangle GetColorRect(int index)
-        {
-            return new Rectangle(2 + (index % 16) * 13, 2 + ((index - firstVisibleColor) >> 4) * 13, 13, 13);
-        }
+            => new Rectangle(2 + (index % 16) * 13, 2 + ((index - firstVisibleColor) >> 4) * 13, 13, 13);
 
         private bool IsSelectedColorVisible()
-        {
-            return selectedColorIndex >= firstVisibleColor
+            => selectedColorIndex >= firstVisibleColor
                 && selectedColorIndex < firstVisibleColor + (visibleRowCount << 4);
-        }
 
-        private void OnSelectedColorChanged(EventArgs e)
-        {
-            if (SelectedColorChanged != null)
-                SelectedColorChanged.Invoke(this, e);
-        }
+        private void OnSelectedColorChanged(EventArgs e) => SelectedColorChanged?.Invoke(this, e);
 
         #endregion
 
