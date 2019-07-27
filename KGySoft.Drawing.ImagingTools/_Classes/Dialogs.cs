@@ -10,5 +10,7 @@ namespace KGySoft.Drawing.ImagingTools
         internal static void ErrorMessage(string format, params object[] args) => ErrorMessage(String.Format(format, args));
 
         internal static void InfoMessage(string message) => MessageBox.Show(message, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+        public static bool ConfirmMessage(string message) => MessageBox.Show(message, "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
     }
 }

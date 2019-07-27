@@ -16,10 +16,6 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         {
             InitializeComponent();
 
-            Notification = $"As a standalone application, {title} can be used to load images, save them various formats, extract frames or pages, examine or change palette entries of indexed images, etc.{Environment.NewLine}{Environment.NewLine}"
-                + $"But it can be also used as debugger visualizer for {nameof(Image)}, {nameof(Bitmap)}, {nameof(Metafile)}, {nameof(BitmapData)}, {nameof(Graphics)}, {nameof(ColorPalette)} and {nameof(Color)} types."
-                + $"Use the Install menu to manage installations.";
-
             ToolStripItem separator = new ToolStripSeparator();
             btnInstall = new ToolStripButton(Properties.Resources.Gear)
             {
@@ -28,9 +24,11 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             };
 
             btnInstall.Click += btnInstall_Click;
-
             tsMenu.Items.AddRange(new ToolStripItem[] { separator, btnInstall });
 
+            Notification = $"As a standalone application, {title} can be used to load images, save them various formats, extract frames or pages, examine or change palette entries of indexed images, etc.{Environment.NewLine}{Environment.NewLine}"
+                + $"But it can be also used as debugger visualizer for {nameof(Image)}, {nameof(Bitmap)}, {nameof(Metafile)}, {nameof(BitmapData)}, {nameof(Graphics)}, {nameof(ColorPalette)} and {nameof(Color)} types."
+                + $"Use the '{btnInstall.Text}' toolbar item.";
         }
 
         protected override void Dispose(bool disposing)
@@ -44,7 +42,10 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
         private void btnInstall_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            using (var form = new ManageInstallationsForm())
+            {
+                form.ShowDialog(this);
+            }
         }
 
         public override string Text
