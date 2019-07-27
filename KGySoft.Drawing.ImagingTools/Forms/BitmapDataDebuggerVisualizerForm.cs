@@ -1,16 +1,53 @@
-﻿using System;
+﻿#region Copyright
+
+///////////////////////////////////////////////////////////////////////////////
+//  File: BitmapDataDebuggerVisualizerForm.cs
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright (C) KGy SOFT, 2005-2019 - All Rights Reserved
+//
+//  You should have received a copy of the LICENSE file at the top-level
+//  directory of this distribution. If not, then this file is considered as
+//  an illegal copy.
+//
+//  Unauthorized copying of this file, via any medium is strictly prohibited.
+///////////////////////////////////////////////////////////////////////////////
+
+#endregion
+
+#region Usings
+
+using System;
 using System.Drawing;
+
+#endregion
 
 namespace KGySoft.Drawing.ImagingTools.Forms
 {
     internal partial class BitmapDataDebuggerVisualizerForm : ImageDebuggerVisualizerForm
     {
-        public BitmapDataDebuggerVisualizerForm()
-        {
-            InitializeComponent();
-        }
+        #region Properties
+
+        #region Internal Properties
 
         internal string SpecialInfo { get; set; }
+
+        #endregion
+
+        #region Protected Properties
+
+        protected override bool IsPaletteReadOnly => false;
+
+        #endregion
+
+        #endregion
+
+        #region Constructors
+
+        public BitmapDataDebuggerVisualizerForm() => InitializeComponent();
+
+        #endregion
+
+        #region Methods
 
         protected override void UpdateInfo()
         {
@@ -31,9 +68,6 @@ namespace KGySoft.Drawing.ImagingTools.Forms
                 Notification = "The palette of an indexed BitmapData cannot be reconstructed, therefore a default palette is used. You can change palette colors in the menu.";
         }
 
-        protected override bool IsPaletteReadOnly
-        {
-            get { return false; }
-        }
+        #endregion
     }
 }

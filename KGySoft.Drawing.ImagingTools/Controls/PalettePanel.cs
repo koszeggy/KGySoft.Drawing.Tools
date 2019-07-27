@@ -1,4 +1,20 @@
-﻿#region Used namespaces
+﻿#region Copyright
+
+///////////////////////////////////////////////////////////////////////////////
+//  File: PalettePanel.cs
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright (C) KGy SOFT, 2005-2019 - All Rights Reserved
+//
+//  You should have received a copy of the LICENSE file at the top-level
+//  directory of this distribution. If not, then this file is considered as
+//  an illegal copy.
+//
+//  Unauthorized copying of this file, via any medium is strictly prohibited.
+///////////////////////////////////////////////////////////////////////////////
+
+#endregion
+
+#region Usings
 
 using System;
 using System.Collections.Generic;
@@ -137,8 +153,6 @@ namespace KGySoft.Drawing.ImagingTools.Controls
 
         #endregion
 
-        #region Construction and Destruction
-
         #region Constructors
 
         internal PalettePanel()
@@ -151,45 +165,9 @@ namespace KGySoft.Drawing.ImagingTools.Controls
 
         #endregion
 
-        #region Initialization
-        // ReSharper disable RedundantThisQualifier
-        // ReSharper disable RedundantNameQualifier
-        // ReSharper disable RedundantDelegateCreation
+        #region Methods
 
-        private void InitializeComponent()
-        {
-            this.components = new System.ComponentModel.Container();
-            this.sbPalette = new System.Windows.Forms.VScrollBar();
-            this.timerSelection = new System.Windows.Forms.Timer(this.components);
-            this.SuspendLayout();
-            //
-            // sbPalette
-            //
-            this.sbPalette.Dock = System.Windows.Forms.DockStyle.Right;
-            this.sbPalette.Location = new System.Drawing.Point(183, 0);
-            this.sbPalette.Name = "sbPalette";
-            this.sbPalette.Size = new System.Drawing.Size(17, 100);
-            this.sbPalette.TabIndex = 0;
-            this.sbPalette.Visible = false;
-            this.sbPalette.ValueChanged += new System.EventHandler(this.sbPalette_ValueChanged);
-            //
-            // timerSelection
-            //
-            this.timerSelection.Interval = 20;
-            this.timerSelection.Tick += new System.EventHandler(this.timerSelection_Tick);
-            //
-            // PalettePanel
-            //
-            this.Controls.Add(this.sbPalette);
-            this.ResumeLayout(false);
-        }
-
-        // ReSharper restore RedundantNameQualifier
-        // ReSharper restore RedundantThisQualifier
-        // ReSharper restore RedundantDelegateCreation
-        #endregion
-
-        #region Explicit Disposing
+        #region Protected Methods
 
         /// <summary>
         /// Clean up any resources being used.
@@ -198,22 +176,12 @@ namespace KGySoft.Drawing.ImagingTools.Controls
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
-            {
                 components.Dispose();
-            }
 
             sbPalette.ValueChanged -= sbPalette_ValueChanged;
             timerSelection.Tick -= timerSelection_Tick;
             base.Dispose(disposing);
         }
-
-        #endregion
-
-        #endregion
-
-        #region Methods
-
-        #region Protected Methods
 
         protected override void OnPaint(PaintEventArgs e)
         {
@@ -366,6 +334,34 @@ namespace KGySoft.Drawing.ImagingTools.Controls
 
         #region Private Methods
 
+        private void InitializeComponent()
+        {
+            this.components = new System.ComponentModel.Container();
+            this.sbPalette = new System.Windows.Forms.VScrollBar();
+            this.timerSelection = new System.Windows.Forms.Timer(this.components);
+            this.SuspendLayout();
+            // 
+            // sbPalette
+            // 
+            this.sbPalette.Dock = System.Windows.Forms.DockStyle.Right;
+            this.sbPalette.Location = new System.Drawing.Point(183, 0);
+            this.sbPalette.Name = "sbPalette";
+            this.sbPalette.Size = new System.Drawing.Size(17, 100);
+            this.sbPalette.TabIndex = 0;
+            this.sbPalette.Visible = false;
+            this.sbPalette.ValueChanged += new System.EventHandler(this.sbPalette_ValueChanged);
+            // 
+            // timerSelection
+            // 
+            this.timerSelection.Interval = 20;
+            this.timerSelection.Tick += new System.EventHandler(this.timerSelection_Tick);
+            // 
+            // PalettePanel
+            // 
+            this.Controls.Add(this.sbPalette);
+            this.ResumeLayout(false);
+        }
+
         private void CheckPaletteLayout()
         {
             if (ColorCount == 0)
@@ -421,9 +417,7 @@ namespace KGySoft.Drawing.ImagingTools.Controls
 
         #endregion
 
-        #endregion
-
-        #region Event Handlers
+        #region Event handlers
         //ReSharper disable InconsistentNaming
 
         private void sbPalette_ValueChanged(object sender, EventArgs e)
@@ -447,7 +441,9 @@ namespace KGySoft.Drawing.ImagingTools.Controls
             Invalidate(GetColorRect(selectedColorIndex));
         }
 
-        //ReSharper restore InconsistentNaming
+        //ReSharper disable InconsistentNaming
+        #endregion
+
         #endregion
     }
 }

@@ -68,7 +68,7 @@
     <StartupObject />
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>ImagingTools.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\ImagingTools.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="KGySoft.CoreLibraries, Version=4.6.1.0, Culture=neutral, PublicKeyToken=b45eba277439ddfe, processorArchitecture=MSIL">
@@ -166,11 +166,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\ucColorVisualizer.cs">
+    <Compile Include="UserControls\ColorVisualizerControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UserControls\ucColorVisualizer.Designer.cs">
-      <DependentUpon>ucColorVisualizer.cs</DependentUpon>
+    <Compile Include="UserControls\ColorVisualizerControl.Designer.cs">
+      <DependentUpon>ColorVisualizerControl.cs</DependentUpon>
     </Compile>
     <Compile Include="_Extensions\ControlExtensions.cs" />
   </ItemGroup>
@@ -203,8 +203,8 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\ucColorVisualizer.resx">
-      <DependentUpon>ucColorVisualizer.cs</DependentUpon>
+    <EmbeddedResource Include="UserControls\ColorVisualizerControl.resx">
+      <DependentUpon>ColorVisualizerControl.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
@@ -246,7 +246,6 @@
     <None Include="Resources\Gear.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ImagingTools.ico" />
     <None Include="Resources\ImagingTools.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
@@ -260,7 +259,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties ExternalBuildIntegrationEnabled="True" ED14F191-6CDA-4bbb-BB1B-C329DD754E20_OutputCondition="" LastExportedMakefileHash="Lc9DFBa2QeJU6LkEO19XOA==" />
+      <UserProperties LastExportedMakefileHash="Lc9DFBa2QeJU6LkEO19XOA==" ED14F191-6CDA-4bbb-BB1B-C329DD754E20_OutputCondition="" ExternalBuildIntegrationEnabled="True" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

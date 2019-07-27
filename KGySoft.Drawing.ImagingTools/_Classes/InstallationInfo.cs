@@ -26,8 +26,6 @@ namespace KGySoft.Drawing.ImagingTools
 {
     internal sealed class InstallationInfo : MarshalByRefObject
     {
-        #region Nested classes
-
         #region InitializerSandbox class
 
         private sealed class InitializerSandbox : MarshalByRefObject
@@ -51,8 +49,6 @@ namespace KGySoft.Drawing.ImagingTools
 
             #endregion
         }
-
-        #endregion
 
         #endregion
 

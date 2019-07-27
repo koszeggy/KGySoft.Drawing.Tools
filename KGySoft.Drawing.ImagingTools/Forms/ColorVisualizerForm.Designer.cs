@@ -17,7 +17,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         /// </summary>
         private void InitializeComponent()
         {
-            this.ucColorVisualizer = new ucColorVisualizer();
+            this.ucColorVisualizer = new ColorVisualizerControl();
             this.SuspendLayout();
             // 
             // ucColorVisualizer
@@ -44,6 +44,6 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
         #endregion
 
-        private ucColorVisualizer ucColorVisualizer;
+        private ColorVisualizerControl ucColorVisualizer;
     }
 }

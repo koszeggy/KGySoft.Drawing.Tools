@@ -1,4 +1,20 @@
-﻿#region Used namespaces
+﻿#region Copyright
+
+///////////////////////////////////////////////////////////////////////////////
+//  File: SerializationHelper.cs
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright (C) KGy SOFT, 2005-2019 - All Rights Reserved
+//
+//  You should have received a copy of the LICENSE file at the top-level
+//  directory of this distribution. If not, then this file is considered as
+//  an illegal copy.
+//
+//  Unauthorized copying of this file, via any medium is strictly prohibited.
+///////////////////////////////////////////////////////////////////////////////
+
+#endregion
+
+#region Usings
 
 using System;
 using System.Drawing;
@@ -7,6 +23,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+
 using KGySoft.Serialization;
 
 #endregion
@@ -26,13 +43,9 @@ namespace KGySoft.Drawing.ImagingTools
         internal static void SerializeImage(object target, Stream outgoingData)
         {
             // Bitmap/Metafile: ImageData
-            Image image = target as Image;
-            if (image != null)
+            if (target is Image image)
             {
-                ImageData imageData;
-                ImageData[] frames;
-                ImageData.FromImage(image, true, out imageData, out frames);
-
+                ImageData.FromImage(image, true, out ImageData imageData, out ImageData[] frames);
                 BinaryWriter bw = new BinaryWriter(outgoingData);
 
                 // 1. Image type
@@ -46,21 +59,16 @@ namespace KGySoft.Drawing.ImagingTools
                 // 2. Image type != single image => images count
                 int count = frames == null ? 1 : frames.Length + (imageData == null ? 0 : 1);
                 if (frames != null)
-                {
                     bw.Write(count);
-                }
 
                 // 3. Main image (if any)
-                if (imageData != null)
-                    imageData.Write(bw);
+                imageData?.Write(bw);
 
                 // 4. Frames (if any)
                 if (frames != null)
                 {
                     foreach (ImageData frame in frames)
-                    {
                         frame.Write(bw);
-                    }
                 }
 
                 return;
@@ -70,10 +78,7 @@ namespace KGySoft.Drawing.ImagingTools
             Icon icon = target as Icon;
             if (icon != null)
             {
-                ImageData iconData;
-                ImageData[] iconImages;
-                ImageData.FromIcon(icon, true, out iconData, out iconImages);
-
+                ImageData.FromIcon(icon, true, out ImageData iconData, out ImageData[] iconImages);
                 BinaryWriter bw = new BinaryWriter(outgoingData);
 
                 // 1. Image type is icon
@@ -99,15 +104,13 @@ namespace KGySoft.Drawing.ImagingTools
                     bw.Write(iconImages.Length + 1);
                     iconData.Write(bw);
                     foreach (ImageData iconImage in iconImages)
-                    {
                         iconImage.Write(bw);
-                    }
                 }
 
                 return;
             }
 
-            throw new ArgumentException("Target should be Image or Icon", "target");
+            throw new ArgumentException("Target should be Image or Icon", nameof(target));
         }
 
         /// <summary>
@@ -115,8 +118,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// </summary>
         internal static void SerializeGraphics(object target, Stream outgoingData)
         {
-            Graphics g = target as Graphics;
-            if (g == null)
+            if (!(target is Graphics g))
                 throw new ArgumentException("Graphics target is expected");
 
             BinaryWriter bw = new BinaryWriter(outgoingData);
@@ -171,7 +173,7 @@ namespace KGySoft.Drawing.ImagingTools
 
                 sb.AppendLine();
                 sb.AppendFormat("{15}Clip Bounds: {1}{0}{15}Visible Clip Bounds (Unit = {5}): {2}{0}Resolution: {3}x{4} dpi{0}Page Scale: {6}{0}" +
-                    "Compositing Mode: {7}{0}Compositing Quality: {8}{0}Interpolation Mode: {9}{0}Pixel Offset Mode: {10}{0}Smoothing Mode: {11}{0}Text Rendering Hint: {12}{0}Text Contrast: {13}{0}Rendering Origin: {14}{0}",
+                        "Compositing Mode: {7}{0}Compositing Quality: {8}{0}Interpolation Mode: {9}{0}Pixel Offset Mode: {10}{0}Smoothing Mode: {11}{0}Text Rendering Hint: {12}{0}Text Contrast: {13}{0}Rendering Origin: {14}{0}",
                     Environment.NewLine, g.ClipBounds, g.VisibleClipBounds, g.DpiX, g.DpiY, g.PageUnit, g.PageScale,
                     g.CompositingMode, g.CompositingQuality, g.InterpolationMode, g.PixelOffsetMode, g.SmoothingMode, g.TextRenderingHint, g.TextContrast, g.RenderingOrigin,
                     m.IsIdentity ? String.Empty : "Transformed ");
@@ -184,8 +186,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// </summary>
         internal static void SerializeBitmapData(object target, Stream outgoingData)
         {
-            BitmapData bitmapData = target as BitmapData;
-            if (bitmapData == null)
+            if (!(target is BitmapData bitmapData))
                 throw new ArgumentException("BitmapData target is expected");
 
             BinaryWriter bw = new BinaryWriter(outgoingData);
@@ -205,14 +206,11 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>
         /// Serializes any <see cref="object"/>, even non serializable ones.
         /// </summary>
-        internal static void SerializeAnyObject(object target, Stream outgoingData)
-        {
-            BinarySerializer.SerializeToStream(outgoingData, target);
-        }
+        internal static void SerializeAnyObject(object target, Stream outgoingData) => BinarySerializer.SerializeToStream(outgoingData, target);
 
         /// <summary>
         /// Deserializes <see cref="Image"/> infos (<see cref="Bitmap"/>, <see cref="Metafile"/> or <see cref="Icon"/>) from the stream
-        /// that can be passed to <see cref="DebuggerHelper.DebugImage"/>, <see cref="DebuggerHelper.DebugBitmap"/> or <see cref="DebuggerHelper.DebugMetafile"/>.
+        /// that can be passed to <see cref="DebuggerHelper.DebugImage(object[],bool)"/>, <see cref="DebuggerHelper.DebugBitmap"/> or <see cref="DebuggerHelper.DebugMetafile"/>.
         /// </summary>
         internal static object[] DeserializeImage(Stream stream)
         {
@@ -264,9 +262,7 @@ namespace KGySoft.Drawing.ImagingTools
 
             ImageData[] frames = new ImageData[len];
             for (int i = 0; i < len; i++)
-            {
                 frames[i] = new ImageData(br);
-            }
 
             return new object[] { null, mainImage, frames };
         }
@@ -318,10 +314,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>
         /// Deserializes any <see cref="object"/> that was serialized by <see cref="SerializeAnyObject"/>.
         /// </summary>
-        internal static object DeserializeAnyObject(Stream stream)
-        {
-            return BinarySerializer.DeserializeFromStream(stream);
-        }
+        internal static object DeserializeAnyObject(Stream stream) => BinarySerializer.DeserializeFromStream(stream);
 
         #endregion
     }

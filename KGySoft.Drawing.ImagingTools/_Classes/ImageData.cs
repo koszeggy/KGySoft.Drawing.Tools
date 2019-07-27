@@ -1,4 +1,20 @@
-﻿#region Used namespaces
+﻿#region Copyright
+
+///////////////////////////////////////////////////////////////////////////////
+//  File: ImageData.cs
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright (C) KGy SOFT, 2005-2019 - All Rights Reserved
+//
+//  You should have received a copy of the LICENSE file at the top-level
+//  directory of this distribution. If not, then this file is considered as
+//  an illegal copy.
+//
+//  Unauthorized copying of this file, via any medium is strictly prohibited.
+///////////////////////////////////////////////////////////////////////////////
+
+#endregion
+
+#region Usings
 
 using System;
 using System.Drawing;
@@ -24,8 +40,6 @@ namespace KGySoft.Drawing.ImagingTools
         internal int Duration { get; set; }
 
         #endregion
-
-        #region Construction and Destruction
 
         #region Constructors
 
@@ -72,18 +86,6 @@ namespace KGySoft.Drawing.ImagingTools
             //    //}
             //}
         }
-
-        #endregion
-
-        #region Explicit Disposing
-
-        public void Dispose()
-        {
-            if (Image != null)
-                Image.Dispose();
-        }
-
-        #endregion
 
         #endregion
 
@@ -240,15 +242,19 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Instance Methods
 
+        #region Public Methods
+
+        public void Dispose() => Image?.Dispose();
+
+        #endregion
+
         #region Internal Methods
 
         internal void Write(BinaryWriter bw)
         {
             Image image = Image;
             if (image == null)
-            {
                 bw.Write(0);
-            }
             else
             {
                 Metafile metafile = image as Metafile;
@@ -270,9 +276,7 @@ namespace KGySoft.Drawing.ImagingTools
             bw.Write((int)PixelFormat);
             bw.Write(Palette.Length);
             foreach (Color color in Palette)
-            {
                 bw.Write(color.ToArgb());
-            }
 
             bw.Write(RawFormat.ToByteArray());
             bw.Write(Duration);

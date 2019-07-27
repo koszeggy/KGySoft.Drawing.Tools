@@ -1,4 +1,20 @@
-﻿#region Used namespaces
+﻿#region Copyright
+
+///////////////////////////////////////////////////////////////////////////////
+//  File: DebuggerHelper.cs
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright (C) KGy SOFT, 2005-2019 - All Rights Reserved
+//
+//  You should have received a copy of the LICENSE file at the top-level
+//  directory of this distribution. If not, then this file is considered as
+//  an illegal copy.
+//
+//  Unauthorized copying of this file, via any medium is strictly prohibited.
+///////////////////////////////////////////////////////////////////////////////
+
+#endregion
+
+#region Usings
 
 using System;
 using System.Collections.Generic;
@@ -6,6 +22,7 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+
 using KGySoft.Drawing.ImagingTools.Forms;
 using KGySoft.Serialization;
 
@@ -28,10 +45,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// <param name="imageInfo">The image info for debugging returned by <see cref="SerializationHelper.DeserializeImage"/></param>
         /// <param name="isReplaceable">Indicates whether the image is replaceable.</param>
         /// <returns>A non-<see langword="null"/>&#160;instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
-        internal static object DebugImage(object[] imageInfo, bool isReplaceable)
-        {
-            return DebugImage(imageInfo, isReplaceable, new ImageDebuggerVisualizerForm());
-        }
+        internal static object DebugImage(object[] imageInfo, bool isReplaceable) => DebugImage(imageInfo, isReplaceable, new ImageDebuggerVisualizerForm());
 
         /// <summary>
         /// Shows the debugger for a <see cref="Bitmap"/> or <see cref="Icon"/> object.
@@ -41,8 +55,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// <returns>A non-<see langword="null"/>&#160;instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
         internal static object DebugBitmap(object[] imageInfo, bool isReplaceable)
         {
-            ImageDebuggerVisualizerForm form = new ImageDebuggerVisualizerForm();
-            form.ImageTypes = ImageTypes.Bitmap | ImageTypes.Icon;
+            ImageDebuggerVisualizerForm form = new ImageDebuggerVisualizerForm { ImageTypes = ImageTypes.Bitmap | ImageTypes.Icon };
             return DebugImage(imageInfo, isReplaceable, form);
         }
 
@@ -54,8 +67,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// <returns>A non-<see langword="null"/>&#160;instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
         internal static object DebugMetafile(object[] imageInfo, bool isReplaceable)
         {
-            ImageDebuggerVisualizerForm form = new ImageDebuggerVisualizerForm();
-            form.ImageTypes = ImageTypes.Metafile;
+            ImageDebuggerVisualizerForm form = new ImageDebuggerVisualizerForm { ImageTypes = ImageTypes.Metafile };
             return DebugImage(imageInfo, isReplaceable, form);
         }
 
@@ -67,8 +79,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// <returns>A non-<see langword="null"/>&#160;instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
         internal static object DebugIcon(object[] imageInfo, bool isReplaceable)
         {
-            ImageDebuggerVisualizerForm form = new ImageDebuggerVisualizerForm();
-            form.ImageTypes = ImageTypes.Icon;
+            ImageDebuggerVisualizerForm form = new ImageDebuggerVisualizerForm { ImageTypes = ImageTypes.Icon };
             return DebugImage(imageInfo, isReplaceable, form);
         }
 
@@ -79,9 +90,9 @@ namespace KGySoft.Drawing.ImagingTools
         internal static void DebugBitmapData(object[] bitmapDataInfo)
         {
             if (bitmapDataInfo == null)
-                throw new ArgumentNullException("bitmapDataInfo");
+                throw new ArgumentNullException(nameof(bitmapDataInfo));
             if (bitmapDataInfo.Length != 2)
-                throw new ArgumentException("2 elements are expected", "bitmapDataInfo");
+                throw new ArgumentException("2 elements are expected", nameof(bitmapDataInfo));
 
             ImageData imageData = (ImageData)bitmapDataInfo[0];
             string specialInfo = (string)bitmapDataInfo[1];
@@ -101,9 +112,9 @@ namespace KGySoft.Drawing.ImagingTools
         internal static void DebugGraphics(object[] graphicsInfo)
         {
             if (graphicsInfo == null)
-                throw new ArgumentNullException("graphicsInfo");
+                throw new ArgumentNullException(nameof(graphicsInfo));
             if (graphicsInfo.Length != 4)
-                throw new ArgumentException("4 elements are expected", "graphicsInfo");
+                throw new ArgumentException("4 elements are expected", nameof(graphicsInfo));
 
             Bitmap bmp = (Bitmap)graphicsInfo[0];
             float[] elements = (float[])graphicsInfo[1];
@@ -131,9 +142,9 @@ namespace KGySoft.Drawing.ImagingTools
             using (PaletteVisualizerForm frm = new PaletteVisualizerForm())
             {
                 ColorPalette palette = obj as ColorPalette;
-                IList<Color> colorList = palette != null ? palette.Entries : obj as IList<Color>;
+                IList<Color> colorList = palette?.Entries ?? obj as IList<Color>;
                 if (colorList == null)
-                    throw new ArgumentException("Object is not a color list", "obj");
+                    throw new ArgumentException("Object is not a color list", nameof(obj));
 
                 if (colorList.Count == 0)
                 {
@@ -165,7 +176,7 @@ namespace KGySoft.Drawing.ImagingTools
         internal static object DebugColor(object obj, bool isReplaceable)
         {
             if (!(obj is Color))
-                throw new ArgumentException("Object is not a Color", "obj");
+                throw new ArgumentException("Object is not a Color", nameof(obj));
 
             using (ColorVisualizerForm frm = new ColorVisualizerForm())
             {
@@ -188,9 +199,9 @@ namespace KGySoft.Drawing.ImagingTools
             using (form)
             {
                 if (imageInfo == null)
-                    throw new ArgumentNullException("imageInfo");
+                    throw new ArgumentNullException(nameof(imageInfo));
                 if (imageInfo.Length != 3)
-                    throw new ArgumentException("3 elements are expected", "imageInfo");
+                    throw new ArgumentException("3 elements are expected", nameof(imageInfo));
 
                 Icon icon = (Icon)imageInfo[0];
                 ImageData mainImage = (ImageData)imageInfo[1];

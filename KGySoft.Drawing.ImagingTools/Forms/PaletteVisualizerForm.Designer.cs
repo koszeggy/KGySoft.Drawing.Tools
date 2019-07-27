@@ -21,7 +21,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             this.gbPalette = new System.Windows.Forms.GroupBox();
             this.pnlPalette = new PalettePanel();
             this.gbSelectedColor = new System.Windows.Forms.GroupBox();
-            this.ucColorVisualizer = new ucColorVisualizer();
+            this.ucColorVisualizer = new ColorVisualizerControl();
             this.gbPalette.SuspendLayout();
             this.gbSelectedColor.SuspendLayout();
             this.SuspendLayout();
@@ -88,6 +88,6 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         private System.Windows.Forms.GroupBox gbPalette;
         private PalettePanel pnlPalette;
         private System.Windows.Forms.GroupBox gbSelectedColor;
-        private ucColorVisualizer ucColorVisualizer;
+        private ColorVisualizerControl ucColorVisualizer;
     }
 }

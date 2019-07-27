@@ -1,17 +1,34 @@
-﻿#region Used namespaces
+﻿#region Copyright
+
+///////////////////////////////////////////////////////////////////////////////
+//  File: ColorVisualizerControl.cs
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright (C) KGy SOFT, 2005-2019 - All Rights Reserved
+//
+//  You should have received a copy of the LICENSE file at the top-level
+//  directory of this distribution. If not, then this file is considered as
+//  an illegal copy.
+//
+//  Unauthorized copying of this file, via any medium is strictly prohibited.
+///////////////////////////////////////////////////////////////////////////////
+
+#endregion
+
+#region Usings
 
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+
 using KGySoft.CoreLibraries;
 
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.UserControls
 {
-    internal partial class ucColorVisualizer : UserControl
+    internal partial class ColorVisualizerControl : UserControl
     {
         #region Fields
 
@@ -126,11 +143,9 @@ namespace KGySoft.Drawing.ImagingTools.UserControls
 
         #endregion
 
-        #region Construction and Destruction
-
         #region Constructors
 
-        public ucColorVisualizer()
+        public ColorVisualizerControl()
         {
             InitializeComponent();
             btnEdit.Image = Properties.Resources.Palette;
@@ -143,37 +158,6 @@ namespace KGySoft.Drawing.ImagingTools.UserControls
 
             SystemColorsChanged += new EventHandler(ucColorVisualizer_SystemColorsChanged);
         }
-
-        #endregion
-
-        #region Explicit Disposing
-
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-                if (alphaBrush != null)
-                    alphaBrush.Dispose();
-            }
-
-            alphaBrush = null;
-            pnlAlpha.Paint -= pnlColor_Paint;
-            pnlColor.Paint -= pnlColor_Paint;
-            btnEdit.Click -= btnEdit_Click;
-            tbAlpha.Scroll -= tbAlpha_Scroll;
-            tbRed.Scroll -= tbRed_Scroll;
-            tbGreen.Scroll -= tbGreen_Scroll;
-            tbBlue.Scroll -= tbBlue_Scroll;
-            SystemColorsChanged -= ucColorVisualizer_SystemColorsChanged;
-            base.Dispose(disposing);
-        }
-
-        #endregion
 
         #endregion
 
@@ -202,6 +186,37 @@ namespace KGySoft.Drawing.ImagingTools.UserControls
         #endregion
 
         #region Instance Methods
+
+        #region Protected Methods
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+                if (alphaBrush != null)
+                    alphaBrush.Dispose();
+            }
+
+            alphaBrush = null;
+            pnlAlpha.Paint -= pnlColor_Paint;
+            pnlColor.Paint -= pnlColor_Paint;
+            btnEdit.Click -= btnEdit_Click;
+            tbAlpha.Scroll -= tbAlpha_Scroll;
+            tbRed.Scroll -= tbRed_Scroll;
+            tbGreen.Scroll -= tbGreen_Scroll;
+            tbBlue.Scroll -= tbBlue_Scroll;
+            SystemColorsChanged -= ucColorVisualizer_SystemColorsChanged;
+            base.Dispose(disposing);
+        }
+
+        #endregion
+
+        #region Private Methods
 
         private void ColorUpdated()
         {
@@ -262,9 +277,7 @@ namespace KGySoft.Drawing.ImagingTools.UserControls
 
         #endregion
 
-        #endregion
-
-        #region Event Handlers
+        #region Event handlers
         //ReSharper disable InconsistentNaming
 
         private void pnlColor_Paint(object sender, PaintEventArgs e)
@@ -329,6 +342,10 @@ namespace KGySoft.Drawing.ImagingTools.UserControls
         }
 
         //ReSharper restore InconsistentNaming
+        #endregion
+
+        #endregion
+
         #endregion
     }
 }

@@ -1,4 +1,22 @@
-﻿#region Used namespaces
+﻿#region Copyright
+
+///////////////////////////////////////////////////////////////////////////////
+//  File: ImageDebuggerVisualizerForm.cs
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright (C) KGy SOFT, 2005-2019 - All Rights Reserved
+//
+//  You should have received a copy of the LICENSE file at the top-level
+//  directory of this distribution. If not, then this file is considered as
+//  an illegal copy.
+//
+//  Unauthorized copying of this file, via any medium is strictly prohibited.
+///////////////////////////////////////////////////////////////////////////////
+
+#endregion
+
+#region Usings
+
+#region Used Namespaces
 
 using System;
 using System.Collections.Generic;
@@ -9,10 +27,17 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+
 using KGySoft.CoreLibraries;
+
+#endregion
+
+#region Used Aliases
 
 using Encoder = System.Drawing.Imaging.Encoder;
 using Images = KGySoft.Drawing.ImagingTools.Properties.Resources;
+
+#endregion
 
 #endregion
 
@@ -20,8 +45,6 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 {
     internal partial class ImageDebuggerVisualizerForm : Form
     {
-        #region Nested classes
-
         #region ButtonRenderer class
 
         private sealed class ButtonRenderer : ToolStripProfessionalRenderer
@@ -32,17 +55,13 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             {
                 ToolStripButton button = e.Item as ToolStripButton;
                 if (button != null && button.Checked && button.Enabled)
-                {
                     e.Graphics.Clear(ProfessionalColors.ButtonSelectedGradientMiddle);
-                }
 
                 base.OnRenderButtonBackground(e);
             }
 
             #endregion
         }
-
-        #endregion
 
         #endregion
 
@@ -81,12 +100,11 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         /// </summary>
         internal virtual Image Image
         {
-            get { return image == null ? null : image.Image; }
+            get => image?.Image;
             set
             {
                 if (image != null && image.Image == value)
                     return;
-
                 SetImage(value, null);
             }
         }
@@ -94,14 +112,13 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         /// <summary>
         /// Gets or sets the icon.
         /// </summary>
-        internal Icon Icon
+        internal new Icon Icon
         {
-            get { return icon; }
+            get => icon;
             set
             {
                 if (icon == value)
                     return;
-
                 SetImage(null, value);
             }
         }
@@ -111,12 +128,11 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         /// </summary>
         internal ImageTypes ImageTypes
         {
-            get { return imageTypes; }
+            get => imageTypes;
             set
             {
                 if (imageTypes == value)
                     return;
-
                 imageTypes = value;
                 isOpenFilterUpToDate = false;
             }
@@ -125,19 +141,15 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         /// <summary>
         /// Gets whether the image has been replaced or edited.
         /// </summary>
-        internal bool IsModified
-        {
-            get { return !isUpToDate || fileName != null; }
-        }
+        internal bool IsModified => !isUpToDate || fileName != null;
 
         internal bool ReadOnly
         {
-            get { return readOnly; }
+            get => readOnly;
             set
             {
                 if (readOnly == value)
                     return;
-
                 readOnly = value;
                 btnClear.Visible = btnOpen.Visible = !readOnly;
             }
@@ -152,16 +164,11 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             set => lblNotification.Text = value;
         }
 
-        protected virtual bool IsPaletteReadOnly
-        {
-            get { return image.RawFormat == ImageFormat.Icon.Guid; }
-        }
+        protected virtual bool IsPaletteReadOnly => image.RawFormat == ImageFormat.Icon.Guid;
 
         #endregion
 
         #endregion
-
-        #region Construction and Destruction
 
         #region Constructors
 
@@ -186,58 +193,6 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
             SetImage(null, null);
         }
-
-        #endregion
-
-        #region Explicit Disposing
-
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            Load -= ImageDebuggerVisualizerForm_Load;
-            btnAutoZoom.CheckedChanged -= btnAutoZoom_CheckedChanged;
-            miDeafult.Click -= miBackColor_Click;
-            miWhite.Click -= miBackColor_Click;
-            miBlack.Click -= miBackColor_Click;
-            btnSave.Click -= btnSave_Click;
-            btnOpen.Click -= btnOpen_Click;
-            btnClear.Click -= btnClear_Click;
-            btnCompound.Click -= btnCompound_Click;
-            btnPrev.Click -= btnPrev_Click;
-            btnNext.Click -= btnNext_Click;
-            pbImage.SizeChanged -= pbImage_SizeChanged;
-            timerPlayer.Tick -= timerPlayer_Tick;
-            miShowPalette.Click -= miShowPalette_Click;
-            txtInfo.TextChanged -= txtInfo_TextChanged;
-            txtInfo.Enter -= txtInfo_Enter;
-            btnConfiguration.Click -= btnConfiguration_Click;
-
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-
-            if (disposing)
-            {
-                // freeing images (this form works always with copies, and gives back copies do
-                // disposing images is alright)
-                if (image != null)
-                    image.Dispose();
-                if (icon != null)
-                    icon.Dispose();
-
-                if (frames != null)
-                    FreeFrames();
-
-            }
-
-            base.Dispose(disposing);
-        }
-
-        #endregion
 
         #endregion
 
@@ -281,11 +236,8 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
         internal void InitFromSingleImage(ImageData imageData, Icon newIcon)
         {
-            if (image != null)
-                image.Dispose();
-            if (icon != null)
-                icon.Dispose();
-
+            image?.Dispose();
+            icon?.Dispose();
             icon = newIcon;
             btnSave.Enabled = btnClear.Enabled = imageData.Image != null;
             FreeFrames();
@@ -297,25 +249,18 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
         internal void InitFromFrames(ImageData mainImage, ImageData[] frameImages, Icon newIcon)
         {
-            if (image != null)
-                image.Dispose();
-            if (icon != null)
-                icon.Dispose();
-
+            image?.Dispose();
+            icon?.Dispose();
             icon = newIcon;
             btnSave.Enabled = btnClear.Enabled = true;
             FreeFrames();
 
             if (mainImage == null)
-            {
                 mainImage = frameImages[0];
-            }
             else if (mainImage.RawFormat == ImageFormat.Icon.Guid)
             {
                 if (newIcon != null)
-                {
                     mainImage.Image = newIcon.ToMultiResBitmap();
-                }
                 else
                 {
                     ImageData[] iconImages = frameImages ?? new[] { mainImage };
@@ -382,6 +327,46 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         #endregion
 
         #region Protected Methods
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            Load -= ImageDebuggerVisualizerForm_Load;
+            btnAutoZoom.CheckedChanged -= btnAutoZoom_CheckedChanged;
+            miDeafult.Click -= miBackColor_Click;
+            miWhite.Click -= miBackColor_Click;
+            miBlack.Click -= miBackColor_Click;
+            btnSave.Click -= btnSave_Click;
+            btnOpen.Click -= btnOpen_Click;
+            btnClear.Click -= btnClear_Click;
+            btnCompound.Click -= btnCompound_Click;
+            btnPrev.Click -= btnPrev_Click;
+            btnNext.Click -= btnNext_Click;
+            pbImage.SizeChanged -= pbImage_SizeChanged;
+            timerPlayer.Tick -= timerPlayer_Tick;
+            miShowPalette.Click -= miShowPalette_Click;
+            txtInfo.TextChanged -= txtInfo_TextChanged;
+            txtInfo.Enter -= txtInfo_Enter;
+            btnConfiguration.Click -= btnConfiguration_Click;
+
+            if (disposing)
+                components?.Dispose();
+
+            if (disposing)
+            {
+                // freeing images (this form works always with copies, and gives back copies do
+                // disposing images is alright)
+                image?.Dispose();
+                icon?.Dispose();
+                if (frames != null)
+                    FreeFrames();
+            }
+
+            base.Dispose(disposing);
+        }
 
         protected virtual void UpdateInfo()
         {
@@ -484,12 +469,8 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         {
             if (frames == null)
                 return;
-
             foreach (ImageData frame in frames)
-            {
                 frame.Dispose();
-            }
-
             frames = null;
         }
 
@@ -524,7 +505,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             if (icon != null)//(image.Image.RawFormat.Guid == ImageFormat.Icon.Guid)
                 return "Icon";
             Image img = GetCurrentImage().Image;
-            return img == null ? typeof(Bitmap).Name : img.GetType().Name;
+            return img?.GetType().Name ?? typeof(Bitmap).Name;
         }
 
         private void FromStream(Stream stream)
@@ -633,9 +614,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         private void SaveIcon(string fileName)
         {
             using (Stream stream = File.Create(fileName))
-            {
                 SaveIcon(stream);
-            }
         }
 
         private void SaveIcon(Stream stream)
@@ -651,16 +630,16 @@ namespace KGySoft.Drawing.ImagingTools.Forms
                     icon.SaveHighQuality(stream);
                 // single image icon without raw data
                 else if (frames == null || frames.Length <= 1)
+                {
                     using (Icon i = Icons.Combine((Bitmap)image.Image))
-                    {
                         i.Save(stream);
-                    }
+                }
                 // multi image icon without raw data
                 else
+                {
                     using (Icon i = Icons.Combine(frames.Select(f => (Bitmap)f.Image).ToArray()))
-                    {
                         i.Save(stream);
-                    }
+                }
 
                 stream.Flush();
                 return;
@@ -668,15 +647,15 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
             // saving a single icon image
             if (icon != null)
+            {
                 using (Icon i = icon.ExtractIcon(currentFrame))
-                {
                     i.Save(stream);
-                }
+            }
             else
+            {
                 using (Icon i = Icons.Combine((Bitmap)currentImage.Image))
-                {
                     i.Save(stream);
-                }
+            }
 
             stream.Flush();
         }
@@ -722,7 +701,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             }
 
             //ImageData currentImage = GetCurrentImage();
-            
+
             //// single gif image
             //if (image.RawFormat != ImageFormat.Gif.Guid || frames == null || frames.Length == 0 || currentImage != image && image.RawFormat == ImageFormat.Gif.Guid)
             //{
@@ -785,9 +764,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         private void SaveMultipageTiff(string fileName)
         {
             using (Stream stream = File.Create(fileName))
-            {
                 GetTiffPages().SaveAsMultipageTiff(stream);
-            }
         }
 
         private IEnumerable<Image> GetTiffPages()
@@ -873,36 +850,26 @@ namespace KGySoft.Drawing.ImagingTools.Forms
                 btnAutoZoom.Checked = true;
         }
 
-        #endregion
-
-        #endregion
-
-        #endregion
-
-        #region Event Handlers
-        //ReSharper disable InconsistentNaming
-
-        private void btnAutoZoom_CheckedChanged(object sender, EventArgs e)
+        private void Open()
         {
-            pbImage.SizeMode = btnAutoZoom.Checked ? PictureBoxSizeMode.Zoom : PictureBoxSizeMode.CenterImage;
-        }
+            SetOpenFilter();
+            if (dlgOpen.ShowDialog(this) != DialogResult.OK)
+                return;
 
-        private void miBackColor_Click(object sender, EventArgs e)
-        {
-            foreach (ToolStripMenuItem item in miBackColor.DropDownItems)
+            try
             {
-                item.Checked = item == sender;
+                Notification = null;
+                FromStream(new MemoryStream(File.ReadAllBytes(dlgOpen.FileName)));
+                isUpToDate = !lblNotification.Visible;
+                fileName = isUpToDate ? dlgOpen.FileName : null;
             }
-
-            if (sender == miDeafult)
-                pbImage.BackColor = SystemColors.Control;
-            else if (sender == miWhite)
-                pbImage.BackColor = Color.White;
-            else
-                pbImage.BackColor = Color.Black;
+            catch (Exception ex)
+            {
+                Dialogs.ErrorMessage("Could not load file due to an error: {0}", ex.Message);
+            }
         }
 
-        private void btnSave_Click(object sender, EventArgs e)
+        private void Save()
         {
             if (image == null)
                 return;
@@ -977,20 +944,11 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             {
                 // icon
                 if (dlgSave.FilterIndex == encoderCodecs.Length + 1 && (icon != null || image.RawFormat == ImageFormat.Icon.Guid))
-                {
                     SaveIcon(dlgSave.FileName);
-                }
-                // metafile
                 else if (dlgSave.FilterIndex >= encoderCodecs.Length + 1 && image.Image is Metafile)
-                {
                     SaveMetafile(dlgSave.FileName, dlgSave.FilterIndex == encoderCodecs.Length + 1);
-                }
-                // jpeg
                 else if (encoderCodecs[dlgSave.FilterIndex - 1].FormatID == ImageFormat.Jpeg.Guid)
-                {
                     SaveJpeg(dlgSave.FileName, encoderCodecs[dlgSave.FilterIndex - 1]);
-                }
-                // multipage tiff: original image is tiff (no composite view is available), or composite image is selected (icon/gif)
                 else if (frames != null && frames.Length > 1 && encoderCodecs[dlgSave.FilterIndex - 1].FormatID == ImageFormat.Tiff.Guid
                     && (image.RawFormat == ImageFormat.Tiff.Guid || GetCurrentImage() == image))
                 {
@@ -998,14 +956,9 @@ namespace KGySoft.Drawing.ImagingTools.Forms
                 }
                 // gif
                 else if (encoderCodecs[dlgSave.FilterIndex - 1].FormatID == ImageFormat.Gif.Guid)
-                {
                     SaveGif(dlgSave.FileName);
-                }
-                // built-in encoders
                 else
-                {
                     GetCurrentImage().Image.Save(dlgSave.FileName, encoderCodecs[dlgSave.FilterIndex - 1], null);
-                }
             }
             catch (Exception ex)
             {
@@ -1013,23 +966,26 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             }
         }
 
-        private void btnOpen_Click(object sender, EventArgs e)
-        {
-            SetOpenFilter();
-            if (dlgOpen.ShowDialog(this) != DialogResult.OK)
-                return;
+        #endregion
 
-            try
-            {
-                Notification = null;
-                FromStream(new MemoryStream(File.ReadAllBytes(dlgOpen.FileName)));
-                isUpToDate = !lblNotification.Visible;
-                fileName = isUpToDate ? dlgOpen.FileName : null;
-            }
-            catch (Exception ex)
-            {
-                Dialogs.ErrorMessage("Could not load file due to an error: {0}", ex.Message);
-            }
+        #region Event handlers
+        //ReSharper disable InconsistentNaming
+
+        private void btnOpen_Click(object sender, EventArgs e) => Open();
+        private void btnSave_Click(object sender, EventArgs e) => Save();
+        private void btnAutoZoom_CheckedChanged(object sender, EventArgs e) => pbImage.SizeMode = btnAutoZoom.Checked ? PictureBoxSizeMode.Zoom : PictureBoxSizeMode.CenterImage;
+
+        private void miBackColor_Click(object sender, EventArgs e)
+        {
+            foreach (ToolStripMenuItem item in miBackColor.DropDownItems)
+                item.Checked = item == sender;
+
+            if (sender == miDeafult)
+                pbImage.BackColor = SystemColors.Control;
+            else if (sender == miWhite)
+                pbImage.BackColor = Color.White;
+            else
+                pbImage.BackColor = Color.Black;
         }
 
         private void btnClear_Click(object sender, EventArgs e)
@@ -1122,9 +1078,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
                     }
 
                     for (int i = 0; i < currentImage.Palette.Length; i++)
-                    {
                         palette.Entries[i] = currentImage.Palette[i];
-                    }
 
                     currentImage.Image.Palette = palette;
                     isUpToDate = false;
@@ -1134,30 +1088,21 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             }
         }
 
-        private void txtInfo_TextChanged(object sender, EventArgs e)
-        {
-            txtInfo.SelectionLength = 0;
-        }
-
-        private void ImageDebuggerVisualizerForm_Load(object sender, EventArgs e)
-        {
-            InitAutoZoom();
-        }
-
-        private void txtInfo_Enter(object sender, EventArgs e)
-        {
-            txtInfo.SelectionLength = 0;
-        }
+        private void txtInfo_TextChanged(object sender, EventArgs e) => txtInfo.SelectionLength = 0;
+        private void ImageDebuggerVisualizerForm_Load(object sender, EventArgs e) => InitAutoZoom();
+        private void txtInfo_Enter(object sender, EventArgs e) => txtInfo.SelectionLength = 0;
 
         private void btnConfiguration_Click(object sender, EventArgs e)
         {
             using (var form = new ManageInstallationsForm())
-            {
                 form.ShowDialog(this);
-            }
         }
 
         //ReSharper restore InconsistentNaming
+        #endregion
+
+        #endregion
+
         #endregion
     }
 }

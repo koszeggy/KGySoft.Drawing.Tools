@@ -1,6 +1,6 @@
 ﻿namespace KGySoft.Drawing.ImagingTools.UserControls
 {
-    partial class ucColorVisualizer
+    partial class ColorVisualizerControl
     {
         /// <summary> 
         /// Required designer variable.

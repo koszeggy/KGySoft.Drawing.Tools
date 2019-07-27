@@ -36,12 +36,12 @@ namespace KGySoft.Drawing.ImagingTools
         #region Fields
 
         private static readonly string[] files =
-            {
-                "KGySoft.Drawing.ImagingTools.exe",
-                "KGySoft.Drawing.dll",
-                "KGySoft.CoreLibraries.dll",
-                debuggerVisualizerFileName
-            };
+        {
+            "KGySoft.Drawing.ImagingTools.exe",
+            "KGySoft.Drawing.dll",
+            "KGySoft.CoreLibraries.dll",
+            debuggerVisualizerFileName
+        };
 
         #endregion
 

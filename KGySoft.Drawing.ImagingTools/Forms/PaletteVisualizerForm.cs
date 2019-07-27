@@ -1,4 +1,20 @@
-﻿#region Used namespaces
+﻿#region Copyright
+
+///////////////////////////////////////////////////////////////////////////////
+//  File: PaletteVisualizerForm.cs
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright (C) KGy SOFT, 2005-2019 - All Rights Reserved
+//
+//  You should have received a copy of the LICENSE file at the top-level
+//  directory of this distribution. If not, then this file is considered as
+//  an illegal copy.
+//
+//  Unauthorized copying of this file, via any medium is strictly prohibited.
+///////////////////////////////////////////////////////////////////////////////
+
+#endregion
+
+#region Usings
 
 using System;
 using System.Collections.Generic;
@@ -23,7 +39,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
         internal IList<Color> Palette
         {
-            get { return palette; }
+            get => palette;
             set
             {
                 palette = value;
@@ -39,14 +55,9 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             }
         }
 
-        internal bool PaletteChanged
-        {
-            get { return changed; }
-        }
+        internal bool PaletteChanged => changed;
 
         #endregion
-
-        #region Construction and Destruction
 
         #region Constructors
 
@@ -59,18 +70,14 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
         #endregion
 
-        #region Explicit Disposing
+        #region Methods
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        #region Protected Methods
+
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
+            if (disposing)
+                components?.Dispose();
 
             ucColorVisualizer.ColorEdited -= ucColorVisualizer_ColorEdited;
             pnlPalette.SelectedColorChanged -= pnlPalette_SelectedColorChanged;
@@ -80,9 +87,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
         #endregion
 
-        #endregion
-
-        #region Event Handlers
+        #region Event handlers
         //ReSharper disable InconsistentNaming
 
         void ucColorVisualizer_ColorEdited(object sender, EventArgs e)
@@ -103,6 +108,8 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         }
 
         //ReSharper restore InconsistentNaming
+        #endregion
+
         #endregion
     }
 }

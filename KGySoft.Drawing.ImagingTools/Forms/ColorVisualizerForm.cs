@@ -1,4 +1,20 @@
-﻿#region Used namespaces
+﻿#region Copyright
+
+///////////////////////////////////////////////////////////////////////////////
+//  File: ColorVisualizerForm.cs
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright (C) KGy SOFT, 2005-2019 - All Rights Reserved
+//
+//  You should have received a copy of the LICENSE file at the top-level
+//  directory of this distribution. If not, then this file is considered as
+//  an illegal copy.
+//
+//  Unauthorized copying of this file, via any medium is strictly prohibited.
+///////////////////////////////////////////////////////////////////////////////
+
+#endregion
+
+#region Usings
 
 using System;
 using System.Drawing;
@@ -20,13 +36,13 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
         internal bool ReadOnly
         {
-            get { return ucColorVisualizer.ReadOnly; }
-            set { ucColorVisualizer.ReadOnly = value; }
+            get => ucColorVisualizer.ReadOnly;
+            set => ucColorVisualizer.ReadOnly = value;
         }
 
         internal Color Color
         {
-            get { return ucColorVisualizer.Color; }
+            get => ucColorVisualizer.Color;
             set
             {
                 ucColorVisualizer.Color = value;
@@ -34,14 +50,9 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             }
         }
 
-        internal bool ColorChanged
-        {
-            get { return changed; }
-        }
+        internal bool ColorChanged => changed;
 
         #endregion
-
-        #region Construction and Destruction
 
         #region Constructors
 
@@ -53,7 +64,9 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
         #endregion
 
-        #region Explicit Disposing
+        #region Methods
+
+        #region Protected Methods
 
         /// <summary>
         /// Clean up any resources being used.
@@ -61,10 +74,8 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
+            if (disposing)
+                components?.Dispose();
 
             ucColorVisualizer.ColorEdited -= ucColorVisualizer_ColorEdited;
             base.Dispose(disposing);
@@ -72,19 +83,13 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
         #endregion
 
-        #endregion
+        #region Private Methods
 
-        #region Methods
-
-        private void UpdateInfo()
-        {
-            Text = "Color: " + Color.Name;
-        }
+        private void UpdateInfo() => Text = "Color: " + Color.Name;
 
         #endregion
 
-        #region Event Handlers
-        //ReSharper disable InconsistentNaming
+        #region Event handlers
 
         void ucColorVisualizer_ColorEdited(object sender, EventArgs e)
         {
@@ -95,7 +100,8 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             changed = true;
         }
 
-        //ReSharper restore InconsistentNaming
+        #endregion
+
         #endregion
     }
 }

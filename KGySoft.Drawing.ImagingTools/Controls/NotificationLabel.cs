@@ -1,23 +1,38 @@
-﻿using System;
+﻿#region Copyright
+
+///////////////////////////////////////////////////////////////////////////////
+//  File: NotificationLabel.cs
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright (C) KGy SOFT, 2005-2019 - All Rights Reserved
+//
+//  You should have received a copy of the LICENSE file at the top-level
+//  directory of this distribution. If not, then this file is considered as
+//  an illegal copy.
+//
+//  Unauthorized copying of this file, via any medium is strictly prohibited.
+///////////////////////////////////////////////////////////////////////////////
+
+#endregion
+
+#region Usings
+
+using System;
 using System.Drawing;
 using System.Windows.Forms;
+
+#endregion
 
 namespace KGySoft.Drawing.ImagingTools.Controls
 {
     internal class NotificationLabel : Label
     {
-        public NotificationLabel()
-        {
-            AutoSize = true;
-            BorderStyle = BorderStyle.FixedSingle;
-            BackColor = Color.FromArgb(255, 255, 128);
-            ForeColor = Color.Black;
-            Image = Icons.Warning.ToMultiResBitmap();
-            TextAlign = ContentAlignment.MiddleLeft;
-            ImageAlign = ContentAlignment.MiddleRight;
-        }
+        #region Fields
 
         private Size lastProposedSize;
+
+        #endregion
+
+        #region Properties
 
         public override string Text
         {
@@ -30,11 +45,26 @@ namespace KGySoft.Drawing.ImagingTools.Controls
             }
         }
 
-        protected override void OnClick(EventArgs e)
+        #endregion
+
+        #region Constructors
+
+        public NotificationLabel()
         {
-            base.OnClick(e);
-            Visible = false;
+            AutoSize = true;
+            BorderStyle = BorderStyle.FixedSingle;
+            BackColor = Color.FromArgb(255, 255, 128);
+            ForeColor = Color.Black;
+            Image = Icons.Warning.ToMultiResBitmap();
+            TextAlign = ContentAlignment.MiddleLeft;
+            ImageAlign = ContentAlignment.MiddleRight;
         }
+
+        #endregion
+
+        #region Methods
+
+        #region Public Methods
 
         public override Size GetPreferredSize(Size proposedSize)
         {
@@ -87,6 +117,20 @@ namespace KGySoft.Drawing.ImagingTools.Controls
             return preferredSize;
         }
 
+        #endregion
+
+        #region Protected Methods
+
+        protected override void OnClick(EventArgs e)
+        {
+            base.OnClick(e);
+            Visible = false;
+        }
+
+        #endregion
+
+        #region Private Methods
+
         private Size GetBordersAndPadding()
         {
             Size size = Padding.Size;
@@ -100,5 +144,8 @@ namespace KGySoft.Drawing.ImagingTools.Controls
             return size;
         }
 
+        #endregion
+
+        #endregion
     }
 }

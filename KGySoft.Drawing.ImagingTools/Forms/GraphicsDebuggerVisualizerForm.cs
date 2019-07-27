@@ -1,4 +1,20 @@
-﻿#region Used namespaces
+﻿#region Copyright
+
+///////////////////////////////////////////////////////////////////////////////
+//  File: GraphicsDebuggerVisualizerForm.cs
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright (C) KGy SOFT, 2005-2019 - All Rights Reserved
+//
+//  You should have received a copy of the LICENSE file at the top-level
+//  directory of this distribution. If not, then this file is considered as
+//  an illegal copy.
+//
+//  Unauthorized copying of this file, via any medium is strictly prohibited.
+///////////////////////////////////////////////////////////////////////////////
+
+#endregion
+
+#region Usings
 
 using System;
 using System.Drawing;
@@ -13,8 +29,9 @@ namespace KGySoft.Drawing.ImagingTools.Forms
     {
         #region Fields
 
-        private ToolStripButton btnCrop;
-        private ToolStripButton btnHighlightClip;
+        private readonly ToolStripButton btnCrop;
+        private readonly ToolStripButton btnHighlightClip;
+
         private Image origImage;
 
         #endregion
@@ -22,14 +39,12 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         #region Properties
 
         internal Rectangle VisibleRect { get; set; }
-
         internal Matrix Transform { get; set; }
-
         internal string SpecialInfo { get; set; }
 
         internal override Image Image
         {
-            get { return base.Image; }
+            get => base.Image;
             set
             {
                 origImage = value;
@@ -39,8 +54,6 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         }
 
         #endregion
-
-        #region Construction and Destruction
 
         #region Constructors
 
@@ -72,7 +85,9 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
         #endregion
 
-        #region Explicit Disposing
+        #region Methods
+
+        #region Protected Methods
 
         /// <summary>
         /// Clean up any resources being used.
@@ -83,29 +98,15 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             btnCrop.Click -= btnHighlightClip_Click;
             btnHighlightClip.Click -= btnHighlightClip_Click;
 
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-
             if (disposing)
             {
-                if (origImage != null)
-                    origImage.Dispose();
+                components?.Dispose();
+                origImage?.Dispose();
             }
 
             origImage = null;
-
             base.Dispose(disposing);
         }
-
-        #endregion
-
-        #endregion
-
-        #region Methods
-
-        #region Protected Methods
 
         protected override void UpdateInfo()
         {
@@ -123,8 +124,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         private void UpdateGraphicImage()
         {
             Image oldImage = base.Image;
-            if (oldImage != null)
-                oldImage.Dispose();
+            oldImage?.Dispose();
             base.Image = null;
 
             if (origImage == null)
@@ -138,9 +138,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
                 Bitmap newImage = new Bitmap(visibleRect.Width, visibleRect.Height);
                 using (Graphics g = Graphics.FromImage(newImage))
-                {
                     g.DrawImage(origImage, new Rectangle(Point.Empty, visibleRect.Size), visibleRect, GraphicsUnit.Pixel);
-                }
 
                 base.Image = newImage;
                 return;
@@ -171,13 +169,10 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
         #endregion
 
-        #region Handled Events
+        #region Event handlers
         // ReSharper disable InconsistentNaming
 
-        void btnHighlightClip_Click(object sender, EventArgs e)
-        {
-            UpdateGraphicImage();
-        }
+        void btnHighlightClip_Click(object sender, EventArgs e) => UpdateGraphicImage();
 
         void btnCrop_Click(object sender, EventArgs e)
         {

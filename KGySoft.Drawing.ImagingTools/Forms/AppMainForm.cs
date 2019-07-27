@@ -1,12 +1,48 @@
-﻿using System;
+﻿#region Copyright
+
+///////////////////////////////////////////////////////////////////////////////
+//  File: AppMainForm.cs
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright (C) KGy SOFT, 2005-2019 - All Rights Reserved
+//
+//  You should have received a copy of the LICENSE file at the top-level
+//  directory of this distribution. If not, then this file is considered as
+//  an illegal copy.
+//
+//  Unauthorized copying of this file, via any medium is strictly prohibited.
+///////////////////////////////////////////////////////////////////////////////
+
+#endregion
+
+#region Usings
+
+using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+
+#endregion
 
 namespace KGySoft.Drawing.ImagingTools.Forms
 {
     internal partial class AppMainForm : ImageDebuggerVisualizerForm
     {
+        #region Constants
+
         private const string title = "KGy SOFT Imaging Tools";
+
+        #endregion
+
+        #region Properties
+
+        public override string Text
+        {
+            get => base.Text;
+            set => base.Text = String.IsNullOrEmpty(value) ? title : $"{title} - {value}";
+        }
+
+        #endregion
+
+        #region Constructors
 
         public AppMainForm()
         {
@@ -17,6 +53,10 @@ namespace KGySoft.Drawing.ImagingTools.Forms
                 + $"Use the '{btnConfiguration.Text}' button.";
         }
 
+        #endregion
+
+        #region Methods
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -24,10 +64,6 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             base.Dispose(disposing);
         }
 
-        public override string Text
-        {
-            get => base.Text;
-            set => base.Text = String.IsNullOrEmpty(value) ? title : $"{title} - {value}";
-        }
+        #endregion
     }
 }
