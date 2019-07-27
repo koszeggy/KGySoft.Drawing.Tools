@@ -11,16 +11,16 @@ using KGySoft.Serialization;
 
 #endregion
 
-namespace KGySoft.Drawing.ImagingTools.PublicApi
+namespace KGySoft.Drawing.ImagingTools
 {
     /// <summary>
     /// Provides debugger methods for debugger visualizers
     /// </summary>
-    public static class DebuggerHelper
+    internal static class DebuggerHelper
     {
         #region Methods
 
-        #region Public Methods
+        #region Internal Methods
 
         /// <summary>
         /// Shows the debugger for an <see cref="Image"/> or <see cref="Icon"/> object.
@@ -28,7 +28,7 @@ namespace KGySoft.Drawing.ImagingTools.PublicApi
         /// <param name="imageInfo">The image info for debugging returned by <see cref="SerializationHelper.DeserializeImage"/></param>
         /// <param name="isReplaceable">Indicates whether the image is replaceable.</param>
         /// <returns>A non-<see langword="null"/>&#160;instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
-        public static object DebugImage(object[] imageInfo, bool isReplaceable)
+        internal static object DebugImage(object[] imageInfo, bool isReplaceable)
         {
             return DebugImage(imageInfo, isReplaceable, new ImageDebuggerVisualizerForm());
         }
@@ -39,7 +39,7 @@ namespace KGySoft.Drawing.ImagingTools.PublicApi
         /// <param name="imageInfo">The image infos for debugging returned by <see cref="SerializationHelper.DeserializeImage"/></param>
         /// <param name="isReplaceable">Indicates whether the image is replaceable.</param>
         /// <returns>A non-<see langword="null"/>&#160;instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
-        public static object DebugBitmap(object[] imageInfo, bool isReplaceable)
+        internal static object DebugBitmap(object[] imageInfo, bool isReplaceable)
         {
             ImageDebuggerVisualizerForm form = new ImageDebuggerVisualizerForm();
             form.ImageTypes = ImageTypes.Bitmap | ImageTypes.Icon;
@@ -52,7 +52,7 @@ namespace KGySoft.Drawing.ImagingTools.PublicApi
         /// <param name="imageInfo">The image infos for debugging returned by <see cref="SerializationHelper.DeserializeImage"/></param>
         /// <param name="isReplaceable">Indicates whether the image is replaceable.</param>
         /// <returns>A non-<see langword="null"/>&#160;instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
-        public static object DebugMetafile(object[] imageInfo, bool isReplaceable)
+        internal static object DebugMetafile(object[] imageInfo, bool isReplaceable)
         {
             ImageDebuggerVisualizerForm form = new ImageDebuggerVisualizerForm();
             form.ImageTypes = ImageTypes.Metafile;
@@ -65,7 +65,7 @@ namespace KGySoft.Drawing.ImagingTools.PublicApi
         /// <param name="imageInfo">The image infos for debugging returned by <see cref="SerializationHelper.DeserializeImage"/></param>
         /// <param name="isReplaceable">Indicates whether the image is replaceable.</param>
         /// <returns>A non-<see langword="null"/>&#160;instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
-        public static object DebugIcon(object[] imageInfo, bool isReplaceable)
+        internal static object DebugIcon(object[] imageInfo, bool isReplaceable)
         {
             ImageDebuggerVisualizerForm form = new ImageDebuggerVisualizerForm();
             form.ImageTypes = ImageTypes.Icon;
@@ -76,7 +76,7 @@ namespace KGySoft.Drawing.ImagingTools.PublicApi
         /// Shows the debugger for a <see cref="BitmapData"/> object.
         /// </summary>
         /// <param name="bitmapDataInfo">The bitmap data infos for debugging returned by <see cref="SerializationHelper.DeserializeBitmapData"/>.</param>
-        public static void DebugBitmapData(object[] bitmapDataInfo)
+        internal static void DebugBitmapData(object[] bitmapDataInfo)
         {
             if (bitmapDataInfo == null)
                 throw new ArgumentNullException("bitmapDataInfo");
@@ -98,7 +98,7 @@ namespace KGySoft.Drawing.ImagingTools.PublicApi
         /// Shows the debugger for a <see cref="Graphics"/> object.
         /// </summary>
         /// <param name="graphicsInfo">The graphics infos for debugging returned by <see cref="SerializationHelper.DeserializeGraphics"/>.</param>
-        public static void DebugGraphics(object[] graphicsInfo)
+        internal static void DebugGraphics(object[] graphicsInfo)
         {
             if (graphicsInfo == null)
                 throw new ArgumentNullException("graphicsInfo");
@@ -126,7 +126,7 @@ namespace KGySoft.Drawing.ImagingTools.PublicApi
         /// <param name="obj">The palette object to debug returned by <see cref="SerializationHelper.DeserializeAnyObject"/>.</param>
         /// <param name="isReplaceable">Indicates whether the palette is replaceable.</param>
         /// <returns>A non-<see langword="null"/>&#160;instance, when the palette has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
-        public static object DebugPalette(object obj, bool isReplaceable)
+        internal static object DebugPalette(object obj, bool isReplaceable)
         {
             using (PaletteVisualizerForm frm = new PaletteVisualizerForm())
             {
@@ -162,7 +162,7 @@ namespace KGySoft.Drawing.ImagingTools.PublicApi
         /// <param name="obj">The color object to debug.</param>
         /// <param name="isReplaceable">Indicates whether the color is replaceable.</param>
         /// <returns>A non-<see langword="null"/>&#160;instance, when the color has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
-        public static object DebugColor(object obj, bool isReplaceable)
+        internal static object DebugColor(object obj, bool isReplaceable)
         {
             if (!(obj is Color))
                 throw new ArgumentException("Object is not a Color", "obj");

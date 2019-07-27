@@ -180,6 +180,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             btnPrev.Image = Images.Prev;
             btnNext.Image = Images.Next;
             btnColorSettings.Image = Images.Palette;
+            btnConfiguration.Image = Images.Gear;
             tsMenu.Renderer = new ButtonRenderer();
             lblNotification.Text = null;
 
@@ -212,6 +213,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             miShowPalette.Click -= miShowPalette_Click;
             txtInfo.TextChanged -= txtInfo_TextChanged;
             txtInfo.Enter -= txtInfo_Enter;
+            btnConfiguration.Click -= btnConfiguration_Click;
 
             if (disposing && (components != null))
             {
@@ -1145,6 +1147,14 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         private void txtInfo_Enter(object sender, EventArgs e)
         {
             txtInfo.SelectionLength = 0;
+        }
+
+        private void btnConfiguration_Click(object sender, EventArgs e)
+        {
+            using (var form = new ManageInstallationsForm())
+            {
+                form.ShowDialog(this);
+            }
         }
 
         //ReSharper restore InconsistentNaming

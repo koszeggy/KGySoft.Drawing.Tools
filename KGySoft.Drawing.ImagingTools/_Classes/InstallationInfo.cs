@@ -42,9 +42,10 @@ namespace KGySoft.Drawing.ImagingTools
                     info.Version = asm.GetName().Version;
                     info.RuntimeVersion = asm.ImageRuntimeVersion;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    throw;
+                    info.Version = null;
+                    info.RuntimeVersion = null;
                 }
             }
 

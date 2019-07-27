@@ -1,4 +1,4 @@
-﻿using KGySoft.Drawing.ImagingTools.PublicApi;
+﻿using KGySoft.Drawing.ImagingTools;
 using Microsoft.VisualStudio.DebuggerVisualizers;
 
 namespace KGySoft.Drawing.DebuggerVisualizers

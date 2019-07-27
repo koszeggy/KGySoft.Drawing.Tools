@@ -11,8 +11,7 @@
     <RootNamespace>KGySoft.Drawing.DebuggerVisualizers</RootNamespace>
     <AssemblyName>KGySoft.Drawing.DebuggerVisualizers</AssemblyName>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\KGySoft.snk</AssemblyOriginatorKeyFile>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <DocumentationFile>bin\$(Configuration)\KGySoft.DebuggerVisualizers.VS2015.xml</DocumentationFile>
     <ErrorReport>prompt</ErrorReport>
@@ -98,7 +97,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\KGySoft.snk">
+    <None Include="..\KGySoft.snk">
       <Link>KGySoft.snk</Link>
     </None>
     <None Include="packages.config" />
@@ -114,7 +113,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties LastExportedMakefileHash="Lc9DFBa2QeJU6LkEO19XOA==" ED14F191-6CDA-4bbb-BB1B-C329DD754E20_OutputCondition="" ExternalBuildIntegrationEnabled="True" />
+      <UserProperties ExternalBuildIntegrationEnabled="True" ED14F191-6CDA-4bbb-BB1B-C329DD754E20_OutputCondition="" LastExportedMakefileHash="Lc9DFBa2QeJU6LkEO19XOA==" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

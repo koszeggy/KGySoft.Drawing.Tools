@@ -11,19 +11,19 @@ using KGySoft.Serialization;
 
 #endregion
 
-namespace KGySoft.Drawing.ImagingTools.PublicApi
+namespace KGySoft.Drawing.ImagingTools
 {
     /// <summary>
     /// Provides serialization and deserialization methods for debugger visualizers
     /// </summary>
-    public static class SerializationHelper
+    internal static class SerializationHelper
     {
         #region Methods
 
         /// <summary>
         /// Serializes an <see cref="Image"/>, <see cref="Metafile"/> or <see cref="Icon"/> instance.
         /// </summary>
-        public static void SerializeImage(object target, Stream outgoingData)
+        internal static void SerializeImage(object target, Stream outgoingData)
         {
             // Bitmap/Metafile: ImageData
             Image image = target as Image;
@@ -113,7 +113,7 @@ namespace KGySoft.Drawing.ImagingTools.PublicApi
         /// <summary>
         /// Serializes a <see cref="Graphics"/> instance.
         /// </summary>
-        public static void SerializeGraphics(object target, Stream outgoingData)
+        internal static void SerializeGraphics(object target, Stream outgoingData)
         {
             Graphics g = target as Graphics;
             if (g == null)
@@ -182,7 +182,7 @@ namespace KGySoft.Drawing.ImagingTools.PublicApi
         /// <summary>
         /// Serializes a <see cref="BitmapData"/> instance.
         /// </summary>
-        public static void SerializeBitmapData(object target, Stream outgoingData)
+        internal static void SerializeBitmapData(object target, Stream outgoingData)
         {
             BitmapData bitmapData = target as BitmapData;
             if (bitmapData == null)
@@ -205,7 +205,7 @@ namespace KGySoft.Drawing.ImagingTools.PublicApi
         /// <summary>
         /// Serializes any <see cref="object"/>, even non serializable ones.
         /// </summary>
-        public static void SerializeAnyObject(object target, Stream outgoingData)
+        internal static void SerializeAnyObject(object target, Stream outgoingData)
         {
             BinarySerializer.SerializeToStream(outgoingData, target);
         }
@@ -214,7 +214,7 @@ namespace KGySoft.Drawing.ImagingTools.PublicApi
         /// Deserializes <see cref="Image"/> infos (<see cref="Bitmap"/>, <see cref="Metafile"/> or <see cref="Icon"/>) from the stream
         /// that can be passed to <see cref="DebuggerHelper.DebugImage"/>, <see cref="DebuggerHelper.DebugBitmap"/> or <see cref="DebuggerHelper.DebugMetafile"/>.
         /// </summary>
-        public static object[] DeserializeImage(Stream stream)
+        internal static object[] DeserializeImage(Stream stream)
         {
             BinaryReader br = new BinaryReader(stream);
             ImageDataTypes imageType = (ImageDataTypes)br.ReadByte();
@@ -274,7 +274,7 @@ namespace KGySoft.Drawing.ImagingTools.PublicApi
         /// <summary>
         /// Deserializes <see cref="BitmapData"/> infos from the stream that can be passed to <see cref="DebuggerHelper.DebugBitmapData"/>.
         /// </summary>
-        public static object[] DeserializeBitmapData(Stream stream)
+        internal static object[] DeserializeBitmapData(Stream stream)
         {
             BinaryReader br = new BinaryReader(stream);
 
@@ -290,7 +290,7 @@ namespace KGySoft.Drawing.ImagingTools.PublicApi
         /// <summary>
         /// Deserializes <see cref="Graphics"/> infos from the stream that can be passed to <see cref="DebuggerHelper.DebugGraphics"/>.
         /// </summary>
-        public static object[] DeserializeGraphics(Stream stream)
+        internal static object[] DeserializeGraphics(Stream stream)
         {
             BinaryReader br = new BinaryReader(stream);
 
@@ -318,7 +318,7 @@ namespace KGySoft.Drawing.ImagingTools.PublicApi
         /// <summary>
         /// Deserializes any <see cref="object"/> that was serialized by <see cref="SerializeAnyObject"/>.
         /// </summary>
-        public static object DeserializeAnyObject(Stream stream)
+        internal static object DeserializeAnyObject(Stream stream)
         {
             return BinarySerializer.DeserializeFromStream(stream);
         }

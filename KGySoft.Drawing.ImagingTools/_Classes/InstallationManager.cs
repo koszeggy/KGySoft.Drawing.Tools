@@ -49,10 +49,7 @@ namespace KGySoft.Drawing.ImagingTools
 
         internal static InstallationInfo GetInstallationInfo(string path) => new InstallationInfo(path);
 
-        internal static bool IsInstalled(string path)
-        {
-            return Directory.Exists(path) && File.Exists(GetDebuggerVisualizerFilePath(path));
-        }
+        internal static bool IsInstalled(string path) => Directory.Exists(path) && File.Exists(GetDebuggerVisualizerFilePath(path));
 
         internal static string GetDebuggerVisualizerFilePath(string path) => Path.Combine(path, debuggerVisualizerFileName);
 
@@ -81,7 +78,7 @@ namespace KGySoft.Drawing.ImagingTools
             {
                 try
                 {
-                    File.Copy(Path.Combine(selfPath, file), Path.Combine(path, file));
+                    File.Copy(Path.Combine(selfPath, file), Path.Combine(path, file), true);
                 }
                 catch (Exception e)
                 {

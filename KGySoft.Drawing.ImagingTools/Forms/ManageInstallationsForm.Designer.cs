@@ -28,7 +28,9 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             this.lblStatus = new System.Windows.Forms.Label();
             this.tbPath = new System.Windows.Forms.TextBox();
             this.lblPath = new System.Windows.Forms.Label();
+            this.gbInstallation.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            this.pnlStatus.SuspendLayout();
             this.SuspendLayout();
             // 
             // cbInstallations
@@ -37,7 +39,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             this.cbInstallations.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbInstallations.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.cbInstallations.FormattingEnabled = true;
-            this.cbInstallations.Location = new System.Drawing.Point(3, 3);
+            this.cbInstallations.Location = new System.Drawing.Point(3, 16);
             this.cbInstallations.Name = "cbInstallations";
             this.cbInstallations.Size = new System.Drawing.Size(308, 21);
             this.cbInstallations.TabIndex = 1;
@@ -47,25 +49,25 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             this.lblVersions.AutoSize = true;
             this.lblVersions.Dock = System.Windows.Forms.DockStyle.Top;
             this.lblVersions.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.lblVersions.Location = new System.Drawing.Point(3, 24);
+            this.lblVersions.Location = new System.Drawing.Point(3, 3);
             this.lblVersions.Name = "lblVersions";
-            this.lblVersions.Size = new System.Drawing.Size(114, 13);
+            this.lblVersions.Size = new System.Drawing.Size(160, 13);
             this.lblVersions.TabIndex = 0;
-            this.lblVersions.Text = "&Visual Studio Versions:";
+            this.lblVersions.Text = "Identified Visual Studio Versions:";
             // 
             // gbInstallation
             // 
+            this.gbInstallation.Controls.Add(this.tableLayoutPanel1);
+            this.gbInstallation.Controls.Add(this.pnlStatus);
+            this.gbInstallation.Controls.Add(this.tbPath);
+            this.gbInstallation.Controls.Add(this.lblPath);
             this.gbInstallation.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.gbInstallation.Location = new System.Drawing.Point(3, 3);
+            this.gbInstallation.Location = new System.Drawing.Point(3, 37);
             this.gbInstallation.Name = "gbInstallation";
-            this.gbInstallation.Size = new System.Drawing.Size(308, 143);
+            this.gbInstallation.Size = new System.Drawing.Size(308, 109);
             this.gbInstallation.TabIndex = 2;
             this.gbInstallation.TabStop = false;
-            this.gbInstallation.Text = "gbInstallation";
-            this.gbInstallation.Controls.Add(tableLayoutPanel1);
-            this.gbInstallation.Controls.Add(pnlStatus);
-            this.gbInstallation.Controls.Add(tbPath);
-            this.gbInstallation.Controls.Add(lblPath);
+            this.gbInstallation.Text = "Installation Status";
             // 
             // tableLayoutPanel1
             // 
@@ -106,13 +108,13 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             // 
             // pnlStatus
             // 
+            this.pnlStatus.Controls.Add(this.lblStatusText);
+            this.pnlStatus.Controls.Add(this.lblStatus);
             this.pnlStatus.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlStatus.Location = new System.Drawing.Point(3, 49);
             this.pnlStatus.Name = "pnlStatus";
             this.pnlStatus.Size = new System.Drawing.Size(302, 17);
             this.pnlStatus.TabIndex = 2;
-            this.pnlStatus.Controls.Add(lblStatusText);
-            this.pnlStatus.Controls.Add(lblStatus);
             // 
             // lblStatusText
             // 
@@ -163,16 +165,20 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(314, 149);
+            this.Controls.Add(this.gbInstallation);
+            this.Controls.Add(this.cbInstallations);
+            this.Controls.Add(this.lblVersions);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ManageInstallationsForm";
             this.Padding = new System.Windows.Forms.Padding(3);
-            this.Text = "Manage Installations";
-            this.Controls.Add(gbInstallation);
-            this.Controls.Add(cbInstallations);
-            this.Controls.Add(lblVersions);
+            this.Text = "Debugger Visualizer Installations";
+            this.gbInstallation.ResumeLayout(false);
+            this.gbInstallation.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
+            this.pnlStatus.ResumeLayout(false);
+            this.pnlStatus.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 

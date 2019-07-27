@@ -1,6 +1,6 @@
 ﻿#region Used namespaces
 
-using KGySoft.Drawing.ImagingTools.PublicApi;
+using KGySoft.Drawing.ImagingTools;
 using Microsoft.VisualStudio.DebuggerVisualizers;
 
 #endregion

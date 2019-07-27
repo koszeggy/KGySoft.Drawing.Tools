@@ -2,7 +2,6 @@
 
 using System.IO;
 using KGySoft.Drawing.ImagingTools;
-using KGySoft.Drawing.ImagingTools.PublicApi;
 using Microsoft.VisualStudio.DebuggerVisualizers;
 
 #endregion

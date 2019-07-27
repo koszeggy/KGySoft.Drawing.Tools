@@ -19,6 +19,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ImageDebuggerVisualizerForm));
             this.txtInfo = new System.Windows.Forms.TextBox();
             this.tsMenu = new System.Windows.Forms.ToolStrip();
             this.btnAutoZoom = new System.Windows.Forms.ToolStripButton();
@@ -36,13 +37,15 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             this.btnCompound = new System.Windows.Forms.ToolStripButton();
             this.btnPrev = new System.Windows.Forms.ToolStripButton();
             this.btnNext = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.btnConfiguration = new System.Windows.Forms.ToolStripButton();
             this.dlgOpen = new System.Windows.Forms.OpenFileDialog();
             this.dlgSave = new System.Windows.Forms.SaveFileDialog();
             this.splitter = new System.Windows.Forms.Splitter();
             this.timerPlayer = new System.Windows.Forms.Timer(this.components);
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.pbImage = new System.Windows.Forms.PictureBox();
             this.lblNotification = new KGySoft.Drawing.ImagingTools.Controls.NotificationLabel();
+            this.pbImage = new System.Windows.Forms.PictureBox();
             this.tsMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbImage)).BeginInit();
             this.SuspendLayout();
@@ -73,7 +76,9 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             this.sepFrames,
             this.btnCompound,
             this.btnPrev,
-            this.btnNext});
+            this.btnNext,
+            this.toolStripSeparator2,
+            this.btnConfiguration});
             this.tsMenu.Location = new System.Drawing.Point(0, 0);
             this.tsMenu.Name = "tsMenu";
             this.tsMenu.Size = new System.Drawing.Size(334, 25);
@@ -212,6 +217,20 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             this.btnNext.Text = "Next Image";
             this.btnNext.Click += new System.EventHandler(this.btnNext_Click);
             // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            // 
+            // btnConfiguration
+            // 
+            this.btnConfiguration.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnConfiguration.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnConfiguration.Name = "btnConfiguration";
+            this.btnConfiguration.Size = new System.Drawing.Size(23, 22);
+            this.btnConfiguration.Text = "Manage Debugger Visualizer Installations...";
+            this.btnConfiguration.Click += new System.EventHandler(this.btnConfiguration_Click);
+            // 
             // dlgOpen
             // 
             this.dlgOpen.Title = "Open Image";
@@ -235,6 +254,23 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             this.timerPlayer.Interval = 10;
             this.timerPlayer.Tick += new System.EventHandler(this.timerPlayer_Tick);
             // 
+            // lblNotification
+            // 
+            this.lblNotification.AutoSize = true;
+            this.lblNotification.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+            this.lblNotification.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.lblNotification.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblNotification.ForeColor = System.Drawing.Color.Black;
+            this.lblNotification.Image = ((System.Drawing.Image)(resources.GetObject("lblNotification.Image")));
+            this.lblNotification.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblNotification.Location = new System.Drawing.Point(0, 25);
+            this.lblNotification.Name = "lblNotification";
+            this.lblNotification.Padding = new System.Windows.Forms.Padding(3, 3, 20, 3);
+            this.lblNotification.Size = new System.Drawing.Size(334, 24);
+            this.lblNotification.TabIndex = 4;
+            this.lblNotification.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.toolTip.SetToolTip(this.lblNotification, "Click to hide");
+            // 
             // pbImage
             // 
             this.pbImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -247,19 +283,6 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             this.pbImage.TabIndex = 1;
             this.pbImage.TabStop = false;
             this.pbImage.SizeChanged += new System.EventHandler(this.pbImage_SizeChanged);
-            // 
-            // lblNotification
-            // 
-            this.lblNotification.AutoSize = true;
-            this.lblNotification.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lblNotification.Dock = System.Windows.Forms.DockStyle.Top;
-            this.lblNotification.ForeColor = System.Drawing.Color.Black;
-            this.lblNotification.Location = new System.Drawing.Point(0, 25);
-            this.lblNotification.Name = "lblNotification";
-            this.lblNotification.Padding = new System.Windows.Forms.Padding(3, 3, 20, 3);
-            this.lblNotification.Size = new System.Drawing.Size(334, 24);
-            this.lblNotification.TabIndex = 4;
-            this.toolTip.SetToolTip(this.lblNotification, "Click to hide");
             // 
             // ImageDebuggerVisualizerForm
             // 
@@ -310,5 +333,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         protected System.Windows.Forms.TextBox txtInfo;
         private NotificationLabel lblNotification;
         private ToolTip toolTip;
+        private ToolStripSeparator toolStripSeparator2;
+        protected ToolStripButton btnConfiguration;
     }
 }
