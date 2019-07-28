@@ -25,7 +25,7 @@ using System.Windows.Forms;
 
 namespace KGySoft.Drawing.ImagingTools.Forms
 {
-    internal partial class PaletteVisualizerForm : Form
+    internal partial class PaletteVisualizerForm : BaseForm
     {
         #region Fields
 

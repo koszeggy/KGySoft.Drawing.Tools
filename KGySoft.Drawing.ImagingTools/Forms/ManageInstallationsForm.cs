@@ -26,7 +26,7 @@ using System.Windows.Forms;
 
 namespace KGySoft.Drawing.ImagingTools.Forms
 {
-    internal partial class ManageInstallationsForm : Form
+    internal partial class ManageInstallationsForm : BaseForm
     {
         #region Constants
 

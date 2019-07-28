@@ -54,6 +54,9 @@ namespace KGySoft.Drawing.ImagingTools.Controls
         private int firstVisibleColor;
         private int visibleRowCount;
         private int counter;
+        private float scaleX = 1f;
+        private float scaleY = 1f;
+        private int scrollFraction;
 
         #endregion
 
@@ -186,6 +189,8 @@ namespace KGySoft.Drawing.ImagingTools.Controls
             if (ColorCount == 0)
                 return;
 
+            scaleX = (float)Math.Round(e.Graphics.DpiX / 96f, 2);
+            scaleY = (float)Math.Round(e.Graphics.DpiY / 96f, 2);
             int upper = Math.Min(palette.Count, firstVisibleColor + (visibleRowCount << 4));
 
             // iterating through visible colors
@@ -205,10 +210,8 @@ namespace KGySoft.Drawing.ImagingTools.Controls
                     int r = (int)Math.Round(selectionFrameColor.R + Math.Abs(counter) * ((double)selectionFrameColorAlternative.R - selectionFrameColor.R) / steps);
                     int g = (int)Math.Round(selectionFrameColor.G + Math.Abs(counter) * ((double)selectionFrameColorAlternative.G - selectionFrameColor.G) / steps);
                     int b = (int)Math.Round(selectionFrameColor.B + Math.Abs(counter) * ((double)selectionFrameColorAlternative.B - selectionFrameColor.B) / steps);
-                    using (Pen pen = new Pen(Color.FromArgb(r, g, b)))
-                    {
+                    using (Pen pen = new Pen(Color.FromArgb(r, g, b), scaleX))
                         e.Graphics.DrawRectangle(pen, new Rectangle(rectSelection.Left, rectSelection.Top, rectSelection.Width - 1, rectSelection.Height - 1));
-                    }
 
                     if (Focused && ShowFocusCues)
                     {
@@ -253,11 +256,11 @@ namespace KGySoft.Drawing.ImagingTools.Controls
             if (GetColorRect(selectedColorIndex).Contains(e.Location))
                 return;
 
-            if (!new Rectangle(2, 2, 13 << 4, 13 * visibleRowCount).Contains(e.Location))
+            if (!Rectangle.Round(new RectangleF(2 * scaleX, 2 * scaleY, (13 << 4) * scaleX, 13 * visibleRowCount * scaleY)).Contains(e.Location))
                 return;
 
-            int x = (e.X - 2) / 13;
-            int y = (e.Y - 2) / 13;
+            int x = ((int)(e.X / scaleX) - 2) / 13;
+            int y = ((int)(e.Y / scaleY) - 2) / 13;
             int index = firstVisibleColor + (y << 4) + x;
 
             if (index >= ColorCount)
@@ -316,7 +319,11 @@ namespace KGySoft.Drawing.ImagingTools.Controls
             if (!sbPalette.Visible)
                 return;
 
-            int newValue = sbPalette.Value - e.Delta / SystemInformation.MouseWheelScrollDelta;
+            // When scrolling by mouse, delta is always +-120 so this will be 1 change on the scrollbar.
+            // But we collect the fractional changes caused by the touchpad scrolling so it will not be lost either.
+            int totalDelta = scrollFraction + e.Delta;
+            scrollFraction = totalDelta % SystemInformation.MouseWheelScrollDelta;
+            int newValue = sbPalette.Value - totalDelta / SystemInformation.MouseWheelScrollDelta;
             if (newValue < 0)
                 newValue = 0;
             else if (newValue > sbPalette.Maximum - sbPalette.LargeChange + 1)
@@ -367,7 +374,7 @@ namespace KGySoft.Drawing.ImagingTools.Controls
             }
 
             // calculating visible rows
-            int maxRows = (Height - 5) / 13;
+            int maxRows = ((int)(Height / scaleY) - 5) / 13;
             if (maxRows == visibleRowCount)
                 return;
 
@@ -394,7 +401,10 @@ namespace KGySoft.Drawing.ImagingTools.Controls
         }
 
         private Rectangle GetColorRect(int index)
-            => new Rectangle(2 + (index % 16) * 13, 2 + ((index - firstVisibleColor) >> 4) * 13, 13, 13);
+        {
+            var rect = new RectangleF((2 + (index % 16) * 13) * scaleX, (2 + ((index - firstVisibleColor) >> 4) * 13) * scaleY, 13 * scaleX, 13 * scaleY);
+            return Rectangle.Round(rect);
+        }
 
         private bool IsSelectedColorVisible()
             => selectedColorIndex >= firstVisibleColor

@@ -43,7 +43,7 @@ using Images = KGySoft.Drawing.ImagingTools.Properties.Resources;
 
 namespace KGySoft.Drawing.ImagingTools.Forms
 {
-    internal partial class ImageDebuggerVisualizerForm : Form
+    internal partial class ImageDebuggerVisualizerForm : BaseForm
     {
         #region ButtonRenderer class
 

@@ -70,6 +70,11 @@
   <PropertyGroup>
     <ApplicationIcon>Resources\ImagingTools.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="KGySoft.CoreLibraries, Version=4.6.1.0, Culture=neutral, PublicKeyToken=b45eba277439ddfe, processorArchitecture=MSIL">
       <HintPath>..\..\packages\KGySoft.CoreLibraries.4.6.1\lib\net35\KGySoft.CoreLibraries.dll</HintPath>
@@ -104,6 +109,9 @@
   <ItemGroup>
     <Compile Include="Controls\NotificationLabel.cs">
       <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\BaseForm.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\ManageInstallationsForm.cs">
       <SubType>Form</SubType>
@@ -212,6 +220,7 @@
     <None Include="..\KGySoft.snk">
       <Link>KGySoft.snk</Link>
     </None>
+    <None Include="app.manifest" />
     <None Include="packages.config" />
     <None Include="Resources\Crop.png" />
   </ItemGroup>
@@ -259,7 +268,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties LastExportedMakefileHash="Lc9DFBa2QeJU6LkEO19XOA==" ED14F191-6CDA-4bbb-BB1B-C329DD754E20_OutputCondition="" ExternalBuildIntegrationEnabled="True" />
+      <UserProperties ExternalBuildIntegrationEnabled="True" ED14F191-6CDA-4bbb-BB1B-C329DD754E20_OutputCondition="" LastExportedMakefileHash="Lc9DFBa2QeJU6LkEO19XOA==" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

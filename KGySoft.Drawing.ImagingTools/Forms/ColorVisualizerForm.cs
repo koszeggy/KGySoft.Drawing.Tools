@@ -24,7 +24,7 @@ using System.Windows.Forms;
 
 namespace KGySoft.Drawing.ImagingTools.Forms
 {
-    internal partial class ColorVisualizerForm : Form
+    internal partial class ColorVisualizerForm : BaseForm
     {
         #region Fields
 
