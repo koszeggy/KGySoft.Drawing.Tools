@@ -19,7 +19,6 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ImageDebuggerVisualizerForm));
             this.txtInfo = new System.Windows.Forms.TextBox();
             this.tsMenu = new System.Windows.Forms.ToolStrip();
             this.btnAutoZoom = new System.Windows.Forms.ToolStripButton();
@@ -261,7 +260,6 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             this.lblNotification.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.lblNotification.Dock = System.Windows.Forms.DockStyle.Top;
             this.lblNotification.ForeColor = System.Drawing.Color.Black;
-            this.lblNotification.Image = ((System.Drawing.Image)(resources.GetObject("lblNotification.Image")));
             this.lblNotification.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.lblNotification.Location = new System.Drawing.Point(0, 25);
             this.lblNotification.Name = "lblNotification";

@@ -86,6 +86,8 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         private ImageTypes imageTypes = ImageTypes.All;
         private bool isOpenFilterUpToDate;
         private bool isUpToDate;
+        private bool autoZoom;
+        private Size currentIconSize;
 
         #endregion
 
@@ -426,6 +428,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         {
             ImageData mainImage;
             ImageData[] frames = null;
+            currentIconSize = Size.Empty;
             if (icon != null)
                 ImageData.FromIcon(icon, false, out mainImage, out frames);
             else if (image != null)
@@ -497,7 +500,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         private string GetSize()
         {
             if (image.RawFormat == ImageFormat.Icon.Guid && frames != null && frames.Length > 1 && currentFrame == -1)
-                return image.Image.Size.ToString();
+                return currentIconSize.ToString();
             return GetCurrentImage().Size.ToString();
         }
 
@@ -509,8 +512,26 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             return img?.GetType().Name ?? typeof(Bitmap).Name;
         }
 
-        private void FromStream(Stream stream)
+        private void FromStream(Stream stream, bool appearsIcon)
         {
+            Icon icon = null;
+
+            // only icon is allowed or the content seems to be an icon
+            // (this block is needed only for Windows XP: Icon Bitmap with PNG throws an exception but initializing from icon will succeed)
+            if (appearsIcon || imageTypes == ImageTypes.Icon)
+            {
+                try
+                {
+                    icon = new Icon(stream);
+                    SetImage(null, icon);
+                    return;
+                }
+                catch (Exception)
+                {
+                    stream.Position = 0L;
+                }
+            }
+
             Image image = null;
 
             // bitmaps and metafiles are both allowed
@@ -528,7 +549,6 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             }
 
             // icon is allowed and an image has been loaded
-            Icon icon = null;
             if (image != null && (imageTypes & ImageTypes.Icon) != ImageTypes.None)
             {
                 // the loaded format is icon: loading as icon
@@ -558,6 +578,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
                     Notification = warning;
                 }
             }
+
 
             SetImage(image, icon);
         }
@@ -601,15 +622,18 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
         private void UpdateIconImage()
         {
-            Size origSize = image.Size;
+            Size origSize = currentIconSize;
             int desiredSize = Math.Min(pbImage.ClientSize.Width, pbImage.ClientSize.Height);
-            if (desiredSize < 1)
+            if (desiredSize < 1 && !origSize.IsEmpty)
                 return;
 
-            Bitmap temp = new Bitmap(image.Image, new Size(desiredSize, desiredSize));
-            temp.Dispose();
-            if (origSize != image.Size)
-                pbImage.Invalidate();
+            // Starting with Windows Vista it would work that we draw the compound image in a new Bitmap with desired size and read the Size afterwards
+            // but that requires always a new bitmap and does not work in Windows XP
+            desiredSize = Math.Max(desiredSize, 1);
+            ImageData desiredImage = frames.Aggregate((acc, i) => i.Size == acc.Size && i.Image.GetBitsPerPixel() > acc.Image.GetBitsPerPixel() || Math.Abs(i.Size.Width - desiredSize) < Math.Abs(acc.Size.Width - desiredSize) ? i : acc);
+            currentIconSize = desiredImage.Size;
+            if (pbImage.Image != desiredImage.Image)
+                pbImage.Image = desiredImage.Image;
         }
 
         private void SaveIcon(string fileName)
@@ -808,7 +832,8 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             try
             {
                 Notification = null;
-                FromStream(new MemoryStream(File.ReadAllBytes(dlgOpen.FileName)));
+                var ms = new MemoryStream(File.ReadAllBytes(dlgOpen.FileName));
+                FromStream(ms, Path.GetExtension(dlgOpen.FileName).Equals(".ico", StringComparison.OrdinalIgnoreCase));
                 isUpToDate = !lblNotification.Visible;
                 fileName = isUpToDate ? dlgOpen.FileName : null;
             }
@@ -934,7 +959,11 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
         private void btnOpen_Click(object sender, EventArgs e) => Open();
         private void btnSave_Click(object sender, EventArgs e) => Save();
-        private void btnAutoZoom_CheckedChanged(object sender, EventArgs e) => pbImage.SizeMode = btnAutoZoom.Checked ? PictureBoxSizeMode.Zoom : PictureBoxSizeMode.CenterImage;
+        private void btnAutoZoom_CheckedChanged(object sender, EventArgs e)
+        {
+            autoZoom = btnAutoZoom.Checked;
+            pbImage.SizeMode = autoZoom ? PictureBoxSizeMode.Zoom : PictureBoxSizeMode.CenterImage;
+        }
 
         private void miBackColor_Click(object sender, EventArgs e)
         {

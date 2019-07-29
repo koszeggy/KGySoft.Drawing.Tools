@@ -17,6 +17,7 @@
 #region Usings
 
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -43,6 +44,13 @@ namespace KGySoft.Drawing.ImagingTools.Controls
                 lastProposedSize = Size.Empty;
                 Visible = !String.IsNullOrEmpty(value);
             }
+        }
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public new Image Image
+        {
+            get => base.Image;
+            set => base.Image = value;
         }
 
         #endregion
