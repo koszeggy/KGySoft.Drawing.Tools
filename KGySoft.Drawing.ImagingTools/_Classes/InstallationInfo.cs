@@ -19,6 +19,8 @@
 using System;
 using System.Reflection;
 using System.Security.Policy;
+using KGySoft.CoreLibraries;
+using KGySoft.Reflection;
 
 #endregion
 
@@ -71,16 +73,34 @@ namespace KGySoft.Drawing.ImagingTools
             if (!Installed)
                 return;
 
-            Evidence evidence = new Evidence(AppDomain.CurrentDomain.Evidence);
-            AppDomain sandboxDomain = AppDomain.CreateDomain(nameof(InitializerSandbox), evidence, AppDomain.CurrentDomain.BaseDirectory, null, false);
-            var initializer = (InitializerSandbox)sandboxDomain.CreateInstanceAndUnwrap(Assembly.GetExecutingAssembly().FullName, typeof(InitializerSandbox).FullName);
+            // DebuggerVisualizers is already loaded (executed from debugger)
+            var debuggerVisualizerAssembly = Reflector.ResolveAssembly("KGySoft.Drawing.DebuggerVisualizers", false, true);
+            if (debuggerVisualizerAssembly != null)
+            {
+                Version = debuggerVisualizerAssembly.GetName().Version;
+                RuntimeVersion = debuggerVisualizerAssembly.ImageRuntimeVersion;
+                return;
+            }
+
+            // not loaded: trying to determine the version by loading it into a sandbox domain
             try
             {
-                initializer.InitializeInfo(this, path);
+                Evidence evidence = new Evidence(AppDomain.CurrentDomain.Evidence);
+                AppDomain sandboxDomain = AppDomain.CreateDomain(nameof(InitializerSandbox), evidence, AppDomain.CurrentDomain.BaseDirectory, null, false);
+                var initializer = (InitializerSandbox)sandboxDomain.CreateInstanceAndUnwrap(Assembly.GetExecutingAssembly().FullName, typeof(InitializerSandbox).FullName);
+                try
+                {
+                    initializer.InitializeInfo(this, path);
+                }
+                finally
+                {
+                    AppDomain.Unload(sandboxDomain);
+                }
             }
-            finally
+            catch (Exception)
             {
-                AppDomain.Unload(sandboxDomain);
+                Version = null;
+                RuntimeVersion = null;
             }
         }
 

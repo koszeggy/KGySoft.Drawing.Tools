@@ -75,8 +75,7 @@ namespace KGySoft.Drawing.ImagingTools
             }
 
             // icon: if needed, creating a new icon from stream and resetting target
-            Icon icon = target as Icon;
-            if (icon != null)
+            if (target is Icon icon)
             {
                 ImageData.FromIcon(icon, true, out ImageData iconData, out ImageData[] iconImages);
                 BinaryWriter bw = new BinaryWriter(outgoingData);
@@ -225,7 +224,15 @@ namespace KGySoft.Drawing.ImagingTools
                 len = br.ReadInt32();
                 Icon icon = new Icon(new MemoryStream(iconData));
                 ImageData compoundIcon = new ImageData(br);
-                compoundIcon.Image = icon.ToMultiResBitmap();
+                try
+                {
+                    compoundIcon.Image = icon.ToMultiResBitmap();
+                }
+                catch (ArgumentException)
+                {
+                    // In Windows XP it can happen that multi-res bitmap throws an exception even if PNG images are uncompressed
+                    compoundIcon.Image = icon.ExtractNearestBitmap(new Size(UInt16.MaxValue, UInt16.MaxValue), PixelFormat.Format32bppArgb);
+                }
 
                 // single icon image
                 if (len == 1)
@@ -233,7 +240,7 @@ namespace KGySoft.Drawing.ImagingTools
 
                 // multi-image icon
                 len--;
-                Bitmap[] iconBitmaps = icon.ExtractBitmaps(false);
+                Bitmap[] iconBitmaps = icon.ExtractBitmaps();
                 ImageData[] iconImages = new ImageData[len];
                 for (int i = 0; i < len; i++)
                 {

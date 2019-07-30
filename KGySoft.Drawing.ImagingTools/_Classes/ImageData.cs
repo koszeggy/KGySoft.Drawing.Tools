@@ -54,10 +54,9 @@ namespace KGySoft.Drawing.ImagingTools
         internal ImageData(BinaryReader br)
         {
             int len = br.ReadInt32();
-            byte[] imageData = null;
             if (len > 0)
             {
-                imageData = br.ReadBytes(len);
+                byte[] imageData = br.ReadBytes(len);
                 MemoryStream ms = new MemoryStream(imageData);
                 Image = Image.FromStream(ms);
             }
@@ -211,7 +210,16 @@ namespace KGySoft.Drawing.ImagingTools
             }
 
             // generating image from icon
-            iconData = new ImageData(icon.ToMultiResBitmap(), true);
+            try
+            {
+                iconData = new ImageData(icon.ToMultiResBitmap(), true);
+            }
+            catch (ArgumentException)
+            {
+                // In Windows XP it can happen that multi-res bitmap throws an exception even if PNG images are uncompressed
+                iconData = new ImageData(icon.ExtractNearestBitmap(new Size(UInt16.MaxValue, UInt16.MaxValue), PixelFormat.Format32bppArgb), true);
+                iconData.RawFormat = ImageFormat.Icon.Guid;
+            }
 
             // icon image will be assembled again after deserialization
             if (toSerialize)
@@ -222,15 +230,21 @@ namespace KGySoft.Drawing.ImagingTools
 
             Bitmap[] iconImagesAlpha = null;
             if (!toSerialize)
-                iconImagesAlpha = icon.ExtractBitmaps(false);
+                iconImagesAlpha = icon.ExtractBitmaps();
             iconImages = new ImageData[iconImagesOrigFormat.Length];
             for (int i = 0; i < iconImages.Length; i++)
             {
                 iconImages[i] = new ImageData(iconImagesOrigFormat[i], true);
-                iconImages[i].Image = iconImagesAlpha == null ? null : iconImagesAlpha[i];
+                iconImages[i].Image = iconImagesAlpha?[i];
 
                 // setting raw format explicitly as it is at icons
-                iconImages[i].RawFormat = iconImagesOrigFormat[i].Width == 256 || iconImagesOrigFormat[i].Height == 256 ? ImageFormat.Png.Guid : ImageFormat.Bmp.Guid;
+                iconImages[i].RawFormat = icon.IsCompressed(i) ? ImageFormat.Png.Guid : ImageFormat.Bmp.Guid;
+                int bpp = icon.GetBitsPerPixel(i);
+                iconImages[i].PixelFormat = bpp == 1 ? PixelFormat.Format1bppIndexed
+                    : bpp == 4 ? PixelFormat.Format4bppIndexed
+                    : bpp == 8 ? PixelFormat.Format8bppIndexed
+                    : iconImages[i].RawFormat == ImageFormat.Bmp.Guid ? PixelFormat.Format32bppRgb
+                    : PixelFormat.Format32bppArgb;
                 iconImagesOrigFormat[i].Dispose();
             }
 
