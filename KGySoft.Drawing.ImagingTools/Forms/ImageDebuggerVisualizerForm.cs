@@ -259,18 +259,6 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
             if (mainImage == null)
                 mainImage = frameImages[0];
-            else if (mainImage.RawFormat == ImageFormat.Icon.Guid)
-            {
-                if (newIcon != null)
-                    mainImage.Image = newIcon.ToMultiResBitmap();
-                else
-                {
-                    ImageData[] iconImages = frameImages ?? new[] { mainImage };
-                    Icon tmpIcon = Icons.Combine(iconImages.Select(i => (Bitmap)i.Image).ToArray());
-                    mainImage.Image = tmpIcon.ToMultiResBitmap();
-                    tmpIcon.Dispose();
-                }
-            }
 
             image = mainImage;
             frames = frameImages;
@@ -522,7 +510,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             {
                 try
                 {
-                    icon = new Icon(stream);
+                    icon = Icons.FromStream(stream);
                     SetImage(null, icon);
                     return;
                 }
@@ -578,7 +566,6 @@ namespace KGySoft.Drawing.ImagingTools.Forms
                     Notification = warning;
                 }
             }
-
 
             SetImage(image, icon);
         }
@@ -1017,7 +1004,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         private void pbImage_SizeChanged(object sender, EventArgs e)
         {
             AdjustSize();
-            if (image != null && image.RawFormat == ImageFormat.Icon.Guid && currentFrame == -1)
+            if (image != null && image.RawFormat == ImageFormat.Icon.Guid && currentFrame == -1 && frames != null)
             {
                 UpdateIconImage();
                 UpdateInfo();
