@@ -432,18 +432,19 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
         private void InitMultiImage()
         {
-            bool isMergeEnabled = image.RawFormat == ImageFormat.Gif.Guid || image.RawFormat == ImageFormat.Icon.Guid;
-            btnCompound.Visible = isMergeEnabled;
-            if (isMergeEnabled)
-            {
-                if (image.RawFormat == ImageFormat.Gif.Guid)
-                    //btnCompound.ToolTipText = "Toggles whether image is handled a single image. When checked, animation will play and saving as GIF saves the whole animation. When not checked, frame navigation will be enabled and saving saves always the selected frame.";
-                    btnCompound.ToolTipText = "Toggles whether image is handled a single image. When checked, animation will play. When not checked, frame navigation will be enabled.";
-                else if (image.RawFormat == ImageFormat.Icon.Guid)
-                    btnCompound.ToolTipText = "Toggles whether icon is handled a single image. When checked, auto sizing displays always the appropriate icon and saving as Icon saves every image. When not checked, icon images can be explored by navigation and saving saves the selected image only.";
-                //else
-                //    btnCompound.ToolTipText = "Toggles whether image is handled a single image. When checked, saving as TIFF saves every page. When not checked, page navigation will be enabled and saving saves always the selected page.";
-            }
+            btnCompound.Visible = true;
+            if (image.RawFormat == ImageFormat.Gif.Guid)
+                btnCompound.ToolTipText = @"Toggles whether image is handled as a single image.
+• When checked, animation will play and saving as GIF saves the whole animation.
+• When not checked, frame navigation will be enabled and saving saves only the selected frame.";
+            else if (image.RawFormat == ImageFormat.Icon.Guid)
+                btnCompound.ToolTipText = @"Toggles whether icon is handled as a single image.
+• When checked, auto sizing displays always the best fitting icon and saving as Icon saves every image.
+• When not checked, icon images can be explored by navigation and saving saves the selected image only.";
+            else
+                btnCompound.ToolTipText = @"Toggles whether image is handled as a compound image.
+• When checked, saving as TIFF saves every page.
+• When not checked, saving saves always the selected page.";
 
             sepFrames.Visible = btnPrev.Visible = btnNext.Visible = true;
             ResetCompoundState();
@@ -572,10 +573,8 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
         private void ResetCompoundState()
         {
-            bool isMergeEnabled = image.RawFormat == ImageFormat.Gif.Guid || image.RawFormat == ImageFormat.Icon.Guid;
-
             // handle as separated images
-            if (!isMergeEnabled || !btnCompound.Checked)
+            if (!btnCompound.Checked || image.RawFormat == ImageFormat.Tiff.Guid)
             {
                 currentFrame = 0;
                 timerPlayer.Enabled = isManualPlaying = false;
@@ -739,8 +738,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
                 {
                     Color[] palette = null;
                     int bpp = Image.GetPixelFormatSize(frame.PixelFormat);
-                    Bitmap bmpPage = page as Bitmap;
-                    if (bpp <= 8 && bmpPage != null)
+                    if (bpp <= 8 && page is Bitmap bmpPage)
                         palette = bmpPage.GetColors(1 << bpp);
 
                     page = frame.Image.ConvertPixelFormat(frame.PixelFormat, palette);
@@ -914,7 +912,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
                     SaveJpeg(dlgSave.FileName, encoderCodecs[dlgSave.FilterIndex - 1]);
                 // Multipage tiff
                 else if (frames != null && frames.Length > 1 && encoderCodecs[dlgSave.FilterIndex - 1].FormatID == ImageFormat.Tiff.Guid
-                    && (image.RawFormat == ImageFormat.Tiff.Guid || GetCurrentImage() == image))
+                    && (image.RawFormat == ImageFormat.Tiff.Guid && btnCompound.Checked))
                 {
                     SaveMultipageTiff(dlgSave.FileName);
                 }
@@ -973,7 +971,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
         private void btnCompound_Click(object sender, EventArgs e)
         {
-            if (frames == null || frames.Length <= 1)
+            if (frames == null || frames.Length <= 1 || image.RawFormat == ImageFormat.Tiff.Guid)
                 return;
 
             ResetCompoundState();

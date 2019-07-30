@@ -1,0 +1,31 @@
+﻿Legend:
+! Breaking change
+* Compatible change
+- Bugfix
++ New feature
+===============================================================================
+
+~~~~~~~~~~~
+! v2.0.0.0:
+~~~~~~~~~~~
+
+! Assembly names:
+=================
+! Instead of many separate KGySoft.DebuggerVisualizers.VS<version>.dll files now there is one
+  KGySoft.Drawing.DebuggerVisualizers.dll for each .NET frameworks.
+! KGySoft.DebuggerVisualizers.Common.dll has been renamed to KGySoft.Drawing.ImagingTools.exe, which
+  is an executable file now.
+
+! KGySoft.Drawing.ImagingTools.exe
+==================================
+! As an executable file, it can be launched as a standalone application.
+! In Windows XP icons will be converted to uncompressed ones.
++ New "Manage debugger visualizer installations" menu (gear icon) for installing the debugger
+  visualizer to any Visual Studio version (requires the KGySoft.Drawing.DebuggerVisualizers.dll)
++ Supporting high-resolution icons in Windows XP.
++ Multi page TIFF images can be saved all together and also separately.
++ High DPI displays are supported
+
++ KGySoft.Drawing.DebuggerVisualizers.dll
+=========================================
++ Compatible with all Visual Studio versions starting with Visual Studio 2008 (tested with versions from 2008 to 2019).

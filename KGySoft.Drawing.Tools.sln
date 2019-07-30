@@ -7,6 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KGySoft.Drawing.ImagingTool
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KGySoft.Drawing.DebuggerVisualizers", "KGySoft.Drawing.DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.csproj", "{6415C328-A2C2-49C3-B113-B3B8C4E09C22}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CA8E7B44-9FA9-4ABD-A337-4C930802F22E}"
+	ProjectSection(SolutionItems) = preProject
+		changelog.txt = changelog.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_NET35|Any CPU = Debug_NET35|Any CPU

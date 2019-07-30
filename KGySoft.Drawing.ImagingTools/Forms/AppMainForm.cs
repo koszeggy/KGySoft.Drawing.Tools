@@ -49,8 +49,8 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             InitializeComponent();
 
             Notification = $"As a standalone application, {title} can be used to load images, save them in various formats, extract frames or pages, examine or change palette entries of indexed images, etc.{Environment.NewLine}{Environment.NewLine}"
-                + $"But it can be used also as a debugger visualizer for {nameof(Image)}, {nameof(Bitmap)}, {nameof(Metafile)}, {nameof(BitmapData)}, {nameof(Graphics)}, {nameof(ColorPalette)} and {nameof(Color)} types."
-                + $"Use the '{btnConfiguration.Text}' button.";
+                + $"But it can be used also as a debugger visualizer for {nameof(Image)}, {nameof(Bitmap)}, {nameof(Metafile)}, {nameof(BitmapData)}, {nameof(Graphics)}, {nameof(ColorPalette)} and {nameof(Color)} types.{Environment.NewLine}"
+                + $"See the '{btnConfiguration.Text}' button.";
         }
 
         #endregion
