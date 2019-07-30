@@ -110,6 +110,9 @@
     <Compile Include="Controls\NotificationLabel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\ScalingToolStrip.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Forms\BaseForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -268,7 +271,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties LastExportedMakefileHash="Lc9DFBa2QeJU6LkEO19XOA==" ED14F191-6CDA-4bbb-BB1B-C329DD754E20_OutputCondition="" ExternalBuildIntegrationEnabled="True" />
+      <UserProperties ExternalBuildIntegrationEnabled="True" ED14F191-6CDA-4bbb-BB1B-C329DD754E20_OutputCondition="" LastExportedMakefileHash="Lc9DFBa2QeJU6LkEO19XOA==" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

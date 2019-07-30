@@ -53,8 +53,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
             protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
             {
-                ToolStripButton button = e.Item as ToolStripButton;
-                if (button != null && button.Checked && button.Enabled)
+                if (e.Item is ToolStripButton button && button.Checked && button.Enabled)
                     e.Graphics.Clear(ProfessionalColors.ButtonSelectedGradientMiddle);
 
                 base.OnRenderButtonBackground(e);

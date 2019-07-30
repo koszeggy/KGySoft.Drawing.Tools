@@ -19,6 +19,7 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Windows.Forms;
 
 #endregion
@@ -37,7 +38,7 @@ namespace KGySoft.Drawing.ImagingTools.Controls
 
         public override string Text
         {
-            get { return base.Text; }
+            get => base.Text;
             set
             {
                 base.Text = value;
@@ -50,7 +51,24 @@ namespace KGySoft.Drawing.ImagingTools.Controls
         public new Image Image
         {
             get => base.Image;
-            set => base.Image = value;
+            set
+            {
+                // if the image to set is a multi-res bitmap, then adjusting the icon size
+                if (value?.RawFormat.Equals(ImageFormat.Icon) == true)
+                {
+                    float scale;
+                    using (Graphics g = CreateGraphics())
+                        scale = (float)Math.Round(Math.Max(g.DpiX, g.DpiY) / 96, 2);
+                    if (scale > 1)
+                    {
+                        // the temp bitmap is not used for anything - it just makes value to the best fitting size
+                        using (new Bitmap(value, Size.Round(new SizeF(value.Width * scale, value.Height * scale))))
+                            ;
+                    }
+                }
+
+                base.Image = value;
+            }
         }
 
         #endregion

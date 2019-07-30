@@ -1,4 +1,6 @@
-﻿namespace KGySoft.Drawing.ImagingTools.UserControls
+﻿using KGySoft.Drawing.ImagingTools.Controls;
+
+namespace KGySoft.Drawing.ImagingTools.UserControls
 {
     partial class ColorVisualizerControl
     {
@@ -30,7 +32,7 @@
             this.lblAlpha = new System.Windows.Forms.Label();
             this.pnlAlpha = new System.Windows.Forms.Panel();
             this.tbAlpha = new System.Windows.Forms.TrackBar();
-            this.tsMenu = new System.Windows.Forms.ToolStrip();
+            this.tsMenu = new ScalingToolStrip();
             this.btnEdit = new System.Windows.Forms.ToolStripButton();
             this.txtColor = new System.Windows.Forms.TextBox();
             this.colorDialog = new System.Windows.Forms.ColorDialog();
@@ -304,7 +306,7 @@
         #endregion
 
         private System.Windows.Forms.Panel pnlControls;
-        private System.Windows.Forms.ToolStrip tsMenu;
+        private ScalingToolStrip tsMenu;
         private System.Windows.Forms.TableLayoutPanel tblColor;
         private System.Windows.Forms.Label lblRed;
         private System.Windows.Forms.Panel pnlRed;

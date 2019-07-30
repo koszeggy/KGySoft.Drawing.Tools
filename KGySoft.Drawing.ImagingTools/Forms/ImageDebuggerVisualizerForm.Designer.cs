@@ -20,7 +20,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         {
             this.components = new System.ComponentModel.Container();
             this.txtInfo = new System.Windows.Forms.TextBox();
-            this.tsMenu = new System.Windows.Forms.ToolStrip();
+            this.tsMenu = new ScalingToolStrip();
             this.btnAutoZoom = new System.Windows.Forms.ToolStripButton();
             this.btnColorSettings = new System.Windows.Forms.ToolStripDropDownButton();
             this.miBackColor = new System.Windows.Forms.ToolStripMenuItem();
@@ -328,7 +328,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         private System.Windows.Forms.ToolStripMenuItem miWhite;
         private System.Windows.Forms.ToolStripMenuItem miBlack;
         private System.Windows.Forms.ToolStripMenuItem miShowPalette;
-        protected System.Windows.Forms.ToolStrip tsMenu;
+        protected ScalingToolStrip tsMenu;
         protected System.Windows.Forms.TextBox txtInfo;
         private NotificationLabel lblNotification;
         private ToolTip toolTip;
