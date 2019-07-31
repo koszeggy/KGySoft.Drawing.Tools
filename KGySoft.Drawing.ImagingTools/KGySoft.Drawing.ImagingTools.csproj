@@ -126,12 +126,14 @@
     <Compile Include="_Classes\Dialogs.cs" />
     <Compile Include="_Classes\ImageData.cs" />
     <Compile Include="_Classes\ImageReference.cs" />
+    <Compile Include="_Classes\Images.cs" />
     <Compile Include="_Classes\SerializationHelper.cs" />
     <Compile Include="Controls\PalettePanel.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="_Classes\InstallationInfo.cs" />
     <Compile Include="_Classes\InstallationManager.cs" />
+    <Compile Include="_Classes\WindowsUtils.cs" />
     <Compile Include="_Enums\ImageDataTypes.cs" />
     <Compile Include="_Enums\ImageTypes.cs" />
     <Compile Include="Forms\AppMainForm.cs">
@@ -223,42 +225,55 @@
     <None Include="..\KGySoft.snk">
       <Link>KGySoft.snk</Link>
     </None>
-    <None Include="app.manifest" />
+    <None Include="app.manifest">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
-    <None Include="Resources\Crop.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\HighlightVisibleClip.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Browse.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Clear.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Magnifier.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Merge.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Next.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Palette.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Prev.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Save.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Gear.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\ImagingTools.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Magnifier.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Palette.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Open.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Save.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Clear.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Prev.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Next.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Crop.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\HighlightVisibleClip.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Settings.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Animation.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\MultiSize.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\MultiPage.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Check.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -271,7 +286,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties ExternalBuildIntegrationEnabled="True" ED14F191-6CDA-4bbb-BB1B-C329DD754E20_OutputCondition="" LastExportedMakefileHash="Lc9DFBa2QeJU6LkEO19XOA==" />
+      <UserProperties LastExportedMakefileHash="Lc9DFBa2QeJU6LkEO19XOA==" ED14F191-6CDA-4bbb-BB1B-C329DD754E20_OutputCondition="" ExternalBuildIntegrationEnabled="True" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

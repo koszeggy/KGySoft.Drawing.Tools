@@ -35,7 +35,6 @@ using KGySoft.CoreLibraries;
 #region Used Aliases
 
 using Encoder = System.Drawing.Imaging.Encoder;
-using Images = KGySoft.Drawing.ImagingTools.Properties.Resources;
 
 #endregion
 
@@ -70,6 +69,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
         private static readonly ImageCodecInfo[] encoderCodecs = ImageCodecInfo.GetImageEncoders();
         private static readonly ImageCodecInfo[] decoderCodecs = ImageCodecInfo.GetImageDecoders();
+        private static readonly Bitmap checkIcon = Images.Check;
 
         #endregion
 
@@ -102,12 +102,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         internal virtual Image Image
         {
             get => image?.Image;
-            set
-            {
-                if (image != null && image.Image == value)
-                    return;
-                SetImage(value, null);
-            }
+            set => SetImage(value, null);
         }
 
         /// <summary>
@@ -179,16 +174,16 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         public ImageDebuggerVisualizerForm()
         {
             InitializeComponent();
-            base.Icon = Images.ImagingTools;
+            base.Icon = Properties.Resources.ImagingTools;
             btnAutoZoom.Image = Images.Magnifier;
             btnSave.Image = Images.Save;
-            btnOpen.Image = Images.Browse;
+            btnOpen.Image = Images.Open;
             btnClear.Image = Images.Clear;
-            btnCompound.Image = Images.Merge;
             btnPrev.Image = Images.Prev;
             btnNext.Image = Images.Next;
             btnColorSettings.Image = Images.Palette;
-            btnConfiguration.Image = Images.Gear;
+            miDeafult.Image = checkIcon;
+            btnConfiguration.Image = Images.Settings;
             tsMenu.Renderer = new ButtonRenderer();
             lblNotification.Text = null;
 
@@ -326,9 +321,9 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             Load -= ImageDebuggerVisualizerForm_Load;
             Resize -= ImageDebuggerVisualizerForm_Resize;
             btnAutoZoom.CheckedChanged -= btnAutoZoom_CheckedChanged;
-            miDeafult.Click -= miBackColor_Click;
-            miWhite.Click -= miBackColor_Click;
-            miBlack.Click -= miBackColor_Click;
+            miDeafult.Click -= BackColorSubMenu_Click;
+            miWhite.Click -= BackColorSubMenu_Click;
+            miBlack.Click -= BackColorSubMenu_Click;
             btnSave.Click -= btnSave_Click;
             btnOpen.Click -= btnOpen_Click;
             btnClear.Click -= btnClear_Click;
@@ -431,21 +426,29 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
         private void InitMultiImage()
         {
-            btnCompound.Visible = true;
             if (image.RawFormat == ImageFormat.Gif.Guid)
-                btnCompound.ToolTipText = @"Toggles whether image is handled as a single image.
+            {
+                btnCompound.ToolTipText = @"Toggles whether the animation is handled as a single image.
 • When checked, animation will play and saving as GIF saves the whole animation.
 • When not checked, frame navigation will be enabled and saving saves only the selected frame.";
+                btnCompound.Image = Images.Animation;
+            }
             else if (image.RawFormat == ImageFormat.Icon.Guid)
-                btnCompound.ToolTipText = @"Toggles whether icon is handled as a single image.
-• When checked, auto sizing displays always the best fitting icon and saving as Icon saves every image.
+            {
+                btnCompound.ToolTipText = @"Toggles whether the icon is handled as a multi-resolution image.
+• When checked, always the best fitting image is displayed and saving as Icon saves every image.
 • When not checked, icon images can be explored by navigation and saving saves the selected image only.";
+                btnCompound.Image = Images.MultiSize;
+            }
             else
-                btnCompound.ToolTipText = @"Toggles whether image is handled as a compound image.
+            {
+                btnCompound.ToolTipText = @"Toggles whether the pages are handled as a compound image.
 • When checked, saving as TIFF saves every page.
-• When not checked, saving saves always the selected page.";
+• When not checked, saving saves always the selected page only.";
+                btnCompound.Image = Images.MultiPage;
+            }
 
-            sepFrames.Visible = btnPrev.Visible = btnNext.Visible = true;
+            sepFrames.Visible = btnCompound.Visible = btnPrev.Visible = btnNext.Visible = true;
             ResetCompoundState();
         }
 
@@ -778,7 +781,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
         private void InitAutoZoom()
         {
-            if (image == null || image.Image == null || image.Image is Metafile)
+            if (image?.Image == null && frames == null || image?.Image is Metafile)
             {
                 btnAutoZoom.Visible = false;
                 btnAutoZoom.Checked = true;
@@ -949,10 +952,10 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             pbImage.SizeMode = autoZoom ? PictureBoxSizeMode.Zoom : PictureBoxSizeMode.CenterImage;
         }
 
-        private void miBackColor_Click(object sender, EventArgs e)
+        private void BackColorSubMenu_Click(object sender, EventArgs e)
         {
             foreach (ToolStripMenuItem item in miBackColor.DropDownItems)
-                item.Checked = item == sender;
+                item.Image = item == sender ? checkIcon : null;
 
             if (sender == miDeafult)
                 pbImage.BackColor = SystemColors.Control;

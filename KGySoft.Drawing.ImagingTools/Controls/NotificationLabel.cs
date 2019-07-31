@@ -81,7 +81,7 @@ namespace KGySoft.Drawing.ImagingTools.Controls
             BorderStyle = BorderStyle.FixedSingle;
             BackColor = Color.FromArgb(255, 255, 128);
             ForeColor = Color.Black;
-            Image = Icons.Warning.ToMultiResBitmap();
+            Image = Icons.Warning.ToScaledBitmap();
             TextAlign = ContentAlignment.MiddleLeft;
             ImageAlign = ContentAlignment.MiddleRight;
         }

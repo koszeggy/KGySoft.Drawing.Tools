@@ -69,8 +69,8 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             this.btnAutoZoom,
             this.btnColorSettings,
             this.toolStripSeparator1,
-            this.btnSave,
             this.btnOpen,
+            this.btnSave,
             this.btnClear,
             this.sepFrames,
             this.btnCompound,
@@ -116,13 +116,11 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             // 
             // miDeafult
             // 
-            this.miDeafult.Checked = true;
-            this.miDeafult.CheckState = System.Windows.Forms.CheckState.Checked;
             this.miDeafult.Name = "miDeafult";
             this.miDeafult.Size = new System.Drawing.Size(112, 22);
             this.miDeafult.Text = "Default";
             this.miDeafult.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
-            this.miDeafult.Click += new System.EventHandler(this.miBackColor_Click);
+            this.miDeafult.Click += new System.EventHandler(this.BackColorSubMenu_Click);
             // 
             // miWhite
             // 
@@ -131,7 +129,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             this.miWhite.Name = "miWhite";
             this.miWhite.Size = new System.Drawing.Size(112, 22);
             this.miWhite.Text = "White";
-            this.miWhite.Click += new System.EventHandler(this.miBackColor_Click);
+            this.miWhite.Click += new System.EventHandler(this.BackColorSubMenu_Click);
             // 
             // miBlack
             // 
@@ -140,7 +138,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             this.miBlack.Name = "miBlack";
             this.miBlack.Size = new System.Drawing.Size(112, 22);
             this.miBlack.Text = "Black";
-            this.miBlack.Click += new System.EventHandler(this.miBackColor_Click);
+            this.miBlack.Click += new System.EventHandler(this.BackColorSubMenu_Click);
             // 
             // miShowPalette
             // 

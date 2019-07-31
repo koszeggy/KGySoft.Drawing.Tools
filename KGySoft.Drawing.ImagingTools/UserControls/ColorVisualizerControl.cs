@@ -148,7 +148,7 @@ namespace KGySoft.Drawing.ImagingTools.UserControls
         public ColorVisualizerControl()
         {
             InitializeComponent();
-            btnEdit.Image = Properties.Resources.Palette;
+            btnEdit.Image = Images.Palette;
             pnlColor.SetDoubleBuffered(true);
             tbAlpha.SetDoubleBuffered(true);
             tbRed.SetDoubleBuffered(true);

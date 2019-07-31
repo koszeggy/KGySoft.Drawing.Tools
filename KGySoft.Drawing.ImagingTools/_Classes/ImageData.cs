@@ -243,6 +243,7 @@ namespace KGySoft.Drawing.ImagingTools
                 iconImages[i].PixelFormat = bpp == 1 ? PixelFormat.Format1bppIndexed
                     : bpp == 4 ? PixelFormat.Format4bppIndexed
                     : bpp == 8 ? PixelFormat.Format8bppIndexed
+                    : bpp == 24 ? PixelFormat.Format24bppRgb
                     : iconImages[i].RawFormat == ImageFormat.Bmp.Guid ? PixelFormat.Format32bppRgb
                     : PixelFormat.Format32bppArgb;
                 iconImagesOrigFormat[i].Dispose();

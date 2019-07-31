@@ -62,7 +62,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             InitializeComponent();
             ImageTypes = ImageTypes.None;
             ToolStripItem separator = new ToolStripSeparator();
-            btnCrop = new ToolStripButton(Properties.Resources.Crop)
+            btnCrop = new ToolStripButton(Images.Crop)
             {
                 Text = "Show visible clip area only",
                 CheckOnClick = true,
@@ -70,7 +70,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             };
 
             btnCrop.Click += new EventHandler(btnCrop_Click);
-            btnHighlightClip = new ToolStripButton(Properties.Resources.HighlightVisibleClip)
+            btnHighlightClip = new ToolStripButton(Images.HighlightVisibleClip)
             {
                 Text = "Highlight visible clip area",
                 CheckOnClick = true,
