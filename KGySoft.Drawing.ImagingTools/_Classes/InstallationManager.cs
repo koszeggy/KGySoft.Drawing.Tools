@@ -58,7 +58,7 @@ namespace KGySoft.Drawing.ImagingTools
             error = null;
             try
             {
-                if (Directory.Exists(path))
+                if (!Directory.Exists(path))
                     Directory.CreateDirectory(path);
             }
             catch (Exception e)

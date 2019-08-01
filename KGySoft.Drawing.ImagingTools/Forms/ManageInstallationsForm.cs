@@ -107,7 +107,11 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             else if (currentStatus.Version == null)
                 lblStatusText.Text = "Unknown version (incompatible runtime?)";
             else
-                lblStatusText.Text = $"Installed: {currentStatus.Version}. Runtime: {currentStatus.RuntimeVersion}";
+            {
+                lblStatusText.Text = $"Installed: {currentStatus.Version}";
+                if (currentStatus.RuntimeVersion != null)
+                    lblStatusText.Text += $" - Runtime: {currentStatus.RuntimeVersion}";
+            }
             btnRemove.Enabled = currentStatus.Installed;
         }
 

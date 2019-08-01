@@ -78,7 +78,7 @@ namespace KGySoft.Drawing.ImagingTools
             if (debuggerVisualizerAssembly != null)
             {
                 Version = debuggerVisualizerAssembly.GetName().Version;
-                RuntimeVersion = debuggerVisualizerAssembly.ImageRuntimeVersion;
+                RuntimeVersion = null; // not relevant, would return the already loaded version
                 return;
             }
 
