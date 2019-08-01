@@ -402,6 +402,21 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             UpdateInfo();
         }
 
+        protected void OpenFile(string path)
+        {
+            try
+            {
+                var ms = new MemoryStream(File.ReadAllBytes(path));
+                FromStream(ms, Path.GetExtension(path).Equals(".ico", StringComparison.OrdinalIgnoreCase));
+                isUpToDate = !lblNotification.Visible;
+                this.fileName = isUpToDate ? path : null;
+            }
+            catch (Exception ex)
+            {
+                Dialogs.ErrorMessage("Could not load file due to an error: {0}", ex.Message);
+            }
+        }
+
         #endregion
 
         #region Private Methods
@@ -816,18 +831,8 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             if (dlgOpen.ShowDialog(this) != DialogResult.OK)
                 return;
 
-            try
-            {
-                Notification = null;
-                var ms = new MemoryStream(File.ReadAllBytes(dlgOpen.FileName));
-                FromStream(ms, Path.GetExtension(dlgOpen.FileName).Equals(".ico", StringComparison.OrdinalIgnoreCase));
-                isUpToDate = !lblNotification.Visible;
-                fileName = isUpToDate ? dlgOpen.FileName : null;
-            }
-            catch (Exception ex)
-            {
-                Dialogs.ErrorMessage("Could not load file due to an error: {0}", ex.Message);
-            }
+            Notification = null;
+            OpenFile(dlgOpen.FileName);
         }
 
         private void Save()

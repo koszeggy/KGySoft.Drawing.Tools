@@ -33,11 +33,11 @@ namespace KGySoft.Drawing.ImagingTools
         /// When executed as a standalone application, this is the entry point.
         /// </summary>
         [STAThread]
-        internal static void Main()
+        internal static void Main(string[] args)
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new AppMainForm());
+            Application.Run(new AppMainForm(args));
         }
 
         #endregion
