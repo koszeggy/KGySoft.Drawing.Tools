@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 #endregion
@@ -79,8 +80,7 @@ namespace KGySoft.Drawing.ImagingTools.Controls
                 palette = value;
                 if (ColorCount == 0)
                     timerSelection.Enabled = false;
-
-                CheckPaletteLayout();
+                Invalidate();
             }
         }
 
@@ -161,6 +161,7 @@ namespace KGySoft.Drawing.ImagingTools.Controls
 
             DoubleBuffered = true;
             SetStyle(ControlStyles.Selectable, true);
+            sbPalette.Width = SystemInformation.VerticalScrollBarWidth;
         }
 
         #endregion
@@ -175,8 +176,8 @@ namespace KGySoft.Drawing.ImagingTools.Controls
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
-                components.Dispose();
+            if (disposing)
+                components?.Dispose();
 
             sbPalette.ValueChanged -= sbPalette_ValueChanged;
             timerSelection.Tick -= timerSelection_Tick;
@@ -185,12 +186,16 @@ namespace KGySoft.Drawing.ImagingTools.Controls
 
         protected override void OnPaint(PaintEventArgs e)
         {
+            scaleX = (float)Math.Round(e.Graphics.DpiX / 96f, 2);
+            scaleY = (float)Math.Round(e.Graphics.DpiY / 96f, 2);
+            if (CheckPaletteLayout())
+                return;
+
             base.OnPaint(e);
             if (ColorCount == 0)
                 return;
 
-            scaleX = (float)Math.Round(e.Graphics.DpiX / 96f, 2);
-            scaleY = (float)Math.Round(e.Graphics.DpiY / 96f, 2);
+            e.Graphics.PixelOffsetMode = PixelOffsetMode.Half;
             int upper = Math.Min(palette.Count, firstVisibleColor + (visibleRowCount << 4));
 
             // iterating through visible colors
@@ -202,25 +207,39 @@ namespace KGySoft.Drawing.ImagingTools.Controls
 
                 // background
                 e.Graphics.FillRectangle(SystemBrushes.Control, rect);
-
+                
                 // selection frame
                 if (i == selectedColorIndex)
                 {
+                    // For drawing lines using top-left PixelOffsetMode (Half cannot be used with DrawFocusRectangle, which accepts int coordinates only)
+                    e.Graphics.PixelOffsetMode = PixelOffsetMode.Default;
                     Rectangle rectSelection = rect;
                     int r = (int)Math.Round(selectionFrameColor.R + Math.Abs(counter) * ((double)selectionFrameColorAlternative.R - selectionFrameColor.R) / steps);
                     int g = (int)Math.Round(selectionFrameColor.G + Math.Abs(counter) * ((double)selectionFrameColorAlternative.G - selectionFrameColor.G) / steps);
                     int b = (int)Math.Round(selectionFrameColor.B + Math.Abs(counter) * ((double)selectionFrameColorAlternative.B - selectionFrameColor.B) / steps);
-                    using (Pen pen = new Pen(Color.FromArgb(r, g, b), scaleX))
-                        e.Graphics.DrawRectangle(pen, new Rectangle(rectSelection.Left, rectSelection.Top, rectSelection.Width - 1, rectSelection.Height - 1));
+
+                    // Using wider pen fails even with Inset alignment with every possible PixelOffsetMode. So using a 1 width pen and drawing possible more rectangles
+                    int penWidth = Math.Max((int)scaleX, 1);
+                    using (Pen pen = new Pen(Color.FromArgb(r, g, b)))
+                    {
+                        for (int x = 0; x < penWidth; x++)
+                            e.Graphics.DrawRectangle(pen, rectSelection.Left + x, rectSelection.Top + x, rectSelection.Width - 1 - (x << 1), rectSelection.Height - 1 - (x << 1));
+                    }
 
                     if (Focused && ShowFocusCues)
                     {
-                        rectSelection.Inflate(-1, -1);
-                        ControlPaint.DrawFocusRectangle(e.Graphics, rectSelection);
+                        rectSelection.Inflate(-(int)scaleX, -(int)scaleX);
+                        for (int x = 0; x < penWidth; x++)
+                        {
+                            ControlPaint.DrawFocusRectangle(e.Graphics, rectSelection);
+                            rectSelection.Inflate(-1, -1);
+                        }
                     }
+
+                    e.Graphics.PixelOffsetMode = PixelOffsetMode.Half;
                 }
 
-                rect.Inflate(-2, -2);
+                rect.Inflate(-(int)(2 * scaleX), -(int)(2 * scaleY));
 
                 // alpha background
                 Color c = palette[i];
@@ -237,12 +256,6 @@ namespace KGySoft.Drawing.ImagingTools.Controls
                 using (Brush b = new SolidBrush(c))
                     e.Graphics.FillRectangle(b, rect);
             }
-        }
-
-        protected override void OnResize(EventArgs eventargs)
-        {
-            base.OnResize(eventargs);
-            CheckPaletteLayout();
         }
 
         protected override void OnMouseDown(MouseEventArgs e)
@@ -364,19 +377,22 @@ namespace KGySoft.Drawing.ImagingTools.Controls
             this.ResumeLayout(false);
         }
 
-        private void CheckPaletteLayout()
+        /// <summary>
+        /// Checks the scrollbar and returns <see langword="true"/> on layout change (which means invalidated graphics)
+        /// </summary>
+        private bool CheckPaletteLayout()
         {
             if (ColorCount == 0)
             {
                 sbPalette.Visible = false;
                 visibleRowCount = 0;
-                return;
+                return false;
             }
 
             // calculating visible rows
             int maxRows = ((int)(Height / scaleY) - 5) / 13;
             if (maxRows == visibleRowCount)
-                return;
+                return false;
 
             Invalidate();
             visibleRowCount = maxRows;
@@ -387,7 +403,7 @@ namespace KGySoft.Drawing.ImagingTools.Controls
                 firstVisibleColor = 0;
                 sbPalette.Visible = false;
                 timerSelection.Enabled = true;
-                return;
+                return true;
             }
 
             //scrollbar is needed
@@ -398,12 +414,16 @@ namespace KGySoft.Drawing.ImagingTools.Controls
             sbPalette.Value = firstVisibleColor >> 4;
             sbPalette.Visible = true;
             timerSelection.Enabled = IsSelectedColorVisible();
+            return true;
         }
 
         private Rectangle GetColorRect(int index)
         {
-            var rect = new RectangleF((2 + (index % 16) * 13) * scaleX, (2 + ((index - firstVisibleColor) >> 4) * 13) * scaleY, 13 * scaleX, 13 * scaleY);
-            return Rectangle.Round(rect);
+            float left = (2 + (index % 16) * 13) * scaleX;
+            float top = (2 + ((index - firstVisibleColor) >> 4) * 13) * scaleY;
+            // ReSharper disable CompareOfFloatsByEqualityOperator - intended
+            return new Rectangle(left % 1 == 0 ? (int)left : (int)left + 1, top % 1 == 0 ? (int)top : (int)top + 1, (int)(13 * scaleX), (int)(13 * scaleY));
+            // ReSharper restore CompareOfFloatsByEqualityOperator
         }
 
         private bool IsSelectedColorVisible()

@@ -59,7 +59,8 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         internal ColorVisualizerForm()
         {
             InitializeComponent();
-            ucColorVisualizer.ColorEdited += new EventHandler(ucColorVisualizer_ColorEdited);
+            Icon = Properties.Resources.Palette;
+            ucColorVisualizer.ColorEdited += ucColorVisualizer_ColorEdited;
         }
 
         #endregion

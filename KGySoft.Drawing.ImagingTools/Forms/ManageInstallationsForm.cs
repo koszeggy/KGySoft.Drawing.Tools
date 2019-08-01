@@ -20,7 +20,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
 
 #endregion
 
@@ -47,6 +46,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         public ManageInstallationsForm()
         {
             InitializeComponent();
+            Icon = Properties.Resources.Settings;
             cbInstallations.ValueMember = nameof(KeyValuePair<string, string>.Key);
             cbInstallations.DisplayMember = nameof(KeyValuePair<string, string>.Value);
 

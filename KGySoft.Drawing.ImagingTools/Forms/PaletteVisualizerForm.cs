@@ -61,11 +61,12 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
         #region Constructors
 
-        public PaletteVisualizerForm()
+        internal PaletteVisualizerForm()
         {
             InitializeComponent();
-            ucColorVisualizer.ColorEdited += new EventHandler(ucColorVisualizer_ColorEdited);
-            pnlPalette.SelectedColorChanged += new System.EventHandler(this.pnlPalette_SelectedColorChanged);
+            Icon = Properties.Resources.Palette;
+            ucColorVisualizer.ColorEdited += ucColorVisualizer_ColorEdited;
+            pnlPalette.SelectedColorChanged += pnlPalette_SelectedColorChanged;
         }
 
         #endregion
