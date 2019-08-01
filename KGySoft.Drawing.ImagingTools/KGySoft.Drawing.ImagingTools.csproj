@@ -25,14 +25,12 @@
     <Optimize>false</Optimize>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <DefineConstants>TRACE;DEBUG;NET35</DefineConstants>
-    <DocumentationFile>bin\Debug_NET35\KGySoft.Drawing.ImagingTools.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_NET35|AnyCPU' ">
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <DefineConstants>TRACE;NET35</DefineConstants>
-    <DocumentationFile>bin\Release_NET35\KGySoft.Drawing.ImagingTools.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET40|AnyCPU'">
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
@@ -40,14 +38,12 @@
     <DefineConstants>TRACE;DEBUG;NET40</DefineConstants>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <DocumentationFile>bin\Debug_NET40\KGySoft.Drawing.ImagingTools.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_NET40|AnyCPU'">
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <DefineConstants>TRACE;NET40</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
-    <DocumentationFile>bin\Release_NET40\KGySoft.Drawing.ImagingTools.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET45|AnyCPU'">
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
@@ -55,14 +51,12 @@
     <DefineConstants>TRACE;DEBUG;NET45</DefineConstants>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <DocumentationFile>bin\Debug_NET45\KGySoft.Drawing.ImagingTools.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_NET45|AnyCPU'">
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <DefineConstants>TRACE;NET45</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
-    <DocumentationFile>bin\Release_NET45\KGySoft.Drawing.ImagingTools.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
