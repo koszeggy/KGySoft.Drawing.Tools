@@ -618,7 +618,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             // Starting with Windows Vista it would work that we draw the compound image in a new Bitmap with desired size and read the Size afterwards
             // but that requires always a new bitmap and does not work in Windows XP
             desiredSize = Math.Max(desiredSize, 1);
-            ImageData desiredImage = frames.Aggregate((acc, i) => i.Size == acc.Size && i.Image.GetBitsPerPixel() > acc.Image.GetBitsPerPixel() || Math.Abs(i.Size.Width - desiredSize) < Math.Abs(acc.Size.Width - desiredSize) ? i : acc);
+            ImageData desiredImage = frames.Aggregate((acc, i) => i.Size == acc.Size && i.BitsPerPixel > acc.BitsPerPixel || Math.Abs(i.Size.Width - desiredSize) < Math.Abs(acc.Size.Width - desiredSize) ? i : acc);
             currentIconSize = desiredImage.Size;
             if (pbImage.Image != desiredImage.Image)
                 pbImage.Image = desiredImage.Image;
@@ -696,7 +696,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         {
             ImageData currentImage = GetCurrentImage();
             int realBpp = currentImage.Image.GetBitsPerPixel();
-            int theoreticBpp = Image.GetPixelFormatSize(currentImage.PixelFormat);
+            int theoreticBpp = currentImage.BitsPerPixel;
 
             using (Stream stream = File.Create(fileName))
             {
@@ -739,7 +739,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
                 if (convertFormat)
                 {
                     Color[] palette = null;
-                    int bpp = Image.GetPixelFormatSize(frame.PixelFormat);
+                    int bpp = frame.BitsPerPixel;
                     if (bpp <= 8 && page is Bitmap bmpPage)
                         palette = bmpPage.GetColors(1 << bpp);
 

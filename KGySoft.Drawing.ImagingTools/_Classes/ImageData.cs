@@ -39,6 +39,8 @@ namespace KGySoft.Drawing.ImagingTools
         internal Guid RawFormat { get; set; }
         internal int Duration { get; set; }
 
+        internal int BitsPerPixel => Image.GetPixelFormatSize(PixelFormat);
+
         #endregion
 
         #region Constructors
@@ -173,7 +175,7 @@ namespace KGySoft.Drawing.ImagingTools
                     int duration = BitConverter.ToInt32(times, frame << 2);
                     duration = duration == 0 ? 100 : duration * 10;
                     frames[frame].Duration = duration;
-                    if (imageData.RawFormat == ImageFormat.Gif.Guid && Image.GetPixelFormatSize(imageData.PixelFormat) > 8)
+                    if (imageData.RawFormat == ImageFormat.Gif.Guid && imageData.BitsPerPixel > 8)
                         frames[frame].PixelFormat = PixelFormat.Format8bppIndexed;
                 }
             }
