@@ -171,11 +171,19 @@ namespace KGySoft.Drawing.ImagingTools
                 }
 
                 sb.AppendLine();
-                sb.AppendFormat("{15}Clip Bounds: {1}{0}{15}Visible Clip Bounds (Unit = {5}): {2}{0}Resolution: {3}x{4} dpi{0}Page Scale: {6}{0}" +
-                        "Compositing Mode: {7}{0}Compositing Quality: {8}{0}Interpolation Mode: {9}{0}Pixel Offset Mode: {10}{0}Smoothing Mode: {11}{0}Text Rendering Hint: {12}{0}Text Contrast: {13}{0}Rendering Origin: {14}{0}",
-                    Environment.NewLine, g.ClipBounds, g.VisibleClipBounds, g.DpiX, g.DpiY, g.PageUnit, g.PageScale,
-                    g.CompositingMode, g.CompositingQuality, g.InterpolationMode, g.PixelOffsetMode, g.SmoothingMode, g.TextRenderingHint, g.TextContrast, g.RenderingOrigin,
-                    m.IsIdentity ? String.Empty : "Transformed ");
+                string isTransformed = m.IsIdentity ? String.Empty : "Transformed ";
+                sb.Append($"{isTransformed}Clip Bounds: {g.ClipBounds}{Environment.NewLine}"
+                    + $"{isTransformed}Visible Clip Bounds (Unit = {g.PageUnit}): {g.VisibleClipBounds}{Environment.NewLine}"
+                    + $"Resolution: {g.DpiX}x{g.DpiY} DPI{Environment.NewLine}"
+                    + $"Page Scale: {g.PageScale}{Environment.NewLine}" 
+                    + $"Compositing Mode: {g.CompositingMode}{Environment.NewLine}"
+                    + $"Compositing Quality: {g.CompositingQuality}{Environment.NewLine}"
+                    + $"Interpolation Mode: {g.InterpolationMode}{Environment.NewLine}"
+                    + $"Pixel Offset Mode: {g.PixelOffsetMode}{Environment.NewLine}"
+                    + $"Smoothing Mode: {g.SmoothingMode}{Environment.NewLine}"
+                    + $"Text Rendering Hint: {g.TextRenderingHint}{Environment.NewLine}"
+                    + $"Text Contrast: {g.TextContrast}{Environment.NewLine}"
+                    + $"Rendering Origin: {g.RenderingOrigin}");
                 bw.Write(sb.ToString());
             }
         }
