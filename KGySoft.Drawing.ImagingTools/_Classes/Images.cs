@@ -28,7 +28,8 @@ namespace KGySoft.Drawing.ImagingTools
     {
         #region Fields
 
-        private static float scale;
+        private static readonly Size referenceSize = new Size(16, 16);
+
         private static Bitmap check;
         private static Bitmap crop;
         private static Bitmap highlightVisibleClip;
@@ -47,27 +48,6 @@ namespace KGySoft.Drawing.ImagingTools
         #endregion
 
         #region Properties
-
-        internal static float Scale
-        {
-            get
-            {
-                if (scale.Equals(0f))
-                    scale = WindowsUtils.SystemDpi / 96f;
-                return scale;
-            }
-            set
-            {
-                if (value < 0f || Single.IsInfinity(value) || Single.IsNaN(value))
-                    throw new ArgumentOutOfRangeException(nameof(value), PublicResources.ArgumentOutOfRange);
-                if (value.Equals(scale))
-                    return;
-                scale = value;
-                if (WindowsUtils.IsVistaOrLater)
-                    return;
-                check = null;
-            }
-        }
 
         internal static Bitmap Check => check ?? (check = GetResource(nameof(Check)));
         internal static Bitmap Crop => crop ?? (crop = GetResource(nameof(Crop)));
@@ -92,8 +72,9 @@ namespace KGySoft.Drawing.ImagingTools
 
         internal static Bitmap ToScaledBitmap(this Icon icon)
         {
-            var size = (int)(16 * Scale);
-            return icon.ExtractNearestBitmap(new Size(size, size), PixelFormat.Format32bppArgb);
+            if (icon == null)
+                throw new ArgumentNullException(nameof(icon), PublicResources.ArgumentNull);
+            return icon.ExtractNearestBitmap(referenceSize.Scale(WindowsUtils.SystemScale), PixelFormat.Format32bppArgb);
         }
 
         #endregion

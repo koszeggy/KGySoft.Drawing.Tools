@@ -71,6 +71,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -105,6 +106,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\ScalingToolStrip.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ScalingToolStripDropDownButton.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\BaseForm.cs">
@@ -180,6 +184,8 @@
       <DependentUpon>ColorVisualizerControl.cs</DependentUpon>
     </Compile>
     <Compile Include="_Extensions\ControlExtensions.cs" />
+    <Compile Include="_Extensions\GraphicsExtensions.cs" />
+    <Compile Include="_Extensions\SizeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Controls\PalettePanel.resx">

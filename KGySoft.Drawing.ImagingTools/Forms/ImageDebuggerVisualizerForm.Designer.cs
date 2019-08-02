@@ -22,9 +22,9 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             this.txtInfo = new System.Windows.Forms.TextBox();
             this.tsMenu = new ScalingToolStrip();
             this.btnAutoZoom = new System.Windows.Forms.ToolStripButton();
-            this.btnColorSettings = new System.Windows.Forms.ToolStripDropDownButton();
+            this.btnColorSettings = new ScalingToolStripDropDownButton();
             this.miBackColor = new System.Windows.Forms.ToolStripMenuItem();
-            this.miDeafult = new System.Windows.Forms.ToolStripMenuItem();
+            this.miDefault = new System.Windows.Forms.ToolStripMenuItem();
             this.miWhite = new System.Windows.Forms.ToolStripMenuItem();
             this.miBlack = new System.Windows.Forms.ToolStripMenuItem();
             this.miShowPalette = new System.Windows.Forms.ToolStripMenuItem();
@@ -107,7 +107,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             // miBackColor
             // 
             this.miBackColor.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.miDeafult,
+            this.miDefault,
             this.miWhite,
             this.miBlack});
             this.miBackColor.Name = "miBackColor";
@@ -116,11 +116,11 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             // 
             // miDeafult
             // 
-            this.miDeafult.Name = "miDeafult";
-            this.miDeafult.Size = new System.Drawing.Size(112, 22);
-            this.miDeafult.Text = "Default";
-            this.miDeafult.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
-            this.miDeafult.Click += new System.EventHandler(this.BackColorSubMenu_Click);
+            this.miDefault.Name = "miDefault";
+            this.miDefault.Size = new System.Drawing.Size(112, 22);
+            this.miDefault.Text = "Default";
+            this.miDefault.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
+            this.miDefault.Click += new System.EventHandler(this.BackColorSubMenu_Click);
             // 
             // miWhite
             // 
@@ -320,9 +320,9 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         private System.Windows.Forms.SaveFileDialog dlgSave;
         private System.Windows.Forms.Splitter splitter;
         private System.Windows.Forms.Timer timerPlayer;
-        private System.Windows.Forms.ToolStripDropDownButton btnColorSettings;
+        private ScalingToolStripDropDownButton btnColorSettings;
         private System.Windows.Forms.ToolStripMenuItem miBackColor;
-        private System.Windows.Forms.ToolStripMenuItem miDeafult;
+        private System.Windows.Forms.ToolStripMenuItem miDefault;
         private System.Windows.Forms.ToolStripMenuItem miWhite;
         private System.Windows.Forms.ToolStripMenuItem miBlack;
         private System.Windows.Forms.ToolStripMenuItem miShowPalette;

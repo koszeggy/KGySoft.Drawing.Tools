@@ -17,6 +17,7 @@
 #region Usings
 
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 using KGySoft.Reflection;
@@ -34,12 +35,21 @@ namespace KGySoft.Drawing.ImagingTools
         /// </summary>
         /// <param name="control">The control to set.</param>
         /// <param name="useDoubleBuffering"><see langword="true"/>, if <paramref name="control"/> should use double buffering; otherwise, <see langword="false"/>.</param>
-        public static void SetDoubleBuffered(this Control control, bool useDoubleBuffering)
+        internal static void SetDoubleBuffered(this Control control, bool useDoubleBuffering)
         {
             if (control == null)
                 throw new ArgumentNullException(nameof(control));
             Reflector.SetProperty(control, "DoubleBuffered", useDoubleBuffering);
         }
+
+        internal static PointF GetScale(this Control control)
+        {
+            if (control == null)
+                throw new ArgumentNullException(nameof(control));
+            return WindowsUtils.GetScale(control.Handle);
+        }
+
+        internal static Size ScaleSize(this Control control, Size size) => size.Scale(control.GetScale());
 
         #endregion
     }

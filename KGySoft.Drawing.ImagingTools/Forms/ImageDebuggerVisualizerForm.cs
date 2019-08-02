@@ -44,32 +44,12 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 {
     internal partial class ImageDebuggerVisualizerForm : BaseForm
     {
-        #region ButtonRenderer class
-
-        private sealed class ButtonRenderer : ToolStripProfessionalRenderer
-        {
-            #region Methods
-
-            protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
-            {
-                if (e.Item is ToolStripButton button && button.Checked && button.Enabled)
-                    e.Graphics.Clear(ProfessionalColors.ButtonSelectedGradientMiddle);
-
-                base.OnRenderButtonBackground(e);
-            }
-
-            #endregion
-        }
-
-        #endregion
-
         #region Fields
 
         #region Static Fields
 
         private static readonly ImageCodecInfo[] encoderCodecs = ImageCodecInfo.GetImageEncoders();
         private static readonly ImageCodecInfo[] decoderCodecs = ImageCodecInfo.GetImageDecoders();
-        private static readonly Bitmap checkIcon = Images.Check;
 
         #endregion
 
@@ -182,9 +162,8 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             btnPrev.Image = Images.Prev;
             btnNext.Image = Images.Next;
             btnColorSettings.Image = Images.Palette;
-            miDeafult.Image = checkIcon;
+            miDefault.Image = Images.Check;
             btnConfiguration.Image = Images.Settings;
-            tsMenu.Renderer = new ButtonRenderer();
             lblNotification.Text = null;
 
             SetImage(null, null);
@@ -321,7 +300,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             Load -= ImageDebuggerVisualizerForm_Load;
             Resize -= ImageDebuggerVisualizerForm_Resize;
             btnAutoZoom.CheckedChanged -= btnAutoZoom_CheckedChanged;
-            miDeafult.Click -= BackColorSubMenu_Click;
+            miDefault.Click -= BackColorSubMenu_Click;
             miWhite.Click -= BackColorSubMenu_Click;
             miBlack.Click -= BackColorSubMenu_Click;
             btnSave.Click -= btnSave_Click;
@@ -960,9 +939,9 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         private void BackColorSubMenu_Click(object sender, EventArgs e)
         {
             foreach (ToolStripMenuItem item in miBackColor.DropDownItems)
-                item.Image = item == sender ? checkIcon : null;
+                item.Image = item == sender ? Images.Check : null;
 
-            if (sender == miDeafult)
+            if (sender == miDefault)
                 pbImage.BackColor = SystemColors.Control;
             else if (sender == miWhite)
                 pbImage.BackColor = Color.White;

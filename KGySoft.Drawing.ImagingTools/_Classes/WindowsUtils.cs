@@ -18,7 +18,6 @@
 
 using System;
 using System.Drawing;
-using System.Runtime.InteropServices;
 
 #endregion
 
@@ -26,31 +25,6 @@ namespace KGySoft.Drawing.ImagingTools
 {
     internal static class WindowsUtils
     {
-        #region NativeMethods class
-
-        private static class NativeMethods
-        {
-            #region Constants
-
-            internal const int LOGPIXELSX = 88;
-
-            #endregion
-
-            #region Methods
-
-            /// <summary>
-            /// Retrieves device-specific information for the specified device.
-            /// </summary>
-            /// <param name="hdc">A handle to the DC.</param>
-            /// <param name="nIndex">The item to be returned.</param>
-            [DllImport("gdi32.dll")]
-            internal static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
-
-            #endregion
-        }
-
-        #endregion
-
         #region Fields
 
         private static bool? isVistaOrLater;
@@ -78,27 +52,31 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        internal static int SystemDpi => GetControlDpi(IntPtr.Zero);
+        internal static PointF SystemScale => GetScale(IntPtr.Zero);
 
         #endregion
 
         #region Methods
 
-        private static int GetControlDpi(IntPtr handle)
+        #region Internal Methods
+
+        internal static PointF GetScale(IntPtr handle)
+        {
+            var dpi = GetDpiForHwnd(handle);
+            return new PointF(dpi.X / 96f, dpi.Y / 96f);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private static PointF GetDpiForHwnd(IntPtr handle)
         {
             using (Graphics screen = Graphics.FromHwnd(handle))
-            {
-                IntPtr hdc = screen.GetHdc();
-                try
-                {
-                    return NativeMethods.GetDeviceCaps(hdc, NativeMethods.LOGPIXELSX);
-                }
-                finally
-                {
-                    screen.ReleaseHdc(hdc);
-                }
-            }
+                return new PointF(screen.DpiX, screen.DpiY);
         }
+
+        #endregion
 
         #endregion
     }

@@ -55,8 +55,7 @@ namespace KGySoft.Drawing.ImagingTools.Controls
         private int firstVisibleColor;
         private int visibleRowCount;
         private int counter;
-        private float scaleX = 1f;
-        private float scaleY = 1f;
+        private PointF scale = new PointF(1f, 1f);
         private int scrollFraction;
 
         #endregion
@@ -186,8 +185,7 @@ namespace KGySoft.Drawing.ImagingTools.Controls
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            scaleX = (float)Math.Round(e.Graphics.DpiX / 96f, 2);
-            scaleY = (float)Math.Round(e.Graphics.DpiY / 96f, 2);
+            scale = e.Graphics.GetScale();
             if (CheckPaletteLayout())
                 return;
 
@@ -219,7 +217,7 @@ namespace KGySoft.Drawing.ImagingTools.Controls
                     int b = (int)Math.Round(selectionFrameColor.B + Math.Abs(counter) * ((double)selectionFrameColorAlternative.B - selectionFrameColor.B) / steps);
 
                     // Using wider pen fails even with Inset alignment with every possible PixelOffsetMode. So using a 1 width pen and drawing possible more rectangles
-                    int penWidth = Math.Max((int)scaleX, 1);
+                    int penWidth = Math.Max((int)scale.X, 1);
                     using (Pen pen = new Pen(Color.FromArgb(r, g, b)))
                     {
                         for (int x = 0; x < penWidth; x++)
@@ -228,7 +226,7 @@ namespace KGySoft.Drawing.ImagingTools.Controls
 
                     if (Focused && ShowFocusCues)
                     {
-                        rectSelection.Inflate(-(int)scaleX, -(int)scaleX);
+                        rectSelection.Inflate(-(int)scale.X, -(int)scale.X);
                         for (int x = 0; x < penWidth; x++)
                         {
                             ControlPaint.DrawFocusRectangle(e.Graphics, rectSelection);
@@ -239,7 +237,7 @@ namespace KGySoft.Drawing.ImagingTools.Controls
                     e.Graphics.PixelOffsetMode = PixelOffsetMode.Half;
                 }
 
-                rect.Inflate(-(int)(2 * scaleX), -(int)(2 * scaleY));
+                rect.Inflate(-(int)(2 * scale.X), -(int)(2 * scale.Y));
 
                 // alpha background
                 Color c = palette[i];
@@ -269,11 +267,11 @@ namespace KGySoft.Drawing.ImagingTools.Controls
             if (GetColorRect(selectedColorIndex).Contains(e.Location))
                 return;
 
-            if (!Rectangle.Round(new RectangleF(2 * scaleX, 2 * scaleY, (13 << 4) * scaleX, 13 * visibleRowCount * scaleY)).Contains(e.Location))
+            if (!Rectangle.Round(new RectangleF(2 * scale.X, 2 * scale.Y, (13 << 4) * scale.X, 13 * visibleRowCount * scale.Y)).Contains(e.Location))
                 return;
 
-            int x = ((int)(e.X / scaleX) - 2) / 13;
-            int y = ((int)(e.Y / scaleY) - 2) / 13;
+            int x = ((int)(e.X / scale.X) - 2) / 13;
+            int y = ((int)(e.Y / scale.Y) - 2) / 13;
             int index = firstVisibleColor + (y << 4) + x;
 
             if (index >= ColorCount)
@@ -390,7 +388,7 @@ namespace KGySoft.Drawing.ImagingTools.Controls
             }
 
             // calculating visible rows
-            int maxRows = ((int)(Height / scaleY) - 5) / 13;
+            int maxRows = ((int)(Height / scale.Y) - 5) / 13;
             if (maxRows == visibleRowCount)
                 return false;
 
@@ -419,10 +417,10 @@ namespace KGySoft.Drawing.ImagingTools.Controls
 
         private Rectangle GetColorRect(int index)
         {
-            float left = (2 + (index % 16) * 13) * scaleX;
-            float top = (2 + ((index - firstVisibleColor) >> 4) * 13) * scaleY;
+            float left = (2 + (index % 16) * 13) * scale.X;
+            float top = (2 + ((index - firstVisibleColor) >> 4) * 13) * scale.Y;
             // ReSharper disable CompareOfFloatsByEqualityOperator - intended
-            return new Rectangle(left % 1 == 0 ? (int)left : (int)left + 1, top % 1 == 0 ? (int)top : (int)top + 1, (int)(13 * scaleX), (int)(13 * scaleY));
+            return new Rectangle(left % 1 == 0 ? (int)left : (int)left + 1, top % 1 == 0 ? (int)top : (int)top + 1, (int)(13 * scale.X), (int)(13 * scale.Y));
             // ReSharper restore CompareOfFloatsByEqualityOperator
         }
 

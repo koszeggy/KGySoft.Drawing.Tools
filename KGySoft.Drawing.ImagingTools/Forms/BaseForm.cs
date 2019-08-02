@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Specialized;
+using System.Configuration;
 using System.Drawing;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -65,6 +66,22 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         #region Properties
 
         private BitVector32 FormState => (BitVector32)(formStateField ?? (formStateField = FieldAccessor.GetAccessor(typeof(Form).GetField("formState", BindingFlags.Instance | BindingFlags.NonPublic)))).Get(this);
+
+        #endregion
+
+        #region Constructors
+
+        static BaseForm()
+        {
+            Type dpiHelper = Reflector.ResolveType(typeof(Form).Assembly, "System.Windows.Forms.DpiHelper");
+            if (dpiHelper == null)
+                return;
+
+            // Turning off WinForms auto resize logic to prevent interferences.
+            // Occurs when executed as visualizer debugger and devenv.exe.config contains some random DpiAwareness
+            Reflector.TrySetField(dpiHelper, "isInitialized", true);
+            Reflector.TrySetField(dpiHelper, "enableHighDpi", false);
+        }
 
         #endregion
 
