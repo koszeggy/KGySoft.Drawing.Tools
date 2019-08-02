@@ -7,6 +7,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
+using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.DebuggerVisualizers.Serializers;
 using KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel;
@@ -18,13 +19,13 @@ using Microsoft.VisualStudio.DebuggerVisualizers;
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Test.Forms
 {
-    public partial class DebuggerTestForm: Form
+    public partial class DebuggerTestForm : Form
     {
         #region Nested classes
 
         #region TestWindowService class
 
-        class TestWindowService: IDialogVisualizerService
+        class TestWindowService : IDialogVisualizerService
         {
             #region Methods
 
@@ -50,7 +51,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.Forms
 
         #region TestObjectProvider class
 
-        class TestObjectProvider: IVisualizerObjectProvider
+        class TestObjectProvider : IVisualizerObjectProvider
         {
             #region Fields
 
@@ -131,7 +132,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.Forms
 
         #region Fields
 
-        private DebuggerTestFormViewModel viewModel = new DebuggerTestFormViewModel();
+        private readonly CommandBindingsCollection commandBindings = new CommandBindingsCollection();
+        private readonly DebuggerTestFormViewModel viewModel = new DebuggerTestFormViewModel();
+        private readonly Bitmap fallbackPreview = new Bitmap(1, 1);
 
         #endregion
 
@@ -140,12 +143,49 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.Forms
         public DebuggerTestForm()
         {
             InitializeComponent();
-            rbBitmap32.Checked = true;
+            commandBindings.AddPropertyBinding(rbBitmap32, nameof(RadioButton.Checked), nameof(viewModel.Bmp32), viewModel);
+            commandBindings.AddPropertyBinding(rbBitmap16, nameof(RadioButton.Checked), nameof(viewModel.Bmp16), viewModel);
+            commandBindings.AddPropertyBinding(rbBitmap4, nameof(RadioButton.Checked), nameof(viewModel.Bmp4), viewModel);
+            commandBindings.AddPropertyBinding(rbMetafile, nameof(RadioButton.Checked), nameof(viewModel.Metafile), viewModel);
+            commandBindings.AddPropertyBinding(rbHIcon, nameof(RadioButton.Checked), nameof(viewModel.HIcon), viewModel);
+            commandBindings.AddPropertyBinding(rbManagedIcon, nameof(RadioButton.Checked), nameof(viewModel.ManagedIcon), viewModel);
+            commandBindings.AddPropertyBinding(rbGraphicsBitmap, nameof(RadioButton.Checked), nameof(viewModel.GraphicsBitmap), viewModel);
+            commandBindings.AddPropertyBinding(rbGraphicsHwnd, nameof(RadioButton.Checked), nameof(viewModel.GraphicsControl), viewModel);
+            commandBindings.AddPropertyBinding(rbBitmapData32, nameof(RadioButton.Checked), nameof(viewModel.BitmapData32), viewModel);
+            commandBindings.AddPropertyBinding(rbBitmapData8, nameof(RadioButton.Checked), nameof(viewModel.BitmapData8), viewModel);
+            commandBindings.AddPropertyBinding(rbPalette256, nameof(RadioButton.Checked), nameof(viewModel.Palette256), viewModel);
+            commandBindings.AddPropertyBinding(rbPalette2, nameof(RadioButton.Checked), nameof(viewModel.Palette2), viewModel);
+            commandBindings.AddPropertyBinding(rbColor, nameof(RadioButton.Checked), nameof(viewModel.Color), viewModel);
+            commandBindings.AddPropertyBinding(rbFromFile, nameof(RadioButton.Checked), nameof(viewModel.ImageFromFile), viewModel);
+
+            commandBindings.AddPropertyBinding(rbAsImage, nameof(RadioButton.Checked), nameof(viewModel.AsImage), viewModel);
+            commandBindings.AddPropertyBinding(rbAsBitmap, nameof(RadioButton.Checked), nameof(viewModel.AsBitmap), viewModel);
+            commandBindings.AddPropertyBinding(rbAsMetafile, nameof(RadioButton.Checked), nameof(viewModel.AsMetafile), viewModel);
+            commandBindings.AddPropertyBinding(rbAsIcon, nameof(RadioButton.Checked), nameof(viewModel.AsIcon), viewModel);
+
+            pictureBox.DataBindings.Add(nameof(pictureBox.Image), viewModel, nameof(viewModel.PreviewImage), true)
+                .Format += (sender, e) => e.Value = e.Value ?? fallbackPreview;
         }
 
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                components?.Dispose();
+                commandBindings.Dispose();
+                viewModel.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
 
         //private void RefreshFromFile()
         //{
@@ -373,9 +413,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.Forms
         ////ReSharper restore InconsistentNaming
         //#endregion
 
-        private void rbGraphicsBitmap_CheckedChanged(object sender, EventArgs e)
-        {
+        //private void rbGraphicsBitmap_CheckedChanged(object sender, EventArgs e)
+        //{
 
-        }
+        //}
     }
 }

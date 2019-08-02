@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using KGySoft.ComponentModel;
 
@@ -22,28 +23,29 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
             new HashSet<string> { nameof(AsImage), nameof(AsBitmap), nameof(AsMetafile),nameof(AsIcon) },
         };
 
-        public bool Bmp32 { get => Get(true); set => Set(value); }
-        public bool Bmp16 { get => Get<bool>(); set => Set(value); }
-        public bool Bmp4 { get => Get<bool>(); set => Set(value); }
-        public bool Metafile { get => Get<bool>(); set => Set(value); }
-        public bool HIcon { get => Get<bool>(); set => Set(value); }
-        public bool ManagedIcon { get => Get<bool>(); set => Set(value); }
-        public bool GraphicsBitmap { get => Get<bool>(); set => Set(value); }
-        public bool GraphicsControl { get => Get<bool>(); set => Set(value); }
-        public bool BitmapData32 { get => Get<bool>(); set => Set(value); }
-        public bool BitmapData8 { get => Get<bool>(); set => Set(value); }
-        public bool Palette256 { get => Get<bool>(); set => Set(value); }
-        public bool Palette2 { get => Get<bool>(); set => Set(value); }
-        public bool Color { get => Get<bool>(); set => Set(value); }
-        public bool ImageFromFile { get => Get<bool>(); set => Set(value); }
+        internal bool Bmp32 { get => Get<bool>(); set => Set(value); }
+        internal bool Bmp16 { get => Get<bool>(); set => Set(value); }
+        internal bool Bmp4 { get => Get<bool>(); set => Set(value); }
+        internal bool Metafile { get => Get<bool>(); set => Set(value); }
+        internal bool HIcon { get => Get<bool>(); set => Set(value); }
+        internal bool ManagedIcon { get => Get<bool>(); set => Set(value); }
+        internal bool GraphicsBitmap { get => Get<bool>(); set => Set(value); }
+        internal bool GraphicsControl { get => Get<bool>(); set => Set(value); }
+        internal bool BitmapData32 { get => Get<bool>(); set => Set(value); }
+        internal bool BitmapData8 { get => Get<bool>(); set => Set(value); }
+        internal bool Palette256 { get => Get<bool>(); set => Set(value); }
+        internal bool Palette2 { get => Get<bool>(); set => Set(value); }
+        internal bool Color { get => Get<bool>(); set => Set(value); }
+        internal bool ImageFromFile { get => Get<bool>(); set => Set(value); }
 
-        public bool AsImage { get => Get(true); set => Set(value); }
-        public bool AsBitmap { get => Get<bool>(); set => Set(value); }
-        public bool AsMetafile { get => Get<bool>(); set => Set(value); }
-        public bool AsIcon { get => Get<bool>(); set => Set(value); }
+        internal bool AsImage { get => Get<bool>(); set => Set(value); }
+        internal bool AsBitmap { get => Get<bool>(); set => Set(value); }
+        internal bool AsMetafile { get => Get<bool>(); set => Set(value); }
+        internal bool AsIcon { get => Get<bool>(); set => Set(value); }
 
-        public object TestObject { get => Get(GenerateObject); set => Set(value); }
+        internal object TestObject { get => Get<object>(); set => Set(value); }
 
+        public Image PreviewImage { get => Get<Image>(); set => Set(value); }
 
         protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
         {
@@ -52,7 +54,11 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
             {
                 AdjustRadioGroup(e.PropertyName, group);
                 TestObject = GenerateObject();
+                return;
             }
+
+            if (e.PropertyName == nameof(TestObject))
+                PreviewImage = GetPreviewImage(TestObject);
         }
 
         private void AdjustRadioGroup(string propertyName, IEnumerable<string> group)
@@ -66,9 +72,25 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
 
         private object GenerateObject()
         {
-            throw new NotImplementedException();
+            (TestObject as IDisposable)?.Dispose();
+            if (Bmp32)
+                return Icons.Shield.ExtractBitmap(0);
+
+            return null;
         }
 
+        private Image GetPreviewImage(object obj)
+        {
+            if (obj is Image image)
+                return image;
+            return null;
+        }
 
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            if (disposing)
+                (TestObject as IDisposable)?.Dispose();
+        }
     }
 }
