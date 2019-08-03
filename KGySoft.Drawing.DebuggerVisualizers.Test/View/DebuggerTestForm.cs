@@ -157,7 +157,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             // simple click opens the file dialog only if text was empty
             if (tbFile.Text.Length != 0 && source.TriggeringEvent == nameof(tbFile.Click))
                 return;
-            using (OpenFileDialog ofd = new OpenFileDialog())
+            using (OpenFileDialog ofd = new OpenFileDialog { FileName = tbFile.Text })
             {
                 if (ofd.ShowDialog() == DialogResult.OK)
                     tbFile.Text = ofd.FileName;
