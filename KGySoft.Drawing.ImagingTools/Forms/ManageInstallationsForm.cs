@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 
 #endregion
 
@@ -52,6 +53,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
             cbInstallations.SelectedValueChanged += cbInstallations_SelectedValueChanged;
             tbPath.TextChanged += tbPath_TextChanged;
+            tbPath.DoubleClick += tbPath_DoubleClick;
             btnInstall.Click += btnInstall_Click;
             btnRemove.Click += btnRemove_Click;
 
@@ -71,6 +73,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
             cbInstallations.SelectedValueChanged -= cbInstallations_SelectedValueChanged;
             tbPath.TextChanged -= tbPath_TextChanged;
+            tbPath.DoubleClick -= tbPath_DoubleClick;
             btnInstall.Click -= btnInstall_Click;
             btnRemove.Click -= btnRemove_Click;
 
@@ -95,7 +98,9 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         {
             bool isCustom = String.IsNullOrEmpty(dir);
             tbPath.Enabled = isCustom;
-            if (!isCustom)
+            if (isCustom)
+                SelectFolder();
+            else
                 tbPath.Text = Path.Combine(dir, visualizersDir);
         }
 
@@ -113,6 +118,20 @@ namespace KGySoft.Drawing.ImagingTools.Forms
                     lblStatusText.Text += $" - Runtime: {currentStatus.RuntimeVersion}";
             }
             btnRemove.Enabled = currentStatus.Installed;
+        }
+
+        private void SelectFolder()
+        {
+            using (var dlg = new FolderBrowserDialog { SelectedPath = tbPath.Text })
+            {
+                if (dlg.ShowDialog() != DialogResult.OK)
+                    return;
+                var path = dlg.SelectedPath;
+                if (((IList<KeyValuePair<string, string>>)cbInstallations.DataSource).Any(i => i.Key == path))
+                    cbInstallations.SelectedValue = path;
+                else
+                    tbPath.Text = path;
+            }
         }
 
         #endregion
@@ -142,6 +161,8 @@ namespace KGySoft.Drawing.ImagingTools.Forms
                 Dialogs.ErrorMessage("Removing failed: {0}", error);
             UpdateStatus(currentStatus.Path);
         }
+
+        private void tbPath_DoubleClick(object sender, EventArgs e) => SelectFolder();
 
         #endregion
 
