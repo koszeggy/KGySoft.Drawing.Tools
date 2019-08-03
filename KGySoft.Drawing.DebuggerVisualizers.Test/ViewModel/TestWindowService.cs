@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: Program.cs
+//  File: TestWindowService.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2019 - All Rights Reserved
 //
@@ -19,23 +19,19 @@
 using System;
 using System.Windows.Forms;
 
-using KGySoft.Drawing.DebuggerVisualizers.Test.View;
+using Microsoft.VisualStudio.DebuggerVisualizers;
 
 #endregion
 
-namespace KGySoft.Drawing.DebuggerVisualizers.Test
+namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
 {
-    static class Program
+    internal class TestWindowService : IDialogVisualizerService
     {
         #region Methods
 
-        [STAThread]
-        static void Main()
-        {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new DebuggerTestForm());
-        }
+        public DialogResult ShowDialog(Form form) => form.ShowDialog();
+        public DialogResult ShowDialog(Control control) => throw new NotImplementedException();
+        public DialogResult ShowDialog(CommonDialog dialog) => throw new NotImplementedException();
 
         #endregion
     }
