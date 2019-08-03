@@ -55,7 +55,7 @@ The `KGySoft.Drawing.DebuggerVisualizers` assembly provides debugger visualizers
 2. Open the folder with the extracted content. You will find three folders there:
   - `NET35` contains the .NET 3.5 version. Compatible with all Visual Studio versions starting with Visual Studio 2008.
   - `NET40` contains the .NET 4.0 version. You cannot use this one for Visual Studio 2008.
-  - `NET45` contains the .NET 4.5 version. You cannot use this one for Windows XP, Visual Studio 2008 and 2010.
+  - `NET45` contains the .NET 4.5 version. You cannot use this one for Windows XP and Visual Studio 2008/2010.
 3. Execute `KGySoft.Drawing.ImagingTools.exe` from one of the folders listed above. Click the _Manage Debugger Visualizer Installations..._ button (the gear icon) on the toolbar.
 
 ![Select Install](https://kgysoft.net/images/InstallSelectMenu.png)
