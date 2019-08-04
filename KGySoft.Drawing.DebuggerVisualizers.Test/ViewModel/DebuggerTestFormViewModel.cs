@@ -37,7 +37,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
 {
     /// <summary>
     /// ViewModel class for DebuggerTestForm.
-    /// NOTE: Debugging images when the debugger is attached to this project will like NOT work because
+    /// NOTE: Debugging images when the debugger is attached to this project will likely NOT work because
     /// this project references a specific version of Microsoft.VisualStudio.DebuggerVisualizers, which may differ your version.
     /// Debugging works for other projects, which do not reference Microsoft.VisualStudio.DebuggerVisualizers (eg. ImagingTools).
     /// </summary>
