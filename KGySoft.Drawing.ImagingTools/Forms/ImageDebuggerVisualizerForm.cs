@@ -381,19 +381,27 @@ namespace KGySoft.Drawing.ImagingTools.Forms
             UpdateInfo();
         }
 
-        protected void OpenFile(string path)
+        protected virtual bool OpenFile(string path)
         {
             try
             {
                 var ms = new MemoryStream(File.ReadAllBytes(path));
                 FromStream(ms, Path.GetExtension(path).Equals(".ico", StringComparison.OrdinalIgnoreCase));
                 isUpToDate = !lblNotification.Visible;
-                this.fileName = isUpToDate ? path : null;
+                fileName = isUpToDate ? path : null;
+                return true;
             }
             catch (Exception ex)
             {
                 Dialogs.ErrorMessage("Could not load file due to an error: {0}", ex.Message);
+                return false;
             }
+        }
+
+        protected virtual void Clear()
+        {
+            Image = null;
+            fileName = String.Empty; // empty string indicates that image has been cleared
         }
 
         #endregion
@@ -949,11 +957,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
                 pbImage.BackColor = Color.Black;
         }
 
-        private void btnClear_Click(object sender, EventArgs e)
-        {
-            Image = null;
-            fileName = String.Empty; // empty string indicates that image has been cleared
-        }
+        private void btnClear_Click(object sender, EventArgs e) => Clear();
 
         private void btnCompound_Click(object sender, EventArgs e)
         {

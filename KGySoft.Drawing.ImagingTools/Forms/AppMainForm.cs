@@ -33,12 +33,23 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
         #endregion
 
+        #region Fields
+
+        private string fileName;
+        private string captionInfo;
+
+        #endregion
+
         #region Properties
 
         public override string Text
         {
             get => base.Text;
-            set => base.Text = String.IsNullOrEmpty(value) ? title : $"{title} - {value}";
+            set
+            {
+                captionInfo = value;
+                UpdateText();
+            }
         }
 
         #endregion
@@ -58,19 +69,21 @@ namespace KGySoft.Drawing.ImagingTools.Forms
                 return;
             }
 
-            string fileName = args[0];
-            if (!File.Exists(fileName))
+            string file = args[0];
+            if (!File.Exists(file))
             {
-                Dialogs.ErrorMessage("File does not exist: {0}", fileName);
+                Dialogs.ErrorMessage("File does not exist: {0}", file);
                 return;
             }
 
-            OpenFile(fileName);
+            OpenFile(file);
         }
 
         #endregion
 
         #region Methods
+
+        #region Protected Methods
 
         protected override void Dispose(bool disposing)
         {
@@ -78,6 +91,30 @@ namespace KGySoft.Drawing.ImagingTools.Forms
                 components?.Dispose();
             base.Dispose(disposing);
         }
+
+        protected override bool OpenFile(string path)
+        {
+            if (!base.OpenFile(path))
+                return false;
+            fileName = Path.GetFileName(path);
+            UpdateText();
+            return true;
+        }
+
+        protected override void Clear()
+        {
+            base.Clear();
+            fileName = null;
+            UpdateText();
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void UpdateText() => base.Text = String.IsNullOrEmpty(captionInfo) ? title : $"{title}{(fileName == null ? null : $" [{Path.GetFileName(fileName)}]")} - {captionInfo}";
+
+        #endregion
 
         #endregion
     }
