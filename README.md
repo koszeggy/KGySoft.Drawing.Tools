@@ -4,22 +4,18 @@
 
 KGy SOFT Drawing Tools repository contains [Debugger Visualizers](#debugger-visualizers) for several `Ststem.Drawing` types such as `Bitmap`, `Metafile`, `Icon`, `BitmapData`, `Graphics`, etc. (see also below). The visualizers use [KGy SOFT Imaging Tools](#kgy-soft-imaging-tools) to display these types visually, which can be executed as a standalone application as well. Along with the [Debugger Visualizers Test Tool](#debugger-visualizers-test-tool) it can also be considered as a demonstration of the features of the [KGy SOFT Drawing Libraries](https://kgysoft.net/drawing).
 
-[![Website](https://img.shields.io/website/https/kgysoft.net/corelibraries.svg)](https://kgysoft.net/drawingdebuggervisualizers)
+[![Website](https://img.shields.io/website/https/kgysoft.net/corelibraries.svg)](https://kgysoft.net/drawing)
 [![Drawing Libraries Repo](https://img.shields.io/github/repo-size/koszeggy/KGySoft.Drawing.svg?label=DrawingLibraries)](https://github.com/koszeggy/KGySoft.Drawing)
 
 ## Table of Contents
-<!--1. [KGy SOFT Imaging Tools](#kgy-soft-imaging-tools)
-2. [Debugger Visualizers](#debugger-visualizers)
-   - [Install](#install)
-   - [Troubleshooting](#troubleshooting) 
-3. [Debugger Visualizers Test Tool](#debugger-visualizers-test-tool)
-4. [Download](#download)
-5. [License](#license)-->
 1. [KGy SOFT Imaging Tools](#kgy-soft-imaging-tools)
 2. [Debugger Visualizers](#debugger-visualizers)
-   - [Install](#install)
+   - [Installing Debugger Visualizers](#installing-debugger-visualizers)
+   - [Troubleshooting](#troubleshooting) 
 3. [Download](#download)
-4. [License](#license)
+4. [Release Notes](#release-notes)
+5. [Debugger Visualizers Test Tool](#debugger-visualizers-test-tool)
+6. [License](#license)
 
 
 ## KGy SOFT Imaging Tools
@@ -29,7 +25,7 @@ The Imaging Tools application makes possible to load images and icons from file,
 
 ## Debugger Visualizers
 
-Imaging tools is packed with some debugger visualizers for Visual Studio (compatible with all versions starting with Visual Studio 2008). When a type is debugged in Visual Studio and there is a debugger visualizer installed for that type, then a magnifier icon appears that you can click to open the visualizer.
+Imaging Tools is packed with several debugger visualizers for Visual Studio (compatible with all versions starting with Visual Studio 2008). When a type is debugged in Visual Studio and there is a debugger visualizer installed for that type, then a magnifier icon appears that you can click to open the visualizer.
 
 ![Debugger Visualizer Usage](https://kgysoft.net/images/DebuggerVisualizerUsage.png)
 
@@ -49,11 +45,11 @@ The `KGySoft.Drawing.DebuggerVisualizers` assembly provides debugger visualizers
 
 ![Debugging Palette](https://kgysoft.net/images/DebugPalette.png)
 
-### Install
+### Installing Debugger Visualizers
 
 1. [Download](#download) the binaries and extract the .zip file to any folder.
 2. Open the folder with the extracted content. You will find three folders there:
-  - `NET35` contains the .NET 3.5 version. Compatible with all Visual Studio versions starting with Visual Studio 2008.
+  - `NET35` contains the .NET 3.5 version. Compatible with all Visual Studio versions starting with Visual Studio 2008 (tested with versions 2008-2019).
   - `NET40` contains the .NET 4.0 version. You cannot use this one for Visual Studio 2008.
   - `NET45` contains the .NET 4.5 version. You cannot use this one for Windows XP and Visual Studio 2008/2010.
 3. Execute `KGySoft.Drawing.ImagingTools.exe` from one of the folders listed above. Click the _Manage Debugger Visualizer Installations..._ button (the gear icon) on the toolbar.
@@ -67,15 +63,33 @@ The `KGySoft.Drawing.DebuggerVisualizers` assembly provides debugger visualizers
 5. Click on the _Install_ button. On success the status will display the installed version.
 
 ![Installation Complete](https://kgysoft.net/images/InstallComplete.png)
-<!--
+
 ### Troubleshooting
 
-- Which version
-- Steps 
-### Debugger Visualizers Test Tool
--->
+If Visual Studio cannot load the visualizer check this table.
+
+| **Issue** | **Solution** |
+|-----------|--------------|
+| The magnifier icon does not appear<img width="0px"/> | Debugger Visualizers are not installed for the Visual Studio version you use. Check the [installation steps](#installing-debugger-visualizers) above. Make sure you select the correct version from the list. |
+| Could not load this custom viewer.<br/>![Could not load this custom viewer.](https://kgysoft.net/images/DebuggerVisualizerTrShCouldNotLoadViewer.png) | _Open Debug / Options / Debugging / General_ and make sure that both _Use Managed Compatibility Mode_ and _Use legacy C# and VB expression evaluators_ are unchecked.<br/>![Debugging Options.](https://kgysoft.net/images/DebuggerVisualizerTrShCouldNotLoadSettings.png) |
+| Unable to load the custom visualizer.<br/>![Unable to load the custom visualizer.](https://kgysoft.net/images/DebuggerVisualizerTrShUnableToLoad.png) | * The project you debug references an unmatching version of the `Microsoft.VisualStudio.DebuggerVisualizers` to your actual VisualStudio version. |
+| Object is currently in use elsewhere.<br/>![Object is currently in use elsewhere.](https://kgysoft.net/images/DebuggerVisualizerTrShObjectIsInUse.png) | You try to debug a `Graphics` instance, whose Device Context is in use (the `GetHdc` method has been called previously). This `Graphics` instance cannot be accessed until the `ReleaseHdc` method is called. |
+| Function evaluation timed out | On slower computers with a slower Visual Studio (with a lot of add-ons installed) it can happen that the visualizer loads too slowly for the first time. Just try to click the magnifier icon again, which usually solves the problem. Alternatively, you can try to set a `DWORD` value in registry under the `HKEY_CURRENT_USER\Software\Microsoft\VisualStudio\[version]\Debugger` key, called `LocalsTimeout`. The value represents milliseconds. |
+| An unhandled exception of type 'System.Exception' was thrown by the UI-side custom visualizer component.<br/>![An unhandled exception of type 'System.Exception' was thrown by the UI-side custom visualizer component.](https://kgysoft.net/images/DebuggerVisualizerTrShException.png) | Occurs when you clear the debugged image in Visual Studio 2017, which does not support nullifying the debugged value. |
+| Could not evaluate expression.<br/>![Could not evaluate expression.](https://kgysoft.net/images/DebuggerVisualizerTrShCouldNotEvaluate.png) | Occurs when you clear the debugged image in Visual Studio 2015, which does not support nullifying the debugged value. |
+| Could not load file or assembly 'KGySoft.Drawing.DebuggerVisualizers.dll'.<br/>![Could not load file or assembly 'KGySoft.Drawing.DebuggerVisualizers.dll'.](https://kgysoft.net/images/DebuggerVisualizerTrShCouldNotLoadVisualizer.png) | Visual Studio 2008 supports the .NET 3.5 version only. A similar error may occur even if some files are missing. Just [install](#installing-debugger-visualizers) a correct version again. |
+| Value does not fall within the expected range.<br/>![Value does not fall within the expected range.](https://kgysoft.net/images/DebuggerVisualizerTrShValueUnexpectedRange.png) | Windows XP does not support the .NET 4.5 version. |
+
 ## Download
 You can download the sources and the binaries as .zip archives [here](https://github.com/koszeggy/KGySoft.Drawing.Tools/releases).
+
+## Debugger Visualizers Test Tool
+
+A simple test application is also available in the download binaries. Though it was created mainly for testing purposes it also demonstrates the debugger visualizer and some `KGySoft.Drawing` features. If you are interested in using [KGy SOFT Drawing Libraries](https://kgysoft.net/drawing) (and [KGy SOFT Core Libraries](https://kgysoft.net/corelibraries)) as a developer, then it may worth checking its source code (especially the [`DebuggerTestFormViewModel`](https://github.com/koszeggy/KGySoft.Drawing.Tools/blob/master/KGySoft.Drawing.DebuggerVisualizers.Test/ViewModel/DebuggerTestFormViewModel.cs) class).
+
+![Debugger Visualizer Test App](https://kgysoft.net/images/DebuggerVisualizerTest.png)
+
+> _Note:_ The Debugger Visualizers Test Tool directly references a specific version of the `Microsoft.VisualStudio.DebuggerVisualizers` assembly, therefore Visual Studio will not able to display visualizers when debugging this project unless you use the very same version (Visual Studio 2013).
 
 ## Release Notes
 
