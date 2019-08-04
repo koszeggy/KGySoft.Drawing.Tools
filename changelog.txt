@@ -11,7 +11,7 @@
 
 ! Assembly names:
 =================
-! Instead of many separate KGySoft.DebuggerVisualizers.VS<version>.dll files now there is one
+! Instead of many separate KGySoft.DebuggerVisualizers.VS<version>.dll files from now on there is one
   KGySoft.Drawing.DebuggerVisualizers.dll for each .NET frameworks.
 ! KGySoft.DebuggerVisualizers.Common.dll has been renamed to KGySoft.Drawing.ImagingTools.exe, which
   is an executable file now.
