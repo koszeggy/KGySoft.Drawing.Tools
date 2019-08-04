@@ -5,7 +5,7 @@
 KGy SOFT Drawing Tools repository contains [Debugger Visualizers](#debugger-visualizers) for several `Ststem.Drawing` types such as `Bitmap`, `Metafile`, `Icon`, `BitmapData`, `Graphics`, etc. (see also below). The visualizers use [KGy SOFT Imaging Tools](#kgy-soft-imaging-tools) to display these types visually, which can be executed as a standalone application as well. Along with the [Debugger Visualizers Test Tool](#debugger-visualizers-test-tool) it can also be considered as a demonstration of the features of the [KGy SOFT Drawing Libraries](https://kgysoft.net/drawing).
 
 [![Website](https://img.shields.io/website/https/kgysoft.net/corelibraries.svg)](https://kgysoft.net/drawing)
-[![Drawing Libraries Repo](https://img.shields.io/github/repo-size/koszeggy/KGySoft.Drawing.svg?label=DrawingLibraries)](https://github.com/koszeggy/KGySoft.Drawing)
+[![Drawing Libraries Repo](https://img.shields.io/github/repo-size/koszeggy/KGySoft.Drawing.svg?label=Drawing%20Libraries)](https://github.com/koszeggy/KGySoft.Drawing)
 
 ## Table of Contents
 1. [KGy SOFT Imaging Tools](#kgy-soft-imaging-tools)
