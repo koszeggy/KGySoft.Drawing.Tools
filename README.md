@@ -36,7 +36,7 @@ Either click the magnifier icon or choose a debugger visualizer from the drop do
 The `KGySoft.Drawing.DebuggerVisualizers` assembly provides debugger visualizers for the following types:
 - `System.Drawing.Image`: If executed for a non read-only variable or member of type `Image`, then the actual value can be replaced by any `Bitmap` or `Metafile`.
 - `System.Drawing.Bitmap`: Supports multi-page, multi-resolution and animated `Bitmap` instances. The bitmap can be saved in many formats. In a non read-only context the bitmap can be replaced from file and its palette (for indexed bitmaps) can be edited.
-- `System.Drawing.Imaging.Metafile`: Unlike many image debugger visualizer around the net, this one does not transform the metafile into a low-resolution PNG image because it is able to serialize the actual metafile content. The metafile can be saved into EMF/WMF formats. In a non read-only context the image can be replaced from file.
+- `System.Drawing.Imaging.Metafile`: Unlike many image debugger visualizers around the net, this one does not transform the metafile into a low-resolution PNG image because it is able to serialize the actual metafile content. The metafile can be saved into EMF/WMF formats. In a non read-only context the image can be replaced from file.
 - `System.Drawing.Icon`: Supports compound and huge icons even in Windows XP. The icon can be saved, and in a non read-only context it can be replaced from file.
 - `System.Drawing.Imaging.BitmapData`: Even for indexed data; however, the palette information cannot be retrieved.
 - `System.Drawing.Graphics`: Supports both image and native window graphics.
