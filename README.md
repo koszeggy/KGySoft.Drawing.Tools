@@ -29,7 +29,7 @@ Imaging Tools is packed with several debugger visualizers for Visual Studio (com
 
 ![Debugger Visualizer Usage](https://kgysoft.net/images/DebuggerVisualizerUsage.png)
 
-Either click the magnifier icon or choose a debugger visualizer from the drop down list (of more of them are applicable).
+Either click the magnifier icon or choose a debugger visualizer from the drop down list (if more visualizers are applicable).
 
 ![Debugging Graphics](https://kgysoft.net/images/DebugGraphics.png)
 
