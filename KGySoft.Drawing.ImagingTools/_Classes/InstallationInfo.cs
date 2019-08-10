@@ -17,6 +17,7 @@
 #region Usings
 
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Security.Policy;
 using KGySoft.CoreLibraries;
@@ -34,7 +35,7 @@ namespace KGySoft.Drawing.ImagingTools
         {
             #region Methods
 
-            public void InitializeInfo(InstallationInfo info, string path)
+            public InitializerSandbox(InstallationInfo info, string path)
             {
                 try
                 {
@@ -86,11 +87,15 @@ namespace KGySoft.Drawing.ImagingTools
             try
             {
                 Evidence evidence = new Evidence(AppDomain.CurrentDomain.Evidence);
-                AppDomain sandboxDomain = AppDomain.CreateDomain(nameof(InitializerSandbox), evidence, AppDomain.CurrentDomain.BaseDirectory, null, false);
-                var initializer = (InitializerSandbox)sandboxDomain.CreateInstanceAndUnwrap(Assembly.GetExecutingAssembly().FullName, typeof(InitializerSandbox).FullName);
+                AppDomain sandboxDomain = AppDomain.CreateDomain(nameof(InitializerSandbox), evidence, Files.GetExecutingPath(), null, false);
                 try
                 {
-                    initializer.InitializeInfo(this, path);
+                    // initializing by the constructor rather than unwrapping and calling a public method because unwrap may fail if executed from a Visual Studio package
+#if NET35
+                    Activator.CreateInstance(sandboxDomain, Assembly.GetExecutingAssembly().FullName, typeof(InitializerSandbox).FullName, false, BindingFlags.Public | BindingFlags.Instance, null, new object[] { this, path }, null, null, evidence);
+#else
+                    Activator.CreateInstance(sandboxDomain, Assembly.GetExecutingAssembly().FullName, typeof(InitializerSandbox).FullName, false, BindingFlags.Public | BindingFlags.Instance, null, new object[] { this, path }, null, null);
+#endif
                 }
                 finally
                 {
@@ -99,11 +104,23 @@ namespace KGySoft.Drawing.ImagingTools
             }
             catch (Exception)
             {
-                Version = null;
                 RuntimeVersion = null;
+                InitializeInfoByFileVersion(path);
             }
         }
 
-        #endregion
+        private void InitializeInfoByFileVersion(string path)
+        {
+            try
+            {
+                Version = new Version(FileVersionInfo.GetVersionInfo(InstallationManager.GetDebuggerVisualizerFilePath(path)).FileVersion);
+            }
+            catch (Exception)
+            {
+                Version = null;
+            }
+        }
+
+#endregion
     }
 }

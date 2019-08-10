@@ -334,7 +334,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
         protected virtual void UpdateInfo()
         {
-            if ((image == null || image.Image == null) && frames == null)
+            if (image?.Image == null && frames == null)
             {
                 Text = "No Image";
                 txtInfo.Clear();
@@ -721,7 +721,6 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         {
             Dialogs.ErrorMessage("Saving animated GIF has not been implemented yet");
             return;
-            throw new NotImplementedException("animgif");
         }
 
         private void SaveMultipageTiff(string fileName)
@@ -1059,7 +1058,12 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         private void btnConfiguration_Click(object sender, EventArgs e)
         {
             using (var form = new ManageInstallationsForm())
+            {
+                var currentPath = Files.GetExecutingPath();
+                if (currentPath.Contains("Visual Studio", StringComparison.Ordinal) && Path.GetFileName(currentPath) == "Visualizers")
+                    form.SelectPath(Path.GetDirectoryName(currentPath));
                 form.ShowDialog(this);
+            }
         }
 
         //ReSharper restore InconsistentNaming
