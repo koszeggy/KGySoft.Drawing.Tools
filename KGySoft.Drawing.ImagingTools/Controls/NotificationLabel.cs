@@ -62,8 +62,7 @@ namespace KGySoft.Drawing.ImagingTools.Controls
                     if (scale > 1)
                     {
                         // the temp bitmap is not used for anything - it just makes value to the best fitting size
-                        using (new Bitmap(value, Size.Round(new SizeF(value.Width * scale, value.Height * scale))))
-                            ;
+                        using (new Bitmap(value, Size.Round(new SizeF(value.Width * scale, value.Height * scale)))) { }
                     }
                 }
 

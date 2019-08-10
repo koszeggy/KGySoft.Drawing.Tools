@@ -134,11 +134,11 @@
     <Compile Include="_Classes\WindowsUtils.cs" />
     <Compile Include="_Enums\ImageDataTypes.cs" />
     <Compile Include="_Enums\ImageTypes.cs" />
-    <Compile Include="Forms\AppMainForm.cs">
+    <Compile Include="Forms\ImagingToolsForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\AppMainForm.Designer.cs">
-      <DependentUpon>AppMainForm.cs</DependentUpon>
+    <Compile Include="Forms\ImagingToolsForm.Designer.cs">
+      <DependentUpon>ImagingToolsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\BitmapDataDebuggerVisualizerForm.cs">
       <SubType>Form</SubType>
@@ -191,8 +191,8 @@
     <EmbeddedResource Include="Controls\PalettePanel.resx">
       <DependentUpon>PalettePanel.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\AppMainForm.resx">
-      <DependentUpon>AppMainForm.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\ImagingToolsForm.resx">
+      <DependentUpon>ImagingToolsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ColorVisualizerForm.resx">
       <DependentUpon>ColorVisualizerForm.cs</DependentUpon>
@@ -286,7 +286,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties LastExportedMakefileHash="Lc9DFBa2QeJU6LkEO19XOA==" ED14F191-6CDA-4bbb-BB1B-C329DD754E20_OutputCondition="" ExternalBuildIntegrationEnabled="True" />
+      <UserProperties ExternalBuildIntegrationEnabled="True" ED14F191-6CDA-4bbb-BB1B-C329DD754E20_OutputCondition="" LastExportedMakefileHash="Lc9DFBa2QeJU6LkEO19XOA==" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

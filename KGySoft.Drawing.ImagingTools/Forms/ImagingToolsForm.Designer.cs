@@ -1,6 +1,6 @@
 ﻿namespace KGySoft.Drawing.ImagingTools.Forms
 {
-    partial class AppMainForm
+    partial class ImagingToolsForm
     {
         /// <summary>
         /// Required designer variable.

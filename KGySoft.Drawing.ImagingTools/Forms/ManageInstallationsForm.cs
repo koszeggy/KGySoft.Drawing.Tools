@@ -39,6 +39,7 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         #region Fields
 
         private InstallationInfo currentStatus;
+        private bool selectingPath;
 
         #endregion
 
@@ -63,6 +64,29 @@ namespace KGySoft.Drawing.ImagingTools.Forms
         #endregion
 
         #region Methods
+
+        #region Internal Methods
+
+        internal void SelectPath(string path)
+        {
+            selectingPath = true;
+            try
+            {
+                if (((IList<KeyValuePair<string, string>>)cbInstallations.DataSource).Any(i => i.Key == path))
+                    cbInstallations.SelectedValue = path;
+                else
+                {
+                    cbInstallations.SelectedValue = String.Empty;
+                    tbPath.Text = path;
+                }
+            }
+            finally
+            {
+                selectingPath = false;
+            }
+        }
+
+        #endregion
 
         #region Protected Methods
 
@@ -122,15 +146,14 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
         private void SelectFolder()
         {
+            if (selectingPath)
+                return;
             using (var dlg = new FolderBrowserDialog { SelectedPath = tbPath.Text })
             {
                 if (dlg.ShowDialog() != DialogResult.OK)
                     return;
                 var path = dlg.SelectedPath;
-                if (((IList<KeyValuePair<string, string>>)cbInstallations.DataSource).Any(i => i.Key == path))
-                    cbInstallations.SelectedValue = path;
-                else
-                    tbPath.Text = path;
+                SelectPath(path);
             }
         }
 

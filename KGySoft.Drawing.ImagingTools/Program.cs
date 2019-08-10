@@ -37,7 +37,7 @@ namespace KGySoft.Drawing.ImagingTools
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new AppMainForm(args));
+            Application.Run(new ImagingToolsForm(args));
         }
 
         #endregion

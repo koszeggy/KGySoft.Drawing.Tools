@@ -25,7 +25,7 @@ using System.IO;
 
 namespace KGySoft.Drawing.ImagingTools.Forms
 {
-    internal partial class AppMainForm : ImageDebuggerVisualizerForm
+    internal partial class ImagingToolsForm : ImageDebuggerVisualizerForm
     {
         #region Constants
 
@@ -56,9 +56,9 @@ namespace KGySoft.Drawing.ImagingTools.Forms
 
         #region Constructors
 
-        public AppMainForm() => InitializeComponent();
+        public ImagingToolsForm() => InitializeComponent();
 
-        public AppMainForm(string[] args) : this()
+        public ImagingToolsForm(string[] args) : this()
         {
             if (args == null || args.Length == 0)
             {

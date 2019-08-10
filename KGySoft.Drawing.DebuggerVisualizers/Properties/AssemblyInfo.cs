@@ -4,7 +4,6 @@ using System.Drawing.Imaging;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Security;
 using KGySoft.Drawing.DebuggerVisualizers;
 using KGySoft.Drawing.DebuggerVisualizers.Serializers;
 using Microsoft.VisualStudio.DebuggerVisualizers;
