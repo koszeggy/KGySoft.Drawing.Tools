@@ -5,9 +5,9 @@
 + New feature
 ===============================================================================
 
-~~~~~~~~~~~
-! v2.0.0.0:
-~~~~~~~~~~~
+~~~~~~~~~
+! v2.0.0:
+~~~~~~~~~
 
 ! Assembly names:
 =================
@@ -29,3 +29,7 @@
 + KGySoft.Drawing.DebuggerVisualizers.dll
 =========================================
 + Compatible with all Visual Studio versions starting with Visual Studio 2008 (tested with versions from 2008 to 2019).
+
++ KGySoft.Drawing.DebuggerVisualizers.Package.dll
+=================================================
++ Installer for the visualizer as a VSIX Package (only for .NET 4.5, requires at least Visual Studio 2013)
