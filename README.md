@@ -47,6 +47,12 @@ The `KGySoft.Drawing.DebuggerVisualizers` assembly provides debugger visualizers
 
 ### Installing Debugger Visualizers
 
+#### By VSIX Installer
+
+If you use Visual Studio 2013 or newer the simplest way is to download the [installer package](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers) from the VisualStudio Marketplace. You can perform the install also from Visual Studio by the _Tools/Extensions and Updates..._ (Visual Studio 2019: _Extensions/Manage Extensions_) menu.
+
+#### Manual Install
+
 1. [Download](#download) the binaries and extract the .zip file to any folder.
 2. Open the folder with the extracted content. You will find three folders there:
   - `NET35` contains the .NET 3.5 version. Compatible with all Visual Studio versions starting with Visual Studio 2008 (tested with versions 2008-2019).
