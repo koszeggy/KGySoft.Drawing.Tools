@@ -49,7 +49,9 @@ The `KGySoft.Drawing.DebuggerVisualizers` assembly provides debugger visualizers
 
 #### By VSIX Installer
 
-If you use Visual Studio 2013 or newer the simplest way is to download the [installer package](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers) from the VisualStudio Marketplace. You can perform the install also from Visual Studio by the _Tools/Extensions and Updates..._ (Visual Studio 2019: _Extensions/Manage Extensions_) menu.
+If you use Visual Studio 2013 or newer the simplest way is to download the [installer package](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers) from the VisualStudio Marketplace. 
+
+You can perform the install also from Visual Studio by the _Tools/Extensions and Updates..._ (Visual Studio 2019: _Extensions/Manage Extensions_) menu if you search for the "_KGy SOFT Drawing DebuggerVisualizers_" extension.
 
 #### Manual Install
 
