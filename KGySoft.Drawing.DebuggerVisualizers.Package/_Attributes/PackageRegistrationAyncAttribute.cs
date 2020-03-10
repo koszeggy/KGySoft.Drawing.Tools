@@ -37,8 +37,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
         #region Static Methods
 
-        private static string RegKeyName(RegistrationContext context)
-            => String.Format(CultureInfo.InvariantCulture, "Packages\\{0}", context.ComponentType.GUID.ToString("B"));
+        private static string RegKeyName(RegistrationContext context) => $"Packages\\{context.ComponentType.GUID:B}";
 
         #endregion
 

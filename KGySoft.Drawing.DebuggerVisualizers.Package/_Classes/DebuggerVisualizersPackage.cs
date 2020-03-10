@@ -33,6 +33,12 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
+    #region Usings
+
+    using KGySoft.Drawing.DebuggerVisualizers.Package.Properties;
+
+    #endregion
+
     [Guid(Ids.PackageGuidString)]
     [ProvideBindingPath]
     [ProvideMenuResource("Menus.ctmenu", 1)]

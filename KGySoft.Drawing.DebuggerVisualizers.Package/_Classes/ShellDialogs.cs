@@ -18,8 +18,6 @@
 
 using System;
 
-using KGySoft.Drawing.DebuggerVisualizers.Package.Properties;
-
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -27,6 +25,12 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
+    #region Usings
+    
+    using KGySoft.Drawing.DebuggerVisualizers.Package.Properties;
+
+    #endregion
+
     internal static class ShellDialogs
     {
         #region Methods

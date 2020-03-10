@@ -24,7 +24,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
-using KGySoft.Serialization;
+using KGySoft.Serialization.Binary;
 
 #endregion
 

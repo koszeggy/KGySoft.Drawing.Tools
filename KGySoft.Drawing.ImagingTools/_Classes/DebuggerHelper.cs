@@ -24,7 +24,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 
 using KGySoft.Drawing.ImagingTools.Forms;
-using KGySoft.Serialization;
+using KGySoft.Serialization.Binary;
 
 #endregion
 

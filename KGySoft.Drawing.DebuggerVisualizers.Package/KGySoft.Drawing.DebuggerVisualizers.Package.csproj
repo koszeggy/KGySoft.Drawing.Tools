@@ -36,7 +36,7 @@
     <StartProgram Condition="'$(DevEnvDir)' != ''">$(DevEnvDir)devenv.exe</StartProgram>
     <StartArguments>/rootsuffix Exp</StartArguments>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug_NET45|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -45,7 +45,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_NET45|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -87,10 +87,12 @@
     <ProjectReference Include="..\KGySoft.Drawing.DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.csproj">
       <Project>{6415c328-a2c2-49c3-b113-b3b8c4e09c22}</Project>
       <Name>KGySoft.Drawing.DebuggerVisualizers</Name>
+      <AdditionalProperties>TargetFramework=net45</AdditionalProperties>
     </ProjectReference>
     <ProjectReference Include="..\KGySoft.Drawing.ImagingTools\KGySoft.Drawing.ImagingTools.csproj">
       <Project>{9080594a-56aa-41e5-9d9a-a23c39a1648a}</Project>
       <Name>KGySoft.Drawing.ImagingTools</Name>
+      <AdditionalProperties>TargetFramework=net45</AdditionalProperties>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -98,6 +100,12 @@
       <HintPath>..\..\packages\VSSDK.DTE.7.0.4\lib\net20\envdte.dll</HintPath>
       <EmbedInteropTypes>False</EmbedInteropTypes>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="KGySoft.CoreLibraries, Version=5.0.1.0, Culture=neutral, PublicKeyToken=b45eba277439ddfe, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\KGySoft.CoreLibraries.5.0.1\lib\net45\KGySoft.CoreLibraries.dll</HintPath>
+    </Reference>
+    <Reference Include="KGySoft.Drawing, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b45eba277439ddfe, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\KGySoft.Drawing.5.0.0\lib\net45\KGySoft.Drawing.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.GraphModel, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\VSSDK.GraphModel.11.0.4\lib\net45\Microsoft.VisualStudio.GraphModel.dll</HintPath>
