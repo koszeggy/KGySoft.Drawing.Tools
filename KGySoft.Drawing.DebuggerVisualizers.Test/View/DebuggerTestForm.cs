@@ -24,7 +24,9 @@ using System.Windows.Forms;
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel;
 using KGySoft.Drawing.ImagingTools;
-using KGySoft.Drawing.ImagingTools.Forms;
+using KGySoft.Drawing.ImagingTools.View;
+using KGySoft.Drawing.ImagingTools.View.Forms;
+using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
 
@@ -113,26 +115,26 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             switch (viewModel.TestObject)
             {
                 case Image image:
-                    using (var frm = new ImageDebuggerVisualizerForm { ImageTypes = viewModel.ImageTypes, Image = (Image)image.Clone() })
+                    using (ImageVisualizerViewModel vm = ViewModelFactory.FromImage((Image)image.Clone(), viewModel.ImageTypes))
                     {
-                        frm.ShowDialog();
-                        if (frm.IsModified)
-                            viewModel.TestObject = frm.Image;
+                        ViewFactory.ShowDialog(vm, this);
+                        if (vm.IsModified)
+                            viewModel.TestObject = vm.Image;
                         break;
                     }
                 case Icon icon:
-                    using (var frm = new ImageDebuggerVisualizerForm { ImageTypes = viewModel.ImageTypes, Icon = (Icon)icon.Clone() })
+                    using (ImageVisualizerViewModel vm = ViewModelFactory.FromIcon((Icon)icon.Clone(), viewModel.ImageTypes))
                     {
-                        frm.ShowDialog();
-                        if (frm.IsModified)
-                            viewModel.TestObject = (object)frm.Icon ?? frm.Image;
+                        ViewFactory.ShowDialog(vm, this);
+                        if (vm.IsModified)
+                            viewModel.TestObject = vm.Icon;
                         break;
                     }
                 case ColorPalette palette:
-                    using (var frm = new PaletteVisualizerForm { Palette = palette.Entries })
+                    using (PaletteVisualizerViewModel vm = ViewModelFactory.FromPalette(palette.Entries))
                     {
-                        frm.ShowDialog();
-                        if (frm.PaletteChanged)
+                        ViewFactory.ShowDialog(vm, this);
+                        if (vm.IsModified)
                         {
                             viewModel.TestObject = null;
                             viewModel.TestObject = palette;
@@ -142,11 +144,11 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
                     }
 
                 case Color color:
-                    using (var frm = new ColorVisualizerForm { Color = color })
+                    using (var vm = ViewModelFactory.FromColor(color))
                     {
-                        frm.ShowDialog();
-                        if (frm.ColorChanged)
-                            viewModel.TestObject = frm.Color;
+                        ViewFactory.ShowDialog(vm, this);
+                        if (vm.IsModified)
+                            viewModel.TestObject = vm.Color;
                         break;
                     }
             }

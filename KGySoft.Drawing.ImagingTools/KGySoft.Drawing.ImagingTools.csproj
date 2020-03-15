@@ -16,6 +16,7 @@
     <Authors>György Kőszeg</Authors>
     <ApplicationIcon>Resources\ImagingTools.ico</ApplicationIcon>
     <OutputType>WinExe</OutputType>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,6 +30,12 @@
 
   <ItemGroup>
     <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="KGySoft.Drawing.ImagingTools.Messages.resx">
+      <LogicalName>KGySoft.Drawing.ImagingTools.Messages.resources</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

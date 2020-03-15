@@ -22,8 +22,10 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-
-using KGySoft.Drawing.ImagingTools.Forms;
+using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.Drawing.ImagingTools.View;
+using KGySoft.Drawing.ImagingTools.View.Forms;
+using KGySoft.Drawing.ImagingTools.ViewModel;
 using KGySoft.Serialization.Binary;
 
 #endregion
@@ -45,7 +47,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// <param name="imageInfo">The image info for debugging returned by <see cref="SerializationHelper.DeserializeImage"/></param>
         /// <param name="isReplaceable">Indicates whether the image is replaceable.</param>
         /// <returns>A non-<see langword="null"/>&#160;instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
-        internal static object DebugImage(object[] imageInfo, bool isReplaceable) => DebugImage(imageInfo, isReplaceable, new ImageDebuggerVisualizerForm());
+        internal static object DebugImage(object[] imageInfo, bool isReplaceable) => DebugImage(imageInfo, isReplaceable, new ImageVisualizerViewModel());
 
         /// <summary>
         /// Shows the debugger for a <see cref="Bitmap"/> or <see cref="Icon"/> object.
@@ -53,11 +55,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// <param name="imageInfo">The image infos for debugging returned by <see cref="SerializationHelper.DeserializeImage"/></param>
         /// <param name="isReplaceable">Indicates whether the image is replaceable.</param>
         /// <returns>A non-<see langword="null"/>&#160;instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
-        internal static object DebugBitmap(object[] imageInfo, bool isReplaceable)
-        {
-            ImageDebuggerVisualizerForm form = new ImageDebuggerVisualizerForm { ImageTypes = ImageTypes.Bitmap | ImageTypes.Icon };
-            return DebugImage(imageInfo, isReplaceable, form);
-        }
+        internal static object DebugBitmap(object[] imageInfo, bool isReplaceable) => DebugImage(imageInfo, isReplaceable, new ImageVisualizerViewModel { ImageTypes = ImageTypes.Bitmap | ImageTypes.Icon });
 
         /// <summary>
         /// Shows the debugger for a <see cref="Metafile"/>.
@@ -65,11 +63,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// <param name="imageInfo">The image infos for debugging returned by <see cref="SerializationHelper.DeserializeImage"/></param>
         /// <param name="isReplaceable">Indicates whether the image is replaceable.</param>
         /// <returns>A non-<see langword="null"/>&#160;instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
-        internal static object DebugMetafile(object[] imageInfo, bool isReplaceable)
-        {
-            ImageDebuggerVisualizerForm form = new ImageDebuggerVisualizerForm { ImageTypes = ImageTypes.Metafile };
-            return DebugImage(imageInfo, isReplaceable, form);
-        }
+        internal static object DebugMetafile(object[] imageInfo, bool isReplaceable) => DebugImage(imageInfo, isReplaceable, new ImageVisualizerViewModel { ImageTypes = ImageTypes.Metafile });
 
         /// <summary>
         /// Shows the debugger for an <see cref="Icon"/> object.
@@ -77,11 +71,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// <param name="imageInfo">The image infos for debugging returned by <see cref="SerializationHelper.DeserializeImage"/></param>
         /// <param name="isReplaceable">Indicates whether the image is replaceable.</param>
         /// <returns>A non-<see langword="null"/>&#160;instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
-        internal static object DebugIcon(object[] imageInfo, bool isReplaceable)
-        {
-            ImageDebuggerVisualizerForm form = new ImageDebuggerVisualizerForm { ImageTypes = ImageTypes.Icon };
-            return DebugImage(imageInfo, isReplaceable, form);
-        }
+        internal static object DebugIcon(object[] imageInfo, bool isReplaceable) => DebugImage(imageInfo, isReplaceable, new ImageVisualizerViewModel { ImageTypes = ImageTypes.Icon });
 
         /// <summary>
         /// Shows the debugger for a <see cref="BitmapData"/> object.
@@ -96,12 +86,12 @@ namespace KGySoft.Drawing.ImagingTools
 
             ImageData imageData = (ImageData)bitmapDataInfo[0];
             string specialInfo = (string)bitmapDataInfo[1];
-            using (BitmapDataDebuggerVisualizerForm frm = new BitmapDataDebuggerVisualizerForm())
+            using (var vm = new BitmapDataVisualizerViewModel())
             {
-                frm.ReadOnly = true;
-                frm.SpecialInfo = specialInfo;
-                frm.InitFromSingleImage(imageData, null);
-                frm.ShowDialog();
+                vm.ReadOnly = true;
+                vm.InfoText = specialInfo;
+                vm.InitFromSingleImage(imageData, null);
+                ViewFactory.ShowDialog(vm, null);
             }
         }
 
@@ -120,14 +110,14 @@ namespace KGySoft.Drawing.ImagingTools
             float[] elements = (float[])graphicsInfo[1];
             Rectangle visibleRect = (Rectangle)graphicsInfo[2];
             string specialInfo = (string)graphicsInfo[3];
-            using (GraphicsDebuggerVisualizerForm frm = new GraphicsDebuggerVisualizerForm())
+            using (var vm = new GraphicsVisualizerViewModel())
             {
-                frm.ReadOnly = true;
-                frm.Transform = new Matrix(elements[0], elements[1], elements[2], elements[3], elements[4], elements[5]);
-                frm.VisibleRect = visibleRect;
-                frm.SpecialInfo = specialInfo;
-                frm.Image = bmp;
-                frm.ShowDialog();
+                vm.ReadOnly = true;
+                vm.Transform = new Matrix(elements[0], elements[1], elements[2], elements[3], elements[4], elements[5]);
+                vm.VisibleRect = visibleRect;
+                vm.InfoText = specialInfo;
+                vm.Image = bmp;
+                ViewFactory.ShowDialog(vm, null);
             }
         }
 
@@ -139,7 +129,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// <returns>A non-<see langword="null"/>&#160;instance, when the palette has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
         internal static object DebugPalette(object obj, bool isReplaceable)
         {
-            using (PaletteVisualizerForm frm = new PaletteVisualizerForm())
+            using (var vm = new PaletteVisualizerViewModel())
             {
                 ColorPalette palette = obj as ColorPalette;
                 IList<Color> colorList = palette?.Entries ?? obj as IList<Color>;
@@ -152,10 +142,10 @@ namespace KGySoft.Drawing.ImagingTools
                     return null;
                 }
 
-                frm.Palette = isReplaceable ? colorList : new ReadOnlyCollection<Color>(colorList);
-                frm.ShowDialog();
+                vm.Palette = isReplaceable ? colorList : new ReadOnlyCollection<Color>(colorList);
+                ViewFactory.ShowDialog(vm, null);
 
-                if (isReplaceable && frm.PaletteChanged)
+                if (isReplaceable && vm.IsModified)
                 {
                     if (palette != null)
                         return new AnyObjectSerializerWrapper(palette, true);
@@ -178,13 +168,13 @@ namespace KGySoft.Drawing.ImagingTools
             if (!(obj is Color))
                 throw new ArgumentException("Object is not a Color", nameof(obj));
 
-            using (ColorVisualizerForm frm = new ColorVisualizerForm())
+            using (var vm = new ColorVisualizerViewModel())
             {
-                frm.ReadOnly = !isReplaceable;
-                frm.Color = (Color)obj;
-                frm.ShowDialog();
-                if (isReplaceable && frm.ColorChanged)
-                    return frm.Color;
+                vm.ReadOnly = !isReplaceable;
+                vm.Color = (Color)obj;
+                ViewFactory.ShowDialog(vm, null);
+                if (isReplaceable && vm.IsModified)
+                    return vm.Color;
             }
 
             return null;
@@ -194,9 +184,9 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Private Methods
 
-        private static object DebugImage(object[] imageInfo, bool isReplaceable, ImageDebuggerVisualizerForm form)
+        private static object DebugImage(object[] imageInfo, bool isReplaceable, ImageVisualizerViewModel viewModel)
         {
-            using (form)
+            using (viewModel)
             {
                 if (imageInfo == null)
                     throw new ArgumentNullException(nameof(imageInfo));
@@ -206,16 +196,16 @@ namespace KGySoft.Drawing.ImagingTools
                 Icon icon = (Icon)imageInfo[0];
                 ImageData mainImage = (ImageData)imageInfo[1];
                 ImageData[] frames = (ImageData[])imageInfo[2];
-                form.ReadOnly = !isReplaceable;
+                viewModel.ReadOnly = !isReplaceable;
 
                 if (frames == null)
-                    form.InitFromSingleImage(mainImage, icon);
+                    viewModel.InitFromSingleImage(mainImage, icon);
                 else
-                    form.InitFromFrames(mainImage, frames, icon);
+                    viewModel.InitFromFrames(mainImage, frames, icon);
 
-                form.ShowDialog();
-                if (isReplaceable && form.IsModified)
-                    return form.GetImageReference();
+                ViewFactory.ShowDialog(viewModel, null);
+                if (isReplaceable && viewModel.IsModified)
+                    return viewModel.GetImageReference();
 
                 return null;
             }

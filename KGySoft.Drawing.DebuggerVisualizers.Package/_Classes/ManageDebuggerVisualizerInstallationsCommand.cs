@@ -18,7 +18,11 @@
 
 using System;
 using System.ComponentModel.Design;
-using KGySoft.Drawing.ImagingTools.Forms;
+using System.Windows.Forms;
+
+using KGySoft.Drawing.ImagingTools.View;
+using KGySoft.Drawing.ImagingTools.ViewModel;
+
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -33,7 +37,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         private static MenuCommand commandInstance;
         private static IServiceProvider serviceProvider;
         private static IVsShell shellService;
-        private static ManageInstallationsForm form;
+        private static ViewModelBase manageInstallationsViewModel;
+        private static Form manageInstallationsView;
 
         #endregion
 
@@ -53,6 +58,14 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             return commandInstance;
         }
 
+        internal static void DestroyCommand()
+        {
+            manageInstallationsView?.Dispose();
+            manageInstallationsView = null;
+            manageInstallationsViewModel?.Dispose();
+            manageInstallationsViewModel = null;
+        }
+
         #endregion
 
         #region Event handlers
@@ -61,24 +74,27 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         {
             try
             {
-                if (form == null || form.IsDisposed)
+                if (manageInstallationsView == null || manageInstallationsView.IsDisposed)
                 {
+                    manageInstallationsViewModel?.Dispose();
 #pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread - invoked in UI thread. And ThreadHelper.ThrowIfNotOnUIThread() just emits another warning.
                     shellService.GetProperty((int)__VSSPROPID2.VSSPROPID_VisualStudioDir, out object documentsDirObj);
 #pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
-                    form = new ManageInstallationsForm();
-                    form.SelectPath(documentsDirObj.ToString());
-                    form.Show();
+                    manageInstallationsViewModel = ViewModelFactory.CreateManageInstallations(documentsDirObj?.ToString());
+                    manageInstallationsView = ViewFactory.CreateView(manageInstallationsViewModel);
+                    manageInstallationsView.Show();
                     return;
                 }
 
-                form.Activate();
-                form.BringToFront();
+                manageInstallationsView.Activate();
+                manageInstallationsView.BringToFront();
 
             }
             catch (Exception ex)
             {
-                form = null;
+                manageInstallationsView?.Dispose();
+                manageInstallationsViewModel?.Dispose();
+                manageInstallationsView = null;
                 ShellDialogs.Error(serviceProvider, $"Unexpected error occurred: {ex.Message}");
             }
         }

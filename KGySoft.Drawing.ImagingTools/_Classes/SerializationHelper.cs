@@ -23,7 +23,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-
+using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Serialization.Binary;
 
 #endregion

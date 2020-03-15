@@ -25,7 +25,7 @@ using System.Threading.Tasks;
 
 using KGySoft.Drawing.DebuggerVisualizers.Package.Properties;
 using KGySoft.Drawing.ImagingTools;
-
+using KGySoft.Drawing.ImagingTools.Model;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -97,6 +97,14 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             DoInitialize(uiShellService, menuCommandService);
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            if (!disposing)
+                return;
+            DestroyCommands();
+        }
+
         #endregion
 
         #region Private Methods
@@ -155,6 +163,12 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         {
             menuCommandService.AddCommand(ExecuteImagingToolsCommand.GetCreateCommand(this));
             menuCommandService.AddCommand(ManageDebuggerVisualizerInstallationsCommand.GetCreateCommand(this, shellService));
+        }
+
+        private void DestroyCommands()
+        {
+            ExecuteImagingToolsCommand.DestroyCommand();
+            ManageDebuggerVisualizerInstallationsCommand.DestroyCommand();
         }
 
         #endregion

@@ -20,6 +20,7 @@ using System;
 using System.IO;
 
 using KGySoft.CoreLibraries;
+using KGySoft.Drawing.ImagingTools.Model;
 
 #endregion
 

@@ -1,0 +1,372 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="General_InternalErrorFormat" xml:space="preserve">
+    <value>Internal Error: {0}</value>
+  </data>
+  <data name="Title_AppName" xml:space="preserve">
+    <value>KGy SOFT Imaging Tools</value>
+  </data>
+  <data name="Title_NoImage" xml:space="preserve">
+    <value>No Image</value>
+  </data>
+  <data name="Title_Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Title_Information" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="Title_Warning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="Title_Confirmation" xml:space="preserve">
+    <value>Confirmation</value>
+  </data>
+  <data name="Title_TypeFormat" xml:space="preserve">
+    <value>Type: {0}</value>
+  </data>
+  <data name="Title_SizeFormat" xml:space="preserve">
+    <value>; Size: {0}</value>
+  </data>
+  <data name="Title_PaletteCountFormat" xml:space="preserve">
+    <value>Palette Count: {0}</value>
+  </data>
+  <data name="Title_VisibleClipFormat" xml:space="preserve">
+    <value>Visible Clip Bounds: {0}</value>
+  </data>
+  <data name="Title_UntransformedVisibleClipFormat" xml:space="preserve">
+    <value>Untransformed Visible Clip Bounds: {0}</value>
+  </data>
+  <data name="Title_ColorFormat" xml:space="preserve">
+    <value>Color: {0}</value>
+  </data>
+  <data name="Text_Files" xml:space="preserve">
+    <value>files</value>
+  </data>
+  <data name="Text_AllFiles" xml:space="preserve">
+    <value>All files</value>
+  </data>
+  <data name="Text_Metafiles" xml:space="preserve">
+    <value>Metafiles</value>
+  </data>
+  <data name="Text_Icon" xml:space="preserve">
+    <value>Icon</value>
+  </data>
+  <data name="Text_Images" xml:space="preserve">
+    <value>Images</value>
+  </data>
+  <data name="Text_FileFormat" xml:space="preserve">
+    <value>File Format</value>
+  </data>
+  <data name="Text_AlphaValueFormat" xml:space="preserve">
+    <value>A: {0}</value>
+  </data>
+  <data name="Text_RedValueFormat" xml:space="preserve">
+    <value>R: {0}</value>
+  </data>
+  <data name="Text_GreenValueFormat" xml:space="preserve">
+    <value>G: {0}</value>
+  </data>
+  <data name="Text_BlueValueFormat" xml:space="preserve">
+    <value>B: {0}</value>
+  </data>
+  <data name="TooltipText_CompoundAnimation" xml:space="preserve">
+    <value>Toggles whether the animation is handled as a single image.
+• When checked, animation will play and saving as GIF saves the whole animation.
+• When not checked, frame navigation will be enabled and saving saves only the selected frame.</value>
+  </data>
+  <data name="TooltipText_CompoundMultiSize" xml:space="preserve">
+    <value>Toggles whether the icon is handled as a multi-resolution image.
+• When checked, always the best fitting image is displayed and saving as Icon saves every image.
+• When not checked, icon images can be explored by navigation and saving saves the selected image only.</value>
+  </data>
+  <data name="TooltipText_CompoundMultiPage" xml:space="preserve">
+    <value>Toggles whether the pages are handled as a compound image.
+• When checked, saving as TIFF saves every page.
+• When not checked, saving saves always the selected page only.</value>
+  </data>
+  <data name="InfoText_ImageFormat" xml:space="preserve">
+    <value>Type: {0}
+Size: {1}
+{6}Pixel Format: {2}
+Raw format: {3}
+Resolution: {4} x {5} dpi</value>
+  </data>
+  <data name="InfoText_UnknownFormat" xml:space="preserve">
+    <value>Unknown format: {0}</value>
+  </data>
+  <data name="InfoText_PaletteFormat" xml:space="preserve">
+    <value>Palette count: {0}</value>
+  </data>
+  <data name="InfoText_FramesCountFormat" xml:space="preserve">
+    <value>Images: {0}</value>
+  </data>
+  <data name="InfoText_CurrentFrameFormat" xml:space="preserve">
+    <value>Current Image: {0}/{1}</value>
+  </data>
+  <data name="InfoText_SelectedIndexFormat" xml:space="preserve">
+    <value>Selected index: {0}</value>
+  </data>
+  <data name="InfoText_ColorFormat" xml:space="preserve">
+    <value>ARGB value: {0:X8} ({0})
+Equivalent known color(s): {1}
+Equivalent System color(s): {2}
+Hue: {3:F0}°
+Saturation: {4:F0}%
+Brightness: {5:F0}%</value>
+  </data>
+  <data name="Notification_Welcome" xml:space="preserve">
+    <value>As a standalone application, KGy SOFT Imaging Tools can be used to load images, save them in various formats, extract frames or pages, examine or change palette entries of indexed images, etc.
+
+But it can be used also as a debugger visualizer for Image, Bitmap, Metafile, BitmapData, Graphics, ColorPalette and Color types.
+See the Configuration button.</value>
+  </data>
+  <data name="Notification_MetafileAsBitmap" xml:space="preserve">
+    <value>The loaded metafile has been converted to Bitmap. To load it as a Metafile, choose the Image Debugger Visualizer instead.</value>
+  </data>
+  <data name="Notification_ImageAsIcon" xml:space="preserve">
+    <value>The loaded image has been converted to Icon</value>
+  </data>
+  <data name="Notification_PaletteCannotBeRestored" xml:space="preserve">
+    <value>The palette of an indexed BitmapData cannot be reconstructed, therefore a default palette is used. You can change palette colors in the menu.</value>
+  </data>
+  <data name="ErrorMessage_FailedToLoadFileFormat" xml:space="preserve">
+    <value>Could not load file due to an error: {0}</value>
+  </data>
+  <data name="ErrorMessage_AnimGifNotSupported" xml:space="preserve">
+    <value>Saving modifications as animated GIF is not supported</value>
+  </data>
+  <data name="ErrorMessage_FailedToSaveImageFormat" xml:space="preserve">
+    <value>Could not save image due to an error: {0}</value>
+  </data>
+  <data name="ErrorMessage_FileDoesNotExistFormat" xml:space="preserve">
+    <value>File does not exist: {0}</value>
+  </data>
+  <data name="ErrorMessage_InstallationFailedFormat" xml:space="preserve">
+    <value>Installation failed: {0}</value>
+  </data>
+  <data name="ErrorMessage_RemoveInstallationFailedFormat" xml:space="preserve">
+    <value>Removing failed: {0}</value>
+  </data>
+  <data name="ConfirmMessage_OverwriteInstallation" xml:space="preserve">
+    <value>Are you sure you want to overwrite this installation?</value>
+  </data>
+  <data name="ConfirmMessage_RemoveInstallation" xml:space="preserve">
+    <value>Are you sure you want to remove this installation?</value>
+  </data>
+  <data name="Installations_CustomDir" xml:space="preserve">
+    <value>&lt;Custom Path...&gt;</value>
+  </data>
+  <data name="Installations_StatusNotInstalled" xml:space="preserve">
+    <value>Not Installed</value>
+  </data>
+  <data name="Installations_StatusUnknown" xml:space="preserve">
+    <value>Unknown version (incompatible runtime?)</value>
+  </data>
+  <data name="Installations_StatusInstalledFormat" xml:space="preserve">
+    <value>Installed: {0}</value>
+  </data>
+  <data name="Installations_StatusInstalledWithRuntimeFormat" xml:space="preserve">
+    <value>Installed: {0} - Runtime: {1}</value>
+  </data>
+  <data name="btnAutoZoom.Text" xml:space="preserve">
+    <value>Auto Zoom</value>
+  </data>
+  <data name="btnOpen.Text" xml:space="preserve">
+    <value>Open...</value>
+  </data>
+  <data name="btnSave.Text" xml:space="preserve">
+    <value>Save As...</value>
+  </data>
+  <data name="btnClear.Text" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="btnColorSettings.Text" xml:space="preserve">
+    <value>Color Settings</value>
+  </data>
+  <data name="miShowPalette.Text" xml:space="preserve">
+    <value>Show Palette...</value>
+  </data>
+  <data name="btnPrev.Text" xml:space="preserve">
+    <value>Previous Image</value>
+  </data>
+  <data name="btnNext.Text" xml:space="preserve">
+    <value>Next Image</value>
+  </data>
+  <data name="btnConfiguration.ToolTipText" xml:space="preserve">
+    <value>Manage Debugger Visualizer Installations...</value>
+  </data>
+  <data name="lblNotification.ToolTip" xml:space="preserve">
+    <value>Click to hide</value>
+  </data>
+  <data name="miBackColor.Text" xml:space="preserve">
+    <value>Back Color</value>
+  </data>
+  <data name="dlgOpen.Title" xml:space="preserve">
+    <value>Open Image</value>
+  </data>
+  <data name="dlgSave.Title" xml:space="preserve">
+    <value>Save Image As...</value>
+  </data>
+  <data name="miBackColorDefault.Text" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="miBackColorWhite.Text" xml:space="preserve">
+    <value>White</value>
+  </data>
+  <data name="miBackColorBlack.Text" xml:space="preserve">
+    <value>Black</value>
+  </data>
+  <data name="btnCrop.Text" xml:space="preserve">
+    <value>Show visible clip area only</value>
+  </data>
+  <data name="btnHighlightClip.Text" xml:space="preserve">
+    <value>Highlight visible clip area</value>
+  </data>
+  <data name="gbPalette.Text" xml:space="preserve">
+    <value>Palette Entries</value>
+  </data>
+  <data name="gbSelectedColor.Text" xml:space="preserve">
+    <value>Selected Color</value>
+  </data>
+  <data name="ManageInstallationsForm.Text" xml:space="preserve">
+    <value>Debugger Visualizer Installations</value>
+  </data>
+  <data name="lblVersions.Text" xml:space="preserve">
+    <value>Identified Visual Studio Versions:</value>
+  </data>
+  <data name="gbInstallation.Text" xml:space="preserve">
+    <value>Installation Status</value>
+  </data>
+  <data name="btnRemove.Text" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="btnInstall.Text" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="lblStatus.Text" xml:space="preserve">
+    <value>Status:</value>
+  </data>
+  <data name="lblPath.Text" xml:space="preserve">
+    <value>&amp;Path:</value>
+  </data>
+  <data name="btnSelectColor.Text" xml:space="preserve">
+    <value>Select Color</value>
+  </data>
+</root>

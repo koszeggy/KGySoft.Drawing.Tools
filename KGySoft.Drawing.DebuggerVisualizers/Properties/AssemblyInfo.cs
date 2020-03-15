@@ -4,8 +4,10 @@ using System.Drawing.Imaging;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+
 using KGySoft.Drawing.DebuggerVisualizers;
 using KGySoft.Drawing.DebuggerVisualizers.Serializers;
+
 using Microsoft.VisualStudio.DebuggerVisualizers;
 
 // General Information about an assembly is controlled through the following 
