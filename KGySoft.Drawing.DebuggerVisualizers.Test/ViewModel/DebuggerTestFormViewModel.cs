@@ -132,9 +132,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
 
         protected override void Dispose(bool disposing)
         {
-            base.Dispose(disposing);
             if (disposing)
                 FreeTestObject();
+            base.Dispose(disposing);
         }
 
         #endregion

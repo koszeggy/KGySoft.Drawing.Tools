@@ -102,10 +102,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-            {
                 CommandBindings?.Dispose();
-                ViewModel.Dispose();
-            }
 
             base.Dispose(disposing);
         }
