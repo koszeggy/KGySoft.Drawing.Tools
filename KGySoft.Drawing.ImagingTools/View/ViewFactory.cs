@@ -44,10 +44,12 @@ namespace KGySoft.Drawing.ImagingTools.View
             {
                 case DefaultViewModel defaultViewModel:
                     return new AppMainForm(defaultViewModel);
-                case ImageVisualizerViewModel imageDebuggerVisualizerViewModel:
-                    return new ImageVisualizerForm(imageDebuggerVisualizerViewModel);
+                case ImageVisualizerViewModel imageVisualizerViewModel:
+                    return new ImageVisualizerForm(imageVisualizerViewModel);
                 case PaletteVisualizerViewModel paletteVisualizerViewModel:
                     return new PaletteVisualizerForm(paletteVisualizerViewModel);
+                case ColorVisualizerViewModel colorVisualizerViewModel:
+                    return new ColorVisualizerForm(colorVisualizerViewModel);
                 case ManageInstallationsViewModel manageInstallationsViewModel:
                     return new ManageInstallationsForm(manageInstallationsViewModel);
                 default:
