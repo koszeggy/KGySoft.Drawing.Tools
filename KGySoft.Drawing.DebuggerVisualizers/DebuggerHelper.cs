@@ -22,15 +22,17 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+
+using KGySoft.Drawing.DebuggerVisualizers.Serializers;
+using KGySoft.Drawing.ImagingTools;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.ImagingTools.View;
-using KGySoft.Drawing.ImagingTools.View.Forms;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 using KGySoft.Serialization.Binary;
 
 #endregion
 
-namespace KGySoft.Drawing.ImagingTools
+namespace KGySoft.Drawing.DebuggerVisualizers
 {
     /// <summary>
     /// Provides debugger methods for debugger visualizers
@@ -163,15 +165,12 @@ namespace KGySoft.Drawing.ImagingTools
         /// <param name="obj">The color object to debug.</param>
         /// <param name="isReplaceable">Indicates whether the color is replaceable.</param>
         /// <returns>A non-<see langword="null"/>&#160;instance, when the color has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
-        internal static object DebugColor(object obj, bool isReplaceable)
+        internal static Color? DebugColor(Color obj, bool isReplaceable)
         {
-            if (!(obj is Color))
-                throw new ArgumentException("Object is not a Color", nameof(obj));
-
-            using (var vm = new ColorVisualizerViewModel())
+            using (ColorVisualizerViewModel vm = ViewModelFactory.FromColor(obj))
             {
                 vm.ReadOnly = !isReplaceable;
-                vm.Color = (Color)obj;
+                vm.Color = obj;
                 ViewFactory.ShowDialog(vm, null);
                 if (isReplaceable && vm.IsModified)
                     return vm.Color;

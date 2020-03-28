@@ -16,6 +16,7 @@
 
 #region Usings
 
+using KGySoft.Drawing.DebuggerVisualizers.Serializers;
 using KGySoft.Drawing.ImagingTools;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;

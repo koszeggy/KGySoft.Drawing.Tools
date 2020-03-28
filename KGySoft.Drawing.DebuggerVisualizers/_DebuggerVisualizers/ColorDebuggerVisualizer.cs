@@ -16,6 +16,7 @@
 
 #region Usings
 
+using System.Drawing;
 using KGySoft.Drawing.ImagingTools;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;
@@ -35,7 +36,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <param name="objectProvider">The object provider.</param>
         protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
         {
-            object replacementObject = DebuggerHelper.DebugColor(objectProvider.GetObject(), objectProvider.IsObjectReplaceable);
+            Color? replacementObject = DebuggerHelper.DebugColor((Color)objectProvider.GetObject(), objectProvider.IsObjectReplaceable);
             if (objectProvider.IsObjectReplaceable && replacementObject != null)
                 objectProvider.ReplaceObject(replacementObject);
         }

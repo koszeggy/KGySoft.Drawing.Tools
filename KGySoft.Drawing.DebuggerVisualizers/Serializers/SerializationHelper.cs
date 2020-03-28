@@ -23,12 +23,14 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+
+using KGySoft.Drawing.ImagingTools;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Serialization.Binary;
 
 #endregion
 
-namespace KGySoft.Drawing.ImagingTools
+namespace KGySoft.Drawing.DebuggerVisualizers.Serializers
 {
     /// <summary>
     /// Provides serialization and deserialization methods for debugger visualizers
