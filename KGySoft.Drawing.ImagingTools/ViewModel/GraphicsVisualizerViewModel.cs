@@ -58,8 +58,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommandState CropCommandState => Get(() => new CommandState());
         internal ICommandState HighlightVisibleClipCommandState => Get(() => new CommandState());
 
-        internal ICommand CropCommand => Get(() => new TargetedCommand<bool>(OnSetCropCommand));
-        internal ICommand HighlightVisibleClipCommand => Get(() => new TargetedCommand<bool>(OnHighlightVisibleClipCommand));
+        internal ICommand CropCommand => Get(() => new SimpleCommand<bool>(OnSetCropCommand));
+        internal ICommand HighlightVisibleClipCommand => Get(() => new SimpleCommand<bool>(OnHighlightVisibleClipCommand));
 
         #endregion
 

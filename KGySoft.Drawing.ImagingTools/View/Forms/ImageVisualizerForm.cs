@@ -176,8 +176,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             // ViewModel commands
             CommandBindings.Add(ViewModel.SetAutoZoomCommand, ViewModel.SetAutoZoomCommandState)
-                .AddSource(btnAutoZoom, nameof(btnAutoZoom.CheckedChanged))
-                .AddTarget(() => btnAutoZoom.Checked);
+                .WithParameter(() => btnAutoZoom.Checked)
+                .AddSource(btnAutoZoom, nameof(btnAutoZoom.CheckedChanged));
             CommandBindings.Add(ViewModel.OpenFileCommand, ViewModel.OpenFileCommandState)
                 .AddSource(btnOpen, nameof(btnOpen.Click));
             CommandBindings.Add(ViewModel.SaveFileCommand, ViewModel.SaveFileCommandState)
@@ -185,8 +185,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.Add(ViewModel.ClearCommand, ViewModel.ClearCommandState)
                 .AddSource(btnClear, nameof(btnClear.Click));
             CommandBindings.Add(ViewModel.SetCompoundViewCommand, ViewModel.SetCompoundViewCommandState)
-                .AddSource(btnCompound, nameof(btnCompound.CheckedChanged))
-                .AddTarget(() => btnCompound.Checked);
+                .WithParameter(() => btnCompound.Checked)
+                .AddSource(btnCompound, nameof(btnCompound.CheckedChanged));
             CommandBindings.Add(ViewModel.AdvanceAnimationCommand, ViewModel.AdvanceAnimationCommandState)
                 .AddSource(timerPlayer, nameof(timerPlayer.Tick));
             CommandBindings.Add(ViewModel.PrevImageCommand, ViewModel.PrevImageCommandState)

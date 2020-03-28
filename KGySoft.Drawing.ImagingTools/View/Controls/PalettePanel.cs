@@ -64,7 +64,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Events
 
-        public event EventHandler SelectedColorChanged;
+        internal event EventHandler SelectedColorChanged;
 
         #endregion
 

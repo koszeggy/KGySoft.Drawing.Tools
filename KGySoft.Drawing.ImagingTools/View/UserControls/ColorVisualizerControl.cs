@@ -52,7 +52,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Events
 
-        public event EventHandler ColorEdited;
+        internal event EventHandler ColorEdited;
 
         #endregion
 

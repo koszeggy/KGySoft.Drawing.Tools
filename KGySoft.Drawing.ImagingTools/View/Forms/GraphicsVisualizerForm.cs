@@ -127,11 +127,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private void InitCommandBindings()
         {
             CommandBindings.Add(VM.CropCommand, VM.CropCommandState)
-                .AddSource(btnCrop, nameof(btnCrop.CheckedChanged))
-                .AddTarget(() => btnCrop.Checked);
+                .WithParameter(() => btnCrop.Checked)
+                .AddSource(btnCrop, nameof(btnCrop.CheckedChanged));
             CommandBindings.Add(VM.HighlightVisibleClipCommand, VM.HighlightVisibleClipCommandState)
-                .AddSource(btnHighlightClip, nameof(btnHighlightClip.CheckedChanged))
-                .AddTarget(() => btnHighlightClip.Checked);
+                .WithParameter(() => btnHighlightClip.Checked)
+                .AddSource(btnHighlightClip, nameof(btnHighlightClip.CheckedChanged));
         }
 
         #endregion

@@ -147,11 +147,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommandState NextImageCommandState => Get(() => new CommandState());
         internal ICommandState ShowPaletteCommandState => Get(() => new CommandState { Enabled = false });
 
-        internal ICommand SetAutoZoomCommand => Get(() => new TargetedCommand<bool>(OnSetAutoZoomCommand));
+        internal ICommand SetAutoZoomCommand => Get(() => new SimpleCommand<bool>(OnSetAutoZoomCommand));
         internal ICommand OpenFileCommand => Get(() => new SimpleCommand(OnOpenFileCommand));
         internal ICommand SaveFileCommand => Get(() => new SimpleCommand(OnSaveFileCommand));
         internal ICommand ClearCommand => Get(() => new SimpleCommand(OnClearCommand));
-        internal ICommand SetCompoundViewCommand => Get(() => new TargetedCommand<bool>(OnSetCompoundViewCommand));
+        internal ICommand SetCompoundViewCommand => Get(() => new SimpleCommand<bool>(OnSetCompoundViewCommand));
         internal ICommand AdvanceAnimationCommand => Get(() => new SimpleCommand(OnAdvanceAnimationCommand));
         internal ICommand PrevImageCommand => Get(() => new SimpleCommand(OnPrevImageCommand));
         internal ICommand NextImageCommand => Get(() => new SimpleCommand(OnNextImageCommand));
