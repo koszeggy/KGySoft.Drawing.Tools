@@ -6,6 +6,26 @@
 ===============================================================================
 
 ~~~~~~~~~
+- v2.1.0:
+~~~~~~~~~
+
+! KGySoft.Drawing.ImagingTools.exe
+==================================
+! When Icon type is being debugged and a non-icon image is opened, then the image will be converted to icon without
+  changing the size (allowing any icon size).
+
++ KGySoft.Drawing.DebuggerVisualizers.dll
+=========================================
+- Serialization of a Metafile with WMF format failed in some cases.
+
+
+- KGySoft.Drawing.DebuggerVisualizers.Test.exe
+==============================================
+- If an image was debugged directly, then after replacing the image and closing the debugger the tester was crashed.
+- A Metafile with WMF format could not be opened by the debugger
+
+
+~~~~~~~~~
 ! v2.0.0:
 ~~~~~~~~~
 

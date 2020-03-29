@@ -44,7 +44,9 @@ namespace KGySoft.Drawing.ImagingTools.View
             {
                 case DefaultViewModel defaultViewModel:
                     return new AppMainForm(defaultViewModel);
-                case ImageVisualizerViewModel imageVisualizerViewModel:
+                case GraphicsVisualizerViewModel graphicsVisualizerViewModel:
+                    return new GraphicsVisualizerForm(graphicsVisualizerViewModel);
+                case ImageVisualizerViewModel imageVisualizerViewModel: // also for BitmapData
                     return new ImageVisualizerForm(imageVisualizerViewModel);
                 case PaletteVisualizerViewModel paletteVisualizerViewModel:
                     return new PaletteVisualizerForm(paletteVisualizerViewModel);

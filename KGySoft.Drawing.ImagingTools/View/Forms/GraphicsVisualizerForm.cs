@@ -53,12 +53,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             ToolStripItem separator = new ToolStripSeparator();
             btnCrop = new ToolStripButton
             {
+                Name = nameof(btnCrop),
                 CheckOnClick = true,
                 DisplayStyle = ToolStripItemDisplayStyle.Image
             };
 
             btnHighlightClip = new ToolStripButton
             {
+                Name = nameof(btnHighlightClip),
                 CheckOnClick = true,
                 DisplayStyle = ToolStripItemDisplayStyle.Image
             };

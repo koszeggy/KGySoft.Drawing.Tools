@@ -347,7 +347,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
             switch (TestObject)
             {
                 case Image _:
-                    debugger = new ImageDebuggerVisualizer();
+                    debugger = !ImageFromFile || AsImage ? new ImageDebuggerVisualizer()
+                        : AsMetafile ? new MetafileDebuggerVisualizer()
+                        : (DialogDebuggerVisualizer)new BitmapDebuggerVisualizer();
                     objectProvider.Serializer = new ImageSerializer();
                     objectProvider.IsObjectReplaceable = true;
                     break;

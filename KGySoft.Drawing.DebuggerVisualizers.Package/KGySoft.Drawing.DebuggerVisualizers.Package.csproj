@@ -64,7 +64,7 @@
     <Compile Include="_Classes\Ids.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="_Classes\ManageDebuggerVisualizerInstallationsCommand.cs" />
-    <Compile Include="_Attributes\PackageRegistrationAyncAttribute.cs" />
+    <Compile Include="_Attributes\PackageRegistrationAsyncAttribute.cs" />
     <Compile Include="_Attributes\ProvideAutoLoadAsyncAttribute.cs" />
     <Compile Include="_Classes\ShellDialogs.cs" />
   </ItemGroup>

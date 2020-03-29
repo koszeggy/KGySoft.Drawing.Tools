@@ -73,6 +73,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private ImageTypes imageTypes = ImageTypes.All;
         private bool isOpenFilterUpToDate;
         private Size currentIconSize;
+        private bool deferSettingCompoundStateImage;
 
         #endregion
 
@@ -254,6 +255,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal override void ViewCreated()
         {
             InitAutoZoom();
+            if (deferSettingCompoundStateImage && SetCompoundViewCommandState.GetValueOrDefault<bool>(stateVisible))
+                SetCompoundViewCommandStateImage();
         }
 
         internal void InitFromSingleImage(ImageData imageData, Icon newIcon)
@@ -359,7 +362,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 // File name is set if the replaced image type can be returned from file.
                 // Null is set if the image should be serialized.
                 SetModified(true);
-                FileName = Notification != null ? path : null;
+                FileName = Notification == null ? path : null;
                 return true;
             }
             catch (Exception ex)
@@ -379,12 +382,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-            {
-                // freeing images (this class works always with copies so disposing images is alright)
-                Image?.Dispose();
-                Icon?.Dispose();
                 FreeFrames();
-            }
 
             base.Dispose(disposing);
         }
@@ -420,9 +418,17 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             else
                 SetCompoundViewCommandState[stateToolTipText] = Res.TooltipTextCompoundMultiPage;
 
-            SetCompoundViewCommandState[stateImage] = GetCompoundViewIconCallback?.Invoke(mainImage.RawFormat);
+            SetCompoundViewCommandStateImage();
             SetCompoundViewCommandState[stateVisible] = true;
             ResetCompoundState();
+        }
+
+        private void SetCompoundViewCommandStateImage()
+        {
+            Func<Guid, Image> callback = GetCompoundViewIconCallback;
+            deferSettingCompoundStateImage = callback == null;
+            if (callback != null)
+                SetCompoundViewCommandState[stateImage] = callback?.Invoke(mainImage.RawFormat);
         }
 
         private void InitSingleImage()
@@ -437,7 +443,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             ImageData image = GetCurrentImage();
             ShowPaletteCommandState.Enabled = image.Palette.Length > 0;
-            SaveFileCommandState.Enabled = ClearCommandState.Enabled = image.Image != null;
+            SaveFileCommandState.Enabled = image.Image != null;
+            ClearCommandState.Enabled = image.Image != null && !ReadOnly;
             UpdateInfo();
         }
 
@@ -488,9 +495,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             Icon icon = null;
 
-            // only icon is allowed or the content seems to be an icon
+            // icon is allowed and the content seems to be an icon
             // (this block is needed only for Windows XP: Icon Bitmap with PNG throws an exception but initializing from icon will succeed)
-            if (appearsIcon || imageTypes == ImageTypes.Icon)
+            if (appearsIcon && (imageTypes & ImageTypes.Icon) == ImageTypes.Icon)
             {
                 try
                 {
@@ -500,6 +507,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 }
                 catch (Exception)
                 {
+                    // failed to open as an icon: fallback to usual paths
                     stream.Position = 0L;
                 }
             }
@@ -508,14 +516,40 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             // bitmaps and metafiles are both allowed
             if ((imageTypes & (ImageTypes.Bitmap | ImageTypes.Metafile)) == (ImageTypes.Bitmap | ImageTypes.Metafile))
-                image = Image.FromStream(stream);
+            {
+                try
+                {
+                    image = Image.FromStream(stream);
+                }
+                catch (Exception e)
+                {
+                    throw new ArgumentException(Res.ErrorMessageNotAnImageStream(e.Message), nameof(stream), e);
+                }
+            }
             // metafiles only
             else if (imageTypes == ImageTypes.Metafile)
-                image = new Metafile(stream);
+            {
+                try
+                {
+                    image = new Metafile(stream);
+                }
+                catch (Exception e)
+                {
+                    throw new ArgumentException(Res.ErrorMessageNotAMetafileStream(e.Message), nameof(stream), e);
+                }
+            }
             // bitmaps or icons
             else if ((imageTypes & (ImageTypes.Bitmap | ImageTypes.Icon)) != ImageTypes.None)
             {
-                image = new Bitmap(stream);
+                try
+                {
+                    image = new Bitmap(stream);
+                }
+                catch (Exception e)
+                {
+                    throw new ArgumentException(Res.ErrorMessageNotABitmapStream(e.Message), nameof(stream), e);
+                }
+
                 if (image.RawFormat.Guid == ImageFormat.MemoryBmp.Guid)
                     Notification = Res.NotificationMetafileAsBitmap;
             }
@@ -527,7 +561,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 if (image.RawFormat.Guid == ImageFormat.Icon.Guid)
                 {
                     stream.Position = 0L;
-                    icon = new Icon(stream);
+                    try
+                    {
+                        icon = new Icon(stream);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new ArgumentException(Res.ErrorMessageNotAnIconStream(e.Message), nameof(stream), e);
+                    }
                 }
 
                 // not icon was loaded, though icon is the only supported format: converting to icon

@@ -115,15 +115,20 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             switch (viewModel.TestObject)
             {
                 case Image image:
-                    using (ImageVisualizerViewModel vm = ViewModelFactory.FromImage((Image)image.Clone(), viewModel.ImageTypes))
+                    using (ImageVisualizerViewModel vm = ViewModelFactory.FromImage(image, viewModel.ImageTypes))
                     {
                         ViewFactory.ShowDialog(vm, this);
                         if (vm.IsModified)
+                        {
+                            if (viewModel.TestObject == vm.Image)
+                                viewModel.TestObject = null;
                             viewModel.TestObject = vm.Image;
+                        }
+
                         break;
                     }
                 case Icon icon:
-                    using (ImageVisualizerViewModel vm = ViewModelFactory.FromIcon((Icon)icon.Clone(), viewModel.ImageTypes))
+                    using (ImageVisualizerViewModel vm = ViewModelFactory.FromIcon(icon, viewModel.ImageTypes))
                     {
                         ViewFactory.ShowDialog(vm, this);
                         if (vm.IsModified)

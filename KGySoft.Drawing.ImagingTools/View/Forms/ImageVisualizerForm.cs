@@ -130,9 +130,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void InitPropertyBindings()
         {
-            // !VM.ReadOnly -> btnClear.Visible, btnOpen.Visible
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.ReadOnly), nameof(Button.Visible), ro => !(bool)ro, btnClear, btnOpen);
-
             // VM.Notification -> lblNotification.Text
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Notification), nameof(Label.Text), lblNotification);
 

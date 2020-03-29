@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: PackageRegistrationAyncAttribute.cs
+//  File: PackageRegistrationAsyncAttribute.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2019 - All Rights Reserved
 //
@@ -31,7 +31,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
     /// in VS2015 and above. Required to support AllowsBackgroundLoading in VS2013.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    internal sealed class PackageRegistrationAyncAttribute : RegistrationAttribute
+    internal sealed class PackageRegistrationAsyncAttribute : RegistrationAttribute
     {
         #region Methods
 

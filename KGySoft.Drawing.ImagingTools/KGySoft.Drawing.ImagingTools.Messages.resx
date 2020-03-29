@@ -264,6 +264,18 @@ See the Configuration button.</value>
   <data name="ErrorMessage_RemoveInstallationFailedFormat" xml:space="preserve">
     <value>Removing failed: {0}</value>
   </data>
+  <data name="ErrorMessage_NotAnImageStreamFormat" xml:space="preserve">
+    <value>Could not open the stream as an Image: {0}</value>
+  </data>
+  <data name="ErrorMessage_NotAMetafileStreamFormat" xml:space="preserve">
+    <value>Could not open the stream as a Metafile: {0}</value>
+  </data>
+  <data name="ErrorMessage_NotABitmapStreamFormat" xml:space="preserve">
+    <value>Could not open the stream as a Bitmap: {0}</value>
+  </data>
+  <data name="ErrorMessage_NotAnIconStreamFormat" xml:space="preserve">
+    <value>Could not open the stream as an Icon: {0}</value>
+  </data>
   <data name="ConfirmMessage_OverwriteInstallation" xml:space="preserve">
     <value>Are you sure you want to overwrite this installation?</value>
   </data>

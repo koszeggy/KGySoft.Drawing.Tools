@@ -43,7 +43,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
     [ProvideBindingPath]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [InstalledProductRegistration("#" + Ids.ResourceTitle, "#" + Ids.ResourceDetails, Ids.Version, IconResourceID = Ids.IconResourceId)]
-    [PackageRegistrationAync]
+    [PackageRegistrationAsync]
     [ProvideAutoLoadAsync]
     public sealed class DebuggerVisualizersPackage : Microsoft.VisualStudio.Shell.Package, IAsyncLoadablePackageInitialize
     {

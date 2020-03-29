@@ -284,6 +284,19 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Removing failed: {0}</summary>
         internal static string ErrorMessageRemoveInstallationFailed(string error) => Get("ErrorMessage_RemoveInstallationFailedFormat", error);
 
+        /// <summary>Could not open the stream as an Image: {0}</summary>
+        internal static string ErrorMessageNotAnImageStream(string message) => Get("ErrorMessage_NotAnImageStreamFormat", message);
+
+        /// <summary>Could not open the stream as a Metafile: {0}</summary>
+        internal static string ErrorMessageNotAMetafileStream(string message) => Get("ErrorMessage_NotAMetafileStreamFormat", message);
+
+        /// <summary>Could not open the stream as a Bitmap: {0}</summary>
+        internal static string ErrorMessageNotABitmapStream(string message) => Get("ErrorMessage_NotABitmapStreamFormat", message);
+
+        /// <summary>Could not open the stream as an Icon: {0}</summary>
+        internal static string ErrorMessageNotAnIconStream(string message) => Get("ErrorMessage_NotAnIconStreamFormat", message);
+
+
         #endregion
 
         #region Installations
