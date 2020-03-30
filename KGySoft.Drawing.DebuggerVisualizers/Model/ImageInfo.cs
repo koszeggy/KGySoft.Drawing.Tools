@@ -1,9 +1,9 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: ImageSerializer.cs
+//  File: ImageInfo.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2019 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2020 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution. If not, then this file is considered as
@@ -17,22 +17,22 @@
 #region Usings
 
 using System.Drawing;
-using System.IO;
 
-using Microsoft.VisualStudio.DebuggerVisualizers;
+using KGySoft.Drawing.ImagingTools.Model;
 
 #endregion
 
-namespace KGySoft.Drawing.DebuggerVisualizers.Serializers
+namespace KGySoft.Drawing.DebuggerVisualizers.Model
 {
-    internal class ImageSerializer : VisualizerObjectSource
+    internal sealed class ImageInfo
     {
-        #region Methods
 
-        /// <summary>
-        /// Called when the object to be debugged is about to be serialized
-        /// </summary>
-        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeImage((Image)target, outgoingData);
+        #region Properties
+
+        internal Icon Icon { get; set; }
+        internal ImageData MainImage { get; set; }
+        internal ImageData[] Frames { get; set; }
+        internal string SpecialInfo { get; set; }
 
         #endregion
     }

@@ -35,15 +35,23 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal static ViewModelBase CreateDefault() => new DefaultViewModel();
         internal static ViewModelBase FromCommandLineArguments(string[] args) => new DefaultViewModel { CommandLineArguments = args };
+        internal static ImageVisualizerViewModel FromImageTypes(ImageTypes imageTypes) => new ImageVisualizerViewModel { ImageTypes = imageTypes };
         internal static ImageVisualizerViewModel FromImage(Image image, ImageTypes imageTypes = ImageTypes.All) => new ImageVisualizerViewModel { Image = image, ImageTypes = imageTypes };
         internal static ImageVisualizerViewModel FromIcon(Icon icon, ImageTypes imageTypes = ImageTypes.Icon) => new ImageVisualizerViewModel { Icon = icon, ImageTypes = imageTypes };
         internal static PaletteVisualizerViewModel FromPalette(IList<Color> palette) => new PaletteVisualizerViewModel { Palette = palette };
         internal static ColorVisualizerViewModel FromColor(Color color) => new ColorVisualizerViewModel { Color = color };
-        internal static ViewModelBase FromBitmapData(Bitmap data, string info) => new BitmapDataVisualizerViewModel { Image = data, InfoText = info };
-        internal static ViewModelBase FromGraphics(Bitmap data, string info, Matrix transform, Rectangle visibleRect) => new GraphicsVisualizerViewModel { Image = data, InfoText = info, Transform = transform, VisibleRect = visibleRect };
+        internal static ViewModelBase FromBitmapData(ImageData data, string info)
+        {
+            var result = new BitmapDataVisualizerViewModel { InfoText = info };
+            result.InitFromSingleImage(data, null);
+            return result;
+        }
+
+        internal static ViewModelBase FromGraphics(Bitmap data, Matrix transform, Rectangle visibleRect, string info)
+            => new GraphicsVisualizerViewModel { Image = data, InfoText = info, Transform = transform, VisibleRect = visibleRect };
+
         internal static ViewModelBase CreateManageInstallations(string hintPath) => new ManageInstallationsViewModel(hintPath);
 
         #endregion
-
     }
 }

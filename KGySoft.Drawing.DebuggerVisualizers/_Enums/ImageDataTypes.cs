@@ -14,7 +14,7 @@
 
 #endregion
 
-namespace KGySoft.Drawing.ImagingTools
+namespace KGySoft.Drawing.DebuggerVisualizers
 {
     internal enum ImageDataTypes : byte
     {
@@ -40,10 +40,5 @@ namespace KGySoft.Drawing.ImagingTools
         /// Animation should built (or imitated) after deserialization.
         /// </summary>
         Animation,
-
-        /// <summary>
-        /// Stream contains an icon, then ImageData instances without images.
-        /// </summary>
-        Icon
     }
 }

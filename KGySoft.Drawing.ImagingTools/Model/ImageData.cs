@@ -96,11 +96,13 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         internal static void FromImage(Image image, bool toSerialize, out ImageData imageData, out ImageData[] frames)
         {
+            Bitmap bmp = image as Bitmap;
+
             // icon
-            if (image is Bitmap && image.RawFormat.Guid == ImageFormat.Icon.Guid)
+            if (bmp != null && bmp.RawFormat.Guid == ImageFormat.Icon.Guid)
             {
-                imageData = new ImageData(image, true);
-                Bitmap[] iconImages = ((Bitmap)image).ExtractBitmaps();
+                imageData = new ImageData(bmp, true);
+                Bitmap[] iconImages = bmp.ExtractBitmaps();
                 if (iconImages.Length == 1)
                 {
                     iconImages[0].Dispose();
@@ -140,7 +142,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
             // single image, unknown dimension or not bitmap
             int frameCount = dimension != null ? image.GetFrameCount(dimension) : 0;
-            if (frameCount <= 1 || dimension == null || !(image is Bitmap))
+            if (frameCount <= 1 || dimension == null || bmp == null)
             {
                 imageData = new ImageData(image, true);
                 frames = null;

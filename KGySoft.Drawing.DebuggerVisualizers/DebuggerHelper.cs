@@ -18,17 +18,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 
+using KGySoft.Drawing.DebuggerVisualizers.Model;
 using KGySoft.Drawing.DebuggerVisualizers.Serializers;
 using KGySoft.Drawing.ImagingTools;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.ImagingTools.View;
 using KGySoft.Drawing.ImagingTools.ViewModel;
-using KGySoft.Serialization.Binary;
 
 #endregion
 
@@ -49,7 +48,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <param name="imageInfo">The image info for debugging returned by <see cref="SerializationHelper.DeserializeImage"/></param>
         /// <param name="isReplaceable">Indicates whether the image is replaceable.</param>
         /// <returns>A non-<see langword="null"/>&#160;instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
-        internal static object DebugImage(object[] imageInfo, bool isReplaceable) => DebugImage(imageInfo, isReplaceable, new ImageVisualizerViewModel());
+        internal static ImageReference DebugImage(ImageInfo imageInfo, bool isReplaceable) => DebugImage(imageInfo, isReplaceable, ImageTypes.All);
 
         /// <summary>
         /// Shows the debugger for a <see cref="Bitmap"/> or <see cref="Icon"/> object.
@@ -57,7 +56,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <param name="imageInfo">The image infos for debugging returned by <see cref="SerializationHelper.DeserializeImage"/></param>
         /// <param name="isReplaceable">Indicates whether the image is replaceable.</param>
         /// <returns>A non-<see langword="null"/>&#160;instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
-        internal static object DebugBitmap(object[] imageInfo, bool isReplaceable) => DebugImage(imageInfo, isReplaceable, new ImageVisualizerViewModel { ImageTypes = ImageTypes.Bitmap | ImageTypes.Icon });
+        internal static ImageReference DebugBitmap(ImageInfo imageInfo, bool isReplaceable) => DebugImage(imageInfo, isReplaceable, ImageTypes.Bitmap | ImageTypes.Icon);
 
         /// <summary>
         /// Shows the debugger for a <see cref="Metafile"/>.
@@ -65,7 +64,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <param name="imageInfo">The image infos for debugging returned by <see cref="SerializationHelper.DeserializeImage"/></param>
         /// <param name="isReplaceable">Indicates whether the image is replaceable.</param>
         /// <returns>A non-<see langword="null"/>&#160;instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
-        internal static object DebugMetafile(object[] imageInfo, bool isReplaceable) => DebugImage(imageInfo, isReplaceable, new ImageVisualizerViewModel { ImageTypes = ImageTypes.Metafile });
+        internal static ImageReference DebugMetafile(ImageInfo imageInfo, bool isReplaceable) => DebugImage(imageInfo, isReplaceable, ImageTypes.Metafile);
 
         /// <summary>
         /// Shows the debugger for an <see cref="Icon"/> object.
@@ -73,89 +72,46 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <param name="imageInfo">The image infos for debugging returned by <see cref="SerializationHelper.DeserializeImage"/></param>
         /// <param name="isReplaceable">Indicates whether the image is replaceable.</param>
         /// <returns>A non-<see langword="null"/>&#160;instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
-        internal static object DebugIcon(object[] imageInfo, bool isReplaceable) => DebugImage(imageInfo, isReplaceable, new ImageVisualizerViewModel { ImageTypes = ImageTypes.Icon });
+        internal static ImageReference DebugIcon(ImageInfo imageInfo, bool isReplaceable) => DebugImage(imageInfo, isReplaceable, ImageTypes.Icon);
 
         /// <summary>
         /// Shows the debugger for a <see cref="BitmapData"/> object.
         /// </summary>
         /// <param name="bitmapDataInfo">The bitmap data infos for debugging returned by <see cref="SerializationHelper.DeserializeBitmapData"/>.</param>
-        internal static void DebugBitmapData(object[] bitmapDataInfo)
+        internal static void DebugBitmapData(ImageInfo bitmapDataInfo)
         {
-            if (bitmapDataInfo == null)
-                throw new ArgumentNullException(nameof(bitmapDataInfo));
-            if (bitmapDataInfo.Length != 2)
-                throw new ArgumentException("2 elements are expected", nameof(bitmapDataInfo));
-
-            ImageData imageData = (ImageData)bitmapDataInfo[0];
-            string specialInfo = (string)bitmapDataInfo[1];
-            using (var vm = new BitmapDataVisualizerViewModel())
-            {
-                vm.ReadOnly = true;
-                vm.InfoText = specialInfo;
-                vm.InitFromSingleImage(imageData, null);
+            using (ViewModelBase vm = ViewModelFactory.FromBitmapData(bitmapDataInfo.MainImage, bitmapDataInfo.SpecialInfo))
                 ViewFactory.ShowDialog(vm, null);
-            }
         }
 
         /// <summary>
         /// Shows the debugger for a <see cref="Graphics"/> object.
         /// </summary>
         /// <param name="graphicsInfo">The graphics infos for debugging returned by <see cref="SerializationHelper.DeserializeGraphics"/>.</param>
-        internal static void DebugGraphics(object[] graphicsInfo)
+        internal static void DebugGraphics(GraphicsInfo graphicsInfo)
         {
-            if (graphicsInfo == null)
-                throw new ArgumentNullException(nameof(graphicsInfo));
-            if (graphicsInfo.Length != 4)
-                throw new ArgumentException("4 elements are expected", nameof(graphicsInfo));
-
-            Bitmap bmp = (Bitmap)graphicsInfo[0];
-            float[] elements = (float[])graphicsInfo[1];
-            Rectangle visibleRect = (Rectangle)graphicsInfo[2];
-            string specialInfo = (string)graphicsInfo[3];
-            using (var vm = new GraphicsVisualizerViewModel())
-            {
-                vm.ReadOnly = true;
-                vm.Transform = new Matrix(elements[0], elements[1], elements[2], elements[3], elements[4], elements[5]);
-                vm.VisibleRect = visibleRect;
-                vm.InfoText = specialInfo;
-                vm.Image = bmp;
+            float[] elements = graphicsInfo.Elements;
+            var matrix = new Matrix(elements[0], elements[1], elements[2], elements[3], elements[4], elements[5]);
+            using (ViewModelBase vm = ViewModelFactory.FromGraphics(graphicsInfo.Data, matrix, graphicsInfo.VisibleRect, graphicsInfo.SpecialInfo))
                 ViewFactory.ShowDialog(vm, null);
-            }
         }
 
         /// <summary>
-        /// Shows the debugger for a <see cref="ColorPalette"/> instance or any <see cref="IList{T}"/> collection with <see cref="Color"/> element.
+        /// Shows the debugger for a <see cref="ColorPalette"/> instance.
         /// </summary>
         /// <param name="obj">The palette object to debug returned by <see cref="SerializationHelper.DeserializeAnyObject"/>.</param>
         /// <param name="isReplaceable">Indicates whether the palette is replaceable.</param>
         /// <returns>A non-<see langword="null"/>&#160;instance, when the palette has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
-        internal static object DebugPalette(object obj, bool isReplaceable)
+        internal static ColorPalette DebugPalette(ColorPalette palette, bool isReplaceable)
         {
-            using (var vm = new PaletteVisualizerViewModel())
-            {
-                ColorPalette palette = obj as ColorPalette;
-                IList<Color> colorList = palette?.Entries ?? obj as IList<Color>;
-                if (colorList == null)
-                    throw new ArgumentException("Object is not a color list", nameof(obj));
-
-                if (colorList.Count == 0)
-                {
-                    Dialogs.InfoMessage("The palette contains no colors. Click OK to exit.");
-                    return null;
-                }
-
-                vm.Palette = isReplaceable ? colorList : new ReadOnlyCollection<Color>(colorList);
-                ViewFactory.ShowDialog(vm, null);
-
-                if (isReplaceable && vm.IsModified)
-                {
-                    if (palette != null)
-                        return new AnyObjectSerializerWrapper(palette, true);
-                    else
-                        return new AnyObjectSerializerWrapper(colorList, true);
-                }
-
+            IList<Color> colorList = palette.Entries;
+            if (colorList.Count == 0)
                 return null;
+            using (PaletteVisualizerViewModel vm = ViewModelFactory.FromPalette(colorList))
+            {
+                vm.ReadOnly = !isReplaceable;
+                ViewFactory.ShowDialog(vm, null);
+                return isReplaceable && vm.IsModified ? palette : null;
             }
         }
 
@@ -183,24 +139,16 @@ namespace KGySoft.Drawing.DebuggerVisualizers
 
         #region Private Methods
 
-        private static object DebugImage(object[] imageInfo, bool isReplaceable, ImageVisualizerViewModel viewModel)
+        private static ImageReference DebugImage(ImageInfo imageInfo, bool isReplaceable, ImageTypes imageTypes)
         {
-            using (viewModel)
+            using (ImageVisualizerViewModel viewModel = ViewModelFactory.FromImageTypes(imageTypes))
             {
-                if (imageInfo == null)
-                    throw new ArgumentNullException(nameof(imageInfo));
-                if (imageInfo.Length != 3)
-                    throw new ArgumentException("3 elements are expected", nameof(imageInfo));
-
-                Icon icon = (Icon)imageInfo[0];
-                ImageData mainImage = (ImageData)imageInfo[1];
-                ImageData[] frames = (ImageData[])imageInfo[2];
                 viewModel.ReadOnly = !isReplaceable;
 
-                if (frames == null)
-                    viewModel.InitFromSingleImage(mainImage, icon);
+                if (imageInfo.Frames == null)
+                    viewModel.InitFromSingleImage(imageInfo.MainImage, imageInfo.Icon);
                 else
-                    viewModel.InitFromFrames(mainImage, frames, icon);
+                    viewModel.InitFromFrames(imageInfo.MainImage, imageInfo.Frames, imageInfo.Icon);
 
                 ViewFactory.ShowDialog(viewModel, null);
                 if (isReplaceable && viewModel.IsModified)

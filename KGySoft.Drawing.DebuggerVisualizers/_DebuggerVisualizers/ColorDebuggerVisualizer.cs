@@ -36,6 +36,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <param name="objectProvider">The object provider.</param>
         protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
         {
+            // Color can be obtained and returned by BinaryFormatter so we can use GetObject and ReplaceObject directly
             Color? replacementObject = DebuggerHelper.DebugColor((Color)objectProvider.GetObject(), objectProvider.IsObjectReplaceable);
             if (objectProvider.IsObjectReplaceable && replacementObject != null)
                 objectProvider.ReplaceObject(replacementObject);

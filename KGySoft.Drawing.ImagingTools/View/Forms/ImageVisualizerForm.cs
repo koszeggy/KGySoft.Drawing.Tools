@@ -136,8 +136,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // VM.PreviewImage -> pbImage.Image
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.PreviewImage), nameof(PictureBox.Image), pbImage);
 
-            // VM.PreviewImage != null -> btnSave.Enabled, btnClear.Enabled
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.PreviewImage), nameof(Button.Enabled), img => img != null, btnSave, btnClear);
+            // VM.PreviewImage != null -> btnSave.Enabled
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.PreviewImage), nameof(Button.Enabled), img => img != null, btnSave);
 
             // VM.TitleCaption -> Text
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.TitleCaption), nameof(Text), this);

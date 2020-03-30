@@ -37,6 +37,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal BitmapDataVisualizerViewModel()
         {
+            ReadOnly = true;
             OpenFileCommandState.Enabled = false;
             ClearCommandState.Enabled = false;
         }

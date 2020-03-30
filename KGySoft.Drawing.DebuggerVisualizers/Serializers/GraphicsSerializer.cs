@@ -16,9 +16,8 @@
 
 #region Usings
 
+using System.Drawing;
 using System.IO;
-
-using KGySoft.Drawing.ImagingTools;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;
 
@@ -33,7 +32,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serializers
         /// <summary>
         /// Called when the object to be debugged is about to be serialized
         /// </summary>
-        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeGraphics(target, outgoingData);
+        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeGraphics((Graphics)target, outgoingData);
 
         #endregion
     }

@@ -1,9 +1,9 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: BitmapDataSerializer.cs
+//  File: IconSerializer.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2019 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2020 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution. If not, then this file is considered as
@@ -16,7 +16,7 @@
 
 #region Usings
 
-using System.Drawing.Imaging;
+using System.Drawing;
 using System.IO;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;
@@ -25,14 +25,14 @@ using Microsoft.VisualStudio.DebuggerVisualizers;
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Serializers
 {
-    internal class BitmapDataSerializer : VisualizerObjectSource
+    internal class IconSerializer : VisualizerObjectSource
     {
         #region Methods
 
         /// <summary>
         /// Called when the object to be debugged is about to be serialized
         /// </summary>
-        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeBitmapData((BitmapData)target, outgoingData);
+        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeIcon((Icon)target, outgoingData);
 
         #endregion
     }

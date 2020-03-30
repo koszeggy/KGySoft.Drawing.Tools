@@ -48,10 +48,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             set
             {
                 origImage = value;
-                UpdateGraphicImage();
-                var visibleRect = VisibleRect;
-                bool commandsEnabled = value != null && (value.Size != visibleRect.Size || visibleRect.Location != Point.Empty);
-                CropCommandState.Enabled = HighlightVisibleClipCommandState.Enabled = commandsEnabled;
+                UpdateImageAndCommands();
             }
         }
 
@@ -67,6 +64,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal GraphicsVisualizerViewModel()
         {
+            ReadOnly = true;
             OpenFileCommandState.Enabled = false;
             ClearCommandState.Enabled = false;
         }
@@ -76,6 +74,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Methods
 
         #region Protected Methods
+
+        protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+            if (e.PropertyName == nameof(VisibleRect))
+                UpdateImageAndCommands();
+        }
 
         internal override void ViewCreated()
         {
@@ -107,11 +112,22 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Private Methods
 
+        private void UpdateImageAndCommands()
+        {
+            var visibleRect = VisibleRect;
+            UpdateGraphicImage();
+            bool commandsEnabled = origImage != null && (origImage.Size != visibleRect.Size || visibleRect.Location != Point.Empty);
+            CropCommandState.Enabled = HighlightVisibleClipCommandState.Enabled = commandsEnabled;
+        }
+
         private void UpdateGraphicImage()
         {
             Image oldImage = base.Image;
-            oldImage?.Dispose();
-            base.Image = null;
+            if (oldImage != null)
+            {
+                oldImage.Dispose();
+                base.Image = null;
+            }
 
             if (origImage == null)
                 return;

@@ -29,4 +29,8 @@
     <ProjectReference Include="..\KGySoft.Drawing.ImagingTools\KGySoft.Drawing.ImagingTools.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="_Enums\" />
+  </ItemGroup>
+
 </Project>

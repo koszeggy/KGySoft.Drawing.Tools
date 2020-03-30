@@ -17,7 +17,7 @@
 #region Usings
 
 using KGySoft.Drawing.DebuggerVisualizers.Serializers;
-using KGySoft.Drawing.ImagingTools;
+using KGySoft.Drawing.ImagingTools.Model;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;
 
@@ -36,7 +36,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <param name="objectProvider">The object provider.</param>
         protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
         {
-            object replacementObject = DebuggerHelper.DebugMetafile(SerializationHelper.DeserializeImage(objectProvider.GetData()), objectProvider.IsObjectReplaceable);
+            ImageReference replacementObject = DebuggerHelper.DebugMetafile(SerializationHelper.DeserializeImage(objectProvider.GetData()), objectProvider.IsObjectReplaceable);
             if (objectProvider.IsObjectReplaceable && replacementObject != null)
                 objectProvider.ReplaceObject(replacementObject);
         }

@@ -344,6 +344,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
             var windowService = new TestWindowService();
             var objectProvider = new TestObjectProvider(TestObject);
             DialogDebuggerVisualizer debugger;
+
+            // TODO: visualizer and serializer by reflection
             switch (TestObject)
             {
                 case Image _:
@@ -355,7 +357,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
                     break;
                 case Icon _:
                     debugger = new IconDebuggerVisualizer();
-                    objectProvider.Serializer = new ImageSerializer();
+                    objectProvider.Serializer = new IconSerializer();
                     objectProvider.IsObjectReplaceable = true;
                     break;
                 case Graphics _:

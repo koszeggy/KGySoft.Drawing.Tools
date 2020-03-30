@@ -164,7 +164,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Protected Properties
 
         protected override bool AffectsModifiedState(string propertyName) => false; // set explicitly
-        protected virtual bool IsPaletteReadOnly => mainImage.RawFormat == ImageFormat.Icon.Guid;
+        protected virtual bool IsPaletteReadOnly => mainImage.RawFormat == ImageFormat.Icon.Guid || ReadOnly;
 
         #endregion
 
@@ -998,10 +998,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (currentImage == null || currentImage.Palette.Length == 0)
                 return;
 
-            bool isReadOnly = IsPaletteReadOnly;
-            IList<Color> colors = isReadOnly ? (IList<Color>)Array.AsReadOnly(currentImage.Palette) : currentImage.Palette;
-            using (PaletteVisualizerViewModel vmPalette = ViewModelFactory.FromPalette(colors))
+            using (PaletteVisualizerViewModel vmPalette = ViewModelFactory.FromPalette(currentImage.Palette))
             {
+                vmPalette.ReadOnly = IsPaletteReadOnly;
                 ShowChildViewCallback?.Invoke(vmPalette);
                 if (!vmPalette.IsModified)
                     return;

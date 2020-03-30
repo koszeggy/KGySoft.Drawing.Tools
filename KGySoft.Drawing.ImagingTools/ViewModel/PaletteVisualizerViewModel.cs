@@ -53,11 +53,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             base.OnPropertyChanged(e);
 
-            // Palette -> ReadOnly, Count
+            // Palette -> Count
             if (e.PropertyName == nameof(Palette))
             {
                 var palette = (IList<Color>)e.NewValue;
-                ReadOnly = palette == null || !(palette is Color[]) && palette.IsReadOnly;
                 Count = palette?.Count ?? 0;
             }
         }

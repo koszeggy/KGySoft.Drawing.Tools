@@ -62,7 +62,7 @@ using Microsoft.VisualStudio.DebuggerVisualizers;
     Description = "KGy SOFT Metafile Debugger Visualizer")]
 
 // Icon
-[assembly: DebuggerVisualizer(typeof(IconDebuggerVisualizer), typeof(ImageSerializer),
+[assembly: DebuggerVisualizer(typeof(IconDebuggerVisualizer), typeof(IconSerializer),
     Target = typeof(Icon),
     Description = "KGy SOFT Icon Debugger Visualizer")]
 

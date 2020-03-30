@@ -16,9 +16,10 @@
 
 #region Usings
 
+using System.Drawing.Imaging;
 using KGySoft.Drawing.DebuggerVisualizers.Serializers;
 using KGySoft.Drawing.ImagingTools;
-
+using KGySoft.Serialization.Binary;
 using Microsoft.VisualStudio.DebuggerVisualizers;
 
 #endregion
@@ -36,9 +37,10 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <param name="objectProvider">The object provider.</param>
         protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
         {
-            object replacementObject = DebuggerHelper.DebugPalette(SerializationHelper.DeserializeAnyObject(objectProvider.GetData()), objectProvider.IsObjectReplaceable);
-            if (objectProvider.IsObjectReplaceable && replacementObject != null)
-                objectProvider.ReplaceObject(replacementObject);
+            // ColorPalette is not serializable by default so obtaining/replacing it by serializable wrappers
+            ColorPalette newPalette = DebuggerHelper.DebugPalette((ColorPalette)SerializationHelper.DeserializeAnyObject(objectProvider.GetData()), objectProvider.IsObjectReplaceable);
+            if (objectProvider.IsObjectReplaceable && newPalette != null)
+                objectProvider.ReplaceObject(new AnyObjectSerializerWrapper(newPalette, true));
         }
 
         #endregion
