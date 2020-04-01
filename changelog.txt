@@ -17,7 +17,7 @@
 + KGySoft.Drawing.DebuggerVisualizers.dll
 =========================================
 - Serialization of a Metafile with WMF format failed in some cases.
-
++ The DebuggerHelper class have been made public, which provides public access for some debugger visualizers
 
 - KGySoft.Drawing.DebuggerVisualizers.Test.exe
 ==============================================

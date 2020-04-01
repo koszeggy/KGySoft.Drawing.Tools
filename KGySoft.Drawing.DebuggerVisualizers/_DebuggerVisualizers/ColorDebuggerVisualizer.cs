@@ -17,6 +17,7 @@
 #region Usings
 
 using System.Drawing;
+using System.Windows.Forms;
 using KGySoft.Drawing.ImagingTools;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;

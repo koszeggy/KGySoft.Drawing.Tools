@@ -17,7 +17,6 @@
 #region Usings
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -37,9 +36,74 @@ namespace KGySoft.Drawing.DebuggerVisualizers
     /// <summary>
     /// Provides debugger methods for debugger visualizers
     /// </summary>
-    internal static class DebuggerHelper
+    public static class DebuggerHelper
     {
         #region Methods
+
+        #region Public Methods
+
+        public static Image DebugImage(Image image, bool isReplaceable = true, IntPtr ownerWindowHandle = default)
+        {
+            using (IViewModel<Image> vm = ViewModelFactory.FromImage(image, !isReplaceable))
+            {
+                ViewFactory.ShowDialog(vm, ownerWindowHandle);
+                return vm.IsModified ? vm.GetEditedModel() : null;
+            }
+        }
+
+        public static Icon DebugIcon(Icon icon, bool isReplaceable = true, IntPtr ownerWindowHandle = default)
+        {
+            using (IViewModel<Icon> vm = ViewModelFactory.FromIcon(icon, !isReplaceable))
+            {
+                ViewFactory.ShowDialog(vm, ownerWindowHandle);
+                return vm.IsModified ? vm.GetEditedModel() : null;
+            }
+        }
+
+        /// <summary>
+        /// Shows the debugger for a <see cref="ColorPalette"/> instance.
+        /// </summary>
+        /// <param name="palette">The palette object to debug.</param>
+        /// <param name="isReplaceable">Indicates whether the palette is replaceable.</param>
+        /// <returns>A non-<see langword="null"/>&#160;instance, when the palette has been edited; otherwise, <see langword="null"/>.</returns>
+        public static ColorPalette DebugPalette(ColorPalette palette, bool isReplaceable, IntPtr ownerWindowHandle = default)
+        {
+            Color[] entries = palette.Entries;
+            if (entries.Length == 0)
+                return null;
+            using (IViewModel<Color[]> vm = ViewModelFactory.FromPalette(entries, !isReplaceable))
+            {
+                ViewFactory.ShowDialog(vm, ownerWindowHandle);
+                if (!isReplaceable)
+                    return null;
+                Color[] result = vm.GetEditedModel();
+
+                // TODO: if length can change use the code from OnShowPaletteCommand
+                Debug.Assert(result.Length == entries.Length, "Palette length is not expected to be changed");
+                result.CopyTo(palette.Entries, 0);
+                return palette;
+            }
+        }
+
+        /// <summary>
+        /// Shows the debugger for a <see cref="Color"/> instance.
+        /// </summary>
+        /// <param name="color">The color object to debug.</param>
+        /// <param name="isReplaceable">Indicates whether the color is replaceable.</param>
+        /// <returns>A non-<see langword="null"/>&#160;instance, when the color has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
+        internal static Color? DebugColor(Color color, bool isReplaceable = true, IntPtr ownerWindowHandle = default)
+        {
+            using (IViewModel<Color> vm = ViewModelFactory.FromColor(color, !isReplaceable))
+            {
+                ViewFactory.ShowDialog(vm, ownerWindowHandle);
+                if (isReplaceable && vm.IsModified)
+                    return vm.GetEditedModel();
+            }
+
+            return null;
+        }
+
+        #endregion
 
         #region Internal Methods
 
@@ -105,49 +169,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers
             var matrix = new Matrix(elements[0], elements[1], elements[2], elements[3], elements[4], elements[5]);
             using (IViewModel vm = ViewModelFactory.FromGraphics(graphicsInfo.Data, matrix, graphicsInfo.VisibleRect, graphicsInfo.SpecialInfo))
                 ViewFactory.ShowDialog(vm);
-        }
-
-        /// <summary>
-        /// Shows the debugger for a <see cref="ColorPalette"/> instance.
-        /// </summary>
-        /// <param name="obj">The palette object to debug returned by <see cref="SerializationHelper.DeserializeAnyObject"/>.</param>
-        /// <param name="isReplaceable">Indicates whether the palette is replaceable.</param>
-        /// <returns>A non-<see langword="null"/>&#160;instance, when the palette has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
-        internal static ColorPalette DebugPalette(ColorPalette palette, bool isReplaceable)
-        {
-            Color[] entries = palette.Entries;
-            if (entries.Length == 0)
-                return null;
-            using (IViewModel<Color[]> vm = ViewModelFactory.FromPalette(entries, !isReplaceable))
-            {
-                ViewFactory.ShowDialog(vm);
-                if (!isReplaceable)
-                    return null;
-                Color[] result = vm.GetEditedModel();
-
-                // TODO: if can change use the code from OnShowPaletteCommand
-                Debug.Assert(result.Length == entries.Length, "Palette length is not expected to be changed");
-                result.CopyTo(palette.Entries, 0);
-                return palette;
-            }
-        }
-
-        /// <summary>
-        /// Shows the debugger for a <see cref="Color"/> instance.
-        /// </summary>
-        /// <param name="color">The color object to debug.</param>
-        /// <param name="isReplaceable">Indicates whether the color is replaceable.</param>
-        /// <returns>A non-<see langword="null"/>&#160;instance, when the color has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
-        internal static Color? DebugColor(Color color, bool isReplaceable)
-        {
-            using (IViewModel<Color> vm = ViewModelFactory.FromColor(color, !isReplaceable))
-            {
-                ViewFactory.ShowDialog(vm);
-                if (isReplaceable && vm.IsModified)
-                    return vm.GetEditedModel();
-            }
-
-            return null;
         }
 
         #endregion

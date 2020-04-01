@@ -50,7 +50,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             InitializeComponent();
 
             commandBindings.Add(viewModel.DebugCommand).AddSource(btnViewByDebugger, nameof(btnViewByDebugger.Click));
-            commandBindings.Add(OnViewDirectCommand).AddSource(btnViewDirect, nameof(btnViewDirect.Click));
+            commandBindings.Add(viewModel.DirectViewCommand).AddSource(btnViewDirect, nameof(btnViewDirect.Click));
             commandBindings.Add<EventArgs>(OnSelectFileCommand)
                 .AddSource(tbFile, nameof(tbFile.Click))
                 .AddSource(tbFile, nameof(tbFile.DoubleClick));
@@ -111,55 +111,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
         #endregion
 
         #region Private Methods
-
-        private void OnViewDirectCommand()
-        {
-            switch (viewModel.TestObject)
-            {
-                case Image image:
-                    using (IViewModel<Image> vm = ViewModelFactory.FromImage(image, viewModel.ImageTypes))
-                    {
-                        ViewFactory.ShowDialog(vm, this);
-                        if (vm.IsModified)
-                        {
-                            if (viewModel.TestObject == vm.GetEditedModel())
-                                viewModel.TestObject = null;
-                            viewModel.TestObject = vm.GetEditedModel();
-                        }
-
-                        break;
-                    }
-                case Icon icon:
-                    using (IViewModel<Icon> vm = ViewModelFactory.FromIcon(icon, viewModel.ImageTypes))
-                    {
-                        ViewFactory.ShowDialog(vm, this);
-                        if (vm.IsModified)
-                            viewModel.TestObject = vm.GetEditedModel();
-                        break;
-                    }
-                case ColorPalette palette:
-                    using (IViewModel<IList<Color>> vm = ViewModelFactory.FromPalette(palette.Entries, false))
-                    {
-                        ViewFactory.ShowDialog(vm, this);
-                        if (vm.IsModified)
-                        {
-                            viewModel.TestObject = null;
-                            viewModel.TestObject = vm.GetEditedModel();
-                        }
-
-                        break;
-                    }
-
-                case Color color:
-                    using (IViewModel<Color> vm = ViewModelFactory.FromColor(color, false))
-                    {
-                        ViewFactory.ShowDialog(vm, this);
-                        if (vm.IsModified)
-                            viewModel.TestObject = vm.GetEditedModel();
-                        break;
-                    }
-            }
-        }
 
         private void OnSelectFileCommand(ICommandSource<EventArgs> source)
         {

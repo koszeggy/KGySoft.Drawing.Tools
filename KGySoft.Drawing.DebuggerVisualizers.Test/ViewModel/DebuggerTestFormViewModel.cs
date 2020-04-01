@@ -85,6 +85,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
         internal bool AsMetafile { get => Get<bool>(); set => Set(value); }
         internal bool AsIcon { get => Get<bool>(); set => Set(value); }
 
+        // TODO: UI
+        internal bool AsReadOnly { get => Get<bool>(); set => Set(value); }
+
         internal object TestObject { get => Get<object>(); set => Set(value); }
         internal Image PreviewImage { get => Get<Image>(); set => Set(value); }
         internal ImageTypes ImageTypes { get => Get<ImageTypes>(); set => Set(value); }
@@ -97,6 +100,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
         internal Func<Rectangle> GetClipCallback { get => Get<Func<Rectangle>>(); set => Set(value); }
 
         internal ICommand DebugCommand => Get(() => new SimpleCommand(OnDebugCommand));
+        internal ICommand DirectViewCommand => Get(() => new SimpleCommand(OnViewDirectCommand));
 
         #endregion
 
@@ -335,6 +339,48 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
                     bitmap.UnlockBits(bitmapData);
                     bitmap.Dispose();
                     BitmapDataOwner = null;
+                    break;
+            }
+        }
+
+        private void OnViewDirectCommand()
+        {
+            IntPtr hwnd = GetHwndCallback?.Invoke() ?? IntPtr.Zero;
+
+            switch (TestObject)
+            {
+                case Image image:
+                    Image newImage = DebuggerHelper.DebugImage(image, AsReadOnly, hwnd);
+                    if (newImage != null)
+                    {
+                        if (TestObject == newImage)
+                            TestObject = null;
+                        TestObject = newImage;
+                    }
+
+                    break;
+
+                case Icon icon:
+                    Icon newIcon = DebuggerHelper.DebugIcon(icon, AsReadOnly, hwnd);
+                    if (newIcon != null)
+                        TestObject = newIcon;
+                    break;
+
+                case ColorPalette palette:
+                    ColorPalette newPalette = DebuggerHelper.DebugPalette(palette, AsReadOnly, hwnd);
+                    if (newPalette != null)
+                    {
+                        if (TestObject == newPalette)
+                            TestObject = null;
+                        TestObject = newPalette;
+                    }
+
+                    break;
+
+                case Color color:
+                    Color? newColor = DebuggerHelper.DebugColor(color, AsReadOnly, hwnd);
+                    if (newColor != null)
+                        TestObject = newColor;
                     break;
             }
         }

@@ -17,7 +17,6 @@
 #region Usings
 
 using System;
-using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.View.Forms;
 using KGySoft.Drawing.ImagingTools.ViewModel;
@@ -59,10 +58,10 @@ namespace KGySoft.Drawing.ImagingTools.View
             }
         }
 
-        internal static void ShowDialog(IViewModel viewModel, IWin32Window owner = null)
+        internal static void ShowDialog(IViewModel viewModel, IntPtr ownerWindowHandle = default)
         {
             using (IView form = CreateView(viewModel))
-                form.ShowDialog(owner);
+                form.ShowDialog(ownerWindowHandle == IntPtr.Zero ? null : new OwnerWindowHandle(ownerWindowHandle));
         }
 
         #endregion

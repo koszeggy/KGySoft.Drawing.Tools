@@ -56,8 +56,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             return result;
         }
 
-        internal static IViewModel<Image> FromImage(Image image, ImageTypes imageTypes = ImageTypes.All) => new ImageVisualizerViewModel { Image = image, ImageTypes = imageTypes };
-        internal static IViewModel<Icon> FromIcon(Icon icon, ImageTypes imageTypes = ImageTypes.Icon) => new ImageVisualizerViewModel { Icon = icon, ImageTypes = imageTypes };
+        internal static IViewModel<Image> FromImage(Image image, bool readOnly = false, ImageTypes imageTypes = ImageTypes.All) => new ImageVisualizerViewModel { Image = image, ReadOnly = readOnly, ImageTypes = imageTypes };
+        internal static IViewModel<Icon> FromIcon(Icon icon, bool readOnly = false) => new ImageVisualizerViewModel { Icon = icon, ReadOnly = readOnly, ImageTypes = ImageTypes.Icon };
         internal static IViewModel<Color[]> FromPalette(Color[] palette, bool isReadOnly) => new PaletteVisualizerViewModel { Palette = palette, ReadOnly = isReadOnly };
         internal static IViewModel<Color> FromColor(Color color, bool isReadOnly) => new ColorVisualizerViewModel { Color = color, ReadOnly = isReadOnly };
         internal static IViewModel FromBitmapData(ImageData data, string info)

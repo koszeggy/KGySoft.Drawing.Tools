@@ -98,7 +98,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected virtual void ApplyViewModel() => VM.ViewCreated();
 
-        protected void ShowChildView(IViewModel vm) => ViewFactory.ShowDialog(vm, this);
+        protected void ShowChildView(IViewModel vm) => ViewFactory.ShowDialog(vm, Handle);
 
         protected override void Dispose(bool disposing)
         {
