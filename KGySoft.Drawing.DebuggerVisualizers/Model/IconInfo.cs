@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: GraphicsInfo.cs
+//  File: IconInfo.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2020 - All Rights Reserved
 //
@@ -18,18 +18,19 @@
 
 using System.Drawing;
 
+using KGySoft.Drawing.ImagingTools.Model;
+
 #endregion
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Model
 {
-    internal sealed class GraphicsInfo
+    internal sealed class IconInfo
     {
         #region Properties
 
-        internal Bitmap Data { get; set; }
-        internal float[] Elements { get; set; }
-        internal Rectangle VisibleRect { get; set; }
-        internal string SpecialInfo { get; set; }
+        internal Icon Icon { get; set; }
+        internal ImageData CompoundIcon { get; set; }
+        internal ImageData[] IconImages { get; set; }
 
         #endregion
     }

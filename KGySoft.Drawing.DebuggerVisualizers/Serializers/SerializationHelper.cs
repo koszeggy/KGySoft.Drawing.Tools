@@ -238,7 +238,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serializers
         /// Deserializes <see cref="Icon"/> from the stream
         /// that can be passed to <see cref="DebuggerHelper.DebugImage(ImageInfo,bool)"/>, <see cref="DebuggerHelper.DebugBitmap"/> or <see cref="DebuggerHelper.DebugMetafile"/>.
         /// </summary>
-        internal static ImageInfo DeserializeIcon(Stream stream)
+        internal static IconInfo DeserializeIcon(Stream stream)
         {
             BinaryReader br = new BinaryReader(stream);
 
@@ -259,7 +259,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serializers
 
             // single icon image
             if (len == 1)
-                return new ImageInfo { Icon = icon, MainImage = compoundIcon };
+                return new IconInfo { Icon = icon, CompoundIcon = compoundIcon };
 
             // multi-image icon
             len--;
@@ -271,13 +271,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serializers
                 iconImages[i].Image = iconBitmaps[i];
             }
 
-            return new ImageInfo { Icon = icon, MainImage = compoundIcon, Frames = iconImages };
+            return new IconInfo { Icon = icon, CompoundIcon = compoundIcon, IconImages = iconImages };
         }
 
         /// <summary>
         /// Deserializes <see cref="BitmapData"/> infos from the stream that can be passed to <see cref="DebuggerHelper.DebugBitmapData"/>.
         /// </summary>
-        internal static ImageInfo DeserializeBitmapData(Stream stream)
+        internal static BitmapDataInfo DeserializeBitmapData(Stream stream)
         {
             BinaryReader br = new BinaryReader(stream);
 
@@ -287,7 +287,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serializers
             // 2. Info
             string specialInfo = br.ReadString();
 
-            return new ImageInfo { MainImage = imageData, SpecialInfo = specialInfo };
+            return new BitmapDataInfo { Data = imageData, SpecialInfo = specialInfo };
         }
 
         /// <summary>

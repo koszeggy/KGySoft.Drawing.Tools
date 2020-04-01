@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: GraphicsInfo.cs
+//  File: IViewModel`1.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2020 - All Rights Reserved
 //
@@ -14,22 +14,19 @@
 
 #endregion
 
-#region Usings
-
-using System.Drawing;
-
-#endregion
-
-namespace KGySoft.Drawing.DebuggerVisualizers.Model
+namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal sealed class GraphicsInfo
+    internal interface IViewModel<out TModel> : IViewModel
     {
         #region Properties
 
-        internal Bitmap Data { get; set; }
-        internal float[] Elements { get; set; }
-        internal Rectangle VisibleRect { get; set; }
-        internal string SpecialInfo { get; set; }
+        bool IsModified { get; }
+
+        #endregion
+
+        #region Methods
+
+        TModel GetEditedModel();
 
         #endregion
     }

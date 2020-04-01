@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: GraphicsInfo.cs
+//  File: IView.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2020 - All Rights Reserved
 //
@@ -16,21 +16,17 @@
 
 #region Usings
 
-using System.Drawing;
+using System;
+using System.Windows.Forms;
 
 #endregion
 
-namespace KGySoft.Drawing.DebuggerVisualizers.Model
+namespace KGySoft.Drawing.ImagingTools.View
 {
-    internal sealed class GraphicsInfo
+    internal interface IView : IDisposable
     {
-        #region Properties
-
-        internal Bitmap Data { get; set; }
-        internal float[] Elements { get; set; }
-        internal Rectangle VisibleRect { get; set; }
-        internal string SpecialInfo { get; set; }
-
-        #endregion
+        void ShowDialog(IWin32Window owner = null);
+        bool IsDisposed { get; }
+        void Show();
     }
 }

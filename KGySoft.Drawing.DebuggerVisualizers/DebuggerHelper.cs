@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -72,16 +73,26 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <param name="imageInfo">The image infos for debugging returned by <see cref="SerializationHelper.DeserializeImage"/></param>
         /// <param name="isReplaceable">Indicates whether the image is replaceable.</param>
         /// <returns>A non-<see langword="null"/>&#160;instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
-        internal static ImageReference DebugIcon(ImageInfo imageInfo, bool isReplaceable) => DebugImage(imageInfo, isReplaceable, ImageTypes.Icon);
+        internal static ImageReference DebugIcon(IconInfo iconInfo, bool isReplaceable)
+        {
+            using (IViewModel<ImageReference> viewModel = ViewModelFactory.FromIconData(!isReplaceable, iconInfo.Icon, iconInfo.CompoundIcon, iconInfo.IconImages))
+            {
+                ViewFactory.ShowDialog(viewModel);
+                if (isReplaceable && viewModel.IsModified)
+                    return viewModel.GetEditedModel();
+
+                return null;
+            }
+        }
 
         /// <summary>
         /// Shows the debugger for a <see cref="BitmapData"/> object.
         /// </summary>
         /// <param name="bitmapDataInfo">The bitmap data infos for debugging returned by <see cref="SerializationHelper.DeserializeBitmapData"/>.</param>
-        internal static void DebugBitmapData(ImageInfo bitmapDataInfo)
+        internal static void DebugBitmapData(BitmapDataInfo bitmapDataInfo)
         {
-            using (ViewModelBase vm = ViewModelFactory.FromBitmapData(bitmapDataInfo.MainImage, bitmapDataInfo.SpecialInfo))
-                ViewFactory.ShowDialog(vm, null);
+            using (IViewModel vm = ViewModelFactory.FromBitmapData(bitmapDataInfo.Data, bitmapDataInfo.SpecialInfo))
+                ViewFactory.ShowDialog(vm);
         }
 
         /// <summary>
@@ -92,8 +103,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         {
             float[] elements = graphicsInfo.Elements;
             var matrix = new Matrix(elements[0], elements[1], elements[2], elements[3], elements[4], elements[5]);
-            using (ViewModelBase vm = ViewModelFactory.FromGraphics(graphicsInfo.Data, matrix, graphicsInfo.VisibleRect, graphicsInfo.SpecialInfo))
-                ViewFactory.ShowDialog(vm, null);
+            using (IViewModel vm = ViewModelFactory.FromGraphics(graphicsInfo.Data, matrix, graphicsInfo.VisibleRect, graphicsInfo.SpecialInfo))
+                ViewFactory.ShowDialog(vm);
         }
 
         /// <summary>
@@ -104,32 +115,36 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <returns>A non-<see langword="null"/>&#160;instance, when the palette has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
         internal static ColorPalette DebugPalette(ColorPalette palette, bool isReplaceable)
         {
-            IList<Color> colorList = palette.Entries;
-            if (colorList.Count == 0)
+            Color[] entries = palette.Entries;
+            if (entries.Length == 0)
                 return null;
-            using (PaletteVisualizerViewModel vm = ViewModelFactory.FromPalette(colorList))
+            using (IViewModel<Color[]> vm = ViewModelFactory.FromPalette(entries, !isReplaceable))
             {
-                vm.ReadOnly = !isReplaceable;
-                ViewFactory.ShowDialog(vm, null);
-                return isReplaceable && vm.IsModified ? palette : null;
+                ViewFactory.ShowDialog(vm);
+                if (!isReplaceable)
+                    return null;
+                Color[] result = vm.GetEditedModel();
+
+                // TODO: if can change use the code from OnShowPaletteCommand
+                Debug.Assert(result.Length == entries.Length, "Palette length is not expected to be changed");
+                result.CopyTo(palette.Entries, 0);
+                return palette;
             }
         }
 
         /// <summary>
         /// Shows the debugger for a <see cref="Color"/> instance.
         /// </summary>
-        /// <param name="obj">The color object to debug.</param>
+        /// <param name="color">The color object to debug.</param>
         /// <param name="isReplaceable">Indicates whether the color is replaceable.</param>
         /// <returns>A non-<see langword="null"/>&#160;instance, when the color has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
-        internal static Color? DebugColor(Color obj, bool isReplaceable)
+        internal static Color? DebugColor(Color color, bool isReplaceable)
         {
-            using (ColorVisualizerViewModel vm = ViewModelFactory.FromColor(obj))
+            using (IViewModel<Color> vm = ViewModelFactory.FromColor(color, !isReplaceable))
             {
-                vm.ReadOnly = !isReplaceable;
-                vm.Color = obj;
-                ViewFactory.ShowDialog(vm, null);
+                ViewFactory.ShowDialog(vm);
                 if (isReplaceable && vm.IsModified)
-                    return vm.Color;
+                    return vm.GetEditedModel();
             }
 
             return null;
@@ -141,18 +156,12 @@ namespace KGySoft.Drawing.DebuggerVisualizers
 
         private static ImageReference DebugImage(ImageInfo imageInfo, bool isReplaceable, ImageTypes imageTypes)
         {
-            using (ImageVisualizerViewModel viewModel = ViewModelFactory.FromImageTypes(imageTypes))
+            using (IViewModel<ImageReference> viewModel = ViewModelFactory.FromImageData(imageTypes, !isReplaceable, imageInfo.MainImage, imageInfo.Frames))
             {
-                viewModel.ReadOnly = !isReplaceable;
 
-                if (imageInfo.Frames == null)
-                    viewModel.InitFromSingleImage(imageInfo.MainImage, imageInfo.Icon);
-                else
-                    viewModel.InitFromFrames(imageInfo.MainImage, imageInfo.Frames, imageInfo.Icon);
-
-                ViewFactory.ShowDialog(viewModel, null);
+                ViewFactory.ShowDialog(viewModel);
                 if (isReplaceable && viewModel.IsModified)
-                    return viewModel.GetImageReference();
+                    return viewModel.GetEditedModel();
 
                 return null;
             }

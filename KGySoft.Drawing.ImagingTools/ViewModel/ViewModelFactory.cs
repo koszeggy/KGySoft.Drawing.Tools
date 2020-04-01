@@ -16,10 +16,10 @@
 
 #region Usings
 
-using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+
+using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
 
 #endregion
@@ -33,24 +33,44 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
     {
         #region Methods
 
-        internal static ViewModelBase CreateDefault() => new DefaultViewModel();
-        internal static ViewModelBase FromCommandLineArguments(string[] args) => new DefaultViewModel { CommandLineArguments = args };
-        internal static ImageVisualizerViewModel FromImageTypes(ImageTypes imageTypes) => new ImageVisualizerViewModel { ImageTypes = imageTypes };
-        internal static ImageVisualizerViewModel FromImage(Image image, ImageTypes imageTypes = ImageTypes.All) => new ImageVisualizerViewModel { Image = image, ImageTypes = imageTypes };
-        internal static ImageVisualizerViewModel FromIcon(Icon icon, ImageTypes imageTypes = ImageTypes.Icon) => new ImageVisualizerViewModel { Icon = icon, ImageTypes = imageTypes };
-        internal static PaletteVisualizerViewModel FromPalette(IList<Color> palette) => new PaletteVisualizerViewModel { Palette = palette };
-        internal static ColorVisualizerViewModel FromColor(Color color) => new ColorVisualizerViewModel { Color = color };
-        internal static ViewModelBase FromBitmapData(ImageData data, string info)
+        internal static IViewModel CreateDefault() => new DefaultViewModel();
+        internal static IViewModel FromCommandLineArguments(string[] args) => new DefaultViewModel { CommandLineArguments = args };
+        
+        internal static IViewModel<ImageReference> FromImageData(ImageTypes imageTypes, bool isReadOnly, ImageData mainImage, params ImageData[] frames)
+        {
+            var result = new ImageVisualizerViewModel { ImageTypes = imageTypes, ReadOnly = isReadOnly };
+            if (frames.IsNullOrEmpty())
+                result.InitFromSingleImage(mainImage, null);
+            else
+                result.InitFromFrames(mainImage, frames, null);
+            return result;
+        }
+
+        internal static IViewModel<ImageReference> FromIconData(bool isReadOnly, Icon underlyingIcon, ImageData compoundIcon, params ImageData[] iconImages)
+        {
+            var result = new ImageVisualizerViewModel { ImageTypes = ImageTypes.Icon, ReadOnly = isReadOnly };
+            if (iconImages.IsNullOrEmpty())
+                result.InitFromSingleImage(compoundIcon, underlyingIcon);
+            else
+                result.InitFromFrames(compoundIcon, iconImages, underlyingIcon);
+            return result;
+        }
+
+        internal static IViewModel<Image> FromImage(Image image, ImageTypes imageTypes = ImageTypes.All) => new ImageVisualizerViewModel { Image = image, ImageTypes = imageTypes };
+        internal static IViewModel<Icon> FromIcon(Icon icon, ImageTypes imageTypes = ImageTypes.Icon) => new ImageVisualizerViewModel { Icon = icon, ImageTypes = imageTypes };
+        internal static IViewModel<Color[]> FromPalette(Color[] palette, bool isReadOnly) => new PaletteVisualizerViewModel { Palette = palette, ReadOnly = isReadOnly };
+        internal static IViewModel<Color> FromColor(Color color, bool isReadOnly) => new ColorVisualizerViewModel { Color = color, ReadOnly = isReadOnly };
+        internal static IViewModel FromBitmapData(ImageData data, string info)
         {
             var result = new BitmapDataVisualizerViewModel { InfoText = info };
             result.InitFromSingleImage(data, null);
             return result;
         }
 
-        internal static ViewModelBase FromGraphics(Bitmap data, Matrix transform, Rectangle visibleRect, string info)
+        internal static IViewModel FromGraphics(Bitmap data, Matrix transform, Rectangle visibleRect, string info)
             => new GraphicsVisualizerViewModel { Image = data, InfoText = info, Transform = transform, VisibleRect = visibleRect };
 
-        internal static ViewModelBase CreateManageInstallations(string hintPath) => new ManageInstallationsViewModel(hintPath);
+        internal static IViewModel CreateManageInstallations(string hintPath) => new ManageInstallationsViewModel(hintPath);
 
         #endregion
     }

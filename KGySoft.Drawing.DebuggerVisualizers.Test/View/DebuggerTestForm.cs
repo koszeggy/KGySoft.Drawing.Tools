@@ -17,6 +17,7 @@
 #region Usings
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
@@ -24,6 +25,7 @@ using System.Windows.Forms;
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel;
 using KGySoft.Drawing.ImagingTools;
+using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.ImagingTools.View;
 using KGySoft.Drawing.ImagingTools.View.Forms;
 using KGySoft.Drawing.ImagingTools.ViewModel;
@@ -115,45 +117,45 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             switch (viewModel.TestObject)
             {
                 case Image image:
-                    using (ImageVisualizerViewModel vm = ViewModelFactory.FromImage(image, viewModel.ImageTypes))
+                    using (IViewModel<Image> vm = ViewModelFactory.FromImage(image, viewModel.ImageTypes))
                     {
                         ViewFactory.ShowDialog(vm, this);
                         if (vm.IsModified)
                         {
-                            if (viewModel.TestObject == vm.Image)
+                            if (viewModel.TestObject == vm.GetEditedModel())
                                 viewModel.TestObject = null;
-                            viewModel.TestObject = vm.Image;
+                            viewModel.TestObject = vm.GetEditedModel();
                         }
 
                         break;
                     }
                 case Icon icon:
-                    using (ImageVisualizerViewModel vm = ViewModelFactory.FromIcon(icon, viewModel.ImageTypes))
+                    using (IViewModel<Icon> vm = ViewModelFactory.FromIcon(icon, viewModel.ImageTypes))
                     {
                         ViewFactory.ShowDialog(vm, this);
                         if (vm.IsModified)
-                            viewModel.TestObject = vm.Icon;
+                            viewModel.TestObject = vm.GetEditedModel();
                         break;
                     }
                 case ColorPalette palette:
-                    using (PaletteVisualizerViewModel vm = ViewModelFactory.FromPalette(palette.Entries))
+                    using (IViewModel<IList<Color>> vm = ViewModelFactory.FromPalette(palette.Entries, false))
                     {
                         ViewFactory.ShowDialog(vm, this);
                         if (vm.IsModified)
                         {
                             viewModel.TestObject = null;
-                            viewModel.TestObject = palette;
+                            viewModel.TestObject = vm.GetEditedModel();
                         }
 
                         break;
                     }
 
                 case Color color:
-                    using (var vm = ViewModelFactory.FromColor(color))
+                    using (IViewModel<Color> vm = ViewModelFactory.FromColor(color, false))
                     {
                         ViewFactory.ShowDialog(vm, this);
                         if (vm.IsModified)
-                            viewModel.TestObject = vm.Color;
+                            viewModel.TestObject = vm.GetEditedModel();
                         break;
                     }
             }

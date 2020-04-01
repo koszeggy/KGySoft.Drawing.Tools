@@ -38,7 +38,7 @@ namespace KGySoft.Drawing.ImagingTools.View
         /// </summary>
         /// <param name="viewModel">The view model to create the view for.</param>
         /// <returns></returns>
-        internal static Form CreateView(ViewModelBase viewModel)
+        internal static IView CreateView(IViewModel viewModel)
         {
             switch (viewModel)
             {
@@ -59,9 +59,9 @@ namespace KGySoft.Drawing.ImagingTools.View
             }
         }
 
-        internal static void ShowDialog(ViewModelBase viewModel, IWin32Window owner)
+        internal static void ShowDialog(IViewModel viewModel, IWin32Window owner = null)
         {
-            using (Form form = CreateView(viewModel))
+            using (IView form = CreateView(viewModel))
                 form.ShowDialog(owner);
         }
 

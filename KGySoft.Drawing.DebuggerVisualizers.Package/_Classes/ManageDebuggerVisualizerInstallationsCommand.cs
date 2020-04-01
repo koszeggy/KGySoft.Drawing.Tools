@@ -18,7 +18,6 @@
 
 using System;
 using System.ComponentModel.Design;
-using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.View;
 using KGySoft.Drawing.ImagingTools.ViewModel;
@@ -37,8 +36,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         private static MenuCommand commandInstance;
         private static IServiceProvider serviceProvider;
         private static IVsShell shellService;
-        private static ViewModelBase manageInstallationsViewModel;
-        private static Form manageInstallationsView;
+        private static IViewModel manageInstallationsViewModel;
+        private static IView manageInstallationsView;
 
         #endregion
 
@@ -82,13 +81,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 #pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
                     manageInstallationsViewModel = ViewModelFactory.CreateManageInstallations(documentsDirObj?.ToString());
                     manageInstallationsView = ViewFactory.CreateView(manageInstallationsViewModel);
-                    manageInstallationsView.Show();
-                    return;
                 }
 
-                manageInstallationsView.Activate();
-                manageInstallationsView.BringToFront();
-
+                manageInstallationsView.Show();
             }
             catch (Exception ex)
             {

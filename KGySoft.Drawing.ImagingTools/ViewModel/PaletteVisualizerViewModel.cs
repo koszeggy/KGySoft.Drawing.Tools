@@ -25,13 +25,13 @@ using KGySoft.ComponentModel;
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal class PaletteVisualizerViewModel : ViewModelBase
+    internal class PaletteVisualizerViewModel : ViewModelBase, IViewModel<Color[]>
     {
         #region Properties
 
         #region Internal Properties
 
-        internal IList<Color> Palette { get => Get<IList<Color>>(); set => Set(value); }
+        internal Color[] Palette { get => Get<Color[]>(); set => Set(value.Clone()); }
         internal int Count { get => Get<int>(); set => Set(value); }
         internal bool ReadOnly { get => Get<bool>(); set => Set(value); }
 
@@ -60,6 +60,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 Count = palette?.Count ?? 0;
             }
         }
+
+        #endregion
+
+        #region Explicitly Implemented Interface Properties
+
+        Color[] IViewModel<Color[]>.GetEditedModel() => Palette;
 
         #endregion
 

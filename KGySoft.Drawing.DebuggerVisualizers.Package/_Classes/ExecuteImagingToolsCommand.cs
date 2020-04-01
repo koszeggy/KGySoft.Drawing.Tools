@@ -18,7 +18,6 @@
 
 using System;
 using System.ComponentModel.Design;
-using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.View;
 using KGySoft.Drawing.ImagingTools.ViewModel;
@@ -35,8 +34,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
         private static MenuCommand commandInstance;
         private static IServiceProvider serviceProvider;
-        private static ViewModelBase imagingToolsViewModel;
-        private static Form imagingToolsView;
+        private static IViewModel imagingToolsViewModel;
+        private static IView imagingToolsView;
 
         #endregion
 
@@ -76,13 +75,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
                     imagingToolsViewModel?.Dispose();
                     imagingToolsViewModel = ViewModelFactory.CreateDefault();
                     imagingToolsView = ViewFactory.CreateView(imagingToolsViewModel);
-                    imagingToolsView.Show();
-                    return;
                 }
 
-                imagingToolsView.Activate();
-                imagingToolsView.BringToFront();
-
+                imagingToolsView.Show();
             }
             catch (Exception ex)
             {

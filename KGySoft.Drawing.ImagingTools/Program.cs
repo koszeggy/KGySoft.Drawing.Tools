@@ -18,9 +18,9 @@
 
 using System;
 using System.Windows.Forms;
+
 using KGySoft.Drawing.ImagingTools.View;
 using KGySoft.Drawing.ImagingTools.ViewModel;
-using KGySoft.Resources;
 
 #endregion
 
@@ -39,7 +39,7 @@ namespace KGySoft.Drawing.ImagingTools
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             using var viewModel = ViewModelFactory.FromCommandLineArguments(args);
-            using var view = ViewFactory.CreateView(viewModel);
+            using var view = (Form)ViewFactory.CreateView(viewModel);
             Application.Run(view);
         }
 

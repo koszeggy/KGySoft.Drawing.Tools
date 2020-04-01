@@ -22,12 +22,18 @@ using System.Drawing;
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal class ColorVisualizerViewModel : ViewModelBase
+    internal class ColorVisualizerViewModel : ViewModelBase, IViewModel<Color>
     {
         #region Properties
 
         internal Color Color { get => Get<Color>(); set => Set(value); }
         internal bool ReadOnly { get => Get<bool>(); set => Set(value); }
+
+        #endregion
+
+        #region Methods
+
+        public Color GetEditedModel() => Color;
 
         #endregion
     }

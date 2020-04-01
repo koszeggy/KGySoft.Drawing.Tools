@@ -18,6 +18,7 @@
 
 using System;
 using System.Windows.Forms;
+
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
@@ -25,7 +26,7 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
-    internal class MvvmBaseForm<TViewModel> : BaseForm
+    internal class MvvmBaseForm<TViewModel> : BaseForm, IView
         where TViewModel : IDisposable // BUG: Actually should be ViewModelBase but WinForms designer with derived forms dies from that
     {
         #region Properties
@@ -97,7 +98,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected virtual void ApplyViewModel() => VM.ViewCreated();
 
-        protected void ShowChildView(ViewModelBase vm) => ViewFactory.ShowDialog(vm, this);
+        protected void ShowChildView(IViewModel vm) => ViewFactory.ShowDialog(vm, this);
 
         protected override void Dispose(bool disposing)
         {
@@ -119,6 +120,23 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 //    userControl.ApplyViewModel(viewModel);
                 //else
                     ApplyViewModel(child, viewModel);
+            }
+        }
+
+        #endregion
+
+        #region Explicit Interface Implementations
+
+        void IView.ShowDialog(IWin32Window owner) => ShowDialog(owner);
+
+        void IView.Show()
+        {
+            if (!Visible)
+                Show();
+            else
+            {
+                Activate();
+                BringToFront();
             }
         }
 

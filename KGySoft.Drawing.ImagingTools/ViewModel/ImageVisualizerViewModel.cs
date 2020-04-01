@@ -44,7 +44,7 @@ using Encoder = System.Drawing.Imaging.Encoder;
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal class ImageVisualizerViewModel : ViewModelBase
+    internal class ImageVisualizerViewModel : ViewModelBase, IViewModel<ImageReference>, IViewModel<Image>, IViewModel<Icon>
     {
         #region Constants
 
@@ -207,50 +207,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Instance Methods
 
         #region Internal Methods
-
-        internal ImageReference GetImageReference()
-        {
-            Debug.Assert(IsModified, "Image reference is requested when image has not been changed");
-            string fileName = FileName;
-
-            // the image has been edited and should be saved
-            if (IsModified && fileName == null)
-            {
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    if (underlyingIcon != null)
-                    {
-                        SaveIcon(ms);
-                        return new ImageReference(imageTypes == ImageTypes.Icon ? imageTypes : ImageTypes.Bitmap, ms.ToArray());
-                    }
-
-                    Debug.Assert(!(mainImage.Image is Metafile), "A metafile is not expected to be changed");
-                    if (frames != null && frames.Length > 1)
-                    {
-                        if (mainImage.RawFormat == ImageFormat.Tiff.Guid)
-                            GetTiffPages().SaveAsMultipageTiff(ms);
-                        else
-                            SaveAnimGif(ms);
-                    }
-                    else
-                        mainImage.Image.Save(ms, ImageFormat.Png);
-
-                    return new ImageReference(ImageTypes.Bitmap, ms.ToArray());
-                }
-            }
-
-            // passing image by filename (even when image has been cleared)
-            ImageTypes imageType;
-            if (underlyingIcon != null && imageTypes == ImageTypes.Icon)
-                imageType = ImageTypes.Icon;
-            else if (mainImage?.Image == null)
-                imageType = ImageTypes.None;
-            else if (mainImage.Image is Metafile)
-                imageType = ImageTypes.Metafile;
-            else
-                imageType = ImageTypes.Bitmap;
-            return new ImageReference(imageType, FileName);
-        }
 
         internal override void ViewCreated()
         {
@@ -893,6 +849,58 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 AutoZoom = true;
         }
 
+        private ImageReference GetImageReference()
+        {
+            Debug.Assert(IsModified, "Image reference is requested when image has not been changed");
+            string fileName = FileName;
+
+            // the image has been edited and should be saved
+            if (IsModified && fileName == null)
+            {
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    if (underlyingIcon != null)
+                    {
+                        SaveIcon(ms);
+                        return new ImageReference(imageTypes == ImageTypes.Icon ? imageTypes : ImageTypes.Bitmap, ms.ToArray());
+                    }
+
+                    Debug.Assert(!(mainImage.Image is Metafile), "A metafile is not expected to be changed");
+                    if (frames != null && frames.Length > 1)
+                    {
+                        if (mainImage.RawFormat == ImageFormat.Tiff.Guid)
+                            GetTiffPages().SaveAsMultipageTiff(ms);
+                        else
+                            SaveAnimGif(ms);
+                    }
+                    else
+                        mainImage.Image.Save(ms, ImageFormat.Png);
+
+                    return new ImageReference(ImageTypes.Bitmap, ms.ToArray());
+                }
+            }
+
+            // passing image by filename (even when image has been cleared)
+            ImageTypes imageType;
+            if (underlyingIcon != null && imageTypes == ImageTypes.Icon)
+                imageType = ImageTypes.Icon;
+            else if (mainImage?.Image == null)
+                imageType = ImageTypes.None;
+            else if (mainImage.Image is Metafile)
+                imageType = ImageTypes.Metafile;
+            else
+                imageType = ImageTypes.Bitmap;
+            return new ImageReference(imageType, FileName);
+        }
+
+        #endregion
+
+        #region Explicit Interface Implementations
+
+        ImageReference IViewModel<ImageReference>.GetEditedModel() => GetImageReference();
+        Image IViewModel<Image>.GetEditedModel() => Image;
+        Icon IViewModel<Icon>.GetEditedModel() => Icon;
+
         #endregion
 
         #region Command Handlers
@@ -998,27 +1006,32 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (currentImage == null || currentImage.Palette.Length == 0)
                 return;
 
-            using (PaletteVisualizerViewModel vmPalette = ViewModelFactory.FromPalette(currentImage.Palette))
+            using (IViewModel<Color[]> vmPalette = ViewModelFactory.FromPalette(currentImage.Palette, IsPaletteReadOnly))
             {
-                vmPalette.ReadOnly = IsPaletteReadOnly;
                 ShowChildViewCallback?.Invoke(vmPalette);
                 if (!vmPalette.IsModified)
                     return;
 
                 // apply changes
                 ColorPalette palette = currentImage.Image.Palette;
-                if (palette.Entries.Length != currentImage.Palette.Length)
+                Color[] newPalette = vmPalette.GetEditedModel();
+
+                // even if the length of the palette is not edited it can happen that the preview image is ARGB32
+                if (palette.Entries.Length != newPalette.Length)
                 {
-                    Image newImage = currentImage.Image.ConvertPixelFormat(currentImage.PixelFormat, currentImage.Palette);
+                    Image newImage = currentImage.Image.ConvertPixelFormat(currentImage.PixelFormat, newPalette);
                     currentImage.Image.Dispose();
                     PreviewImage = currentImage.Image = newImage;
                     palette = newImage.Palette;
                 }
+                else
+                {
+                    for (int i = 0; i < newPalette.Length; i++)
+                        palette.Entries[i] = newPalette[i];
+                }
 
-                for (int i = 0; i < currentImage.Palette.Length; i++)
-                    palette.Entries[i] = currentImage.Palette[i];
-
-                currentImage.Image.Palette = palette;
+                currentImage.Image.Palette = palette; // the preview changes only if we apply the palette
+                currentImage.Palette = palette.Entries; // the actual palette will be taken from here
                 FileName = null;
                 SetModified(true);
                 UpdatePreviewImageCallback.Invoke();
@@ -1027,7 +1040,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnManageInstallationsCommand()
         {
-            using (var viewModel = ViewModelFactory.CreateManageInstallations(Files.GetExecutingPath()))
+            using (IViewModel viewModel = ViewModelFactory.CreateManageInstallations(Files.GetExecutingPath()))
                 ShowChildViewCallback?.Invoke(viewModel);
         }
 

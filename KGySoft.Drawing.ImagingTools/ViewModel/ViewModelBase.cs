@@ -27,7 +27,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
     /// <summary>
     /// Represents a base class for ViewModel types in this project.
     /// </summary>
-    internal abstract class ViewModelBase : ObservableObjectBase
+    internal abstract class ViewModelBase : ObservableObjectBase, IViewModel
     {
         #region Properties
 
@@ -35,7 +35,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal Action<string> ShowWarningCallback { get => Get<Action<string>>(); set => Set(value); }
         internal Action<string> ShowInfoCallback { get => Get<Action<string>>(); set => Set(value); }
         internal Func<string, bool> ConfirmCallback { get => Get<Func<string, bool>>(); set => Set(value); }
-        internal Action<ViewModelBase> ShowChildViewCallback { get => Get<Action<ViewModelBase>>(); set => Set(value); }
+        internal Action<IViewModel> ShowChildViewCallback { get => Get<Action<IViewModel>>(); set => Set(value); }
 
         #endregion
 
