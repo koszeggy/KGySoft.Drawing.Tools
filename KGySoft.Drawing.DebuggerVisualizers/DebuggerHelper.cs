@@ -51,6 +51,24 @@ namespace KGySoft.Drawing.DebuggerVisualizers
             }
         }
 
+        public static Bitmap DebugBitmap(Bitmap bitmap, bool isReplaceable = true, IntPtr ownerWindowHandle = default)
+        {
+            using (IViewModel<Image> vm = ViewModelFactory.FromBitmap(bitmap, !isReplaceable))
+            {
+                ViewFactory.ShowDialog(vm, ownerWindowHandle);
+                return vm.IsModified ? vm.GetEditedModel() as Bitmap : null;
+            }
+        }
+
+        public static Metafile DebugMetafile(Metafile metafile, bool isReplaceable = true, IntPtr ownerWindowHandle = default)
+        {
+            using (IViewModel<Image> vm = ViewModelFactory.FromMetafile(metafile, !isReplaceable))
+            {
+                ViewFactory.ShowDialog(vm, ownerWindowHandle);
+                return vm.IsModified ? vm.GetEditedModel() as Metafile : null;
+            }
+        }
+
         public static Icon DebugIcon(Icon icon, bool isReplaceable = true, IntPtr ownerWindowHandle = default)
         {
             using (IViewModel<Icon> vm = ViewModelFactory.FromIcon(icon, !isReplaceable))
@@ -91,7 +109,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <param name="color">The color object to debug.</param>
         /// <param name="isReplaceable">Indicates whether the color is replaceable.</param>
         /// <returns>A non-<see langword="null"/>&#160;instance, when the color has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
-        internal static Color? DebugColor(Color color, bool isReplaceable = true, IntPtr ownerWindowHandle = default)
+        public static Color? DebugColor(Color color, bool isReplaceable = true, IntPtr ownerWindowHandle = default)
         {
             using (IViewModel<Color> vm = ViewModelFactory.FromColor(color, !isReplaceable))
             {
@@ -166,7 +184,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         internal static void DebugGraphics(GraphicsInfo graphicsInfo)
         {
             float[] elements = graphicsInfo.Elements;
-            var matrix = new Matrix(elements[0], elements[1], elements[2], elements[3], elements[4], elements[5]);
+            using var matrix = new Matrix(elements[0], elements[1], elements[2], elements[3], elements[4], elements[5]);
             using (IViewModel vm = ViewModelFactory.FromGraphics(graphicsInfo.Data, matrix, graphicsInfo.VisibleRect, graphicsInfo.SpecialInfo))
                 ViewFactory.ShowDialog(vm);
         }

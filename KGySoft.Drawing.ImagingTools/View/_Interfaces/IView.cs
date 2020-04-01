@@ -23,7 +23,7 @@ using System.Windows.Forms;
 
 namespace KGySoft.Drawing.ImagingTools.View
 {
-    internal interface IView : IDisposable
+    public interface IView : IDisposable
     {
         void ShowDialog(IWin32Window owner = null);
         bool IsDisposed { get; }

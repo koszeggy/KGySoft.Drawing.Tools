@@ -23,14 +23,14 @@ using System.Windows.Forms;
 
 namespace KGySoft.Drawing.ImagingTools.View
 {
-    internal static class Dialogs
+    public static class Dialogs
     {
         #region Methods
 
-        internal static void ErrorMessage(string message) => MessageBox.Show(message, Res.TitleError, MessageBoxButtons.OK, MessageBoxIcon.Error);
-        internal static void InfoMessage(string message) => MessageBox.Show(message, Res.TitleInformation, MessageBoxButtons.OK, MessageBoxIcon.Information);
-        internal static void WarningMessage(string message) => MessageBox.Show(message, Res.TitleWarning, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        internal static bool ConfirmMessage(string message) => MessageBox.Show(message, Res.TitleConfirmation, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
+        public static void ErrorMessage(string message) => MessageBox.Show(message, Res.TitleError, MessageBoxButtons.OK, MessageBoxIcon.Error);
+        public static void InfoMessage(string message) => MessageBox.Show(message, Res.TitleInformation, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        public static void WarningMessage(string message) => MessageBox.Show(message, Res.TitleWarning, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        public static bool ConfirmMessage(string message) => MessageBox.Show(message, Res.TitleConfirmation, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
 
         #endregion
     }

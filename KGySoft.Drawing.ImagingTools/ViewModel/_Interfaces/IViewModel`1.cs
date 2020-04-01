@@ -16,7 +16,7 @@
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal interface IViewModel<out TModel> : IViewModel
+    public interface IViewModel<out TModel> : IViewModel
     {
         #region Properties
 

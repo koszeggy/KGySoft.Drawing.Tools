@@ -27,7 +27,7 @@ using KGySoft.Reflection;
 
 namespace KGySoft.Drawing.ImagingTools.Model
 {
-    internal sealed class InstallationInfo : MarshalByRefObject
+    public sealed class InstallationInfo : MarshalByRefObject
     {
         #region InitializerSandbox class
 
@@ -57,10 +57,19 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #region Properties
 
+        #region Public Properties
+
+        public bool Installed { get; }
+        public Version Version { get; set; }
+
+        #endregion
+
+        #region Internal Properties
+
         internal string Path { get; }
-        internal bool Installed { get; }
-        internal Version Version { get; set; }
         internal string RuntimeVersion { get; set; }
+
+        #endregion
 
         #endregion
 

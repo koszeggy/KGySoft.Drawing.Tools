@@ -28,7 +28,7 @@ namespace KGySoft.Drawing.ImagingTools.View
     /// <summary>
     /// Represents a class that can create view instances.
     /// </summary>
-    internal static class ViewFactory
+    public static class ViewFactory
     {
         #region Methods
 
@@ -37,7 +37,7 @@ namespace KGySoft.Drawing.ImagingTools.View
         /// </summary>
         /// <param name="viewModel">The view model to create the view for.</param>
         /// <returns></returns>
-        internal static IView CreateView(IViewModel viewModel)
+        public static IView CreateView(IViewModel viewModel)
         {
             switch (viewModel)
             {
@@ -58,7 +58,7 @@ namespace KGySoft.Drawing.ImagingTools.View
             }
         }
 
-        internal static void ShowDialog(IViewModel viewModel, IntPtr ownerWindowHandle = default)
+        public static void ShowDialog(IViewModel viewModel, IntPtr ownerWindowHandle = default)
         {
             using (IView form = CreateView(viewModel))
                 form.ShowDialog(ownerWindowHandle == IntPtr.Zero ? null : new OwnerWindowHandle(ownerWindowHandle));

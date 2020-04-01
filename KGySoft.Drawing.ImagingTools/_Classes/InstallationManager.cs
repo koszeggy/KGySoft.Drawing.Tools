@@ -26,7 +26,7 @@ using KGySoft.Drawing.ImagingTools.Model;
 
 namespace KGySoft.Drawing.ImagingTools
 {
-    internal static class InstallationManager
+    public static class InstallationManager
     {
         #region Constants
 
@@ -48,13 +48,11 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Methods
 
-        internal static InstallationInfo GetInstallationInfo(string path) => new InstallationInfo(path);
+        #region Public Methods
 
-        internal static bool IsInstalled(string path) => Directory.Exists(path) && File.Exists(GetDebuggerVisualizerFilePath(path));
+        public static InstallationInfo GetInstallationInfo(string path) => new InstallationInfo(path);
 
-        internal static string GetDebuggerVisualizerFilePath(string path) => Path.Combine(path, debuggerVisualizerFileName);
-
-        internal static void Install(string path, out string error)
+        public static void Install(string path, out string error)
         {
             error = null;
             try
@@ -89,6 +87,14 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
+        #endregion
+
+        #region Internal Methods
+
+        internal static bool IsInstalled(string path) => Directory.Exists(path) && File.Exists(GetDebuggerVisualizerFilePath(path));
+
+        internal static string GetDebuggerVisualizerFilePath(string path) => Path.Combine(path, debuggerVisualizerFileName);
+
         internal static void Uninstall(string path, out string error)
         {
             error = null;
@@ -114,6 +120,8 @@ namespace KGySoft.Drawing.ImagingTools
                 }
             }
         }
+
+        #endregion
 
         #endregion
     }

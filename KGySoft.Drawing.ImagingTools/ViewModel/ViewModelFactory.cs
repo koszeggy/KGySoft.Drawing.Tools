@@ -18,7 +18,7 @@
 
 using System.Drawing;
 using System.Drawing.Drawing2D;
-
+using System.Drawing.Imaging;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
 
@@ -29,13 +29,28 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
     /// <summary>
     /// Represents a class that can create view model instances.
     /// </summary>
-    internal static class ViewModelFactory
+    public static class ViewModelFactory
     {
         #region Methods
 
-        internal static IViewModel CreateDefault() => new DefaultViewModel();
-        internal static IViewModel FromCommandLineArguments(string[] args) => new DefaultViewModel { CommandLineArguments = args };
-        
+        #region Public Methods
+
+        public static IViewModel CreateDefault() => new DefaultViewModel();
+        public static IViewModel FromCommandLineArguments(string[] args) => new DefaultViewModel { CommandLineArguments = args };
+
+        public static IViewModel<Image> FromImage(Image image, bool readOnly = false) => new ImageVisualizerViewModel { Image = image, ReadOnly = readOnly };
+        public static IViewModel<Bitmap> FromBitmap(Bitmap bitmap, bool readOnly = false) => new ImageVisualizerViewModel { Image = bitmap, ReadOnly = readOnly, ImageTypes = ImageTypes.Bitmap | ImageTypes.Icon };
+        public static IViewModel<Metafile> FromMetafile(Metafile metafile, bool readOnly = false) => new ImageVisualizerViewModel { Image = metafile, ReadOnly = readOnly, ImageTypes = ImageTypes.Metafile };
+        public static IViewModel<Icon> FromIcon(Icon icon, bool readOnly = false) => new ImageVisualizerViewModel { Icon = icon, ReadOnly = readOnly, ImageTypes = ImageTypes.Icon };
+        public static IViewModel<Color[]> FromPalette(Color[] palette, bool isReadOnly) => new PaletteVisualizerViewModel { Palette = palette, ReadOnly = isReadOnly };
+        public static IViewModel<Color> FromColor(Color color, bool isReadOnly) => new ColorVisualizerViewModel { Color = color, ReadOnly = isReadOnly };
+
+        public static IViewModel CreateManageInstallations(string hintPath) => new ManageInstallationsViewModel(hintPath);
+
+        #endregion
+
+        #region Internal Methods
+
         internal static IViewModel<ImageReference> FromImageData(ImageTypes imageTypes, bool isReadOnly, ImageData mainImage, params ImageData[] frames)
         {
             var result = new ImageVisualizerViewModel { ImageTypes = imageTypes, ReadOnly = isReadOnly };
@@ -56,10 +71,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             return result;
         }
 
-        internal static IViewModel<Image> FromImage(Image image, bool readOnly = false, ImageTypes imageTypes = ImageTypes.All) => new ImageVisualizerViewModel { Image = image, ReadOnly = readOnly, ImageTypes = imageTypes };
-        internal static IViewModel<Icon> FromIcon(Icon icon, bool readOnly = false) => new ImageVisualizerViewModel { Icon = icon, ReadOnly = readOnly, ImageTypes = ImageTypes.Icon };
-        internal static IViewModel<Color[]> FromPalette(Color[] palette, bool isReadOnly) => new PaletteVisualizerViewModel { Palette = palette, ReadOnly = isReadOnly };
-        internal static IViewModel<Color> FromColor(Color color, bool isReadOnly) => new ColorVisualizerViewModel { Color = color, ReadOnly = isReadOnly };
         internal static IViewModel FromBitmapData(ImageData data, string info)
         {
             var result = new BitmapDataVisualizerViewModel { InfoText = info };
@@ -70,7 +81,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal static IViewModel FromGraphics(Bitmap data, Matrix transform, Rectangle visibleRect, string info)
             => new GraphicsVisualizerViewModel { Image = data, InfoText = info, Transform = transform, VisibleRect = visibleRect };
 
-        internal static IViewModel CreateManageInstallations(string hintPath) => new ManageInstallationsViewModel(hintPath);
+        #endregion
 
         #endregion
     }

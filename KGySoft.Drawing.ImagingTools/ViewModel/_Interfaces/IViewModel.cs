@@ -22,7 +22,7 @@ using System;
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal interface IViewModel : IDisposable
+    public interface IViewModel : IDisposable
     {
     }
 }

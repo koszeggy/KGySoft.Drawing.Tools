@@ -44,7 +44,7 @@ using Encoder = System.Drawing.Imaging.Encoder;
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal class ImageVisualizerViewModel : ViewModelBase, IViewModel<ImageReference>, IViewModel<Image>, IViewModel<Icon>
+    internal class ImageVisualizerViewModel : ViewModelBase, IViewModel<ImageReference>, IViewModel<Image>, IViewModel<Icon>, IViewModel<Bitmap>, IViewModel<Metafile>
     {
         #region Constants
 
@@ -895,11 +895,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #endregion
 
-        #region Explicit Interface Implementations
+        #region Explicitly Implemented Interface Methods
 
         ImageReference IViewModel<ImageReference>.GetEditedModel() => GetImageReference();
         Image IViewModel<Image>.GetEditedModel() => Image;
         Icon IViewModel<Icon>.GetEditedModel() => Icon;
+        Bitmap IViewModel<Bitmap>.GetEditedModel() => Image as Bitmap;
+        Metafile IViewModel<Metafile>.GetEditedModel() => Image as Metafile;
 
         #endregion
 

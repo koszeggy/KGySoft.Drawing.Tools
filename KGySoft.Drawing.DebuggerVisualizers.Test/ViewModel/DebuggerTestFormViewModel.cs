@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -25,8 +26,7 @@ using System.IO;
 using System.Linq;
 
 using KGySoft.ComponentModel;
-using KGySoft.Drawing.DebuggerVisualizers.Serializers;
-using KGySoft.Drawing.ImagingTools;
+using KGySoft.CoreLibraries;
 using KGySoft.Reflection;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;
@@ -60,6 +60,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
             new HashSet<string> { nameof(AsImage), nameof(AsBitmap), nameof(AsMetafile),nameof(AsIcon) },
         };
 
+        private static Dictionary<Type, DebuggerVisualizerAttribute> debuggerVisualizers = Attribute.GetCustomAttributes(typeof(DebuggerHelper).Assembly, typeof(DebuggerVisualizerAttribute))
+            .Cast<DebuggerVisualizerAttribute>().ToDictionary(a => a.Target, a => a);
+
         #endregion
 
         #region Properties
@@ -90,7 +93,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
 
         internal object TestObject { get => Get<object>(); set => Set(value); }
         internal Image PreviewImage { get => Get<Image>(); set => Set(value); }
-        internal ImageTypes ImageTypes { get => Get<ImageTypes>(); set => Set(value); }
         internal bool CanDebugDirectly { get => Get<bool>(); set => Set(value); }
         internal bool CanDebugByDebugger { get => Get<bool>(); set => Set(value); }
         internal Bitmap BitmapDataOwner { get => Get<Bitmap>(); set => Set(value); }
@@ -127,7 +129,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
             if (e.PropertyName == nameof(TestObject))
             {
                 var obj = TestObject;
-                ImageTypes = GetImageTypes(obj);
                 PreviewImage = GetPreviewImage(obj);
                 CanDebugByDebugger = obj != null;
                 CanDebugDirectly = obj != null && !(obj is Graphics || obj is BitmapData);
@@ -220,33 +221,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
                 for (int y = 0; y < size; y++)
                     result.SetPixel(x, y, palette[x]);
             return result;
-        }
-
-        private ImageTypes GetImageTypes(object obj)
-        {
-            if (ImageFromFile)
-            {
-                if (AsImage)
-                    return ImageTypes.All;
-                if (AsBitmap)
-                    return ImageTypes.Bitmap;
-                if (AsMetafile)
-                    return ImageTypes.Metafile;
-                if (AsIcon)
-                    return ImageTypes.Icon;
-            }
-
-            switch (obj)
-            {
-                case Bitmap _:
-                    return ImageTypes.Bitmap;
-                case Metafile _:
-                    return ImageTypes.Metafile;
-                case Icon _:
-                    return ImageTypes.Icon;
-                default:
-                    return ImageTypes.None;
-            }
         }
 
         private object FromFile(string fileName)
@@ -350,12 +324,31 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
             switch (TestObject)
             {
                 case Image image:
-                    Image newImage = DebuggerHelper.DebugImage(image, AsReadOnly, hwnd);
-                    if (newImage != null)
+                    if (!ImageFromFile || AsImage)
                     {
-                        if (TestObject == newImage)
-                            TestObject = null;
-                        TestObject = newImage;
+                        Image newImage = DebuggerHelper.DebugImage(image, AsReadOnly, hwnd);
+                        if (newImage != null)
+                        {
+                            if (TestObject == newImage)
+                                TestObject = null;
+                            TestObject = newImage;
+                        }
+                    }
+                    else if (image is Metafile metafile)
+                    {
+                        Metafile newMetafile = DebuggerHelper.DebugMetafile(metafile, AsReadOnly, hwnd);
+                        if (newMetafile != null)
+                            TestObject = newMetafile;
+                    }
+                    else if (image is Bitmap bitmap)
+                    {
+                        Bitmap newBitmap = DebuggerHelper.DebugBitmap(bitmap, AsReadOnly, hwnd);
+                        if (newBitmap != null)
+                        {
+                            if (TestObject == newBitmap)
+                                TestObject = null;
+                            TestObject = newBitmap;
+                        }
                     }
 
                     break;
@@ -387,47 +380,24 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
 
         private void OnDebugCommand()
         {
-            var windowService = new TestWindowService();
-            var objectProvider = new TestObjectProvider(TestObject);
-            DialogDebuggerVisualizer debugger;
+            object testObject = TestObject;
+            if (testObject == null)
+                return;
 
-            // TODO: visualizer and serializer by reflection
-            switch (TestObject)
+            Type targetType = testObject is Image && (!ImageFromFile || AsImage)
+                ? typeof(Image)
+                : testObject.GetType();
+            DebuggerVisualizerAttribute attr = debuggerVisualizers.GetValueOrDefault(targetType);
+            if (attr == null)
             {
-                case Image _:
-                    debugger = !ImageFromFile || AsImage ? new ImageDebuggerVisualizer()
-                        : AsMetafile ? new MetafileDebuggerVisualizer()
-                        : (DialogDebuggerVisualizer)new BitmapDebuggerVisualizer();
-                    objectProvider.Serializer = new ImageSerializer();
-                    objectProvider.IsObjectReplaceable = true;
-                    break;
-                case Icon _:
-                    debugger = new IconDebuggerVisualizer();
-                    objectProvider.Serializer = new IconSerializer();
-                    objectProvider.IsObjectReplaceable = true;
-                    break;
-                case Graphics _:
-                    debugger = new GraphicsDebuggerVisualizer();
-                    objectProvider.Serializer = new GraphicsSerializer();
-                    break;
-                case BitmapData _:
-                    debugger = new BitmapDataDebuggerVisualizer();
-                    objectProvider.Serializer = new BitmapDataSerializer();
-                    break;
-                case ColorPalette _:
-                    debugger = new PaletteDebuggerVisualizer();
-                    objectProvider.IsObjectReplaceable = true;
-                    objectProvider.Serializer = new AnySerializer();
-                    break;
-                case Color _:
-                    debugger = new ColorDebuggerVisualizer();
-                    objectProvider.IsObjectReplaceable = true;
-                    objectProvider.Serializer = new VisualizerObjectSource();
-                    break;
-                default:
-                    return;
+                ErrorCallback?.Invoke($"No debugger visualizer found for type {targetType}");
+                return;
             }
 
+            var windowService = new TestWindowService();
+            var objectProvider = new TestObjectProvider(testObject) { IsObjectReplaceable = !AsReadOnly };
+            DialogDebuggerVisualizer debugger = (DialogDebuggerVisualizer)Reflector.CreateInstance(Reflector.ResolveType(attr.VisualizerTypeName));
+            objectProvider.Serializer = (VisualizerObjectSource)Reflector.CreateInstance(Reflector.ResolveType(attr.VisualizerObjectSourceTypeName));
             Reflector.InvokeMethod(debugger, "Show", windowService, objectProvider);
             if (objectProvider.ObjectReplaced)
                 TestObject = objectProvider.Object;
