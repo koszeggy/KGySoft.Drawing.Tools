@@ -32,7 +32,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serializers
         /// <summary>
         /// Called when the object to be debugged is about to be serialized
         /// </summary>
-        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeGraphics((Graphics)target, outgoingData);
+        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeGraphicsInfo((Graphics)target, outgoingData);
 
         #endregion
     }

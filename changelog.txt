@@ -11,8 +11,11 @@
 
 ! KGySoft.Drawing.ImagingTools.exe
 ==================================
-! When Icon type is being debugged and a non-icon image is opened, then the image will be converted to icon without
-  changing the size (allowing any icon size).
+
++ API changes:
+! Functional changes:
+  ! When Icon type is being debugged and a non-icon image is opened, then the image will be converted to icon
+    without changing the size (allowing any icon size).
 
 + KGySoft.Drawing.DebuggerVisualizers.dll
 =========================================

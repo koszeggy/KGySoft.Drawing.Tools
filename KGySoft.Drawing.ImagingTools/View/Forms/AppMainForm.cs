@@ -36,11 +36,21 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Properties
 
+        #region Public Properties
+        
         public override string Text
         {
             get => base.Text;
             set => base.Text = FormatText(value);
         }
+
+        #endregion
+
+        #region Private Properties
+
+        private new DefaultViewModel ViewModel => (DefaultViewModel)base.ViewModel;
+
+        #endregion
 
         #endregion
 

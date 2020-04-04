@@ -18,18 +18,15 @@
 
 using System.Drawing;
 
-using KGySoft.Drawing.ImagingTools.Model;
-
 #endregion
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Model
 {
     internal sealed class BitmapDataInfo
     {
-
         #region Properties
 
-        internal ImageData Data { get; set; }
+        internal Bitmap Data { get; set; }
         internal string SpecialInfo { get; set; }
 
         #endregion

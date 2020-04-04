@@ -62,7 +62,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Constructors
 
-        internal GraphicsVisualizerViewModel()
+        internal GraphicsVisualizerViewModel() : base(AllowedImageTypes.None)
         {
             ReadOnly = true;
             OpenFileCommandState.Enabled = false;

@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: ImageDataTypes.cs
+//  File: ImageInfoType.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2019 - All Rights Reserved
 //
@@ -14,31 +14,35 @@
 
 #endregion
 
-namespace KGySoft.Drawing.DebuggerVisualizers
+namespace KGySoft.Drawing.ImagingTools.Model
 {
-    internal enum ImageDataTypes : byte
+    public enum ImageInfoType
     {
+        None,
+
         /// <summary>
-        /// Stream contains a single image data
+        /// The image represents a single frame of image.
         /// </summary>
         SingleImage,
 
         /// <summary>
-        /// Stream contains separated pages, no compound image is available (first page is shown instead)
+        /// The image represents an image of multiple pages.
         /// </summary>
         Pages,
 
         /// <summary>
-        /// First image data contains no image, further ones contain icon images.
-        /// First image should be built after deserialization.
-        /// Bitmap can be saved as ICO.
+        /// The image have multiple resolutions.
         /// </summary>
-        IconBitmap,
+        MultiRes,
 
         /// <summary>
-        /// First image data contains no image, further ones contain animation frames.
-        /// Animation should built (or imitated) after deserialization.
+        /// The image represents an animation.
         /// </summary>
         Animation,
+
+        /// <summary>
+        /// The image is an icon of one or more images.
+        /// </summary>
+        Icon,
     }
 }

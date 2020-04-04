@@ -22,6 +22,7 @@ using System.Drawing.Imaging;
 using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
+using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
@@ -57,15 +58,20 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         
         #region Static Methods
 
-        private static Image GetCompoundViewIcon(Guid format)
+        private static Image GetCompoundViewIcon(ImageInfoType type)
         {
-            if (format == ImageFormat.Gif.Guid)
-                return Images.Animation;
-            if (format == ImageFormat.Icon.Guid)
-                return Images.MultiSize;
-            if (format == ImageFormat.Tiff.Guid)
-                return Images.MultiPage;
-            throw new InvalidOperationException(Res.InternalError($"Unexpected format: {format}"));
+            switch (type)
+            {
+                case ImageInfoType.Pages:
+                    return Images.MultiPage;
+                case ImageInfoType.Animation:
+                    return Images.Animation;
+                case ImageInfoType.MultiRes:
+                case ImageInfoType.Icon:
+                    return Images.MultiSize;
+                default:
+                    throw new InvalidOperationException(Res.InternalError($"Unexpected compound type: {type}"));
+            }
         }
 
         #endregion

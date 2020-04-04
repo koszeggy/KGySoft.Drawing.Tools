@@ -17,10 +17,12 @@
 #region Usings
 
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -40,75 +42,27 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serializers
         #region Methods
 
         /// <summary>
-        /// Serializes an <see cref="Image"/> instance.
+        /// Serializes an <see cref="Image"/> instance along with metadata.
         /// </summary>
-        internal static void SerializeImage(Image image, Stream outgoingData)
+        internal static void SerializeImageInfo(Image image, Stream outgoingData)
         {
-            // Bitmap/Metafile: ImageData
-            ImageData.FromImage(image, true, out ImageData imageData, out ImageData[] frames);
-            BinaryWriter bw = new BinaryWriter(outgoingData);
-
-            // 1. Image type
-            if (frames == null)
-                bw.Write((byte)ImageDataTypes.SingleImage);
-            else if (imageData == null)
-                bw.Write((byte)ImageDataTypes.Pages);
-            else
-                bw.Write(frames[0].Duration > 0 ? (byte)ImageDataTypes.Animation : (byte)ImageDataTypes.IconBitmap);
-
-            // 2. Image type != single image => images count
-            int count = frames == null ? 1 : frames.Length + (imageData == null ? 0 : 1);
-            if (frames != null)
-                bw.Write(count);
-
-            // 3. Main image (if any)
-            imageData?.Write(bw);
-
-            // 4. Frames (if any)
-            if (frames != null)
-            {
-                foreach (ImageData frame in frames)
-                    frame.Write(bw);
-            }
+            var imageInfo = new ImageSerializationInfo(image);
+            imageInfo.Write(new BinaryWriter(outgoingData));
         }
 
         /// <summary>
-        /// Serializes an <see cref="Icon"/> instance.
+        /// Serializes an <see cref="Icon"/> instance along with metadata.
         /// </summary>
-        internal static void SerializeIcon(Icon icon, Stream outgoingData)
+        internal static void SerializeIconInfo(Icon icon, Stream outgoingData)
         {
-            // icon: if needed, creating a new icon from stream and resetting target
-            ImageData.FromIcon(icon, true, out ImageData iconData, out ImageData[] iconImages);
-            BinaryWriter bw = new BinaryWriter(outgoingData);
-
-            // 1. The icon data itself (length must be stored because Icon.ctor(Stream) consumes the whole stream, so using a new stream)
-            using (MemoryStream ms = new MemoryStream())
-            {
-                icon.SaveHighQuality(ms);
-                byte[] iconRawData = ms.ToArray();
-                bw.Write(iconRawData.Length);
-                bw.Write(iconRawData);
-            }
-
-            // 2. Icon images (without image)
-            if (iconImages == null)
-            {
-                bw.Write(1);
-                iconData.Write(bw);
-            }
-            else
-            {
-                bw.Write(iconImages.Length + 1);
-                iconData.Write(bw);
-                foreach (ImageData iconImage in iconImages)
-                    iconImage.Write(bw);
-            }
+            var iconInfo = new ImageSerializationInfo(icon);
+            iconInfo.Write(new BinaryWriter(outgoingData));
         }
 
         /// <summary>
-        /// Serializes a <see cref="Graphics"/> instance.
+        /// Serializes a <see cref="Graphics"/> instance along with metadata.
         /// </summary>
-        internal static void SerializeGraphics(Graphics g, Stream outgoingData)
+        internal static void SerializeGraphicsInfo(Graphics g, Stream outgoingData)
         {
             BinaryWriter bw = new BinaryWriter(outgoingData);
 
@@ -118,7 +72,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serializers
             {
                 using (MemoryStream ms = new MemoryStream())
                 {
-                    bmp.Save(ms, ImageFormat.Png);
+                    bmp.SaveAsPng(ms);
                     bw.Write((int)ms.Length);
                     bw.Write(ms.ToArray());
                 }
@@ -179,18 +133,15 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serializers
         }
 
         /// <summary>
-        /// Serializes a <see cref="BitmapData"/> instance.
+        /// Serializes a <see cref="BitmapData"/> instance along with metadata.
         /// </summary>
-        internal static void SerializeBitmapData(BitmapData bitmapData, Stream outgoingData)
+        internal static void SerializeBitmapDataInfo(BitmapData bitmapData, Stream outgoingData)
         {
             BinaryWriter bw = new BinaryWriter(outgoingData);
 
-            // 1. Bitmap as ImageData
+            // 1. Bitmap
             using (Bitmap bmp = new Bitmap(bitmapData.Width, bitmapData.Height, bitmapData.Stride, bitmapData.PixelFormat, bitmapData.Scan0))
-            {
-                ImageData imageData = new ImageData(bmp, true);
-                imageData.Write(bw);
-            }
+                WriteImage(bw, bmp);
 
             // 2. Info
             bw.Write(String.Format("Size: {1}{0}Stride: {2} bytes{0}Pixel Format: {3}",
@@ -202,98 +153,27 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serializers
         /// </summary>
         internal static void SerializeAnyObject(object target, Stream outgoingData) => BinarySerializer.SerializeToStream(outgoingData, target);
 
-        /// <summary>
-        /// Deserializes <see cref="Image"/> infos (<see cref="Bitmap"/> or <see cref="Metafile"/>) from the stream
-        /// that can be passed to <see cref="DebuggerHelper.DebugImage(ImageInfo,bool)"/>, <see cref="DebuggerHelper.DebugBitmap"/> or <see cref="DebuggerHelper.DebugMetafile"/>.
-        /// </summary>
-        internal static ImageInfo DeserializeImage(Stream stream)
-        {
-            BinaryReader br = new BinaryReader(stream);
-            ImageDataTypes imageType = (ImageDataTypes)br.ReadByte();
-
-            // single image
-            if (imageType == ImageDataTypes.SingleImage)
-            {
-                ImageData imageData = new ImageData(br);
-                return new ImageInfo { MainImage = imageData };
-            }
-
-            // multi-page image
-            ImageData mainImage = null;
-            int len = br.ReadInt32();
-            if (imageType != ImageDataTypes.Pages)
-            {
-                mainImage = new ImageData(br);
-                len--;
-            }
-
-            ImageData[] frames = new ImageData[len];
-            for (int i = 0; i < len; i++)
-                frames[i] = new ImageData(br);
-
-            return new ImageInfo { MainImage = mainImage, Frames = frames };
-        }
-
-        /// <summary>
-        /// Deserializes <see cref="Icon"/> from the stream
-        /// that can be passed to <see cref="DebuggerHelper.DebugImage(ImageInfo,bool)"/>, <see cref="DebuggerHelper.DebugBitmap"/> or <see cref="DebuggerHelper.DebugMetafile"/>.
-        /// </summary>
-        internal static IconInfo DeserializeIcon(Stream stream)
-        {
-            BinaryReader br = new BinaryReader(stream);
-
-            // icon image
-            byte[] iconData = br.ReadBytes(br.ReadInt32());
-            int len = br.ReadInt32();
-            Icon icon = new Icon(new MemoryStream(iconData));
-            ImageData compoundIcon = new ImageData(br);
-            try
-            {
-                compoundIcon.Image = icon.ToMultiResBitmap();
-            }
-            catch (ArgumentException)
-            {
-                // In Windows XP it can happen that multi-res bitmap throws an exception even if PNG images are uncompressed
-                compoundIcon.Image = icon.ExtractNearestBitmap(new Size(UInt16.MaxValue, UInt16.MaxValue), PixelFormat.Format32bppArgb);
-            }
-
-            // single icon image
-            if (len == 1)
-                return new IconInfo { Icon = icon, CompoundIcon = compoundIcon };
-
-            // multi-image icon
-            len--;
-            Bitmap[] iconBitmaps = icon.ExtractBitmaps();
-            ImageData[] iconImages = new ImageData[len];
-            for (int i = 0; i < len; i++)
-            {
-                iconImages[i] = new ImageData(br);
-                iconImages[i].Image = iconBitmaps[i];
-            }
-
-            return new IconInfo { Icon = icon, CompoundIcon = compoundIcon, IconImages = iconImages };
-        }
+        internal static ImageInfo DeserializeImageInfo(Stream stream) => new ImageSerializationInfo(new BinaryReader(stream)).ImageInfo;
 
         /// <summary>
         /// Deserializes <see cref="BitmapData"/> infos from the stream that can be passed to <see cref="DebuggerHelper.DebugBitmapData"/>.
         /// </summary>
-        internal static BitmapDataInfo DeserializeBitmapData(Stream stream)
+        internal static BitmapDataInfo DeserializeBitmapDataInfo(Stream stream)
         {
             BinaryReader br = new BinaryReader(stream);
 
             // 1. Bitmap
-            ImageData imageData = new ImageData(br);
+            var bitmap = (Bitmap)ReadImage(br);
 
             // 2. Info
             string specialInfo = br.ReadString();
-
-            return new BitmapDataInfo { Data = imageData, SpecialInfo = specialInfo };
+            return new BitmapDataInfo { Data = bitmap, SpecialInfo = specialInfo };
         }
 
         /// <summary>
         /// Deserializes <see cref="Graphics"/> infos from the stream that can be passed to <see cref="DebuggerHelper.DebugGraphics"/>.
         /// </summary>
-        internal static GraphicsInfo DeserializeGraphics(Stream stream)
+        internal static GraphicsInfo DeserializeGraphicsInfo(Stream stream)
         {
             BinaryReader br = new BinaryReader(stream);
             var result = new GraphicsInfo();
@@ -323,6 +203,78 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serializers
         /// </summary>
         internal static object DeserializeAnyObject(Stream stream) => BinarySerializer.DeserializeFromStream(stream);
 
+        internal static void WriteImage(BinaryWriter bw, Image image)
+        {
+            static bool SaveAsRaw(Image image)
+            {
+                return false;
+                var bpp = image.GetBitsPerPixel();
+
+                // 48/64 bpp: allowing TIFF only because it can be saved (only if the raw format is already a TIFF)
+                if (bpp > 32)
+                    return image.RawFormat.Guid != ImageFormat.Tiff.Guid;
+
+                // indexed: raw if the palette has more transparent colors or at least one partially transparent color
+                if (bpp <= 8)
+                {
+                    Color[] colors = image.Palette.Entries.Where(c => c.A < 255).Take(2).ToArray();
+                    return colors.Length > 1 || colors.Length == 1 && colors[0].A > 0;
+                }
+
+                // any other case: 16 bpp formats must be saved as raw
+                return bpp == 16;
+            }
+
+
+            // TODO: stream with seek
+            Debug.Assert(image != null, "Image should not be null here");
+            using (MemoryStream ms = new MemoryStream())
+            {
+                bool asRaw = SaveAsRaw(image);
+                bw.Write(asRaw);
+
+                if (asRaw)
+                    image.SaveAsRaw(ms);
+                else
+                {
+                    int bpp;
+                    if (image is Metafile metafile)
+                        metafile.Save(ms);
+                    else if ((bpp = image.GetBitsPerPixel()) <= 8 || image.RawFormat.Guid == ImageFormat.Gif.Guid)
+                        // or GIF condition: animated GIFs have 32 BPP format
+                        image.SaveAsGif(ms);
+                    else if (bpp > 32 && image.RawFormat.Guid == ImageFormat.Tiff.Guid)
+                        // TIFF: only if 48/64 BPP because saving as TIFF can preserve pixel format only if the raw format is also TIFF
+                        image.SaveAsTiff(ms);
+                    else
+                        image.SaveAsPng(ms);
+                }
+
+                image.Save(ms, image.RawFormat.Guid == ImageFormat.Gif.Guid ? ImageFormat.Gif : ImageFormat.Png);
+                bw.Write((int)ms.Length);
+                bw.Write(ms.GetBuffer(), 0, (int)ms.Length);
+            }
+        }
+
+        internal static Image ReadImage(BinaryReader br)
+        {
+            // TODO: stream with seek
+            bool savedAsRaw = br.ReadBoolean();
+            MemoryStream ms = new MemoryStream(br.ReadBytes(br.ReadInt32()));
+            return savedAsRaw
+                ? ImageExtensions.LoadFromRaw(ms)
+                : Image.FromStream(ms);
+        }
+
         #endregion
     }
+
+    // TODO: delete
+    internal static class ImageExtensions
+    {
+        internal static void SaveAsRaw(this Image image, Stream s) => throw new NotImplementedException("TODO: use Drawing");
+
+        public static Bitmap LoadFromRaw(Stream s) => throw new NotImplementedException();
+    }
+
 }

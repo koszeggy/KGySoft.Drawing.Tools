@@ -27,6 +27,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Properties
 
         internal string[] CommandLineArguments { get => Get<string[]>(); set => Set(value); }
+        internal string FileName { get => Get<string>(); set => Set(value); }
 
         #endregion
 
@@ -49,7 +50,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (!base.OpenFile(path))
                 return false;
 
-            // in this class filename is used only for displaying the opened file
             FileName = Path.GetFileName(path);
             return true;
         }

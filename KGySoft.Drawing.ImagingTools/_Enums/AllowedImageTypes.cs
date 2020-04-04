@@ -1,9 +1,9 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: ImageInfo.cs
+//  File: AllowedImageTypes.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2020 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2019 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution. If not, then this file is considered as
@@ -16,24 +16,19 @@
 
 #region Usings
 
-using System.Drawing;
-
-using KGySoft.Drawing.ImagingTools.Model;
+using System;
 
 #endregion
 
-namespace KGySoft.Drawing.DebuggerVisualizers.Model
+namespace KGySoft.Drawing.ImagingTools
 {
-    internal sealed class ImageInfo
+    [Flags]
+    internal enum AllowedImageTypes
     {
-
-        #region Properties
-
-        internal Icon Icon { get; set; }
-        internal ImageData MainImage { get; set; }
-        internal ImageData[] Frames { get; set; }
-        internal string SpecialInfo { get; set; }
-
-        #endregion
+        None = 0,
+        Bitmap = 1,
+        Metafile = 1 << 1,
+        Icon = 1 << 2,
+        All = Bitmap | Metafile | Icon
     }
 }

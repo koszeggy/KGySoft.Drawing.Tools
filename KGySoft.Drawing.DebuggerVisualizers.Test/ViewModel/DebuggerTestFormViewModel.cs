@@ -327,12 +327,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
                     if (!ImageFromFile || AsImage)
                     {
                         Image newImage = DebuggerHelper.DebugImage(image, AsReadOnly, hwnd);
-                        if (newImage != null)
-                        {
-                            if (TestObject == newImage)
-                                TestObject = null;
+                        if (newImage != image)
                             TestObject = newImage;
-                        }
                     }
                     else if (image is Metafile metafile)
                     {

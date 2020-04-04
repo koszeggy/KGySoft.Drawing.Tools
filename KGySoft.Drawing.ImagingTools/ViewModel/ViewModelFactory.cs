@@ -19,7 +19,7 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using KGySoft.CoreLibraries;
+
 using KGySoft.Drawing.ImagingTools.Model;
 
 #endregion
@@ -33,55 +33,40 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
     {
         #region Methods
 
-        #region Public Methods
-
         public static IViewModel CreateDefault() => new DefaultViewModel();
         public static IViewModel FromCommandLineArguments(string[] args) => new DefaultViewModel { CommandLineArguments = args };
 
-        public static IViewModel<Image> FromImage(Image image, bool readOnly = false) => new ImageVisualizerViewModel { Image = image, ReadOnly = readOnly };
-        public static IViewModel<Bitmap> FromBitmap(Bitmap bitmap, bool readOnly = false) => new ImageVisualizerViewModel { Image = bitmap, ReadOnly = readOnly, ImageTypes = ImageTypes.Bitmap | ImageTypes.Icon };
-        public static IViewModel<Metafile> FromMetafile(Metafile metafile, bool readOnly = false) => new ImageVisualizerViewModel { Image = metafile, ReadOnly = readOnly, ImageTypes = ImageTypes.Metafile };
-        public static IViewModel<Icon> FromIcon(Icon icon, bool readOnly = false) => new ImageVisualizerViewModel { Icon = icon, ReadOnly = readOnly, ImageTypes = ImageTypes.Icon };
+        public static IViewModel<Image> FromImage(Image image, bool readOnly = false) => new ImageVisualizerViewModel { Image = (Image)image?.Clone(), ReadOnly = readOnly };
+        public static IViewModel<ImageInfo> FromImage(ImageInfo imageInfo, bool readOnly) => new ImageVisualizerViewModel { ImageInfo = imageInfo, ReadOnly = readOnly };
+
+        public static IViewModel<Bitmap> FromBitmap(Bitmap bitmap, bool readOnly = false) => new ImageVisualizerViewModel(AllowedImageTypes.Bitmap | AllowedImageTypes.Icon) { Image = bitmap, ReadOnly = readOnly };
+        public static IViewModel<ImageInfo> FromBitmap(ImageInfo bitmapInfo, bool readOnly) => new ImageVisualizerViewModel(AllowedImageTypes.Bitmap | AllowedImageTypes.Icon) { ImageInfo = bitmapInfo, ReadOnly = readOnly };
+
+        public static IViewModel<Metafile> FromMetafile(Metafile metafile, bool readOnly = false) => new ImageVisualizerViewModel { Image = metafile, ReadOnly = readOnly };
+        public static IViewModel<ImageInfo> FromMetafile(ImageInfo metafileInfo, bool readOnly) => new ImageVisualizerViewModel(AllowedImageTypes.Metafile) { ImageInfo = metafileInfo, ReadOnly = readOnly };
+
+        public static IViewModel<Icon> FromIcon(Icon icon, bool readOnly = false) => new ImageVisualizerViewModel(AllowedImageTypes.Icon) { Icon = icon, ReadOnly = readOnly };
+        public static IViewModel<ImageInfo> FromIcon(ImageInfo iconInfo, bool readOnly) => new ImageVisualizerViewModel(AllowedImageTypes.Icon) { ImageInfo = iconInfo, ReadOnly = readOnly };
+
         public static IViewModel<Color[]> FromPalette(Color[] palette, bool isReadOnly) => new PaletteVisualizerViewModel { Palette = palette, ReadOnly = isReadOnly };
         public static IViewModel<Color> FromColor(Color color, bool isReadOnly) => new ColorVisualizerViewModel { Color = color, ReadOnly = isReadOnly };
 
         public static IViewModel CreateManageInstallations(string hintPath) => new ManageInstallationsViewModel(hintPath);
 
-        #endregion
-
-        #region Internal Methods
-
-        internal static IViewModel<ImageReference> FromImageData(ImageTypes imageTypes, bool isReadOnly, ImageData mainImage, params ImageData[] frames)
+        public static IViewModel FromBitmapData(Bitmap data, string info)
         {
-            var result = new ImageVisualizerViewModel { ImageTypes = imageTypes, ReadOnly = isReadOnly };
-            if (frames.IsNullOrEmpty())
-                result.InitFromSingleImage(mainImage, null);
-            else
-                result.InitFromFrames(mainImage, frames, null);
+            // using image info directly to avoid generating meta and checking bitmap for multiple frames
+            var imageInfo = new ImageInfo(ImageInfoType.SingleImage) { Image = data };
+            var result = new BitmapDataVisualizerViewModel { InfoText = info, ImageInfo = imageInfo };
             return result;
         }
 
-        internal static IViewModel<ImageReference> FromIconData(bool isReadOnly, Icon underlyingIcon, ImageData compoundIcon, params ImageData[] iconImages)
+        public static IViewModel FromGraphics(Bitmap data, Matrix transform, Rectangle visibleRect, string info)
         {
-            var result = new ImageVisualizerViewModel { ImageTypes = ImageTypes.Icon, ReadOnly = isReadOnly };
-            if (iconImages.IsNullOrEmpty())
-                result.InitFromSingleImage(compoundIcon, underlyingIcon);
-            else
-                result.InitFromFrames(compoundIcon, iconImages, underlyingIcon);
-            return result;
+            // using image info directly to avoid generating meta and checking bitmap for multiple frames
+            var imageInfo = new ImageInfo(ImageInfoType.SingleImage) { Image = data };
+            return new GraphicsVisualizerViewModel { ImageInfo = imageInfo, InfoText = info, Transform = transform, VisibleRect = visibleRect };
         }
-
-        internal static IViewModel FromBitmapData(ImageData data, string info)
-        {
-            var result = new BitmapDataVisualizerViewModel { InfoText = info };
-            result.InitFromSingleImage(data, null);
-            return result;
-        }
-
-        internal static IViewModel FromGraphics(Bitmap data, Matrix transform, Rectangle visibleRect, string info)
-            => new GraphicsVisualizerViewModel { Image = data, InfoText = info, Transform = transform, VisibleRect = visibleRect };
-
-        #endregion
 
         #endregion
     }

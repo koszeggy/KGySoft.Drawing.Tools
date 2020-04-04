@@ -35,7 +35,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <param name="windowService">The window service.</param>
         /// <param name="objectProvider">The object provider.</param>
         protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
-            => DebuggerHelper.DebugBitmapData(SerializationHelper.DeserializeBitmapData(objectProvider.GetData()));
+            => DebuggerHelper.DebugBitmapData(SerializationHelper.DeserializeBitmapDataInfo(objectProvider.GetData()));
 
         #endregion
     }

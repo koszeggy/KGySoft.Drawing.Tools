@@ -35,7 +35,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Constructors
 
-        internal BitmapDataVisualizerViewModel()
+        internal BitmapDataVisualizerViewModel() : base(AllowedImageTypes.None)
         {
             ReadOnly = true;
             OpenFileCommandState.Enabled = false;
@@ -49,7 +49,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         protected override void UpdateInfo()
         {
             // InfoText is expected to be set already so setting caption and notification only
-            ImageData image = GetCurrentImage();
+            ImageInfoBase image = GetCurrentImage();
 
             if (image?.Image == null)
             {

@@ -24,7 +24,6 @@ using System.Drawing.Imaging;
 
 using KGySoft.Drawing.DebuggerVisualizers.Model;
 using KGySoft.Drawing.DebuggerVisualizers.Serializers;
-using KGySoft.Drawing.ImagingTools;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.ImagingTools.View;
 using KGySoft.Drawing.ImagingTools.ViewModel;
@@ -47,7 +46,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
             using (IViewModel<Image> vm = ViewModelFactory.FromImage(image, !isReplaceable))
             {
                 ViewFactory.ShowDialog(vm, ownerWindowHandle);
-                return vm.IsModified ? vm.GetEditedModel() : null;
+                return vm.IsModified ? vm.GetEditedModel() : image;
             }
         }
 
@@ -125,52 +124,34 @@ namespace KGySoft.Drawing.DebuggerVisualizers
 
         #region Internal Methods
 
-        /// <summary>
-        /// Shows the debugger for an <see cref="Image"/> or <see cref="Icon"/> object.
-        /// </summary>
-        /// <param name="imageInfo">The image info for debugging returned by <see cref="SerializationHelper.DeserializeImage"/></param>
-        /// <param name="isReplaceable">Indicates whether the image is replaceable.</param>
-        /// <returns>A non-<see langword="null"/>&#160;instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
-        internal static ImageReference DebugImage(ImageInfo imageInfo, bool isReplaceable) => DebugImage(imageInfo, isReplaceable, ImageTypes.All);
-
-        /// <summary>
-        /// Shows the debugger for a <see cref="Bitmap"/> or <see cref="Icon"/> object.
-        /// </summary>
-        /// <param name="imageInfo">The image infos for debugging returned by <see cref="SerializationHelper.DeserializeImage"/></param>
-        /// <param name="isReplaceable">Indicates whether the image is replaceable.</param>
-        /// <returns>A non-<see langword="null"/>&#160;instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
-        internal static ImageReference DebugBitmap(ImageInfo imageInfo, bool isReplaceable) => DebugImage(imageInfo, isReplaceable, ImageTypes.Bitmap | ImageTypes.Icon);
-
-        /// <summary>
-        /// Shows the debugger for a <see cref="Metafile"/>.
-        /// </summary>
-        /// <param name="imageInfo">The image infos for debugging returned by <see cref="SerializationHelper.DeserializeImage"/></param>
-        /// <param name="isReplaceable">Indicates whether the image is replaceable.</param>
-        /// <returns>A non-<see langword="null"/>&#160;instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
-        internal static ImageReference DebugMetafile(ImageInfo imageInfo, bool isReplaceable) => DebugImage(imageInfo, isReplaceable, ImageTypes.Metafile);
-
-        /// <summary>
-        /// Shows the debugger for an <see cref="Icon"/> object.
-        /// </summary>
-        /// <param name="imageInfo">The image infos for debugging returned by <see cref="SerializationHelper.DeserializeImage"/></param>
-        /// <param name="isReplaceable">Indicates whether the image is replaceable.</param>
-        /// <returns>A non-<see langword="null"/>&#160;instance, when the image has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
-        internal static ImageReference DebugIcon(IconInfo iconInfo, bool isReplaceable)
+        internal static ImageReference DebugImage(ImageInfo imageInfo, bool isReplaceable)
         {
-            using (IViewModel<ImageReference> viewModel = ViewModelFactory.FromIconData(!isReplaceable, iconInfo.Icon, iconInfo.CompoundIcon, iconInfo.IconImages))
-            {
-                ViewFactory.ShowDialog(viewModel);
-                if (isReplaceable && viewModel.IsModified)
-                    return viewModel.GetEditedModel();
+            using (IViewModel<ImageInfo> viewModel = ViewModelFactory.FromImage(imageInfo, !isReplaceable))
+                return DebugImageInfo(viewModel, isReplaceable);
+        }
 
-                return null;
-            }
+        internal static ImageReference DebugBitmap(ImageInfo bitmapInfo, bool isReplaceable)
+        {
+            using (IViewModel<ImageInfo> viewModel = ViewModelFactory.FromBitmap(bitmapInfo, !isReplaceable))
+                return DebugImageInfo(viewModel, isReplaceable);
+        }
+
+        internal static ImageReference DebugMetafile(ImageInfo metafileInfo, bool isReplaceable)
+        {
+            using (IViewModel<ImageInfo> viewModel = ViewModelFactory.FromMetafile(metafileInfo, !isReplaceable))
+                return DebugImageInfo(viewModel, isReplaceable);
+        }
+
+        internal static ImageReference DebugIcon(ImageInfo iconInfo, bool isReplaceable)
+        {
+            using (IViewModel<ImageInfo> viewModel = ViewModelFactory.FromIcon(iconInfo, !isReplaceable))
+                return DebugImageInfo(viewModel, isReplaceable);
         }
 
         /// <summary>
         /// Shows the debugger for a <see cref="BitmapData"/> object.
         /// </summary>
-        /// <param name="bitmapDataInfo">The bitmap data infos for debugging returned by <see cref="SerializationHelper.DeserializeBitmapData"/>.</param>
+        /// <param name="bitmapDataInfo">The bitmap data infos for debugging returned by <see cref="SerializationHelper.DeserializeBitmapDataInfo"/>.</param>
         internal static void DebugBitmapData(BitmapDataInfo bitmapDataInfo)
         {
             using (IViewModel vm = ViewModelFactory.FromBitmapData(bitmapDataInfo.Data, bitmapDataInfo.SpecialInfo))
@@ -180,7 +161,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <summary>
         /// Shows the debugger for a <see cref="Graphics"/> object.
         /// </summary>
-        /// <param name="graphicsInfo">The graphics infos for debugging returned by <see cref="SerializationHelper.DeserializeGraphics"/>.</param>
+        /// <param name="graphicsInfo">The graphics infos for debugging returned by <see cref="SerializationHelper.DeserializeGraphicsInfo"/>.</param>
         internal static void DebugGraphics(GraphicsInfo graphicsInfo)
         {
             float[] elements = graphicsInfo.Elements;
@@ -193,17 +174,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers
 
         #region Private Methods
 
-        private static ImageReference DebugImage(ImageInfo imageInfo, bool isReplaceable, ImageTypes imageTypes)
+        private static ImageReference DebugImageInfo(IViewModel<ImageInfo> viewModel, bool isReplaceable)
         {
-            using (IViewModel<ImageReference> viewModel = ViewModelFactory.FromImageData(imageTypes, !isReplaceable, imageInfo.MainImage, imageInfo.Frames))
-            {
+            ViewFactory.ShowDialog(viewModel);
+            if (isReplaceable && viewModel.IsModified)
+                return new ImageReference(viewModel.GetEditedModel());
 
-                ViewFactory.ShowDialog(viewModel);
-                if (isReplaceable && viewModel.IsModified)
-                    return viewModel.GetEditedModel();
-
-                return null;
-            }
+            return null;
         }
 
         #endregion
