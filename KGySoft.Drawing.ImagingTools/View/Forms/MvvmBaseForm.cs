@@ -132,12 +132,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         void IView.Show()
         {
             if (!Visible)
-                Show();
-            else
             {
-                Activate();
-                BringToFront();
+                Show();
+                return;
             }
+
+            if (WindowState == FormWindowState.Minimized)
+                WindowState = FormWindowState.Normal;
+            Activate();
+            BringToFront();
         }
 
         #endregion
