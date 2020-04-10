@@ -618,7 +618,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 // when used as debugger, icon is always created from stream so it has raw data and Save can be used safely.
                 // But when icon is set via Icon property it can be an unmanaged icon
                 if (imageInfo.Icon != null && !IsModified)
-                    imageInfo.Icon.SaveHighQuality(stream);
+                    imageInfo.Icon.SaveAsIcon(stream);
                 // multi image icon without raw data
                 else if (imageInfo.HasFrames)
                 {

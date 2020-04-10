@@ -68,7 +68,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Model
             {
                 if (isIcon)
                 {
-                    (imageInfo.Icon ?? imageInfo.GenerateIcon()).SaveHighQuality(ms);
+                    (imageInfo.Icon ?? imageInfo.GenerateIcon()).SaveAsIcon(ms);
                     return ms.ToArray();
                 }
 
@@ -85,7 +85,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Model
                                 return ms.ToArray();
 
                             case ImageInfoType.MultiRes:
-                                (imageInfo.Icon ?? imageInfo.GenerateIcon()).SaveHighQuality(ms);
+                                (imageInfo.Icon ?? imageInfo.GenerateIcon()).SaveAsIcon(ms);
                                 return ms.ToArray();
 
                             case ImageInfoType.Animation:
