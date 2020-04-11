@@ -27,7 +27,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 
 using KGySoft.Drawing.DebuggerVisualizers.Model;
+using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.Reflection;
 using KGySoft.Serialization.Binary;
 
 #endregion
@@ -39,7 +41,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serializers
     /// </summary>
     internal static class SerializationHelper
     {
-        #region Methods
+        #region Internal Methods
 
         /// <summary>
         /// Serializes an <see cref="Image"/> instance along with metadata.
@@ -205,76 +207,119 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serializers
 
         internal static void WriteImage(BinaryWriter bw, Image image)
         {
-            static bool SaveAsRaw(Image image)
+            Debug.Assert(image != null, "Image should not be null here");
+            int bpp;
+
+            // writing a decoder compatible stream if image is a metafile...
+            bool asImage = image is Metafile
+                // ... or is a TIFF with 48/64 BPP because saving as TIFF can preserve pixel format only if the raw format is also TIFF...
+                || (bpp = image.GetBitsPerPixel()) > 32 && image.RawFormat.Guid == ImageFormat.Tiff.Guid
+                // ... or is an animated GIF, which always have 32 BPP pixel format
+                || bpp == 32 && image.RawFormat.Guid == ImageFormat.Gif.Guid;
+
+            bw.Write(asImage);
+            if (asImage)
             {
-                return false;
-                var bpp = image.GetBitsPerPixel();
-
-                // 48/64 bpp: allowing TIFF only because it can be saved (only if the raw format is already a TIFF)
-                if (bpp > 32)
-                    return image.RawFormat.Guid != ImageFormat.Tiff.Guid;
-
-                // indexed: raw if the palette has more transparent colors or at least one partially transparent color
-                if (bpp <= 8)
-                {
-                    Color[] colors = image.Palette.Entries.Where(c => c.A < 255).Take(2).ToArray();
-                    return colors.Length > 1 || colors.Length == 1 && colors[0].A > 0;
-                }
-
-                // any other case: 16 bpp formats must be saved as raw
-                return bpp == 16;
+                WriteAsImage(bw, image);
+                return;
             }
 
+            WriteRawBitmap((Bitmap)image, bw);
+        }
 
-            // TODO: stream with seek
-            Debug.Assert(image != null, "Image should not be null here");
+        internal static Image ReadImage(BinaryReader br) => br.ReadBoolean()
+            ? Image.FromStream(new MemoryStream(br.ReadBytes(br.ReadInt32())))
+            : ReadRawBitmap(br);
+
+        #endregion
+
+        #region Private Methods
+
+        private static void WriteAsImage(BinaryWriter bw, Image image)
+        {
             using (MemoryStream ms = new MemoryStream())
             {
-                bool asRaw = SaveAsRaw(image);
-                bw.Write(asRaw);
-
-                if (asRaw)
-                    image.SaveAsRaw(ms);
+                if (image is Metafile metafile)
+                    metafile.Save(ms);
+                else if (image.RawFormat.Guid == ImageFormat.Gif.Guid)
+                    image.SaveAsGif(ms);
+                else if (image.RawFormat.Guid == ImageFormat.Tiff.Guid)
+                    image.SaveAsTiff(ms);
                 else
                 {
-                    int bpp;
-                    if (image is Metafile metafile)
-                        metafile.Save(ms);
-                    else if ((bpp = image.GetBitsPerPixel()) <= 8 || image.RawFormat.Guid == ImageFormat.Gif.Guid)
-                        // or GIF condition: animated GIFs have 32 BPP format
-                        image.SaveAsGif(ms);
-                    else if (bpp > 32 && image.RawFormat.Guid == ImageFormat.Tiff.Guid)
-                        // TIFF: only if 48/64 BPP because saving as TIFF can preserve pixel format only if the raw format is also TIFF
-                        image.SaveAsTiff(ms);
-                    else
-                        image.SaveAsPng(ms);
+                    Debug.Fail("It is not expected to serialize an image as a PNG");
+                    image.SaveAsPng(ms);
                 }
 
-                image.Save(ms, image.RawFormat.Guid == ImageFormat.Gif.Guid ? ImageFormat.Gif : ImageFormat.Png);
                 bw.Write((int)ms.Length);
                 bw.Write(ms.GetBuffer(), 0, (int)ms.Length);
             }
         }
 
-        internal static Image ReadImage(BinaryReader br)
+        private static void WriteRawBitmap(Bitmap bitmap, BinaryWriter bw)
         {
-            // TODO: stream with seek
-            bool savedAsRaw = br.ReadBoolean();
-            MemoryStream ms = new MemoryStream(br.ReadBytes(br.ReadInt32()));
-            return savedAsRaw
-                ? ImageExtensions.LoadFromRaw(ms)
-                : Image.FromStream(ms);
+            Size size = bitmap.Size;
+            bw.Write(size.Width);
+            bw.Write(size.Height);
+            PixelFormat pixelFormat = bitmap.PixelFormat;
+            bw.Write((int)pixelFormat);
+            if (pixelFormat.ToBitsPerPixel() <= 8)
+            {
+                Color[] palette = bitmap.Palette.Entries;
+                bw.Write(palette.Length);
+                foreach (Color color in palette)
+                    bw.Write(color.ToArgb());
+            }
+
+            using (IReadableBitmapData data = bitmap.GetReadableBitmapData())
+            {
+                int width = data.Stride >> 2;
+                IReadableBitmapDataRow row = data.FirstRow;
+                do
+                {
+                    for (int x = 0; x < width; x++)
+                        bw.Write(row.ReadRaw<int>(x));
+                } while (row.MoveNextRow());
+            }
+        }
+
+        private static Bitmap ReadRawBitmap(BinaryReader br)
+        {
+            var size = new Size(br.ReadInt32(), br.ReadInt32());
+            var pixelFormat = (PixelFormat)br.ReadInt32();
+            Color[] palette = null;
+            if (pixelFormat.ToBitsPerPixel() <= 8)
+            {
+                palette = new Color[br.ReadInt32()];
+                for (int i = 0; i < palette.Length; i++)
+                    palette[i] = Color.FromArgb(br.ReadInt32());
+            }
+
+            var result = new Bitmap(size.Width, size.Height, pixelFormat);
+            if (palette != null)
+            {
+                ColorPalette resultPalette = result.Palette;
+                if (resultPalette.Entries.Length != palette.Length)
+                    resultPalette = (ColorPalette)Reflector.CreateInstance(typeof(ColorPalette), resultPalette.Entries.Length);
+                for (int i = 0; i < palette.Length; i++)
+                    resultPalette.Entries[i] = palette[i];
+                result.Palette = resultPalette;
+            }
+
+            using (IWritableBitmapData data = result.GetWritableBitmapData())
+            {
+                int width = data.Stride >> 2;
+                IWritableBitmapDataRow row = data.FirstRow;
+                do
+                {
+                    for (int x = 0; x < width; x++)
+                        row.WriteRaw(x, br.ReadInt32());
+                } while (row.MoveNextRow());
+            }
+
+            return result;
         }
 
         #endregion
     }
-
-    // TODO: delete
-    internal static class ImageExtensions
-    {
-        internal static void SaveAsRaw(this Image image, Stream s) => throw new NotImplementedException("TODO: use Drawing");
-
-        public static Bitmap LoadFromRaw(Stream s) => throw new NotImplementedException();
-    }
-
 }

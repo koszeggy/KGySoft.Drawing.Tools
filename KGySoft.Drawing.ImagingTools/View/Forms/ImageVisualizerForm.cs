@@ -22,6 +22,7 @@ using System.Drawing.Imaging;
 using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
+using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
@@ -73,6 +74,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                     throw new InvalidOperationException(Res.InternalError($"Unexpected compound type: {type}"));
             }
         }
+
+        private static object FormatPreviewImage(object arg) => arg is Bitmap bmp
+            ? bmp.PixelFormat == PixelFormat.Format16bppGrayScale ? bmp.ConvertPixelFormat(PixelFormat.Format8bppIndexed, PredefinedColorsQuantizer.Grayscale()) : bmp
+            : null;
 
         #endregion
 
@@ -140,7 +145,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Notification), nameof(Label.Text), lblNotification);
 
             // VM.PreviewImage -> pbImage.Image
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.PreviewImage), nameof(PictureBox.Image), pbImage);
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.PreviewImage), nameof(PictureBox.Image), FormatPreviewImage, pbImage);
 
             // VM.PreviewImage != null -> btnSave.Enabled
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.PreviewImage), nameof(Button.Enabled), img => img != null, btnSave);
@@ -174,7 +179,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SaveFileFilterIndex), nameof(dlgSave.FilterIndex), dlgSave);
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SaveFileDefaultExtension), nameof(dlgSave.DefaultExt), dlgSave);
         }
-
         private void InitCommandBindings()
         {
             // ViewModel commands
