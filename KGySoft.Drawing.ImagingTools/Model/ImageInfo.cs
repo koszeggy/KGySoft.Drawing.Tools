@@ -17,8 +17,10 @@
 #region Usings
 
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 
 using KGySoft.ComponentModel;
@@ -31,7 +33,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
     public sealed class ImageInfo : ImageInfoBase
     {
         #region Fields
-        
+
         private Icon icon;
 
         #endregion
@@ -47,7 +49,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
         public string FileName { get => Get<string>(); set => Set(value); }
 
         public ImageFrameInfo[] Frames { get => Get<ImageFrameInfo[]>(); set => Set(value); }
-        
+
         public bool IsMultiRes => !Frames.IsNullOrEmpty() && Type.In(ImageInfoType.MultiRes, ImageInfoType.Icon);
         public bool HasFrames => !Frames.IsNullOrEmpty() && Type.In(ImageInfoType.Pages, ImageInfoType.Animation, ImageInfoType.MultiRes, ImageInfoType.Icon);
 
@@ -88,16 +90,44 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #region Public Methods
 
-        public Image GenerateImage()
+        public Image GetCreateImage()
         {
-            throw new NotImplementedException("GenerateImage");
+            Image image = Image;
+            if (image != null)
+                return image;
+            if (Type == ImageInfoType.None || !(Type == ImageInfoType.Icon || HasFrames))
+                return null;
+            image = GenerateImage();
+            return Image = image;
         }
 
-        public Icon GenerateIcon()
+        public Icon GetCreateIcon()
         {
-            throw new NotImplementedException("GenerateIcon");
-            // TODO: exception if not Icon? Maybe it can be generated in any case
-            // Maybe not even needed: SaveIcon generates it from frames if needed (and maybe even cleaner so)
+            Icon icon = Icon;
+            if (icon != null)
+                return icon;
+            if (Type == ImageInfoType.None)
+                return null;
+            icon = GenerateIcon();
+            return Icon = icon;
+        }
+
+        #endregion
+
+        #region Internal Methods
+
+        internal ImageInfo AsIcon()
+        {
+            if (!Type.In(ImageInfoType.None, ImageInfoType.Icon))
+                Type = ImageInfoType.Icon;
+            return this;
+        }
+
+        internal ImageInfo AsImage()
+        {
+            if (Type == ImageInfoType.Icon)
+                Type = HasFrames ? ImageInfoType.MultiRes : ImageInfoType.SingleImage;
+            return this;
         }
 
         #endregion
@@ -133,6 +163,9 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         protected override void Dispose(bool disposing)
         {
+            if (IsDisposed)
+                return;
+
             if (disposing)
             {
                 Icon?.Dispose();
@@ -229,62 +262,108 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         private void InitFromIcon(Icon icon)
         {
+            #region Local Methods
+
+            static void InitIconMeta(IconInfo iconInfo, ImageInfoBase imageInfo)
+            {
+                imageInfo.PixelFormat = iconInfo.BitsPerPixel == 1 ? PixelFormat.Format1bppIndexed
+                    : iconInfo.BitsPerPixel == 4 ? PixelFormat.Format4bppIndexed
+                    : iconInfo.BitsPerPixel == 8 ? PixelFormat.Format8bppIndexed
+                    : iconInfo.BitsPerPixel == 24 ? PixelFormat.Format24bppRgb
+                    : PixelFormat.Format32bppArgb;
+                imageInfo.Palette = iconInfo.Palette;
+                imageInfo.Size = iconInfo.Size;
+                imageInfo.RawFormat = iconInfo.IsCompressed ? ImageFormat.Png.Guid : ImageFormat.Bmp.Guid;
+            }
+
+            #endregion
+
             if (icon == null)
                 return;
 
             Icon = icon;
             Type = ImageInfoType.Icon;
+            PointF defaultDpi = WindowsUtils.SystemDpi;
+            HorizontalRes = defaultDpi.X;
+            VerticalRes = defaultDpi.Y;
 
             // obtaining icon images in original format
-            Bitmap[] iconImagesOrigFormat = icon.ExtractBitmaps(true);
+            IconInfo[] iconInfo = icon.GetIconInfo();
 
-            if (iconImagesOrigFormat.Length == 1)
+            if (iconInfo.Length == 1)
             {
-                InitMeta(iconImagesOrigFormat[0]);
-                iconImagesOrigFormat[0].Dispose();
+                InitIconMeta(iconInfo[0], this);
                 RawFormat = ImageFormat.Icon.Guid;
-
-                // TODO: On demand
-                //// when single-image icon, creating image from bitmap to avoid bad quality of system icons (pixel format will be system dependent)
-                //PreviewImage = icon.ToAlphaBitmap();
                 return;
             }
 
-            // TODO: not needed, not used
-            //// generating image from icon
-            //try
-            //{
-            //    PreviewImage = icon.ToMultiResBitmap();
-            //    InitMeta(PreviewImage);
-            //}
-            //catch (ArgumentException)
-            //{
-            //    // In Windows XP it can happen that multi-res bitmap throws an exception even if PNG images are uncompressed
-            //    PreviewImage = icon.ExtractNearestBitmap(new Size(UInt16.MaxValue, UInt16.MaxValue), PixelFormat.Format32bppArgb);
-            //    InitMeta(PreviewImage);
-            //    RawFormat = ImageFormat.Icon.Guid;
-            //}
-
-            Bitmap[] iconImagesAlpha = icon.ExtractBitmaps();
-            Frames = new ImageFrameInfo[iconImagesOrigFormat.Length];
-            for (int i = 0; i < Frames.Length; i++)
+            Bitmap[] iconImages = icon.ExtractBitmaps();
+            Debug.Assert(iconInfo.Length == iconImages.Length);
+            var frames = new ImageFrameInfo[iconInfo.Length];
+            for (int i = 0; i < frames.Length; i++)
             {
-                Frames[i] = new ImageFrameInfo(iconImagesOrigFormat[i]) { Image = iconImagesAlpha[i] };
-                bool isCompressed = icon.IsCompressed(i);
-                RawFormat = isCompressed ? ImageFormat.Png.Guid : ImageFormat.Bmp.Guid;
-                // setting raw format explicitly as it is at icons
-                int bpp = icon.GetBitsPerPixel(i);
-                Frames[i].PixelFormat = bpp == 1 ? PixelFormat.Format1bppIndexed
-                    : bpp == 4 ? PixelFormat.Format4bppIndexed
-                    : bpp == 8 ? PixelFormat.Format8bppIndexed
-                    : bpp == 24 ? PixelFormat.Format24bppRgb
-                    : !isCompressed ? PixelFormat.Format32bppRgb
-                    : PixelFormat.Format32bppArgb;
-                iconImagesOrigFormat[i].Dispose();
+                frames[i] = new ImageFrameInfo(iconImages[i]);
+                InitIconMeta(iconInfo[i], frames[i]);
             }
 
-            // selecting the maximum size for the compound icon
+            Frames = frames;
+
+            // determining data for the compound icon
             Size = Frames.Aggregate(Size.Empty, (size, image) => size.Width >= image.Size.Width ? size : image.Size);
+            PixelFormat = Frames.Aggregate(PixelFormat.Undefined, (pf, image) => pf.ToBitsPerPixel() >= image.PixelFormat.ToBitsPerPixel() ? pf : image.PixelFormat);
+            RawFormat = ImageFormat.Icon.Guid;
+        }
+
+        private Image GenerateImage()
+        {
+            if (!IsValid)
+            {
+                ValidationResult error = ValidationResults.Errors[0];
+
+                // ReSharper disable once LocalizableElement - the message comes from resource
+                throw new InvalidOperationException($"{error.PropertyName}: {error.Message}");
+            }
+
+            Debug.Assert(HasFrames || Type == ImageInfoType.Icon, "Frames or icon are expected here");
+            switch (Type)
+            {
+                case ImageInfoType.Pages:
+                    var ms = new MemoryStream();
+                    Frames.Select(f => f.Image).SaveAsMultipageTiff(ms);
+                    ms.Position = 0;
+                    return new Bitmap(ms);
+
+                case ImageInfoType.MultiRes:
+                case ImageInfoType.Icon:
+                    try
+                    {
+                        return GetCreateIcon().ToMultiResBitmap();
+                    }
+                    catch (ArgumentException)
+                    {
+                        // In Windows XP it can happen that multi-res bitmap throws an exception even if PNG images are uncompressed
+                        return GetCreateIcon().ExtractNearestBitmap(new Size(UInt16.MaxValue, UInt16.MaxValue), PixelFormat.Format32bppArgb);
+                    }
+
+                case ImageInfoType.Animation:
+                    throw new NotSupportedException(Res.ErrorMessageAnimGifNotSupported);
+
+                default:
+                    throw new InvalidOperationException(Res.InternalError($"Unexpected type in {nameof(GenerateImage)}: {Type}"));
+            }
+        }
+
+        private Icon GenerateIcon()
+        {
+            if (!IsValid)
+            {
+                ValidationResult error = ValidationResults.Errors[0];
+
+                // ReSharper disable once LocalizableElement - the message comes from resource
+                throw new InvalidOperationException($"{error.PropertyName}: {error.Message}");
+            }
+
+            return !HasFrames ? Image.ToIcon() : Icons.Combine(Frames.Select(f => (Bitmap)f.Image));
         }
 
         private void FreeFrames()

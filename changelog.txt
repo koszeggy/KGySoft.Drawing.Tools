@@ -11,21 +11,27 @@
 
 ! KGySoft.Drawing.ImagingTools.exe
 ==================================
-
 + API changes:
 ! Functional changes:
   ! When Icon type is being debugged and a non-icon image is opened, then the image will be converted to icon
     without changing the size (allowing any icon size).
+  ! When an icon is debugged as an image, the raw format of its images is always displayed as Icon. Though when
+    an icon is opened from file or is debugged as icon, Bmp/Png format is displayed for non-compound view.
+  + Supporting all possible PixelFormats
 
 + KGySoft.Drawing.DebuggerVisualizers.dll
 =========================================
++ The DebuggerHelper class have been made public, which provides public access for some debugger visualizers.
 - Serialization of a Metafile with WMF format failed in some cases.
-+ The DebuggerHelper class have been made public, which provides public access for some debugger visualizers
+- Debugging Bitmaps of rare PixelFormats failed, now all possible formats are supported.
 
-- KGySoft.Drawing.DebuggerVisualizers.Test.exe
++ KGySoft.Drawing.DebuggerVisualizers.Test.exe
 ==============================================
++ Providing tests for all possible PixelFormats (applies Bitmap, BitmapData, Graphics, Palette)
++ Bitmap/Metafile/Icon types can be debugged as Image or as their self type (affects replacing while debugging)
++ Also BitmapData and Graphics can be opened directly
 - If an image was debugged directly, then after replacing the image and closing the debugger the tester was crashed.
-- A Metafile with WMF format could not be opened by the debugger
+- A Metafile with WMF format was not be able to be opened by the debugger
 
 
 ~~~~~~~~~

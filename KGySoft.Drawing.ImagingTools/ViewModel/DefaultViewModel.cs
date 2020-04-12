@@ -35,10 +35,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Internal Methods
 
-        internal override void ViewCreated()
+        internal override void ViewLoaded()
         {
             ProcessArgs(CommandLineArguments);
-            base.ViewCreated();
+            base.ViewLoaded();
         }
 
         #endregion

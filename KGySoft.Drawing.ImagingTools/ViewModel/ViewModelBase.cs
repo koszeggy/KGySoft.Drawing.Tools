@@ -36,6 +36,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal Action<string> ShowInfoCallback { get => Get<Action<string>>(); set => Set(value); }
         internal Func<string, bool> ConfirmCallback { get => Get<Func<string, bool>>(); set => Set(value); }
         internal Action<IViewModel> ShowChildViewCallback { get => Get<Action<IViewModel>>(); set => Set(value); }
+        internal Action CloseViewCallback { get => Get<Action>(); set => Set(value); }
 
         #endregion
 
@@ -52,7 +53,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Internal Methods
 
-        internal virtual void ViewCreated() => SetModified(false);
+        internal virtual void ViewLoaded() => SetModified(false);
 
         #endregion
 

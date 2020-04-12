@@ -76,6 +76,10 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Confirmation</summary>
         internal static string TitleConfirmation => Get("Title_Confirmation");
 
+        /// <summary>; </summary>
+        internal static string TitleInfoSeparator => Get("Title_InfoSeparator");
+
+
         #endregion
 
         #region Texts
@@ -145,6 +149,9 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Are you sure you want to remove this installation?</summary>
         internal static string ConfirmMessageRemoveInstallation => Get("ConfirmMessage_RemoveInstallation");
 
+        /// <summary>The palette contains no colors. Click OK to exit.</summary>
+        internal static string InfoMessagePaletteEmpty => Get("InfoMessage_PaletteEmpty");
+
         #endregion
 
         #region Installations
@@ -198,7 +205,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Type: {0}</summary>
         public static string TitleType(string type) => Get("Title_TypeFormat", type);
 
-        /// <summary>; Size: {0}</summary>
+        /// <summary>Size: {0}</summary>
         public static string TitleSize(string size) => Get("Title_SizeFormat", size);
 
         /// <summary>Palette Count: {0}</summary>

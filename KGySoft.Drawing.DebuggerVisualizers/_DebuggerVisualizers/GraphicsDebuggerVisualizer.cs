@@ -16,7 +16,8 @@
 
 #region Usings
 
-using KGySoft.Drawing.DebuggerVisualizers.Serializers;
+using KGySoft.Drawing.DebuggerVisualizers.Model;
+using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 using KGySoft.Drawing.ImagingTools;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;
@@ -35,7 +36,10 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <param name="windowService">The window service.</param>
         /// <param name="objectProvider">The object provider.</param>
         protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
-            => DebuggerHelper.DebugGraphics(SerializationHelper.DeserializeGraphicsInfo(objectProvider.GetData()));
+        {
+            using (GraphicsInfo graphicsInfo = SerializationHelper.DeserializeGraphicsInfo(objectProvider.GetData()))
+                DebuggerHelper.DebugGraphics(graphicsInfo);
+        }
 
         #endregion
     }

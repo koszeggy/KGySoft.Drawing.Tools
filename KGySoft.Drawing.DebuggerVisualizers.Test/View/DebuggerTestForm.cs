@@ -76,8 +76,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.PixelFormatEnabled), nameof(cmbPixelFormat.Enabled), cmbPixelFormat);
             commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.ImageFromFile), nameof(gbFile.Enabled), gbFile);
             commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.AsReadOnlyEnabled), nameof(chbAsReadOnly.Enabled), chbAsReadOnly);
-            commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.CanDebugDirectly), nameof(btnViewDirect.Enabled), btnViewDirect);
-            commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.CanDebugByDebugger), nameof(btnViewByDebugger.Enabled), btnViewByDebugger);
+            commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.CanDebug), nameof(Button.Enabled), btnViewDirect, btnViewByDebugger);
             commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.PreviewImage), nameof(pictureBox.Image), pictureBox);
 
             commandBindings.Add<EventArgs>(OnSelectFileCommand)

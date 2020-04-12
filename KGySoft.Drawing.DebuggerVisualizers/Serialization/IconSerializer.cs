@@ -23,7 +23,7 @@ using Microsoft.VisualStudio.DebuggerVisualizers;
 
 #endregion
 
-namespace KGySoft.Drawing.DebuggerVisualizers.Serializers
+namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 {
     internal class IconSerializer : VisualizerObjectSource
     {

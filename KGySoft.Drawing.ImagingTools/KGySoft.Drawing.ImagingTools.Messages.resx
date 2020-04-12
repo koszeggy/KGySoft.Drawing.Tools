@@ -138,11 +138,14 @@
   <data name="Title_Confirmation" xml:space="preserve">
     <value>Confirmation</value>
   </data>
+  <data name="Title_InfoSeparator" xml:space="preserve">
+    <value>; </value>
+  </data>
   <data name="Title_TypeFormat" xml:space="preserve">
     <value>Type: {0}</value>
   </data>
   <data name="Title_SizeFormat" xml:space="preserve">
-    <value>; Size: {0}</value>
+    <value>Size: {0}</value>
   </data>
   <data name="Title_PaletteCountFormat" xml:space="preserve">
     <value>Palette Count: {0}</value>
@@ -281,6 +284,9 @@ See the Configuration button.</value>
   </data>
   <data name="ConfirmMessage_RemoveInstallation" xml:space="preserve">
     <value>Are you sure you want to remove this installation?</value>
+  </data>
+  <data name="InfoMessage_PaletteEmpty" xml:space="preserve">
+    <value>The palette contains no colors. Click OK to exit.</value>
   </data>
   <data name="Installations_CustomDir" xml:space="preserve">
     <value>&lt;Custom Path...&gt;</value>

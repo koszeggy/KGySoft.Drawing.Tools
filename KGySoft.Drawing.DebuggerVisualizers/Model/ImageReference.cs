@@ -22,8 +22,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security;
-
-using KGySoft.Drawing.DebuggerVisualizers.Serializers;
+using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 using KGySoft.Drawing.ImagingTools.Model;
 
 #endregion
@@ -36,7 +35,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Model
         #region Fields
 
         private readonly string fileName;
-        private readonly bool isIcon;
+        private readonly bool asIcon;
         private readonly byte[] rawData;
 
         #endregion
@@ -48,9 +47,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Model
             if (imageInfo.Type == ImageInfoType.None)
                 return;
 
-            isIcon = imageInfo.Type == ImageInfoType.Icon;
+            asIcon = imageInfo.Type == ImageInfoType.Icon;
             fileName = imageInfo.FileName;
-            if (fileName == null)
+            if (fileName != null)
                 return;
 
             rawData = SerializeImage(imageInfo);
@@ -66,35 +65,43 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Model
         {
             using (var ms = new MemoryStream())
             {
-                if (isIcon)
+                if (asIcon)
                 {
-                    (imageInfo.Icon ?? imageInfo.GenerateIcon()).SaveAsIcon(ms);
+                    (imageInfo.Icon ?? imageInfo.GetCreateIcon()).SaveAsIcon(ms);
                     return ms.ToArray();
                 }
 
                 using (var bw = new BinaryWriter(ms))
                 {
-                    // compound image is not available: not generating it unnecessarily
-                    if (imageInfo.HasFrames && imageInfo.Image == null)
+                    switch (imageInfo.Type)
                     {
-                        bw.Write(false); // not raw
-                        switch (imageInfo.Type)
-                        {
-                            case ImageInfoType.Pages:
-                                imageInfo.Frames.Select(f => f.Image).SaveAsMultipageTiff(ms);
-                                return ms.ToArray();
+                        case ImageInfoType.Pages:
+                        case ImageInfoType.MultiRes:
+                            // we must use an inner stream because image.Save (at least TIFF encoder) may overwrite
+                            // the stream content before the original start position
+                            using (var inner = new MemoryStream())
+                            {
+                                if (imageInfo.Type == ImageInfoType.Pages)
+                                    imageInfo.Frames.Select(f => f.Image).SaveAsMultipageTiff(inner);
+                                else
+                                    (imageInfo.Icon ?? imageInfo.GetCreateIcon()).SaveAsIcon(inner);
 
-                            case ImageInfoType.MultiRes:
-                                (imageInfo.Icon ?? imageInfo.GenerateIcon()).SaveAsIcon(ms);
-                                return ms.ToArray();
+                                bw.Write(true); // AsImage
+                                bw.Write((int)inner.Length);
+                                inner.WriteTo(ms);
+                            }
 
-                            case ImageInfoType.Animation:
-                                imageInfo.GenerateImage();
-                                break;
-                        }
+                            break;
+
+                        case ImageInfoType.Animation:
+                            SerializationHelper.WriteImage(bw, imageInfo.GetCreateImage());
+                            break;
+
+                        default:
+                            SerializationHelper.WriteImage(bw, imageInfo.Image);
+                            break;
                     }
 
-                    SerializationHelper.WriteImage(bw, imageInfo.Image);
                     return ms.ToArray();
                 }
             }
@@ -110,10 +117,28 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Model
             if (fileName == null && rawData == null)
                 return null;
 
-            MemoryStream ms = new MemoryStream(rawData ?? File.ReadAllBytes(fileName));
-            if (isIcon)
-                return new Icon(ms);
-            return SerializationHelper.ReadImage(new BinaryReader(ms));
+            if (fileName != null)
+            {
+                if (asIcon)
+                    return new Icon(fileName);
+
+                try
+                {
+                    return Image.FromFile(fileName);
+                }
+                catch (Exception)
+                {
+                    if (!fileName.EndsWith(".ico", StringComparison.OrdinalIgnoreCase))
+                        throw;
+
+                    // special handling for icon files: as a Bitmap icons may throw an exception
+                    using (var info = new ImageInfo(new Icon(fileName)))
+                        return info.GetCreateImage().Clone();
+                }
+            }
+
+            MemoryStream ms = new MemoryStream(rawData);
+            return asIcon ? (object)new Icon(ms) : SerializationHelper.ReadImage(new BinaryReader(ms));
         }
 
         #endregion

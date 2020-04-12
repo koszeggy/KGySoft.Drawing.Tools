@@ -40,7 +40,6 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         /// <summary>
         /// Gets or sets the actual image to save or work with.
-        /// Cannot be <see langword="null"/>.
         /// </summary>
         public Image Image { get => Get<Image>(); set => Set(value); }
 
@@ -52,8 +51,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         public PixelFormat PixelFormat { get => Get<PixelFormat>(); set => Set(value); }
 
-        // TODO: Reflector.EmptyArray<Color>()
-        public Color[] Palette { get => Get(new Color[0]); set => Set(value); }
+        public Color[] Palette { get => Get(Reflector.EmptyArray<Color>()); set => Set(value ?? Reflector.EmptyArray<Color>()); }
 
         public Guid RawFormat { get => Get<Guid>(); set => Set(value); }
 
@@ -62,6 +60,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
         #region Internal Properties
 
         internal int BitsPerPixel => Image.GetPixelFormatSize(PixelFormat);
+        internal bool IsDisposed { get; private set; } // TODO: remove if OOB will have IsDisposed
 
         #endregion
 
@@ -99,8 +98,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
             HorizontalRes = image.HorizontalResolution;
             VerticalRes = image.VerticalResolution;
             PixelFormat = image.PixelFormat;
-            // TODO: EmptyArray
-            Palette = image is Metafile ? new Color[0] : image.Palette.Entries;
+            Palette = image is Metafile ? Reflector.EmptyArray<Color>() : image.Palette.Entries;
             RawFormat = image.RawFormat.Guid;
         }
 
@@ -108,6 +106,9 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         protected override void Dispose(bool disposing)
         {
+            if (IsDisposed)
+                return;
+            IsDisposed = true;
             if (disposing)
                 Image?.Dispose();
             base.Dispose(disposing);

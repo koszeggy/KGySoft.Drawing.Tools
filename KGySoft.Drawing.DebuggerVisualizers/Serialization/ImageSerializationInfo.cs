@@ -22,14 +22,14 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 
-using KGySoft.Drawing.DebuggerVisualizers.Serializers;
+using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
 
 #endregion
 
-namespace KGySoft.Drawing.DebuggerVisualizers.Model
+namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 {
-    internal sealed class ImageSerializationInfo
+    internal sealed class ImageSerializationInfo : IDisposable
     {
         #region Properties
 
@@ -41,17 +41,17 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Model
 
         internal ImageSerializationInfo(Image image)
         {
-            ImageInfo = new ImageInfo(image);
+            ImageInfo = new ImageInfo((Image)image?.Clone());
         }
 
         internal ImageSerializationInfo(Icon icon)
         {
-            ImageInfo = new ImageInfo(icon);
+            ImageInfo = new ImageInfo((Icon)icon?.Clone());
         }
 
-        internal ImageSerializationInfo(BinaryReader br)
+        internal ImageSerializationInfo(Stream stream)
         {
-            ReadFrom(br);
+            ReadFrom(new BinaryReader(stream));
             ImageInfo.SetModified(false);
         }
 
@@ -93,6 +93,12 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Model
 
         #region Instance Methods
 
+        #region Public Methods
+
+        public void Dispose() => ImageInfo?.Dispose();
+
+        #endregion
+
         #region Internal Methods
 
         internal void Write(BinaryWriter bw)
@@ -103,20 +109,25 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Model
                 return;
 
             // 2. How multi-frame image is saved
-            bool saveAsSingleImage = ImageInfo.Type == ImageInfoType.SingleImage || ForceSaveCompoundImage();
+            bool saveAsSingleImage = ImageInfo.Type.In(ImageInfoType.SingleImage, ImageInfoType.Icon) || ForceSaveCompoundImage();
             if (ImageInfo.Type != ImageInfoType.SingleImage)
                 bw.Write(saveAsSingleImage);
 
-            // 3. Main image (if any). For pages meta is not saved for main image even if compound saving was forced.
+            // 3. Main image (if any)
             if (saveAsSingleImage)
-                SerializationHelper.WriteImage(bw, ImageInfo.Image);
-            if (ImageInfo.Type != ImageInfoType.Pages)
-                WriteMeta(bw, ImageInfo);
+            {
+                if (ImageInfo.Type == ImageInfoType.Icon)
+                    SerializationHelper.WriteIcon(bw, ImageInfo.GetCreateIcon());
+                else
+                    SerializationHelper.WriteImage(bw, ImageInfo.GetCreateImage());
+            }
+
+            // Meta is saved even for pages so we will have a general size, etc.
+            WriteMeta(bw, ImageInfo);
 
             // 4. Frames (if any)
-            if (ImageInfo.Type != ImageInfoType.SingleImage)
+            if (ImageInfo.HasFrames)
             {
-                Debug.Assert(ImageInfo.Frames != null, "Frames should not be null");
                 bw.Write(ImageInfo.Frames.Length);
                 foreach (ImageFrameInfo frame in ImageInfo.Frames)
                 {
@@ -146,18 +157,29 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Model
 
             // 3. Main/single image (if any)
             if (savedAsSingleImage)
-                ImageInfo.Image = SerializationHelper.ReadImage(br);
-            if (imageType != ImageInfoType.Pages)
-                ReadMeta(br, ImageInfo);
+            {
+                if (imageType == ImageInfoType.Icon)
+                    ImageInfo.Icon = SerializationHelper.ReadIcon(br);
+                else
+                    ImageInfo.Image = SerializationHelper.ReadImage(br);
+            }
 
-            if (imageType == ImageInfoType.SingleImage)
+            ReadMeta(br, ImageInfo);
+
+            if (imageType == ImageInfoType.SingleImage || imageType == ImageInfoType.Icon && ImageInfo.Icon.GetImagesCount() <= 1)
                 return;
 
             // 4. Frames (if any)
             int len = br.ReadInt32();
-            ImageInfo.Frames = new ImageFrameInfo[len];
-            foreach (ImageFrameInfo frame in ImageInfo.Frames)
+            var frames = new ImageFrameInfo[len];
+            Bitmap[] frameImages = savedAsSingleImage
+                ? imageType == ImageInfoType.Icon ? ImageInfo.Icon.ExtractBitmaps() : ((Bitmap)ImageInfo.Image).ExtractBitmaps()
+                : new Bitmap[len];
+            Debug.Assert(frameImages.Length == frames.Length);
+            for (int i = 0; i < len; i++)
             {
+                var frame = new ImageFrameInfo(frameImages[i]);
+                frames[i] = frame;
                 if (!savedAsSingleImage)
                     frame.Image = SerializationHelper.ReadImage(br);
                 ReadMeta(br, frame);
@@ -165,13 +187,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Model
                     frame.Duration = br.ReadInt32();
             }
 
-            if (savedAsSingleImage)
-            {
-                Bitmap[] frames = ((Bitmap)ImageInfo.Image).ExtractBitmaps();
-                Debug.Assert(frames.Length == ImageInfo.Frames.Length);
-                for (int i = 0; i < frames.Length; i++)
-                    ImageInfo.Frames[i].Image = frames[i];
-            }
+            ImageInfo.Frames = frames;
         }
 
         private bool ForceSaveCompoundImage() => ImageInfo.RawFormat == ImageFormat.Gif.Guid;

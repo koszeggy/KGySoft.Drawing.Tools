@@ -38,8 +38,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             this.rbBitmapData = new System.Windows.Forms.RadioButton();
             this.rbGraphicsHwnd = new System.Windows.Forms.RadioButton();
             this.rbGraphicsBitmap = new System.Windows.Forms.RadioButton();
-            this.cmbPixelFormat = new System.Windows.Forms.ComboBox();
             this.chbAsImage = new System.Windows.Forms.CheckBox();
+            this.cmbPixelFormat = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.panelControls.SuspendLayout();
             this.gbFile.SuspendLayout();
@@ -145,7 +145,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             this.pictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox.Location = new System.Drawing.Point(224, 10);
             this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(195, 401);
+            this.pictureBox.Size = new System.Drawing.Size(195, 396);
             this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox.TabIndex = 14;
             this.pictureBox.TabStop = false;
@@ -172,7 +172,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             this.panelControls.Location = new System.Drawing.Point(15, 10);
             this.panelControls.Name = "panelControls";
             this.panelControls.Padding = new System.Windows.Forms.Padding(0, 0, 13, 0);
-            this.panelControls.Size = new System.Drawing.Size(209, 401);
+            this.panelControls.Size = new System.Drawing.Size(209, 396);
             this.panelControls.TabIndex = 0;
             // 
             // chbAsReadOnly
@@ -314,17 +314,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             this.rbGraphicsBitmap.Text = "Graphics from Bitmap";
             this.rbGraphicsBitmap.UseVisualStyleBackColor = true;
             // 
-            // cmbPixelFormat
-            // 
-            this.cmbPixelFormat.Dock = System.Windows.Forms.DockStyle.Top;
-            this.cmbPixelFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbPixelFormat.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.cmbPixelFormat.FormattingEnabled = true;
-            this.cmbPixelFormat.Location = new System.Drawing.Point(0, 0);
-            this.cmbPixelFormat.Name = "cmbPixelFormat";
-            this.cmbPixelFormat.Size = new System.Drawing.Size(196, 21);
-            this.cmbPixelFormat.TabIndex = 0;
-            // 
             // chbAsImage
             // 
             this.chbAsImage.AutoSize = true;
@@ -339,6 +328,17 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             this.chbAsImage.Text = "As Image";
             this.chbAsImage.UseVisualStyleBackColor = true;
             // 
+            // cmbPixelFormat
+            // 
+            this.cmbPixelFormat.Dock = System.Windows.Forms.DockStyle.Top;
+            this.cmbPixelFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbPixelFormat.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.cmbPixelFormat.FormattingEnabled = true;
+            this.cmbPixelFormat.Location = new System.Drawing.Point(0, 0);
+            this.cmbPixelFormat.Name = "cmbPixelFormat";
+            this.cmbPixelFormat.Size = new System.Drawing.Size(196, 21);
+            this.cmbPixelFormat.TabIndex = 0;
+            // 
             // DebuggerTestForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -349,7 +349,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(250, 450);
             this.Name = "DebuggerTestForm";
-            this.Padding = new System.Windows.Forms.Padding(15, 10, 15, 0);
+            this.Padding = new System.Windows.Forms.Padding(15, 10, 15, 5);
             this.Text = "Debugger Visualizer Test";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             this.panelControls.ResumeLayout(false);

@@ -94,8 +94,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
         internal bool AsReadOnly { get => Get<bool>(); set => Set(value); }
         internal bool AsReadOnlyEnabled { get => Get<bool>(); set => Set(value); }
 
-        internal bool CanDebugDirectly { get => Get<bool>(); set => Set(value); }
-        internal bool CanDebugByDebugger { get => Get<bool>(); set => Set(value); }
+        internal bool CanDebug { get => Get<bool>(); set => Set(value); }
         internal Image PreviewImage { get => Get<Image>(); set => Set(value); }
 
         internal Action<string> ErrorCallback { get => Get<Action<string>>(); set => Set(value); }
@@ -123,7 +122,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
                 if (group.Contains(nameof(Bitmap)))
                 {
                     AsImageEnabled = e.PropertyName.In(nameof(Bitmap), nameof(Metafile), nameof(HIcon), nameof(ManagedIcon));
-                    PixelFormatEnabled = e.PropertyName.In(nameof(Bitmap), nameof(BitmapData), nameof(Palette));
+                    PixelFormatEnabled = e.PropertyName.In(nameof(Bitmap), nameof(BitmapData), nameof(Palette), nameof(GraphicsBitmap));
                     AsReadOnlyEnabled = !e.PropertyName.In(nameof(GraphicsBitmap), nameof(GraphicsHwnd), nameof(BitmapData));
                 }
 
@@ -131,7 +130,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
                 return;
             }
 
-            if (e.PropertyName == nameof(FileName) && ImageFromFile || e.PropertyName == nameof(PixelFormat) && PixelFormatEnabled)
+            if (e.PropertyName == nameof(FileName) && ImageFromFile
+                || e.PropertyName == nameof(PixelFormat) && PixelFormatEnabled
+                || e.PropertyName == nameof(AsImage))
             {
                 TestObject = GenerateObject();
                 return;
@@ -141,8 +142,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
             {
                 var obj = TestObject;
                 PreviewImage = GetPreviewImage(obj);
-                CanDebugByDebugger = obj != null;
-                CanDebugDirectly = obj != null && !(obj is Graphics || obj is BitmapData);
+                CanDebug = obj != null;
             }
         }
 
@@ -176,11 +176,11 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
             if (Metafile)
                 return GenerateMetafile();
             if (HIcon)
-                return SystemIcons.Application;
+                return AsImage ? SystemIcons.Application.ToMultiResBitmap() : (object)SystemIcons.Application;
             if (ManagedIcon)
-                return Icons.Application;
+                return AsImage ? Icons.Application.ToMultiResBitmap() : (object)Icons.Application;
             if (GraphicsBitmap)
-                return Graphics.FromImage(Icons.Shield.ExtractBitmap(0));
+                return GetBitmapGraphics();
             if (GraphicsHwnd)
                 return GetWindowGraphics();
             if (BitmapData)
@@ -197,16 +197,20 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
 
         private Image GetPreviewImage(object obj)
         {
+            static Image ToSupportedFormat(Image image) => image.PixelFormat == PixelFormat.Format16bppGrayScale
+                ? image.ConvertPixelFormat(PixelFormat.Format8bppIndexed, PredefinedColorsQuantizer.Grayscale())
+                : image;
+
             switch (obj)
             {
                 case Image image:
-                    return image.PixelFormat == PixelFormat.Format16bppGrayScale ? image.ConvertPixelFormat(PixelFormat.Format8bppIndexed, PredefinedColorsQuantizer.Grayscale()) : image;
+                    return ToSupportedFormat(image);
                 case Icon icon:
                     return icon.ToMultiResBitmap();
                 case Graphics graphics:
                     return graphics.ToBitmap(false);
                 case BitmapData _:
-                    return (Image)BitmapDataOwner.Clone();
+                    return ToSupportedFormat((Image)BitmapDataOwner.Clone());
                 case ColorPalette palette:
                     return FromPalette(palette.Entries);
                 case Color color:
@@ -219,6 +223,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
         private Image FromPalette(IList<Color> palette)
         {
             var size = palette.Count;
+            if (size == 0)
+                return null;
             var result = new Bitmap(size, size, PixelFormat.Format32bppArgb);
             for (int x = 0; x < size; x++)
                 for (int y = 0; y < size; y++)
@@ -285,7 +291,20 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
             return result;
         }
 
-        private object GetWindowGraphics()
+        private Graphics GetBitmapGraphics()
+        {
+            try
+            {
+                return Graphics.FromImage(Icons.Shield.ExtractBitmap(0).ConvertPixelFormat(PixelFormat));
+            }
+            catch (Exception e) when (!(e is StackOverflowException))
+            {
+                ErrorCallback?.Invoke($"Could not create Graphics from a Bitmap with PixelFormat '{PixelFormat}': {e.Message}");
+                return null;
+            }
+        }
+
+        private Graphics GetWindowGraphics()
         {
             IntPtr hwnd = GetHwndCallback?.Invoke() ?? IntPtr.Zero;
             var graphics = Graphics.FromHwnd(hwnd);
@@ -327,39 +346,43 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
             switch (TestObject)
             {
                 case Image image:
-                    if (!ImageFromFile || FileAsImage)
+                    if (!ImageFromFile && AsImage || ImageFromFile && FileAsImage)
                     {
-                        Image newImage = DebuggerHelper.DebugImage(image, AsReadOnly, hwnd);
+                        Image newImage = DebuggerHelper.DebugImage(image, !AsReadOnly, hwnd);
                         if (newImage != image)
                             TestObject = newImage;
                     }
                     else if (image is Metafile metafile)
                     {
-                        Metafile newMetafile = DebuggerHelper.DebugMetafile(metafile, AsReadOnly, hwnd);
-                        if (newMetafile != null)
+                        Metafile newMetafile = DebuggerHelper.DebugMetafile(metafile, !AsReadOnly, hwnd);
+                        if (newMetafile != image)
                             TestObject = newMetafile;
                     }
                     else if (image is Bitmap bitmap)
                     {
-                        Bitmap newBitmap = DebuggerHelper.DebugBitmap(bitmap, AsReadOnly, hwnd);
-                        if (newBitmap != null)
-                        {
-                            if (TestObject == newBitmap)
-                                TestObject = null;
+                        Bitmap newBitmap = DebuggerHelper.DebugBitmap(bitmap, !AsReadOnly, hwnd);
+                        if (newBitmap != bitmap)
                             TestObject = newBitmap;
-                        }
                     }
 
                     break;
 
                 case Icon icon:
-                    Icon newIcon = DebuggerHelper.DebugIcon(icon, AsReadOnly, hwnd);
-                    if (newIcon != null)
+                    Icon newIcon = DebuggerHelper.DebugIcon(icon, !AsReadOnly, hwnd);
+                    if (newIcon != icon)
                         TestObject = newIcon;
                     break;
 
+                case BitmapData bitmapData:
+                    DebuggerHelper.DebugBitmapData(bitmapData, hwnd);
+                    break;
+
+                case Graphics graphics:
+                    DebuggerHelper.DebugGraphics(graphics, hwnd);
+                    break;
+
                 case ColorPalette palette:
-                    ColorPalette newPalette = DebuggerHelper.DebugPalette(palette, AsReadOnly, hwnd);
+                    ColorPalette newPalette = DebuggerHelper.DebugPalette(palette, !AsReadOnly, hwnd);
                     if (newPalette != null)
                     {
                         if (TestObject == newPalette)
@@ -370,10 +393,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
                     break;
 
                 case Color color:
-                    Color? newColor = DebuggerHelper.DebugColor(color, AsReadOnly, hwnd);
+                    Color? newColor = DebuggerHelper.DebugColor(color, !AsReadOnly, hwnd);
                     if (newColor != null)
                         TestObject = newColor;
                     break;
+
+                default:
+                    throw new InvalidOperationException($"Unexpected object type: {TestObject.GetType()}");
             }
         }
 
@@ -383,7 +409,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
             if (testObject == null)
                 return;
 
-            Type targetType = testObject is Image && (!ImageFromFile || FileAsImage)
+            Type targetType = testObject is Image && (!ImageFromFile && AsImage || ImageFromFile && FileAsImage)
                 ? typeof(Image)
                 : testObject.GetType();
             DebuggerVisualizerAttribute attr = debuggerVisualizers.GetValueOrDefault(targetType);

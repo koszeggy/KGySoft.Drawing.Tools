@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: GraphicsSerializer.cs
+//  File: BitmapDataSerializer.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2019 - All Rights Reserved
 //
@@ -16,23 +16,22 @@
 
 #region Usings
 
-using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
-
 using Microsoft.VisualStudio.DebuggerVisualizers;
 
 #endregion
 
-namespace KGySoft.Drawing.DebuggerVisualizers.Serializers
+namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 {
-    internal class GraphicsSerializer : VisualizerObjectSource
+    internal class BitmapDataSerializer : VisualizerObjectSource
     {
         #region Methods
 
         /// <summary>
         /// Called when the object to be debugged is about to be serialized
         /// </summary>
-        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeGraphicsInfo((Graphics)target, outgoingData);
+        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeBitmapDataInfo((BitmapData)target, outgoingData);
 
         #endregion
     }

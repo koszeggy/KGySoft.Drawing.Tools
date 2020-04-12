@@ -76,8 +76,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         }
 
         private static object FormatPreviewImage(object arg) => arg is Bitmap bmp
-            ? bmp.PixelFormat == PixelFormat.Format16bppGrayScale ? bmp.ConvertPixelFormat(PixelFormat.Format8bppIndexed, PredefinedColorsQuantizer.Grayscale()) : bmp
-            : null;
+            ? bmp.PixelFormat == PixelFormat.Format16bppGrayScale
+                ? bmp.ConvertPixelFormat(PixelFormat.Format8bppIndexed, PredefinedColorsQuantizer.Grayscale())
+                : bmp
+            : arg;
 
         #endregion
 

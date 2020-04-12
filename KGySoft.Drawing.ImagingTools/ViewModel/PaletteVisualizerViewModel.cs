@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Drawing;
 
 using KGySoft.ComponentModel;
+using KGySoft.CoreLibraries;
 
 #endregion
 
@@ -46,6 +47,21 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #endregion
 
         #region Methods
+
+        #region Internal Methods
+
+        internal override void ViewLoaded()
+        {
+            base.ViewLoaded();
+            if (Palette.IsNullOrEmpty())
+            {
+                ReadOnly = true;
+                ShowInfo(Res.InfoMessagePaletteEmpty);
+                CloseViewCallback?.Invoke();
+            }
+        }
+
+        #endregion
 
         #region Protected Methods
 

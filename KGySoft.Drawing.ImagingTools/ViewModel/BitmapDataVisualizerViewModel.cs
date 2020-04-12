@@ -35,11 +35,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Constructors
 
-        internal BitmapDataVisualizerViewModel() : base(AllowedImageTypes.None)
+        internal BitmapDataVisualizerViewModel() : base(AllowedImageTypes.Bitmap)
         {
             ReadOnly = true;
-            OpenFileCommandState.Enabled = false;
-            ClearCommandState.Enabled = false;
         }
 
         #endregion
@@ -57,7 +55,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 return;
             }
 
-            TitleCaption = $"{Res.TitleType(nameof(BitmapData))}; {Res.TitleSize(image.Size.ToString())}";
+            TitleCaption = $"{Res.TitleType(nameof(BitmapData))}{Res.TitleInfoSeparator}{Res.TitleSize(image.Size.ToString())}";
             if (GetCurrentImage().BitsPerPixel <= 8)
                 Notification = Res.NotificationPaletteCannotBeRestored;
         }

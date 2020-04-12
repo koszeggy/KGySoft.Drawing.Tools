@@ -57,12 +57,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 return;
             ViewModel = viewModel;
 
-            var vm = VM;
+            ViewModelBase vm = VM;
             vm.ShowInfoCallback = Dialogs.InfoMessage;
             vm.ShowWarningCallback = Dialogs.WarningMessage;
             vm.ShowErrorCallback = Dialogs.ErrorMessage;
             vm.ConfirmCallback = Dialogs.ConfirmMessage;
             vm.ShowChildViewCallback = ShowChildView;
+            vm.CloseViewCallback = () => BeginInvoke(new Action(Close));
 
             CommandBindings = new WinformsCommandBindingsCollection();
         }
@@ -96,7 +97,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected virtual void ApplyResources() => this.ApplyStaticStringResources();
 
-        protected virtual void ApplyViewModel() => VM.ViewCreated();
+        protected virtual void ApplyViewModel() => VM.ViewLoaded();
 
         protected void ShowChildView(IViewModel vm) => ViewFactory.ShowDialog(vm, Handle);
 
@@ -116,6 +117,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             foreach (Control child in control.Controls)
             {
+                // TODO:
                 //if (child is MvvmBaseUserControl<TViewModel> userControl)
                 //    userControl.ApplyViewModel(viewModel);
                 //else

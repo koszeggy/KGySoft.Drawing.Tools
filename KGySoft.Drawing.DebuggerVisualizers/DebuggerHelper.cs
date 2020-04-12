@@ -23,7 +23,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 
 using KGySoft.Drawing.DebuggerVisualizers.Model;
-using KGySoft.Drawing.DebuggerVisualizers.Serializers;
+using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.ImagingTools.View;
 using KGySoft.Drawing.ImagingTools.ViewModel;
@@ -55,7 +55,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
             using (IViewModel<Image> vm = ViewModelFactory.FromBitmap(bitmap, !isReplaceable))
             {
                 ViewFactory.ShowDialog(vm, ownerWindowHandle);
-                return vm.IsModified ? vm.GetEditedModel() as Bitmap : null;
+                return vm.IsModified ? vm.GetEditedModel() as Bitmap : bitmap;
             }
         }
 
@@ -64,7 +64,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
             using (IViewModel<Image> vm = ViewModelFactory.FromMetafile(metafile, !isReplaceable))
             {
                 ViewFactory.ShowDialog(vm, ownerWindowHandle);
-                return vm.IsModified ? vm.GetEditedModel() as Metafile : null;
+                return vm.IsModified ? vm.GetEditedModel() as Metafile : metafile;
             }
         }
 
@@ -73,8 +73,24 @@ namespace KGySoft.Drawing.DebuggerVisualizers
             using (IViewModel<Icon> vm = ViewModelFactory.FromIcon(icon, !isReplaceable))
             {
                 ViewFactory.ShowDialog(vm, ownerWindowHandle);
-                return vm.IsModified ? vm.GetEditedModel() : null;
+                return vm.IsModified ? vm.GetEditedModel() : icon;
             }
+        }
+
+        public static void DebugBitmapData(BitmapData bitmapData, IntPtr ownerWindowHandle = default)
+        {
+            if (bitmapData == null)
+                throw new ArgumentNullException(nameof(bitmapData), PublicResources.ArgumentNull);
+            using (var bitmapDataInfo = new BitmapDataInfo(bitmapData))
+                DebugBitmapData(bitmapDataInfo, ownerWindowHandle);
+        }
+
+        public static void DebugGraphics(Graphics graphics, IntPtr ownerWindowHandle = default)
+        {
+            if (graphics == null)
+                throw new ArgumentNullException(nameof(graphics), PublicResources.ArgumentNull);
+            using (var graphicsInfo = new GraphicsInfo(graphics))
+                DebugGraphics(graphicsInfo, ownerWindowHandle);
         }
 
         /// <summary>
@@ -86,8 +102,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         public static ColorPalette DebugPalette(ColorPalette palette, bool isReplaceable, IntPtr ownerWindowHandle = default)
         {
             Color[] entries = palette.Entries;
-            if (entries.Length == 0)
-                return null;
             using (IViewModel<Color[]> vm = ViewModelFactory.FromPalette(entries, !isReplaceable))
             {
                 ViewFactory.ShowDialog(vm, ownerWindowHandle);
@@ -152,22 +166,22 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// Shows the debugger for a <see cref="BitmapData"/> object.
         /// </summary>
         /// <param name="bitmapDataInfo">The bitmap data infos for debugging returned by <see cref="SerializationHelper.DeserializeBitmapDataInfo"/>.</param>
-        internal static void DebugBitmapData(BitmapDataInfo bitmapDataInfo)
+        internal static void DebugBitmapData(BitmapDataInfo bitmapDataInfo, IntPtr ownerWindowHandle = default)
         {
             using (IViewModel vm = ViewModelFactory.FromBitmapData(bitmapDataInfo.Data, bitmapDataInfo.SpecialInfo))
-                ViewFactory.ShowDialog(vm);
+                ViewFactory.ShowDialog(vm, ownerWindowHandle);
         }
 
         /// <summary>
         /// Shows the debugger for a <see cref="Graphics"/> object.
         /// </summary>
         /// <param name="graphicsInfo">The graphics infos for debugging returned by <see cref="SerializationHelper.DeserializeGraphicsInfo"/>.</param>
-        internal static void DebugGraphics(GraphicsInfo graphicsInfo)
+        internal static void DebugGraphics(GraphicsInfo graphicsInfo, IntPtr ownerWindowHandle = default)
         {
             float[] elements = graphicsInfo.Elements;
             using var matrix = new Matrix(elements[0], elements[1], elements[2], elements[3], elements[4], elements[5]);
             using (IViewModel vm = ViewModelFactory.FromGraphics(graphicsInfo.Data, matrix, graphicsInfo.VisibleRect, graphicsInfo.SpecialInfo))
-                ViewFactory.ShowDialog(vm);
+                ViewFactory.ShowDialog(vm, ownerWindowHandle);
         }
 
         #endregion

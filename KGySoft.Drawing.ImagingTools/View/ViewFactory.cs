@@ -60,8 +60,8 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         public static void ShowDialog(IViewModel viewModel, IntPtr ownerWindowHandle = default)
         {
-            using (IView form = CreateView(viewModel))
-                form.ShowDialog(ownerWindowHandle == IntPtr.Zero ? null : new OwnerWindowHandle(ownerWindowHandle));
+            using (IView view = CreateView(viewModel))
+                view.ShowDialog(ownerWindowHandle == IntPtr.Zero ? null : new OwnerWindowHandle(ownerWindowHandle));
         }
 
         #endregion

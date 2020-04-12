@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: AnySerializer.cs
+//  File: ImageSerializer.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2019 - All Rights Reserved
 //
@@ -16,27 +16,23 @@
 
 #region Usings
 
+using System.Drawing;
 using System.IO;
-
-using KGySoft.Drawing.ImagingTools;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;
 
 #endregion
 
-namespace KGySoft.Drawing.DebuggerVisualizers.Serializers
+namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 {
-    /// <summary>
-    /// Serializes any object, even non-Serializable ones
-    /// </summary>
-    internal class AnySerializer : VisualizerObjectSource
+    internal class ImageSerializer : VisualizerObjectSource
     {
         #region Methods
 
         /// <summary>
         /// Called when the object to be debugged is about to be serialized
         /// </summary>
-        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeAnyObject(target, outgoingData);
+        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeImageInfo((Image)target, outgoingData);
 
         #endregion
     }

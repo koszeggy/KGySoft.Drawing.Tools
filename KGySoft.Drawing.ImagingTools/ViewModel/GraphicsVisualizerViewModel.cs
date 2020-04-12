@@ -21,6 +21,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 
 using KGySoft.ComponentModel;
+using KGySoft.CoreLibraries;
 
 #endregion
 
@@ -30,27 +31,18 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
     {
         #region Fields
 
-        private Image origImage;
+        private bool viewInitialized;
 
         #endregion
 
         #region Properties
 
+        internal Bitmap GraphicsImage { get => Get<Bitmap>(); set => Set(value); }
         internal Rectangle VisibleRect { get => Get<Rectangle>(); set => Set(value); }
         internal Matrix Transform { get => Get<Matrix>(); set => Set(value); }
         internal bool Crop { get => Get<bool>(); set => Set(value); }
-        internal bool HighlightVisibleClip { get => Get<bool>(); set => Set(value); }
+        internal bool HighlightVisibleClip { get => Get<bool>(true); set => Set(value); }
         internal Action<Graphics, Rectangle> DrawFocusRectangleCallback { get => Get<Action<Graphics, Rectangle>>(); set => Set(value); }
-
-        internal override Image Image
-        {
-            get => base.Image;
-            set
-            {
-                origImage = value;
-                UpdateImageAndCommands();
-            }
-        }
 
         internal ICommandState CropCommandState => Get(() => new CommandState());
         internal ICommandState HighlightVisibleClipCommandState => Get(() => new CommandState());
@@ -62,11 +54,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Constructors
 
-        internal GraphicsVisualizerViewModel() : base(AllowedImageTypes.None)
+        internal GraphicsVisualizerViewModel() : base(AllowedImageTypes.Bitmap)
         {
             ReadOnly = true;
-            OpenFileCommandState.Enabled = false;
-            ClearCommandState.Enabled = false;
         }
 
         #endregion
@@ -78,14 +68,15 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
         {
             base.OnPropertyChanged(e);
-            if (e.PropertyName == nameof(VisibleRect))
+            if (e.PropertyName.In(nameof(VisibleRect), nameof(GraphicsImage)))
                 UpdateImageAndCommands();
         }
 
-        internal override void ViewCreated()
+        internal override void ViewLoaded()
         {
-            HighlightVisibleClip = true;
-            base.ViewCreated();
+            viewInitialized = true;
+            UpdateGraphicImage();
+            base.ViewLoaded();
         }
 
         protected override void UpdateInfo()
@@ -102,7 +93,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (disposing)
             {
                 Transform?.Dispose();
-                origImage?.Dispose();
+                GraphicsImage?.Dispose();
             }
 
             base.Dispose(disposing);
@@ -116,39 +107,36 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             var visibleRect = VisibleRect;
             UpdateGraphicImage();
-            bool commandsEnabled = origImage != null && (origImage.Size != visibleRect.Size || visibleRect.Location != Point.Empty);
+            var backingImage = GraphicsImage;
+            bool commandsEnabled = backingImage != null && (backingImage.Size != visibleRect.Size || visibleRect.Location != Point.Empty);
             CropCommandState.Enabled = HighlightVisibleClipCommandState.Enabled = commandsEnabled;
         }
 
         private void UpdateGraphicImage()
         {
-            Image oldImage = base.Image;
-            if (oldImage != null)
-            {
-                oldImage.Dispose();
-                base.Image = null;
-            }
-
-            if (origImage == null)
+            if (!viewInitialized)
+                return;
+            var backingImage = GraphicsImage;
+            if (backingImage == null)
                 return;
 
             Rectangle visibleRect = VisibleRect;
-            if (Crop && (visibleRect.Size != origImage.Size || visibleRect.Location != Point.Empty))
+            if (Crop && (visibleRect.Size != backingImage.Size || visibleRect.Location != Point.Empty))
             {
                 if (visibleRect.Width <= 0 || visibleRect.Height <= 0)
                     return;
 
                 Bitmap newImage = new Bitmap(visibleRect.Width, visibleRect.Height);
                 using (Graphics g = Graphics.FromImage(newImage))
-                    g.DrawImage(origImage, new Rectangle(Point.Empty, visibleRect.Size), visibleRect, GraphicsUnit.Pixel);
+                    g.DrawImage(backingImage, new Rectangle(Point.Empty, visibleRect.Size), visibleRect, GraphicsUnit.Pixel);
 
-                base.Image = newImage;
+                Image = newImage;
                 return;
             }
 
-            if (HighlightVisibleClip && (visibleRect.Size != origImage.Size || visibleRect.Location != Point.Empty))
+            if (HighlightVisibleClip && (visibleRect.Size != backingImage.Size || visibleRect.Location != Point.Empty))
             {
-                Bitmap newImage = new Bitmap(origImage);
+                Bitmap newImage = new Bitmap(backingImage);
                 using (Graphics g = Graphics.FromImage(newImage))
                 {
                     using (Brush b = new SolidBrush(Color.FromArgb(128, Color.Black)))
@@ -162,11 +150,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     }
                 }
 
-                base.Image = newImage;
+                Image = newImage;
                 return;
             }
 
-            base.Image = (Image)origImage.Clone();
+            Image = (Image)backingImage.Clone();
         }
 
         #endregion

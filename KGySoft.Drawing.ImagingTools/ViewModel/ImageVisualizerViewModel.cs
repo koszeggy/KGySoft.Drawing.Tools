@@ -19,7 +19,6 @@
 #region Used Namespaces
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -81,9 +80,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Internal Properties
 
-        internal virtual Image Image
+        internal Image Image
         {
-            get => imageInfo.Image;
+            get => imageInfo.GetCreateImage();
             set => SetImageInfo(new ImageInfo(value));
         }
 
@@ -200,7 +199,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Internal Methods
 
-        internal override void ViewCreated()
+        internal override void ViewLoaded()
         {
             InitAutoZoom();
             if (deferSettingCompoundStateImage && SetCompoundViewCommandState.GetValueOrDefault<bool>(stateVisible))
@@ -214,16 +213,19 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
         {
             base.OnPropertyChanged(e);
-            if (e.PropertyName == nameof(IsCompoundView))
+            switch (e.PropertyName)
             {
-                if (!imageInfo.HasFrames || imageInfo.Type == ImageInfoType.Pages)
+                case nameof(IsCompoundView):
+                    if (imageInfo.HasFrames && imageInfo.Type != ImageInfoType.Pages)
+                        ResetCompoundState();
                     return;
-                ResetCompoundState();
-                return;
+                case nameof(ReadOnly):
+                    ReadOnlyChanged();
+                    return;
+                case nameof(ViewImagePreviewSize):
+                    OnViewImagePreviewSizeChanged();
+                    break;
             }
-
-            if (e.PropertyName == nameof(ViewImagePreviewSize))
-                OnViewImagePreviewSizeChanged();
         }
 
         protected virtual void UpdateInfo()
@@ -239,7 +241,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             StringBuilder sb = new StringBuilder();
             sb.Append(Res.TitleType(GetTypeName()));
             if (!imageInfo.IsMetafile)
+            {
+                sb.Append(Res.TitleInfoSeparator);
                 sb.Append(Res.TitleSize(GetSize()));
+            }
             sb.Append(GetFrameInfo(true));
 
             TitleCaption = sb.ToString();
@@ -254,7 +259,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (!imageInfo.IsMetafile)
             {
                 sb.AppendLine();
-                sb.Append(Res.InfoPalette(imageInfo.Palette.Length));
+                sb.Append(Res.InfoPalette(currentImage.Palette.Length));
             }
 
             InfoText = sb.ToString();
@@ -292,7 +297,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             if (disposing)
                 imageInfo.Dispose();
-
             base.Dispose(disposing);
         }
 
@@ -328,22 +332,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 throw new ArgumentException($"{error.PropertyName}: {error.Message}", nameof(value));
             }
 
-            bool valid = true;
-            switch (imageTypes)
-            {
-                case AllowedImageTypes.None:
-                    valid = value.Type == ImageInfoType.None;
-                    break;
-                case AllowedImageTypes.Bitmap:
-                    valid = !value.IsMetafile;
-                    break;
-                case AllowedImageTypes.Metafile:
-                    valid = value.IsMetafile;
-                    break;
-                case AllowedImageTypes.Icon:
-                    valid = value.Type == ImageInfoType.Icon;
-                    break;
-            }
+            bool valid = value.Type == ImageInfoType.None
+                || value.IsMetafile && imageTypes.HasFlag<AllowedImageTypes>(AllowedImageTypes.Metafile)
+                || value.Type == ImageInfoType.Icon && imageTypes.HasFlag<AllowedImageTypes>(AllowedImageTypes.Icon)
+                || !value.Type.In(ImageInfoType.None, ImageInfoType.Icon) && !value.IsMetafile && imageTypes.HasFlag<AllowedImageTypes>(AllowedImageTypes.Bitmap);
 
             if (!valid)
                 throw new ArgumentException(PublicResources.ArgumentOutOfRange, nameof(value));
@@ -353,7 +345,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             currentFrame = -1;
             SetCompoundViewCommandState[stateVisible] = false;
-            PreviewImage = imageInfo.Image;
+            IsAutoPlaying = false;
+            PreviewImage = imageInfo.GetCreateImage();
             ImageChanged();
         }
 
@@ -389,9 +382,16 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             ImageInfoBase image = GetCurrentImage();
             ShowPaletteCommandState.Enabled = image.Palette.Length > 0;
-            SaveFileCommandState.Enabled = image.Image != null;
-            ClearCommandState.Enabled = image.Image != null && !ReadOnly;
+            SaveFileCommandState.Enabled = imageInfo.Type != ImageInfoType.None;
+            ClearCommandState.Enabled = imageInfo.Type != ImageInfoType.None && !ReadOnly;
             UpdateInfo();
+        }
+
+        private void ReadOnlyChanged()
+        {
+            bool readOnly = ReadOnly;
+            OpenFileCommandState.Enabled = !readOnly;
+            ClearCommandState.Enabled = !readOnly && imageInfo.Type != ImageInfoType.None;
         }
 
         private string GetFrameInfo(bool singleLine)
@@ -693,8 +693,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
         }
 
-        private void SaveAnimGif(Stream stream) => ShowError(Res.ErrorMessageAnimGifNotSupported);
-
         private void SaveMultipageTiff(string fileName)
         {
             using (Stream stream = File.Create(fileName))
@@ -779,7 +777,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 }
 
                 // if encoder not found, selecting png encoder
-                SaveFileFilterIndex = found ? index : posPng;
+                index = found ? index : posPng;
+                SaveFileFilterIndex = index;
 
                 // setting default extension
                 string ext = encoderCodecs[index - 1].FilenameExtension;
@@ -793,7 +792,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void InitAutoZoom()
         {
-            if (imageInfo.Image == null)
+            if (GetCurrentImage() == null)
             {
                 SetAutoZoomCommandState.Enabled = AutoZoom = false;
                 return;
@@ -820,15 +819,26 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 AutoZoom = true;
         }
 
+        private void InvalidateImage()
+        {
+            SetModified(true);
+            imageInfo.FileName = null;
+            if (imageInfo.HasFrames)
+            {
+                imageInfo.Image = null;
+                imageInfo.Icon = null;
+            }
+        }
+
         #endregion
 
         #region Explicitly Implemented Interface Methods
 
-        ImageInfo IViewModel<ImageInfo>.GetEditedModel() => imageInfo;
-        Image IViewModel<Image>.GetEditedModel() => Image;
-        Icon IViewModel<Icon>.GetEditedModel() => Icon;
-        Bitmap IViewModel<Bitmap>.GetEditedModel() => Image as Bitmap;
-        Metafile IViewModel<Metafile>.GetEditedModel() => Image as Metafile;
+        Image IViewModel<Image>.GetEditedModel() => (Image)Image?.Clone();
+        Icon IViewModel<Icon>.GetEditedModel() => Icon?.Clone() as Icon;
+        Bitmap IViewModel<Bitmap>.GetEditedModel() => Image?.Clone() as Bitmap;
+        Metafile IViewModel<Metafile>.GetEditedModel() => Image?.Clone() as Metafile;
+        ImageInfo IViewModel<ImageInfo>.GetEditedModel() => imageTypes == AllowedImageTypes.Icon ? imageInfo.AsIcon() : imageInfo.AsImage();
 
         #endregion
 
@@ -951,21 +961,19 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 // even if the length of the palette is not edited it can happen that the preview image is ARGB32
                 if (palette.Entries.Length != newPalette.Length)
                 {
-                    Image newImage = currentImage.Image.ConvertPixelFormat(currentImage.PixelFormat, newPalette);
+                    // using the original palette for the conversion before applying the new colors
+                    Image newImage = currentImage.Image.ConvertPixelFormat(currentImage.PixelFormat, currentImage.Palette);
                     currentImage.Image.Dispose();
                     PreviewImage = currentImage.Image = newImage;
                     palette = newImage.Palette;
                 }
-                else
-                {
-                    for (int i = 0; i < newPalette.Length; i++)
-                        palette.Entries[i] = newPalette[i];
-                }
+
+                for (int i = 0; i < newPalette.Length; i++)
+                    palette.Entries[i] = newPalette[i];
 
                 currentImage.Image.Palette = palette; // the preview changes only if we apply the palette
                 currentImage.Palette = palette.Entries; // the actual palette will be taken from here
-                SetModified(true);
-                imageInfo.FileName = null;
+                InvalidateImage();
                 UpdatePreviewImageCallback.Invoke();
             }
         }
