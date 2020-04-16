@@ -19,9 +19,11 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Text;
 
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
+using KGySoft.Drawing.ImagingTools.Model;
 
 #endregion
 
@@ -37,9 +39,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Properties
 
-        internal Bitmap GraphicsImage { get => Get<Bitmap>(); set => Set(value); }
-        internal Rectangle VisibleRect { get => Get<Rectangle>(); set => Set(value); }
-        internal Matrix Transform { get => Get<Matrix>(); set => Set(value); }
+        internal GraphicsInfo GraphicsInfo { get => Get<GraphicsInfo>(); set => Set(value); }
         internal bool Crop { get => Get<bool>(); set => Set(value); }
         internal bool HighlightVisibleClip { get => Get<bool>(true); set => Set(value); }
         internal Action<Graphics, Rectangle> DrawFocusRectangleCallback { get => Get<Action<Graphics, Rectangle>>(); set => Set(value); }
@@ -68,7 +68,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
         {
             base.OnPropertyChanged(e);
-            if (e.PropertyName.In(nameof(VisibleRect), nameof(GraphicsImage)))
+            if (e.PropertyName.In(nameof(GraphicsInfo), nameof(GraphicsInfo)))
                 UpdateImageAndCommands();
         }
 
@@ -81,20 +81,56 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         protected override void UpdateInfo()
         {
-            var transform = Transform;
-            if (transform == null || InfoText == null)
+            GraphicsInfo graphicsInfo = GraphicsInfo;
+            Matrix transform = graphicsInfo?.Transform;
+            if (graphicsInfo?.GraphicsImage == null || transform == null)
+            {
+                TitleCaption = Res.TitleNoImage;
+                InfoText = null;
                 return;
+            }
 
-            TitleCaption = $"{Res.TitleType(nameof(Graphics))}; {(transform.IsIdentity ? Res.TitleVisibleClip(VisibleRect) : Res.TitleUntransformedVisibleClip(VisibleRect))}";
+            bool isTransformed = !transform.IsIdentity;
+            TitleCaption = $"{Res.TitleType(nameof(Graphics))}{Res.TextSeparator}{(isTransformed ? Res.TitleOriginalVisibleClip(graphicsInfo.OriginalVisibleClipBounds) : Res.TitleVisibleClip(graphicsInfo.OriginalVisibleClipBounds))}";
+            var sb = new StringBuilder();
+            sb.Append(Res.InfoWorldTransformation);
+            if (transform.IsIdentity)
+                sb.Append(Res.InfoNoTransformation);
+            else
+            {
+                // offset
+                PointF offset = new PointF(transform.OffsetX, transform.OffsetY);
+                if (offset != PointF.Empty)
+                    sb.Append($"{Res.InfoTransformOffset(offset)}{Res.TextSeparator}");
+                float[] elements = transform.Elements;
+
+                // when there is rotation, the angle/zoom is mixed so displaying them together
+                if (!elements[1].Equals(0f) || !elements[2].Equals(0f))
+                    sb.Append(Res.InfoRotationZoom(elements[0], elements[1], elements[2], elements[3]));
+                else if (elements[0].Equals(elements[3]))
+                    sb.Append(Res.InfoZoom(elements[0]));
+                else
+                    sb.Append($"{Res.InfoHorizontalZoom(elements[0])}{Res.TextSeparator}{Res.InfoVerticalZoom(elements[1])}");
+            }
+
+            sb.AppendLine();
+            if (isTransformed
+                || graphicsInfo.OriginalVisibleClipBounds != graphicsInfo.TransformedVisibleClipBounds)
+            {
+                sb.AppendLine(Res.InfoOriginalVisibleClip(graphicsInfo.OriginalVisibleClipBounds));
+                sb.AppendLine(Res.InfoTransformedVisibleClip(graphicsInfo.TransformedVisibleClipBounds, graphicsInfo.PageUnit));
+            }
+            else
+                sb.AppendLine(Res.InfoVisibleClip(graphicsInfo.OriginalVisibleClipBounds));
+
+            sb.Append(Res.InfoResolution(graphicsInfo.Resolution));
+            InfoText = sb.ToString();
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-            {
-                Transform?.Dispose();
-                GraphicsImage?.Dispose();
-            }
+                GraphicsInfo?.Dispose();
 
             base.Dispose(disposing);
         }
@@ -105,10 +141,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void UpdateImageAndCommands()
         {
-            var visibleRect = VisibleRect;
             UpdateGraphicImage();
-            var backingImage = GraphicsImage;
-            bool commandsEnabled = backingImage != null && (backingImage.Size != visibleRect.Size || visibleRect.Location != Point.Empty);
+            GraphicsInfo graphicsInfo = GraphicsInfo;
+            Bitmap backingImage = graphicsInfo?.GraphicsImage;
+            bool commandsEnabled = backingImage != null && (backingImage.Size != graphicsInfo.OriginalVisibleClipBounds.Size || graphicsInfo.OriginalVisibleClipBounds.Location != Point.Empty);
             CropCommandState.Enabled = HighlightVisibleClipCommandState.Enabled = commandsEnabled;
         }
 
@@ -116,11 +152,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             if (!viewInitialized)
                 return;
-            var backingImage = GraphicsImage;
+            GraphicsInfo graphicsInfo = GraphicsInfo;
+            Bitmap backingImage = graphicsInfo?.GraphicsImage;
             if (backingImage == null)
                 return;
 
-            Rectangle visibleRect = VisibleRect;
+            Rectangle visibleRect = graphicsInfo.OriginalVisibleClipBounds;
             if (Crop && (visibleRect.Size != backingImage.Size || visibleRect.Location != Point.Empty))
             {
                 if (visibleRect.Width <= 0 || visibleRect.Height <= 0)

@@ -242,7 +242,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             sb.Append(Res.TitleType(GetTypeName()));
             if (!imageInfo.IsMetafile)
             {
-                sb.Append(Res.TitleInfoSeparator);
+                sb.Append(Res.TextSeparator);
                 sb.Append(Res.TitleSize(GetSize()));
             }
             sb.Append(GetFrameInfo(true));
@@ -263,13 +263,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
 
             InfoText = sb.ToString();
-        }
-
-        protected ImageInfoBase GetCurrentImage()
-        {
-            if (!imageInfo.HasFrames || currentFrame < 0 || IsAutoPlaying)
-                return imageInfo;
-            return imageInfo.Frames[currentFrame];
         }
 
         protected virtual bool OpenFile(string path)
@@ -370,6 +363,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             ResetCompoundState();
         }
 
+        private ImageInfoBase GetCurrentImage()
+        {
+            if (!imageInfo.HasFrames || currentFrame < 0 || IsAutoPlaying)
+                return imageInfo;
+            return imageInfo.Frames[currentFrame];
+        }
+
+
         private void SetCompoundViewCommandStateImage()
         {
             Func<ImageInfoType, Image> callback = GetCompoundViewIconCallback;
@@ -413,11 +414,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             return result.ToString();
         }
 
-        private string GetSize()
+        private Size GetSize()
         {
             if (imageInfo.IsMultiRes && imageInfo.HasFrames && currentFrame == -1)
-                return currentResolution.ToString();
-            return GetCurrentImage().Size.ToString();
+                return currentResolution;
+            return GetCurrentImage().Size;
         }
 
         private string GetTypeName()

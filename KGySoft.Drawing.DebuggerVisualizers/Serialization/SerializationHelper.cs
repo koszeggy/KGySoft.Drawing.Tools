@@ -16,12 +16,12 @@
 
 #region Usings
 
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 
-using KGySoft.Drawing.DebuggerVisualizers.Model;
 using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Reflection;
@@ -155,7 +155,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 
             using (IReadableBitmapData data = bitmap.GetReadableBitmapData())
             {
-                int width = data.Stride >> 2;
+                int width = data.RowSize >> 2;
                 IReadableBitmapDataRow row = data.FirstRow;
                 do
                 {
@@ -190,7 +190,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 
             using (IWritableBitmapData data = result.GetWritableBitmapData())
             {
-                int width = data.Stride >> 2;
+                int width = data.RowSize >> 2;
                 IWritableBitmapDataRow row = data.FirstRow;
                 do
                 {

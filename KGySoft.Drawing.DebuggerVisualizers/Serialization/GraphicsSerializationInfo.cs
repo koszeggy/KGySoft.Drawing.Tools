@@ -18,9 +18,11 @@
 
 using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.Runtime.InteropServices;
-using KGySoft.Drawing.DebuggerVisualizers.Model;
+
+using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Serialization.Binary;
 
 #endregion
@@ -62,16 +64,23 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
         internal void Write(BinaryWriter bw)
         {
             // 1. Bitmap
-            SerializationHelper.WriteImage(bw, GraphicsInfo.Data);
+            SerializationHelper.WriteImage(bw, GraphicsInfo.GraphicsImage);
 
             // 2. Transformation matrix
-            BinarySerializer.SerializeByWriter(bw, GraphicsInfo.Elements);
+            BinarySerializer.SerializeByWriter(bw, GraphicsInfo.Transform.Elements);
 
-            // 3. Visible clip in pixels without transformation (with identity matrix)
-            bw.Write(BinarySerializer.SerializeValueType(GraphicsInfo.VisibleRect));
-
-            // 4. Info (as seen by user's transformation)
-            bw.Write(GraphicsInfo.SpecialInfo);
+            // 3. Meta
+            bw.Write(GraphicsInfo.OriginalVisibleClipBounds.X);
+            bw.Write(GraphicsInfo.OriginalVisibleClipBounds.Y);
+            bw.Write(GraphicsInfo.OriginalVisibleClipBounds.Width);
+            bw.Write(GraphicsInfo.OriginalVisibleClipBounds.Height);
+            bw.Write(GraphicsInfo.TransformedVisibleClipBounds.X);
+            bw.Write(GraphicsInfo.TransformedVisibleClipBounds.Y);
+            bw.Write(GraphicsInfo.TransformedVisibleClipBounds.Width);
+            bw.Write(GraphicsInfo.TransformedVisibleClipBounds.Height);
+            bw.Write((int)GraphicsInfo.PageUnit);
+            bw.Write(GraphicsInfo.Resolution.X);
+            bw.Write(GraphicsInfo.Resolution.Y);
         }
 
         #endregion
@@ -83,16 +92,17 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
             var result = new GraphicsInfo();
 
             // 1. Bitmap
-            result.Data = (Bitmap)SerializationHelper.ReadImage(br);
+            result.GraphicsImage = (Bitmap)SerializationHelper.ReadImage(br);
 
             // 2. Transformation matrix
-            result.Elements = (float[])BinarySerializer.DeserializeByReader(br);
+            var elements = (float[])BinarySerializer.DeserializeByReader(br);
+            result.Transform = new Matrix(elements[0], elements[1], elements[2], elements[3], elements[4], elements[5]);
 
-            // 3. Visible rect in pixels
-            result.VisibleRect = (Rectangle)BinarySerializer.DeserializeValueType(typeof(Rectangle), br.ReadBytes(Marshal.SizeOf(typeof(Rectangle))));
-
-            // 4. Info
-            result.SpecialInfo = br.ReadString();
+            // 3. Meta
+            result.OriginalVisibleClipBounds = new Rectangle(br.ReadInt32(), br.ReadInt32(), br.ReadInt32(), br.ReadInt32());
+            result.TransformedVisibleClipBounds = new RectangleF(br.ReadSingle(), br.ReadSingle(), br.ReadSingle(), br.ReadSingle());
+            result.PageUnit = (GraphicsUnit)br.ReadInt32();
+            result.Resolution = new PointF(br.ReadSingle(), br.ReadSingle());
 
             GraphicsInfo = result;
         }

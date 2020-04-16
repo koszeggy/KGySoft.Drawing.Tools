@@ -19,6 +19,7 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 
+using KGySoft.ComponentModel;
 using KGySoft.Drawing.ImagingTools.Model;
 
 #endregion
@@ -29,7 +30,17 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
     {
         #region Properties
 
+        #region Internal Properties
+
+        internal BitmapDataInfo BitmapDataInfo { get => Get<BitmapDataInfo>(); set => Set(value); }
+
+        #endregion
+
+        #region Protected Properties
+
         protected override bool IsPaletteReadOnly => false;
+
+        #endregion
 
         #endregion
 
@@ -44,20 +55,40 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Methods
 
+        protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+            if (e.PropertyName == nameof(BitmapDataInfo))
+            {
+                var bitmapDataInfo = (BitmapDataInfo)e.NewValue;
+                Image = bitmapDataInfo?.BackingImage;
+                if ((bitmapDataInfo?.BitmapData?.PixelFormat ?? PixelFormat.Format32bppArgb).ToBitsPerPixel() <= 8)
+                    Notification = Res.NotificationPaletteCannotBeRestored;
+            }
+        }
+
         protected override void UpdateInfo()
         {
-            // InfoText is expected to be set already so setting caption and notification only
-            ImageInfoBase image = GetCurrentImage();
+            BitmapDataInfo bitmapDataInfo = BitmapDataInfo;
+            BitmapData bitmapData = bitmapDataInfo?.BitmapData;
 
-            if (image?.Image == null)
+            if (bitmapDataInfo?.BackingImage == null || bitmapData == null)
             {
                 TitleCaption = Res.TitleNoImage;
+                InfoText = null;
                 return;
             }
 
-            TitleCaption = $"{Res.TitleType(nameof(BitmapData))}{Res.TitleInfoSeparator}{Res.TitleSize(image.Size.ToString())}";
-            if (GetCurrentImage().BitsPerPixel <= 8)
-                Notification = Res.NotificationPaletteCannotBeRestored;
+            var size = new Size(bitmapData.Width, bitmapData.Height);
+            TitleCaption = $"{Res.TitleType(nameof(BitmapData))}{Res.TextSeparator}{Res.TitleSize(size)}";
+            InfoText = Res.InfoBitmapData(size, bitmapData.Stride, bitmapData.PixelFormat);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+                BitmapDataInfo?.Dispose();
+            base.Dispose(disposing);
         }
 
         #endregion

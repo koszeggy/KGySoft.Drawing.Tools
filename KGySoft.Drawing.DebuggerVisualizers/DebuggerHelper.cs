@@ -19,7 +19,6 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 
 using KGySoft.Drawing.DebuggerVisualizers.Model;
@@ -81,16 +80,16 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         {
             if (bitmapData == null)
                 throw new ArgumentNullException(nameof(bitmapData), PublicResources.ArgumentNull);
-            using (var bitmapDataInfo = new BitmapDataInfo(bitmapData))
-                DebugBitmapData(bitmapDataInfo, ownerWindowHandle);
+            using (IViewModel vm = ViewModelFactory.FromBitmapData(bitmapData))
+                ViewFactory.ShowDialog(vm, ownerWindowHandle);
         }
 
         public static void DebugGraphics(Graphics graphics, IntPtr ownerWindowHandle = default)
         {
             if (graphics == null)
                 throw new ArgumentNullException(nameof(graphics), PublicResources.ArgumentNull);
-            using (var graphicsInfo = new GraphicsInfo(graphics))
-                DebugGraphics(graphicsInfo, ownerWindowHandle);
+            using (IViewModel vm = ViewModelFactory.FromGraphics(graphics))
+                ViewFactory.ShowDialog(vm, ownerWindowHandle);
         }
 
         /// <summary>
@@ -168,7 +167,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <param name="bitmapDataInfo">The bitmap data infos for debugging returned by <see cref="SerializationHelper.DeserializeBitmapDataInfo"/>.</param>
         internal static void DebugBitmapData(BitmapDataInfo bitmapDataInfo, IntPtr ownerWindowHandle = default)
         {
-            using (IViewModel vm = ViewModelFactory.FromBitmapData(bitmapDataInfo.Data, bitmapDataInfo.SpecialInfo))
+            using (IViewModel vm = ViewModelFactory.FromBitmapData(bitmapDataInfo))
                 ViewFactory.ShowDialog(vm, ownerWindowHandle);
         }
 
@@ -178,9 +177,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <param name="graphicsInfo">The graphics infos for debugging returned by <see cref="SerializationHelper.DeserializeGraphicsInfo"/>.</param>
         internal static void DebugGraphics(GraphicsInfo graphicsInfo, IntPtr ownerWindowHandle = default)
         {
-            float[] elements = graphicsInfo.Elements;
-            using var matrix = new Matrix(elements[0], elements[1], elements[2], elements[3], elements[4], elements[5]);
-            using (IViewModel vm = ViewModelFactory.FromGraphics(graphicsInfo.Data, matrix, graphicsInfo.VisibleRect, graphicsInfo.SpecialInfo))
+            using (IViewModel vm = ViewModelFactory.FromGraphics(graphicsInfo))
                 ViewFactory.ShowDialog(vm, ownerWindowHandle);
         }
 

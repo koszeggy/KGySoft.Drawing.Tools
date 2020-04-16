@@ -21,7 +21,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 
-using KGySoft.Drawing.DebuggerVisualizers.Model;
+using KGySoft.Drawing.ImagingTools.Model;
 
 #endregion
 
@@ -62,10 +62,14 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
         internal void Write(BinaryWriter bw)
         {
             // 1. Bitmap
-            SerializationHelper.WriteImage(bw, BitmapDataInfo.Data);
+            SerializationHelper.WriteImage(bw, BitmapDataInfo.BackingImage);
 
-            // 2. Info
-            bw.Write(BitmapDataInfo.SpecialInfo);
+            // 2. Data
+            BitmapData data = BitmapDataInfo.BitmapData;
+            bw.Write(data.Width);
+            bw.Write(data.Height);
+            bw.Write(data.Stride);
+            bw.Write((int)data.PixelFormat);
         }
 
         #endregion
@@ -77,10 +81,16 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
             var result = new BitmapDataInfo();
 
             // 1. Bitmap
-            result.Data = (Bitmap)SerializationHelper.ReadImage(br);
+            result.BackingImage = (Bitmap)SerializationHelper.ReadImage(br);
 
-            // 2. Info
-            result.SpecialInfo = br.ReadString();
+            // 2. Data
+            result.BitmapData = new BitmapData
+            {
+                Width = br.ReadInt32(),
+                Height = br.ReadInt32(),
+                Stride = br.ReadInt32(),
+                PixelFormat = (PixelFormat)br.ReadInt32()
+            };
 
             BitmapDataInfo = result;
         }

@@ -17,7 +17,10 @@
     without changing the size (allowing any icon size).
   ! When an icon is debugged as an image, the raw format of its images is always displayed as Icon. Though when
     an icon is opened from file or is debugged as icon, Bmp/Png format is displayed for non-compound view.
+  ! When debugging a Graphics instance not showing all those properties anymore, which are obvious also from the
+    regular debug window.
   + Supporting all possible PixelFormats
+  - If an indexed bitmap was debugged, then changing a transparent palette entry did not always work properly.
 
 + KGySoft.Drawing.DebuggerVisualizers.dll
 =========================================

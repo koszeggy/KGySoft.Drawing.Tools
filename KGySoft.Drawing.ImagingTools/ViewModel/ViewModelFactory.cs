@@ -53,15 +53,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         public static IViewModel CreateManageInstallations(string hintPath) => new ManageInstallationsViewModel(hintPath);
 
-        public static IViewModel FromBitmapData(Bitmap data, string info)
-        {
-            // using image info directly to avoid generating meta and checking bitmap for multiple frames
-            var result = new BitmapDataVisualizerViewModel { InfoText = info, Image = data };
-            return result;
-        }
+        public static IViewModel FromBitmapData(BitmapData bitmapData) => new BitmapDataVisualizerViewModel { BitmapDataInfo = new BitmapDataInfo(bitmapData) };
+        public static IViewModel FromBitmapData(BitmapDataInfo bitmapDataInfo) => new BitmapDataVisualizerViewModel { BitmapDataInfo = bitmapDataInfo };
 
-        public static IViewModel FromGraphics(Bitmap data, Matrix transform, Rectangle visibleRect, string info) =>
-            new GraphicsVisualizerViewModel { GraphicsImage = data, InfoText = info, Transform = transform, VisibleRect = visibleRect };
+        public static IViewModel FromGraphics(Graphics graphics) => new GraphicsVisualizerViewModel { GraphicsInfo = new GraphicsInfo(graphics)};
+        public static IViewModel FromGraphics(GraphicsInfo graphicsInfo) => new GraphicsVisualizerViewModel { GraphicsInfo = graphicsInfo };
 
         #endregion
     }

@@ -22,35 +22,34 @@ using System.Drawing.Imaging;
 
 #endregion
 
-namespace KGySoft.Drawing.DebuggerVisualizers.Model
+namespace KGySoft.Drawing.ImagingTools.Model
 {
-    internal sealed class BitmapDataInfo : IDisposable
+    public sealed class BitmapDataInfo : IDisposable
     {
         #region Properties
 
-        internal Bitmap Data { get; set; }
-        internal string SpecialInfo { get; set; }
+        public Bitmap BackingImage { get; set; }
+        public BitmapData BitmapData { get; set; }
 
         #endregion
 
         #region Constructors
 
-        internal BitmapDataInfo()
+        public BitmapDataInfo()
         {
         }
 
-        internal BitmapDataInfo(BitmapData bitmapData)
+        public BitmapDataInfo(BitmapData bitmapData)
         {
-            Data = new Bitmap(bitmapData.Width, bitmapData.Height, bitmapData.Stride, bitmapData.PixelFormat, bitmapData.Scan0);
-            SpecialInfo = String.Format("Size: {1}{0}Stride: {2} bytes{0}Pixel Format: {3}",
-                Environment.NewLine, new Size(bitmapData.Width, bitmapData.Height), bitmapData.Stride, bitmapData.PixelFormat);
+            BackingImage = new Bitmap(bitmapData.Width, bitmapData.Height, bitmapData.Stride, bitmapData.PixelFormat, bitmapData.Scan0);
+            BitmapData = bitmapData;
         }
 
         #endregion
 
         #region Methods
 
-        public void Dispose() => Data?.Dispose();
+        public void Dispose() => BackingImage?.Dispose();
 
         #endregion
     }

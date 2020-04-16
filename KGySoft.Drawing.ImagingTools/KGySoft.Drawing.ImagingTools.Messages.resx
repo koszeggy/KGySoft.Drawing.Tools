@@ -138,23 +138,23 @@
   <data name="Title_Confirmation" xml:space="preserve">
     <value>Confirmation</value>
   </data>
-  <data name="Title_InfoSeparator" xml:space="preserve">
+  <data name="Text_Separator" xml:space="preserve">
     <value>; </value>
   </data>
   <data name="Title_TypeFormat" xml:space="preserve">
     <value>Type: {0}</value>
   </data>
   <data name="Title_SizeFormat" xml:space="preserve">
-    <value>Size: {0}</value>
+    <value>Size: {0} x {1}</value>
   </data>
   <data name="Title_PaletteCountFormat" xml:space="preserve">
     <value>Palette Count: {0}</value>
   </data>
   <data name="Title_VisibleClipFormat" xml:space="preserve">
-    <value>Visible Clip Bounds: {0}</value>
+    <value>Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2} x {3}}}</value>
   </data>
-  <data name="Title_UntransformedVisibleClipFormat" xml:space="preserve">
-    <value>Untransformed Visible Clip Bounds: {0}</value>
+  <data name="Title_OriginalVisibleClipFormat" xml:space="preserve">
+    <value>Original Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2} x {3}}}</value>
   </data>
   <data name="Title_ColorFormat" xml:space="preserve">
     <value>Color: {0}</value>
@@ -204,12 +204,20 @@
 • When checked, saving as TIFF saves every page.
 • When not checked, saving saves always the selected page only.</value>
   </data>
+  <data name="InfoText_SizeFormat" xml:space="preserve">
+    <value>{{Width={0}, Height={1}}}</value>
+  </data>
   <data name="InfoText_ImageFormat" xml:space="preserve">
     <value>Type: {0}
-Size: {1}
-{6}Pixel Format: {2}
-Raw format: {3}
-Resolution: {4} x {5} dpi</value>
+Size: {1} x {2} pixels
+{7}Pixel Format: {3}
+Raw format: {4}
+Resolution: {5} x {6} DPI</value>
+  </data>
+  <data name="InfoText_BitmapDataFormat" xml:space="preserve">
+    <value>Size: {0} x {1} pixels
+Stride: {2} bytes
+Pixel Format: {3}</value>
   </data>
   <data name="InfoText_UnknownFormat" xml:space="preserve">
     <value>Unknown format: {0}</value>
@@ -233,6 +241,39 @@ Equivalent System color(s): {2}
 Hue: {3:F0}°
 Saturation: {4:F0}%
 Brightness: {5:F0}%</value>
+  </data>
+  <data name="InfoText_WorldTransformation" xml:space="preserve">
+    <value>World transformation: </value>
+  </data>
+  <data name="InfoText_NoTransformation" xml:space="preserve">
+    <value>None (Identity Matrix)</value>
+  </data>
+  <data name="InfoText_TransformOffsetFormat" xml:space="preserve">
+    <value>Offset: {{X={0}, Y={1}}}</value>
+  </data>
+  <data name="InfoText_RotationZoomFormat" xml:space="preserve">
+    <value>Rotation and zoom matrix: [{0}; {1}] [{2}; {3}]</value>
+  </data>
+  <data name="InfoText_ZoomFormat" xml:space="preserve">
+    <value>Zoom: {0}</value>
+  </data>
+  <data name="InfoText_HorizontalZoomFormat" xml:space="preserve">
+    <value>Horizontal zoom: {0}</value>
+  </data>
+  <data name="InfoText_VerticalZoomFormat" xml:space="preserve">
+    <value>Vertical zoom: {0}</value>
+  </data>
+  <data name="InfoText_VisibleClipFormat" xml:space="preserve">
+    <value>Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2} x {3} pixels}}</value>
+  </data>
+  <data name="InfoText_OriginalVisibleClipFormat" xml:space="preserve">
+    <value>Original Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2} x {3} pixels}}</value>
+  </data>
+  <data name="InfoText_TransformedVisibleClipFormat" xml:space="preserve">
+    <value>Transformed Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2} x {3} (Page Unit: {4})}}</value>
+  </data>
+  <data name="InfoText_ResolutionFormat" xml:space="preserve">
+    <value>Resolution: {0} x {1} DPI</value>
   </data>
   <data name="Notification_Welcome" xml:space="preserve">
     <value>As a standalone application, KGy SOFT Imaging Tools can be used to load images, save them in various formats, extract frames or pages, examine or change palette entries of indexed images, etc.

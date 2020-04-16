@@ -76,13 +76,12 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Confirmation</summary>
         internal static string TitleConfirmation => Get("Title_Confirmation");
 
-        /// <summary>; </summary>
-        internal static string TitleInfoSeparator => Get("Title_InfoSeparator");
-
-
         #endregion
 
         #region Texts
+
+        /// <summary>; </summary>
+        internal static string TextSeparator => Get("Text_Separator");
 
         /// <summary>files</summary>
         internal static string TextFiles => Get("Text_Files");
@@ -116,6 +115,16 @@ namespace KGySoft.Drawing.ImagingTools
         /// • When checked, saving as TIFF saves every page.
         /// • When not checked, saving saves always the selected page only.</summary>
         internal static string TooltipTextCompoundMultiPage => Get("TooltipText_CompoundMultiPage");
+
+        #endregion
+
+        #region Info Texts
+
+        /// <summary>World transformation: </summary>
+        internal static string InfoWorldTransformation => Get("InfoText_WorldTransformation");
+
+        /// <summary>None (Identity Matrix)</summary>
+        internal static string InfoNoTransformation => Get("InfoText_NoTransformation");
 
         #endregion
 
@@ -203,65 +212,71 @@ namespace KGySoft.Drawing.ImagingTools
         #region Title Captions
 
         /// <summary>Type: {0}</summary>
-        public static string TitleType(string type) => Get("Title_TypeFormat", type);
+        internal static string TitleType(string type) => Get("Title_TypeFormat", type);
 
-        /// <summary>Size: {0}</summary>
-        public static string TitleSize(string size) => Get("Title_SizeFormat", size);
+        /// <summary>Size: {0} x {1}</summary>
+        internal static string TitleSize(Size size) => Get("Title_SizeFormat", size.Width, size.Height);
 
         /// <summary>Palette Count: {0}</summary>
-        public static string TitlePaletteCount(int count) => Get("Title_PaletteCountFormat", count);
+        internal static string TitlePaletteCount(int count) => Get("Title_PaletteCountFormat", count);
 
-        /// <summary>Visible Clip Bounds: {0}</summary>
-        public static string TitleVisibleClip(Rectangle rect) => Get("Title_VisibleClipFormat", rect);
+        /// <summary>Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2} x {3}}}</summary>
+        internal static string TitleVisibleClip(Rectangle rect) => Get("Title_VisibleClipFormat", rect.X, rect.Y, rect.Width, rect.Height);
 
-        /// <summary>Untransformed Visible Clip Bounds: {0}</summary>
-        public static string TitleUntransformedVisibleClip(Rectangle rect) => Get("Title_UntransformedVisibleClipFormat", rect);
+        /// <summary>Original Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2} x {3}}}</summary>
+        internal static string TitleOriginalVisibleClip(Rectangle rect) => Get("Title_OriginalVisibleClipFormat", rect.X, rect.Y, rect.Width, rect.Height);
 
         /// <summary>Color: {0}</summary>
-        public static string TitleColor(Color color) => Get("Title_ColorFormat", color.Name);
+        internal static string TitleColor(Color color) => Get("Title_ColorFormat", color.Name);
 
         #endregion
 
         #region Texts
 
         /// <summary>A: {0}</summary>
-        public static string TextAlphaValue(byte a) => Get("Text_AlphaValueFormat", a);
+        internal static string TextAlphaValue(byte a) => Get("Text_AlphaValueFormat", a);
 
         /// <summary>R: {0}</summary>
-        public static string TextRedValue(byte r) => Get("Text_RedValueFormat", r);
+        internal static string TextRedValue(byte r) => Get("Text_RedValueFormat", r);
 
         /// <summary>G: {0}</summary>
-        public static string TextGreenValue(byte g) => Get("Text_GreenValueFormat", g);
+        internal static string TextGreenValue(byte g) => Get("Text_GreenValueFormat", g);
 
         /// <summary>B: {0}</summary>
-        public static string TextBlueValue(byte a) => Get("Text_BlueValueFormat", a);
+        internal static string TextBlueValue(byte a) => Get("Text_BlueValueFormat", a);
 
         #endregion
 
         #region Info Texts
 
         /// <summary>Type: {0}
-        /// Size: {1}
-        /// {6}Pixel Format: {2}
-        /// Raw format: {3}
-        /// Resolution: {4} x {5} dpi</summary>
-        public static string InfoImage(string type, string size, PixelFormat pixelFormat, string rawFormat, float hres, float vres, string frameInfo)
-            => Get("InfoText_ImageFormat", type, size, pixelFormat, rawFormat, hres, vres, frameInfo);
+        /// Size: {1} x {2} pixels
+        /// {7}Pixel Format: {3}
+        /// Raw format: {4}
+        /// Resolution: {5} x {6} DPI</summary>
+        internal static string InfoImage(string type, Size size, PixelFormat pixelFormat, string rawFormat, float hres, float vres, string frameInfo)
+            => Get("InfoText_ImageFormat", type, size.Width, size.Height, pixelFormat, rawFormat, hres, vres, frameInfo);
+
+        /// <summary>Size: {0} x {1} pixels
+        /// Stride: {2} bytes
+        /// Pixel Format: {3}</summary>
+        internal static string InfoBitmapData(Size size, int stride, PixelFormat pixelFormat)
+            => Get("InfoText_BitmapDataFormat", size.Width, size.Height, stride, pixelFormat);
 
         /// <summary>Unknown format: {0}</summary>
-        public static string InfoUnknownFormat(Guid format) => Get("InfoText_UnknownFormat", format);
+        internal static string InfoUnknownFormat(Guid format) => Get("InfoText_UnknownFormat", format);
 
         /// <summary>Palette count: {0}</summary>
-        public static string InfoPalette(int count) => Get("InfoText_PaletteFormat", count);
+        internal static string InfoPalette(int count) => Get("InfoText_PaletteFormat", count);
 
         /// <summary>Images: {0}</summary>
-        public static string InfoFramesCount(int count) => Get("InfoText_FramesCountFormat", count);
+        internal static string InfoFramesCount(int count) => Get("InfoText_FramesCountFormat", count);
 
         /// <summary>Current Image: {0}/{1}</summary>
-        public static string InfoCurrentFrame(int current, int count) => Get("InfoText_CurrentFrameFormat", current, count);
+        internal static string InfoCurrentFrame(int current, int count) => Get("InfoText_CurrentFrameFormat", current, count);
 
         /// <summary>Selected index: {0}</summary>
-        public static string InfoSelectedIndex(int index) => Get("InfoText_SelectedIndexFormat", index);
+        internal static string InfoSelectedIndex(int index) => Get("InfoText_SelectedIndexFormat", index);
 
         /// <summary>ARGB value: {0:X8} ({0})
         /// Equivalent known color(s): {1}
@@ -269,21 +284,48 @@ namespace KGySoft.Drawing.ImagingTools
         /// Hue: {3:F0}°
         /// Saturation: {4:F0}%
         /// Brightness: {5:F0}%</summary>
-        public static string InfoColor(int argb, string knownColors, string systemColors, float hue, float saturation, float brightness)
+        internal static string InfoColor(int argb, string knownColors, string systemColors, float hue, float saturation, float brightness)
             => Get("InfoText_ColorFormat", argb, knownColors, systemColors, hue, saturation, brightness);
+
+        /// <summary>Offset: {{X={0}, Y={1}}}</summary>
+        internal static string InfoTransformOffset(PointF offset) => Get("InfoText_TransformOffsetFormat", offset.X, offset.Y);
+
+        /// <summary>Rotation and zoom matrix: [{0}; {1}] [{2}; {3}]</summary>
+        internal static string InfoRotationZoom(float m0, float m1, float m2, float m3) => Get("InfoText_RotationZoomFormat", m0, m1, m2, m3);
+
+        /// <summary>Zoom: {0}</summary>
+        internal static string InfoZoom(float zoom) => Get("InfoText_ZoomFormat", zoom);
+
+        /// <summary>Horizontal zoom: {0}</summary>
+        internal static string InfoHorizontalZoom(float zoom) => Get("InfoText_HorizontalZoomFormat", zoom);
+
+        /// <summary>Vertical zoom: {0}</summary>
+        internal static string InfoVerticalZoom(float zoom) => Get("InfoText_VerticalZoomFormat", zoom);
+
+        /// <summary>Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2} x {3} pixels}}</summary>
+        internal static string InfoVisibleClip(Rectangle rect) => Get("InfoText_VisibleClipFormat", rect.X, rect.Y, rect.Width, rect.Height);
+
+        /// <summary>Original Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2} x {3} pixels}}</summary>
+        internal static string InfoOriginalVisibleClip(Rectangle rect) => Get("InfoText_OriginalVisibleClipFormat", rect.X, rect.Y, rect.Width, rect.Height);
+
+        /// <summary>Transformed Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2} x {3} (Page Unit: {4})}}</summary>
+        internal static string InfoTransformedVisibleClip(RectangleF rect, GraphicsUnit unit) => Get("InfoText_TransformedVisibleClipFormat", rect.X, rect.Y, rect.Width, rect.Height, unit);
+
+        /// <summary>Resolution: {0} x {1} DPI</summary>
+        internal static string InfoResolution(PointF dpi) => Get("InfoText_ResolutionFormat", dpi.X, dpi.Y);
 
         #endregion
 
         #region Messages
 
         /// <summary>Could not load file due to an error: {0}</summary>
-        public static string ErrorMessageFailedToLoadFile(string error) => Get("ErrorMessage_FailedToLoadFileFormat", error);
+        internal static string ErrorMessageFailedToLoadFile(string error) => Get("ErrorMessage_FailedToLoadFileFormat", error);
 
         /// <summary>Could not save image due to an error: {0}</summary>
-        public static string ErrorMessageFailedToSaveImage(string error) => Get("ErrorMessage_FailedToSaveImageFormat", error);
+        internal static string ErrorMessageFailedToSaveImage(string error) => Get("ErrorMessage_FailedToSaveImageFormat", error);
 
         /// <summary>File does not exist: {0}</summary>
-        public static string ErrorMessageFileDoesNotExist(string file) => Get("ErrorMessage_FileDoesNotExistFormat", file);
+        internal static string ErrorMessageFileDoesNotExist(string file) => Get("ErrorMessage_FileDoesNotExistFormat", file);
 
         /// <summary>Installation failed: {0}</summary>
         internal static string ErrorMessageInstallationFailed(string error) => Get("ErrorMessage_InstallationFailedFormat", error);
@@ -309,10 +351,10 @@ namespace KGySoft.Drawing.ImagingTools
         #region Installations
 
         /// <summary>Installed: {0}</summary>
-        public static string InstallationsStatusInstalled(Version version) => Get("Installations_StatusInstalledFormat", version);
+        internal static string InstallationsStatusInstalled(Version version) => Get("Installations_StatusInstalledFormat", version);
 
         /// <summary>Installed: {0} - Runtime: {1}</summary>
-        public static string InstallationsStatusInstalledWithRuntime(Version version, string runtimeVersion) => Get("Installations_StatusInstalledWithRuntimeFormat", version, runtimeVersion);
+        internal static string InstallationsStatusInstalledWithRuntime(Version version, string runtimeVersion) => Get("Installations_StatusInstalledWithRuntimeFormat", version, runtimeVersion);
 
         #endregion
 
