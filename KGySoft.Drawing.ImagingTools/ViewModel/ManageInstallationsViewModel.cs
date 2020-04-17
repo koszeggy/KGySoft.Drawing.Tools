@@ -100,7 +100,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (hintPath?.Contains(visualStudioName, StringComparison.Ordinal) == true)
             {
                 string preferredPath = Path.GetFileName(hintPath) == visualizersDir ? Path.GetDirectoryName(hintPath) : hintPath;
-                SelectInstallation(Path.GetDirectoryName(preferredPath));
+                SelectInstallation(preferredPath);
                 return;
             }
 
