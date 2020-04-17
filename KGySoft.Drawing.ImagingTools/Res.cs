@@ -345,6 +345,10 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Could not open the stream as an Icon: {0}</summary>
         internal static string ErrorMessageNotAnIconStream(string message) => Get("ErrorMessage_NotAnIconStreamFormat", message);
 
+        /// <summary>The extension of the provided filename '{0}' does not match to the selected format ({1}).
+        /// 
+        /// Are you sure you want to save the file with the provided extension?</summary>
+        internal static string ConfirmMessageSaveFileExtension(string fileName, string format) => Get("ConfirmMessage_SaveFileExtensionFormat", fileName, format);
 
         #endregion
 

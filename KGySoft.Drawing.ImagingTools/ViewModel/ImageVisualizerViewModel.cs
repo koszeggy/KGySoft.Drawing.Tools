@@ -16,8 +16,7 @@
 
 #region Usings
 
-#region Used Namespaces
-
+using System.Diagnostics.CodeAnalysis;
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -29,14 +28,6 @@ using System.Text;
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
-
-#endregion
-
-#region Used Aliases
-
-using Encoder = System.Drawing.Imaging.Encoder;
-
-#endregion
 
 #endregion
 
@@ -652,54 +643,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             stream.Flush();
         }
 
-        private void SaveMetafile(string fileName, bool asWmf)
-        {
-            using (Stream stream = File.Create(fileName))
-            {
-                ((Metafile)imageInfo.Image).Save(stream, asWmf);
-                stream.Flush();
-            }
-        }
-
-        private void SaveJpeg(string fileName, ImageCodecInfo jpegEncoder)
-        {
-            using (Stream stream = File.Create(fileName))
-            using (EncoderParameters encoderParams = new EncoderParameters(1))
-            {
-                encoderParams.Param[0] = new EncoderParameter(Encoder.Quality, 95L);
-                GetCurrentImage().Image.Save(stream, jpegEncoder, encoderParams);
-            }
-        }
-
-        private void SaveGif(string fileName)
-        {
-            ImageInfoBase currentImage = GetCurrentImage();
-            int realBpp = currentImage.Image.GetBitsPerPixel();
-            int theoreticBpp = currentImage.BitsPerPixel;
-
-            using (Stream stream = File.Create(fileName))
-            {
-                // we know that image is indexed but in .NET it is loaded as hi-res (eg. GIF frames, icon images)
-                if (theoreticBpp <= 8 && realBpp > 8 && currentImage.Image is Bitmap bmp)
-                {
-                    Color[] palette = bmp.GetColors(1 << theoreticBpp);
-                    bmp.SaveAsGif(stream, palette);
-                    return;
-                }
-
-                // saving with or without original palette with transparency - works also for animGif if no change has been made (and now even the palette cannot be changed due to the GIF decoder)
-                // TODO: if changing frames/palette will be available, SaveAnimGif if needed
-                // TODO: Allow dithering on SaveAs dialog (which replaces palette)
-                currentImage.Image.SaveAsGif(stream);
-            }
-        }
-
-        private void SaveMultipageTiff(string fileName)
-        {
-            using (Stream stream = File.Create(fileName))
-                imageInfo.Frames.Select(f => f.Image).SaveAsMultipageTiff(stream);
-        }
-
         private void SetOpenFilter()
         {
             if (isOpenFilterUpToDate || imageTypes == AllowedImageTypes.None)
@@ -724,8 +667,22 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             isOpenFilterUpToDate = true;
         }
 
+        [SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase",
+            Justification = "This is not normalization, we want to set the default extension in lowercase")]
         private void SetSaveFilter()
         {
+            #region Local Methods
+            
+            static string GetFirstExtension(string extensions)
+            {
+                int sep = extensions.IndexOf(';');
+                if (sep > 0)
+                    extensions = extensions.Substring(0, sep);
+                return extensions.Substring(extensions.IndexOf('.') + 1).ToLowerInvariant();
+            }
+
+            #endregion
+
             // enlisting encoders
             StringBuilder sb = new StringBuilder();
             foreach (ImageCodecInfo codecInfo in encoderCodecs)
@@ -736,9 +693,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
 
             bool isEmf = false;
-            if (imageInfo.IsMultiRes)
-                sb.Append($"|{Res.TextIcon} {Res.TextFileFormat}|*.ico");
-            else if (imageInfo.IsMetafile)
+            sb.Append($"|{Res.TextIcon} {Res.TextFileFormat}|*.ico");
+            if (imageInfo.IsMetafile)
             {
                 sb.Append($"|WMF {Res.TextFileFormat}|*.wmf");
                 isEmf = imageInfo.RawFormat == ImageFormat.Emf.Guid;
@@ -746,49 +702,44 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     sb.Append($"|EMF {Res.TextFileFormat}|*.emf");
             }
 
-            SaveFileFilter = sb.ToString();
+            string filter = sb.ToString();
 
             // selecting appropriate format
+            string ext = null;
             if (imageInfo.IsMultiRes)
-            {
-                SaveFileFilterIndex = encoderCodecs.Length + 1;
-                SaveFileDefaultExtension = "ico";
-            }
+                ext = "ico";
             else if (imageInfo.IsMetafile)
-            {
-                SaveFileFilterIndex = encoderCodecs.Length + (isEmf ? 2 : 1);
-                SaveFileDefaultExtension = isEmf ? "emf" : "wmf";
-            }
+                ext = isEmf ? "emf" : "wmf";
             else
             {
-                int posPng = 0;
-                int index = 0;
+                // looking for a matching built-in encoder
+                bool isPngSupported = false;
                 bool found = false;
-                for (int i = 0; i < encoderCodecs.Length; i++)
+                foreach (ImageCodecInfo encoder in encoderCodecs)
                 {
-                    if (imageInfo.RawFormat == encoderCodecs[i].FormatID)
+                    if (encoder.FormatID == imageInfo.RawFormat)
                     {
-                        index = i + 1;
+                        ext = GetFirstExtension(encoder.FilenameExtension);
                         found = true;
                         break;
                     }
 
-                    if (encoderCodecs[i].FormatDescription == "PNG")
-                        posPng = i + 1;
+                    if (!isPngSupported && encoder.FormatID == ImageFormat.Png.Guid)
+                        isPngSupported = true;
                 }
 
-                // if encoder not found, selecting png encoder
-                index = found ? index : posPng;
-                SaveFileFilterIndex = index;
-
-                // setting default extension
-                string ext = encoderCodecs[index - 1].FilenameExtension;
-                int sep = ext.IndexOf(';');
-                if (sep > 0)
-                    ext = ext.Substring(0, sep);
-
-                SaveFileDefaultExtension = ext.Substring(ext.IndexOf('.') + 1).ToLowerInvariant();
+                // no matching encoder found: using either PNG, the first one in the list or icon
+                if (!found)
+                {
+                    ext = isPngSupported ? "png"
+                        : encoderCodecs.Length > 0 ? GetFirstExtension(encoderCodecs[0].FilenameExtension)
+                        : "ico";
+                }
             }
+
+            SaveFileFilter = filter;
+            SaveFileDefaultExtension = ext;
+            SaveFileFilterIndex = (filter.Split('|').IndexOf(item => item.Contains("*." + ext, StringComparison.OrdinalIgnoreCase)) >> 1) + 1;
         }
 
         private void InitAutoZoom()
@@ -831,6 +782,17 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
         }
 
+        private bool CheckSaveExtension(string fileName)
+        {
+            string actualExt = Path.GetExtension(fileName)?.ToUpperInvariant();
+            string[] filters = SaveFileFilter.Split('|');
+            int filterIndex = SaveFileFilterIndex;
+            string suggestedExt = filters[((filterIndex - 1) << 1) + 1].ToUpperInvariant();
+            if (suggestedExt.Split(';').Contains('*' + actualExt))
+                return true;
+            return Confirm(Res.ConfirmMessageSaveFileExtension(Path.GetFileName(fileName), filters[(filterIndex - 1) << 1]));
+        }
+
         #endregion
 
         #region Explicitly Implemented Interface Methods
@@ -864,37 +826,61 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 return;
 
             SetSaveFilter();
-            string fileName = SelectFileToSaveCallback?.Invoke();
-            if (fileName == null)
-                return;
+            string fileName;
+            do
+            {
+                fileName = SelectFileToSaveCallback?.Invoke();
+                if (fileName == null)
+                    return;
+            } while (!CheckSaveExtension(fileName));
 
             int filterIndex = SaveFileFilterIndex;
+            string selectedFormat = SaveFileFilter.Split('|')[((filterIndex - 1) << 1) + 1];
+            ImageCodecInfo encoder = encoderCodecs.FirstOrDefault(e => e.FilenameExtension.Equals(selectedFormat, StringComparison.OrdinalIgnoreCase));
+
             try
             {
-                // icon
-                if (filterIndex == encoderCodecs.Length + 1 && imageInfo.IsMultiRes)
-                    SaveIcon(fileName);
-                // metafile
-                else if (filterIndex >= encoderCodecs.Length + 1 && imageInfo.IsMetafile)
-                    SaveMetafile(fileName, filterIndex == encoderCodecs.Length + 1);
-                // JPG
-                else if (encoderCodecs[filterIndex - 1].FormatID == ImageFormat.Jpeg.Guid)
-                    SaveJpeg(fileName, encoderCodecs[filterIndex - 1]);
-                // Multipage tiff
-                else if (imageInfo.HasFrames && encoderCodecs[filterIndex - 1].FormatID == ImageFormat.Tiff.Guid
-                    && (imageInfo.Type == ImageInfoType.Pages && IsCompoundView))
+                // BMP
+                if (encoder?.FormatID == ImageFormat.Bmp.Guid)
+                    GetCurrentImage().Image.SaveAsBmp(fileName);
+                // JPEG
+                else if (encoder?.FormatID == ImageFormat.Jpeg.Guid)
+                    GetCurrentImage().Image.SaveAsJpeg(fileName, 95);
+                // GIF
+                else if (encoder?.FormatID == ImageFormat.Gif.Guid)
+                    GetCurrentImage().Image.SaveAsGif(fileName);
+                // Tiff
+                else if (encoder?.FormatID == ImageFormat.Tiff.Guid)
                 {
-                    SaveMultipageTiff(fileName);
+                    if (imageInfo.HasFrames && IsCompoundView)
+                    {
+                        using (Stream stream = File.Create(fileName))
+                            imageInfo.Frames.Select(f => f.Image).SaveAsMultipageTiff(stream);
+                    }
+                    else
+                        GetCurrentImage().Image.SaveAsTiff(fileName);
                 }
-                // gif
-                else if (encoderCodecs[filterIndex - 1].FormatID == ImageFormat.Gif.Guid)
-                    SaveGif(fileName);
+                // PNG
+                else if (encoder?.FormatID == ImageFormat.Png.Guid)
+                    GetCurrentImage().Image.SaveAsPng(fileName);
+                // icon
+                else if (selectedFormat == "*.ico")
+                    SaveIcon(fileName);
+                // windows metafile
+                else if (selectedFormat == "*.wmf" && imageInfo.IsMetafile)
+                    ((Metafile)imageInfo.Image).SaveAsWmf(fileName);
+                // enhanced metafile
+                else if (selectedFormat == "*.emf" && imageInfo.IsMetafile)
+                    ((Metafile)imageInfo.Image).SaveAsEmf(fileName);
+                // Some unrecognized encoder - we assume it can handle every pixel format
+                else if (encoder != null)
+                    GetCurrentImage().Image.Save(fileName, encoder, null);
                 else
-                    GetCurrentImage().Image.Save(fileName, encoderCodecs[filterIndex - 1], null);
+                    throw new InvalidOperationException(Res.InternalError($"Unexpected format without encoder: {selectedFormat}"));
             }
-            catch (Exception ex)
+            catch (Exception e) when (!(e is StackOverflowException))
             {
-                ShowError(Res.ErrorMessageFailedToSaveImage(ex.Message));
+                ShowError(Res.ErrorMessageFailedToSaveImage(e.Message));
             }
         }
 

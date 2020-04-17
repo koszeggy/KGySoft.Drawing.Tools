@@ -323,6 +323,11 @@ See the Configuration button.</value>
   <data name="ConfirmMessage_OverwriteInstallation" xml:space="preserve">
     <value>Are you sure you want to overwrite this installation?</value>
   </data>
+  <data name="ConfirmMessage_SaveFileExtensionFormat" xml:space="preserve">
+    <value>The extension of the provided filename '{0}' does not match to the selected format ({1}).
+
+Are you sure you want to save the file with the provided extension?</value>
+  </data>
   <data name="ConfirmMessage_RemoveInstallation" xml:space="preserve">
     <value>Are you sure you want to remove this installation?</value>
   </data>

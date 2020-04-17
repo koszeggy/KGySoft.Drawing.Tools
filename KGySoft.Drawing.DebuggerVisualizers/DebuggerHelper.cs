@@ -100,6 +100,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <returns>A non-<see langword="null"/>&#160;instance, when the palette has been edited; otherwise, <see langword="null"/>.</returns>
         public static ColorPalette DebugPalette(ColorPalette palette, bool isReplaceable, IntPtr ownerWindowHandle = default)
         {
+            if (palette == null)
+                throw new ArgumentNullException(nameof(palette), PublicResources.ArgumentNull);
             Color[] entries = palette.Entries;
             using (IViewModel<Color[]> vm = ViewModelFactory.FromPalette(entries, !isReplaceable))
             {

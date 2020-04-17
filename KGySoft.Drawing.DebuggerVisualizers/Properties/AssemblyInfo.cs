@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 
 using KGySoft.Drawing.DebuggerVisualizers;
 using KGySoft.Drawing.DebuggerVisualizers.Serialization;
+
 using Microsoft.VisualStudio.DebuggerVisualizers;
 
 // General Information about an assembly is controlled through the following 
