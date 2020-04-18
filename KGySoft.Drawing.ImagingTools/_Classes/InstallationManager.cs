@@ -18,6 +18,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
@@ -46,11 +47,15 @@ namespace KGySoft.Drawing.ImagingTools
             debuggerVisualizerFileName
         };
 
+        private static InstallationInfo availableVersion;
+
         #endregion
 
         #region Methods
 
         #region Public Methods
+
+        public static InstallationInfo AvailableVersion => availableVersion ??= new InstallationInfo(Files.GetExecutingPath());
 
         public static InstallationInfo GetInstallationInfo(string path) => new InstallationInfo(path);
 
@@ -60,6 +65,15 @@ namespace KGySoft.Drawing.ImagingTools
                 throw new ArgumentNullException(nameof(path), PublicResources.ArgumentNull);
             if (path.Length == 0)
                 throw new ArgumentException(PublicResources.ArgumentEmpty, nameof(path));
+            try
+            {
+                path = Path.GetFullPath(path);
+            }
+            catch (Exception e)
+            {
+                throw new ArgumentException(PublicResources.ValueContainsIllegalPathCharacters(path), nameof(path), e);
+            }
+
             error = null;
             warning = null;
             try
@@ -178,7 +192,7 @@ namespace KGySoft.Drawing.ImagingTools
 #if NET35
                     Directory.GetFileSystemEntries(netCorePath).Length == 0
 #else
-                    Directory.EnumerateFileSystemEntries(netCorePath).IsNullOrEmpty()
+                    !Directory.EnumerateFileSystemEntries(netCorePath).Any()
 #endif
                     )
                 {

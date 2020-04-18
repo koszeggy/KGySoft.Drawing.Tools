@@ -367,6 +367,9 @@ Are you sure you want to save the file with the provided extension?</value>
   <data name="InfoMessage_PaletteEmpty" xml:space="preserve">
     <value>The palette contains no colors. Click OK to exit.</value>
   </data>
+  <data name="Installations_NotAvailable" xml:space="preserve">
+    <value>N/A (KGySoft.Drawing.DebuggerVisualizers.dll is missing)</value>
+  </data>
   <data name="Installations_CustomDir" xml:space="preserve">
     <value>&lt;Custom Path...&gt;</value>
   </data>
@@ -375,6 +378,12 @@ Are you sure you want to save the file with the provided extension?</value>
   </data>
   <data name="Installations_StatusUnknown" xml:space="preserve">
     <value>Unknown version (incompatible runtime?)</value>
+  </data>
+  <data name="Installation_AvailableFormat" xml:space="preserve">
+    <value>Debugger version: {0}</value>
+  </data>
+  <data name="Installation_AvailableWithRuntimeFormat" xml:space="preserve">
+    <value>Debugger version: {0} - Runtime: {1}</value>
   </data>
   <data name="Installations_StatusInstalledFormat" xml:space="preserve">
     <value>Installed: {0}</value>
@@ -445,7 +454,13 @@ Are you sure you want to save the file with the provided extension?</value>
   <data name="ManageInstallationsForm.Text" xml:space="preserve">
     <value>Debugger Visualizer Installations</value>
   </data>
-  <data name="lblVersions.Text" xml:space="preserve">
+  <data name="gbAvailableVersion.Text" xml:space="preserve">
+    <value>Installable Version:</value>
+  </data>
+  <data name="lblAvailableVersion.Text" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="gbVisualStudioVersions.Text" xml:space="preserve">
     <value>Identified Visual Studio Versions:</value>
   </data>
   <data name="gbInstallation.Text" xml:space="preserve">
@@ -459,6 +474,9 @@ Are you sure you want to save the file with the provided extension?</value>
   </data>
   <data name="lblStatus.Text" xml:space="preserve">
     <value>Status:</value>
+  </data>
+  <data name="lblStatusText.Text" xml:space="preserve">
+    <value>-</value>
   </data>
   <data name="lblPath.Text" xml:space="preserve">
     <value>&amp;Path:</value>

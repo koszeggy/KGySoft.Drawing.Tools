@@ -95,8 +95,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SelectedInstallation), nameof(cbInstallations.SelectedValue), cbInstallations);
             CommandBindings.AddPropertyBinding(cbInstallations, nameof(cbInstallations.SelectedValue), nameof(ViewModel.SelectedInstallation), ViewModel);
 
-            // VM.CurrentPath -> tbPath.Text
+            // VM.CurrentPath <-> tbPath.Text
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.CurrentPath), nameof(tbPath.Text), tbPath);
+            CommandBindings.AddPropertyBinding(tbPath, nameof(tbPath.Text), nameof(ViewModel.CurrentPath), ViewModel);
+
+            // VM.AvailableVersionText -> lblAvailableVersion.Text
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.AvailableVersionText), nameof(lblAvailableVersion.Text), lblAvailableVersion);
 
             // VM.StatusText -> lblStatusText.Text
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.StatusText), nameof(lblStatusText.Text), lblStatusText);
@@ -106,7 +110,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             CommandBindings.Add(ViewModel.SelectFolderCommand, ViewModel.SelectFolderCommandState)
                 .AddSource(tbPath, nameof(tbPath.DoubleClick));
-            CommandBindings.Add(ViewModel.InstallCommand)
+            CommandBindings.Add(ViewModel.InstallCommand, ViewModel.InstallCommandState)
                 .AddSource(btnInstall, nameof(btnInstall.Click));
             CommandBindings.Add(ViewModel.RemoveCommand, ViewModel.RemoveCommandState)
                 .AddSource(btnRemove, nameof(btnRemove.Click));

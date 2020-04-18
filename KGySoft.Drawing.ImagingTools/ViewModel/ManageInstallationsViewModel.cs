@@ -52,10 +52,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal string SelectedInstallation { get => Get<string>(); set => Set(value); }
         internal string CurrentPath { get => Get<string>(); set => Set(value); }
         internal string StatusText { get => Get("-"); set => Set(value); }
+        internal string AvailableVersionText { get => Get("-"); set => Set(value); }
 
         internal Func<string> SelectFolderCallback { get => Get<Func<string>>(); set => Set(value); }
 
         internal ICommandState SelectFolderCommandState => Get(() => new CommandState());
+        internal ICommandState InstallCommandState => Get(() => new CommandState());
         internal ICommandState RemoveCommandState => Get(() => new CommandState());
 
         internal ICommand SelectFolderCommand => Get(() => new SimpleCommand(OnSelectFolderCommand));
@@ -68,7 +70,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal ManageInstallationsViewModel(string hintPath)
         {
-            InitVersions();
+            InitAvailableVersion();
+            InitInstallations();
             TrySelectPath(hintPath);
         }
 
@@ -95,6 +98,21 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Private Methods
 
+        private void InitAvailableVersion()
+        {
+            InstallationInfo availableVersion = InstallationManager.AvailableVersion;
+            bool available = availableVersion.Installed;
+            if (!available)
+                AvailableVersionText = Res.InstallationNotAvailable;
+            else if (availableVersion.Version == null)
+                AvailableVersionText = Res.InstallationsStatusUnknown;
+            else
+                AvailableVersionText = availableVersion.RuntimeVersion == null
+                    ? Res.InstallationAvailable(availableVersion.Version)
+                    : Res.InstallationsAvailableWithRuntime(availableVersion.Version, availableVersion.RuntimeVersion);
+            InstallCommandState.Enabled = available;
+        }
+
         private void TrySelectPath(string hintPath)
         {
             if (hintPath?.Contains(visualStudioName, StringComparison.Ordinal) == true)
@@ -109,7 +127,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             SelectInstallation(selected);
         }
 
-        private void InitVersions()
+        private void InitInstallations()
         {
             string docsDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             var list = new List<KeyValuePair<string, string>>();

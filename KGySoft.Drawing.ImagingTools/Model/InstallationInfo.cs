@@ -58,19 +58,10 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #region Properties
 
-        #region Public Properties
-
+        public string Path { get; }
         public bool Installed { get; }
-        public Version Version { get; set; }
-
-        #endregion
-
-        #region Internal Properties
-
-        internal string Path { get; }
-        internal string RuntimeVersion { get; set; }
-
-        #endregion
+        public Version Version { get; private set; }
+        public string RuntimeVersion { get; private set; }
 
         #endregion
 
@@ -84,16 +75,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
             if (!Installed)
                 return;
 
-            // DebuggerVisualizers is already loaded (executed from debugger)
-            var debuggerVisualizerAssembly = Reflector.ResolveAssembly("KGySoft.Drawing.DebuggerVisualizers", ResolveAssemblyOptions.AllowPartialMatch);
-            if (debuggerVisualizerAssembly != null)
-            {
-                Version = debuggerVisualizerAssembly.GetName().Version;
-                RuntimeVersion = null; // not relevant, would return the already loaded version
-                return;
-            }
-
-            // not loaded: trying to determine the version by loading it into a sandbox domain
+            // Trying to determine the version by loading it into a sandbox domain. 
             try
             {
                 Evidence evidence = new Evidence(AppDomain.CurrentDomain.Evidence);

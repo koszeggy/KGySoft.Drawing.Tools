@@ -145,8 +145,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             shellService.GetProperty((int)__VSSPROPID2.VSSPROPID_VisualStudioDir, out object documentsDirObj);
             string documentsDir = documentsDirObj.ToString();
             string targetPath = Path.Combine(documentsDir, "Visualizers");
-            InstallationInfo installationInfo = InstallationManager.GetInstallationInfo(targetPath);
-            if (installationInfo.Installed && (installationInfo.Version == null || installationInfo.Version >= typeof(InstallationManager).Assembly.GetName().Version))
+            InstallationInfo installedVersion = InstallationManager.GetInstallationInfo(targetPath);
+            InstallationInfo availableVersion = InstallationManager.AvailableVersion;
+            if (installedVersion.Installed && (installedVersion.Version == null || installedVersion.Version >= availableVersion.Version))
                 return;
 
             InstallationManager.Install(targetPath, out string error, out string warning);
@@ -155,7 +156,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             else if (warning != null)
                 ShellDialogs.Warning(this, $"The installation of the debugger visualizers to {targetPath} finished with a warning: {warning}");
             else
-                ShellDialogs.Info(this, $"{Resources.ResourceManager.GetString(Ids.ResourceTitle)} {installationInfo.Version} has been installed to {targetPath}.");
+                ShellDialogs.Info(this, $"{Resources.ResourceManager.GetString(Ids.ResourceTitle)} {availableVersion.Version} has been installed to {targetPath}.");
         }
 
         private void InitCommands(IVsShell shellService, IMenuCommandService menuCommandService)

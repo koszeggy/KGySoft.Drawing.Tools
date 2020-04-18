@@ -171,6 +171,9 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Installations
 
+        /// <summary>N/A (KGySoft.Drawing.DebuggerVisualizers.dll is missing)</summary>
+        internal static string InstallationNotAvailable => Get("Installations_NotAvailable");
+
         /// <summary>&lt;Custom Path...&gt;</summary>
         internal static string InstallationsCustomDir => Get("Installations_CustomDir");
 
@@ -386,6 +389,12 @@ namespace KGySoft.Drawing.ImagingTools
         #endregion
 
         #region Installations
+
+        /// <summary>Debugger version: {0}</summary>
+        internal static string InstallationAvailable(Version version) => Get("Installation_AvailableFormat", version);
+
+        /// <summary>Debugger version: {0} - Runtime: {1}</summary>
+        internal static string InstallationsAvailableWithRuntime(Version version, string runtimeVersion) => Get("Installation_AvailableWithRuntimeFormat", version, runtimeVersion);
 
         /// <summary>Installed: {0}</summary>
         internal static string InstallationsStatusInstalled(Version version) => Get("Installations_StatusInstalledFormat", version);
