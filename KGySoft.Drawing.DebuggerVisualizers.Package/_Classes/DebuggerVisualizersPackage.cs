@@ -149,14 +149,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             if (installationInfo.Installed && (installationInfo.Version == null || installationInfo.Version >= typeof(InstallationManager).Assembly.GetName().Version))
                 return;
 
-            InstallationManager.Install(targetPath, out string error);
+            InstallationManager.Install(targetPath, out string error, out string warning);
             if (error != null)
-            {
-                ShellDialogs.Warning(this, $"Failed to install the visualizers to {targetPath}: {error}{Environment.NewLine}{Environment.NewLine}Make sure every running debugger is closed. Installing will be tried again on restarting Visual Studio.");
-                return;
-            }
-
-            ShellDialogs.Info(this, $"{Resources.ResourceManager.GetString(Ids.ResourceTitle)} {installationInfo.Version} has been installed to {targetPath}.");
+                ShellDialogs.Error(this, $"Failed to install the visualizers to {targetPath}: {error}{Environment.NewLine}{Environment.NewLine}Make sure every running debugger is closed. Installing will be tried again on restarting Visual Studio.");
+            else if (warning != null)
+                ShellDialogs.Warning(this, $"The installation of the debugger visualizers to {targetPath} finished with a warning: {warning}");
+            else
+                ShellDialogs.Info(this, $"{Resources.ResourceManager.GetString(Ids.ResourceTitle)} {installationInfo.Version} has been installed to {targetPath}.");
         }
 
         private void InitCommands(IVsShell shellService, IMenuCommandService menuCommandService)

@@ -104,7 +104,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 return;
             }
 
-            SelectInstallation(Installations.First().Key);
+            IList<KeyValuePair<string, string>> installations = Installations;
+            string selected = (installations.Count > 1 ? installations[installations.Count - 2] : installations.Last()).Key;
+            SelectInstallation(selected);
         }
 
         private void InitVersions()
@@ -182,9 +184,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             if (currentStatus.Installed && !Confirm(Res.ConfirmMessageOverwriteInstallation))
                 return;
-            InstallationManager.Install(currentStatus.Path, out string error);
+            InstallationManager.Install(currentStatus.Path, out string error, out string warning);
             if (error != null)
                 ShowError(Res.ErrorMessageInstallationFailed(error));
+            else if (warning != null)
+                ShowWarning(Res.WarningMessageInstallationWarning(warning));
             UpdateStatus(currentStatus.Path);
         }
 

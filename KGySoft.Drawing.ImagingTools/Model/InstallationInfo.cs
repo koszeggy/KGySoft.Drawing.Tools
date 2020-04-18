@@ -18,6 +18,7 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Security.Policy;
 using KGySoft.CoreLibraries;
@@ -78,13 +79,13 @@ namespace KGySoft.Drawing.ImagingTools.Model
         internal InstallationInfo(string path)
         {
             Path = path;
-            Installed = InstallationManager.IsInstalled(path);
+            Installed = File.Exists(InstallationManager.GetDebuggerVisualizerFilePath(path));
 
             if (!Installed)
                 return;
 
             // DebuggerVisualizers is already loaded (executed from debugger)
-            var debuggerVisualizerAssembly = Reflector.ResolveAssembly("KGySoft.Drawing.DebuggerVisualizers", false, true);
+            var debuggerVisualizerAssembly = Reflector.ResolveAssembly("KGySoft.Drawing.DebuggerVisualizers", ResolveAssemblyOptions.AllowPartialMatch);
             if (debuggerVisualizerAssembly != null)
             {
                 Version = debuggerVisualizerAssembly.GetName().Version;

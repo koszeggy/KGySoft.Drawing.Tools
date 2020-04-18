@@ -152,6 +152,12 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Saving modifications as animated GIF is not supported</summary>
         internal static string ErrorMessageAnimGifNotSupported => Get("ErrorMessage_AnimGifNotSupported");
 
+        /// <summary>The current installation is being executed, which cannot be overwritten</summary>
+        internal static string ErrorMessageInstallationCannotBeOverwritten => Get("ErrorMessage_InstallationCannotBeOverwritten");
+
+        /// <summary>The current installation is being executed, which cannot be removed</summary>
+        internal static string ErrorMessageInstallationCannotBeRemoved => Get("ErrorMessage_InstallationCannotBeRemoved");
+
         /// <summary>Are you sure you want to overwrite this installation?</summary>
         internal static string ConfirmMessageOverwriteInstallation => Get("ConfirmMessage_OverwriteInstallation");
 
@@ -327,12 +333,6 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>File does not exist: {0}</summary>
         internal static string ErrorMessageFileDoesNotExist(string file) => Get("ErrorMessage_FileDoesNotExistFormat", file);
 
-        /// <summary>Installation failed: {0}</summary>
-        internal static string ErrorMessageInstallationFailed(string error) => Get("ErrorMessage_InstallationFailedFormat", error);
-
-        /// <summary>Removing failed: {0}</summary>
-        internal static string ErrorMessageRemoveInstallationFailed(string error) => Get("ErrorMessage_RemoveInstallationFailedFormat", error);
-
         /// <summary>Could not open the stream as an Image: {0}</summary>
         internal static string ErrorMessageNotAnImageStream(string message) => Get("ErrorMessage_NotAnImageStreamFormat", message);
 
@@ -344,6 +344,39 @@ namespace KGySoft.Drawing.ImagingTools
 
         /// <summary>Could not open the stream as an Icon: {0}</summary>
         internal static string ErrorMessageNotAnIconStream(string message) => Get("ErrorMessage_NotAnIconStreamFormat", message);
+
+        /// <summary>Installation failed: {0}</summary>
+        internal static string ErrorMessageInstallationFailed(string error) => Get("ErrorMessage_InstallationFailedFormat", error);
+
+        /// <summary>Removing failed: {0}</summary>
+        internal static string ErrorMessageRemoveInstallationFailed(string error) => Get("ErrorMessage_RemoveInstallationFailedFormat", error);
+
+        /// <summary>Could not create directory {0}: {1}</summary>
+        internal static string ErrorMessageCouldNotCreateDirectory(string path, string message) => Get("ErrorMessage_CouldNotCreateDirectoryFormat", path, message);
+
+        /// <summary>Could not copy file {0}: {1}</summary>
+        internal static string ErrorMessageCouldNotCopyFile(string path, string message) => Get("ErrorMessage_CouldNotCopyFileFormat", path, message);
+
+        /// <summary>Could not delete file {0}: {1}</summary>
+        internal static string ErrorMessageCouldNotDeleteFile(string path, string message) => Get("ErrorMessage_CouldNotDeleteFileFormat", path, message);
+
+        /// <summary>Could not create directory {0}: {1}
+        ///
+        /// The debugger visualizer may will not work for .NET Core projects.</summary>
+        internal static string WarningMessageCouldNotCreateNetCoreDirectory(string path, string message) => Get("WarningMessage_CouldNotCreateNetCoreDirectoryFormat", path, message);
+
+        /// <summary>Could not create a link for file {0}: {1}
+        ///
+        /// The debugger visualizer may will not work for .NET Core projects.</summary>
+        internal static string WarningMessageCouldNotCreateNetCoreLink(string path, string message) => Get("WarningMessage_CouldNotCreateNetCoreLinkFormat", path, message);
+
+        /// <summary>Could not copy file {0}: {1}
+        ///
+        /// The debugger visualizer may will not work for .NET Core projects.</summary>
+        internal static string WarningMessageCouldNotCopyFileNetCore(string path, string message) => Get("WarningMessage_CouldNotCopyFileNetCoreFormat", path, message);
+
+        /// <summary>The installation finished with a warning: {0}</summary>
+        internal static string WarningMessageInstallationWarning(string warning) => Get("WarningMessage_InstallationWarningFormat", warning);
 
         /// <summary>The extension of the provided filename '{0}' does not match to the selected format ({1}).
         /// 

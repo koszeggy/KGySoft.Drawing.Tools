@@ -21,6 +21,7 @@ using System.IO;
 
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.Drawing.ImagingTools.WinApi;
 
 #endregion
 
@@ -31,6 +32,7 @@ namespace KGySoft.Drawing.ImagingTools
         #region Constants
 
         private const string debuggerVisualizerFileName = "KGySoft.Drawing.DebuggerVisualizers.dll";
+        private const string netCoreSubdirectory = "netstandard2.0";
 
         #endregion
 
@@ -52,9 +54,14 @@ namespace KGySoft.Drawing.ImagingTools
 
         public static InstallationInfo GetInstallationInfo(string path) => new InstallationInfo(path);
 
-        public static void Install(string path, out string error)
+        public static void Install(string path, out string error, out string warning)
         {
+            if (path == null)
+                throw new ArgumentNullException(nameof(path), PublicResources.ArgumentNull);
+            if (path.Length == 0)
+                throw new ArgumentException(PublicResources.ArgumentEmpty, nameof(path));
             error = null;
+            warning = null;
             try
             {
                 if (!Directory.Exists(path))
@@ -62,14 +69,14 @@ namespace KGySoft.Drawing.ImagingTools
             }
             catch (Exception e)
             {
-                error = $"Could not create directory {path}: {e.Message}";
+                error = Res.ErrorMessageCouldNotCreateDirectory(path, e.Message);
                 return;
             }
 
             string selfPath = Files.GetExecutingPath();
             if (selfPath == path)
             {
-                error = "The current installation is being executed, which cannot be overwritten";
+                error = Res.ErrorMessageInstallationCannotBeOverwritten;
                 return;
             }
 
@@ -81,21 +88,62 @@ namespace KGySoft.Drawing.ImagingTools
                 }
                 catch (Exception e)
                 {
-                    error = $"Could not copy file {file}: {e.Message}";
+                    error = Res.ErrorMessageCouldNotCopyFile(file, e.Message);
+                    return;
+                }
+            }
+
+            // .NET Core 3.0 support: the visualizer must be in a netstandard2.0 subdirectory.
+            // And actually it can contain framework assemblies so we just create a symbolic link to it
+            string netCorePath = Path.Combine(path, netCoreSubdirectory);
+            try
+            {
+                if (!Directory.Exists(netCorePath))
+                    Directory.CreateDirectory(netCorePath);
+            }
+            catch (Exception e)
+            {
+                warning = Res.WarningMessageCouldNotCreateNetCoreDirectory(netCorePath, e.Message);
+                return;
+            }
+
+            bool isNtfs;
+            try
+            {
+                char drive = Char.ToUpperInvariant(Path.GetFullPath(path)[0]);
+                isNtfs = drive >= 'A' && drive <= 'Z' && new DriveInfo(drive.ToString(null)).DriveFormat == "NTFS";
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                isNtfs = false;
+            }
+
+            foreach (string file in files)
+            {
+                try
+                {
+                    string source = Path.Combine(path, file);
+                    string target = Path.Combine(netCorePath, file);
+                    if (isNtfs)
+                    {
+                        if (File.Exists(target))
+                            File.Delete(target);
+                        Kernel32.CreateHardLink(target, source);
+                    }
+                    else
+                        File.Copy(source, target, true);
+                }
+                catch (Exception e)
+                {
+                    warning = isNtfs
+                        ? Res.WarningMessageCouldNotCreateNetCoreLink(file, e.Message)
+                        : Res.WarningMessageCouldNotCopyFileNetCore(file, e.Message);
                     return;
                 }
             }
         }
 
-        #endregion
-
-        #region Internal Methods
-
-        internal static bool IsInstalled(string path) => Directory.Exists(path) && File.Exists(GetDebuggerVisualizerFilePath(path));
-
-        internal static string GetDebuggerVisualizerFilePath(string path) => Path.Combine(path, debuggerVisualizerFileName);
-
-        internal static void Uninstall(string path, out string error)
+        public static void Uninstall(string path, out string error)
         {
             error = null;
             if (!Directory.Exists(path))
@@ -103,23 +151,50 @@ namespace KGySoft.Drawing.ImagingTools
 
             if (path == Files.GetExecutingPath())
             {
-                error = "The current installation is being executed, which cannot be removed";
+                error = Res.ErrorMessageInstallationCannotBeRemoved;
                 return;
             }
 
+            string netCorePath = Path.Combine(path, netCoreSubdirectory);
+            bool netCoreDirExists = Directory.Exists(netCorePath);
             foreach (string file in files)
             {
                 try
                 {
                     File.Delete(Path.Combine(path, file));
+                    if (netCoreDirExists)
+                        File.Delete(Path.Combine(netCorePath, file));
                 }
                 catch (Exception e)
                 {
-                    error = $"Could not delete file {file}: {e.Message}";
+                    error = Res.ErrorMessageCouldNotDeleteFile(file, e.Message);
                     return;
                 }
             }
+
+            try
+            {
+                if (netCoreDirExists &&
+#if NET35
+                    Directory.GetFileSystemEntries(netCorePath).Length == 0
+#else
+                    Directory.EnumerateFileSystemEntries(netCorePath).IsNullOrEmpty()
+#endif
+                    )
+                {
+                    Directory.Delete(netCorePath);
+                }
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+            }
         }
+
+        #endregion
+
+        #region Internal Methods
+
+        internal static string GetDebuggerVisualizerFilePath(string path) => Path.Combine(path, debuggerVisualizerFileName);
 
         #endregion
 

@@ -296,17 +296,17 @@ See the Configuration button.</value>
   <data name="ErrorMessage_AnimGifNotSupported" xml:space="preserve">
     <value>Saving modifications as animated GIF is not supported</value>
   </data>
+  <data name="ErrorMessage_InstallationCannotBeOverwritten" xml:space="preserve">
+    <value>The current installation is being executed, which cannot be overwritten</value>
+  </data>
+  <data name="ErrorMessage_InstallationCannotBeRemoved" xml:space="preserve">
+    <value>The current installation is being executed, which cannot be removed</value>
+  </data>
   <data name="ErrorMessage_FailedToSaveImageFormat" xml:space="preserve">
     <value>Could not save image due to an error: {0}</value>
   </data>
   <data name="ErrorMessage_FileDoesNotExistFormat" xml:space="preserve">
     <value>File does not exist: {0}</value>
-  </data>
-  <data name="ErrorMessage_InstallationFailedFormat" xml:space="preserve">
-    <value>Installation failed: {0}</value>
-  </data>
-  <data name="ErrorMessage_RemoveInstallationFailedFormat" xml:space="preserve">
-    <value>Removing failed: {0}</value>
   </data>
   <data name="ErrorMessage_NotAnImageStreamFormat" xml:space="preserve">
     <value>Could not open the stream as an Image: {0}</value>
@@ -319,6 +319,39 @@ See the Configuration button.</value>
   </data>
   <data name="ErrorMessage_NotAnIconStreamFormat" xml:space="preserve">
     <value>Could not open the stream as an Icon: {0}</value>
+  </data>
+  <data name="ErrorMessage_InstallationFailedFormat" xml:space="preserve">
+    <value>Installation failed: {0}</value>
+  </data>
+  <data name="ErrorMessage_RemoveInstallationFailedFormat" xml:space="preserve">
+    <value>Removing failed: {0}</value>
+  </data>
+  <data name="ErrorMessage_CouldNotCreateDirectoryFormat" xml:space="preserve">
+    <value>Could not create directory {0}: {1}</value>
+  </data>
+  <data name="ErrorMessage_CouldNotCopyFileFormat" xml:space="preserve">
+    <value>Could not copy file {0}: {1}</value>
+  </data>
+  <data name="ErrorMessage_CouldNotDeleteFileFormat" xml:space="preserve">
+    <value>Could not delete file {0}: {1}</value>
+  </data>
+  <data name="WarningMessage_CouldNotCreateNetCoreDirectoryFormat" xml:space="preserve">
+    <value>Could not create directory {0}: {1}
+
+The debugger visualizer may will not work for .NET Core projects.</value>
+  </data>
+  <data name="WarningMessage_CouldNotCreateNetCoreLinkFormat" xml:space="preserve">
+    <value>Could not create a link for file {0}: {1}
+
+The debugger visualizer may will not work for .NET Core projects.</value>
+  </data>
+  <data name="WarningMessage_CouldNotCopyFileNetCoreFormat" xml:space="preserve">
+    <value>Could not copy file {0}: {1}
+
+The debugger visualizer may will not work for .NET Core projects.</value>
+  </data>
+  <data name="WarningMessage_InstallationWarningFormat" xml:space="preserve">
+    <value>The installation finished with a warning: {0}</value>
   </data>
   <data name="ConfirmMessage_OverwriteInstallation" xml:space="preserve">
     <value>Are you sure you want to overwrite this installation?</value>

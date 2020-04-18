@@ -21,9 +21,12 @@
     regular debug window.
   ! Improving quality, when image is saved in a format that does not support current pixel format. Though this is
     is an improvement the result might not be incompatible with earlier results.
+  ! Installation Manager: When there are multiple detected VisualStudio versions the newest one is selected by
+    default instead of the oldest one.
   + Supporting all possible PixelFormats
   + Always allowing to save in Icon format
   + Saving as TIFF allows to save a multi-page image even for animations and icons if compound view is selected.
+  + Installation Manager: The installer now supports .NET Core 3.0+ projects
   - If an indexed bitmap was debugged, then changing a transparent palette entry did not always work properly.
 
 + KGySoft.Drawing.DebuggerVisualizers.dll
