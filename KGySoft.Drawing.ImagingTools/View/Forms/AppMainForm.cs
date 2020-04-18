@@ -30,7 +30,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
     {
         #region Fields
 
-        private static readonly string title = Res.TitleAppName;
+        private static readonly string title = Res.TitleAppNameAndVersion(typeof(Res).Assembly.GetName().Version);
 
         #endregion
 
@@ -106,7 +106,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private string FormatText(string value)
         {
-            var fileName = ViewModel.FileName;
+            string fileName = ViewModel.FileName;
             return String.IsNullOrEmpty(value) ? title : $"{title}{(fileName == null ? null : $" [{Path.GetFileName(fileName)}]")} - {value}";
         }
 

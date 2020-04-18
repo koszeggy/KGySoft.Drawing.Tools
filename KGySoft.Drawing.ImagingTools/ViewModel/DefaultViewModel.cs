@@ -17,6 +17,7 @@
 #region Usings
 
 using System.IO;
+using KGySoft.CoreLibraries;
 
 #endregion
 
@@ -37,7 +38,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal override void ViewLoaded()
         {
-            ProcessArgs(CommandLineArguments);
+            string[] args = CommandLineArguments;
+            if (args != null)
+                ProcessArgs(CommandLineArguments);
             base.ViewLoaded();
         }
 
@@ -66,7 +69,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void ProcessArgs(string[] args)
         {
-            if (args == null || args.Length == 0)
+            if (args.IsNullOrEmpty())
             {
                 Notification = Res.NotificationWelcome;
                 Image = null;

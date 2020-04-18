@@ -23,9 +23,9 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
-using KGySoft.Drawing.DebuggerVisualizers.Package.Properties;
 using KGySoft.Drawing.ImagingTools;
 using KGySoft.Drawing.ImagingTools.Model;
+
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -35,7 +35,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
     #region Usings
 
-    using KGySoft.Drawing.DebuggerVisualizers.Package.Properties;
+    using Resources = Properties.Resources;
 
     #endregion
 
@@ -137,7 +137,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         {
             if (shellService == null)
             {
-                ShellDialogs.Error(this, "Shell service could not be obtained. Installation of the debugger visualizers cannot be checked.");
+                ShellDialogs.Error(this, Resources.ErrorMessage_ShellServiceUnavailable);
                 return;
             }
 
@@ -152,11 +152,11 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
             InstallationManager.Install(targetPath, out string error, out string warning);
             if (error != null)
-                ShellDialogs.Error(this, $"Failed to install the visualizers to {targetPath}: {error}{Environment.NewLine}{Environment.NewLine}Make sure every running debugger is closed. Installing will be tried again on restarting Visual Studio.");
+                ShellDialogs.Error(this, Res.ErrorMessageFailedToInstall(targetPath, error));
             else if (warning != null)
-                ShellDialogs.Warning(this, $"The installation of the debugger visualizers to {targetPath} finished with a warning: {warning}");
+                ShellDialogs.Warning(this, Res.WarningMessageInstallationFinishedWithWarning(targetPath, warning));
             else
-                ShellDialogs.Info(this, $"{Resources.ResourceManager.GetString(Ids.ResourceTitle)} {availableVersion.Version} has been installed to {targetPath}.");
+                ShellDialogs.Info(this, Res.InfoMessageInstallationFinished(availableVersion.Version, targetPath));
         }
 
         private void InitCommands(IVsShell shellService, IMenuCommandService menuCommandService)

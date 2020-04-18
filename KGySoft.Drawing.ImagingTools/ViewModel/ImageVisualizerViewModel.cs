@@ -195,6 +195,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             InitAutoZoom();
             if (deferSettingCompoundStateImage && SetCompoundViewCommandState.GetValueOrDefault<bool>(stateVisible))
                 SetCompoundViewCommandStateImage();
+            base.ViewLoaded();
         }
 
         #endregion

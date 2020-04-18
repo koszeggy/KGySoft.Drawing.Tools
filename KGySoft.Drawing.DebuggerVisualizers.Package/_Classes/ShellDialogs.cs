@@ -25,12 +25,6 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
-    #region Usings
-    
-    using KGySoft.Drawing.DebuggerVisualizers.Package.Properties;
-
-    #endregion
-
     internal static class ShellDialogs
     {
         #region Methods
@@ -38,20 +32,20 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         #region Internal Methods
 
         internal static void Error(IServiceProvider serviceProvider, string message)
-            => ShowMesasgeBox(serviceProvider, message, OLEMSGICON.OLEMSGICON_CRITICAL);
+            => ShowMessageBox(serviceProvider, message, OLEMSGICON.OLEMSGICON_CRITICAL);
 
         internal static void Warning(IServiceProvider serviceProvider, string message)
-            => ShowMesasgeBox(serviceProvider, message, OLEMSGICON.OLEMSGICON_WARNING);
+            => ShowMessageBox(serviceProvider, message, OLEMSGICON.OLEMSGICON_WARNING);
 
         internal static void Info(IServiceProvider serviceProvider, string message)
-            => ShowMesasgeBox(serviceProvider, message, OLEMSGICON.OLEMSGICON_INFO);
+            => ShowMessageBox(serviceProvider, message, OLEMSGICON.OLEMSGICON_INFO);
 
         #endregion
 
         #region Private Methods
 
-        private static void ShowMesasgeBox(IServiceProvider serviceProvider, string message, OLEMSGICON icon)
-            => VsShellUtilities.ShowMessageBox(serviceProvider, message, Resources.ResourceManager.GetString(Ids.ResourceTitle), icon, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+        private static void ShowMessageBox(IServiceProvider serviceProvider, string message, OLEMSGICON icon)
+            => VsShellUtilities.ShowMessageBox(serviceProvider, message, Res.TitleMessageDialog, icon, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
 
         #endregion
 

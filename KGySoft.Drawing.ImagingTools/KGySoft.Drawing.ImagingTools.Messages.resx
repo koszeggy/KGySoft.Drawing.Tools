@@ -120,8 +120,8 @@
   <data name="General_InternalErrorFormat" xml:space="preserve">
     <value>Internal Error: {0}</value>
   </data>
-  <data name="Title_AppName" xml:space="preserve">
-    <value>KGy SOFT Imaging Tools</value>
+  <data name="Title_AppNameAndVersionFormat" xml:space="preserve">
+    <value>KGy SOFT Imaging Tools v{0}</value>
   </data>
   <data name="Title_NoImage" xml:space="preserve">
     <value>No Image</value>

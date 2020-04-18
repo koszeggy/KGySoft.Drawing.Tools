@@ -58,9 +58,6 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Title Captions
 
-        /// <summary>KGy SOFT Imaging Tools</summary>
-        internal static string TitleAppName => Get("Title_AppName");
-
         /// <summary>No Image</summary>
         internal static string TitleNoImage => Get("Title_NoImage");
 
@@ -219,6 +216,9 @@ namespace KGySoft.Drawing.ImagingTools
         #endregion
 
         #region Title Captions
+
+        /// <summary>KGy SOFT Imaging Tools v{0}</summary>
+        internal static string TitleAppNameAndVersion(Version version) => Get("Title_AppNameAndVersionFormat", version);
 
         /// <summary>Type: {0}</summary>
         internal static string TitleType(string type) => Get("Title_TypeFormat", type);

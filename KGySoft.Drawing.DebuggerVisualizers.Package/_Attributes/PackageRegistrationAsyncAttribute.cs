@@ -18,7 +18,7 @@
 
 using System;
 using System.ComponentModel;
-using System.Globalization;
+
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 

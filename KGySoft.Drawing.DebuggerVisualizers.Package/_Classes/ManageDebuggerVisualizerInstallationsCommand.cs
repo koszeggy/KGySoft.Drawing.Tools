@@ -90,7 +90,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
                 manageInstallationsView?.Dispose();
                 manageInstallationsViewModel?.Dispose();
                 manageInstallationsView = null;
-                ShellDialogs.Error(serviceProvider, $"Unexpected error occurred: {ex.Message}");
+                ShellDialogs.Error(serviceProvider, Res.ErrorMessageUnexpectedError(ex.Message));
             }
         }
 

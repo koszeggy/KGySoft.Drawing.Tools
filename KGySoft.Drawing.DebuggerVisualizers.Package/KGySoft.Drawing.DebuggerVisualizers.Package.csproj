@@ -58,6 +58,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Res.cs" />
     <Compile Include="_Classes\DebuggerVisualizersPackage.cs" />
     <Compile Include="_Classes\ExecuteImagingToolsCommand.cs" />
     <Compile Include="_Classes\Ids.cs" />

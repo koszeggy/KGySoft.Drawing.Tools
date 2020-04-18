@@ -84,7 +84,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
                 imagingToolsView?.Dispose();
                 imagingToolsViewModel?.Dispose();
                 imagingToolsView = null;
-                ShellDialogs.Error(serviceProvider, $"Unexpected error occurred: {ex.Message}");
+                ShellDialogs.Error(serviceProvider, Res.ErrorMessageUnexpectedError(ex.Message));
             }
         }
 
