@@ -6,12 +6,30 @@
 ===============================================================================
 
 ~~~~~~~~~
-- v2.1.0:
+! v2.5.0:
 ~~~~~~~~~
 
 ! KGySoft.Drawing.ImagingTools.exe
 ==================================
-+ API changes:
++ API changes: New public types to be able to debug several types by referencing the KGySoft.Drawing.ImagingTools
+  assembly:
+  + New public types in KGySoft.Drawing.ImagingTools namespace:
+    + InstallationManager class
+  + New public types in KGySoft.Drawing.ImagingTools.Model namespace:
+    + ImageInfoBase class
+    + ImageInfo class
+    + ImageFrameInfo class
+    + BitmapDataInfo class
+    + GraphicsInfo class
+    + InstallationInfo class
+    + ImageInfoType enum
+  + New public types in KGySoft.Drawing.ImagingTools.ViewModel namespace:
+    + IViewModel interface
+    + IViewModel<TModel> interface
+    + ViewModelFactory class
+  + New public types in KGySoft.Drawing.ImagingTools.View namespace:
+    + IView interface
+    + ViewFactory class
 ! Functional changes:
   ! When Icon type is being debugged and a non-icon image is opened, then the image will be converted to icon
     without changing the size (allowing any icon size).

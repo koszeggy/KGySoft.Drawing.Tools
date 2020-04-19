@@ -16,8 +16,14 @@
 
 namespace KGySoft.Drawing.ImagingTools.Model
 {
+    /// <summary>
+    /// Represents the image type held by an <see cref="ImageInfo"/> instance.
+    /// </summary>
     public enum ImageInfoType
     {
+        /// <summary>
+        /// Represents an empty <see cref="ImageInfo"/> without any image.
+        /// </summary>
         None,
 
         /// <summary>
@@ -31,7 +37,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
         Pages,
 
         /// <summary>
-        /// The image have multiple resolutions.
+        /// The image has multiple resolutions.
         /// </summary>
         MultiRes,
 

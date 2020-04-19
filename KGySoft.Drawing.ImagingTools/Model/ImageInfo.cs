@@ -18,6 +18,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -30,33 +31,49 @@ using KGySoft.CoreLibraries;
 
 namespace KGySoft.Drawing.ImagingTools.Model
 {
+    /// <summary>
+    /// Represents a descriptor for an <see cref="Image"/> or <see cref="System.Drawing.Icon"/> instance that can be used
+    /// to display arbitrary debug information for images.
+    /// </summary>
+    /// <seealso cref="ImageInfoBase" />
     public sealed class ImageInfo : ImageInfoBase
     {
-        #region Fields
-
-        private Icon icon;
-
-        #endregion
-
         #region Properties
 
         #region Public Properties
 
+        /// <summary>
+        /// Gets the type of the stored image.
+        /// </summary>
         public ImageInfoType Type { get; private set; }
 
+        /// <summary>
+        /// Gets or sets an <see cref="System.Drawing.Icon"/> instance associated with this <see cref="ImageInfo"/> instance.
+        /// </summary>
         public Icon Icon { get => Get<Icon>(); set => Set(value); }
 
+        /// <summary>
+        /// Gets or sets a file name associated with this <see cref="ImageInfo"/> instance.
+        /// </summary>
         public string FileName { get => Get<string>(); set => Set(value); }
 
+        /// <summary>
+        /// If this <see cref="ImageInfo"/> instance represents a multi-frame image, then gets or sets the frames belong to the image.
+        /// </summary>
+        [SuppressMessage("Performance", "CA1819:Properties should not return arrays",
+            Justification = "This is a descriptor class. It is expected that this property or the elements are set. The IsValid property gets whether this instance is valid, including frames.")]
         public ImageFrameInfo[] Frames { get => Get<ImageFrameInfo[]>(); set => Set(value); }
 
-        public bool IsMultiRes => !Frames.IsNullOrEmpty() && Type.In(ImageInfoType.MultiRes, ImageInfoType.Icon);
+        /// <summary>
+        /// Gets whether this instance represents a multi-frame image and has frames.
+        /// </summary>
         public bool HasFrames => !Frames.IsNullOrEmpty() && Type.In(ImageInfoType.Pages, ImageInfoType.Animation, ImageInfoType.MultiRes, ImageInfoType.Icon);
 
         #endregion
 
         #region Internal Properties
 
+        internal bool IsMultiRes => !Frames.IsNullOrEmpty() && Type.In(ImageInfoType.MultiRes, ImageInfoType.Icon);
         internal bool IsMetafile => Image is Metafile;
 
         #endregion
@@ -65,6 +82,12 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #region Constructors
 
+        /// <summary>
+        /// Initializes an empty instance of the <see cref="ImageInfo"/> class.
+        /// The properties are expected to be initialized individually. Use the <see cref="ValidatingObjectBase.IsValid"/>
+        /// property to check whether this instance is initialized properly.
+        /// </summary>
+        /// <param name="imageType">Type of the image.</param>
         public ImageInfo(ImageInfoType imageType)
         {
             if (!imageType.IsDefined())
@@ -72,12 +95,20 @@ namespace KGySoft.Drawing.ImagingTools.Model
             Type = imageType;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImageInfo"/> class from an <see cref="Image"/>.
+        /// </summary>
+        /// <param name="image">The image to be used for the initialization.</param>
         public ImageInfo(Image image)
         {
             InitFromImage(image);
             SetModified(false);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImageInfo"/> class from an <see cref="System.Drawing.Icon"/>.
+        /// </summary>
+        /// <param name="icon">The icon to be used for the initialization.</param>
         public ImageInfo(Icon icon)
         {
             InitFromIcon(icon);
@@ -90,6 +121,13 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #region Public Methods
 
+        /// <summary>
+        /// Gets or creates the compound image from the <see cref="Frames"/> if this instance represents a multi-frame image
+        /// and the <see cref="ImageInfoBase.Image"/> property is <see langword="null"/>.
+        /// </summary>
+        /// <returns>An <see cref="Image"/> that represents the possible compound image of this <see cref="ImageInfo"/> instance.
+        /// When a new image is created, then the return value will be the new value of the <see cref="ImageInfoBase.Image"/> property as well.</returns>
+        /// <exception cref="InvalidOperationException">The object is in an invalid state (the <see cref="ValidatingObjectBase.IsValid"/> property returns <see langword="false"/>).</exception>
         public Image GetCreateImage()
         {
             Image image = Image;
@@ -101,6 +139,12 @@ namespace KGySoft.Drawing.ImagingTools.Model
             return Image = image;
         }
 
+        /// <summary>
+        /// Gets or creates the icon if this instance represents an icon and the <see cref="Icon"/> property is <see langword="null"/>.
+        /// </summary>
+        /// <returns>An <see cref="Icon"/> that represents the possible icon of this <see cref="ImageInfo"/> instance.
+        /// When a new icon is created, then the return value will be the new value of the <see cref="Icon"/> property as well.</returns>
+        /// <exception cref="InvalidOperationException">The object is in an invalid state (the <see cref="ValidatingObjectBase.IsValid"/> property returns <see langword="false"/>).</exception>
         public Icon GetCreateIcon()
         {
             Icon icon = Icon;
@@ -134,6 +178,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #region Protected Methods
 
+        /// <inheritdoc/>
         protected override ValidationResultsCollection DoValidation()
         {
             if (Type == ImageInfoType.None)
@@ -161,6 +206,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
             return result;
         }
 
+        /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
             if (IsDisposed)
@@ -179,6 +225,8 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #region Private Methods
 
+        [SuppressMessage("ReSharper", "PossibleUnintendedReferenceComparison",
+            Justification = "The dimension variable is compared with the references we set earlier")]
         private void InitFromImage(Image image)
         {
             if (image == null)

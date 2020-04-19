@@ -22,6 +22,10 @@ using System;
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
+    /// <summary>
+    /// Represents a view model instance.
+    /// A new instance can be created by the <see cref="ViewModelFactory"/> class.
+    /// </summary>
     public interface IViewModel : IDisposable
     {
     }

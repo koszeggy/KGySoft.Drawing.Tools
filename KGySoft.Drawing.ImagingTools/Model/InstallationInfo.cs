@@ -18,16 +18,20 @@
 
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using System.Security.Policy;
+
 using KGySoft.CoreLibraries;
-using KGySoft.Reflection;
 
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.Model
 {
+    /// <summary>
+    /// Provides information about the installation status of the debugger visualizers in a directory.
+    /// </summary>
     public sealed class InstallationInfo : MarshalByRefObject
     {
         #region InitializerSandbox class
@@ -58,15 +62,33 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #region Properties
 
+        /// <summary>
+        /// Gets the path of the installation.
+        /// </summary>
         public string Path { get; }
+
+        /// <summary>
+        /// Gets whether a debugger visualizer assembly exists in the directory specified by the <see cref="Path"/> property.
+        /// </summary>
         public bool Installed { get; }
+
+        /// <summary>
+        /// Gets the version of an identified debugger visualizer installation.
+        /// Can return <see langword="null"/>&#160;even if <see cref="Installed"/> is <see langword="true"/>, if the installed version could not be determined.
+        /// </summary>
         public Version Version { get; private set; }
+
+        /// <summary>
+        /// Gets the runtime version of an identified debugger visualizer installation.
+        /// Can return <see langword="null"/>&#160;even if <see cref="Installed"/> is <see langword="true"/>, if the runtime version could not be determined.
+        /// </summary>
         public string RuntimeVersion { get; private set; }
 
         #endregion
 
         #region Constructors
 
+        [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute", Justification = "typeof().FullName will not be null")]
         internal InstallationInfo(string path)
         {
             Path = path;
