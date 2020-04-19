@@ -60,7 +60,6 @@ namespace KGySoft.Drawing.ImagingTools.Model
         #region Internal Properties
 
         internal int BitsPerPixel => Image.GetPixelFormatSize(PixelFormat);
-        internal bool IsDisposed { get; private set; } // TODO: remove if OOB will have IsDisposed
 
         #endregion
 
@@ -76,16 +75,6 @@ namespace KGySoft.Drawing.ImagingTools.Model
         #endregion
 
         #region Methods
-
-        #region Public Methods
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        #endregion
 
         #region Protected Methods
 
@@ -108,7 +97,6 @@ namespace KGySoft.Drawing.ImagingTools.Model
         {
             if (IsDisposed)
                 return;
-            IsDisposed = true;
             if (disposing)
                 Image?.Dispose();
             base.Dispose(disposing);
