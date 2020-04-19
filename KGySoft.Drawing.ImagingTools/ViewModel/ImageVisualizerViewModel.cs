@@ -265,9 +265,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 SetModified(true);
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception e) when (!e.IsCritical())
             {
-                ShowError(Res.ErrorMessageFailedToLoadFile(ex.Message));
+                ShowError(Res.ErrorMessageFailedToLoadFile(e.Message));
                 return false;
             }
         }
@@ -337,18 +337,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void InitMultiImage()
         {
-            switch (imageInfo.Type)
+            SetCompoundViewCommandState[stateToolTipText] = imageInfo.Type switch
             {
-                case ImageInfoType.Pages:
-                    SetCompoundViewCommandState[stateToolTipText] = Res.TooltipTextCompoundMultiPage;
-                    break;
-                case ImageInfoType.Animation:
-                    SetCompoundViewCommandState[stateToolTipText] = Res.TooltipTextCompoundAnimation;
-                    break;
-                default:
-                    SetCompoundViewCommandState[stateToolTipText] = Res.TooltipTextCompoundMultiSize;
-                    break;
-            }
+                ImageInfoType.Pages => Res.TooltipTextCompoundMultiPage,
+                ImageInfoType.Animation => Res.TooltipTextCompoundAnimation,
+                _ => Res.TooltipTextCompoundMultiSize
+            };
 
             SetCompoundViewCommandStateImage();
             SetCompoundViewCommandState[stateVisible] = true;
@@ -421,6 +415,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             return img?.GetType().Name ?? typeof(Bitmap).Name;
         }
 
+        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Stream is passed to an Image/Icon")]
         private void FromFile(string fileName)
         {
             var stream = new MemoryStream(File.ReadAllBytes(fileName));
@@ -439,7 +434,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     imageInfo.FileName = fileName;
                     return;
                 }
-                catch (Exception)
+                catch (Exception e) when (!e.IsCritical())
                 {
                     // failed to open as an icon: fallback to usual paths
                     stream.Position = 0L;
@@ -457,7 +452,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 }
                 catch (Exception e)
                 {
-                    throw new ArgumentException(Res.ErrorMessageNotAnImageStream(e.Message), nameof(stream), e);
+                    throw new ArgumentException(Res.ErrorMessageNotAnImageFile(e.Message), nameof(fileName), e);
                 }
             }
             // metafiles only
@@ -469,7 +464,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 }
                 catch (Exception e)
                 {
-                    throw new ArgumentException(Res.ErrorMessageNotAMetafileStream(e.Message), nameof(stream), e);
+                    throw new ArgumentException(Res.ErrorMessageNotAMetafile(e.Message), nameof(fileName), e);
                 }
             }
             // bitmaps or icons
@@ -481,7 +476,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 }
                 catch (Exception e)
                 {
-                    throw new ArgumentException(Res.ErrorMessageNotABitmapStream(e.Message), nameof(stream), e);
+                    throw new ArgumentException(Res.ErrorMessageNotABitmapFile(e.Message), nameof(fileName), e);
                 }
 
                 if (image.RawFormat.Guid == ImageFormat.MemoryBmp.Guid)
@@ -504,7 +499,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     }
                     catch (Exception e)
                     {
-                        throw new ArgumentException(Res.ErrorMessageNotAnIconStream(e.Message), nameof(stream), e);
+                        throw new ArgumentException(Res.ErrorMessageNotAnIconFile(e.Message), nameof(fileName), e);
                     }
                 }
 
@@ -644,6 +639,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             stream.Flush();
         }
 
+        [SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase",
+            Justification = "This is not normalization, we want to display the extensions in lowercase")]
         private void SetOpenFilter()
         {
             if (isOpenFilterUpToDate || imageTypes == AllowedImageTypes.None)

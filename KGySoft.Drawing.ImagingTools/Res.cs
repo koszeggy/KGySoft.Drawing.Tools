@@ -336,17 +336,17 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>File does not exist: {0}</summary>
         internal static string ErrorMessageFileDoesNotExist(string file) => Get("ErrorMessage_FileDoesNotExistFormat", file);
 
-        /// <summary>Could not open the stream as an Image: {0}</summary>
-        internal static string ErrorMessageNotAnImageStream(string message) => Get("ErrorMessage_NotAnImageStreamFormat", message);
+        /// <summary>Could not open the file as an Image: {0}</summary>
+        internal static string ErrorMessageNotAnImageFile(string message) => Get("ErrorMessage_NotAnImageFileFormat", message);
 
-        /// <summary>Could not open the stream as a Metafile: {0}</summary>
-        internal static string ErrorMessageNotAMetafileStream(string message) => Get("ErrorMessage_NotAMetafileStreamFormat", message);
+        /// <summary>Could not open the file as a Metafile: {0}</summary>
+        internal static string ErrorMessageNotAMetafile(string message) => Get("ErrorMessage_NotAMetafileFormat", message);
 
-        /// <summary>Could not open the stream as a Bitmap: {0}</summary>
-        internal static string ErrorMessageNotABitmapStream(string message) => Get("ErrorMessage_NotABitmapStreamFormat", message);
+        /// <summary>Could not open the file as a Bitmap: {0}</summary>
+        internal static string ErrorMessageNotABitmapFile(string message) => Get("ErrorMessage_NotABitmapFileFormat", message);
 
-        /// <summary>Could not open the stream as an Icon: {0}</summary>
-        internal static string ErrorMessageNotAnIconStream(string message) => Get("ErrorMessage_NotAnIconStreamFormat", message);
+        /// <summary>Could not open the file as an Icon: {0}</summary>
+        internal static string ErrorMessageNotAnIconFile(string message) => Get("ErrorMessage_NotAnIconFileFormat", message);
 
         /// <summary>Installation failed: {0}</summary>
         internal static string ErrorMessageInstallationFailed(string error) => Get("ErrorMessage_InstallationFailedFormat", error);

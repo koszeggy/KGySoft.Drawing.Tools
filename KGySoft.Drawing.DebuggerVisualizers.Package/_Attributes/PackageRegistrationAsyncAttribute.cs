@@ -52,8 +52,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
                 packageKey = context.CreateKey(RegKeyName(context));
 
                 //use a friendly description if it exists.
-                DescriptionAttribute attr = TypeDescriptor.GetAttributes(t)[typeof(DescriptionAttribute)] as DescriptionAttribute;
-                if (attr != null && !String.IsNullOrEmpty(attr.Description))
+                if (TypeDescriptor.GetAttributes(t)[typeof(DescriptionAttribute)] is DescriptionAttribute attr && !String.IsNullOrEmpty(attr.Description))
                     packageKey.SetValue(String.Empty, attr.Description);
                 else
                     packageKey.SetValue(String.Empty, t.Name);

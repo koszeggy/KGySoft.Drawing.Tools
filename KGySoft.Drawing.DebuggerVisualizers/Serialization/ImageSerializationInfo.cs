@@ -18,6 +18,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -49,6 +50,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
             ImageInfo = new ImageInfo((Icon)icon?.Clone());
         }
 
+        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
+            Justification = "The stream must not be disposed and the leaveOpen parameter is not available in every targeted platform")]
         internal ImageSerializationInfo(Stream stream)
         {
             ReadFrom(new BinaryReader(stream));

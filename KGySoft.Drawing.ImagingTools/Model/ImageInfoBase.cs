@@ -17,8 +17,10 @@
 #region Usings
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
+
 using KGySoft.ComponentModel;
 using KGySoft.Reflection;
 
@@ -28,12 +30,6 @@ namespace KGySoft.Drawing.ImagingTools.Model
 {
     public class ImageInfoBase : ValidatingObjectBase
     {
-        #region Fields
-        
-        private Color[] palette;
-
-        #endregion
-
         #region Properties
 
         #region Public Properties
@@ -51,6 +47,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         public PixelFormat PixelFormat { get => Get<PixelFormat>(); set => Set(value); }
 
+        [SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Justification = "This is a DTO class")]
         public Color[] Palette { get => Get(Reflector.EmptyArray<Color>()); set => Set(value ?? Reflector.EmptyArray<Color>()); }
 
         public Guid RawFormat { get => Get<Guid>(); set => Set(value); }

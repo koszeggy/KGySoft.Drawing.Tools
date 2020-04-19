@@ -308,17 +308,17 @@ See the Configuration button.</value>
   <data name="ErrorMessage_FileDoesNotExistFormat" xml:space="preserve">
     <value>File does not exist: {0}</value>
   </data>
-  <data name="ErrorMessage_NotAnImageStreamFormat" xml:space="preserve">
-    <value>Could not open the stream as an Image: {0}</value>
+  <data name="ErrorMessage_NotAnImageFileFormat" xml:space="preserve">
+    <value>Could not open the file as an Image: {0}</value>
   </data>
-  <data name="ErrorMessage_NotAMetafileStreamFormat" xml:space="preserve">
-    <value>Could not open the stream as a Metafile: {0}</value>
+  <data name="ErrorMessage_NotAMetafileFormat" xml:space="preserve">
+    <value>Could not open the file as a Metafile: {0}</value>
   </data>
-  <data name="ErrorMessage_NotABitmapStreamFormat" xml:space="preserve">
-    <value>Could not open the stream as a Bitmap: {0}</value>
+  <data name="ErrorMessage_NotABitmapFileFormat" xml:space="preserve">
+    <value>Could not open the file as a Bitmap: {0}</value>
   </data>
-  <data name="ErrorMessage_NotAnIconStreamFormat" xml:space="preserve">
-    <value>Could not open the stream as an Icon: {0}</value>
+  <data name="ErrorMessage_NotAnIconFileFormat" xml:space="preserve">
+    <value>Could not open the file as an Icon: {0}</value>
   </data>
   <data name="ErrorMessage_InstallationFailedFormat" xml:space="preserve">
     <value>Installation failed: {0}</value>

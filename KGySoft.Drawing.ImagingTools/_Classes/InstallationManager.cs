@@ -81,7 +81,7 @@ namespace KGySoft.Drawing.ImagingTools
                 if (!Directory.Exists(path))
                     Directory.CreateDirectory(path);
             }
-            catch (Exception e)
+            catch (Exception e) when (!e.IsCritical())
             {
                 error = Res.ErrorMessageCouldNotCreateDirectory(path, e.Message);
                 return;
@@ -100,7 +100,7 @@ namespace KGySoft.Drawing.ImagingTools
                 {
                     File.Copy(Path.Combine(selfPath, file), Path.Combine(path, file), true);
                 }
-                catch (Exception e)
+                catch (Exception e) when (!e.IsCritical())
                 {
                     error = Res.ErrorMessageCouldNotCopyFile(file, e.Message);
                     return;
@@ -115,7 +115,7 @@ namespace KGySoft.Drawing.ImagingTools
                 if (!Directory.Exists(netCorePath))
                     Directory.CreateDirectory(netCorePath);
             }
-            catch (Exception e)
+            catch (Exception e) when (!e.IsCritical())
             {
                 warning = Res.WarningMessageCouldNotCreateNetCoreDirectory(netCorePath, e.Message);
                 return;
@@ -147,7 +147,7 @@ namespace KGySoft.Drawing.ImagingTools
                     else
                         File.Copy(source, target, true);
                 }
-                catch (Exception e)
+                catch (Exception e) when (!e.IsCritical())
                 {
                     warning = isNtfs
                         ? Res.WarningMessageCouldNotCreateNetCoreLink(file, e.Message)
@@ -179,7 +179,7 @@ namespace KGySoft.Drawing.ImagingTools
                     if (netCoreDirExists)
                         File.Delete(Path.Combine(netCorePath, file));
                 }
-                catch (Exception e)
+                catch (Exception e) when (!e.IsCritical())
                 {
                     error = Res.ErrorMessageCouldNotDeleteFile(file, e.Message);
                     return;

@@ -44,7 +44,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
                     info.Version = asm.GetName().Version;
                     info.RuntimeVersion = asm.ImageRuntimeVersion;
                 }
-                catch (Exception)
+                catch (Exception e) when (!e.IsCritical())
                 {
                     info.Version = null;
                     info.RuntimeVersion = null;
@@ -94,7 +94,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
                     AppDomain.Unload(sandboxDomain);
                 }
             }
-            catch (Exception)
+            catch (Exception e) when (!e.IsCritical())
             {
                 RuntimeVersion = null;
                 InitializeInfoByFileVersion(path);
@@ -107,7 +107,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
             {
                 Version = new Version(FileVersionInfo.GetVersionInfo(InstallationManager.GetDebuggerVisualizerFilePath(path)).FileVersion);
             }
-            catch (Exception)
+            catch (Exception e) when (!e.IsCritical())
             {
                 Version = null;
             }
