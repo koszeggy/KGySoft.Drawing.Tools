@@ -19,6 +19,7 @@
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Globalization;
 
 #endregion
 
@@ -83,7 +84,7 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         private static Bitmap GetResource(string resourceName)
         {
-            var icon = (Icon)Properties.Resources.ResourceManager.GetObject(resourceName);
+            var icon = (Icon)Properties.Resources.ResourceManager.GetObject(resourceName, CultureInfo.InvariantCulture);
             if (WindowsUtils.IsVistaOrLater)
                 return icon.ToMultiResBitmap();
 

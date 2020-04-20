@@ -17,6 +17,7 @@
 #region Usings
 
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -37,24 +38,32 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
     {
         #region Internal Methods
 
+        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
+            Justification = "False alarm, the stream must not be disposed and the leaveOpen parameter is not available on every targeted platform")]
         internal static void SerializeImageInfo(Image image, Stream outgoingData)
         {
             using (var imageInfo = new ImageSerializationInfo(image))
                 imageInfo.Write(new BinaryWriter(outgoingData));
         }
 
+        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
+            Justification = "False alarm, the stream must not be disposed and the leaveOpen parameter is not available on every targeted platform")]
         internal static void SerializeIconInfo(Icon icon, Stream outgoingData)
         {
             using (var iconInfo = new ImageSerializationInfo(icon))
                 iconInfo.Write(new BinaryWriter(outgoingData));
         }
 
+        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
+            Justification = "False alarm, the stream must not be disposed and the leaveOpen parameter is not available on every targeted platform")]
         internal static void SerializeGraphicsInfo(Graphics g, Stream outgoingData)
         {
             using (var graphicsInfo = new GraphicsSerializationInfo(g))
                 graphicsInfo.Write(new BinaryWriter(outgoingData));
         }
 
+        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
+            Justification = "False alarm, the stream must not be disposed and the leaveOpen parameter is not available on every targeted platform")]
         internal static void SerializeBitmapDataInfo(BitmapData bitmapData, Stream outgoingData)
         {
             using (var bitmapDataInfo = new BitmapDataSerializationInfo(bitmapData))
@@ -63,10 +72,16 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 
         internal static void SerializeAnyObject(object target, Stream outgoingData) => BinarySerializer.SerializeToStream(outgoingData, target);
 
+        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
+            Justification = "False alarm, disposing would dispose the return value")]
         internal static ImageInfo DeserializeImageInfo(Stream stream) => new ImageSerializationInfo(stream).ImageInfo;
 
+        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
+            Justification = "False alarm, disposing would dispose the return value")]
         internal static BitmapDataInfo DeserializeBitmapDataInfo(Stream stream) => new BitmapDataSerializationInfo(stream).BitmapDataInfo;
 
+        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
+            Justification = "False alarm, disposing would dispose the return value")]
         internal static GraphicsInfo DeserializeGraphicsInfo(Stream stream) => new GraphicsSerializationInfo(stream).GraphicsInfo;
 
         internal static object DeserializeAnyObject(Stream stream) => BinarySerializer.DeserializeFromStream(stream);
@@ -104,6 +119,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
             }
         }
 
+        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
+            Justification = "False alarm, the stream is passed to an image so must not be disposed")]
         internal static Image ReadImage(BinaryReader br) => br.ReadBoolean()
             ? Image.FromStream(new MemoryStream(br.ReadBytes(br.ReadInt32())))
             : ReadRawBitmap(br);

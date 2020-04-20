@@ -17,18 +17,10 @@
 #region Usings
 
 using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel;
-using KGySoft.Drawing.ImagingTools;
-using KGySoft.Drawing.ImagingTools.Model;
-using KGySoft.Drawing.ImagingTools.View;
-using KGySoft.Drawing.ImagingTools.View.Forms;
-using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
 
@@ -87,7 +79,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
 
             viewModel.GetHwndCallback = () => Handle;
             viewModel.GetClipCallback = () => pictureBox.Bounds;
-            viewModel.ErrorCallback = Dialogs.ErrorMessage;
+            viewModel.ErrorCallback = message => MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         #endregion

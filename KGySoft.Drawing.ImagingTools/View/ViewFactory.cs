@@ -33,12 +33,15 @@ namespace KGySoft.Drawing.ImagingTools.View
         #region Methods
 
         /// <summary>
-        /// Creates a <see cref="Form"/> for the specified <see cref="ViewModelBase"/> instance.
+        /// Creates a view for the specified <see cref="IViewModel"/> instance.
         /// </summary>
         /// <param name="viewModel">The view model to create the view for.</param>
-        /// <returns></returns>
+        /// <returns>A view for the specified <see cref="IViewModel"/> instance.</returns>
         public static IView CreateView(IViewModel viewModel)
         {
+            if (viewModel == null)
+                throw new ArgumentNullException(nameof(viewModel), PublicResources.ArgumentNull);
+
             switch (viewModel)
             {
                 case DefaultViewModel defaultViewModel:
@@ -58,10 +61,18 @@ namespace KGySoft.Drawing.ImagingTools.View
             }
         }
 
+        /// <summary>
+        /// Shows an internally created view for the specified <see cref="IViewModel"/> instance,
+        /// which will be discarded when the view is closed.
+        /// </summary>
+        /// <param name="viewModel">The view model to create the view for.</param>
+        /// <param name="ownerWindowHandle">If specified, then the created dialog will be owned by the window that has specified handle. This parameter is optional.
+        /// <br/>Default value: <see cref="IntPtr.Zero">IntPtr.Zero</see>.</param>
+        /// <returns>A view for the specified <see cref="IViewModel"/> instance.</returns>
         public static void ShowDialog(IViewModel viewModel, IntPtr ownerWindowHandle = default)
         {
             using (IView view = CreateView(viewModel))
-                view.ShowDialog(ownerWindowHandle == IntPtr.Zero ? null : new OwnerWindowHandle(ownerWindowHandle));
+                view.ShowDialog(ownerWindowHandle);
         }
 
         #endregion

@@ -17,11 +17,13 @@
 #region Usings
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security;
+
 using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 using KGySoft.Drawing.ImagingTools.Model;
 
@@ -112,6 +114,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Model
         #region Instance Methods
 
         [SecurityCritical]
+        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
+            Justification = "False alarm, the icon is disposed by the container ImageInfo")]
         public object GetRealObject(StreamingContext context)
         {
             if (fileName == null && rawData == null)

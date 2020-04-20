@@ -68,7 +68,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
 
         public object GetObject()
         {
-            MemoryStream ms = new MemoryStream();
+            using var ms = new MemoryStream();
             Serializer.GetData(Object, ms);
             ms.Position = 0;
             return new BinaryFormatter().Deserialize(ms);

@@ -32,12 +32,12 @@ namespace KGySoft.Drawing.ImagingTools.View
         /// <summary>
         /// Shows the view as a modal dialog.
         /// </summary>
-        /// <param name="owner">If not <see langword="null"/>, then the created dialog will belong to the specified owner. This parameter is optional.
-        /// <br/>Default value: <see langword="null"/>.</param>
-        void ShowDialog(IWin32Window owner = null);
+        /// <param name="ownerWindowHandle">If specified, then the created dialog will be owned by the window that has specified handle. This parameter is optional.
+        /// <br/>Default value: <see cref="IntPtr.Zero">IntPtr.Zero</see>.</param>
+        void ShowDialog(IntPtr ownerWindowHandle = default);
 
         /// <summary>
-        /// Gets a value indicating whether this instance is disposed.
+        /// Gets whether this view is disposed.
         /// </summary>
         bool IsDisposed { get; }
 

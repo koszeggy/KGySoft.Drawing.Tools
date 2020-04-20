@@ -129,7 +129,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Explicit Interface Implementations
 
-        void IView.ShowDialog(IWin32Window owner) => ShowDialog(owner);
+        void IView.ShowDialog(IntPtr ownerHandle) => ShowDialog(ownerHandle == IntPtr.Zero ? null : new OwnerWindowHandle(ownerHandle));
 
         void IView.Show()
         {

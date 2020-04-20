@@ -16,14 +16,18 @@
 
 #region Usings
 
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing.Imaging;
 using System.IO;
+
 using Microsoft.VisualStudio.DebuggerVisualizers;
 
 #endregion
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 {
+    [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses",
+        Justification = "False alarm, instantiated by VS debugger visualizers")]
     internal class BitmapDataSerializer : VisualizerObjectSource
     {
         #region Methods

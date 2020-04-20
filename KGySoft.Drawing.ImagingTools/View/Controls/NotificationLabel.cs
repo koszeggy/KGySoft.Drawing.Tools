@@ -18,6 +18,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
@@ -28,6 +29,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
     internal class NotificationLabel : Label
     {
+        #region Constants
+
+        private const string fontMeasureValue = "0";
+
+        #endregion
+
         #region Fields
 
         private Size lastProposedSize;
@@ -91,6 +98,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Public Methods
 
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters",
+            Justification = "Font measuring must not rely on a variable resource text")]
         public override Size GetPreferredSize(Size proposedSize)
         {
             // Workaround: Immediately after calculating preferred size (eg. Dock == Top), another request arrives with empty proposedSize, which ruins the constrained result.
@@ -123,7 +132,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             {
                 if (String.IsNullOrEmpty(base.Text))
                 {
-                    preferredSize = Size.Ceiling(g.MeasureString("0", base.Font, 0));
+                    preferredSize = Size.Ceiling(g.MeasureString(fontMeasureValue, base.Font, 0));
                     preferredSize.Width = 0;
                 }
                 else

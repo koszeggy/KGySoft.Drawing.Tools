@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -111,6 +112,50 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
 
         #region Methods
 
+        #region Static Methods
+
+        private static Image FromPalette(IList<Color> palette)
+        {
+            var size = palette.Count;
+            if (size == 0)
+                return null;
+            var result = new Bitmap(size, size, PixelFormat.Format32bppArgb);
+            for (int x = 0; x < size; x++)
+            for (int y = 0; y < size; y++)
+                result.SetPixel(x, y, palette[x]);
+            return result;
+        }
+
+        private static Metafile GenerateMetafile()
+        {
+            //Set up reference Graphic
+            Graphics refGraph = Graphics.FromHwnd(IntPtr.Zero);
+            IntPtr hdc = refGraph.GetHdc();
+            Metafile result = new Metafile(hdc, new Rectangle(0, 0, 100, 100), MetafileFrameUnit.Pixel, EmfType.EmfOnly, "Test");
+
+            //Draw some silly drawing
+            using (var g = Graphics.FromImage(result))
+            {
+                var r = new Rectangle(0, 0, 100, 100);
+                var leftEye = new Rectangle(20, 20, 20, 30);
+                var rightEye = new Rectangle(60, 20, 20, 30);
+                g.FillEllipse(Brushes.Yellow, r);
+                g.FillEllipse(Brushes.White, leftEye);
+                g.FillEllipse(Brushes.White, rightEye);
+                g.DrawEllipse(Pens.Black, leftEye);
+                g.DrawEllipse(Pens.Black, rightEye);
+                g.DrawBezier(Pens.Red, new Point(10, 50), new Point(10, 100), new Point(90, 100), new Point(90, 50));
+            }
+
+            refGraph.ReleaseHdc(hdc); //cleanup
+            refGraph.Dispose();
+            return result;
+        }
+
+        #endregion
+
+        #region Instance Methods
+
         #region Protected Methods
 
         protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
@@ -186,7 +231,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
             if (BitmapData)
                 return GetBitmapData(PixelFormat);
             if (Palette)
-                return new Bitmap(1, 1, PixelFormat).Palette;
+                using (var bmp = new Bitmap(1, 1, PixelFormat))
+                    return bmp.Palette;
             if (SingleColor)
                 return Color.Black;
             if (ImageFromFile)
@@ -220,18 +266,10 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
             }
         }
 
-        private Image FromPalette(IList<Color> palette)
-        {
-            var size = palette.Count;
-            if (size == 0)
-                return null;
-            var result = new Bitmap(size, size, PixelFormat.Format32bppArgb);
-            for (int x = 0; x < size; x++)
-                for (int y = 0; y < size; y++)
-                    result.SetPixel(x, y, palette[x]);
-            return result;
-        }
-
+        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
+            Justification = "False alarm, the stream is passed to an image so must not be disposed")]
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes",
+            Justification = "This is just a test application")]
         private object FromFile(string fileName)
         {
             try
@@ -263,32 +301,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
                 ErrorCallback?.Invoke($"Could not open file: {e.Message}");
                 return null;
             }
-        }
-
-        private Metafile GenerateMetafile()
-        {
-            //Set up reference Graphic
-            Graphics refGraph = Graphics.FromHwnd(IntPtr.Zero);
-            IntPtr hdc = refGraph.GetHdc();
-            Metafile result = new Metafile(hdc, new Rectangle(0, 0, 100, 100), MetafileFrameUnit.Pixel, EmfType.EmfOnly, "Test");
-
-            //Draw some silly drawing
-            using (var g = Graphics.FromImage(result))
-            {
-                var r = new Rectangle(0, 0, 100, 100);
-                var leftEye = new Rectangle(20, 20, 20, 30);
-                var rightEye = new Rectangle(60, 20, 20, 30);
-                g.FillEllipse(Brushes.Yellow, r);
-                g.FillEllipse(Brushes.White, leftEye);
-                g.FillEllipse(Brushes.White, rightEye);
-                g.DrawEllipse(Pens.Black, leftEye);
-                g.DrawEllipse(Pens.Black, rightEye);
-                g.DrawBezier(Pens.Red, new Point(10, 50), new Point(10, 100), new Point(90, 100), new Point(90, 50));
-            }
-
-            refGraph.ReleaseHdc(hdc); //cleanup
-            refGraph.Dispose();
-            return result;
         }
 
         private Graphics GetBitmapGraphics()
@@ -427,6 +439,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
             if (objectProvider.ObjectReplaced)
                 TestObject = objectProvider.Object;
         }
+
+        #endregion
 
         #endregion
 

@@ -16,6 +16,7 @@
 
 #region Usings
 
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -59,26 +60,22 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     switch (e.Direction)
                     {
                         case ArrowDirection.Up:
-
                             arrow = new Point[] {
                                 new Point(middle.X - offset.Width, middle.Y + 1),
                                 new Point(middle.X + offset.Width + 1, middle.Y + 1),
                                 new Point(middle.X, middle.Y - offset.Height)};
-
                             break;
                         case ArrowDirection.Left:
                             arrow = new Point[] {
                                 new Point(middle.X + offset.Width, middle.Y - offsetDouble.Height),
                                 new Point(middle.X + offset.Width, middle.Y + offsetDouble.Height),
                                 new Point(middle.X - offset.Width, middle.Y)};
-
                             break;
                         case ArrowDirection.Right:
                             arrow = new Point[] {
                                 new Point(middle.X - offset.Width, middle.Y - offsetDouble.Height),
                                 new Point(middle.X - offset.Width, middle.Y + offsetDouble.Height),
                                 new Point(middle.X + offset.Width, middle.Y)};
-
                             break;
                         default:
                             arrow = new Point[] {
@@ -92,6 +89,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 }
             }
 
+            [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "False alarm, see the disposing at the end")]
             protected override void OnRenderItemCheck(ToolStripItemImageRenderEventArgs e)
             {
                 Rectangle imageRect = e.ImageRectangle;

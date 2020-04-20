@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
@@ -261,9 +262,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             txtColor.Text = sb.ToString();
         }
 
+        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "False alarm, bmpPattern is passed to a brush")]
         private void CreateAlphaBrush()
         {
-            Bitmap bmpPattern = new Bitmap(10, 10);
+            Size size = new Size(10, 10).Scale(this.GetScale());
+            var bmpPattern = new Bitmap(size.Width, size.Height);
             using (Graphics g = Graphics.FromImage(bmpPattern))
             {
                 g.Clear(Color.White);
@@ -276,16 +279,13 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             alphaBrush = new TextureBrush(bmpPattern);
         }
 
-        private void OnColorEdited()
-        {
-            if (ColorEdited != null)
-                ColorEdited.Invoke(this, EventArgs.Empty);
-        }
+        private void OnColorEdited() => ColorEdited?.Invoke(this, EventArgs.Empty);
 
         #endregion
 
         #region Event handlers
         //ReSharper disable InconsistentNaming
+#pragma warning disable IDE1006 // Naming Styles
 
         private void pnlColor_Paint(object sender, PaintEventArgs e)
         {
@@ -346,6 +346,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             UpdateInfo();
         }
 
+#pragma warning restore IDE1006 // Naming Styles
         //ReSharper restore InconsistentNaming
         #endregion
 

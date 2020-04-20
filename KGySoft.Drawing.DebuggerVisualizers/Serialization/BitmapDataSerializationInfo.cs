@@ -17,6 +17,7 @@
 #region Usings
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -37,6 +38,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 
         #region Constructors
 
+        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
+            Justification = "False alarm, the stream must not be disposed and the leaveOpen parameter is not available on every targeted platform")]
         internal BitmapDataSerializationInfo(Stream stream)
         {
             ReadFrom(new BinaryReader(stream));

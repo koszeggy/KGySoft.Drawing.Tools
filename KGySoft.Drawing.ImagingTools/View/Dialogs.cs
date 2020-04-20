@@ -23,7 +23,7 @@ using System.Windows.Forms;
 
 namespace KGySoft.Drawing.ImagingTools.View
 {
-    public static class Dialogs
+    internal static class Dialogs
     {
         #region Methods
 

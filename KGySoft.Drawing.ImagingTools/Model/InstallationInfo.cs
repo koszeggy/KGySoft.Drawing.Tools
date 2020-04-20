@@ -36,6 +36,8 @@ namespace KGySoft.Drawing.ImagingTools.Model
     {
         #region InitializerSandbox class
 
+        [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses",
+            Justification = "False alarm, instantiated by the InstallationInfo constructor in a separated AppDmain")]
         private sealed class InitializerSandbox : MarshalByRefObject
         {
             #region Methods

@@ -34,7 +34,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new DebuggerTestForm());
+            using (var mainForm = new DebuggerTestForm())
+                Application.Run(mainForm);
         }
 
         #endregion

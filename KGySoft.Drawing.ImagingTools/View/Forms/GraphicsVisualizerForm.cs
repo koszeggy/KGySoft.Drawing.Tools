@@ -16,10 +16,10 @@
 
 #region Usings
 
-using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
@@ -30,7 +30,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
     {
         #region Fields
 
+        [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed",
+            Justification = "False alarm, added to tsMenu, which is disposed by base")]
         private readonly ToolStripButton btnCrop;
+
+        [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed",
+            Justification = "False alarm, added to tsMenu, which is disposed by base")]
         private readonly ToolStripButton btnHighlightClip;
 
         #endregion

@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
@@ -46,7 +47,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Instance Fields
 
+        [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed",
+            Justification = "False alarm, added to Controls, which is disposed by base")]
         private VScrollBar sbPalette;
+
+        [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed",
+            Justification = "False alarm, added to components, which is disposed")]
         private Timer timerSelection;
         private IContainer components;
 
@@ -432,6 +438,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Event handlers
         //ReSharper disable InconsistentNaming
+#pragma warning disable IDE1006 // Naming Styles
 
         private void sbPalette_ValueChanged(object sender, EventArgs e)
         {
@@ -454,6 +461,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             Invalidate(GetColorRect(selectedColorIndex));
         }
 
+#pragma warning restore IDE1006 // Naming Styles
         //ReSharper disable InconsistentNaming
         #endregion
 

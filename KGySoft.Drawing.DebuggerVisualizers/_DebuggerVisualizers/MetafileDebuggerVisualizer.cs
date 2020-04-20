@@ -16,6 +16,8 @@
 
 #region Usings
 
+using System.Diagnostics.CodeAnalysis;
+
 using KGySoft.Drawing.DebuggerVisualizers.Model;
 using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 using KGySoft.Drawing.ImagingTools.Model;
@@ -26,6 +28,8 @@ using Microsoft.VisualStudio.DebuggerVisualizers;
 
 namespace KGySoft.Drawing.DebuggerVisualizers
 {
+    [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses",
+        Justification = "False alarm, instantiated by VS debugger visualizers")]
     internal sealed class MetafileDebuggerVisualizer : DialogDebuggerVisualizer
     {
         #region Methods
