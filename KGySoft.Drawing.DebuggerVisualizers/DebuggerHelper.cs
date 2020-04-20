@@ -40,6 +40,14 @@ namespace KGySoft.Drawing.DebuggerVisualizers
 
         #region Public Methods
 
+        /// <summary>
+        /// Shows a debugger dialog for the specified <paramref name="image"/>.
+        /// </summary>
+        /// <param name="image">The image to debug.</param>
+        /// <param name="isReplaceable"><see langword="true"/>, if the debugged instance can be replaced or edited; otherwise, <see langword="false"/>.</param>
+        /// <param name="ownerWindowHandle">If specified, then the created dialog will be owned by the window that has specified handle. This parameter is optional.
+        /// <br/>Default value: <see cref="IntPtr.Zero">IntPtr.Zero</see>.</param>
+        /// <returns>An <see cref="Image"/> that is returned by the debugger. If <paramref name="isReplaceable"/> is <see langword="false"/>, then this will be always the original <paramref name="image"/>.</returns>
         public static Image DebugImage(Image image, bool isReplaceable = true, IntPtr ownerWindowHandle = default)
         {
             using (IViewModel<Image> vm = ViewModelFactory.FromImage(image, !isReplaceable))
@@ -49,24 +57,48 @@ namespace KGySoft.Drawing.DebuggerVisualizers
             }
         }
 
+        /// <summary>
+        /// Shows a debugger dialog for the specified <paramref name="bitmap"/>.
+        /// </summary>
+        /// <param name="bitmap">The bitmap to debug.</param>
+        /// <param name="isReplaceable"><see langword="true"/>, if the debugged instance can be replaced or edited; otherwise, <see langword="false"/>.</param>
+        /// <param name="ownerWindowHandle">If specified, then the created dialog will be owned by the window that has specified handle. This parameter is optional.
+        /// <br/>Default value: <see cref="IntPtr.Zero">IntPtr.Zero</see>.</param>
+        /// <returns>A <see cref="Bitmap"/> that is returned by the debugger. If <paramref name="isReplaceable"/> is <see langword="false"/>, then this will be always the original <paramref name="bitmap"/>.</returns>
         public static Bitmap DebugBitmap(Bitmap bitmap, bool isReplaceable = true, IntPtr ownerWindowHandle = default)
         {
-            using (IViewModel<Image> vm = ViewModelFactory.FromBitmap(bitmap, !isReplaceable))
+            using (IViewModel<Bitmap> vm = ViewModelFactory.FromBitmap(bitmap, !isReplaceable))
             {
                 ViewFactory.ShowDialog(vm, ownerWindowHandle);
-                return vm.IsModified ? vm.GetEditedModel() as Bitmap : bitmap;
+                return vm.IsModified ? vm.GetEditedModel() : bitmap;
             }
         }
 
+        /// <summary>
+        /// Shows a debugger dialog for the specified <paramref name="metafile"/>.
+        /// </summary>
+        /// <param name="metafile">The metafile to debug.</param>
+        /// <param name="isReplaceable"><see langword="true"/>, if the debugged instance can be replaced or edited; otherwise, <see langword="false"/>.</param>
+        /// <param name="ownerWindowHandle">If specified, then the created dialog will be owned by the window that has specified handle. This parameter is optional.
+        /// <br/>Default value: <see cref="IntPtr.Zero">IntPtr.Zero</see>.</param>
+        /// <returns>A <see cref="Metafile"/> that is returned by the debugger. If <paramref name="isReplaceable"/> is <see langword="false"/>, then this will be always the original <paramref name="metafile"/>.</returns>
         public static Metafile DebugMetafile(Metafile metafile, bool isReplaceable = true, IntPtr ownerWindowHandle = default)
         {
-            using (IViewModel<Image> vm = ViewModelFactory.FromMetafile(metafile, !isReplaceable))
+            using (IViewModel<Metafile> vm = ViewModelFactory.FromMetafile(metafile, !isReplaceable))
             {
                 ViewFactory.ShowDialog(vm, ownerWindowHandle);
-                return vm.IsModified ? vm.GetEditedModel() as Metafile : metafile;
+                return vm.IsModified ? vm.GetEditedModel() : metafile;
             }
         }
 
+        /// <summary>
+        /// Shows a debugger dialog for the specified <paramref name="icon"/>.
+        /// </summary>
+        /// <param name="icon">The icon to debug.</param>
+        /// <param name="isReplaceable"><see langword="true"/>, if the debugged instance can be replaced or edited; otherwise, <see langword="false"/>.</param>
+        /// <param name="ownerWindowHandle">If specified, then the created dialog will be owned by the window that has specified handle. This parameter is optional.
+        /// <br/>Default value: <see cref="IntPtr.Zero">IntPtr.Zero</see>.</param>
+        /// <returns>An <see cref="Icon"/> that is returned by the debugger. If <paramref name="isReplaceable"/> is <see langword="false"/>, then this will be always the original <paramref name="icon"/>.</returns>
         public static Icon DebugIcon(Icon icon, bool isReplaceable = true, IntPtr ownerWindowHandle = default)
         {
             using (IViewModel<Icon> vm = ViewModelFactory.FromIcon(icon, !isReplaceable))
@@ -76,6 +108,12 @@ namespace KGySoft.Drawing.DebuggerVisualizers
             }
         }
 
+        /// <summary>
+        /// Shows a debugger dialog for the specified <paramref name="bitmapData"/>.
+        /// </summary>
+        /// <param name="bitmapData">The bitmap data to debug.</param>
+        /// <param name="ownerWindowHandle">If specified, then the created dialog will be owned by the window that has specified handle. This parameter is optional.
+        /// <br/>Default value: <see cref="IntPtr.Zero">IntPtr.Zero</see>.</param>
         public static void DebugBitmapData(BitmapData bitmapData, IntPtr ownerWindowHandle = default)
         {
             if (bitmapData == null)
@@ -84,6 +122,12 @@ namespace KGySoft.Drawing.DebuggerVisualizers
                 ViewFactory.ShowDialog(vm, ownerWindowHandle);
         }
 
+        /// <summary>
+        /// Shows a debugger dialog for the specified <paramref name="graphics"/>.
+        /// </summary>
+        /// <param name="graphics">The <see cref="Graphics"/> instance to debug.</param>
+        /// <param name="ownerWindowHandle">If specified, then the created dialog will be owned by the window that has specified handle. This parameter is optional.
+        /// <br/>Default value: <see cref="IntPtr.Zero">IntPtr.Zero</see>.</param>
         public static void DebugGraphics(Graphics graphics, IntPtr ownerWindowHandle = default)
         {
             if (graphics == null)
@@ -97,6 +141,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// </summary>
         /// <param name="palette">The palette object to debug.</param>
         /// <param name="isReplaceable">Indicates whether the palette is replaceable.</param>
+        /// <param name="ownerWindowHandle">If specified, then the created dialog will be owned by the window that has specified handle. This parameter is optional.
+        /// <br/>Default value: <see cref="IntPtr.Zero">IntPtr.Zero</see>.</param>
         /// <returns>A non-<see langword="null"/>&#160;instance, when the palette has been edited; otherwise, <see langword="null"/>.</returns>
         public static ColorPalette DebugPalette(ColorPalette palette, bool isReplaceable, IntPtr ownerWindowHandle = default)
         {
@@ -122,6 +168,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// </summary>
         /// <param name="color">The color object to debug.</param>
         /// <param name="isReplaceable">Indicates whether the color is replaceable.</param>
+        /// <param name="ownerWindowHandle">If specified, then the created dialog will be owned by the window that has specified handle. This parameter is optional.
+        /// <br/>Default value: <see cref="IntPtr.Zero">IntPtr.Zero</see>.</param>
         /// <returns>A non-<see langword="null"/>&#160;instance, when the color has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
         public static Color? DebugColor(Color color, bool isReplaceable = true, IntPtr ownerWindowHandle = default)
         {
@@ -163,24 +211,16 @@ namespace KGySoft.Drawing.DebuggerVisualizers
                 return DebugImageInfo(viewModel, isReplaceable);
         }
 
-        /// <summary>
-        /// Shows the debugger for a <see cref="BitmapData"/> object.
-        /// </summary>
-        /// <param name="bitmapDataInfo">The bitmap data infos for debugging returned by <see cref="SerializationHelper.DeserializeBitmapDataInfo"/>.</param>
-        internal static void DebugBitmapData(BitmapDataInfo bitmapDataInfo, IntPtr ownerWindowHandle = default)
+        internal static void DebugBitmapData(BitmapDataInfo bitmapDataInfo)
         {
             using (IViewModel vm = ViewModelFactory.FromBitmapData(bitmapDataInfo))
-                ViewFactory.ShowDialog(vm, ownerWindowHandle);
+                ViewFactory.ShowDialog(vm);
         }
 
-        /// <summary>
-        /// Shows the debugger for a <see cref="Graphics"/> object.
-        /// </summary>
-        /// <param name="graphicsInfo">The graphics infos for debugging returned by <see cref="SerializationHelper.DeserializeGraphicsInfo"/>.</param>
-        internal static void DebugGraphics(GraphicsInfo graphicsInfo, IntPtr ownerWindowHandle = default)
+        internal static void DebugGraphics(GraphicsInfo graphicsInfo)
         {
             using (IViewModel vm = ViewModelFactory.FromGraphics(graphicsInfo))
-                ViewFactory.ShowDialog(vm, ownerWindowHandle);
+                ViewFactory.ShowDialog(vm);
         }
 
         #endregion

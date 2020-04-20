@@ -38,9 +38,9 @@ namespace KGySoft.Drawing.ImagingTools
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            using var viewModel = ViewModelFactory.FromCommandLineArguments(args);
-            using var view = (Form)ViewFactory.CreateView(viewModel);
-            Application.Run(view);
+            using IViewModel viewModel = ViewModelFactory.FromCommandLineArguments(args);
+            using IView view = ViewFactory.CreateView(viewModel);
+            Application.Run((Form)view);
         }
 
         #endregion

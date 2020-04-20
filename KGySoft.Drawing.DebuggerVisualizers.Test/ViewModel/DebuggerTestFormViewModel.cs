@@ -193,6 +193,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
 
         protected override void Dispose(bool disposing)
         {
+            if (IsDisposed)
+                return;
             if (disposing)
                 FreeTestObject();
             base.Dispose(disposing);
@@ -397,9 +399,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
                     ColorPalette newPalette = DebuggerHelper.DebugPalette(palette, !AsReadOnly, hwnd);
                     if (newPalette != null)
                     {
-                        if (TestObject == newPalette)
-                            TestObject = null;
                         TestObject = newPalette;
+                        if (ReferenceEquals(palette, newPalette))
+                            OnPropertyChanged(new PropertyChangedExtendedEventArgs(palette, newPalette, nameof(TestObject)));
                     }
 
                     break;

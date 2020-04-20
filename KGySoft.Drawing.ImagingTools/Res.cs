@@ -223,16 +223,16 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Type: {0}</summary>
         internal static string TitleType(string type) => Get("Title_TypeFormat", type);
 
-        /// <summary>Size: {0} x {1}</summary>
+        /// <summary>Size: {0}x{1}</summary>
         internal static string TitleSize(Size size) => Get("Title_SizeFormat", size.Width, size.Height);
 
         /// <summary>Palette Count: {0}</summary>
         internal static string TitlePaletteCount(int count) => Get("Title_PaletteCountFormat", count);
 
-        /// <summary>Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2} x {3}}}</summary>
+        /// <summary>Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2}x{3}}}</summary>
         internal static string TitleVisibleClip(Rectangle rect) => Get("Title_VisibleClipFormat", rect.X, rect.Y, rect.Width, rect.Height);
 
-        /// <summary>Original Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2} x {3}}}</summary>
+        /// <summary>Original Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2}x{3}}}</summary>
         internal static string TitleOriginalVisibleClip(Rectangle rect) => Get("Title_OriginalVisibleClipFormat", rect.X, rect.Y, rect.Width, rect.Height);
 
         /// <summary>Color: {0}</summary>
@@ -259,14 +259,14 @@ namespace KGySoft.Drawing.ImagingTools
         #region Info Texts
 
         /// <summary>Type: {0}
-        /// Size: {1} x {2} pixels
+        /// Size: {1}x{2} pixels
         /// {7}Pixel Format: {3}
         /// Raw format: {4}
-        /// Resolution: {5} x {6} DPI</summary>
+        /// Resolution: {5}x{6} DPI</summary>
         internal static string InfoImage(string type, Size size, PixelFormat pixelFormat, string rawFormat, float hres, float vres, string frameInfo)
             => Get("InfoText_ImageFormat", type, size.Width, size.Height, pixelFormat, rawFormat, hres, vres, frameInfo);
 
-        /// <summary>Size: {0} x {1} pixels
+        /// <summary>Size: {0}x{1} pixels
         /// Stride: {2} bytes
         /// Pixel Format: {3}</summary>
         internal static string InfoBitmapData(Size size, int stride, PixelFormat pixelFormat)
@@ -311,16 +311,16 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Vertical zoom: {0}</summary>
         internal static string InfoVerticalZoom(float zoom) => Get("InfoText_VerticalZoomFormat", zoom);
 
-        /// <summary>Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2} x {3} pixels}}</summary>
+        /// <summary>Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2}x{3} pixels}}</summary>
         internal static string InfoVisibleClip(Rectangle rect) => Get("InfoText_VisibleClipFormat", rect.X, rect.Y, rect.Width, rect.Height);
 
-        /// <summary>Original Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2} x {3} pixels}}</summary>
+        /// <summary>Original Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2}x{3} pixels}}</summary>
         internal static string InfoOriginalVisibleClip(Rectangle rect) => Get("InfoText_OriginalVisibleClipFormat", rect.X, rect.Y, rect.Width, rect.Height);
 
-        /// <summary>Transformed Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2} x {3} (Page Unit: {4})}}</summary>
+        /// <summary>Transformed Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2}x{3} (Page Unit: {4})}}</summary>
         internal static string InfoTransformedVisibleClip(RectangleF rect, GraphicsUnit unit) => Get("InfoText_TransformedVisibleClipFormat", rect.X, rect.Y, rect.Width, rect.Height, unit);
 
-        /// <summary>Resolution: {0} x {1} DPI</summary>
+        /// <summary>Resolution: {0}x{1} DPI</summary>
         internal static string InfoResolution(PointF dpi) => Get("InfoText_ResolutionFormat", dpi.X, dpi.Y);
 
         #endregion
