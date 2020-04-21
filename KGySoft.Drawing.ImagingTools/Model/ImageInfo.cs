@@ -352,6 +352,10 @@ namespace KGySoft.Drawing.ImagingTools.Model
             {
                 frames[i] = new ImageFrameInfo(iconImages[i]);
                 InitIconMeta(iconInfo[i], frames[i]);
+
+                // In Windows XP all icon images are uncompressed so displaying just Icon
+                if (!WindowsUtils.IsVistaOrLater)
+                    RawFormat = ImageFormat.Icon.Guid;
             }
 
             Frames = frames;

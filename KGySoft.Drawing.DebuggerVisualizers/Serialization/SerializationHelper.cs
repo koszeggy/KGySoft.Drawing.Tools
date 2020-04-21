@@ -96,7 +96,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
                 // ... or is a TIFF with 48/64 BPP because saving as TIFF can preserve pixel format only if the raw format is also TIFF...
                 || (bpp = image.GetBitsPerPixel()) > 32 && image.RawFormat.Guid == ImageFormat.Tiff.Guid
                 // ... or is an animated GIF, which always have 32 BPP pixel format
-                || bpp == 32 && image.RawFormat.Guid == ImageFormat.Gif.Guid;
+                || bpp == 32 && image.RawFormat.Guid == ImageFormat.Gif.Guid
+                // ... or image is an icon - actually needed only for Windows XP to prevent error from LockBits when sizes are not recognized
+                || image.RawFormat.Guid == ImageFormat.Icon.Guid;
 
             bw.Write(asImage);
             if (asImage)
@@ -143,6 +145,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
                     image.SaveAsGif(ms);
                 else if (image.RawFormat.Guid == ImageFormat.Tiff.Guid)
                     image.SaveAsTiff(ms);
+                else if (image.RawFormat.Guid == ImageFormat.Icon.Guid)
+                    image.SaveAsIcon(ms);
                 else
                 {
                     Debug.Fail("It is not expected to serialize an image as a PNG");
