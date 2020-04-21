@@ -53,6 +53,7 @@ namespace KGySoft.Drawing.ImagingTools
         }
 
         internal static PointF SystemScale => GetScale(IntPtr.Zero);
+        internal static PointF SystemDpi => GetDpiForHwnd(IntPtr.Zero);
 
         #endregion
 

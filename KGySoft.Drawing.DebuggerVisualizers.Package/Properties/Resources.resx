@@ -121,10 +121,27 @@
     <value>KGy SOFT Drawing DebuggerVisualizers</value>
   </data>
   <data name="112" xml:space="preserve">
-    <value>Debugger Visualizers for System.Drawing types such as Bitmap, Metafile, Icon, Graphics, BitmapData, ColorPalette and Color.</value>
+    <value>Debugger Visualizers for System.Drawing types such as Image, Bitmap, Metafile, Icon, Graphics, BitmapData, ColorPalette and Color.</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="400" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ImageDebuggerVisualizers.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ErrorMessage_UnexpectedErrorFormat" xml:space="preserve">
+    <value>Unexpected error occurred: {0}</value>
+  </data>
+  <data name="ErrorMessage_ShellServiceUnavailable" xml:space="preserve">
+    <value>Shell service could not be obtained. Installation of the debugger visualizers cannot be checked.</value>
+  </data>
+  <data name="ErrorMessage_FailedToInstallFormat" xml:space="preserve">
+    <value>Failed to install the visualizers to {0}: {1}
+
+Make sure every running debugger is closed. Installing will be tried again on restarting Visual Studio.</value>
+  </data>
+  <data name="WarningMessage_InstallationFinishedWithWarningFormat" xml:space="preserve">
+    <value>The installation of KGy SOFT Drawing DebuggerVisualizers to {0} finished with a warning: {1}</value>
+  </data>
+  <data name="InfoMessage_InstallationFinishedFormat" xml:space="preserve">
+    <value>KGy SOFT Drawing DebuggerVisualizers {0} have been installed to {1}</value>
   </data>
 </root>

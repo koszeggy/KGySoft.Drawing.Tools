@@ -1,292 +1,41 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{9080594A-56AA-41E5-9D9A-A23C39A1648A}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFrameworks>net35;net40;net45</TargetFrameworks>
+    <!--<TargetFrameworks>net45</TargetFrameworks>-->
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>KGySoft.Drawing.ImagingTools</RootNamespace>
-    <AssemblyName>KGySoft.Drawing.ImagingTools</AssemblyName>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\KGySoft.snk</AssemblyOriginatorKeyFile>
-    <DocumentationFile>bin\$(Configuration)\KGySoft.DebuggerVisualizers.Common.xml</DocumentationFile>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <OutputPath>bin\$(Configuration)</OutputPath>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug_NET35|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <DefineConstants>TRACE;DEBUG;NET35</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_NET35|AnyCPU' ">
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <DefineConstants>TRACE;NET35</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET40|AnyCPU'">
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <DebugSymbols>true</DebugSymbols>
-    <DefineConstants>TRACE;DEBUG;NET40</DefineConstants>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_NET40|AnyCPU'">
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <DefineConstants>TRACE;NET40</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET45|AnyCPU'">
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <DebugSymbols>true</DebugSymbols>
-    <DefineConstants>TRACE;DEBUG;NET45</DefineConstants>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_NET45|AnyCPU'">
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <DefineConstants>TRACE;NET45</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
-  <PropertyGroup>
+    <!--<RunCodeAnalysis>true</RunCodeAnalysis>-->
+    <!--<CodeAnalysisRuleSet>..\KGySoft.Drawing.ruleset</CodeAnalysisRuleSet>-->
+    <LangVersion>latest</LangVersion>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Authors>György Kőszeg</Authors>
     <ApplicationIcon>Resources\ImagingTools.ico</ApplicationIcon>
-  </PropertyGroup>
-  <PropertyGroup />
-  <PropertyGroup />
-  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
+    <PackageReference Include="KGySoft.CoreLibraries" Version="5.1.1" />
+    <PackageReference Include="KGySoft.Drawing" Version="5.1.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFrameworkVersion)' == 'v3.5'">
-    <Reference Include="KGySoft.CoreLibraries, Version=4.7.0.0, Culture=neutral, PublicKeyToken=b45eba277439ddfe, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\KGySoft.CoreLibraries.4.7.0\lib\net35\KGySoft.CoreLibraries.dll</HintPath>
-    </Reference>
-    <Reference Include="KGySoft.Drawing, Version=4.7.0.0, Culture=neutral, PublicKeyToken=b45eba277439ddfe, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\KGySoft.Drawing.4.7.0\lib\net35\KGySoft.Drawing.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFrameworkVersion)' == 'v4.0'">
-    <Reference Include="KGySoft.CoreLibraries, Version=4.7.0.0, Culture=neutral, PublicKeyToken=b45eba277439ddfe, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\KGySoft.CoreLibraries.4.7.0\lib\net40\KGySoft.CoreLibraries.dll</HintPath>
-    </Reference>
-    <Reference Include="KGySoft.Drawing, Version=4.7.0.0, Culture=neutral, PublicKeyToken=b45eba277439ddfe, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\KGySoft.Drawing.4.7.0\lib\net40\KGySoft.Drawing.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFrameworkVersion)' == 'v4.5'">
-    <Reference Include="KGySoft.CoreLibraries, Version=4.7.0.0, Culture=neutral, PublicKeyToken=b45eba277439ddfe, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\KGySoft.CoreLibraries.4.7.0\lib\net45\KGySoft.CoreLibraries.dll</HintPath>
-    </Reference>
-    <Reference Include="KGySoft.Drawing, Version=4.7.0.0, Culture=neutral, PublicKeyToken=b45eba277439ddfe, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\KGySoft.Drawing.4.7.0\lib\net45\KGySoft.Drawing.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="Controls\NotificationLabel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controls\ScalingToolStrip.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controls\ScalingToolStripDropDownButton.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Forms\BaseForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\ManageInstallationsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\ManageInstallationsForm.Designer.cs">
-      <DependentUpon>ManageInstallationsForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="_Classes\DebuggerHelper.cs" />
-    <Compile Include="_Classes\Dialogs.cs" />
-    <Compile Include="_Classes\ImageData.cs" />
-    <Compile Include="_Classes\ImageReference.cs" />
-    <Compile Include="_Classes\Images.cs" />
-    <Compile Include="_Classes\SerializationHelper.cs" />
-    <Compile Include="Controls\PalettePanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="_Classes\InstallationInfo.cs" />
-    <Compile Include="_Classes\InstallationManager.cs" />
-    <Compile Include="_Classes\WindowsUtils.cs" />
-    <Compile Include="_Enums\ImageDataTypes.cs" />
-    <Compile Include="_Enums\ImageTypes.cs" />
-    <Compile Include="Forms\ImagingToolsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\ImagingToolsForm.Designer.cs">
-      <DependentUpon>ImagingToolsForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\BitmapDataDebuggerVisualizerForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\BitmapDataDebuggerVisualizerForm.Designer.cs">
-      <DependentUpon>BitmapDataDebuggerVisualizerForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\ColorVisualizerForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\ColorVisualizerForm.Designer.cs">
-      <DependentUpon>ColorVisualizerForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\GraphicsDebuggerVisualizerForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\GraphicsDebuggerVisualizerForm.Designer.cs">
-      <DependentUpon>GraphicsDebuggerVisualizerForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\ImageDebuggerVisualizerForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\ImageDebuggerVisualizerForm.Designer.cs">
-      <DependentUpon>ImageDebuggerVisualizerForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\PaletteVisualizerForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\PaletteVisualizerForm.Designer.cs">
-      <DependentUpon>PaletteVisualizerForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\ColorVisualizerControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\ColorVisualizerControl.Designer.cs">
-      <DependentUpon>ColorVisualizerControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="_Extensions\ControlExtensions.cs" />
-    <Compile Include="_Extensions\GraphicsExtensions.cs" />
-    <Compile Include="_Extensions\SizeExtensions.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Controls\PalettePanel.resx">
-      <DependentUpon>PalettePanel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ImagingToolsForm.resx">
-      <DependentUpon>ImagingToolsForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ColorVisualizerForm.resx">
-      <DependentUpon>ColorVisualizerForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\GraphicsDebuggerVisualizerForm.resx">
-      <DependentUpon>GraphicsDebuggerVisualizerForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ImageDebuggerVisualizerForm.resx">
-      <DependentUpon>ImageDebuggerVisualizerForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ManageInstallationsForm.resx">
-      <DependentUpon>ManageInstallationsForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\PaletteVisualizerForm.resx">
-      <DependentUpon>PaletteVisualizerForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\ColorVisualizerControl.resx">
-      <DependentUpon>ColorVisualizerControl.cs</DependentUpon>
-      <SubType>Designer</SubType>
+    <EmbeddedResource Update="KGySoft.Drawing.ImagingTools.Messages.resx">
+      <LogicalName>KGySoft.Drawing.ImagingTools.Messages.resources</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\KGySoft.snk">
-      <Link>KGySoft.snk</Link>
-    </None>
-    <None Include="app.manifest">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ImagingTools.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Magnifier.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Palette.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Open.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Save.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Clear.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Prev.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Next.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Crop.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\HighlightVisibleClip.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Settings.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Animation.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\MultiSize.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\MultiPage.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Check.ico" />
-  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-    <MSBuild Condition=" '$(TargetFrameworkVersion.Replace(&quot;v&quot;,&quot;&quot;))' &gt;= '4.0' " Projects="$(MSBuildProjectFile)" Properties="TargetFrameworkVersion=v3.5" RunEachTargetSeparately="true" />
-  </Target>
-  -->
-  <ProjectExtensions>
-    <VisualStudio>
-      <UserProperties ExternalBuildIntegrationEnabled="True" ED14F191-6CDA-4bbb-BB1B-C329DD754E20_OutputCondition="" LastExportedMakefileHash="Lc9DFBa2QeJU6LkEO19XOA==" />
-    </VisualStudio>
-  </ProjectExtensions>
+
 </Project>

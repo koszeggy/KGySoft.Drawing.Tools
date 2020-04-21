@@ -17,6 +17,7 @@
 #region Usings
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.DebuggerVisualizers.Test.View;
@@ -30,6 +31,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test
         #region Methods
 
         [STAThread]
+        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
+            Justification = "Would just cause double disposing because closing will dispose the form anyway.")]
         static void Main()
         {
             Application.EnableVisualStyles();

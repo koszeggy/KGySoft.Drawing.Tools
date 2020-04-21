@@ -1,0 +1,142 @@
+﻿#region Copyright
+
+///////////////////////////////////////////////////////////////////////////////
+//  File: InstallationInfo.cs
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright (C) KGy SOFT, 2005-2019 - All Rights Reserved
+//
+//  You should have received a copy of the LICENSE file at the top-level
+//  directory of this distribution. If not, then this file is considered as
+//  an illegal copy.
+//
+//  Unauthorized copying of this file, via any medium is strictly prohibited.
+///////////////////////////////////////////////////////////////////////////////
+
+#endregion
+
+#region Usings
+
+using System;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Reflection;
+using System.Security.Policy;
+
+using KGySoft.CoreLibraries;
+
+#endregion
+
+namespace KGySoft.Drawing.ImagingTools.Model
+{
+    /// <summary>
+    /// Provides information about the installation status of the debugger visualizers in a directory.
+    /// </summary>
+    public sealed class InstallationInfo : MarshalByRefObject
+    {
+        #region InitializerSandbox class
+
+        [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses",
+            Justification = "False alarm, instantiated by the InstallationInfo constructor in a separated AppDmain")]
+        private sealed class InitializerSandbox : MarshalByRefObject
+        {
+            #region Methods
+
+            public InitializerSandbox(InstallationInfo info, string path)
+            {
+                try
+                {
+                    var asm = Assembly.ReflectionOnlyLoadFrom(InstallationManager.GetDebuggerVisualizerFilePath(path));
+                    info.Version = asm.GetName().Version;
+                    info.RuntimeVersion = asm.ImageRuntimeVersion;
+                }
+                catch (Exception e) when (!e.IsCritical())
+                {
+                    info.Version = null;
+                    info.RuntimeVersion = null;
+                }
+            }
+
+            #endregion
+        }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the path of the installation.
+        /// </summary>
+        public string Path { get; }
+
+        /// <summary>
+        /// Gets whether a debugger visualizer assembly exists in the directory specified by the <see cref="Path"/> property.
+        /// </summary>
+        public bool Installed { get; }
+
+        /// <summary>
+        /// Gets the version of an identified debugger visualizer installation.
+        /// Can return <see langword="null"/>&#160;even if <see cref="Installed"/> is <see langword="true"/>, if the installed version could not be determined.
+        /// </summary>
+        public Version Version { get; private set; }
+
+        /// <summary>
+        /// Gets the runtime version of an identified debugger visualizer installation.
+        /// Can return <see langword="null"/>&#160;even if <see cref="Installed"/> is <see langword="true"/>, if the runtime version could not be determined.
+        /// </summary>
+        public string RuntimeVersion { get; private set; }
+
+        #endregion
+
+        #region Constructors
+
+        [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute", Justification = "typeof().FullName will not be null")]
+        internal InstallationInfo(string path)
+        {
+            Path = path;
+            Installed = File.Exists(InstallationManager.GetDebuggerVisualizerFilePath(path));
+
+            if (!Installed)
+                return;
+
+            // Trying to determine the version by loading it into a sandbox domain. 
+            try
+            {
+                Evidence evidence = new Evidence(AppDomain.CurrentDomain.Evidence);
+                AppDomain sandboxDomain = AppDomain.CreateDomain(nameof(InitializerSandbox), evidence, Files.GetExecutingPath(), null, false);
+                try
+                {
+                    // initializing by the constructor rather than unwrapping and calling a public method because unwrap may fail if executed from a Visual Studio package
+#if NET35
+                    Activator.CreateInstance(sandboxDomain, Assembly.GetExecutingAssembly().FullName, typeof(InitializerSandbox).FullName, false, BindingFlags.Public | BindingFlags.Instance, null, new object[] { this, path }, null, null, evidence);
+#else
+                    Activator.CreateInstance(sandboxDomain, Assembly.GetExecutingAssembly().FullName, typeof(InitializerSandbox).FullName, false, BindingFlags.Public | BindingFlags.Instance, null, new object[] { this, path }, null, null);
+#endif
+                }
+                finally
+                {
+                    AppDomain.Unload(sandboxDomain);
+                }
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                RuntimeVersion = null;
+                InitializeInfoByFileVersion(path);
+            }
+        }
+
+        private void InitializeInfoByFileVersion(string path)
+        {
+            try
+            {
+                Version = new Version(FileVersionInfo.GetVersionInfo(InstallationManager.GetDebuggerVisualizerFilePath(path)).FileVersion);
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                Version = null;
+            }
+        }
+
+        #endregion
+    }
+}

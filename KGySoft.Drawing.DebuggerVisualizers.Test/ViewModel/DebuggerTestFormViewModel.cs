@@ -18,6 +18,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -25,8 +27,8 @@ using System.IO;
 using System.Linq;
 
 using KGySoft.ComponentModel;
-using KGySoft.Drawing.DebuggerVisualizers.Serializers;
-using KGySoft.Drawing.ImagingTools;
+using KGySoft.CoreLibraries;
+using KGySoft.Drawing.Imaging;
 using KGySoft.Reflection;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;
@@ -49,236 +51,82 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
         {
             new HashSet<string>
             {
-                nameof(Bmp32), nameof(Bmp16), nameof(Bmp8),
+                nameof(Bitmap),
                 nameof(Metafile),
                 nameof(HIcon), nameof(ManagedIcon),
                 nameof(GraphicsBitmap), nameof(GraphicsHwnd),
-                nameof(BitmapData32), nameof(BitmapData8),
-                nameof(Palette256), nameof(Palette2), nameof(SingleColor),
+                nameof(BitmapData),
+                nameof(Palette), nameof(SingleColor),
                 nameof(ImageFromFile)
             },
-            new HashSet<string> { nameof(AsImage), nameof(AsBitmap), nameof(AsMetafile),nameof(AsIcon) },
+            new HashSet<string> { nameof(FileAsImage), nameof(FileAsBitmap), nameof(FileAsMetafile),nameof(FileAsIcon) },
         };
+
+        private static readonly Dictionary<Type, DebuggerVisualizerAttribute> debuggerVisualizers = Attribute.GetCustomAttributes(typeof(DebuggerHelper).Assembly, typeof(DebuggerVisualizerAttribute))
+            .Cast<DebuggerVisualizerAttribute>().ToDictionary(a => a.Target, a => a);
 
         #endregion
 
         #region Properties
 
-        internal bool Bmp32 { get => Get<bool>(); set => Set(value); }
-        internal bool Bmp16 { get => Get<bool>(); set => Set(value); }
-        internal bool Bmp8 { get => Get<bool>(); set => Set(value); }
+        internal bool AsImage { get => Get<bool>(); set => Set(value); }
+        internal bool AsImageEnabled { get => Get<bool>(); set => Set(value); }
+        internal PixelFormat[] PixelFormats => Get(() => Enum<PixelFormat>.GetValues().Where(pf => pf.IsValidFormat()).OrderBy(pf => pf & PixelFormat.Max).ToArray());
+        internal PixelFormat PixelFormat { get => Get<PixelFormat>(); set => Set(value); }
+        internal bool PixelFormatEnabled { get => Get<bool>(); set => Set(value); }
+
+        internal bool Bitmap { get => Get<bool>(); set => Set(value); }
         internal bool Metafile { get => Get<bool>(); set => Set(value); }
         internal bool HIcon { get => Get<bool>(); set => Set(value); }
         internal bool ManagedIcon { get => Get<bool>(); set => Set(value); }
         internal bool GraphicsBitmap { get => Get<bool>(); set => Set(value); }
         internal bool GraphicsHwnd { get => Get<bool>(); set => Set(value); }
-        internal bool BitmapData32 { get => Get<bool>(); set => Set(value); }
-        internal bool BitmapData8 { get => Get<bool>(); set => Set(value); }
-        internal bool Palette256 { get => Get<bool>(); set => Set(value); }
-        internal bool Palette2 { get => Get<bool>(); set => Set(value); }
+        internal bool BitmapData { get => Get<bool>(); set => Set(value); }
+        internal bool Palette { get => Get<bool>(); set => Set(value); }
         internal bool SingleColor { get => Get<bool>(); set => Set(value); }
 
         internal bool ImageFromFile { get => Get<bool>(); set => Set(value); }
         internal string FileName { get => Get<string>(); set => Set(value); }
-        internal bool AsImage { get => Get<bool>(); set => Set(value); }
-        internal bool AsBitmap { get => Get<bool>(); set => Set(value); }
-        internal bool AsMetafile { get => Get<bool>(); set => Set(value); }
-        internal bool AsIcon { get => Get<bool>(); set => Set(value); }
+        internal bool FileAsImage { get => Get<bool>(); set => Set(value); }
+        internal bool FileAsBitmap { get => Get<bool>(); set => Set(value); }
+        internal bool FileAsMetafile { get => Get<bool>(); set => Set(value); }
+        internal bool FileAsIcon { get => Get<bool>(); set => Set(value); }
 
-        internal object TestObject { get => Get<object>(); set => Set(value); }
+        internal bool AsReadOnly { get => Get<bool>(); set => Set(value); }
+        internal bool AsReadOnlyEnabled { get => Get<bool>(); set => Set(value); }
+
+        internal bool CanDebug { get => Get<bool>(); set => Set(value); }
         internal Image PreviewImage { get => Get<Image>(); set => Set(value); }
-        internal ImageTypes ImageTypes { get => Get<ImageTypes>(); set => Set(value); }
-        internal bool CanDebugDirectly { get => Get<bool>(); set => Set(value); }
-        internal bool CanDebugByDebugger { get => Get<bool>(); set => Set(value); }
-        internal Bitmap BitmapDataOwner { get => Get<Bitmap>(); set => Set(value); }
-        internal Action<string> ErrorCallback { get => Get<Action<string>>(); set => Set(value); }
 
+        internal Action<string> ErrorCallback { get => Get<Action<string>>(); set => Set(value); }
         internal Func<IntPtr> GetHwndCallback { get => Get<Func<IntPtr>>(); set => Set(value); }
         internal Func<Rectangle> GetClipCallback { get => Get<Func<Rectangle>>(); set => Set(value); }
 
         internal ICommand DebugCommand => Get(() => new SimpleCommand(OnDebugCommand));
+        internal ICommand DirectViewCommand => Get(() => new SimpleCommand(OnViewDirectCommand));
+
+        private object TestObject { get => Get<object>(); set => Set(value); }
+        private Bitmap BitmapDataOwner { get => Get<Bitmap>(); set => Set(value); }
 
         #endregion
 
         #region Methods
 
-        #region Protected Methods
+        #region Static Methods
 
-        protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
-        {
-            base.OnPropertyChanged(e);
-            if (e.NewValue is true && radioGroups.FirstOrDefault(g => g.Contains(e.PropertyName)) is IEnumerable<string> group)
-            {
-                AdjustRadioGroup(e.PropertyName, group);
-                TestObject = GenerateObject();
-                return;
-            }
-
-            if (e.PropertyName == nameof(FileName) && ImageFromFile)
-            {
-                TestObject = GenerateObject();
-                return;
-            }
-
-            if (e.PropertyName == nameof(TestObject))
-            {
-                var obj = TestObject;
-                ImageTypes = GetImageTypes(obj);
-                PreviewImage = GetPreviewImage(obj);
-                CanDebugByDebugger = obj != null;
-                CanDebugDirectly = obj != null && !(obj is Graphics || obj is BitmapData);
-            }
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-            if (disposing)
-                FreeTestObject();
-        }
-
-        #endregion
-
-        #region Private Methods
-
-        private void AdjustRadioGroup(string propertyName, IEnumerable<string> group)
-        {
-            foreach (string prop in group)
-            {
-                if (prop != propertyName)
-                    Set(false, propertyName: prop);
-            }
-        }
-
-        private object GenerateObject()
-        {
-            FreeTestObject();
-
-            // actually the transient steps should be disposed, too... as this is just a test, now we rely on the destructor
-            if (Bmp32)
-                return Icons.Shield.ExtractBitmap(0);
-            if (Bmp16)
-                return Icons.Shield.ExtractBitmap(0).ConvertPixelFormat(PixelFormat.Format16bppRgb565);
-            if (Bmp8)
-                return Icons.Shield.ExtractBitmap(0).ConvertPixelFormat(PixelFormat.Format8bppIndexed);
-            if (Metafile)
-                return GenerateMetafile();
-            if (HIcon)
-                return SystemIcons.Application;
-            if (ManagedIcon)
-                return Icons.Application;
-            if (GraphicsBitmap)
-                return Graphics.FromImage(Icons.Shield.ExtractBitmap(0));
-            if (GraphicsHwnd)
-                return GetWindowGraphics();
-            if (BitmapData32)
-                return GetBitmapData(PixelFormat.Format32bppArgb);
-            if (BitmapData8)
-                return GetBitmapData(PixelFormat.Format8bppIndexed);
-            if (Palette256)
-                return new Bitmap(1, 1, PixelFormat.Format8bppIndexed).Palette;
-            if (Palette2)
-                return new Bitmap(1, 1, PixelFormat.Format1bppIndexed).Palette;
-            if (SingleColor)
-                return Color.Red;
-            if (ImageFromFile)
-                return FromFile(FileName);
-
-            return null;
-        }
-
-        private Image GetPreviewImage(object obj)
-        {
-            switch (obj)
-            {
-                case Image image:
-                    return image;
-                case Icon icon:
-                    return icon.ToMultiResBitmap();
-                case Graphics graphics:
-                    return graphics.ToBitmap(false);
-                case BitmapData _:
-                    return (Image)BitmapDataOwner.Clone();
-                case ColorPalette palette:
-                    return FromPalette(palette.Entries);
-                case Color color:
-                    return FromPalette(new[] { color });
-                default:
-                    return null;
-            }
-        }
-
-        private Image FromPalette(IList<Color> palette)
+        private static Image FromPalette(IList<Color> palette)
         {
             var size = palette.Count;
+            if (size == 0)
+                return null;
             var result = new Bitmap(size, size, PixelFormat.Format32bppArgb);
             for (int x = 0; x < size; x++)
-                for (int y = 0; y < size; y++)
-                    result.SetPixel(x, y, palette[x]);
+            for (int y = 0; y < size; y++)
+                result.SetPixel(x, y, palette[x]);
             return result;
         }
 
-        private ImageTypes GetImageTypes(object obj)
-        {
-            if (ImageFromFile)
-            {
-                if (AsImage)
-                    return ImageTypes.All;
-                if (AsBitmap)
-                    return ImageTypes.Bitmap;
-                if (AsMetafile)
-                    return ImageTypes.Metafile;
-                if (AsIcon)
-                    return ImageTypes.Icon;
-            }
-
-            switch (obj)
-            {
-                case Bitmap _:
-                    return ImageTypes.Bitmap;
-                case Metafile _:
-                    return ImageTypes.Metafile;
-                case Icon _:
-                    return ImageTypes.Icon;
-                default:
-                    return ImageTypes.None;
-            }
-        }
-
-        private object FromFile(string fileName)
-        {
-            try
-            {
-                if (fileName == null || !File.Exists(fileName))
-                    return null;
-                var stream = new MemoryStream(File.ReadAllBytes(fileName));
-                if (AsIcon)
-                    return Icons.FromStream(stream);
-                var image = Image.FromStream(stream);
-                if (AsBitmap && !(image is Bitmap))
-                {
-                    image.Dispose();
-                    ErrorCallback?.Invoke("The file is not a Bitmap");
-                    return null;
-                }
-
-                if (AsMetafile && !(image is Metafile))
-                {
-                    image.Dispose();
-                    ErrorCallback?.Invoke("The file is not a Metafile");
-                    return null;
-                }
-
-                return image;
-            }
-            catch (Exception e)
-            {
-                ErrorCallback?.Invoke($"Could not open file: {e.Message}");
-                return null;
-            }
-        }
-
-        private Metafile GenerateMetafile()
+        private static Metafile GenerateMetafile()
         {
             //Set up reference Graphic
             Graphics refGraph = Graphics.FromHwnd(IntPtr.Zero);
@@ -304,7 +152,173 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
             return result;
         }
 
-        private object GetWindowGraphics()
+        #endregion
+
+        #region Instance Methods
+
+        #region Protected Methods
+
+        protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+            if (e.NewValue is true && radioGroups.FirstOrDefault(g => g.Contains(e.PropertyName)) is HashSet<string> group)
+            {
+                AdjustRadioGroup(e.PropertyName, group);
+                if (group.Contains(nameof(Bitmap)))
+                {
+                    AsImageEnabled = e.PropertyName.In(nameof(Bitmap), nameof(Metafile), nameof(HIcon), nameof(ManagedIcon));
+                    PixelFormatEnabled = e.PropertyName.In(nameof(Bitmap), nameof(BitmapData), nameof(Palette), nameof(GraphicsBitmap));
+                    AsReadOnlyEnabled = !e.PropertyName.In(nameof(GraphicsBitmap), nameof(GraphicsHwnd), nameof(BitmapData));
+                }
+
+                TestObject = GenerateObject();
+                return;
+            }
+
+            if (e.PropertyName == nameof(FileName) && ImageFromFile
+                || e.PropertyName == nameof(PixelFormat) && PixelFormatEnabled
+                || e.PropertyName == nameof(AsImage))
+            {
+                TestObject = GenerateObject();
+                return;
+            }
+
+            if (e.PropertyName == nameof(TestObject))
+            {
+                var obj = TestObject;
+                PreviewImage = GetPreviewImage(obj);
+                CanDebug = obj != null;
+            }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (IsDisposed)
+                return;
+            if (disposing)
+                FreeTestObject();
+            base.Dispose(disposing);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void AdjustRadioGroup(string propertyName, IEnumerable<string> group)
+        {
+            foreach (string prop in group)
+            {
+                if (prop != propertyName)
+                    Set(false, propertyName: prop);
+            }
+        }
+
+        private object GenerateObject()
+        {
+            FreeTestObject();
+
+            // actually the transient steps should be disposed, too... as this is just a test, now we rely on the destructor
+            if (Bitmap)
+                return Icons.Shield.ExtractBitmap(0).ConvertPixelFormat(PixelFormat);
+            if (Metafile)
+                return GenerateMetafile();
+            if (HIcon)
+                return AsImage ? SystemIcons.Application.ToMultiResBitmap() : (object)SystemIcons.Application;
+            if (ManagedIcon)
+                return AsImage ? Icons.Application.ToMultiResBitmap() : (object)Icons.Application;
+            if (GraphicsBitmap)
+                return GetBitmapGraphics();
+            if (GraphicsHwnd)
+                return GetWindowGraphics();
+            if (BitmapData)
+                return GetBitmapData(PixelFormat);
+            if (Palette)
+                using (var bmp = new Bitmap(1, 1, PixelFormat))
+                    return bmp.Palette;
+            if (SingleColor)
+                return Color.Black;
+            if (ImageFromFile)
+                return FromFile(FileName);
+
+            return null;
+        }
+
+        private Image GetPreviewImage(object obj)
+        {
+            static Image ToSupportedFormat(Image image) => image.PixelFormat == PixelFormat.Format16bppGrayScale
+                ? image.ConvertPixelFormat(PixelFormat.Format8bppIndexed, PredefinedColorsQuantizer.Grayscale())
+                : image;
+
+            switch (obj)
+            {
+                case Image image:
+                    return ToSupportedFormat(image);
+                case Icon icon:
+                    return icon.ToMultiResBitmap();
+                case Graphics graphics:
+                    return graphics.ToBitmap(false);
+                case BitmapData _:
+                    return ToSupportedFormat((Image)BitmapDataOwner.Clone());
+                case ColorPalette palette:
+                    return FromPalette(palette.Entries);
+                case Color color:
+                    return FromPalette(new[] { color });
+                default:
+                    return null;
+            }
+        }
+
+        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
+            Justification = "False alarm, the stream is passed to an image so must not be disposed")]
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes",
+            Justification = "This is just a test application")]
+        private object FromFile(string fileName)
+        {
+            try
+            {
+                if (fileName == null || !File.Exists(fileName))
+                    return null;
+                var stream = new MemoryStream(File.ReadAllBytes(fileName));
+                if (FileAsIcon)
+                    return Icons.FromStream(stream);
+                var image = Image.FromStream(stream);
+                if (FileAsBitmap && !(image is Bitmap))
+                {
+                    image.Dispose();
+                    ErrorCallback?.Invoke("The file is not a Bitmap");
+                    return null;
+                }
+
+                if (FileAsMetafile && !(image is Metafile))
+                {
+                    image.Dispose();
+                    ErrorCallback?.Invoke("The file is not a Metafile");
+                    return null;
+                }
+
+                return image;
+            }
+            catch (Exception e)
+            {
+                ErrorCallback?.Invoke($"Could not open file: {e.Message}");
+                return null;
+            }
+        }
+
+        private Graphics GetBitmapGraphics()
+        {
+            try
+            {
+                return Graphics.FromImage(Icons.Shield.ExtractBitmap(0).ConvertPixelFormat(PixelFormat));
+            }
+            catch (Exception e) when (!(e is StackOverflowException))
+            {
+                ErrorCallback?.Invoke($"Could not create Graphics from a Bitmap with PixelFormat '{PixelFormat}': {e.Message}");
+                return null;
+            }
+        }
+
+        private Graphics GetWindowGraphics()
         {
             IntPtr hwnd = GetHwndCallback?.Invoke() ?? IntPtr.Zero;
             var graphics = Graphics.FromHwnd(hwnd);
@@ -339,49 +353,96 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
             }
         }
 
-        private void OnDebugCommand()
+        private void OnViewDirectCommand()
         {
-            var windowService = new TestWindowService();
-            var objectProvider = new TestObjectProvider(TestObject);
-            DialogDebuggerVisualizer debugger;
+            IntPtr hwnd = GetHwndCallback?.Invoke() ?? IntPtr.Zero;
+
             switch (TestObject)
             {
-                case Image _:
-                    debugger = new ImageDebuggerVisualizer();
-                    objectProvider.Serializer = new ImageSerializer();
-                    objectProvider.IsObjectReplaceable = true;
+                case Image image:
+                    if (!ImageFromFile && AsImage || ImageFromFile && FileAsImage)
+                    {
+                        Image newImage = DebuggerHelper.DebugImage(image, !AsReadOnly, hwnd);
+                        if (newImage != image)
+                            TestObject = newImage;
+                    }
+                    else if (image is Metafile metafile)
+                    {
+                        Metafile newMetafile = DebuggerHelper.DebugMetafile(metafile, !AsReadOnly, hwnd);
+                        if (newMetafile != image)
+                            TestObject = newMetafile;
+                    }
+                    else if (image is Bitmap bitmap)
+                    {
+                        Bitmap newBitmap = DebuggerHelper.DebugBitmap(bitmap, !AsReadOnly, hwnd);
+                        if (newBitmap != bitmap)
+                            TestObject = newBitmap;
+                    }
+
                     break;
-                case Icon _:
-                    debugger = new IconDebuggerVisualizer();
-                    objectProvider.Serializer = new ImageSerializer();
-                    objectProvider.IsObjectReplaceable = true;
+
+                case Icon icon:
+                    Icon newIcon = DebuggerHelper.DebugIcon(icon, !AsReadOnly, hwnd);
+                    if (newIcon != icon)
+                        TestObject = newIcon;
                     break;
-                case Graphics _:
-                    debugger = new GraphicsDebuggerVisualizer();
-                    objectProvider.Serializer = new GraphicsSerializer();
+
+                case BitmapData bitmapData:
+                    DebuggerHelper.DebugBitmapData(bitmapData, hwnd);
                     break;
-                case BitmapData _:
-                    debugger = new BitmapDataDebuggerVisualizer();
-                    objectProvider.Serializer = new BitmapDataSerializer();
+
+                case Graphics graphics:
+                    DebuggerHelper.DebugGraphics(graphics, hwnd);
                     break;
-                case ColorPalette _:
-                    debugger = new PaletteDebuggerVisualizer();
-                    objectProvider.IsObjectReplaceable = true;
-                    objectProvider.Serializer = new AnySerializer();
+
+                case ColorPalette palette:
+                    ColorPalette newPalette = DebuggerHelper.DebugPalette(palette, !AsReadOnly, hwnd);
+                    if (newPalette != null)
+                    {
+                        TestObject = newPalette;
+                        if (ReferenceEquals(palette, newPalette))
+                            OnPropertyChanged(new PropertyChangedExtendedEventArgs(palette, newPalette, nameof(TestObject)));
+                    }
+
                     break;
-                case Color _:
-                    debugger = new ColorDebuggerVisualizer();
-                    objectProvider.IsObjectReplaceable = true;
-                    objectProvider.Serializer = new VisualizerObjectSource();
+
+                case Color color:
+                    Color? newColor = DebuggerHelper.DebugColor(color, !AsReadOnly, hwnd);
+                    if (newColor != null)
+                        TestObject = newColor;
                     break;
+
                 default:
-                    return;
+                    throw new InvalidOperationException($"Unexpected object type: {TestObject.GetType()}");
+            }
+        }
+
+        private void OnDebugCommand()
+        {
+            object testObject = TestObject;
+            if (testObject == null)
+                return;
+
+            Type targetType = testObject is Image && (!ImageFromFile && AsImage || ImageFromFile && FileAsImage)
+                ? typeof(Image)
+                : testObject.GetType();
+            DebuggerVisualizerAttribute attr = debuggerVisualizers.GetValueOrDefault(targetType);
+            if (attr == null)
+            {
+                ErrorCallback?.Invoke($"No debugger visualizer found for type {targetType}");
+                return;
             }
 
+            var windowService = new TestWindowService();
+            var objectProvider = new TestObjectProvider(testObject) { IsObjectReplaceable = !AsReadOnly };
+            DialogDebuggerVisualizer debugger = (DialogDebuggerVisualizer)Reflector.CreateInstance(Reflector.ResolveType(attr.VisualizerTypeName));
+            objectProvider.Serializer = (VisualizerObjectSource)Reflector.CreateInstance(Reflector.ResolveType(attr.VisualizerObjectSourceTypeName));
             Reflector.InvokeMethod(debugger, "Show", windowService, objectProvider);
             if (objectProvider.ObjectReplaced)
                 TestObject = objectProvider.Object;
         }
+
+        #endregion
 
         #endregion
 

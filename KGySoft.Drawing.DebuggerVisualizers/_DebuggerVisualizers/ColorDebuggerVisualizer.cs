@@ -16,7 +16,8 @@
 
 #region Usings
 
-using KGySoft.Drawing.ImagingTools;
+using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;
 
@@ -24,6 +25,8 @@ using Microsoft.VisualStudio.DebuggerVisualizers;
 
 namespace KGySoft.Drawing.DebuggerVisualizers
 {
+    [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses",
+        Justification = "False alarm, instantiated by VS debugger visualizers")]
     internal class ColorDebuggerVisualizer : DialogDebuggerVisualizer
     {
         #region Methods
@@ -35,7 +38,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <param name="objectProvider">The object provider.</param>
         protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
         {
-            object replacementObject = DebuggerHelper.DebugColor(objectProvider.GetObject(), objectProvider.IsObjectReplaceable);
+            // Color can be obtained and returned by BinaryFormatter so we can use GetObject and ReplaceObject directly
+            Color? replacementObject = DebuggerHelper.DebugColor((Color)objectProvider.GetObject(), objectProvider.IsObjectReplaceable);
             if (objectProvider.IsObjectReplaceable && replacementObject != null)
                 objectProvider.ReplaceObject(replacementObject);
         }

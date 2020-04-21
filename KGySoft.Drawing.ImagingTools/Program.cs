@@ -19,7 +19,8 @@
 using System;
 using System.Windows.Forms;
 
-using KGySoft.Drawing.ImagingTools.Forms;
+using KGySoft.Drawing.ImagingTools.View;
+using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
 
@@ -37,7 +38,9 @@ namespace KGySoft.Drawing.ImagingTools
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new ImagingToolsForm(args));
+            using IViewModel viewModel = ViewModelFactory.FromCommandLineArguments(args);
+            using IView view = ViewFactory.CreateView(viewModel);
+            Application.Run((Form)view);
         }
 
         #endregion

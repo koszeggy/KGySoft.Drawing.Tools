@@ -1,0 +1,66 @@
+﻿#region Copyright
+
+///////////////////////////////////////////////////////////////////////////////
+//  File: Kernel32.cs
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright (C) KGy SOFT, 2005-2020 - All Rights Reserved
+//
+//  You should have received a copy of the LICENSE file at the top-level
+//  directory of this distribution. If not, then this file is considered as
+//  an illegal copy.
+//
+//  Unauthorized copying of this file, via any medium is strictly prohibited.
+///////////////////////////////////////////////////////////////////////////////
+
+#endregion
+
+#region Usings
+
+using System;
+using System.ComponentModel;
+using System.Runtime.InteropServices;
+
+#endregion
+
+namespace KGySoft.Drawing.ImagingTools.WinApi
+{
+    internal static class Kernel32
+    {
+        #region NativeMethods class
+
+        private static class NativeMethods
+        {
+            #region Methods
+
+            /// <summary>
+            /// Establishes a hard link between an existing file and a new file. This function is only supported on the NTFS file system, and only for files, not directories.
+            /// </summary>
+            /// <param name="lpFileName">The name of the new file.
+            /// This parameter may include the path but cannot specify the name of a directory.
+            /// In the ANSI version of this function, the name is limited to MAX_PATH characters. To extend this limit to 32,767 wide characters, call the Unicode version of the function and prepend "\\?\" to the path. For more information, see Naming a File. If you pass a name longer than MAX_PATH characters to the ANSI version of this function or to the Unicode version of this function without prepending "\\?\" to the path, the function returns ERROR_PATH_NOT_FOUND.</param>
+            /// <param name="lpExistingFileName">The name of the existing file.
+            /// This parameter may include the path cannot specify the name of a directory.
+            /// In the ANSI version of this function, the name is limited to MAX_PATH characters. To extend this limit to 32,767 wide characters, call the Unicode version of the function and prepend "\\?\" to the path. For more information, see Naming a File. If you pass a name longer than MAX_PATH characters to the ANSI version of this function or to the Unicode version of this function without prepending "\\?\" to the path, the function returns ERROR_PATH_NOT_FOUND.</param>
+            /// <param name="lpSecurityAttributes">Reserved; must be NULL.</param>
+            /// <returns></returns>
+            [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            internal static extern bool CreateHardLink(string lpFileName, string lpExistingFileName, IntPtr lpSecurityAttributes);
+
+            #endregion
+        }
+
+        #endregion
+
+        #region Methods
+
+        internal static void CreateHardLink(string linkName, string existingFileName)
+        {
+            const string allowLongPathPrefix = @"\\?\";
+            if (!NativeMethods.CreateHardLink(allowLongPathPrefix + linkName, allowLongPathPrefix + existingFileName, IntPtr.Zero))
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+        }
+
+        #endregion
+    }
+}

@@ -19,7 +19,8 @@
 using System;
 using System.ComponentModel.Design;
 
-using KGySoft.Drawing.ImagingTools.Forms;
+using KGySoft.Drawing.ImagingTools.View;
+using KGySoft.Drawing.ImagingTools.ViewModel;
 
 using Microsoft.VisualStudio.Shell;
 
@@ -33,7 +34,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
         private static MenuCommand commandInstance;
         private static IServiceProvider serviceProvider;
-        private static ImagingToolsForm form;
+        private static IViewModel imagingToolsViewModel;
+        private static IView imagingToolsView;
 
         #endregion
 
@@ -52,6 +54,14 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             return commandInstance;
         }
 
+        internal static void DestroyCommand()
+        {
+            imagingToolsView?.Dispose();
+            imagingToolsView = null;
+            imagingToolsViewModel?.Dispose();
+            imagingToolsViewModel = null;
+        }
+
         #endregion
 
         #region Event handlers
@@ -60,21 +70,21 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         {
             try
             {
-                if (form == null || form.IsDisposed)
+                if (imagingToolsView == null || imagingToolsView.IsDisposed)
                 {
-                    form = new ImagingToolsForm();
-                    form.Show();
-                    return;
+                    imagingToolsViewModel?.Dispose();
+                    imagingToolsViewModel = ViewModelFactory.CreateDefault();
+                    imagingToolsView = ViewFactory.CreateView(imagingToolsViewModel);
                 }
 
-                form.Activate();
-                form.BringToFront();
-
+                imagingToolsView.Show();
             }
             catch (Exception ex)
             {
-                form = null;
-                ShellDialogs.Error(serviceProvider, $"Unexpected error occurred: {ex.Message}");
+                imagingToolsView?.Dispose();
+                imagingToolsViewModel?.Dispose();
+                imagingToolsView = null;
+                ShellDialogs.Error(serviceProvider, Res.ErrorMessageUnexpectedError(ex.Message));
             }
         }
 

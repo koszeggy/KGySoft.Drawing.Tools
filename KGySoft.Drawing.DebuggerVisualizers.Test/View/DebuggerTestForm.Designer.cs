@@ -17,8 +17,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
         /// </summary>
         private void InitializeComponent()
         {
-            this.rbBitmap8 = new System.Windows.Forms.RadioButton();
-            this.rbBitmap16 = new System.Windows.Forms.RadioButton();
             this.btnViewDirect = new System.Windows.Forms.Button();
             this.btnViewByDebugger = new System.Windows.Forms.Button();
             this.tbFile = new System.Windows.Forms.TextBox();
@@ -26,58 +24,35 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             this.rbManagedIcon = new System.Windows.Forms.RadioButton();
             this.rbHIcon = new System.Windows.Forms.RadioButton();
             this.rbMetafile = new System.Windows.Forms.RadioButton();
-            this.rbBitmap32 = new System.Windows.Forms.RadioButton();
+            this.rbBitmap = new System.Windows.Forms.RadioButton();
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.panelControls = new System.Windows.Forms.Panel();
+            this.chbAsReadOnly = new System.Windows.Forms.CheckBox();
             this.gbFile = new System.Windows.Forms.GroupBox();
             this.rbAsIcon = new System.Windows.Forms.RadioButton();
             this.rbAsMetafile = new System.Windows.Forms.RadioButton();
             this.rbAsBitmap = new System.Windows.Forms.RadioButton();
             this.rbAsImage = new System.Windows.Forms.RadioButton();
             this.rbColor = new System.Windows.Forms.RadioButton();
-            this.rbPalette2 = new System.Windows.Forms.RadioButton();
-            this.rbPalette256 = new System.Windows.Forms.RadioButton();
-            this.rbBitmapData8 = new System.Windows.Forms.RadioButton();
-            this.rbBitmapData32 = new System.Windows.Forms.RadioButton();
+            this.rbPalette = new System.Windows.Forms.RadioButton();
+            this.rbBitmapData = new System.Windows.Forms.RadioButton();
             this.rbGraphicsHwnd = new System.Windows.Forms.RadioButton();
             this.rbGraphicsBitmap = new System.Windows.Forms.RadioButton();
+            this.chbAsImage = new System.Windows.Forms.CheckBox();
+            this.cmbPixelFormat = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.panelControls.SuspendLayout();
             this.gbFile.SuspendLayout();
             this.SuspendLayout();
             // 
-            // rbBitmap8
-            // 
-            this.rbBitmap8.AutoSize = true;
-            this.rbBitmap8.Dock = System.Windows.Forms.DockStyle.Top;
-            this.rbBitmap8.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbBitmap8.Location = new System.Drawing.Point(0, 36);
-            this.rbBitmap8.Name = "rbBitmap8";
-            this.rbBitmap8.Size = new System.Drawing.Size(196, 18);
-            this.rbBitmap8.TabIndex = 2;
-            this.rbBitmap8.Text = "Memory BMP 8 bpp";
-            this.rbBitmap8.UseVisualStyleBackColor = true;
-            // 
-            // rbBitmap16
-            // 
-            this.rbBitmap16.AutoSize = true;
-            this.rbBitmap16.Dock = System.Windows.Forms.DockStyle.Top;
-            this.rbBitmap16.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbBitmap16.Location = new System.Drawing.Point(0, 18);
-            this.rbBitmap16.Name = "rbBitmap16";
-            this.rbBitmap16.Size = new System.Drawing.Size(196, 18);
-            this.rbBitmap16.TabIndex = 1;
-            this.rbBitmap16.Text = "Memory BMP 16 bpp";
-            this.rbBitmap16.UseVisualStyleBackColor = true;
-            // 
             // btnViewDirect
             // 
             this.btnViewDirect.Dock = System.Windows.Forms.DockStyle.Top;
             this.btnViewDirect.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnViewDirect.Location = new System.Drawing.Point(0, 363);
+            this.btnViewDirect.Location = new System.Drawing.Point(0, 348);
             this.btnViewDirect.Name = "btnViewDirect";
             this.btnViewDirect.Size = new System.Drawing.Size(196, 24);
-            this.btnViewDirect.TabIndex = 15;
+            this.btnViewDirect.TabIndex = 14;
             this.btnViewDirect.Text = "View Directly";
             this.btnViewDirect.UseVisualStyleBackColor = true;
             // 
@@ -85,10 +60,10 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             // 
             this.btnViewByDebugger.Dock = System.Windows.Forms.DockStyle.Top;
             this.btnViewByDebugger.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnViewByDebugger.Location = new System.Drawing.Point(0, 387);
+            this.btnViewByDebugger.Location = new System.Drawing.Point(0, 372);
             this.btnViewByDebugger.Name = "btnViewByDebugger";
             this.btnViewByDebugger.Size = new System.Drawing.Size(196, 24);
-            this.btnViewByDebugger.TabIndex = 16;
+            this.btnViewByDebugger.TabIndex = 15;
             this.btnViewByDebugger.Text = "View by Debugger";
             this.btnViewByDebugger.UseVisualStyleBackColor = true;
             // 
@@ -107,10 +82,10 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             this.rbFromFile.AutoSize = true;
             this.rbFromFile.Dock = System.Windows.Forms.DockStyle.Top;
             this.rbFromFile.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbFromFile.Location = new System.Drawing.Point(0, 234);
+            this.rbFromFile.Location = new System.Drawing.Point(0, 201);
             this.rbFromFile.Name = "rbFromFile";
             this.rbFromFile.Size = new System.Drawing.Size(196, 18);
-            this.rbFromFile.TabIndex = 13;
+            this.rbFromFile.TabIndex = 11;
             this.rbFromFile.Text = "Image From File";
             this.rbFromFile.UseVisualStyleBackColor = true;
             // 
@@ -119,7 +94,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             this.rbManagedIcon.AutoSize = true;
             this.rbManagedIcon.Dock = System.Windows.Forms.DockStyle.Top;
             this.rbManagedIcon.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbManagedIcon.Location = new System.Drawing.Point(0, 90);
+            this.rbManagedIcon.Location = new System.Drawing.Point(0, 93);
             this.rbManagedIcon.Name = "rbManagedIcon";
             this.rbManagedIcon.Size = new System.Drawing.Size(196, 18);
             this.rbManagedIcon.TabIndex = 5;
@@ -131,7 +106,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             this.rbHIcon.AutoSize = true;
             this.rbHIcon.Dock = System.Windows.Forms.DockStyle.Top;
             this.rbHIcon.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbHIcon.Location = new System.Drawing.Point(0, 72);
+            this.rbHIcon.Location = new System.Drawing.Point(0, 75);
             this.rbHIcon.Name = "rbHIcon";
             this.rbHIcon.Size = new System.Drawing.Size(196, 18);
             this.rbHIcon.TabIndex = 4;
@@ -143,34 +118,34 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             this.rbMetafile.AutoSize = true;
             this.rbMetafile.Dock = System.Windows.Forms.DockStyle.Top;
             this.rbMetafile.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbMetafile.Location = new System.Drawing.Point(0, 54);
+            this.rbMetafile.Location = new System.Drawing.Point(0, 57);
             this.rbMetafile.Name = "rbMetafile";
             this.rbMetafile.Size = new System.Drawing.Size(196, 18);
             this.rbMetafile.TabIndex = 3;
             this.rbMetafile.Text = "Metafile";
             this.rbMetafile.UseVisualStyleBackColor = true;
             // 
-            // rbBitmap32
+            // rbBitmap
             // 
-            this.rbBitmap32.AutoSize = true;
-            this.rbBitmap32.Checked = true;
-            this.rbBitmap32.Dock = System.Windows.Forms.DockStyle.Top;
-            this.rbBitmap32.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbBitmap32.Location = new System.Drawing.Point(0, 0);
-            this.rbBitmap32.Name = "rbBitmap32";
-            this.rbBitmap32.Size = new System.Drawing.Size(196, 18);
-            this.rbBitmap32.TabIndex = 0;
-            this.rbBitmap32.TabStop = true;
-            this.rbBitmap32.Text = "Memory BMP 32 bpp";
-            this.rbBitmap32.UseVisualStyleBackColor = true;
+            this.rbBitmap.AutoSize = true;
+            this.rbBitmap.Checked = true;
+            this.rbBitmap.Dock = System.Windows.Forms.DockStyle.Top;
+            this.rbBitmap.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.rbBitmap.Location = new System.Drawing.Point(0, 39);
+            this.rbBitmap.Name = "rbBitmap";
+            this.rbBitmap.Size = new System.Drawing.Size(196, 18);
+            this.rbBitmap.TabIndex = 2;
+            this.rbBitmap.TabStop = true;
+            this.rbBitmap.Text = "Bitmap";
+            this.rbBitmap.UseVisualStyleBackColor = true;
             // 
             // pictureBox
             // 
             this.pictureBox.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox.Location = new System.Drawing.Point(224, 15);
+            this.pictureBox.Location = new System.Drawing.Point(224, 10);
             this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(195, 411);
+            this.pictureBox.Size = new System.Drawing.Size(195, 396);
             this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox.TabIndex = 14;
             this.pictureBox.TabStop = false;
@@ -179,27 +154,38 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             // 
             this.panelControls.Controls.Add(this.btnViewByDebugger);
             this.panelControls.Controls.Add(this.btnViewDirect);
+            this.panelControls.Controls.Add(this.chbAsReadOnly);
             this.panelControls.Controls.Add(this.gbFile);
             this.panelControls.Controls.Add(this.rbFromFile);
             this.panelControls.Controls.Add(this.rbColor);
-            this.panelControls.Controls.Add(this.rbPalette2);
-            this.panelControls.Controls.Add(this.rbPalette256);
-            this.panelControls.Controls.Add(this.rbBitmapData8);
-            this.panelControls.Controls.Add(this.rbBitmapData32);
+            this.panelControls.Controls.Add(this.rbPalette);
+            this.panelControls.Controls.Add(this.rbBitmapData);
             this.panelControls.Controls.Add(this.rbGraphicsHwnd);
             this.panelControls.Controls.Add(this.rbGraphicsBitmap);
             this.panelControls.Controls.Add(this.rbManagedIcon);
             this.panelControls.Controls.Add(this.rbHIcon);
             this.panelControls.Controls.Add(this.rbMetafile);
-            this.panelControls.Controls.Add(this.rbBitmap8);
-            this.panelControls.Controls.Add(this.rbBitmap16);
-            this.panelControls.Controls.Add(this.rbBitmap32);
+            this.panelControls.Controls.Add(this.rbBitmap);
+            this.panelControls.Controls.Add(this.chbAsImage);
+            this.panelControls.Controls.Add(this.cmbPixelFormat);
             this.panelControls.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panelControls.Location = new System.Drawing.Point(15, 15);
+            this.panelControls.Location = new System.Drawing.Point(15, 10);
             this.panelControls.Name = "panelControls";
             this.panelControls.Padding = new System.Windows.Forms.Padding(0, 0, 13, 0);
-            this.panelControls.Size = new System.Drawing.Size(209, 411);
+            this.panelControls.Size = new System.Drawing.Size(209, 396);
             this.panelControls.TabIndex = 0;
+            // 
+            // chbAsReadOnly
+            // 
+            this.chbAsReadOnly.AutoSize = true;
+            this.chbAsReadOnly.Dock = System.Windows.Forms.DockStyle.Top;
+            this.chbAsReadOnly.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.chbAsReadOnly.Location = new System.Drawing.Point(0, 330);
+            this.chbAsReadOnly.Name = "chbAsReadOnly";
+            this.chbAsReadOnly.Size = new System.Drawing.Size(196, 18);
+            this.chbAsReadOnly.TabIndex = 13;
+            this.chbAsReadOnly.Text = "As Read-Only";
+            this.chbAsReadOnly.UseVisualStyleBackColor = true;
             // 
             // gbFile
             // 
@@ -211,10 +197,10 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             this.gbFile.Controls.Add(this.tbFile);
             this.gbFile.Dock = System.Windows.Forms.DockStyle.Top;
             this.gbFile.Enabled = false;
-            this.gbFile.Location = new System.Drawing.Point(0, 252);
+            this.gbFile.Location = new System.Drawing.Point(0, 219);
             this.gbFile.Name = "gbFile";
             this.gbFile.Size = new System.Drawing.Size(196, 111);
-            this.gbFile.TabIndex = 14;
+            this.gbFile.TabIndex = 12;
             this.gbFile.TabStop = false;
             this.gbFile.Text = "File Details";
             // 
@@ -273,67 +259,43 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             this.rbColor.AutoSize = true;
             this.rbColor.Dock = System.Windows.Forms.DockStyle.Top;
             this.rbColor.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbColor.Location = new System.Drawing.Point(0, 216);
+            this.rbColor.Location = new System.Drawing.Point(0, 183);
             this.rbColor.Name = "rbColor";
             this.rbColor.Size = new System.Drawing.Size(196, 18);
-            this.rbColor.TabIndex = 12;
+            this.rbColor.TabIndex = 10;
             this.rbColor.Text = "Single Color";
             this.rbColor.UseVisualStyleBackColor = true;
             // 
-            // rbPalette2
+            // rbPalette
             // 
-            this.rbPalette2.AutoSize = true;
-            this.rbPalette2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.rbPalette2.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbPalette2.Location = new System.Drawing.Point(0, 198);
-            this.rbPalette2.Name = "rbPalette2";
-            this.rbPalette2.Size = new System.Drawing.Size(196, 18);
-            this.rbPalette2.TabIndex = 11;
-            this.rbPalette2.Text = "Palette 2 Colors";
-            this.rbPalette2.UseVisualStyleBackColor = true;
+            this.rbPalette.AutoSize = true;
+            this.rbPalette.Dock = System.Windows.Forms.DockStyle.Top;
+            this.rbPalette.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.rbPalette.Location = new System.Drawing.Point(0, 165);
+            this.rbPalette.Name = "rbPalette";
+            this.rbPalette.Size = new System.Drawing.Size(196, 18);
+            this.rbPalette.TabIndex = 9;
+            this.rbPalette.Text = "Palette";
+            this.rbPalette.UseVisualStyleBackColor = true;
             // 
-            // rbPalette256
+            // rbBitmapData
             // 
-            this.rbPalette256.AutoSize = true;
-            this.rbPalette256.Dock = System.Windows.Forms.DockStyle.Top;
-            this.rbPalette256.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbPalette256.Location = new System.Drawing.Point(0, 180);
-            this.rbPalette256.Name = "rbPalette256";
-            this.rbPalette256.Size = new System.Drawing.Size(196, 18);
-            this.rbPalette256.TabIndex = 10;
-            this.rbPalette256.Text = "Palette 256 Colors";
-            this.rbPalette256.UseVisualStyleBackColor = true;
-            // 
-            // rbBitmapData8
-            // 
-            this.rbBitmapData8.AutoSize = true;
-            this.rbBitmapData8.Dock = System.Windows.Forms.DockStyle.Top;
-            this.rbBitmapData8.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbBitmapData8.Location = new System.Drawing.Point(0, 162);
-            this.rbBitmapData8.Name = "rbBitmapData8";
-            this.rbBitmapData8.Size = new System.Drawing.Size(196, 18);
-            this.rbBitmapData8.TabIndex = 9;
-            this.rbBitmapData8.Text = "BitmapData 8 bpp";
-            this.rbBitmapData8.UseVisualStyleBackColor = true;
-            // 
-            // rbBitmapData32
-            // 
-            this.rbBitmapData32.AutoSize = true;
-            this.rbBitmapData32.Dock = System.Windows.Forms.DockStyle.Top;
-            this.rbBitmapData32.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbBitmapData32.Location = new System.Drawing.Point(0, 144);
-            this.rbBitmapData32.Name = "rbBitmapData32";
-            this.rbBitmapData32.Size = new System.Drawing.Size(196, 18);
-            this.rbBitmapData32.TabIndex = 8;
-            this.rbBitmapData32.Text = "BitmapData 32 bpp";
-            this.rbBitmapData32.UseVisualStyleBackColor = true;
+            this.rbBitmapData.AutoSize = true;
+            this.rbBitmapData.Dock = System.Windows.Forms.DockStyle.Top;
+            this.rbBitmapData.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.rbBitmapData.Location = new System.Drawing.Point(0, 147);
+            this.rbBitmapData.Name = "rbBitmapData";
+            this.rbBitmapData.Size = new System.Drawing.Size(196, 18);
+            this.rbBitmapData.TabIndex = 8;
+            this.rbBitmapData.Text = "BitmapData";
+            this.rbBitmapData.UseVisualStyleBackColor = true;
             // 
             // rbGraphicsHwnd
             // 
             this.rbGraphicsHwnd.AutoSize = true;
             this.rbGraphicsHwnd.Dock = System.Windows.Forms.DockStyle.Top;
             this.rbGraphicsHwnd.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbGraphicsHwnd.Location = new System.Drawing.Point(0, 126);
+            this.rbGraphicsHwnd.Location = new System.Drawing.Point(0, 129);
             this.rbGraphicsHwnd.Name = "rbGraphicsHwnd";
             this.rbGraphicsHwnd.Size = new System.Drawing.Size(196, 18);
             this.rbGraphicsHwnd.TabIndex = 7;
@@ -345,24 +307,49 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             this.rbGraphicsBitmap.AutoSize = true;
             this.rbGraphicsBitmap.Dock = System.Windows.Forms.DockStyle.Top;
             this.rbGraphicsBitmap.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbGraphicsBitmap.Location = new System.Drawing.Point(0, 108);
+            this.rbGraphicsBitmap.Location = new System.Drawing.Point(0, 111);
             this.rbGraphicsBitmap.Name = "rbGraphicsBitmap";
             this.rbGraphicsBitmap.Size = new System.Drawing.Size(196, 18);
             this.rbGraphicsBitmap.TabIndex = 6;
             this.rbGraphicsBitmap.Text = "Graphics from Bitmap";
             this.rbGraphicsBitmap.UseVisualStyleBackColor = true;
             // 
+            // chbAsImage
+            // 
+            this.chbAsImage.AutoSize = true;
+            this.chbAsImage.Checked = true;
+            this.chbAsImage.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chbAsImage.Dock = System.Windows.Forms.DockStyle.Top;
+            this.chbAsImage.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.chbAsImage.Location = new System.Drawing.Point(0, 21);
+            this.chbAsImage.Name = "chbAsImage";
+            this.chbAsImage.Size = new System.Drawing.Size(196, 18);
+            this.chbAsImage.TabIndex = 1;
+            this.chbAsImage.Text = "As Image";
+            this.chbAsImage.UseVisualStyleBackColor = true;
+            // 
+            // cmbPixelFormat
+            // 
+            this.cmbPixelFormat.Dock = System.Windows.Forms.DockStyle.Top;
+            this.cmbPixelFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbPixelFormat.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.cmbPixelFormat.FormattingEnabled = true;
+            this.cmbPixelFormat.Location = new System.Drawing.Point(0, 0);
+            this.cmbPixelFormat.Name = "cmbPixelFormat";
+            this.cmbPixelFormat.Size = new System.Drawing.Size(196, 21);
+            this.cmbPixelFormat.TabIndex = 0;
+            // 
             // DebuggerTestForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(434, 441);
+            this.ClientSize = new System.Drawing.Size(434, 411);
             this.Controls.Add(this.pictureBox);
             this.Controls.Add(this.panelControls);
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(250, 480);
+            this.MinimumSize = new System.Drawing.Size(250, 450);
             this.Name = "DebuggerTestForm";
-            this.Padding = new System.Windows.Forms.Padding(15);
+            this.Padding = new System.Windows.Forms.Padding(15, 10, 15, 5);
             this.Text = "Debugger Visualizer Test";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             this.panelControls.ResumeLayout(false);
@@ -375,7 +362,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
 
         #endregion
 
-        private RadioButton rbBitmap32;
+        private RadioButton rbBitmap;
         private RadioButton rbMetafile;
         private RadioButton rbHIcon;
         private RadioButton rbManagedIcon;
@@ -383,21 +370,20 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
         private TextBox tbFile;
         private Button btnViewByDebugger;
         private Button btnViewDirect;
-        private RadioButton rbBitmap16;
-        private RadioButton rbBitmap8;
         private PictureBox pictureBox;
         private Panel panelControls;
         private RadioButton rbGraphicsBitmap;
         private RadioButton rbGraphicsHwnd;
         private GroupBox gbFile;
-        private RadioButton rbBitmapData32;
-        private RadioButton rbPalette256;
-        private RadioButton rbBitmapData8;
+        private RadioButton rbBitmapData;
+        private RadioButton rbPalette;
         private RadioButton rbColor;
-        private RadioButton rbPalette2;
         private RadioButton rbAsIcon;
         private RadioButton rbAsMetafile;
         private RadioButton rbAsBitmap;
         private RadioButton rbAsImage;
+        private ComboBox cmbPixelFormat;
+        private CheckBox chbAsImage;
+        private CheckBox chbAsReadOnly;
     }
 }

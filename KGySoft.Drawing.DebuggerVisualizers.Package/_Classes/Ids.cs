@@ -30,7 +30,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         internal const string ResourceTitle = "110";
         internal const string ResourceDetails = "112";
         internal const int IconResourceId = 400;
-        internal const string Version = "2.0.0";
+        internal const string Version = "2.1.0"; // Note: in .vsixmanifest it should be adjusted manually
         internal const int ExecuteImagingToolsCommandId = 0x0100;
         internal const int ManageDebuggerVisualizerInstallationsCommandId = 0x0101;
 

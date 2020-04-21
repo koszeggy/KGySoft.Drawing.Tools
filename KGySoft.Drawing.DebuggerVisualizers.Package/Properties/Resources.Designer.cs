@@ -19,7 +19,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -70,7 +70,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Debugger Visualizers for System.Drawing types such as Bitmap, Metafile, Icon, Graphics, BitmapData, ColorPalette and Color..
+        ///   Looks up a localized string similar to Debugger Visualizers for System.Drawing types such as Image, Bitmap, Metafile, Icon, Graphics, BitmapData, ColorPalette and Color..
         /// </summary>
         internal static string _112 {
             get {
@@ -85,6 +85,53 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package.Properties {
             get {
                 object obj = ResourceManager.GetObject("400", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to install the visualizers to {0}: {1}
+        ///
+        ///Make sure every running debugger is closed. Installing will be tried again on restarting Visual Studio..
+        /// </summary>
+        internal static string ErrorMessage_FailedToInstallFormat {
+            get {
+                return ResourceManager.GetString("ErrorMessage_FailedToInstallFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shell service could not be obtained. Installation of the debugger visualizers cannot be checked..
+        /// </summary>
+        internal static string ErrorMessage_ShellServiceUnavailable {
+            get {
+                return ResourceManager.GetString("ErrorMessage_ShellServiceUnavailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unexpected error occurred: {0}.
+        /// </summary>
+        internal static string ErrorMessage_UnexpectedErrorFormat {
+            get {
+                return ResourceManager.GetString("ErrorMessage_UnexpectedErrorFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to KGy SOFT Drawing DebuggerVisualizers {0} have been installed to {1}.
+        /// </summary>
+        internal static string InfoMessage_InstallationFinishedFormat {
+            get {
+                return ResourceManager.GetString("InfoMessage_InstallationFinishedFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The installation of KGy SOFT Drawing DebuggerVisualizers to {0} finished with a warning: {1}.
+        /// </summary>
+        internal static string WarningMessage_InstallationFinishedWithWarningFormat {
+            get {
+                return ResourceManager.GetString("WarningMessage_InstallationFinishedWithWarningFormat", resourceCulture);
             }
         }
     }

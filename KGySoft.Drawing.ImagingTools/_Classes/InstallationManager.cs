@@ -18,18 +18,25 @@
 
 using System;
 using System.IO;
+using System.Linq;
 
 using KGySoft.CoreLibraries;
+using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.Drawing.ImagingTools.WinApi;
 
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools
 {
-    internal static class InstallationManager
+    /// <summary>
+    /// Represents a class that can manage debugger visualizer installations.
+    /// </summary>
+    public static class InstallationManager
     {
         #region Constants
 
         private const string debuggerVisualizerFileName = "KGySoft.Drawing.DebuggerVisualizers.dll";
+        private const string netCoreSubdirectory = "netstandard2.0";
 
         #endregion
 
@@ -43,34 +50,65 @@ namespace KGySoft.Drawing.ImagingTools
             debuggerVisualizerFileName
         };
 
+        private static InstallationInfo availableVersion;
+
         #endregion
 
         #region Methods
 
-        internal static InstallationInfo GetInstallationInfo(string path) => new InstallationInfo(path);
+        #region Public Methods
 
-        internal static bool IsInstalled(string path) => Directory.Exists(path) && File.Exists(GetDebuggerVisualizerFilePath(path));
+        /// <summary>
+        /// Gets the available debugger visualizer version that can be installed with the <see cref="InstallationManager"/> class.
+        /// If the debugger visualizer assembly is not deployed with this application, then the <see cref="InstallationInfo.Installed"/> property of the returned instance will be <see langword="false"/>.
+        /// </summary>
+        public static InstallationInfo AvailableVersion => availableVersion ??= new InstallationInfo(Files.GetExecutingPath());
 
-        internal static string GetDebuggerVisualizerFilePath(string path) => Path.Combine(path, debuggerVisualizerFileName);
+        /// <summary>
+        /// Gets the installation information of the debugger visualizer for the specified <paramref name="directory"/>.
+        /// </summary>
+        /// <param name="directory">The directory for which the installation status is about to be retrieved.</param>
+        /// <returns>An <see cref="InstallationInfo"/> instance that provides information about the debugger visualizer installation for the specified <paramref name="directory"/>.</returns>
+        public static InstallationInfo GetInstallationInfo(string directory) => new InstallationInfo(directory);
 
-        internal static void Install(string path, out string error)
+        /// <summary>
+        /// Installs the debugger visualizers into the specified <paramref name="directory"/>.
+        /// </summary>
+        /// <param name="directory">The directory where the debugger visualizers have to be installed.</param>
+        /// <param name="error">If the installation fails, then this parameter returns the error message; otherwise, this parameter returns <see langword="null"/>.</param>
+        /// <param name="warning">If the installation succeeds with warnings, then this parameter returns the warning message; otherwise, this parameter returns <see langword="null"/>.</param>
+        public static void Install(string directory, out string error, out string warning)
         {
-            error = null;
+            if (directory == null)
+                throw new ArgumentNullException(nameof(directory), PublicResources.ArgumentNull);
+            if (directory.Length == 0)
+                throw new ArgumentException(PublicResources.ArgumentEmpty, nameof(directory));
             try
             {
-                if (!Directory.Exists(path))
-                    Directory.CreateDirectory(path);
+                directory = Path.GetFullPath(directory);
             }
             catch (Exception e)
             {
-                error = $"Could not create directory {path}: {e.Message}";
+                throw new ArgumentException(PublicResources.ArgumentInvalidString, nameof(directory), e);
+            }
+
+            error = null;
+            warning = null;
+            try
+            {
+                if (!Directory.Exists(directory))
+                    Directory.CreateDirectory(directory);
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                error = Res.ErrorMessageCouldNotCreateDirectory(directory, e.Message);
                 return;
             }
 
             string selfPath = Files.GetExecutingPath();
-            if (selfPath == path)
+            if (selfPath == directory)
             {
-                error = "The current installation is being executed, which cannot be overwritten";
+                error = Res.ErrorMessageInstallationCannotBeOverwritten;
                 return;
             }
 
@@ -78,41 +116,124 @@ namespace KGySoft.Drawing.ImagingTools
             {
                 try
                 {
-                    File.Copy(Path.Combine(selfPath, file), Path.Combine(path, file), true);
+                    File.Copy(Path.Combine(selfPath, file), Path.Combine(directory, file), true);
                 }
-                catch (Exception e)
+                catch (Exception e) when (!e.IsCritical())
                 {
-                    error = $"Could not copy file {file}: {e.Message}";
+                    error = Res.ErrorMessageCouldNotCopyFile(file, e.Message);
+                    return;
+                }
+            }
+
+            // .NET Core 3.0 support: the visualizer must be in a netstandard2.0 subdirectory.
+            // And actually it can contain framework assemblies so we just create a symbolic link to it
+            string netCorePath = Path.Combine(directory, netCoreSubdirectory);
+            try
+            {
+                if (!Directory.Exists(netCorePath))
+                    Directory.CreateDirectory(netCorePath);
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                warning = Res.WarningMessageCouldNotCreateNetCoreDirectory(netCorePath, e.Message);
+                return;
+            }
+
+            bool isNtfs;
+            try
+            {
+                char drive = Char.ToUpperInvariant(Path.GetFullPath(directory)[0]);
+                isNtfs = drive >= 'A' && drive <= 'Z' && new DriveInfo(drive.ToString(null)).DriveFormat == "NTFS";
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                isNtfs = false;
+            }
+
+            foreach (string file in files)
+            {
+                try
+                {
+                    string source = Path.Combine(directory, file);
+                    string target = Path.Combine(netCorePath, file);
+                    if (isNtfs)
+                    {
+                        if (File.Exists(target))
+                            File.Delete(target);
+                        Kernel32.CreateHardLink(target, source);
+                    }
+                    else
+                        File.Copy(source, target, true);
+                }
+                catch (Exception e) when (!e.IsCritical())
+                {
+                    warning = isNtfs
+                        ? Res.WarningMessageCouldNotCreateNetCoreLink(file, e.Message)
+                        : Res.WarningMessageCouldNotCopyFileNetCore(file, e.Message);
                     return;
                 }
             }
         }
 
-        internal static void Uninstall(string path, out string error)
+        /// <summary>
+        /// Removes the debugger visualizers from the specified <paramref name="directory"/>.
+        /// </summary>
+        /// <param name="directory">The directory where the debugger visualizers have to be removed from.</param>
+        /// <param name="error">If the removal fails, then this parameter returns the error message; otherwise, this parameter returns <see langword="null"/>.</param>
+        public static void Uninstall(string directory, out string error)
         {
             error = null;
-            if (!Directory.Exists(path))
+            if (!Directory.Exists(directory))
                 return;
 
-            if (path == Files.GetExecutingPath())
+            if (directory == Files.GetExecutingPath())
             {
-                error = "The current installation is being executed, which cannot be removed";
+                error = Res.ErrorMessageInstallationCannotBeRemoved;
                 return;
             }
 
+            string netCorePath = Path.Combine(directory, netCoreSubdirectory);
+            bool netCoreDirExists = Directory.Exists(netCorePath);
             foreach (string file in files)
             {
                 try
                 {
-                    File.Delete(Path.Combine(path, file));
+                    File.Delete(Path.Combine(directory, file));
+                    if (netCoreDirExists)
+                        File.Delete(Path.Combine(netCorePath, file));
                 }
-                catch (Exception e)
+                catch (Exception e) when (!e.IsCritical())
                 {
-                    error = $"Could not delete file {file}: {e.Message}";
+                    error = Res.ErrorMessageCouldNotDeleteFile(file, e.Message);
                     return;
                 }
             }
+
+            try
+            {
+                if (netCoreDirExists &&
+#if NET35
+                    Directory.GetFileSystemEntries(netCorePath).Length == 0
+#else
+                    !Directory.EnumerateFileSystemEntries(netCorePath).Any()
+#endif
+                    )
+                {
+                    Directory.Delete(netCorePath);
+                }
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+            }
         }
+
+        #endregion
+
+        #region Internal Methods
+
+        internal static string GetDebuggerVisualizerFilePath(string path) => Path.Combine(path, debuggerVisualizerFileName);
+
+        #endregion
 
         #endregion
     }

@@ -16,7 +16,10 @@
 
 #region Usings
 
-using KGySoft.Drawing.ImagingTools;
+using System.Diagnostics.CodeAnalysis;
+
+using KGySoft.Drawing.DebuggerVisualizers.Serialization;
+using KGySoft.Drawing.ImagingTools.Model;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;
 
@@ -24,6 +27,8 @@ using Microsoft.VisualStudio.DebuggerVisualizers;
 
 namespace KGySoft.Drawing.DebuggerVisualizers
 {
+    [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses",
+        Justification = "False alarm, instantiated by VS debugger visualizers")]
     internal sealed class BitmapDataDebuggerVisualizer : DialogDebuggerVisualizer
     {
         #region Methods
@@ -34,7 +39,10 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <param name="windowService">The window service.</param>
         /// <param name="objectProvider">The object provider.</param>
         protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
-            => DebuggerHelper.DebugBitmapData(SerializationHelper.DeserializeBitmapData(objectProvider.GetData()));
+        {
+            using (BitmapDataInfo bitmapDataInfo = SerializationHelper.DeserializeBitmapDataInfo(objectProvider.GetData()))
+                DebuggerHelper.DebugBitmapData(bitmapDataInfo);
+        }
 
         #endregion
     }

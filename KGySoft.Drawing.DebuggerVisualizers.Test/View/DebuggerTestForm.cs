@@ -17,14 +17,10 @@
 #region Usings
 
 using System;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel;
-using KGySoft.Drawing.ImagingTools;
-using KGySoft.Drawing.ImagingTools.Forms;
 
 #endregion
 
@@ -44,42 +40,46 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
         public DebuggerTestForm()
         {
             InitializeComponent();
+            cmbPixelFormat.DataSource = viewModel.PixelFormats;
 
-            commandBindings.Add(viewModel.DebugCommand).AddSource(btnViewByDebugger, nameof(btnViewByDebugger.Click));
-            commandBindings.Add(OnViewDirectCommand).AddSource(btnViewDirect, nameof(btnViewDirect.Click));
-            commandBindings.Add<EventArgs>(OnSelectFileCommand)
-                .AddSource(tbFile, nameof(tbFile.Click))
-                .AddSource(tbFile, nameof(tbFile.DoubleClick));
+            commandBindings.AddPropertyBinding(chbAsImage, nameof(CheckBox.Checked), nameof(viewModel.AsImage), viewModel);
+            commandBindings.AddPropertyBinding(cmbPixelFormat, nameof(ComboBox.SelectedValue), nameof(viewModel.PixelFormat), viewModel);
 
-            commandBindings.AddPropertyBinding(rbBitmap32, nameof(RadioButton.Checked), nameof(viewModel.Bmp32), viewModel);
-            commandBindings.AddPropertyBinding(rbBitmap16, nameof(RadioButton.Checked), nameof(viewModel.Bmp16), viewModel);
-            commandBindings.AddPropertyBinding(rbBitmap8, nameof(RadioButton.Checked), nameof(viewModel.Bmp8), viewModel);
+            commandBindings.AddPropertyBinding(rbBitmap, nameof(RadioButton.Checked), nameof(viewModel.Bitmap), viewModel);
             commandBindings.AddPropertyBinding(rbMetafile, nameof(RadioButton.Checked), nameof(viewModel.Metafile), viewModel);
             commandBindings.AddPropertyBinding(rbHIcon, nameof(RadioButton.Checked), nameof(viewModel.HIcon), viewModel);
             commandBindings.AddPropertyBinding(rbManagedIcon, nameof(RadioButton.Checked), nameof(viewModel.ManagedIcon), viewModel);
             commandBindings.AddPropertyBinding(rbGraphicsBitmap, nameof(RadioButton.Checked), nameof(viewModel.GraphicsBitmap), viewModel);
             commandBindings.AddPropertyBinding(rbGraphicsHwnd, nameof(RadioButton.Checked), nameof(viewModel.GraphicsHwnd), viewModel);
-            commandBindings.AddPropertyBinding(rbBitmapData32, nameof(RadioButton.Checked), nameof(viewModel.BitmapData32), viewModel);
-            commandBindings.AddPropertyBinding(rbBitmapData8, nameof(RadioButton.Checked), nameof(viewModel.BitmapData8), viewModel);
-            commandBindings.AddPropertyBinding(rbPalette256, nameof(RadioButton.Checked), nameof(viewModel.Palette256), viewModel);
-            commandBindings.AddPropertyBinding(rbPalette2, nameof(RadioButton.Checked), nameof(viewModel.Palette2), viewModel);
+            commandBindings.AddPropertyBinding(rbBitmapData, nameof(RadioButton.Checked), nameof(viewModel.BitmapData), viewModel);
+            commandBindings.AddPropertyBinding(rbPalette, nameof(RadioButton.Checked), nameof(viewModel.Palette), viewModel);
             commandBindings.AddPropertyBinding(rbColor, nameof(RadioButton.Checked), nameof(viewModel.SingleColor), viewModel);
             commandBindings.AddPropertyBinding(rbFromFile, nameof(RadioButton.Checked), nameof(viewModel.ImageFromFile), viewModel);
 
             commandBindings.AddPropertyBinding(tbFile, nameof(tbFile.Text), nameof(viewModel.FileName), viewModel);
-            commandBindings.AddPropertyBinding(rbAsImage, nameof(RadioButton.Checked), nameof(viewModel.AsImage), viewModel);
-            commandBindings.AddPropertyBinding(rbAsBitmap, nameof(RadioButton.Checked), nameof(viewModel.AsBitmap), viewModel);
-            commandBindings.AddPropertyBinding(rbAsMetafile, nameof(RadioButton.Checked), nameof(viewModel.AsMetafile), viewModel);
-            commandBindings.AddPropertyBinding(rbAsIcon, nameof(RadioButton.Checked), nameof(viewModel.AsIcon), viewModel);
+            commandBindings.AddPropertyBinding(rbAsImage, nameof(RadioButton.Checked), nameof(viewModel.FileAsImage), viewModel);
+            commandBindings.AddPropertyBinding(rbAsBitmap, nameof(RadioButton.Checked), nameof(viewModel.FileAsBitmap), viewModel);
+            commandBindings.AddPropertyBinding(rbAsMetafile, nameof(RadioButton.Checked), nameof(viewModel.FileAsMetafile), viewModel);
+            commandBindings.AddPropertyBinding(rbAsIcon, nameof(RadioButton.Checked), nameof(viewModel.FileAsIcon), viewModel);
 
-            commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.PreviewImage), nameof(pictureBox.Image), pictureBox);
-            commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.CanDebugDirectly), nameof(btnViewDirect.Enabled), btnViewDirect);
-            commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.CanDebugByDebugger), nameof(btnViewByDebugger.Enabled), btnViewByDebugger);
+            commandBindings.AddPropertyBinding(chbAsReadOnly, nameof(CheckBox.Checked), nameof(viewModel.AsReadOnly), viewModel);
+
+            commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.AsImageEnabled), nameof(chbAsImage.Enabled), chbAsImage);
+            commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.PixelFormatEnabled), nameof(cmbPixelFormat.Enabled), cmbPixelFormat);
             commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.ImageFromFile), nameof(gbFile.Enabled), gbFile);
+            commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.AsReadOnlyEnabled), nameof(chbAsReadOnly.Enabled), chbAsReadOnly);
+            commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.CanDebug), nameof(Button.Enabled), btnViewDirect, btnViewByDebugger);
+            commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.PreviewImage), nameof(pictureBox.Image), pictureBox);
+
+            commandBindings.Add<EventArgs>(OnSelectFileCommand)
+                .AddSource(tbFile, nameof(tbFile.Click))
+                .AddSource(tbFile, nameof(tbFile.DoubleClick));
+            commandBindings.Add(viewModel.DirectViewCommand).AddSource(btnViewDirect, nameof(btnViewDirect.Click));
+            commandBindings.Add(viewModel.DebugCommand).AddSource(btnViewByDebugger, nameof(btnViewByDebugger.Click));
 
             viewModel.GetHwndCallback = () => Handle;
             viewModel.GetClipCallback = () => pictureBox.Bounds;
-            viewModel.ErrorCallback = Dialogs.ErrorMessage;
+            viewModel.ErrorCallback = message => MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         #endregion
@@ -107,50 +107,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
         #endregion
 
         #region Private Methods
-
-        private void OnViewDirectCommand()
-        {
-            switch (viewModel.TestObject)
-            {
-                case Image image:
-                    using (var frm = new ImageDebuggerVisualizerForm { ImageTypes = viewModel.ImageTypes, Image = (Image)image.Clone() })
-                    {
-                        frm.ShowDialog();
-                        if (frm.IsModified)
-                            viewModel.TestObject = frm.Image;
-                        break;
-                    }
-                case Icon icon:
-                    using (var frm = new ImageDebuggerVisualizerForm { ImageTypes = viewModel.ImageTypes, Icon = (Icon)icon.Clone() })
-                    {
-                        frm.ShowDialog();
-                        if (frm.IsModified)
-                            viewModel.TestObject = (object)frm.Icon ?? frm.Image;
-                        break;
-                    }
-                case ColorPalette palette:
-                    using (var frm = new PaletteVisualizerForm { Palette = palette.Entries })
-                    {
-                        frm.ShowDialog();
-                        if (frm.PaletteChanged)
-                        {
-                            viewModel.TestObject = null;
-                            viewModel.TestObject = palette;
-                        }
-
-                        break;
-                    }
-
-                case Color color:
-                    using (var frm = new ColorVisualizerForm { Color = color })
-                    {
-                        frm.ShowDialog();
-                        if (frm.ColorChanged)
-                            viewModel.TestObject = frm.Color;
-                        break;
-                    }
-            }
-        }
 
         private void OnSelectFileCommand(ICommandSource<EventArgs> source)
         {

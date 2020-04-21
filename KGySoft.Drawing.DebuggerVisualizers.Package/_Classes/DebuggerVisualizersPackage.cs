@@ -23,8 +23,8 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
-using KGySoft.Drawing.DebuggerVisualizers.Package.Properties;
 using KGySoft.Drawing.ImagingTools;
+using KGySoft.Drawing.ImagingTools.Model;
 
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -33,11 +33,17 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
+    #region Usings
+
+    using Resources = Properties.Resources;
+
+    #endregion
+
     [Guid(Ids.PackageGuidString)]
     [ProvideBindingPath]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [InstalledProductRegistration("#" + Ids.ResourceTitle, "#" + Ids.ResourceDetails, Ids.Version, IconResourceID = Ids.IconResourceId)]
-    [PackageRegistrationAync]
+    [PackageRegistrationAsync]
     [ProvideAutoLoadAsync]
     public sealed class DebuggerVisualizersPackage : Microsoft.VisualStudio.Shell.Package, IAsyncLoadablePackageInitialize
     {
@@ -91,6 +97,14 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             DoInitialize(uiShellService, menuCommandService);
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            if (!disposing)
+                return;
+            DestroyCommands();
+        }
+
         #endregion
 
         #region Private Methods
@@ -123,7 +137,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         {
             if (shellService == null)
             {
-                ShellDialogs.Error(this, "Shell service could not be obtained. Installation of the debugger visualizers cannot be checked.");
+                ShellDialogs.Error(this, Resources.ErrorMessage_ShellServiceUnavailable);
                 return;
             }
 
@@ -131,24 +145,30 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             shellService.GetProperty((int)__VSSPROPID2.VSSPROPID_VisualStudioDir, out object documentsDirObj);
             string documentsDir = documentsDirObj.ToString();
             string targetPath = Path.Combine(documentsDir, "Visualizers");
-            InstallationInfo installationInfo = InstallationManager.GetInstallationInfo(targetPath);
-            if (installationInfo.Installed && (installationInfo.Version == null || installationInfo.Version >= typeof(InstallationManager).Assembly.GetName().Version))
+            InstallationInfo installedVersion = InstallationManager.GetInstallationInfo(targetPath);
+            InstallationInfo availableVersion = InstallationManager.AvailableVersion;
+            if (installedVersion.Installed && (installedVersion.Version == null || installedVersion.Version >= availableVersion.Version))
                 return;
 
-            InstallationManager.Install(targetPath, out string error);
+            InstallationManager.Install(targetPath, out string error, out string warning);
             if (error != null)
-            {
-                ShellDialogs.Warning(this, $"Failed to install the visualizers to {targetPath}: {error}{Environment.NewLine}{Environment.NewLine}Make sure every running debugger is closed. Installing will be tried again on restarting Visual Studio.");
-                return;
-            }
-
-            ShellDialogs.Info(this, $"{Resources.ResourceManager.GetString(Ids.ResourceTitle)} {installationInfo.Version} has been installed to {targetPath}.");
+                ShellDialogs.Error(this, Res.ErrorMessageFailedToInstall(targetPath, error));
+            else if (warning != null)
+                ShellDialogs.Warning(this, Res.WarningMessageInstallationFinishedWithWarning(targetPath, warning));
+            else
+                ShellDialogs.Info(this, Res.InfoMessageInstallationFinished(availableVersion.Version, targetPath));
         }
 
         private void InitCommands(IVsShell shellService, IMenuCommandService menuCommandService)
         {
             menuCommandService.AddCommand(ExecuteImagingToolsCommand.GetCreateCommand(this));
             menuCommandService.AddCommand(ManageDebuggerVisualizerInstallationsCommand.GetCreateCommand(this, shellService));
+        }
+
+        private void DestroyCommands()
+        {
+            ExecuteImagingToolsCommand.DestroyCommand();
+            ManageDebuggerVisualizerInstallationsCommand.DestroyCommand();
         }
 
         #endregion
