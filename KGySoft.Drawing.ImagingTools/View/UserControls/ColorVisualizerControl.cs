@@ -67,7 +67,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             {
                 if (knownColors == null)
                 {
-                    knownColors = new Dictionary<int, string>();
+                    knownColors = new Dictionary<int, string> { { 0, nameof(Color.Empty) } };
 
                     // non-system known colors: 27..168 (Transparent..YellowGreen)
                     for (KnownColor color = (KnownColor)27; color <= (KnownColor)167; color++)
