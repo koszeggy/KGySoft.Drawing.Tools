@@ -44,7 +44,7 @@
   + Supporting all possible PixelFormats
   + Always allowing to save in Icon format
   + Saving as TIFF allows to save a multi-page image even for animations and icons if compound view is selected.
-  + Installation Manager: The installer now supports .NET Core 3.0+ projects
+  + Installation Manager: The installer now supports .NET Core 2.1+ projects
   - If an indexed bitmap was debugged, then changing a transparent palette entry did not always work properly.
 
 + KGySoft.Drawing.DebuggerVisualizers.dll
