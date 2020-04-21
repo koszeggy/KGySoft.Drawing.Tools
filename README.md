@@ -25,7 +25,7 @@ The Imaging Tools application makes possible to load images and icons from file,
 
 ## Debugger Visualizers
 
-Imaging Tools is packed with several debugger visualizers for Visual Studio (compatible with all versions starting with Visual Studio 2008). When a type is debugged in Visual Studio and there is a debugger visualizer installed for that type, then a magnifier icon appears that you can click to open the visualizer.
+Imaging Tools is packed with several debugger visualizers for Visual Studio (compatible with all versions starting with Visual Studio 2008, and supports even .NET Core 2.1 and newer projects). When a type is debugged in Visual Studio and there is a debugger visualizer installed for that type, then a magnifier icon appears that you can click to open the visualizer.
 
 ![Debugger Visualizer Usage](https://kgysoft.net/images/DebuggerVisualizerUsage.png)
 
@@ -61,6 +61,8 @@ You can perform the install also from Visual Studio by the _Tools/Extensions and
   - `NET40` contains the .NET 4.0 version. You cannot use this one for Visual Studio 2008.
   - `NET45` contains the .NET 4.5 version. You cannot use this one for Windows XP and Visual Studio 2008/2010.
 3. Execute `KGySoft.Drawing.ImagingTools.exe` from one of the folders listed above. Click the _Manage Debugger Visualizer Installations..._ button (the gear icon) on the toolbar.
+
+> _Note:_ Starting with version 2.1.0 the debugger visualizers can be used also for .NET Core projects from Visual Studio 2019, even though no .NET Core binaries are used.
 
 ![Select Install](https://kgysoft.net/images/InstallSelectMenu.png)
 
