@@ -25,7 +25,7 @@ The Imaging Tools application makes possible to load images and icons from file,
 
 ## Debugger Visualizers
 
-Imaging Tools is packed with several debugger visualizers for Visual Studio (compatible with all versions starting with Visual Studio 2008, and supports even .NET Core 2.1 and newer projects). When a type is debugged in Visual Studio and there is a debugger visualizer installed for that type, then a magnifier icon appears that you can click to open the visualizer.
+Imaging Tools is packed with several debugger visualizers for Visual Studio (compatible with all versions starting with Visual Studio 2008, and supports even .NET Core 2.1 and newer platform targets). When a type is debugged in Visual Studio and there is a debugger visualizer installed for that type, then a magnifier icon appears that you can click to open the visualizer.
 
 ![Debugger Visualizer Usage](https://kgysoft.net/images/DebuggerVisualizerUsage.png)
 
