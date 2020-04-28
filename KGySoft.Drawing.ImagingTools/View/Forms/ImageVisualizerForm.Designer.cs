@@ -44,9 +44,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.timerPlayer = new System.Windows.Forms.Timer(this.components);
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.lblNotification = new KGySoft.Drawing.ImagingTools.View.Controls.NotificationLabel();
-            this.pbImage = new System.Windows.Forms.PictureBox();
+            this.pbImage = new ImageViewer();
             this.tsMenu.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbImage)).BeginInit();
+            //((System.ComponentModel.ISupportInitialize)(this.pbImage)).BeginInit();
             this.SuspendLayout();
             // 
             // txtInfo
@@ -228,12 +228,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // 
             // pbImage
             // 
-            this.pbImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            //this.pbImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pbImage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pbImage.Location = new System.Drawing.Point(0, 49);
             this.pbImage.Name = "pbImage";
             this.pbImage.Size = new System.Drawing.Size(334, 141);
-            this.pbImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            //this.pbImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pbImage.TabIndex = 1;
             this.pbImage.TabStop = false;
             // 
@@ -252,7 +252,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.Name = "ImageVisualizerForm";
             this.tsMenu.ResumeLayout(false);
             this.tsMenu.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbImage)).EndInit();
+            //((System.ComponentModel.ISupportInitialize)(this.pbImage)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -260,7 +260,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #endregion
 
-        private System.Windows.Forms.PictureBox pbImage;
+        private ImageViewer pbImage;
         private System.Windows.Forms.ToolStripButton btnAutoZoom;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton btnSave;

@@ -147,7 +147,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Notification), nameof(Label.Text), lblNotification);
 
             // VM.PreviewImage -> pbImage.Image
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.PreviewImage), nameof(PictureBox.Image), FormatPreviewImage, pbImage);
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.PreviewImage), nameof(pbImage.Image), FormatPreviewImage, pbImage);
 
             // VM.PreviewImage != null -> btnSave.Enabled
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.PreviewImage), nameof(Button.Enabled), img => img != null, btnSave);
@@ -158,10 +158,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // VM.InfoText -> txtInfo.Text
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.InfoText), nameof(TextBox.Text), txtInfo);
 
-            // VM.AutoZoom -> btnAutoZoom.Checked, pbImage.SizeMode
+            // VM.AutoZoom -> btnAutoZoom.Checked, pbImage.AutoZoom
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.AutoZoom), nameof(btnAutoZoom.Checked), btnAutoZoom);
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.AutoZoom), nameof(pbImage.SizeMode),
-                autoZoom => (bool)autoZoom ? PictureBoxSizeMode.Zoom : PictureBoxSizeMode.CenterImage, pbImage);
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.AutoZoom), nameof(pbImage.AutoZoom), pbImage);
 
             // VM.IsCompoundView -> btnCompound.Checked
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsCompoundView), nameof(btnCompound.Checked), btnCompound);
