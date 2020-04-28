@@ -28,7 +28,7 @@ using System.Windows.Forms;
 
 namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
-    internal sealed class PalettePanel : Panel
+    internal sealed partial class PalettePanel : Panel
     {
         #region Constants
 
@@ -46,15 +46,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         #endregion
 
         #region Instance Fields
-
-        [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed",
-            Justification = "False alarm, added to Controls, which is disposed by base")]
-        private VScrollBar sbPalette;
-
-        [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed",
-            Justification = "False alarm, added to components, which is disposed")]
-        private Timer timerSelection;
-        private IContainer components;
 
         private IList<Color> palette;
         private int selectedColorIndex = -1;
@@ -350,34 +341,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         #endregion
 
         #region Private Methods
-
-        private void InitializeComponent()
-        {
-            components = new Container();
-            sbPalette = new VScrollBar();
-            timerSelection = new Timer(components);
-            SuspendLayout();
-            // 
-            // sbPalette
-            // 
-            sbPalette.Dock = DockStyle.Right;
-            sbPalette.Location = new Point(183, 0);
-            sbPalette.Name = "sbPalette";
-            sbPalette.Size = new Size(17, 100);
-            sbPalette.TabIndex = 0;
-            sbPalette.Visible = false;
-            sbPalette.ValueChanged += new EventHandler(sbPalette_ValueChanged);
-            // 
-            // timerSelection
-            // 
-            timerSelection.Interval = 20;
-            timerSelection.Tick += new EventHandler(timerSelection_Tick);
-            // 
-            // PalettePanel
-            // 
-            Controls.Add(sbPalette);
-            ResumeLayout(false);
-        }
 
         /// <summary>
         /// Checks the scrollbar and returns <see langword="true"/> on layout change (which means invalidated graphics)
