@@ -157,6 +157,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         {
             InitializeComponent();
 
+            sbPalette.ValueChanged += sbPalette_ValueChanged;
+            timerSelection.Tick += timerSelection_Tick;
+
             DoubleBuffered = true;
             SetStyle(ControlStyles.Selectable, true);
             sbPalette.Width = SystemInformation.VerticalScrollBarWidth;

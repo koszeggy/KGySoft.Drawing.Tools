@@ -32,6 +32,8 @@ namespace KGySoft.Drawing.ImagingTools
         internal static Size Scale(this Size size, PointF scale) =>
             Size.Round(ScaleF(size, scale));
 
+        internal static Size Scale(this Size size, float scale) => size.Scale(new PointF(scale, scale));
+
         #endregion
     }
 }

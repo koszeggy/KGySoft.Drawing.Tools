@@ -24,12 +24,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             sbPalette.Size = new Size(17, 100);
             sbPalette.TabIndex = 0;
             sbPalette.Visible = false;
-            sbPalette.ValueChanged += new EventHandler(sbPalette_ValueChanged);
             // 
             // timerSelection
             // 
             timerSelection.Interval = 20;
-            timerSelection.Tick += new EventHandler(timerSelection_Tick);
             // 
             // PalettePanel
             // 

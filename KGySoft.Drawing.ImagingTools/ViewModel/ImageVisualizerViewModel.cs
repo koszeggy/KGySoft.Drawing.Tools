@@ -95,6 +95,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal string InfoText { get => Get<string>(); set => Set(value); }
         internal string Notification { get => Get<string>(); set => Set(value); }
         internal bool AutoZoom { get => Get<bool>(); set => Set(value); }
+        internal bool AntiAliasing { get => Get<bool>(); set => Set(value); }
         internal bool IsCompoundView { get => Get(true); set => Set(value); }
         internal bool IsAutoPlaying { get => Get<bool>(); set => Set(value); }
         internal Size ViewImagePreviewSize { get => Get<Size>(); set => Set(value); }
@@ -112,6 +113,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal Func<ImageInfoType, Image> GetCompoundViewIconCallback { get => Get<Func<ImageInfoType, Image>>(); set => Set(value); }
 
         internal ICommandState SetAutoZoomCommandState => Get(() => new CommandState());
+        internal ICommandState SetAntiAliasingCommandState => Get(() => new CommandState());
         internal ICommandState OpenFileCommandState => Get(() => new CommandState());
         internal ICommandState SaveFileCommandState => Get(() => new CommandState { Enabled = false });
         internal ICommandState ClearCommandState => Get(() => new CommandState { Enabled = false });
@@ -122,6 +124,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommandState ShowPaletteCommandState => Get(() => new CommandState { Enabled = false });
 
         internal ICommand SetAutoZoomCommand => Get(() => new SimpleCommand<bool>(OnSetAutoZoomCommand));
+        internal ICommand SetAntiAliasingCommand => Get(() => new SimpleCommand<bool>(OnSetAntiAliasingCommand));
         internal ICommand OpenFileCommand => Get(() => new SimpleCommand(OnOpenFileCommand));
         internal ICommand SaveFileCommand => Get(() => new SimpleCommand(OnSaveFileCommand));
         internal ICommand ClearCommand => Get(() => new SimpleCommand(OnClearCommand));
@@ -806,6 +809,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Command Handlers
 
         private void OnSetAutoZoomCommand(bool newValue) => AutoZoom = newValue;
+        private void OnSetAntiAliasingCommand(bool newValue) => AntiAliasing = newValue;
 
         private void OnOpenFileCommand()
         {

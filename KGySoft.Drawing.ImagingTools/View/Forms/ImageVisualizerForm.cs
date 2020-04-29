@@ -75,12 +75,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             }
         }
 
-        private static object FormatPreviewImage(object arg) => arg is Bitmap bmp
-            ? bmp.PixelFormat == PixelFormat.Format16bppGrayScale
-                ? bmp.ConvertPixelFormat(PixelFormat.Format8bppIndexed, PredefinedColorsQuantizer.Grayscale())
-                : bmp
-            : arg;
-
         #endregion
 
         #region Instance Methods
@@ -131,13 +125,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void InitViewModelDependencies()
         {
-            ViewModel.ViewImagePreviewSize = pbImage.ClientSize;
+            ViewModel.ViewImagePreviewSize = imageViewer.ClientSize;
             ViewModel.GetScreenRectangleCallback = GetScreenRectangle;
             ViewModel.GetViewSizeCallback = () => Size;
             ViewModel.SelectFileToOpenCallback = SelectFileToOpen;
             ViewModel.SelectFileToSaveCallback = SelectFileToSave;
             ViewModel.ApplyViewSizeCallback = ApplySize;
-            ViewModel.UpdatePreviewImageCallback = () => pbImage.Invalidate();
+            ViewModel.UpdatePreviewImageCallback = () => imageViewer.Invalidate();
             ViewModel.GetCompoundViewIconCallback = GetCompoundViewIcon;
         }
 
@@ -146,8 +140,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // VM.Notification -> lblNotification.Text
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Notification), nameof(Label.Text), lblNotification);
 
-            // VM.PreviewImage -> pbImage.Image
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.PreviewImage), nameof(pbImage.Image), FormatPreviewImage, pbImage);
+            // VM.PreviewImage -> imageViewer.Image
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.PreviewImage), nameof(imageViewer.Image), imageViewer);
 
             // VM.PreviewImage != null -> btnSave.Enabled
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.PreviewImage), nameof(Button.Enabled), img => img != null, btnSave);
@@ -158,9 +152,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // VM.InfoText -> txtInfo.Text
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.InfoText), nameof(TextBox.Text), txtInfo);
 
-            // VM.AutoZoom -> btnAutoZoom.Checked, pbImage.AutoZoom
+            // VM.AutoZoom -> btnAutoZoom.Checked, imageViewer.AutoZoom
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.AutoZoom), nameof(btnAutoZoom.Checked), btnAutoZoom);
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.AutoZoom), nameof(pbImage.AutoZoom), pbImage);
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.AutoZoom), nameof(imageViewer.AutoZoom), imageViewer);
+
+            // VM.AntiAliasing -> btnAntiAlias.Checked, imageViewer.AntiAliasing
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.AntiAliasing), nameof(btnAntiAlias.Checked), btnAntiAlias);
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.AntiAliasing), nameof(imageViewer.AntiAliasing), imageViewer);
 
             // VM.IsCompoundView -> btnCompound.Checked
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsCompoundView), nameof(btnCompound.Checked), btnCompound);
@@ -186,6 +184,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.Add(ViewModel.SetAutoZoomCommand, ViewModel.SetAutoZoomCommandState)
                 .WithParameter(() => btnAutoZoom.Checked)
                 .AddSource(btnAutoZoom, nameof(btnAutoZoom.CheckedChanged));
+            CommandBindings.Add(ViewModel.SetAntiAliasingCommand, ViewModel.SetAntiAliasingCommandState)
+                .WithParameter(() => btnAntiAlias.Checked)
+                .AddSource(btnAntiAlias, nameof(btnAntiAlias.CheckedChanged));
             CommandBindings.Add(ViewModel.OpenFileCommand, ViewModel.OpenFileCommandState)
                 .AddSource(btnOpen, nameof(btnOpen.Click));
             CommandBindings.Add(ViewModel.SaveFileCommand, ViewModel.SaveFileCommandState)
@@ -210,7 +211,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.Add(OnResizeCommand)
                 .AddSource(this, nameof(Resize));
             CommandBindings.Add(OnPreviewImageResizedCommand)
-                .AddSource(pbImage, nameof(pbImage.SizeChanged));
+                .AddSource(imageViewer, nameof(imageViewer.SizeChanged));
             CommandBindings.Add<EventArgs>(OnSetBackColorCommand)
                 .AddSource(miBackColorDefault, nameof(miBackColorDefault.Click))
                 .AddSource(miBackColorBlack, nameof(miBackColorBlack.Click))
@@ -236,7 +237,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void AdjustSize()
         {
-            if (pbImage.Height >= 16)
+            if (imageViewer.Height >= 16)
                 return;
             txtInfo.Height = ClientSize.Height - tsMenu.Height - 16 - splitter.Height;
             PerformLayout();
@@ -267,17 +268,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 item.Image = item == sender ? Images.Check : null;
 
             if (sender == miBackColorDefault)
-                pbImage.BackColor = SystemColors.Control;
+                imageViewer.BackColor = SystemColors.Control;
             else if (sender == miBackColorWhite)
-                pbImage.BackColor = Color.White;
+                imageViewer.BackColor = Color.White;
             else
-                pbImage.BackColor = Color.Black;
+                imageViewer.BackColor = Color.Black;
         }
 
         private void OnPreviewImageResizedCommand()
         {
             AdjustSize();
-            ViewModel.ViewImagePreviewSize = pbImage.ClientSize;
+            ViewModel.ViewImagePreviewSize = imageViewer.ClientSize;
         }
 
         private void OnResizeCommand() => AdjustSize();
