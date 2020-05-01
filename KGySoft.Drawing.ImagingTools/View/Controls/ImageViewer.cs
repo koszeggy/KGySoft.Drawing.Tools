@@ -21,7 +21,9 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
+
 using KGySoft.CoreLibraries;
+using KGySoft.Drawing.ImagingTools.WinApi;
 
 #endregion
 
@@ -32,6 +34,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
     /// </summary>
     internal partial class ImageViewer : Control
     {
+        #region Enumerations
+
         [Flags]
         private enum InvalidateFlags
         {
@@ -41,17 +45,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             All = Sizes | PreviewImage
         }
 
-        private static readonly PixelFormat[] convertedFormats = { PixelFormat.Format16bppGrayScale, PixelFormat.Format48bppRgb, PixelFormat.Format64bppArgb, PixelFormat.Format64bppPArgb };
-
-        private bool IsMetafilePreviewNeeded => isMetafile && (!autoZoom || antiAliasing);
-
-        #region Constants
-
-        private const int WS_BORDER = 0x00800000;
-
         #endregion
 
         #region Fields
+
+        #region Static Fields
+
+        private static readonly PixelFormat[] convertedFormats = { PixelFormat.Format16bppGrayScale, PixelFormat.Format48bppRgb, PixelFormat.Format64bppArgb, PixelFormat.Format64bppPArgb };
+
+        #endregion
+
+        #region Instance Fields
 
         private Image image;
         private Image previewImage;
@@ -63,6 +67,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         private Size scrollbarSize;
         private Size imageSize;
         private bool isMetafile;
+        private int scrollFractionVertical;
+        private int scrollFractionHorizontal;
+
+        #endregion
 
         #endregion
 
@@ -78,19 +86,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 if (image == value)
                     return;
                 SetImage(value);
-            }
-        }
-
-        private void SetImage(Image value)
-        {
-            Invalidate(InvalidateFlags.All);
-            image = value;
-            isMetafile = image is Metafile;
-            imageSize = image?.Size ?? default;
-            if (value != null)
-            {
-                sbHorizontal.Maximum = value.Width - 1;
-                sbVertical.Maximum = value.Height - 1;
             }
         }
 
@@ -111,7 +106,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 Invalidate(InvalidateFlags.Sizes | (isMetafile ? InvalidateFlags.PreviewImage : InvalidateFlags.None));
             }
         }
-
 
         internal bool AntiAliasing
         {
@@ -136,10 +130,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 CreateParams cp = base.CreateParams;
 
                 // Fixed single border
-                cp.Style |= WS_BORDER;
+                cp.Style |= Constants.WS_BORDER;
                 return cp;
             }
         }
+
+        #endregion
+
+        #region Private Properties
+
+        private bool IsMetafilePreviewNeeded => isMetafile && (!autoZoom || antiAliasing);
 
         #endregion
 
@@ -163,6 +163,27 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         #endregion
 
         #region Methods
+
+        #region Internal Methods
+
+        internal void ResetZoom()
+        {
+            if (autoZoom)
+                return;
+
+            SetZoom(1f);
+            if (!isMetafile)
+                return;
+
+            // metafile: keeping 1x zoom only if that is smaller than client size; otherwise auto adjusting for view size
+            autoZoom = true;
+            AdjustSizes();
+            autoZoom = false;
+            if (zoom > 1f)
+                SetZoom(1f);
+        }
+
+        #endregion
 
         #region Protected Methods
 
@@ -205,17 +226,36 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         {
             base.OnMouseWheel(e);
 
-            // zoom
-            if (ModifierKeys == Keys.Control)
+            switch (ModifierKeys)
             {
-                if (autoZoom)
-                    return;
-                float delta = (float)e.Delta / SystemInformation.MouseWheelScrollDelta / 5;
-                Zoom(delta);
-                return;
+                // zoom
+                case Keys.Control:
+                    if (autoZoom)
+                        return;
+                    float delta = (float)e.Delta / SystemInformation.MouseWheelScrollDelta / 5;
+                    Zoom(delta);
+                    break;
+
+                // vertical scroll
+                case Keys.None:
+                    VerticalScroll(e.Delta);
+                    break;
             }
+        }
 
+        protected override void WndProc(ref Message m)
+        {
+            base.WndProc(ref m);
+            if (m.HWnd != Handle)
+                return;
 
+            switch (m.Msg)
+            {
+                case Constants.WM_MOUSEHWHEEL:
+                    HorizontalScroll(-(short)((m.WParam.ToInt64() >> 16) & 0xffff));
+                    m.Result = new IntPtr(1);
+                    break;
+            }
         }
 
         protected override void Dispose(bool disposing)
@@ -239,6 +279,49 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         #endregion
 
         #region Private Methods
+
+        private void SetImage(Image value)
+        {
+            Invalidate(InvalidateFlags.All);
+            image = value;
+            isMetafile = image is Metafile;
+            imageSize = image?.Size ?? default;
+            if (value != null)
+            {
+                sbHorizontal.Maximum = value.Width - 1;
+                sbVertical.Maximum = value.Height - 1;
+            }
+        }
+
+        private void VerticalScroll(int delta)
+        {
+            // When scrolling by mouse, delta is always +-120 so this will be 1 change on the scrollbar.
+            // But we collect the fractional changes caused by the touchpad scrolling so it will not be lost either.
+            int totalDelta = scrollFractionVertical + delta;
+            scrollFractionVertical = totalDelta % SystemInformation.MouseWheelScrollDelta;
+            int newValue = sbVertical.Value - totalDelta / SystemInformation.MouseWheelScrollDelta;
+            if (newValue < 0)
+                newValue = 0;
+            else if (newValue > sbVertical.Maximum - sbVertical.LargeChange + 1)
+                newValue = sbVertical.Maximum - sbVertical.LargeChange + 1;
+
+            sbVertical.Value = newValue;
+        }
+
+        private void HorizontalScroll(int delta)
+        {
+            // When scrolling by mouse, delta is always +-120 so this will be 1 change on the scrollbar.
+            // But we collect the fractional changes caused by the touchpad scrolling so it will not be lost either.
+            int totalDelta = scrollFractionHorizontal + delta;
+            scrollFractionHorizontal = totalDelta % SystemInformation.MouseWheelScrollDelta;
+            int newValue = sbHorizontal.Value - totalDelta / SystemInformation.MouseWheelScrollDelta;
+            if (newValue < 0)
+                newValue = 0;
+            else if (newValue > sbHorizontal.Maximum - sbHorizontal.LargeChange + 1)
+                newValue = sbHorizontal.Maximum - sbHorizontal.LargeChange + 1;
+
+            sbHorizontal.Value = newValue;
+        }
 
         private void Invalidate(InvalidateFlags flags)
         {
@@ -283,15 +366,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             // scrollbars visibility
             bool sbHorizontalVisible = scaledSize.Width > clientSize.Width
-                || scaledSize.Width > clientSize.Width - scrollbarSize.Width && scaledSize.Height > clientSize.Height - scrollbarSize.Height;
+                    || scaledSize.Width > clientSize.Width - scrollbarSize.Width && scaledSize.Height > clientSize.Height - scrollbarSize.Height;
             bool sbVerticalVisible = scaledSize.Height > clientSize.Height
-                || scaledSize.Height > clientSize.Width - scrollbarSize.Width && scaledSize.Height > clientSize.Height - scrollbarSize.Height;
+                    || scaledSize.Height > clientSize.Width - scrollbarSize.Width && scaledSize.Height > clientSize.Height - scrollbarSize.Height;
 
             if (sbHorizontalVisible)
                 clientSize.Height -= scrollbarSize.Height;
             if (sbVerticalVisible)
                 clientSize.Width -= scrollbarSize.Width;
 
+            // TODO: del
             //float ratio = Math.Min((float)scaledSize.Width / sourceSize.Width, (float)scaledSize.Height / sourceSize.Height);
             //Size targetSize = new Size((int)(sourceSize.Width * ratio), (int)(sourceSize.Height * ratio));
             targetLocation = new Point(Math.Max(0, (clientSize.Width >> 1) - (scaledSize.Width >> 1)),
@@ -388,6 +472,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             else
                 g.DrawImage(previewImage, destRectangle, sourceRectangle, GraphicsUnit.Pixel);
 
+            // TODO: del
             //// 1. Directly from original image: fails for icons (no partial copy is possible: icon get stretched) - can be kept when the whole source is shown
             //g.DrawImage(image, destRectangle, sourceRectangle, GraphicsUnit.Pixel);
 
@@ -436,47 +521,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             previewImage = image;
         }
 
-        //private void GeneratePreview()
-        //{
-        //    Rectangle clientRect = ClientRectangle;
-        //    if (clientRect.Width < 1 || clientRect.Height < 1)
-        //    {
-        //        previewRectangle = Rectangle.Empty;
-        //        return;
-        //    }
-
-        //    Size sourceSize = image.Size;
-        //    Rectangle sourceRect = new Rectangle(Point.Empty, sourceSize);
-        //    Size targetSize = autoZoom ? clientRect.Size : sourceSize.Scale(zoom);
-
-        //    float ratio = Math.Min((float)targetSize.Width / sourceSize.Width, (float)targetSize.Height / sourceSize.Height);
-        //    targetSize = new Size((int)(sourceSize.Width * ratio), (int)(sourceSize.Height * ratio));
-        //    Point targetLocation = new Point((clientRect.Width >> 1) - (targetSize.Width >> 1), (clientRect.Height >> 1) - (targetSize.Height >> 1));
-
-        //    previewRectangle = new Rectangle(targetLocation, targetSize);
-        //    previewImage = image switch
-        //    {
-        //        Bitmap bmp => ResizeBitmap(bmp, targetSize),
-        //        Metafile metafile => metafile.ToBitmap(targetSize, antiAliasing),
-        //        _ => throw new InvalidOperationException(Res.InternalError($"Unexpected image type: {image.GetType()}"))
-        //    };
-        //}
-
-        //private Bitmap ResizeBitmap(Bitmap bmp, Size targetSize)
-        //{
-        //    var result = new Bitmap(targetSize.Width, targetSize.Height);
-        //    Size origSize = bmp.Size;
-        //    using (Graphics graphics = Graphics.FromImage(result))
-        //    {
-        //        graphics.InterpolationMode = antiAliasing || targetSize.Width < origSize.Width ? InterpolationMode.HighQualityBicubic : InterpolationMode.NearestNeighbor;
-        //        graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-        //        graphics.DrawImage(bmp, new Rectangle(Point.Empty, targetSize), new Rectangle(Point.Empty, origSize), GraphicsUnit.Pixel);
-        //        graphics.Flush();
-        //        return result;
-        //    }
-
-        //}
-
         private void Zoom(float delta)
         {
             if (delta == 0f)
@@ -498,6 +542,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 return;
             }
 
+            SetZoom(newValue);
+        }
+
+        private void SetZoom(float newValue)
+        {
             if (zoom == newValue)
                 return;
             zoom = newValue;
@@ -505,6 +554,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         }
 
         #endregion
+
+        #region Event handlers
 
         private void sbHorizontal_ValueChanged(object sender, EventArgs e)
         {
@@ -517,6 +568,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             sourceRectangle.Y = sbVertical.Value;
             Invalidate();
         }
+
+        #endregion
 
         #endregion
     }

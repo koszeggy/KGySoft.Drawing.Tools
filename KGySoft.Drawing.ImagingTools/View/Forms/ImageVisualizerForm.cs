@@ -255,6 +255,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 Top = workingArea.Bottom - Height;
             if (Right > workingArea.Right)
                 Left = workingArea.Right - Width;
+
+            if (ViewModel.AutoZoom)
+                return;
+            imageViewer.ResetZoom();
         }
 
         #endregion
