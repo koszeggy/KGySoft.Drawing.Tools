@@ -52,6 +52,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         #region Static Fields
 
         private static readonly PixelFormat[] convertedFormats = { PixelFormat.Format16bppGrayScale, PixelFormat.Format48bppRgb, PixelFormat.Format64bppArgb, PixelFormat.Format64bppPArgb };
+        private static readonly Size referenceScrollSize = new Size(32, 32);
 
         #endregion
 
@@ -59,14 +60,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         private Image image;
         private Image previewImage;
-        private Rectangle destRectangle;
-        private Rectangle sourceRectangle;
+        private Rectangle targetRectangle;
+        private Rectangle clientRectangle;
         private bool antiAliasing;
         private bool autoZoom;
         private float zoom = 1;
         private Size scrollbarSize;
         private Size imageSize;
         private bool isMetafile;
+        private bool sbHorizontalVisible;
+        private bool sbVerticalVisible;
         private int scrollFractionVertical;
         private int scrollFractionHorizontal;
 
@@ -103,7 +106,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         zoom = 1f;
                 }
 
-                Invalidate(InvalidateFlags.Sizes | (isMetafile ? InvalidateFlags.PreviewImage : InvalidateFlags.None));
+                Invalidate(InvalidateFlags.Sizes | (IsMetafilePreviewNeeded ? InvalidateFlags.PreviewImage : InvalidateFlags.None));
             }
         }
 
@@ -139,7 +142,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Private Properties
 
-        private bool IsMetafilePreviewNeeded => isMetafile && (!autoZoom || antiAliasing);
+        private bool IsMetafilePreviewNeeded => isMetafile && antiAliasing;
 
         #endregion
 
@@ -190,7 +193,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         protected override void OnSizeChanged(EventArgs e)
         {
             base.OnSizeChanged(e);
-            Invalidate(InvalidateFlags.Sizes | (IsMetafilePreviewNeeded ? InvalidateFlags.PreviewImage : InvalidateFlags.None));
+            Invalidate(InvalidateFlags.Sizes | (IsMetafilePreviewNeeded && autoZoom ? InvalidateFlags.PreviewImage : InvalidateFlags.None));
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -199,21 +202,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (image == null || e.ClipRectangle.Width <= 0 || e.ClipRectangle.Height <= 0)
                 return;
 
-            if (destRectangle.IsEmpty)
+            if (targetRectangle.IsEmpty)
                 AdjustSizes();
-            if (!destRectangle.IsEmpty)
+            if (!targetRectangle.IsEmpty)
                 PaintImage(e.Graphics);
-
-            //if (previewImage == null)
-            //{
-            //    GeneratePreview();
-            //    if (previewRectangle.IsEmpty)
-            //        return;
-            //}
-
-            //e.Graphics.DrawImage(previewImage, previewRectangle);
-
-
         }
 
         protected override void OnMouseDown(MouseEventArgs e)
@@ -286,22 +278,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             image = value;
             isMetafile = image is Metafile;
             imageSize = image?.Size ?? default;
-            if (value != null)
-            {
-                sbHorizontal.Maximum = value.Width - 1;
-                sbVertical.Maximum = value.Height - 1;
-            }
         }
 
         private void VerticalScroll(int delta)
         {
-            // When scrolling by mouse, delta is always +-120 so this will be 1 change on the scrollbar.
+            // When scrolling by mouse, delta is always +-120 so this will be a small change on the scrollbar.
             // But we collect the fractional changes caused by the touchpad scrolling so it will not be lost either.
-            int totalDelta = scrollFractionVertical + delta;
+            int totalDelta = scrollFractionVertical + delta * sbVertical.SmallChange;
             scrollFractionVertical = totalDelta % SystemInformation.MouseWheelScrollDelta;
             int newValue = sbVertical.Value - totalDelta / SystemInformation.MouseWheelScrollDelta;
-            if (newValue < 0)
-                newValue = 0;
+            if (newValue < sbVertical.Minimum)
+                newValue = sbVertical.Minimum;
             else if (newValue > sbVertical.Maximum - sbVertical.LargeChange + 1)
                 newValue = sbVertical.Maximum - sbVertical.LargeChange + 1;
 
@@ -310,13 +297,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         private void HorizontalScroll(int delta)
         {
-            // When scrolling by mouse, delta is always +-120 so this will be 1 change on the scrollbar.
+            // When scrolling by mouse, delta is always +-120 so this will be a small change on the scrollbar.
             // But we collect the fractional changes caused by the touchpad scrolling so it will not be lost either.
-            int totalDelta = scrollFractionHorizontal + delta;
+            int totalDelta = scrollFractionHorizontal + delta * sbVertical.SmallChange;
             scrollFractionHorizontal = totalDelta % SystemInformation.MouseWheelScrollDelta;
             int newValue = sbHorizontal.Value - totalDelta / SystemInformation.MouseWheelScrollDelta;
-            if (newValue < 0)
-                newValue = 0;
+            if (newValue < sbHorizontal.Minimum)
+                newValue = sbHorizontal.Minimum;
             else if (newValue > sbHorizontal.Maximum - sbHorizontal.LargeChange + 1)
                 newValue = sbHorizontal.Maximum - sbHorizontal.LargeChange + 1;
 
@@ -326,7 +313,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         private void Invalidate(InvalidateFlags flags)
         {
             if ((flags & InvalidateFlags.Sizes) != InvalidateFlags.None)
-                destRectangle = default;
+                targetRectangle = default;
             if ((flags & InvalidateFlags.PreviewImage) != InvalidateFlags.None)
             {
                 if (image != previewImage)
@@ -342,11 +329,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             Size clientSize = ClientSize;
             if (clientSize.Width < 1 || clientSize.Height < 1)
             {
-                destRectangle = Rectangle.Empty;
+                targetRectangle = Rectangle.Empty;
                 return;
             }
 
-            Point sourceLocation = sourceRectangle.Location;
             Point targetLocation;
             Size scaledSize;
             if (autoZoom)
@@ -356,145 +342,96 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 targetLocation = new Point(Math.Max(0, (clientSize.Width >> 1) - (scaledSize.Width >> 1)),
                     Math.Max(0, (clientSize.Height >> 1) - (scaledSize.Height >> 1)));
 
-                sourceRectangle = new Rectangle(Point.Empty, imageSize);
-                destRectangle = new Rectangle(targetLocation, scaledSize);
-                sbHorizontal.Visible = sbVertical.Visible = false;
+                targetRectangle = new Rectangle(targetLocation, scaledSize);
+                clientRectangle = new Rectangle(Point.Empty, clientSize);
+                sbHorizontal.Visible = sbVertical.Visible = sbHorizontalVisible = sbVerticalVisible = false;
                 return;
             }
 
             scaledSize = imageSize.Scale(zoom);
 
             // scrollbars visibility
-            bool sbHorizontalVisible = scaledSize.Width > clientSize.Width
-                    || scaledSize.Width > clientSize.Width - scrollbarSize.Width && scaledSize.Height > clientSize.Height - scrollbarSize.Height;
-            bool sbVerticalVisible = scaledSize.Height > clientSize.Height
-                    || scaledSize.Height > clientSize.Width - scrollbarSize.Width && scaledSize.Height > clientSize.Height - scrollbarSize.Height;
+            sbHorizontalVisible = scaledSize.Width > clientSize.Width
+                || scaledSize.Width > clientSize.Width - scrollbarSize.Width && scaledSize.Height > clientSize.Height - scrollbarSize.Height;
+            sbVerticalVisible = scaledSize.Height > clientSize.Height
+                || scaledSize.Height > clientSize.Width - scrollbarSize.Width && scaledSize.Height > clientSize.Height - scrollbarSize.Height;
 
             if (sbHorizontalVisible)
                 clientSize.Height -= scrollbarSize.Height;
             if (sbVerticalVisible)
                 clientSize.Width -= scrollbarSize.Width;
-
-            // TODO: del
-            //float ratio = Math.Min((float)scaledSize.Width / sourceSize.Width, (float)scaledSize.Height / sourceSize.Height);
-            //Size targetSize = new Size((int)(sourceSize.Width * ratio), (int)(sourceSize.Height * ratio));
-            targetLocation = new Point(Math.Max(0, (clientSize.Width >> 1) - (scaledSize.Width >> 1)),
-                Math.Max(0, (clientSize.Height >> 1) - (scaledSize.Height >> 1)));
-
-            Size sourceSize = imageSize;
-            Size targetSize = scaledSize;
-
-            // no scrollbars
-            if (!sbHorizontalVisible && !sbVerticalVisible)
+            if (clientSize.Width < 1 || clientSize.Height < 1)
             {
-                // the whole source is visible
-                sourceLocation = Point.Empty;
+                targetRectangle = Rectangle.Empty;
+                return;
             }
-            else
+
+            targetLocation = new Point((clientSize.Width >> 1) - (scaledSize.Width >> 1),
+                (clientSize.Height >> 1) - (scaledSize.Height >> 1));
+
+            targetRectangle = new Rectangle(targetLocation, scaledSize);
+            clientRectangle = new Rectangle(Point.Empty, clientSize);
+
+            // both scrollbars
+            if (sbHorizontalVisible && sbVerticalVisible)
             {
-                // both scrollbars
-                if (sbHorizontalVisible && sbVerticalVisible)
-                {
-                    sbHorizontal.Dock = sbVertical.Dock = DockStyle.None;
-                    sbHorizontal.Width = clientSize.Width;
-                    sbHorizontal.Top = clientSize.Height;
-                    sbVertical.Height = clientSize.Height;
-                    sbVertical.Left = clientSize.Width;
-
-                    targetSize.Width = Math.Min(targetSize.Width, clientSize.Width);
-                    targetSize.Height = Math.Min(targetSize.Height, clientSize.Height);
-
-                    // the whole target is filled except scrollbars area
-                    targetLocation = Point.Empty;
-                }
-                // horizontal scrollbar
-                else if (sbHorizontalVisible)
-                {
-                    sbHorizontal.Dock = DockStyle.Bottom;
-                    targetSize.Width = clientSize.Width;
-
-                    // vertically the whole source is visible
-                    sourceLocation.Y = 0;
-                }
-                // vertical scrollbar
-                else
-                {
-                    sbVertical.Dock = DockStyle.Right;
-                    targetSize.Height = clientSize.Height;
-
-                    // horizontally the whole source is visible
-                    sourceLocation.X = 0;
-                }
-
-                sourceSize = targetSize.Scale(1 / zoom);
+                sbHorizontal.Dock = sbVertical.Dock = DockStyle.None;
+                sbHorizontal.Width = clientSize.Width;
+                sbHorizontal.Top = clientSize.Height;
+                sbVertical.Height = clientSize.Height;
+                sbVertical.Left = clientSize.Width;
+            }
+            // horizontal scrollbar
+            else if (sbHorizontalVisible)
+            {
+                sbHorizontal.Dock = DockStyle.Bottom;
+            }
+            // vertical scrollbar
+            else if (sbVerticalVisible)
+            {
+                sbVertical.Dock = DockStyle.Right;
             }
 
             // adjust scrollbar values
             if (sbHorizontalVisible)
             {
-                sbHorizontal.LargeChange = Math.Max(1, sourceSize.Width);
-                sourceLocation.X = Math.Min(imageSize.Width - sourceSize.Width, sbHorizontal.Value);
-                sbHorizontal.Value = sourceLocation.X;
+                sbHorizontal.Minimum = targetRectangle.X;
+                sbHorizontal.Maximum = targetRectangle.Right;
+                sbHorizontal.LargeChange = clientSize.Width;
+                sbHorizontal.SmallChange = this.ScaleSize(referenceScrollSize).Width;
+                sbHorizontal.Value = Math.Min(sbHorizontal.Value, sbHorizontal.Maximum - sbHorizontal.LargeChange);
             }
 
             if (sbVerticalVisible)
             {
-                sbVertical.LargeChange = Math.Max(1, sourceSize.Height);
-                sourceLocation.Y = Math.Min(imageSize.Height - sourceSize.Height, sbVertical.Value);
-                sbVertical.Value = sourceLocation.Y;
+                sbVertical.Minimum = targetRectangle.Y;
+                sbVertical.Maximum = targetRectangle.Bottom;
+                sbVertical.LargeChange = clientSize.Height;
+                sbVertical.SmallChange = this.ScaleSize(referenceScrollSize).Height;
+                sbVertical.Value = Math.Min(sbVertical.Value, sbVertical.Maximum - sbVertical.LargeChange);
             }
 
             sbHorizontal.Visible = sbHorizontalVisible;
             sbVertical.Visible = sbVerticalVisible;
 
-            if (targetSize.Width <= 0 || targetSize.Height <= 0)
-            {
-                destRectangle = Rectangle.Empty;
-                return;
-            }
-
-            sourceRectangle = new Rectangle(sourceLocation, sourceSize);
-            destRectangle = new Rectangle(targetLocation, targetSize);
+            clientRectangle = new Rectangle(Point.Empty, clientSize);
+            targetRectangle = new Rectangle(targetLocation, scaledSize);
         }
 
         private void PaintImage(Graphics g)
         {
-            // 2. From the clone of the original: needs one clone
             if (previewImage == null)
                 GeneratePreview();
+            g.IntersectClip(clientRectangle);
+            Rectangle dest = targetRectangle;
+            if (sbHorizontalVisible)
+                dest.X -= sbHorizontal.Value;
+            if (sbVerticalVisible)
+                dest.Y -= sbVertical.Value;
 
             g.InterpolationMode = antiAliasing ? InterpolationMode.HighQualityBicubic : InterpolationMode.NearestNeighbor;
             g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-            if (sourceRectangle.Size == imageSize)
-                g.DrawImage(previewImage, destRectangle);
-            else if (IsMetafilePreviewNeeded)
-                g.DrawImage(previewImage, destRectangle, new RectangleF(sourceRectangle.X * zoom, sourceRectangle.Y * zoom, sourceRectangle.Width * zoom, sourceRectangle.Height * zoom), GraphicsUnit.Pixel);
-            else
-                g.DrawImage(previewImage, destRectangle, sourceRectangle, GraphicsUnit.Pixel);
-
-            // TODO: del
-            //// 1. Directly from original image: fails for icons (no partial copy is possible: icon get stretched) - can be kept when the whole source is shown
-            //g.DrawImage(image, destRectangle, sourceRectangle, GraphicsUnit.Pixel);
-
-            //// 2. From the clone of the original: needs one clone
-            //if (previewImage == null)
-            //    previewImage = new Bitmap(image);
-            //g.DrawImage(previewImage, destRectangle, sourceRectangle, GraphicsUnit.Pixel);
-
-            //// 3. Generating only the shown part: works but a new image is generated even when just scrolling
-            //// Needs InvalidatePreview on scrolling, zooming
-            //if (previewImage == null)
-            //{
-            //    previewImage = new Bitmap(sourceRectangle.Width, sourceRectangle.Height, PixelFormat.Format32bppPArgb);
-            //    image.DrawInto(previewImage, sourceRectangle, Point.Empty);
-            //}
-            //g.DrawImage(previewImage, destRectangle, new Rectangle(Point.Empty, sourceRectangle.Size), GraphicsUnit.Pixel);
-
-            //// 4. Generate actual zoomed image: crashes when large image is zoomed
-            //// Needs InvalidatePreview on zooming
-            //if (previewImage == null)
-            //    previewImage = new Bitmap(image, image.Size.Scale(zoom));
-            //g.DrawImage(previewImage, destRectangle, new RectangleF(sourceRectangle.X * zoom, sourceRectangle.Y * zoom, sourceRectangle.Width * zoom, sourceRectangle.Height * zoom), GraphicsUnit.Pixel);
+            g.DrawImage(previewImage, dest);
         }
 
         private void GeneratePreview()
@@ -502,10 +439,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (image == null)
                 return;
 
-            // For icons Graphics.DrawImage does not work with partial source
-            if (image.RawFormat.Guid == ImageFormat.Icon.Guid
-                // Converting non supported or too memory consuming and slow pixel formats
-                || image.PixelFormat.In(convertedFormats))
+            // Converting non supported or too memory consuming and slow pixel formats
+            if (image.PixelFormat.In(convertedFormats))
             {
                 previewImage = image.ConvertPixelFormat(PixelFormat.Format32bppPArgb);
                 return;
@@ -514,7 +449,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (IsMetafilePreviewNeeded)
             {
                 // here we generate a scaled preview
-                previewImage = ((Metafile)image).ToBitmap(autoZoom ? destRectangle.Size : imageSize.Scale(zoom), antiAliasing);
+                previewImage = ((Metafile)image).ToBitmap(targetRectangle.Size, antiAliasing);
                 return;
             }
 
@@ -534,12 +469,18 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             Size screenSize = Screen.GetBounds(this).Size;
 
-            // in case of a metafile the maximum size is the larger value of screen size (which can be larger than client size) and image size but image size is limited to 10,000
-            if (isMetafile && (scaledSize.Width > Math.Max(screenSize.Width, Math.Min(imageSize.Width, 10_000)) || scaledSize.Height > Math.Max(screenSize.Height, Math.Min(imageSize.Height, 10_000)))
-                // inc case of a bitmap the default maximum size is image size * 10 but it can be increased to screen size
-                || !isMetafile && (scaledSize.Width > Math.Max(screenSize.Width, imageSize.Width * 10) || scaledSize.Height > Math.Max(screenSize.Height, imageSize.Height * 10)))
+            if (isMetafile)
             {
-                return;
+                // in case of a metafile the maximum size is the larger value of screen size (which can be larger than client size) and min(image size; 10,000)
+                if (scaledSize.Width > Math.Max(screenSize.Width, Math.Min(imageSize.Width, 10_000)) || scaledSize.Height > Math.Max(screenSize.Height, Math.Min(imageSize.Height, 10_000)))
+                    return;
+            }
+            else
+            {
+                // in case of a bitmap the default maximum size is image size * 10 (adjusted with DPI) but it can be increased to screen size
+                Size maxZoom = this.ScaleSize(new Size(10, 10));
+                if (scaledSize.Width > Math.Max(screenSize.Width, imageSize.Width * maxZoom.Width) || scaledSize.Height > Math.Max(screenSize.Height, imageSize.Height * maxZoom.Height))
+                    return;
             }
 
             SetZoom(newValue);
@@ -559,13 +500,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         private void sbHorizontal_ValueChanged(object sender, EventArgs e)
         {
-            sourceRectangle.X = sbHorizontal.Value;
             Invalidate();
         }
 
         private void sbVertical_ValueChanged(object sender, EventArgs e)
         {
-            sourceRectangle.Y = sbVertical.Value;
             Invalidate();
         }
 
