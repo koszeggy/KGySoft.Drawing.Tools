@@ -227,20 +227,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             }
         }
 
-        protected override void WndProc(ref Message m)
-        {
-            base.WndProc(ref m);
-            if (m.HWnd != Handle)
-                return;
-
-            switch (m.Msg)
-            {
-                case Constants.WM_MOUSEHWHEEL:
-                    HorizontalScroll(-(short)((m.WParam.ToInt64() >> 16) & 0xffff));
-                    m.Result = new IntPtr(1);
-                    break;
-            }
-        }
 
         protected override void Dispose(bool disposing)
         {

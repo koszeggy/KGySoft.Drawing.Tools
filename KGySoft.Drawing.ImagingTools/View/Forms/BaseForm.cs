@@ -63,7 +63,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Properties
 
-        private BitVector32 FormState => (BitVector32)(formStateField ?? (formStateField = FieldAccessor.GetAccessor(typeof(Form).GetField("formState", BindingFlags.Instance | BindingFlags.NonPublic)))).Get(this);
+        private BitVector32 FormState => (BitVector32)(formStateField ??= FieldAccessor.GetAccessor(typeof(Form).GetField("formState", BindingFlags.Instance | BindingFlags.NonPublic))).Get(this);
 
         #endregion
 
@@ -100,6 +100,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             }
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            if (disposing)
+                Events.Dispose();
+        }
+
         #endregion
 
         #region Private Methods
@@ -113,9 +120,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             if (FormState[formStateRenderSizeGrip] != 0)
             {
                 // Here is the bug in original code: LParam contains two shorts. Without the cast negative values are positive ints
-                int x = (short)(m.LParam.ToInt32() & 0xffff);
-                int y = (short)((m.LParam.ToInt32() >> 16) & 0xffff);
-                Point pt = new Point(x, y);
+                Point pt = new Point(m.LParam.GetSignedLoWord(), m.LParam.GetSignedHiWord());
                 NativeMethods.ScreenToClient(Handle, ref pt);
                 Size clientSize = ClientSize;
                 if (pt.X >= clientSize.Width - 16 && pt.Y >= clientSize.Height - 16 && clientSize.Height >= 16)

@@ -18,8 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
@@ -28,7 +26,7 @@ using System.Windows.Forms;
 
 namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
-    internal sealed partial class PalettePanel : Panel
+    internal sealed partial class PalettePanel : BaseControl
     {
         #region Constants
 
@@ -61,7 +59,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Events
 
-        internal event EventHandler SelectedColorChanged;
+        internal event EventHandler SelectedColorChanged
+        {
+            add => Events.AddHandler(nameof(SelectedColorChanged), value);
+            remove => Events.RemoveHandler(nameof(SelectedColorChanged), value);
+        }
 
         #endregion
 
@@ -398,7 +400,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             => selectedColorIndex >= firstVisibleColor
                 && selectedColorIndex < firstVisibleColor + (visibleRowCount << 4);
 
-        private void OnSelectedColorChanged(EventArgs e) => SelectedColorChanged?.Invoke(this, e);
+        private void OnSelectedColorChanged(EventArgs e) => Events.GetHandler<EventHandler>(nameof(SelectedColorChanged))?.Invoke(this, e);
 
         #endregion
 

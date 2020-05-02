@@ -95,6 +95,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal string InfoText { get => Get<string>(); set => Set(value); }
         internal string Notification { get => Get<string>(); set => Set(value); }
         internal bool AutoZoom { get => Get<bool>(); set => Set(value); }
+        internal float Zoom { get => Get(1f); set => Set(value); }
         internal bool AntiAliasing { get => Get<bool>(); set => Set(value); }
         internal bool IsCompoundView { get => Get(true); set => Set(value); }
         internal bool IsAutoPlaying { get => Get<bool>(); set => Set(value); }
@@ -767,6 +768,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             {
                 AutoZoom = false;
                 ApplyViewSizeCallback?.Invoke(new Size(Math.Max(desiredSize.Width, viewSize.Width), Math.Max(desiredSize.Height, viewSize.Height)));
+                Zoom = 1f;
             }
             else
                 AutoZoom = true;

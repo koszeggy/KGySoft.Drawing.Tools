@@ -156,6 +156,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.AutoZoom), nameof(btnAutoZoom.Checked), btnAutoZoom);
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.AutoZoom), nameof(imageViewer.AutoZoom), imageViewer);
 
+            // VM.Zoom <-> imageViewer.Zoom
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Zoom), nameof(imageViewer.Zoom), imageViewer);
+            CommandBindings.AddPropertyBinding(imageViewer, nameof(imageViewer.Zoom), nameof(ViewModel.Zoom), ViewModel);
+
             // VM.AntiAliasing -> btnAntiAlias.Checked, imageViewer.AntiAliasing
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.AntiAliasing), nameof(btnAntiAlias.Checked), btnAntiAlias);
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.AntiAliasing), nameof(imageViewer.AntiAliasing), imageViewer);
@@ -255,10 +259,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 Top = workingArea.Bottom - Height;
             if (Right > workingArea.Right)
                 Left = workingArea.Right - Width;
-
-            if (ViewModel.AutoZoom)
-                return;
-            imageViewer.ResetZoom();
         }
 
         #endregion
