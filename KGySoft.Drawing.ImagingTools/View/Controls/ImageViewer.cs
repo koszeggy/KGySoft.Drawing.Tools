@@ -75,6 +75,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #endregion
 
+        #region Events
+
+        internal event EventHandler ZoomChanged
+        {
+            add => Events.AddHandler(nameof(ZoomChanged), value);
+            remove => Events.RemoveHandler(nameof(ZoomChanged), value);
+        }
+
+        #endregion
+
         #endregion
 
         #region Properties
@@ -105,6 +115,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
                 Invalidate(InvalidateFlags.Sizes | (IsMetafilePreviewNeeded ? InvalidateFlags.PreviewImage : InvalidateFlags.None));
             }
+        }
+
+        internal float Zoom
+        {
+            get => zoom;
+            set => SetZoom(value);
         }
 
         internal bool AntiAliasing
@@ -164,27 +180,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Methods
 
-        #region Internal Methods
-
-        internal void ResetZoom()
-        {
-            if (autoZoom)
-                return;
-
-            SetZoom(1f);
-            if (!isMetafile)
-                return;
-
-            // metafile: keeping 1x zoom only if that is smaller than client size; otherwise auto adjusting for view size
-            autoZoom = true;
-            AdjustSizes();
-            autoZoom = false;
-            if (zoom > 1f)
-                SetZoom(1f);
-        }
-
-        #endregion
-
         #region Protected Methods
 
         protected override void OnSizeChanged(EventArgs e)
@@ -222,7 +217,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     if (autoZoom)
                         return;
                     float delta = (float)e.Delta / SystemInformation.MouseWheelScrollDelta / 5;
-                    Zoom(delta);
+                    ApplyZoomChange(delta);
                     break;
 
                 // vertical scroll
@@ -263,6 +258,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             }
 
             base.Dispose(disposing);
+            if (disposing)
+                Events.Dispose();
         }
 
         #endregion
@@ -427,7 +424,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 dest.Y -= sbVertical.Value;
 
             g.InterpolationMode = antiAliasing ? InterpolationMode.HighQualityBicubic : InterpolationMode.NearestNeighbor;
-            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            //g.PixelOffsetMode = PixelOffsetMode.HighQuality;
             g.DrawImage(previewImage, dest);
         }
 
@@ -453,7 +450,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             previewImage = image;
         }
 
-        private void Zoom(float delta)
+        private void ApplyZoomChange(float delta)
         {
             if (delta == 0f)
                 return;
@@ -496,7 +493,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             zoom = value;
             Invalidate(InvalidateFlags.Sizes | (IsMetafilePreviewNeeded ? InvalidateFlags.PreviewImage : InvalidateFlags.None));
+            OnZoomChanged(EventArgs.Empty);
         }
+
+        private void OnZoomChanged(EventArgs e) => Events.GetHandler<EventHandler>(nameof(ZoomChanged))?.Invoke(this, e);
 
         #endregion
 
