@@ -125,9 +125,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void InitViewModelDependencies()
         {
-            ViewModel.ViewImagePreviewSize = imageViewer.ClientSize;
             ViewModel.GetScreenRectangleCallback = GetScreenRectangle;
             ViewModel.GetViewSizeCallback = () => Size;
+            ViewModel.GetImagePreviewSizeCallback = () => imageViewer.ClientSize;
             ViewModel.SelectFileToOpenCallback = SelectFileToOpen;
             ViewModel.SelectFileToSaveCallback = SelectFileToSave;
             ViewModel.ApplyViewSizeCallback = ApplySize;
@@ -210,6 +210,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 .AddSource(miShowPalette, nameof(miShowPalette.Click));
             CommandBindings.Add(ViewModel.ManageInstallationsCommand)
                 .AddSource(btnConfiguration, nameof(btnConfiguration.Click));
+            CommandBindings.Add(ViewModel.ViewImagePreviewSizeChangedCommand)
+                .AddSource(imageViewer, nameof(imageViewer.SizeChanged));
 
             // View commands
             CommandBindings.Add(OnResizeCommand)
@@ -279,11 +281,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 imageViewer.BackColor = Color.Black;
         }
 
-        private void OnPreviewImageResizedCommand()
-        {
-            AdjustSize();
-            ViewModel.ViewImagePreviewSize = imageViewer.ClientSize;
-        }
+        private void OnPreviewImageResizedCommand() => AdjustSize();
 
         private void OnResizeCommand() => AdjustSize();
 

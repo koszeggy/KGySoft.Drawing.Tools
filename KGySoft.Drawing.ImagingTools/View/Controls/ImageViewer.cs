@@ -332,9 +332,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             // scrollbars visibility
             sbHorizontalVisible = scaledSize.Width > clientSize.Width
-                || scaledSize.Width > clientSize.Width - scrollbarSize.Width && scaledSize.Height > clientSize.Height - scrollbarSize.Height;
+                || scaledSize.Width > clientSize.Width - scrollbarSize.Width && scaledSize.Height > clientSize.Height;
             sbVerticalVisible = scaledSize.Height > clientSize.Height
-                || scaledSize.Height > clientSize.Width - scrollbarSize.Width && scaledSize.Height > clientSize.Height - scrollbarSize.Height;
+                || scaledSize.Height > clientSize.Height - scrollbarSize.Height && scaledSize.Width > clientSize.Width;
 
             if (sbHorizontalVisible)
                 clientSize.Height -= scrollbarSize.Height;

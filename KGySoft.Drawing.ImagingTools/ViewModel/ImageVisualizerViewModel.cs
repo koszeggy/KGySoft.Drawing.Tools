@@ -99,7 +99,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal bool AntiAliasing { get => Get<bool>(); set => Set(value); }
         internal bool IsCompoundView { get => Get(true); set => Set(value); }
         internal bool IsAutoPlaying { get => Get<bool>(); set => Set(value); }
-        internal Size ViewImagePreviewSize { get => Get<Size>(); set => Set(value); }
         internal string OpenFileFilter { get => Get<string>(); set => Set(value); }
         internal string SaveFileFilter { get => Get<string>(); set => Set(value); }
         internal int SaveFileFilterIndex { get => Get<int>(); set => Set(value); }
@@ -107,6 +106,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal Func<Rectangle> GetScreenRectangleCallback { get => Get<Func<Rectangle>>(); set => Set(value); }
         internal Func<Size> GetViewSizeCallback { get => Get<Func<Size>>(); set => Set(value); }
+        internal Func<Size> GetImagePreviewSizeCallback { get => Get<Func<Size>>(); set => Set(value); }
         internal Action<Size> ApplyViewSizeCallback { get => Get<Action<Size>>(); set => Set(value); }
         internal Func<string> SelectFileToOpenCallback { get => Get<Func<string>>(); set => Set(value); }
         internal Func<string> SelectFileToSaveCallback { get => Get<Func<string>>(); set => Set(value); }
@@ -126,6 +126,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal ICommand SetAutoZoomCommand => Get(() => new SimpleCommand<bool>(OnSetAutoZoomCommand));
         internal ICommand SetAntiAliasingCommand => Get(() => new SimpleCommand<bool>(OnSetAntiAliasingCommand));
+        internal ICommand ViewImagePreviewSizeChangedCommand => Get(() => new SimpleCommand(OnViewImagePreviewSizeChangedCommand));
         internal ICommand OpenFileCommand => Get(() => new SimpleCommand(OnOpenFileCommand));
         internal ICommand SaveFileCommand => Get(() => new SimpleCommand(OnSaveFileCommand));
         internal ICommand ClearCommand => Get(() => new SimpleCommand(OnClearCommand));
@@ -218,9 +219,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 case nameof(ReadOnly):
                     ReadOnlyChanged();
                     return;
-                case nameof(ViewImagePreviewSize):
-                    OnViewImagePreviewSizeChanged();
-                    break;
             }
         }
 
@@ -570,19 +568,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             ImageChanged();
         }
 
-        private void OnViewImagePreviewSizeChanged()
-        {
-            if (!imageInfo.IsMultiRes || currentFrame != -1)
-                return;
-            UpdateMultiResImage();
-            UpdateInfo();
-        }
-
         private void UpdateMultiResImage()
         {
             Debug.Assert(imageInfo.IsMultiRes);
             Size origSize = currentResolution;
-            Size clientSize = ViewImagePreviewSize;
+            Size clientSize = GetImagePreviewSizeCallback?.Invoke() ?? default;
             int desiredSize = Math.Min(clientSize.Width, clientSize.Height);
             if (desiredSize < 1 && !origSize.IsEmpty)
                 return;
@@ -762,7 +752,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             Rectangle workingArea = GetScreenRectangleCallback?.Invoke() ?? default;
             Size screenSize = workingArea.Size;
             Size viewSize = GetViewSizeCallback?.Invoke() ?? default;
-            Size padding = viewSize - ViewImagePreviewSize;
+            Size padding = viewSize - GetImagePreviewSizeCallback?.Invoke() ?? default;
             Size desiredSize = imageInfo.Size + padding;
             if (desiredSize.Width <= screenSize.Width && desiredSize.Height <= screenSize.Height)
             {
@@ -812,6 +802,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnSetAutoZoomCommand(bool newValue) => AutoZoom = newValue;
         private void OnSetAntiAliasingCommand(bool newValue) => AntiAliasing = newValue;
+
+        private void OnViewImagePreviewSizeChangedCommand()
+        {
+            if (!imageInfo.IsMultiRes || currentFrame != -1)
+                return;
+            UpdateMultiResImage();
+            UpdateInfo();
+        }
 
         private void OnOpenFileCommand()
         {
