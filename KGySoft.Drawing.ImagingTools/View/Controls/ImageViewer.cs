@@ -100,11 +100,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 if (autoZoom == value)
                     return;
                 autoZoom = value;
-                if (!autoZoom)
-                {
-                    if (!isMetafile || zoom > 1f)
-                        zoom = 1f;
-                }
+                if (!autoZoom && !isMetafile)
+                    zoom = 1f;
 
                 Invalidate(InvalidateFlags.Sizes | (IsMetafilePreviewNeeded ? InvalidateFlags.PreviewImage : InvalidateFlags.None));
             }
@@ -461,36 +458,43 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (delta == 0f)
                 return;
             delta += 1;
-            float newValue = zoom * delta;
+            SetZoom(zoom * delta);
+        }
 
-            Size scaledSize = imageSize.Scale(newValue);
-            if (scaledSize.Width < 1 || scaledSize.Height < 1)
+        private void SetZoom(float value)
+        {
+            if (zoom == value)
                 return;
 
+            float minZoom = 1f / Math.Min(imageSize.Width, imageSize.Height);
+            if (value < minZoom)
+                value = minZoom;
+
             Size screenSize = Screen.GetBounds(this).Size;
+            float maxZoom;
 
             if (isMetafile)
             {
-                // in case of a metafile the maximum size is the larger value of screen size (which can be larger than client size) and min(image size; 10,000)
-                if (scaledSize.Width > Math.Max(screenSize.Width, Math.Min(imageSize.Width, 10_000)) || scaledSize.Height > Math.Max(screenSize.Height, Math.Min(imageSize.Height, 10_000)))
-                    return;
+                // For metafiles the max zoom is between 1x and 2x screen size. 2x screen size is allowed if that is below 10,000 pixels
+                const int maxMetafileSize = 10_000;
+                maxZoom = Math.Max(
+                        Math.Min(Math.Max(screenSize.Width, maxMetafileSize), screenSize.Width << 1),
+                        Math.Min(Math.Max(screenSize.Height, maxMetafileSize), screenSize.Height << 1))
+                    / (float)Math.Max(imageSize.Width, imageSize.Height);
             }
             else
             {
-                // in case of a bitmap the default maximum size is image size * 10 (adjusted with DPI) but it can be increased to screen size
-                Size maxZoom = this.ScaleSize(new Size(10, 10));
-                if (scaledSize.Width > Math.Max(screenSize.Width, imageSize.Width * maxZoom.Width) || scaledSize.Height > Math.Max(screenSize.Height, imageSize.Height * maxZoom.Height))
-                    return;
+                // For bitmaps the default maximum size is image size * 10 (adjusted with DPI) but at least screen size x 2 
+                PointF scale = this.GetScale();
+                maxZoom = Math.Max(
+                    Math.Max(scale.X * 10, (screenSize.Width << 1) / (float)imageSize.Width),
+                    Math.Max(scale.Y * 10, (screenSize.Height << 1) / (float)imageSize.Height));
             }
 
-            SetZoom(newValue);
-        }
+            if (value > maxZoom)
+                value = maxZoom;
 
-        private void SetZoom(float newValue)
-        {
-            if (zoom == newValue)
-                return;
-            zoom = newValue;
+            zoom = value;
             Invalidate(InvalidateFlags.Sizes | (IsMetafilePreviewNeeded ? InvalidateFlags.PreviewImage : InvalidateFlags.None));
         }
 
