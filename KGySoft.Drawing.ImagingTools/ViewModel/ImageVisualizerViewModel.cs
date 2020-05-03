@@ -96,7 +96,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal string Notification { get => Get<string>(); set => Set(value); }
         internal bool AutoZoom { get => Get<bool>(); set => Set(value); }
         internal float Zoom { get => Get(1f); set => Set(value); }
-        internal bool AntiAliasing { get => Get<bool>(); set => Set(value); }
+        internal bool SmoothZooming { get => Get<bool>(); set => Set(value); }
         internal bool IsCompoundView { get => Get(true); set => Set(value); }
         internal bool IsAutoPlaying { get => Get<bool>(); set => Set(value); }
         internal string OpenFileFilter { get => Get<string>(); set => Set(value); }
@@ -801,7 +801,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Command Handlers
 
         private void OnSetAutoZoomCommand(bool newValue) => AutoZoom = newValue;
-        private void OnSetAntiAliasingCommand(bool newValue) => AntiAliasing = newValue;
+        private void OnSetAntiAliasingCommand(bool newValue) => SmoothZooming = newValue;
 
         private void OnViewImagePreviewSizeChangedCommand()
         {

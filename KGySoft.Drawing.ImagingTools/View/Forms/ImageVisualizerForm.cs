@@ -160,9 +160,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Zoom), nameof(imageViewer.Zoom), imageViewer);
             CommandBindings.AddPropertyBinding(imageViewer, nameof(imageViewer.Zoom), nameof(ViewModel.Zoom), ViewModel);
 
-            // VM.AntiAliasing -> btnAntiAlias.Checked, imageViewer.AntiAliasing
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.AntiAliasing), nameof(btnAntiAlias.Checked), btnAntiAlias);
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.AntiAliasing), nameof(imageViewer.AntiAliasing), imageViewer);
+            // VM.SmoothZooming -> btnAntiAlias.Checked, imageViewer.SmoothZooming
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SmoothZooming), nameof(btnAntiAlias.Checked), btnAntiAlias);
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SmoothZooming), nameof(imageViewer.SmoothZooming), imageViewer);
 
             // VM.IsCompoundView -> btnCompound.Checked
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsCompoundView), nameof(btnCompound.Checked), btnCompound);

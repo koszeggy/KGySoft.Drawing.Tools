@@ -32,7 +32,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
     /// <summary>
     /// Represents an image display control with zooming. Does not support implicit animation.
     /// </summary>
-    internal partial class ImageViewer : Control
+    internal partial class ImageViewer : BaseControl
     {
         #region Enumerations
 
@@ -41,8 +41,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         {
             None,
             Sizes = 1,
-            PreviewImage = 1 << 1,
-            All = Sizes | PreviewImage
+            DisplayImage = 1 << 1,
+            All = Sizes | DisplayImage
         }
 
         #endregion
@@ -59,10 +59,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         #region Instance Fields
 
         private Image image;
-        private Image previewImage;
+        private Image displayImage;
         private Rectangle targetRectangle;
         private Rectangle clientRectangle;
-        private bool antiAliasing;
+        private bool smoothZooming;
         private bool autoZoom;
         private float zoom = 1;
         private Size scrollbarSize;
@@ -113,7 +113,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 if (!autoZoom && !isMetafile)
                     zoom = 1f;
 
-                Invalidate(InvalidateFlags.Sizes | (IsMetafilePreviewNeeded ? InvalidateFlags.PreviewImage : InvalidateFlags.None));
+                Invalidate(InvalidateFlags.Sizes | (IsMetafilePreviewNeeded ? InvalidateFlags.DisplayImage : InvalidateFlags.None));
             }
         }
 
@@ -123,15 +123,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             set => SetZoom(value);
         }
 
-        internal bool AntiAliasing
+        internal bool SmoothZooming
         {
-            get => antiAliasing;
+            get => smoothZooming;
             set
             {
-                if (antiAliasing == value)
+                if (smoothZooming == value)
                     return;
-                antiAliasing = value;
-                Invalidate(isMetafile ? InvalidateFlags.PreviewImage : InvalidateFlags.None);
+                smoothZooming = value;
+                Invalidate(isMetafile ? InvalidateFlags.DisplayImage : InvalidateFlags.None);
             }
         }
 
@@ -155,7 +155,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Private Properties
 
-        private bool IsMetafilePreviewNeeded => isMetafile && antiAliasing;
+        private bool IsMetafilePreviewNeeded => isMetafile && smoothZooming;
 
         #endregion
 
@@ -185,7 +185,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         protected override void OnSizeChanged(EventArgs e)
         {
             base.OnSizeChanged(e);
-            Invalidate(InvalidateFlags.Sizes | (IsMetafilePreviewNeeded && autoZoom ? InvalidateFlags.PreviewImage : InvalidateFlags.None));
+            Invalidate(InvalidateFlags.Sizes | (IsMetafilePreviewNeeded && autoZoom ? InvalidateFlags.DisplayImage : InvalidateFlags.None));
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -209,7 +209,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         protected override void OnMouseWheel(MouseEventArgs e)
         {
             base.OnMouseWheel(e);
-
             switch (ModifierKeys)
             {
                 // zoom
@@ -227,6 +226,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             }
         }
 
+        protected override void OnMouseHWheel(HandledMouseEventArgs e)
+        {
+            base.OnMouseHWheel(e);
+
+            // horizontal scroll
+            if (ModifierKeys == Keys.None)
+                HorizontalScroll(-e.Delta);
+        }
 
         protected override void Dispose(bool disposing)
         {
@@ -239,8 +246,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (disposing)
             {
                 components?.Dispose();
-                if (image != previewImage)
-                    previewImage?.Dispose();
+                if (image != displayImage)
+                    displayImage?.Dispose();
             }
 
             base.Dispose(disposing);
@@ -294,11 +301,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         {
             if ((flags & InvalidateFlags.Sizes) != InvalidateFlags.None)
                 targetRectangle = default;
-            if ((flags & InvalidateFlags.PreviewImage) != InvalidateFlags.None)
+            if ((flags & InvalidateFlags.DisplayImage) != InvalidateFlags.None)
             {
-                if (image != previewImage)
-                    previewImage?.Dispose();
-                previewImage = null;
+                if (image != displayImage)
+                    displayImage?.Dispose();
+                displayImage = null;
             }
 
             Invalidate();
@@ -400,8 +407,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         private void PaintImage(Graphics g)
         {
-            if (previewImage == null)
-                GeneratePreview();
+            if (displayImage == null)
+                GenerateDisplayImage();
             g.IntersectClip(clientRectangle);
             Rectangle dest = targetRectangle;
             if (sbHorizontalVisible)
@@ -409,12 +416,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (sbVerticalVisible)
                 dest.Y -= sbVertical.Value;
 
-            g.InterpolationMode = antiAliasing ? InterpolationMode.HighQualityBicubic : InterpolationMode.NearestNeighbor;
+            g.InterpolationMode = smoothZooming ? InterpolationMode.HighQualityBicubic : InterpolationMode.NearestNeighbor;
             //g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-            g.DrawImage(previewImage, dest);
+            g.DrawImage(displayImage, dest);
         }
 
-        private void GeneratePreview()
+        private void GenerateDisplayImage()
         {
             if (image == null)
                 return;
@@ -422,18 +429,18 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             // Converting non supported or too memory consuming and slow pixel formats
             if (image.PixelFormat.In(convertedFormats))
             {
-                previewImage = image.ConvertPixelFormat(PixelFormat.Format32bppPArgb);
+                displayImage = image.ConvertPixelFormat(PixelFormat.Format32bppPArgb);
                 return;
             }
 
             if (IsMetafilePreviewNeeded)
             {
                 // here we generate a scaled preview
-                previewImage = ((Metafile)image).ToBitmap(targetRectangle.Size, antiAliasing);
+                displayImage = ((Metafile)image).ToBitmap(targetRectangle.Size, smoothZooming);
                 return;
             }
 
-            previewImage = image;
+            displayImage = image;
         }
 
         private void ApplyZoomChange(float delta)
@@ -478,7 +485,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 value = maxZoom;
 
             zoom = value;
-            Invalidate(InvalidateFlags.Sizes | (IsMetafilePreviewNeeded ? InvalidateFlags.PreviewImage : InvalidateFlags.None));
+            Invalidate(InvalidateFlags.Sizes | (IsMetafilePreviewNeeded ? InvalidateFlags.DisplayImage : InvalidateFlags.None));
             OnZoomChanged(EventArgs.Empty);
         }
 
