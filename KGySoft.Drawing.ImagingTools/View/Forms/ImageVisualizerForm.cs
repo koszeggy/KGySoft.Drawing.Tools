@@ -140,9 +140,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // VM.Notification -> lblNotification.Text
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Notification), nameof(Label.Text), lblNotification);
 
-            // VM.PreviewImage -> imageViewer.Image
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.PreviewImage), nameof(imageViewer.Image), imageViewer);
-
             // VM.PreviewImage != null -> btnSave.Enabled
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.PreviewImage), nameof(Button.Enabled), img => img != null, btnSave);
 
@@ -169,6 +166,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
             // VM.IsAutoPlaying -> timerPlayer.Enabled
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsAutoPlaying), nameof(timerPlayer.Enabled), timerPlayer);
+
+            // VM.PreviewImage -> imageViewer.Image
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.PreviewImage), nameof(imageViewer.Image), imageViewer);
 
             // VM.SetCompoundViewCommandState.Visible -> sepFrames.Visible, btnCompound.Visible, btnPrev.Visible, btnNext.Visible
             CommandBindings.AddPropertyBinding(ViewModel.SetCompoundViewCommandState, nameof(Visible), nameof(Visible),

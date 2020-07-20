@@ -17,12 +17,15 @@
 #region Usings
 
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Threading;
 using System.Windows.Forms;
 
 using KGySoft.CoreLibraries;
+using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.WinApi;
 
 #endregion
@@ -34,6 +37,125 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
     /// </summary>
     internal partial class ImageViewer : BaseControl
     {
+        private sealed class AsyncAntiAliasedMetafileGenerator : IDisposable
+        {
+            private sealed class GenerateTask
+            {
+                internal Metafile Source;
+                internal Image ReferenceImage;
+                internal Size Size;
+                internal volatile bool IsCanceled;
+            }
+
+            private readonly ImageViewer owner;
+            private GenerateTask runningTask;
+            private GenerateTask pendingTask;
+            private Metafile sourceClone;
+
+            internal AsyncAntiAliasedMetafileGenerator(ImageViewer owner) => this.owner = owner;
+
+            public void Dispose()
+            {
+                CancelPendingGenerate();
+                FreeReferenceClone();
+            }
+
+            internal void BeginGenerate()
+            {
+                CancelPendingGenerate();
+                Metafile metafile = owner.image as Metafile;
+                Debug.Assert(metafile != null && owner.IsSmoothMetafileNeeded, "Metafile expected");
+
+                // A clone must be created; otherwise, we might get an "object is used elsewhere" error from paint
+                if (sourceClone == null)
+                    sourceClone = (Metafile)metafile.Clone();
+                var newTask = new GenerateTask { Source = sourceClone, ReferenceImage = metafile, Size = owner.targetRectangle.Size };
+
+                lock (this) // it's fine, this is a private class
+                {
+                    if (runningTask == null)
+                    {
+                        runningTask = newTask;
+                        ThreadPool.QueueUserWorkItem(DoGenerate, newTask);
+                        return;
+                    }
+
+                    runningTask.IsCanceled = true;
+                    pendingTask = newTask;
+                }
+            }
+
+            private void CancelPendingGenerate()
+            {
+                lock (this) // it's fine, this is a private class
+                {
+                    if (runningTask == null)
+                        return;
+                    runningTask.IsCanceled = true;
+                    pendingTask = null;
+                }
+            }
+
+            /// <summary>
+            /// Generates the display image on a pool thread.
+            /// </summary>
+            private void DoGenerate(object state)
+            {
+                Debug.WriteLine($"Generating on thread #{Thread.CurrentThread.ManagedThreadId}");
+                var task = (GenerateTask)state;
+                do
+                {
+                    Bitmap result = task.IsCanceled ? null : task.Source.ToBitmap(task.Size, true, false);
+                    lock (this)
+                    {
+                        if (task.IsCanceled)
+                        {
+                            if (pendingTask == null)
+                            {
+                                Debug.WriteLine("Task canceled without continuation");
+                                runningTask = null;
+                                return;
+                            }
+
+                            Debug.WriteLine("Continuing with pending task");
+                            task = runningTask = pendingTask;
+                            pendingTask = null;
+                            continue;
+                        }
+
+                        if (task.ReferenceImage == owner.image && task.Size == owner.targetRectangle.Size)
+                        {
+                            Debug.WriteLine("Applying generated result");
+
+                            // not freeing the original image because it is always the original image here
+                            owner.displayImage = result;
+                            owner.Invalidate();
+                        }
+
+                        runningTask = null;
+                        return;
+                    }
+
+                } while (task != null);
+            }
+
+            internal void FreeReferenceClone()
+            {
+                sourceClone?.Dispose();
+                sourceClone = null;
+            }
+        }
+
+        private AsyncAntiAliasedMetafileGenerator AntiAliasedMetafileGenerator
+        {
+            get
+            {
+                if (antiAliasedMetafileGenerator == null)
+                    Interlocked.CompareExchange(ref antiAliasedMetafileGenerator, new AsyncAntiAliasedMetafileGenerator(this), null);
+                return antiAliasedMetafileGenerator;
+            }
+        }
+
         #region Enumerations
 
         [Flags]
@@ -59,7 +181,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         #region Instance Fields
 
         private Image image;
-        private Image displayImage;
+        private volatile Image displayImage;
         private Rectangle targetRectangle;
         private Rectangle clientRectangle;
         private bool smoothZooming;
@@ -72,6 +194,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         private bool sbVerticalVisible;
         private int scrollFractionVertical;
         private int scrollFractionHorizontal;
+        // TODO
+        private AsyncAntiAliasedMetafileGenerator antiAliasedMetafileGenerator;
 
         #endregion
 
@@ -113,7 +237,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 if (!autoZoom && !isMetafile)
                     zoom = 1f;
 
-                Invalidate(InvalidateFlags.Sizes | (IsMetafilePreviewNeeded ? InvalidateFlags.DisplayImage : InvalidateFlags.None));
+                Invalidate(InvalidateFlags.Sizes | (IsSmoothMetafileNeeded ? InvalidateFlags.DisplayImage : InvalidateFlags.None));
             }
         }
 
@@ -155,7 +279,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Private Properties
 
-        private bool IsMetafilePreviewNeeded => isMetafile && smoothZooming;
+        private bool IsSmoothMetafileNeeded => isMetafile && smoothZooming;
 
         #endregion
 
@@ -185,7 +309,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         protected override void OnSizeChanged(EventArgs e)
         {
             base.OnSizeChanged(e);
-            Invalidate(InvalidateFlags.Sizes | (IsMetafilePreviewNeeded && autoZoom ? InvalidateFlags.DisplayImage : InvalidateFlags.None));
+            Invalidate(InvalidateFlags.Sizes | (IsSmoothMetafileNeeded && autoZoom ? InvalidateFlags.DisplayImage : InvalidateFlags.None));
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -245,9 +369,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             if (disposing)
             {
+                // TODO
+                antiAliasedMetafileGenerator?.Dispose();
+                FreeDisplayImage();
                 components?.Dispose();
-                if (image != displayImage)
-                    displayImage?.Dispose();
             }
 
             base.Dispose(disposing);
@@ -261,10 +386,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         private void SetImage(Image value)
         {
-            Invalidate(InvalidateFlags.All);
+            FreeDisplayImage(); // Called also from Invalidate but must be called also from here until image is replaced
             image = value;
             isMetafile = image is Metafile;
             imageSize = image?.Size ?? default;
+            // TODO
+            antiAliasedMetafileGenerator?.FreeReferenceClone();
+            Invalidate(InvalidateFlags.All);
         }
 
         private void VerticalScroll(int delta)
@@ -300,19 +428,37 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         private void Invalidate(InvalidateFlags flags)
         {
             if ((flags & InvalidateFlags.Sizes) != InvalidateFlags.None)
-                targetRectangle = default;
+                AdjustSizes();
+
             if ((flags & InvalidateFlags.DisplayImage) != InvalidateFlags.None)
             {
-                if (image != displayImage)
-                    displayImage?.Dispose();
-                displayImage = null;
+                FreeDisplayImage();
+                // TODO
+                if (IsSmoothMetafileNeeded)
+                    AntiAliasedMetafileGenerator.BeginGenerate();
             }
 
             Invalidate();
         }
 
+        private void FreeDisplayImage()
+        {
+            Image toFree = displayImage;
+            if (toFree != image)
+                toFree?.Dispose();
+
+            displayImage = null;
+        }
+
         private void AdjustSizes()
         {
+            if (imageSize.IsEmpty)
+            {
+                sbHorizontal.Visible = sbVertical.Visible = sbHorizontalVisible = sbVerticalVisible = false;
+                targetRectangle = Rectangle.Empty;
+                return;
+            }
+
             Size clientSize = ClientSize;
             if (clientSize.Width < 1 || clientSize.Height < 1)
             {
@@ -325,7 +471,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (autoZoom)
             {
                 zoom = Math.Min((float)clientSize.Width / imageSize.Width, (float)clientSize.Height / imageSize.Height);
-                scaledSize = new Size((int)(imageSize.Width * zoom), (int)(imageSize.Height * zoom));
+                scaledSize = imageSize.Scale(zoom);
                 targetLocation = new Point(Math.Max(0, (clientSize.Width >> 1) - (scaledSize.Width >> 1)),
                     Math.Max(0, (clientSize.Height >> 1) - (scaledSize.Height >> 1)));
 
@@ -407,6 +553,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         private void PaintImage(Graphics g)
         {
+            //Debug.Assert(displayImage != null, "Display image should not be null here");
+
             if (displayImage == null)
                 GenerateDisplayImage();
             g.IntersectClip(clientRectangle);
@@ -415,16 +563,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 dest.X -= sbHorizontal.Value;
             if (sbVerticalVisible)
                 dest.Y -= sbVertical.Value;
-
-            g.InterpolationMode = smoothZooming ? InterpolationMode.HighQualityBicubic : InterpolationMode.NearestNeighbor;
-            //g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            // TODO
+            g.InterpolationMode = smoothZooming && !isMetafile ? InterpolationMode.HighQualityBicubic : InterpolationMode.NearestNeighbor;
+            //g.InterpolationMode = smoothZooming ? InterpolationMode.HighQualityBicubic : InterpolationMode.NearestNeighbor;
+            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
             g.DrawImage(displayImage, dest);
         }
 
         private void GenerateDisplayImage()
         {
-            if (image == null)
-                return;
+            Debug.Assert(image != null, "Image is not expected to be null here");
 
             // Converting non supported or too memory consuming and slow pixel formats
             if (image.PixelFormat.In(convertedFormats))
@@ -433,10 +581,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 return;
             }
 
-            if (IsMetafilePreviewNeeded)
+            if (IsSmoothMetafileNeeded)
             {
                 // here we generate a scaled preview
-                displayImage = ((Metafile)image).ToBitmap(targetRectangle.Size, smoothZooming);
+                //displayImage = ((Metafile)image).ToBitmap(targetRectangle.Size, true, false);
+                // TODO
+                displayImage = image;
                 return;
             }
 
@@ -453,7 +603,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         private void SetZoom(float value)
         {
-            if (zoom == value)
+            if (zoom == value || autoZoom)
                 return;
 
             float minZoom = 1f / Math.Min(imageSize.Width, imageSize.Height);
@@ -484,8 +634,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (value > maxZoom)
                 value = maxZoom;
 
+            if (zoom == value)
+                return;
+
             zoom = value;
-            Invalidate(InvalidateFlags.Sizes | (IsMetafilePreviewNeeded ? InvalidateFlags.DisplayImage : InvalidateFlags.None));
+            Invalidate(InvalidateFlags.Sizes | (IsSmoothMetafileNeeded ? InvalidateFlags.DisplayImage : InvalidateFlags.None));
             OnZoomChanged(EventArgs.Empty);
         }
 

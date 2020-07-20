@@ -300,6 +300,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             imageInfo.Dispose();
             imageInfo = value;
             SetModified(false);
+            PreviewImage = null;
             InitAutoZoom();
 
             if (value.HasFrames)
