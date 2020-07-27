@@ -114,7 +114,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal Func<ImageInfoType, Image> GetCompoundViewIconCallback { get => Get<Func<ImageInfoType, Image>>(); set => Set(value); }
 
         internal ICommandState SetAutoZoomCommandState => Get(() => new CommandState());
-        internal ICommandState SetAntiAliasingCommandState => Get(() => new CommandState());
+        internal ICommandState SetSmoothZoomingCommandState => Get(() => new CommandState());
         internal ICommandState OpenFileCommandState => Get(() => new CommandState());
         internal ICommandState SaveFileCommandState => Get(() => new CommandState { Enabled = false });
         internal ICommandState ClearCommandState => Get(() => new CommandState { Enabled = false });
@@ -125,7 +125,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommandState ShowPaletteCommandState => Get(() => new CommandState { Enabled = false });
 
         internal ICommand SetAutoZoomCommand => Get(() => new SimpleCommand<bool>(OnSetAutoZoomCommand));
-        internal ICommand SetAntiAliasingCommand => Get(() => new SimpleCommand<bool>(OnSetAntiAliasingCommand));
+        internal ICommand SetSmoothZoomingCommand => Get(() => new SimpleCommand<bool>(OnSetSmoothZoomingCommand));
         internal ICommand ViewImagePreviewSizeChangedCommand => Get(() => new SimpleCommand(OnViewImagePreviewSizeChangedCommand));
         internal ICommand OpenFileCommand => Get(() => new SimpleCommand(OnOpenFileCommand));
         internal ICommand SaveFileCommand => Get(() => new SimpleCommand(OnSaveFileCommand));
@@ -197,7 +197,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal override void ViewLoaded()
         {
-            InitAutoZoom();
+            InitAutoZoomAndSmoothZooming(true);
             if (deferSettingCompoundStateImage && SetCompoundViewCommandState.GetValueOrDefault<bool>(stateVisible))
                 SetCompoundViewCommandStateImage();
             base.ViewLoaded();
@@ -218,6 +218,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     return;
                 case nameof(ReadOnly):
                     ReadOnlyChanged();
+                    return;
+                case nameof(AutoZoom):
+                    UpdateMultiResImage();
                     return;
             }
         }
@@ -301,7 +304,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             imageInfo = value;
             SetModified(false);
             PreviewImage = null;
-            InitAutoZoom();
+            InitAutoZoomAndSmoothZooming(false);
 
             if (value.HasFrames)
                 InitMultiImage();
@@ -561,8 +564,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             else
             {
                 currentFrame = -1;
-                if (imageInfo.IsMultiRes)
-                    UpdateMultiResImage();
+                UpdateMultiResImage();
             }
 
             timerState.Enabled = autoPlaying;
@@ -571,7 +573,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void UpdateMultiResImage()
         {
-            Debug.Assert(imageInfo.IsMultiRes);
+            if (!imageInfo.IsMultiRes || currentFrame != -1)
+                return;
             Size origSize = currentResolution;
             Size clientSize = GetImagePreviewSizeCallback?.Invoke() ?? default;
             int desiredSize = Math.Min(clientSize.Width, clientSize.Height);
@@ -581,7 +584,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             // Starting with Windows Vista it would work that we draw the compound image in a new Bitmap with desired size and read the Size afterwards
             // but that requires always a new bitmap and does not work in Windows XP
             desiredSize = Math.Max(desiredSize, 1);
-            ImageFrameInfo desiredImage = imageInfo.Frames.Aggregate((acc, i) => i.Size == acc.Size && i.BitsPerPixel > acc.BitsPerPixel || Math.Abs(i.Size.Width - desiredSize) < Math.Abs(acc.Size.Width - desiredSize) ? i : acc);
+            float zoom = AutoZoom ? 1f : Zoom;
+            ImageFrameInfo desiredImage = imageInfo.Frames.Aggregate((acc, i) => i.Size == acc.Size && i.BitsPerPixel > acc.BitsPerPixel || Math.Abs(i.Size.Width * zoom - desiredSize) < Math.Abs(acc.Size.Width * zoom - desiredSize) ? i : acc);
             currentResolution = desiredImage.Size;
             if (PreviewImage != desiredImage.Image)
                 PreviewImage = desiredImage.Image;
@@ -735,26 +739,41 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             SaveFileFilterIndex = (filter.Split('|').IndexOf(item => item.Contains("*." + ext, StringComparison.OrdinalIgnoreCase)) >> 1) + 1;
         }
 
-        private void InitAutoZoom()
+        private void InitAutoZoomAndSmoothZooming(bool viewLoading)
         {
-            if (GetCurrentImage() == null)
+            if (GetCurrentImage().Image == null)
             {
                 SetAutoZoomCommandState.Enabled = AutoZoom = false;
+                SetSmoothZoomingCommandState.Enabled = SmoothZooming = false;
                 return;
             }
 
+            SetAutoZoomCommandState.Enabled = SetSmoothZoomingCommandState.Enabled = true;
+
+            // metafile: we always turn on auto zoom and preserve current smooth zooming
             if (imageInfo.IsMetafile)
             {
-                SetAutoZoomCommandState.Enabled = AutoZoom = true;
+                AutoZoom = true;
                 return;
             }
 
-            SetAutoZoomCommandState.Enabled = true;
+            // if we are just opening a new image we don't auto toggle AutoZoom and SmoothZooming anymore
+            if (!viewLoading)
+            {
+                if (!AutoZoom)
+                    Zoom = 1f;
+                return;
+            }
+
             Rectangle workingArea = GetScreenRectangleCallback?.Invoke() ?? default;
+            if (workingArea.IsEmpty)
+                return;
+
             Size screenSize = workingArea.Size;
             Size viewSize = GetViewSizeCallback?.Invoke() ?? default;
             Size padding = viewSize - GetImagePreviewSizeCallback?.Invoke() ?? default;
             Size desiredSize = imageInfo.Size + padding;
+
             if (desiredSize.Width <= screenSize.Width && desiredSize.Height <= screenSize.Height)
             {
                 AutoZoom = false;
@@ -762,7 +781,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 Zoom = 1f;
             }
             else
+            {
+                // image is too large to fit
+                SmoothZooming = true;
                 AutoZoom = true;
+            }
         }
 
         private void InvalidateImage()
@@ -802,12 +825,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Command Handlers
 
         private void OnSetAutoZoomCommand(bool newValue) => AutoZoom = newValue;
-        private void OnSetAntiAliasingCommand(bool newValue) => SmoothZooming = newValue;
+
+        private void OnSetSmoothZoomingCommand(bool newValue) => SmoothZooming = newValue;
 
         private void OnViewImagePreviewSizeChangedCommand()
         {
-            if (!imageInfo.IsMultiRes || currentFrame != -1)
-                return;
             UpdateMultiResImage();
             UpdateInfo();
         }

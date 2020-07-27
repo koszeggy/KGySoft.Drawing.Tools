@@ -188,7 +188,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.Add(ViewModel.SetAutoZoomCommand, ViewModel.SetAutoZoomCommandState)
                 .WithParameter(() => btnAutoZoom.Checked)
                 .AddSource(btnAutoZoom, nameof(btnAutoZoom.CheckedChanged));
-            CommandBindings.Add(ViewModel.SetAntiAliasingCommand, ViewModel.SetAntiAliasingCommandState)
+            CommandBindings.Add(ViewModel.SetSmoothZoomingCommand, ViewModel.SetSmoothZoomingCommandState)
                 .WithParameter(() => btnAntiAlias.Checked)
                 .AddSource(btnAntiAlias, nameof(btnAntiAlias.CheckedChanged));
             CommandBindings.Add(ViewModel.OpenFileCommand, ViewModel.OpenFileCommandState)
@@ -211,7 +211,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.Add(ViewModel.ManageInstallationsCommand)
                 .AddSource(btnConfiguration, nameof(btnConfiguration.Click));
             CommandBindings.Add(ViewModel.ViewImagePreviewSizeChangedCommand)
-                .AddSource(imageViewer, nameof(imageViewer.SizeChanged));
+                .AddSource(imageViewer, nameof(imageViewer.SizeChanged))
+                .AddSource(imageViewer, nameof(imageViewer.ZoomChanged));
 
             // View commands
             CommandBindings.Add(OnResizeCommand)

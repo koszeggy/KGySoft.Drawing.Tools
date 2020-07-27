@@ -25,7 +25,6 @@ using System.Threading;
 using System.Windows.Forms;
 
 using KGySoft.CoreLibraries;
-using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.WinApi;
 
 #endregion
@@ -37,28 +36,70 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
     /// </summary>
     internal partial class ImageViewer : BaseControl
     {
+        #region Nested types
+
+        #region Enumerations
+
+        [Flags]
+        private enum InvalidateFlags
+        {
+            None,
+            Sizes = 1,
+            DisplayImage = 1 << 1,
+            All = Sizes | DisplayImage
+        }
+
+        #endregion
+
+        #region AsyncAntiAliasedMetafileGenerator class
+
         private sealed class AsyncAntiAliasedMetafileGenerator : IDisposable
         {
+            #region Nested classes
+
             private sealed class GenerateTask
             {
+                #region Fields
+
                 internal Metafile Source;
                 internal Image ReferenceImage;
                 internal Size Size;
                 internal volatile bool IsCanceled;
+
+                #endregion
             }
 
+            #endregion
+
+            #region Fields
+
             private readonly ImageViewer owner;
+
             private GenerateTask runningTask;
             private GenerateTask pendingTask;
             private Metafile sourceClone;
 
+            #endregion
+
+            #region Constructors
+
             internal AsyncAntiAliasedMetafileGenerator(ImageViewer owner) => this.owner = owner;
+
+            #endregion
+
+            #region Methods
+
+            #region Public Methods
 
             public void Dispose()
             {
                 CancelPendingGenerate();
                 FreeReferenceClone();
             }
+
+            #endregion
+
+            #region Internal Methods
 
             internal void BeginGenerate()
             {
@@ -84,6 +125,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     pendingTask = newTask;
                 }
             }
+
+            internal void FreeReferenceClone()
+            {
+                sourceClone?.Dispose();
+                sourceClone = null;
+            }
+
+            #endregion
+
+            #region Private Methods
 
             private void CancelPendingGenerate()
             {
@@ -139,33 +190,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 } while (task != null);
             }
 
-            internal void FreeReferenceClone()
-            {
-                sourceClone?.Dispose();
-                sourceClone = null;
-            }
+            #endregion
+
+            #endregion
         }
 
-        private AsyncAntiAliasedMetafileGenerator AntiAliasedMetafileGenerator
-        {
-            get
-            {
-                if (antiAliasedMetafileGenerator == null)
-                    Interlocked.CompareExchange(ref antiAliasedMetafileGenerator, new AsyncAntiAliasedMetafileGenerator(this), null);
-                return antiAliasedMetafileGenerator;
-            }
-        }
-
-        #region Enumerations
-
-        [Flags]
-        private enum InvalidateFlags
-        {
-            None,
-            Sizes = 1,
-            DisplayImage = 1 << 1,
-            All = Sizes | DisplayImage
-        }
+        #endregion
 
         #endregion
 
@@ -194,8 +224,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         private bool sbVerticalVisible;
         private int scrollFractionVertical;
         private int scrollFractionHorizontal;
-        // TODO
         private AsyncAntiAliasedMetafileGenerator antiAliasedMetafileGenerator;
+
+        #endregion
 
         #endregion
 
@@ -206,8 +237,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             add => Events.AddHandler(nameof(ZoomChanged), value);
             remove => Events.RemoveHandler(nameof(ZoomChanged), value);
         }
-
-        #endregion
 
         #endregion
 
@@ -235,7 +264,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     return;
                 autoZoom = value;
                 if (!autoZoom && !isMetafile)
-                    zoom = 1f;
+                    SetZoom(1f);
 
                 Invalidate(InvalidateFlags.Sizes | (IsSmoothMetafileNeeded ? InvalidateFlags.DisplayImage : InvalidateFlags.None));
             }
@@ -278,6 +307,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         #endregion
 
         #region Private Properties
+
+        private AsyncAntiAliasedMetafileGenerator AntiAliasedMetafileGenerator
+        {
+            get
+            {
+                if (antiAliasedMetafileGenerator == null)
+                    Interlocked.CompareExchange(ref antiAliasedMetafileGenerator, new AsyncAntiAliasedMetafileGenerator(this), null);
+                return antiAliasedMetafileGenerator;
+            }
+        }
 
         private bool IsSmoothMetafileNeeded => isMetafile && smoothZooming;
 
@@ -369,7 +408,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             if (disposing)
             {
-                // TODO
                 antiAliasedMetafileGenerator?.Dispose();
                 FreeDisplayImage();
                 components?.Dispose();
@@ -390,7 +428,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             image = value;
             isMetafile = image is Metafile;
             imageSize = image?.Size ?? default;
-            // TODO
             antiAliasedMetafileGenerator?.FreeReferenceClone();
             Invalidate(InvalidateFlags.All);
         }
@@ -433,7 +470,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if ((flags & InvalidateFlags.DisplayImage) != InvalidateFlags.None)
             {
                 FreeDisplayImage();
-                // TODO
                 if (IsSmoothMetafileNeeded)
                     AntiAliasedMetafileGenerator.BeginGenerate();
             }
@@ -563,9 +599,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 dest.X -= sbHorizontal.Value;
             if (sbVerticalVisible)
                 dest.Y -= sbVertical.Value;
-            // TODO
             g.InterpolationMode = smoothZooming && !isMetafile ? InterpolationMode.HighQualityBicubic : InterpolationMode.NearestNeighbor;
-            //g.InterpolationMode = smoothZooming ? InterpolationMode.HighQualityBicubic : InterpolationMode.NearestNeighbor;
             g.PixelOffsetMode = PixelOffsetMode.HighQuality;
             g.DrawImage(displayImage, dest);
         }
@@ -581,11 +615,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 return;
             }
 
+            // Raw icons: converting because icons are handled oddly by GDI+, for example, the first column has half pixel width
+            if (image is Bitmap bmp && bmp.RawFormat.Guid == ImageFormat.Icon.Guid)
+            {
+                displayImage = bmp.CloneCurrentFrame();
+                return;
+            }
+
             if (IsSmoothMetafileNeeded)
             {
-                // here we generate a scaled preview
-                //displayImage = ((Metafile)image).ToBitmap(targetRectangle.Size, true, false);
-                // TODO
                 displayImage = image;
                 return;
             }
@@ -606,7 +644,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (zoom == value || autoZoom)
                 return;
 
-            float minZoom = 1f / Math.Min(imageSize.Width, imageSize.Height);
+            float minZoom = image == null ? 1f : 1f / Math.Min(imageSize.Width, imageSize.Height);
             if (value < minZoom)
                 value = minZoom;
 
@@ -618,13 +656,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 // For metafiles the max zoom is between 1x and 2x screen size. 2x screen size is allowed if that is below 10,000 pixels
                 const int maxMetafileSize = 10_000;
                 maxZoom = Math.Max(
-                        Math.Min(Math.Max(screenSize.Width, maxMetafileSize), screenSize.Width << 1),
-                        Math.Min(Math.Max(screenSize.Height, maxMetafileSize), screenSize.Height << 1))
+                    Math.Min(Math.Max(screenSize.Width, maxMetafileSize), screenSize.Width << 1),
+                    Math.Min(Math.Max(screenSize.Height, maxMetafileSize), screenSize.Height << 1))
                     / (float)Math.Max(imageSize.Width, imageSize.Height);
             }
             else
             {
-                // For bitmaps the default maximum size is image size * 10 (adjusted with DPI) but at least screen size x 2 
+                // For bitmaps the default maximum size is image size * 10 (adjusted with DPI) but at least screen size x 2
                 PointF scale = this.GetScale();
                 maxZoom = Math.Max(
                     Math.Max(scale.X * 10, (screenSize.Width << 1) / (float)imageSize.Width),
