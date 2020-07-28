@@ -244,9 +244,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void AdjustSize()
         {
-            if (imageViewer.Height >= 16)
+            if (imageViewer.Height >= 16 + SystemInformation.HorizontalScrollBarHeight)
                 return;
-            txtInfo.Height = ClientSize.Height - tsMenu.Height - 16 - splitter.Height;
+            txtInfo.Height = ClientSize.Height - tsMenu.Height - splitter.Height - 16 - SystemInformation.HorizontalScrollBarHeight;
             PerformLayout();
         }
 

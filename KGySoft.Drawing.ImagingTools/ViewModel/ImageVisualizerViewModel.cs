@@ -197,7 +197,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal override void ViewLoaded()
         {
-            InitAutoZoomAndSmoothZooming(true);
+            InitAutoZoom(true);
             if (deferSettingCompoundStateImage && SetCompoundViewCommandState.GetValueOrDefault<bool>(stateVisible))
                 SetCompoundViewCommandStateImage();
             base.ViewLoaded();
@@ -304,7 +304,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             imageInfo = value;
             SetModified(false);
             PreviewImage = null;
-            InitAutoZoomAndSmoothZooming(false);
+            InitAutoZoom(false);
 
             if (value.HasFrames)
                 InitMultiImage();
@@ -739,9 +739,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             SaveFileFilterIndex = (filter.Split('|').IndexOf(item => item.Contains("*." + ext, StringComparison.OrdinalIgnoreCase)) >> 1) + 1;
         }
 
-        private void InitAutoZoomAndSmoothZooming(bool viewLoading)
+        private void InitAutoZoom(bool viewLoading)
         {
-            if (GetCurrentImage().Image == null)
+            if (imageInfo.Type == ImageInfoType.None)
             {
                 SetAutoZoomCommandState.Enabled = AutoZoom = false;
                 SetSmoothZoomingCommandState.Enabled = SmoothZooming = false;
@@ -776,14 +776,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             if (desiredSize.Width <= screenSize.Width && desiredSize.Height <= screenSize.Height)
             {
-                AutoZoom = false;
+                // for icons turning on auto zoom so shrinking the view will not cause twitching as the scrollbar appears and disappears
+                AutoZoom = imageInfo.IsMultiRes;
                 ApplyViewSizeCallback?.Invoke(new Size(Math.Max(desiredSize.Width, viewSize.Width), Math.Max(desiredSize.Height, viewSize.Height)));
                 Zoom = 1f;
             }
             else
             {
                 // image is too large to fit
-                SmoothZooming = true;
                 AutoZoom = true;
             }
         }

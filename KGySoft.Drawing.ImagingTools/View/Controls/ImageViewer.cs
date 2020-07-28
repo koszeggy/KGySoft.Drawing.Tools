@@ -225,6 +225,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         private int scrollFractionVertical;
         private int scrollFractionHorizontal;
         private AsyncAntiAliasedMetafileGenerator antiAliasedMetafileGenerator;
+        private bool isApplyingZoom;
 
         #endregion
 
@@ -266,7 +267,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 if (!autoZoom && !isMetafile)
                     SetZoom(1f);
 
-                Invalidate(InvalidateFlags.Sizes | (IsSmoothMetafileNeeded ? InvalidateFlags.DisplayImage : InvalidateFlags.None));
+                Invalidate(InvalidateFlags.Sizes | (IsSmoothMetafileNeeded && autoZoom ? InvalidateFlags.DisplayImage : InvalidateFlags.None));
             }
         }
 
@@ -430,6 +431,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             imageSize = image?.Size ?? default;
             antiAliasedMetafileGenerator?.FreeReferenceClone();
             Invalidate(InvalidateFlags.All);
+
+            // making sure image is not under or overzoomed
+            if (!autoZoom && !isMetafile)
+                SetZoom(zoom);
         }
 
         private void VerticalScroll(int delta)
@@ -589,8 +594,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         private void PaintImage(Graphics g)
         {
-            //Debug.Assert(displayImage != null, "Display image should not be null here");
-
             if (displayImage == null)
                 GenerateDisplayImage();
             g.IntersectClip(clientRectangle);
@@ -599,7 +602,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 dest.X -= sbHorizontal.Value;
             if (sbVerticalVisible)
                 dest.Y -= sbVertical.Value;
-            g.InterpolationMode = smoothZooming && !isMetafile ? InterpolationMode.HighQualityBicubic : InterpolationMode.NearestNeighbor;
+            g.InterpolationMode = !isMetafile && (smoothZooming || zoom < 1f) ? InterpolationMode.HighQualityBicubic : InterpolationMode.NearestNeighbor;
             g.PixelOffsetMode = PixelOffsetMode.HighQuality;
             g.DrawImage(displayImage, dest);
         }
@@ -641,7 +644,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         private void SetZoom(float value)
         {
-            if (zoom == value || autoZoom)
+            if (autoZoom || isApplyingZoom)
                 return;
 
             float minZoom = image == null ? 1f : 1f / Math.Min(imageSize.Width, imageSize.Height);
@@ -664,7 +667,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             {
                 // For bitmaps the default maximum size is image size * 10 (adjusted with DPI) but at least screen size x 2
                 PointF scale = this.GetScale();
-                maxZoom = Math.Max(
+                maxZoom = image == null ? 1f : Math.Max(
                     Math.Max(scale.X * 10, (screenSize.Width << 1) / (float)imageSize.Width),
                     Math.Max(scale.Y * 10, (screenSize.Height << 1) / (float)imageSize.Height));
             }
@@ -677,7 +680,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             zoom = value;
             Invalidate(InvalidateFlags.Sizes | (IsSmoothMetafileNeeded ? InvalidateFlags.DisplayImage : InvalidateFlags.None));
-            OnZoomChanged(EventArgs.Empty);
+            isApplyingZoom = true;
+            try
+            {
+                OnZoomChanged(EventArgs.Empty);
+            }
+            finally
+            {
+                isApplyingZoom = false;
+            }
         }
 
         private void OnZoomChanged(EventArgs e) => Events.GetHandler<EventHandler>(nameof(ZoomChanged))?.Invoke(this, e);
@@ -686,15 +697,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Event handlers
 
-        private void sbHorizontal_ValueChanged(object sender, EventArgs e)
-        {
-            Invalidate();
-        }
-
-        private void sbVertical_ValueChanged(object sender, EventArgs e)
-        {
-            Invalidate();
-        }
+        private void sbHorizontal_ValueChanged(object sender, EventArgs e) => Invalidate();
+        private void sbVertical_ValueChanged(object sender, EventArgs e) => Invalidate();
 
         #endregion
 

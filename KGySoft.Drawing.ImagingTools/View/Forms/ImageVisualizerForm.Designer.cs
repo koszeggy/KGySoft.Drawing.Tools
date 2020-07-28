@@ -22,6 +22,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.txtInfo = new System.Windows.Forms.TextBox();
             this.tsMenu = new KGySoft.Drawing.ImagingTools.View.Controls.ScalingToolStrip();
             this.btnAutoZoom = new System.Windows.Forms.ToolStripButton();
+            this.btnAntiAlias = new System.Windows.Forms.ToolStripButton();
             this.btnColorSettings = new KGySoft.Drawing.ImagingTools.View.Controls.ScalingToolStripDropDownButton();
             this.miBackColor = new System.Windows.Forms.ToolStripMenuItem();
             this.miBackColorDefault = new System.Windows.Forms.ToolStripMenuItem();
@@ -44,8 +45,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.timerPlayer = new System.Windows.Forms.Timer(this.components);
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.lblNotification = new KGySoft.Drawing.ImagingTools.View.Controls.NotificationLabel();
-            this.btnAntiAlias = new System.Windows.Forms.ToolStripButton();
-            this.imageViewer = new ImageViewer();
+            this.imageViewer = new KGySoft.Drawing.ImagingTools.View.Controls.ImageViewer();
             this.tsMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -91,6 +91,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.btnAutoZoom.Name = "btnAutoZoom";
             this.btnAutoZoom.Size = new System.Drawing.Size(23, 22);
             // 
+            // btnAntiAlias
+            // 
+            this.btnAntiAlias.CheckOnClick = true;
+            this.btnAntiAlias.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnAntiAlias.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnAntiAlias.Name = "btnAntiAlias";
+            this.btnAntiAlias.Size = new System.Drawing.Size(23, 22);
+            // 
             // btnColorSettings
             // 
             this.btnColorSettings.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -108,7 +116,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.miBackColorWhite,
             this.miBackColorBlack});
             this.miBackColor.Name = "miBackColor";
-            this.miBackColor.Size = new System.Drawing.Size(180, 22);
+            this.miBackColor.Size = new System.Drawing.Size(67, 22);
             // 
             // miBackColorDefault
             // 
@@ -133,7 +141,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // miShowPalette
             // 
             this.miShowPalette.Name = "miShowPalette";
-            this.miShowPalette.Size = new System.Drawing.Size(180, 22);
+            this.miShowPalette.Size = new System.Drawing.Size(67, 22);
             // 
             // toolStripSeparator1
             // 
@@ -234,14 +242,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.imageViewer.TabIndex = 1;
             this.imageViewer.TabStop = false;
             // 
-            // btnAntiAlias
-            // 
-            this.btnAntiAlias.CheckOnClick = true;
-            this.btnAntiAlias.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnAntiAlias.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnAntiAlias.Name = "btnAntiAlias";
-            this.btnAntiAlias.Size = new System.Drawing.Size(23, 22);
-            // 
             // ImageVisualizerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -264,7 +264,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #endregion
 
-        private ImageViewer imageViewer;
+        private KGySoft.Drawing.ImagingTools.View.Controls.ImageViewer imageViewer;
         private System.Windows.Forms.ToolStripButton btnAutoZoom;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton btnSave;
@@ -278,15 +278,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private System.Windows.Forms.SaveFileDialog dlgSave;
         private System.Windows.Forms.Splitter splitter;
         private System.Windows.Forms.Timer timerPlayer;
-        private ScalingToolStripDropDownButton btnColorSettings;
+        private KGySoft.Drawing.ImagingTools.View.Controls.ScalingToolStripDropDownButton btnColorSettings;
         private System.Windows.Forms.ToolStripMenuItem miBackColor;
         private System.Windows.Forms.ToolStripMenuItem miBackColorDefault;
         private System.Windows.Forms.ToolStripMenuItem miBackColorWhite;
         private System.Windows.Forms.ToolStripMenuItem miBackColorBlack;
         private System.Windows.Forms.ToolStripMenuItem miShowPalette;
-        protected ScalingToolStrip tsMenu;
+        protected KGySoft.Drawing.ImagingTools.View.Controls.ScalingToolStrip tsMenu;
         protected System.Windows.Forms.TextBox txtInfo;
-        private NotificationLabel lblNotification;
+        private KGySoft.Drawing.ImagingTools.View.Controls.NotificationLabel lblNotification;
         private ToolTip toolTip;
         private ToolStripSeparator toolStripSeparator2;
         protected ToolStripButton btnConfiguration;
