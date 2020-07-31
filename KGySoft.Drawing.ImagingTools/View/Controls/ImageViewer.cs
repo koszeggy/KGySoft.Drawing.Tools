@@ -62,7 +62,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 #region Fields
 
                 internal Metafile Source;
-                internal Image ReferenceImage;
+                internal Metafile ReferenceImage;
                 internal Size Size;
                 internal volatile bool IsCanceled;
 
@@ -73,11 +73,23 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             #region Fields
 
+            #region Static Fields
+
+            private static readonly int maxSize = IntPtr.Size == 4 ? 1_600_000_000 : Int32.MaxValue;
+
+            #endregion
+
+            #region Instance Fields
+
             private readonly ImageViewer owner;
 
             private GenerateTask runningTask;
             private GenerateTask pendingTask;
             private Metafile sourceClone;
+            private Bitmap currentPreview;
+            private Metafile referenceOfCurrentPreview;
+
+            #endregion
 
             #endregion
 
@@ -94,7 +106,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             public void Dispose()
             {
                 CancelPendingGenerate();
-                FreeReferenceClone();
+                Free();
             }
 
             #endregion
@@ -105,7 +117,22 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             {
                 CancelPendingGenerate();
                 Metafile metafile = owner.image as Metafile;
-                Debug.Assert(metafile != null && owner.IsSmoothMetafileNeeded, "Metafile expected");
+                Debug.Assert(metafile != null && owner.IsSmoothMetafileNeeded, "Metafile with smooth preview expected");
+
+                lock (this) // it's fine, this is a private class
+                {
+                    // checking if we already have the preview
+                    if (TrySetPreview(metafile, owner.targetRectangle.Size))
+                    {
+                        if (runningTask != null)
+                        {
+                            runningTask.IsCanceled = true;
+                            runningTask = null;
+                        }
+
+                        return;
+                    }
+                }
 
                 // A clone must be created; otherwise, we might get an "object is used elsewhere" error from paint
                 if (sourceClone == null)
@@ -126,17 +153,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 }
             }
 
-            internal void FreeReferenceClone()
-            {
-                sourceClone?.Dispose();
-                sourceClone = null;
-            }
-
-            #endregion
-
-            #region Private Methods
-
-            private void CancelPendingGenerate()
+            internal void CancelPendingGenerate()
             {
                 lock (this) // it's fine, this is a private class
                 {
@@ -147,18 +164,115 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 }
             }
 
+            internal bool IsHandled(Image reference) => reference == referenceOfCurrentPreview;
+
+            internal void Free()
+            {
+                sourceClone?.Dispose();
+                sourceClone = null;
+
+                FreeCachedPreview();
+            }
+
+            #endregion
+
+            #region Private Methods
+
+            private bool TrySetPreview(Metafile reference, Size size)
+            {
+                if (referenceOfCurrentPreview != null && reference != referenceOfCurrentPreview)
+                {
+                    Debug.Assert(currentPreview != owner.displayImage, "If image has been replaced in owner, its display image is not expected to be cached here");
+                    FreeCachedPreview();
+                    return false;
+                }
+
+                if (currentPreview?.Size != size)
+                    return false;
+
+                Debug.WriteLine($"Re-using pregenerated preview of size {size.Width}x{size.Height}");
+                if (owner.displayImage == currentPreview)
+                    return true;
+                owner.FreeDisplayImage();
+                owner.displayImage = currentPreview;
+                owner.Invalidate();
+                return true;
+            }
+
+            private void FreeCachedPreview()
+            {
+                lock (this)
+                {
+                    Bitmap toFree = currentPreview;
+                    if (toFree != null)
+                    {
+                        if (toFree == owner.displayImage)
+                        {
+                            Debug.Fail("It is not expected that cached preview is in use when freeing it");
+                            owner.displayImage = null;
+                            owner.Invalidate();
+                        }
+
+                        toFree.Dispose();
+                    }
+
+                    currentPreview = null;
+                    referenceOfCurrentPreview = null;
+                }
+            }
+
             /// <summary>
             /// Generates the display image on a pool thread.
             /// </summary>
             private void DoGenerate(object state)
             {
-                Debug.WriteLine($"Generating on thread #{Thread.CurrentThread.ManagedThreadId}");
                 var task = (GenerateTask)state;
                 do
                 {
-                    Bitmap result = task.IsCanceled ? null : task.Source.ToBitmap(task.Size, true, false);
                     lock (this)
                     {
+                        if (!task.IsCanceled && TrySetPreview(task.ReferenceImage, task.Size))
+                        {
+                            runningTask = null;
+                            return;
+                        }
+                    }
+
+                    // delaying the start of generation a bit to prevent working on canceled tasks (eg when zooming, a task is canceled very often)
+                    Thread.Sleep(250);
+                    Bitmap result = null;
+
+                    if (!task.IsCanceled)
+                    {
+                        // Before creating the preview releasing previous cached result. It is important to free it here, before checking the free memory.
+                        FreeCachedPreview();
+
+                        // For the resizing large managed buffer of source.Height * target.Width of ColorF (16 bytes) is allocated internally. To be safe we count with the doubled sizes.
+                        long managedPressure = (task.Size.Width << 1) * (task.Size.Height << 1) * 16;
+                        if (managedPressure > maxSize || IntPtr.Size == 4 && maxSize - GC.GetTotalMemory(true) < managedPressure)
+                        {
+                            Debug.WriteLine($"Discarding task because there is no {managedPressure:N0} bytes of available managed memory");
+                            task.IsCanceled = true;
+                        }
+
+                        if (!task.IsCanceled)
+                        {
+                            Debug.WriteLine($"Generating anti aliased image {task.Size.Width}x{task.Size.Height} on thread #{Thread.CurrentThread.ManagedThreadId}");
+                            result = task.Source.ToBitmap(task.Size, true, false);
+                        }
+                    }
+
+                    lock (this)
+                    {
+                        // setting latest cache (even if task is canceled)
+                        if (result != null)
+                        {
+                            // it can be set again here due to a lost race
+                            FreeCachedPreview();
+                            currentPreview = result;
+                            referenceOfCurrentPreview = task.ReferenceImage;
+                        }
+
                         if (task.IsCanceled)
                         {
                             if (pendingTask == null)
@@ -177,8 +291,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         if (task.ReferenceImage == owner.image && task.Size == owner.targetRectangle.Size)
                         {
                             Debug.WriteLine("Applying generated result");
+                            Debug.Assert(owner.displayImage == owner.image, "Display image is not the same as the original one: dispose is necessary");
 
-                            // not freeing the original image because it is always the original image here
+                            // not freeing the display image because it is always the original image here
                             owner.displayImage = result;
                             owner.Invalidate();
                         }
@@ -409,8 +524,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             if (disposing)
             {
-                antiAliasedMetafileGenerator?.Dispose();
                 FreeDisplayImage();
+                antiAliasedMetafileGenerator?.Dispose();
                 components?.Dispose();
             }
 
@@ -429,7 +544,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             image = value;
             isMetafile = image is Metafile;
             imageSize = image?.Size ?? default;
-            antiAliasedMetafileGenerator?.FreeReferenceClone();
+            antiAliasedMetafileGenerator?.Free();
             Invalidate(InvalidateFlags.All);
 
             // making sure image is not under or overzoomed
@@ -477,6 +592,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 FreeDisplayImage();
                 if (IsSmoothMetafileNeeded)
                     AntiAliasedMetafileGenerator.BeginGenerate();
+                else
+                    antiAliasedMetafileGenerator?.CancelPendingGenerate();
             }
 
             Invalidate();
@@ -485,10 +602,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         private void FreeDisplayImage()
         {
             Image toFree = displayImage;
-            if (toFree != image)
-                toFree?.Dispose();
-
             displayImage = null;
+            if (toFree != image && antiAliasedMetafileGenerator?.IsHandled(image) != true)
+                toFree?.Dispose();
         }
 
         private void AdjustSizes()
@@ -622,12 +738,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (image is Bitmap bmp && bmp.RawFormat.Guid == ImageFormat.Icon.Guid)
             {
                 displayImage = bmp.CloneCurrentFrame();
-                return;
-            }
-
-            if (IsSmoothMetafileNeeded)
-            {
-                displayImage = image;
                 return;
             }
 
