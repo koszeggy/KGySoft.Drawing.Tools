@@ -56,7 +56,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Fields
 
-        private static readonly BitVector32.Section formStateRenderSizeGrip = (BitVector32.Section)Reflector.GetField(typeof(Form), "FormStateRenderSizeGrip");
+        private static readonly BitVector32.Section formStateRenderSizeGrip = OSUtils.IsWindows ? (BitVector32.Section)Reflector.GetField(typeof(Form), "FormStateRenderSizeGrip") : default;
         private static FieldAccessor formStateField;
 
         #endregion
@@ -89,6 +89,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected override void WndProc(ref Message m)
         {
+            if (!OSUtils.IsWindows)
+            {
+                base.WndProc(ref m);
+                return;
+            }
+
             switch (m.Msg)
             {
                 case WM_NCHITTEST:

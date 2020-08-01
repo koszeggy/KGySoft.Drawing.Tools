@@ -18,6 +18,7 @@
 
 using System;
 using System.Drawing;
+using KGySoft.CoreLibraries;
 
 #endregion
 
@@ -28,6 +29,7 @@ namespace KGySoft.Drawing.ImagingTools
         #region Fields
 
         private static bool? isVistaOrLater;
+        private static bool? isWindows;
 
         #endregion
 
@@ -60,6 +62,8 @@ namespace KGySoft.Drawing.ImagingTools
         #region Methods
 
         #region Internal Methods
+
+        internal static bool IsWindows => isWindows ??= Environment.OSVersion.Platform.In(PlatformID.Win32NT, PlatformID.Win32Windows);
 
         internal static PointF GetScale(IntPtr handle)
         {

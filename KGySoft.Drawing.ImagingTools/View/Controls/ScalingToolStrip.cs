@@ -118,7 +118,18 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
             {
                 if (e.Item is ToolStripButton button && button.Checked && button.Enabled)
-                    e.Graphics.Clear(ProfessionalColors.ButtonSelectedGradientMiddle);
+                {
+                    if (OSUtils.IsWindows)
+                        e.Graphics.Clear(ProfessionalColors.ButtonSelectedGradientMiddle);
+                    else
+                    {
+                        // In Mono without this clipping the whole tool strip container is cleared (not enabling on Windows because the rectangle is a bit smaller than normally)
+                        var state = e.Graphics.Save();
+                        e.Graphics.SetClip(e.Item.ContentRectangle);
+                        e.Graphics.Clear(ProfessionalColors.ButtonSelectedGradientMiddle);
+                        e.Graphics.Restore(state);
+                    }
+                }
 
                 base.OnRenderButtonBackground(e);
             }
