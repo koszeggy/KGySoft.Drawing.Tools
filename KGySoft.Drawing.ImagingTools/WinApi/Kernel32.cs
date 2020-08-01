@@ -42,10 +42,19 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             /// This parameter may include the path cannot specify the name of a directory.
             /// In the ANSI version of this function, the name is limited to MAX_PATH characters. To extend this limit to 32,767 wide characters, call the Unicode version of the function and prepend "\\?\" to the path. For more information, see Naming a File. If you pass a name longer than MAX_PATH characters to the ANSI version of this function or to the Unicode version of this function without prepending "\\?\" to the path, the function returns ERROR_PATH_NOT_FOUND.</param>
             /// <param name="lpSecurityAttributes">Reserved; must be NULL.</param>
-            /// <returns></returns>
+            /// <returns>If the function succeeds, the return value is nonzero. If the function fails, the return value is zero. To get extended error information, call GetLastError.</returns>
             [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
             [return: MarshalAs(UnmanagedType.Bool)]
             internal static extern bool CreateHardLink(string lpFileName, string lpExistingFileName, IntPtr lpSecurityAttributes);
+
+            /// <summary>
+            /// Retrieves information about the system's current usage of both physical and virtual memory.
+            /// </summary>
+            /// <param name="lpBuffer">A pointer to a <see cref="MEMORYSTATUSEX"/> structure that receives information about current memory availability.</param>
+            /// <returns>If the function succeeds, the return value is nonzero. If the function fails, the return value is zero. To get extended error information, call GetLastError.</returns>
+            [return: MarshalAs(UnmanagedType.Bool)]
+            [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+            internal static extern bool GlobalMemoryStatusEx(ref MEMORYSTATUSEX lpBuffer);
 
             #endregion
         }
@@ -59,6 +68,14 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             const string allowLongPathPrefix = @"\\?\";
             if (!NativeMethods.CreateHardLink(allowLongPathPrefix + linkName, allowLongPathPrefix + existingFileName, IntPtr.Zero))
                 throw new Win32Exception(Marshal.GetLastWin32Error());
+        }
+
+        internal static long GetTotalMemory()
+        {
+            var status = new MEMORYSTATUSEX { dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX)) };
+            if (!NativeMethods.GlobalMemoryStatusEx(ref status))
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+            return (long)status.ullTotalPhys;
         }
 
         #endregion

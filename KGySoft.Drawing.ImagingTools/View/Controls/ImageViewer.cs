@@ -73,14 +73,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             #region Fields
 
-            #region Static Fields
-
-            private static readonly int maxSize = IntPtr.Size == 4 ? 1_600_000_000 : Int32.MaxValue;
-
-            #endregion
-
-            #region Instance Fields
-
             private readonly ImageViewer owner;
 
             private GenerateTask runningTask;
@@ -88,8 +80,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             private Metafile sourceClone;
             private Bitmap currentPreview;
             private Metafile referenceOfCurrentPreview;
-
-            #endregion
 
             #endregion
 
@@ -249,7 +239,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
                         // For the resizing large managed buffer of source.Height * target.Width of ColorF (16 bytes) is allocated internally. To be safe we count with the doubled sizes.
                         long managedPressure = (task.Size.Width << 1) * (task.Size.Height << 1) * 16;
-                        if (managedPressure > maxSize || IntPtr.Size == 4 && maxSize - GC.GetTotalMemory(true) < managedPressure)
+                        //TODO if (managedPressure > maxSize || IntPtr.Size == 4 && maxSize - GC.GetTotalMemory(true) < managedPressure)
+                        if (!MemoryHelper.CanAllocate(managedPressure))
                         {
                             Debug.WriteLine($"Discarding task because there is no {managedPressure:N0} bytes of available managed memory");
                             task.IsCanceled = true;
@@ -258,7 +249,18 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         if (!task.IsCanceled)
                         {
                             Debug.WriteLine($"Generating anti aliased image {task.Size.Width}x{task.Size.Height} on thread #{Thread.CurrentThread.ManagedThreadId}");
-                            result = task.Source.ToBitmap(task.Size, true, false);
+                            try
+                            {
+                                result = task.Source.ToBitmap(task.Size, true, false);
+                            }
+                            catch (OutOfMemoryException)
+                            {
+                                // despite all of the preconditions the memory could not be allocated
+                                // NOTE: practically we always can recover from here: we simply don't use a generated preview and the worker thread can be finished
+                                result?.Dispose();
+                                result = null;
+                                task.IsCanceled = true;
+                            }
                         }
                     }
 

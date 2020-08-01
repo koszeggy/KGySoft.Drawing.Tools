@@ -75,7 +75,7 @@ namespace KGySoft.Drawing.ImagingTools.View
         {
             if (icon == null)
                 throw new ArgumentNullException(nameof(icon), PublicResources.ArgumentNull);
-            return icon.ExtractNearestBitmap(referenceSize.Scale(WindowsUtils.SystemScale), PixelFormat.Format32bppArgb);
+            return icon.ExtractNearestBitmap(referenceSize.Scale(OSUtils.SystemScale), PixelFormat.Format32bppArgb);
         }
 
         #endregion
@@ -85,7 +85,7 @@ namespace KGySoft.Drawing.ImagingTools.View
         private static Bitmap GetResource(string resourceName)
         {
             var icon = (Icon)Properties.Resources.ResourceManager.GetObject(resourceName, CultureInfo.InvariantCulture);
-            if (WindowsUtils.IsVistaOrLater)
+            if (OSUtils.IsVistaOrLater)
                 return icon.ToMultiResBitmap();
 
             // In Windows XP the multi resolution bitmap can be ugly if it has not completely transparent pixels

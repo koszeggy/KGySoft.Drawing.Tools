@@ -23,7 +23,7 @@ using System.Drawing;
 
 namespace KGySoft.Drawing.ImagingTools
 {
-    internal static class WindowsUtils
+    internal static class OSUtils
     {
         #region Fields
 

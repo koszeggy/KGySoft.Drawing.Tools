@@ -109,6 +109,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             InitPropertyBindings();
             InitCommandBindings();
             base.ApplyViewModel();
+            imageViewer.Focus();
         }
 
         protected override void Dispose(bool disposing)
@@ -244,9 +245,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void AdjustSize()
         {
-            if (imageViewer.Height >= 16 + SystemInformation.HorizontalScrollBarHeight)
+            int minHeight = new Size(16, 16).Scale(this.GetScale()).Height + SystemInformation.HorizontalScrollBarHeight;
+            if (imageViewer.Height >= minHeight)
                 return;
-            txtInfo.Height = ClientSize.Height - tsMenu.Height - splitter.Height - 16 - SystemInformation.HorizontalScrollBarHeight;
+            txtInfo.Height = ClientSize.Height - tsMenu.Height - splitter.Height - minHeight;
             PerformLayout();
         }
 

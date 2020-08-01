@@ -46,7 +46,7 @@ namespace KGySoft.Drawing.ImagingTools.View
         {
             if (control == null)
                 throw new ArgumentNullException(nameof(control));
-            return WindowsUtils.GetScale(control.Handle);
+            return OSUtils.GetScale(control.Handle);
         }
 
         internal static Size ScaleSize(this Control control, Size size) => size.Scale(control.GetScale());

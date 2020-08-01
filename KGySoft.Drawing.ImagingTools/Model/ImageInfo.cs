@@ -331,7 +331,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
             Icon = icon;
             Type = ImageInfoType.Icon;
-            PointF defaultDpi = WindowsUtils.SystemDpi;
+            PointF defaultDpi = OSUtils.SystemDpi;
             HorizontalRes = defaultDpi.X;
             VerticalRes = defaultDpi.Y;
 
@@ -354,7 +354,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
                 InitIconMeta(iconInfo[i], frames[i]);
 
                 // In Windows XP all icon images are uncompressed so displaying just Icon
-                if (!WindowsUtils.IsVistaOrLater)
+                if (!OSUtils.IsVistaOrLater)
                     RawFormat = ImageFormat.Icon.Guid;
             }
 
