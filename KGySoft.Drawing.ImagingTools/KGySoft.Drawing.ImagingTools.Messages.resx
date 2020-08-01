@@ -394,6 +394,9 @@ Are you sure you want to save the file with the provided extension?</value>
   <data name="btnAutoZoom.Text" xml:space="preserve">
     <value>Auto Zoom</value>
   </data>
+  <data name="btnAntiAlias.Text" xml:space="preserve">
+    <value>Smooth Zooming</value>
+  </data>
   <data name="btnOpen.Text" xml:space="preserve">
     <value>Open...</value>
   </data>

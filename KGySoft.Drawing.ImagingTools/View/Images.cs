@@ -45,6 +45,7 @@ namespace KGySoft.Drawing.ImagingTools.View
         private static Bitmap animation;
         private static Bitmap multiSize;
         private static Bitmap multiPage;
+        private static Bitmap smoothZoom;
 
         #endregion
 
@@ -64,6 +65,7 @@ namespace KGySoft.Drawing.ImagingTools.View
         internal static Bitmap Animation => animation ??= GetResource(nameof(Animation));
         internal static Bitmap MultiSize => multiSize ??= GetResource(nameof(MultiSize));
         internal static Bitmap MultiPage => multiPage ??= GetResource(nameof(MultiPage));
+        internal static Bitmap SmoothZoom => smoothZoom ??= GetResource(nameof(SmoothZoom));
 
         #endregion
 

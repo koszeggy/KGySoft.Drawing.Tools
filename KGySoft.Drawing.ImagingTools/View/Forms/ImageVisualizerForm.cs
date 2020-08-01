@@ -18,11 +18,9 @@
 
 using System;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
-using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
@@ -96,6 +94,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             btnPrev.Image = Images.Prev;
             btnNext.Image = Images.Next;
             btnConfiguration.Image = Images.Settings;
+            btnAntiAlias.Image = Images.SmoothZoom;
             toolTip.SetToolTip(lblNotification, Res.Get($"{nameof(lblNotification)}.ToolTip"));
 
             // base cannot handle these because components do not have names and dialogs are not even added to components field
