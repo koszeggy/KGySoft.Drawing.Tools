@@ -6,6 +6,28 @@
 ===============================================================================
 
 ~~~~~~~~~
+* v2.2.0:
+~~~~~~~~~
+
++ KGySoft.Drawing.ImagingTools.exe
+==================================
++ API changes:
+  + InstallationInfo class:
+    + New TargetFramework property
++ Functional changes:
+  + The image preview now can be zoomed and scrolled freely when Auto Zoom is turned off.
+    To zoom use the Ctrl + Mouse Wheel or the pinch zooming gesture on the touchpad.
+    For scrolling vertical and horizontal mouse wheels and the touchpad scrolling gestures are completely supported.
+  + New Smooth Zooming toggle button:
+    For bitmaps and icons toggles pixelated/smoothed appearance when the image is enlarged.
+    For metafiles toggles anti-aliasing on any size. Can be ignored on low memory when zooming is too large
+
+- KGySoft.Drawing.DebuggerVisualizers.dll
+=========================================
+- Changing ColorPalette serialization so now it works also in .NET Core projects.
+
+
+~~~~~~~~~
 ! v2.1.0:
 ~~~~~~~~~
 

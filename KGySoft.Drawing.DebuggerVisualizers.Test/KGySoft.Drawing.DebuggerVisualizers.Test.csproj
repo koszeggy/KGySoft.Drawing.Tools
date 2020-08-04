@@ -1,8 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <TargetFrameworks>net35;net40;net45</TargetFrameworks>
-    <!--<TargetFrameworks>net45</TargetFrameworks>-->
+    <!--<TargetFrameworks>net35;net40;net45;netcoreapp3.0</TargetFrameworks>-->
+    <TargetFrameworks>net45</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>KGySoft.Drawing.DebuggerVisualizers.Test</RootNamespace>
     <SignAssembly>true</SignAssembly>
@@ -13,6 +13,7 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Authors>György Kőszeg</Authors>
+    <UseWindowsForms>true</UseWindowsForms>
     <OutputType>WinExe</OutputType>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>

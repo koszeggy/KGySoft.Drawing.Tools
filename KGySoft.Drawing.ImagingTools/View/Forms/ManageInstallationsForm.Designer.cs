@@ -46,7 +46,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.gbInstallation.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gbInstallation.Location = new System.Drawing.Point(3, 89);
             this.gbInstallation.Name = "gbInstallation";
-            this.gbInstallation.Size = new System.Drawing.Size(308, 105);
+            this.gbInstallation.Size = new System.Drawing.Size(378, 105);
             this.gbInstallation.TabIndex = 2;
             this.gbInstallation.TabStop = false;
             this.gbInstallation.Text = "gbInstallation";
@@ -64,14 +64,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.tblButtons.RowCount = 1;
             this.tblButtons.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tblButtons.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 37F));
-            this.tblButtons.Size = new System.Drawing.Size(302, 37);
+            this.tblButtons.Size = new System.Drawing.Size(372, 37);
             this.tblButtons.TabIndex = 3;
             // 
             // btnRemove
             // 
             this.btnRemove.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.btnRemove.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnRemove.Location = new System.Drawing.Point(189, 7);
+            this.btnRemove.Location = new System.Drawing.Point(241, 7);
             this.btnRemove.Name = "btnRemove";
             this.btnRemove.Size = new System.Drawing.Size(75, 23);
             this.btnRemove.TabIndex = 1;
@@ -82,7 +82,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // 
             this.btnInstall.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.btnInstall.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnInstall.Location = new System.Drawing.Point(38, 7);
+            this.btnInstall.Location = new System.Drawing.Point(55, 7);
             this.btnInstall.Name = "btnInstall";
             this.btnInstall.Size = new System.Drawing.Size(75, 23);
             this.btnInstall.TabIndex = 0;
@@ -96,7 +96,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.pnlStatus.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlStatus.Location = new System.Drawing.Point(3, 49);
             this.pnlStatus.Name = "pnlStatus";
-            this.pnlStatus.Size = new System.Drawing.Size(302, 17);
+            this.pnlStatus.Size = new System.Drawing.Size(372, 17);
             this.pnlStatus.TabIndex = 2;
             // 
             // lblStatusText
@@ -129,7 +129,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.tbPath.Dock = System.Windows.Forms.DockStyle.Top;
             this.tbPath.Location = new System.Drawing.Point(3, 29);
             this.tbPath.Name = "tbPath";
-            this.tbPath.Size = new System.Drawing.Size(302, 20);
+            this.tbPath.Size = new System.Drawing.Size(372, 20);
             this.tbPath.TabIndex = 1;
             this.tbPath.Text = "tbPath";
             // 
@@ -150,7 +150,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.gbVisualStudioVersions.Dock = System.Windows.Forms.DockStyle.Top;
             this.gbVisualStudioVersions.Location = new System.Drawing.Point(3, 43);
             this.gbVisualStudioVersions.Name = "gbVisualStudioVersions";
-            this.gbVisualStudioVersions.Size = new System.Drawing.Size(308, 46);
+            this.gbVisualStudioVersions.Size = new System.Drawing.Size(378, 46);
             this.gbVisualStudioVersions.TabIndex = 1;
             this.gbVisualStudioVersions.TabStop = false;
             this.gbVisualStudioVersions.Text = "gbVisualStudioVersions";
@@ -163,7 +163,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.cbInstallations.FormattingEnabled = true;
             this.cbInstallations.Location = new System.Drawing.Point(3, 16);
             this.cbInstallations.Name = "cbInstallations";
-            this.cbInstallations.Size = new System.Drawing.Size(302, 21);
+            this.cbInstallations.Size = new System.Drawing.Size(372, 21);
             this.cbInstallations.TabIndex = 0;
             // 
             // gbAvailableVersion
@@ -172,7 +172,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.gbAvailableVersion.Dock = System.Windows.Forms.DockStyle.Top;
             this.gbAvailableVersion.Location = new System.Drawing.Point(3, 3);
             this.gbAvailableVersion.Name = "gbAvailableVersion";
-            this.gbAvailableVersion.Size = new System.Drawing.Size(308, 40);
+            this.gbAvailableVersion.Size = new System.Drawing.Size(378, 40);
             this.gbAvailableVersion.TabIndex = 0;
             this.gbAvailableVersion.TabStop = false;
             this.gbAvailableVersion.Text = "gbAvailableVersion";
@@ -192,7 +192,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(314, 197);
+            this.ClientSize = new System.Drawing.Size(384, 197);
             this.Controls.Add(this.gbInstallation);
             this.Controls.Add(this.gbVisualStudioVersions);
             this.Controls.Add(this.gbAvailableVersion);

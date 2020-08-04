@@ -107,9 +107,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             else if (availableVersion.Version == null)
                 AvailableVersionText = Res.InstallationsStatusUnknown;
             else
-                AvailableVersionText = availableVersion.RuntimeVersion == null
-                    ? Res.InstallationAvailable(availableVersion.Version)
-                    : Res.InstallationsAvailableWithRuntime(availableVersion.Version, availableVersion.RuntimeVersion);
+                AvailableVersionText = availableVersion.TargetFramework != null ? Res.InstallationsAvailableWithTargetFramework(availableVersion.Version, availableVersion.TargetFramework)
+                    : availableVersion.RuntimeVersion != null ? Res.InstallationsAvailableWithRuntime(availableVersion.Version, availableVersion.RuntimeVersion)
+                    : Res.InstallationAvailable(availableVersion.Version);
             InstallCommandState.Enabled = available;
         }
 
@@ -174,10 +174,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             else if (currentStatus.Version == null)
                 StatusText = Res.InstallationsStatusUnknown;
             else
-                StatusText = currentStatus.RuntimeVersion == null
-                    ? Res.InstallationsStatusInstalled(currentStatus.Version)
-                    : Res.InstallationsStatusInstalledWithRuntime(currentStatus.Version, currentStatus.RuntimeVersion);
-            RemoveCommandState.Enabled = currentStatus.Installed;
+                StatusText = currentStatus.TargetFramework != null ? Res.InstallationsStatusInstalledWithTargetFramework(currentStatus.Version, currentStatus.TargetFramework)
+                    : currentStatus.RuntimeVersion != null ? Res.InstallationsStatusInstalledWithRuntime(currentStatus.Version, currentStatus.RuntimeVersion)
+                    : Res.InstallationsStatusInstalled(currentStatus.Version);
         }
 
         private void SelectFolder()
@@ -202,6 +201,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             if (currentStatus.Installed && !Confirm(Res.ConfirmMessageOverwriteInstallation))
                 return;
+#if NETCOREAPP
+            if (!Confirm(Res.ConfirmMessageNetCoreVersion))
+                return;
+#endif
+
             InstallationManager.Install(currentStatus.Path, out string error, out string warning);
             if (error != null)
                 ShowError(Res.ErrorMessageInstallationFailed(error));

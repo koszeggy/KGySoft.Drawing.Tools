@@ -21,9 +21,17 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
-using System.Security.Policy;
+using System.Runtime.Versioning;
 
-using KGySoft.CoreLibraries;
+#if NETFRAMEWORK
+using KGySoft.CoreLibraries; 
+#endif
+#if NETCOREAPP
+using System.Runtime.Loader;
+#endif
+#if NETFRAMEWORK
+using System.Security.Policy; 
+#endif
 
 #endregion
 
@@ -36,19 +44,21 @@ namespace KGySoft.Drawing.ImagingTools.Model
     {
         #region InitializerSandbox class
 
+#if NETFRAMEWORK
         [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses",
             Justification = "False alarm, instantiated by the InstallationInfo constructor in a separated AppDmain")]
         private sealed class InitializerSandbox : MarshalByRefObject
         {
-            #region Methods
+            #region Constructors
 
             public InitializerSandbox(InstallationInfo info, string path)
             {
                 try
                 {
-                    var asm = Assembly.ReflectionOnlyLoadFrom(InstallationManager.GetDebuggerVisualizerFilePath(path));
+                    Assembly asm = Assembly.LoadFrom(InstallationManager.GetDebuggerVisualizerFilePath(path));
                     info.Version = asm.GetName().Version;
                     info.RuntimeVersion = asm.ImageRuntimeVersion;
+                    info.TargetFramework = (Attribute.GetCustomAttribute(asm, typeof(TargetFrameworkAttribute)) as TargetFrameworkAttribute)?.FrameworkName;
                 }
                 catch (Exception e) when (!e.IsCritical())
                 {
@@ -59,6 +69,47 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
             #endregion
         }
+#endif
+
+        #endregion
+
+        #region SandboxContext class
+
+#if NETCOREAPP
+        private sealed class SandboxContext : AssemblyLoadContext
+        {
+
+            #region Field
+
+            private readonly AssemblyDependencyResolver resolver;
+
+            #endregion
+
+            #region Constructors
+
+            internal SandboxContext(string path) : base(nameof(SandboxContext), isCollectible: true)
+            {
+                resolver = new AssemblyDependencyResolver(path);
+            }
+
+            #endregion
+
+            #region Methods
+
+            protected override Assembly Load(AssemblyName name)
+            {
+                // ensuring that dependencies of the main assembly are also loaded into this context
+                string assemblyPath = resolver.ResolveAssemblyToPath(name);
+                if (assemblyPath == null)
+                    return null;
+
+                using var fs = File.OpenRead(assemblyPath);
+                return LoadFromStream(fs);
+            }
+
+            #endregion
+        }
+#endif
 
         #endregion
 
@@ -86,6 +137,13 @@ namespace KGySoft.Drawing.ImagingTools.Model
         /// </summary>
         public string RuntimeVersion { get; private set; }
 
+        /// <summary>
+        /// Gets the target framework of an identified debugger visualizer installation.
+        /// Can return <see langword="null"/>&#160;even if <see cref="Installed"/> is <see langword="true"/>, if the assembly does no contain target framework information
+        /// (typically .NET 3.5 version).
+        /// </summary>
+        public string TargetFramework { get; private set; }
+
         #endregion
 
         #region Constructors
@@ -102,6 +160,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
             // Trying to determine the version by loading it into a sandbox domain. 
             try
             {
+#if NETFRAMEWORK
                 Evidence evidence = new Evidence(AppDomain.CurrentDomain.Evidence);
                 AppDomain sandboxDomain = AppDomain.CreateDomain(nameof(InitializerSandbox), evidence, Files.GetExecutingPath(), null, false);
                 try
@@ -117,6 +176,27 @@ namespace KGySoft.Drawing.ImagingTools.Model
                 {
                     AppDomain.Unload(sandboxDomain);
                 }
+#else
+                var context = new SandboxContext(path);
+                try
+                {
+                    // note: we use LoadFromStream instead of LoadFromAssemblyPath because that keeps the file locked even after unloading the context
+                    using var fs = File.OpenRead(InstallationManager.GetDebuggerVisualizerFilePath(path));
+                    Assembly asm = context.LoadFromStream(fs);
+                    Version = asm.GetName().Version;
+                    RuntimeVersion = asm.ImageRuntimeVersion;
+                    TargetFramework = (Attribute.GetCustomAttribute(asm, typeof(TargetFrameworkAttribute)) as TargetFrameworkAttribute)?.FrameworkName;
+                }
+                catch (Exception e) when (!e.IsCritical())
+                {
+                    Version = null;
+                    RuntimeVersion = null;
+                }
+                finally
+                {
+                    context.Unload();
+                }
+#endif
             }
             catch (Exception e) when (!e.IsCritical())
             {

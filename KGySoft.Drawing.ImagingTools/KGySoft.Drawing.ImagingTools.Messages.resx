@@ -364,6 +364,9 @@ Are you sure you want to save the file with the provided extension?</value>
   <data name="ConfirmMessage_RemoveInstallation" xml:space="preserve">
     <value>Are you sure you want to remove this installation?</value>
   </data>
+  <data name="ConfirmMessage_NetCoreVersion" xml:space="preserve">
+    <value>You are about to install the .NET Core version, which might not be supported by Visual Studio as a debugger visualizer. Are you sure?</value>
+  </data>
   <data name="InfoMessage_PaletteEmpty" xml:space="preserve">
     <value>The palette contains no colors. Click OK to exit.</value>
   </data>
@@ -385,11 +388,17 @@ Are you sure you want to save the file with the provided extension?</value>
   <data name="Installation_AvailableWithRuntimeFormat" xml:space="preserve">
     <value>Debugger version: {0} - Runtime: {1}</value>
   </data>
+  <data name="Installation_AvailableWithTargetFrameworkFormat" xml:space="preserve">
+    <value>Debugger version: {0} - Target: {1}</value>
+  </data>
   <data name="Installations_StatusInstalledFormat" xml:space="preserve">
     <value>Installed: {0}</value>
   </data>
   <data name="Installations_StatusInstalledWithRuntimeFormat" xml:space="preserve">
     <value>Installed: {0} - Runtime: {1}</value>
+  </data>
+  <data name="Installations_StatusInstalledWithTargetFrameworkFormat" xml:space="preserve">
+    <value>Installed: {0} - Target: {1}</value>
   </data>
   <data name="btnAutoZoom.Text" xml:space="preserve">
     <value>Auto Zoom</value>

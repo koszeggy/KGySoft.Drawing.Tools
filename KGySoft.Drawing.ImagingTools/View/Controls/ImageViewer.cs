@@ -369,6 +369,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             {
                 if (image == value)
                     return;
+
                 SetImage(value);
             }
         }
