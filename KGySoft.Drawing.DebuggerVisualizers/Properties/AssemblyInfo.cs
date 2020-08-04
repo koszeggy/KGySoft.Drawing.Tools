@@ -7,8 +7,6 @@ using System.Runtime.InteropServices;
 using KGySoft.Drawing.DebuggerVisualizers;
 using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 
-using Microsoft.VisualStudio.DebuggerVisualizers;
-
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
@@ -75,18 +73,12 @@ using Microsoft.VisualStudio.DebuggerVisualizers;
     Target = typeof(BitmapData),
     Description = "KGy SOFT BitmapData Debugger Visualizer")]
 
-//// Color list. Note: PaletteDebuggerVisualizer and PaletteSerializer supports any color list and any color count,
-//// though VS visualizers do not support interfaces and arrays. In case of a List<> visualizer, it can be re-used for Color element type
-//[assembly: DebuggerVisualizer(typeof(PaletteDebuggerVisualizer), typeof(PaletteSerializer),
-//    Target = typeof(IList<Color>),
-//    Description = "KGy SOFT Color List Debugger Visualizer")]
-
-// Color palette (serialized by AnySerialier, because ColorPalette is not serializable)
-[assembly: DebuggerVisualizer(typeof(PaletteDebuggerVisualizer), typeof(AnySerializer),
+// Color palette
+[assembly: DebuggerVisualizer(typeof(ColorPaletteDebuggerVisualizer), typeof(ColorPaletteSerializer),
     Target = typeof(ColorPalette),
     Description = "KGy SOFT Color Palette Debugger Visualizer")]
 
 // Color (regular serialization)
-[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(VisualizerObjectSource),
+[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
     Target = typeof(Color),
     Description = "KGy SOFT Color Debugger Visualizer")]
