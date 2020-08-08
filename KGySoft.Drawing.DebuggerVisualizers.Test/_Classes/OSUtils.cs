@@ -1,9 +1,9 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: SizeExtensions.cs
+//  File: WindowsUtils.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2019 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2020 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution. If not, then this file is considered as
@@ -16,23 +16,26 @@
 
 #region Usings
 
+using System;
 using System.Drawing;
+
+using KGySoft.CoreLibraries;
 
 #endregion
 
-namespace KGySoft.Drawing.ImagingTools
+namespace KGySoft.Drawing.DebuggerVisualizers.Test
 {
-    internal static class SizeExtensions
+    internal static class OSUtils
     {
-        #region Methods
+        #region Fields
 
-        internal static SizeF ScaleF(this Size size, PointF scale) =>
-            new SizeF(scale.X * size.Width, scale.Y * size.Height);
+        private static bool? isWindows;
 
-        internal static Size Scale(this Size size, PointF scale) =>
-            Size.Round(ScaleF(size, scale));
+        #endregion
 
-        internal static Size Scale(this Size size, float scale) => size.Scale(new PointF(scale, scale));
+        #region Properties
+
+        internal static bool IsWindows => isWindows ??= Environment.OSVersion.Platform.In(PlatformID.Win32NT, PlatformID.Win32Windows);
 
         #endregion
     }

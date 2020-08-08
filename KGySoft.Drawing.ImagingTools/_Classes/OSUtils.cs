@@ -18,20 +18,24 @@
 
 using System;
 using System.Drawing;
+using KGySoft.CoreLibraries;
 
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools
 {
-    internal static class WindowsUtils
+    internal static class OSUtils
     {
         #region Fields
 
         private static bool? isVistaOrLater;
+        private static bool? isWindows;
 
         #endregion
 
         #region Properties
+
+        internal static bool IsWindows => isWindows ??= Environment.OSVersion.Platform.In(PlatformID.Win32NT, PlatformID.Win32Windows);
 
         internal static bool IsVistaOrLater
         {

@@ -63,6 +63,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         /// <summary>KGy SOFT Drawing DebuggerVisualizers {0} have been installed to {1}</summary>
         internal static string InfoMessageInstallationFinished(Version version, string targetPath) => Get(Resources.InfoMessage_InstallationFinishedFormat, version, targetPath);
 
+        /// <summary>KGy SOFT Drawing DebuggerVisualizers {0} have been upgraded to version {1} at {2}</summary>
+        internal static string InfoMessageUpgradeFinished(Version oldVersion, Version newVersion, string targetPath) => Get(Resources.InfoMessage_InstallationUpgradedFormat, oldVersion, newVersion, targetPath);
+
         #endregion
 
         #region Private Methods

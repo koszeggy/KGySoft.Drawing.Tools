@@ -17,6 +17,7 @@
 #region Usings
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
@@ -32,6 +33,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
 
         private readonly CommandBindingsCollection commandBindings = new CommandBindingsCollection();
         private readonly DebuggerTestFormViewModel viewModel = new DebuggerTestFormViewModel();
+        private readonly Timer timer;
+        private string errorMessage;
 
         #endregion
 
@@ -79,7 +82,17 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
 
             viewModel.GetHwndCallback = () => Handle;
             viewModel.GetClipCallback = () => pictureBox.Bounds;
-            viewModel.ErrorCallback = message => MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            // Due to some strange issue on Linux the app crashes if we show a MessageBox while changing radio buttons
+            // so as a workaround we show error messages by using a timer. Another solution would be to show a custom dialog.
+            timer = new Timer { Interval = 1 };
+            viewModel.ErrorCallback = message =>
+            {
+                errorMessage = message;
+                timer.Enabled = true;
+            };
+            commandBindings.Add(OnShowErrorCommand)
+                .AddSource(timer, nameof(timer.Tick));
         }
 
         #endregion
@@ -99,6 +112,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
                 components?.Dispose();
                 commandBindings.Dispose();
                 viewModel.Dispose();
+                timer?.Dispose();
             }
 
             base.Dispose(disposing);
@@ -118,6 +132,15 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
                 if (ofd.ShowDialog() == DialogResult.OK)
                     tbFile.Text = ofd.FileName;
             }
+        }
+
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "This is just a test app")]
+        private void OnShowErrorCommand()
+        {
+            timer.Enabled = false;
+            if (errorMessage != null)
+                MessageBox.Show(this, errorMessage, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            errorMessage = null;
         }
 
         #endregion

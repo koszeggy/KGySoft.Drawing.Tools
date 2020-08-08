@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="fd42f5a8-4449-4c07-8b60-b6bd58b67118" Version="2.1.0" Language="en-US" Publisher="KGy SOFT" />
+    <Identity Id="fd42f5a8-4449-4c07-8b60-b6bd58b67118" Version="2.2.0" Language="en-US" Publisher="KGy SOFT" />
     <DisplayName>KGy SOFT Drawing DebuggerVisualizers</DisplayName>
     <Description xml:space="preserve">Debugger Visualizers for System.Drawing types such as Image (Bitmap and Metafile), Icon, Graphics, BitmapData, ColorPalette and Color.</Description>
     <MoreInfo>https://github.com/koszeggy/KGySoft.Drawing.Tools</MoreInfo>

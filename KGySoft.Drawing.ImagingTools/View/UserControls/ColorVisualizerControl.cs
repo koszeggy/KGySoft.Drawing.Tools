@@ -29,7 +29,7 @@ using KGySoft.CoreLibraries;
 
 namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    internal partial class ColorVisualizerControl : UserControl
+    internal partial class ColorVisualizerControl : BaseUserControl
     {
         #region Fields
 
@@ -53,7 +53,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Events
 
-        internal event EventHandler ColorEdited;
+        internal event EventHandler ColorEdited
+        {
+            add => Events.AddHandler(nameof(ColorEdited), value);
+            remove => Events.RemoveHandler(nameof(ColorEdited), value);
+        }
 
         #endregion
 
@@ -279,7 +283,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             alphaBrush = new TextureBrush(bmpPattern);
         }
 
-        private void OnColorEdited() => ColorEdited?.Invoke(this, EventArgs.Empty);
+        private void OnColorEdited() => Events.GetHandler<EventHandler>(nameof(ColorEdited))?.Invoke(this, EventArgs.Empty);
 
         #endregion
 

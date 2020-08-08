@@ -18,8 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
@@ -28,7 +26,7 @@ using System.Windows.Forms;
 
 namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
-    internal sealed class PalettePanel : Panel
+    internal sealed partial class PalettePanel : BaseControl
     {
         #region Constants
 
@@ -47,15 +45,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Instance Fields
 
-        [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed",
-            Justification = "False alarm, added to Controls, which is disposed by base")]
-        private VScrollBar sbPalette;
-
-        [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed",
-            Justification = "False alarm, added to components, which is disposed")]
-        private Timer timerSelection;
-        private IContainer components;
-
         private IList<Color> palette;
         private int selectedColorIndex = -1;
         private int firstVisibleColor;
@@ -70,7 +59,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Events
 
-        internal event EventHandler SelectedColorChanged;
+        internal event EventHandler SelectedColorChanged
+        {
+            add => Events.AddHandler(nameof(SelectedColorChanged), value);
+            remove => Events.RemoveHandler(nameof(SelectedColorChanged), value);
+        }
 
         #endregion
 
@@ -165,6 +158,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         internal PalettePanel()
         {
             InitializeComponent();
+
+            sbPalette.ValueChanged += sbPalette_ValueChanged;
+            timerSelection.Tick += timerSelection_Tick;
 
             DoubleBuffered = true;
             SetStyle(ControlStyles.Selectable, true);
@@ -351,34 +347,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Private Methods
 
-        private void InitializeComponent()
-        {
-            components = new Container();
-            sbPalette = new VScrollBar();
-            timerSelection = new Timer(components);
-            SuspendLayout();
-            // 
-            // sbPalette
-            // 
-            sbPalette.Dock = DockStyle.Right;
-            sbPalette.Location = new Point(183, 0);
-            sbPalette.Name = "sbPalette";
-            sbPalette.Size = new Size(17, 100);
-            sbPalette.TabIndex = 0;
-            sbPalette.Visible = false;
-            sbPalette.ValueChanged += new EventHandler(sbPalette_ValueChanged);
-            // 
-            // timerSelection
-            // 
-            timerSelection.Interval = 20;
-            timerSelection.Tick += new EventHandler(timerSelection_Tick);
-            // 
-            // PalettePanel
-            // 
-            Controls.Add(sbPalette);
-            ResumeLayout(false);
-        }
-
         /// <summary>
         /// Checks the scrollbar and returns <see langword="true"/> on layout change (which means invalidated graphics)
         /// </summary>
@@ -432,7 +400,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             => selectedColorIndex >= firstVisibleColor
                 && selectedColorIndex < firstVisibleColor + (visibleRowCount << 4);
 
-        private void OnSelectedColorChanged(EventArgs e) => SelectedColorChanged?.Invoke(this, e);
+        private void OnSelectedColorChanged(EventArgs e) => Events.GetHandler<EventHandler>(nameof(SelectedColorChanged))?.Invoke(this, e);
 
         #endregion
 

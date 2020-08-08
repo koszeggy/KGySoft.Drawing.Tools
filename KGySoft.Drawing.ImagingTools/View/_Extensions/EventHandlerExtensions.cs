@@ -1,9 +1,9 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: SizeExtensions.cs
+//  File: EventHandlerExtensions.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2019 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2020 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution. If not, then this file is considered as
@@ -16,23 +16,18 @@
 
 #region Usings
 
-using System.Drawing;
+using System;
+using System.ComponentModel;
 
 #endregion
 
-namespace KGySoft.Drawing.ImagingTools
+namespace KGySoft.Drawing.ImagingTools.View
 {
-    internal static class SizeExtensions
+    internal static class EventHandlerExtensions
     {
         #region Methods
 
-        internal static SizeF ScaleF(this Size size, PointF scale) =>
-            new SizeF(scale.X * size.Width, scale.Y * size.Height);
-
-        internal static Size Scale(this Size size, PointF scale) =>
-            Size.Round(ScaleF(size, scale));
-
-        internal static Size Scale(this Size size, float scale) => size.Scale(new PointF(scale, scale));
+        internal static TDelegate GetHandler<TDelegate>(this EventHandlerList handlers, object key) where TDelegate : Delegate => handlers?[key] as TDelegate;
 
         #endregion
     }

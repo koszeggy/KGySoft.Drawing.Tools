@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net35;net40;net45</TargetFrameworks>
+    <TargetFrameworks>net35;net40;net45;netcoreapp3.0</TargetFrameworks>
     <!--<TargetFrameworks>net45</TargetFrameworks>-->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>KGySoft.Drawing.DebuggerVisualizers</RootNamespace>
@@ -17,8 +17,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="KGySoft.CoreLibraries" Version="5.1.1" />
-    <PackageReference Include="KGySoft.Drawing" Version="5.1.0" />
+    <PackageReference Include="KGySoft.CoreLibraries" Version="5.3.0" />
+    <PackageReference Include="KGySoft.Drawing" Version="5.2.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

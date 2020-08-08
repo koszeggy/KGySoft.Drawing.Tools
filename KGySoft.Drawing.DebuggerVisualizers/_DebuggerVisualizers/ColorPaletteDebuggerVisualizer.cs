@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: PaletteDebuggerVisualizer.cs
+//  File: ColorPaletteDebuggerVisualizer.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2019 - All Rights Reserved
 //
@@ -18,9 +18,8 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing.Imaging;
-
+using KGySoft.Drawing.DebuggerVisualizers.Model;
 using KGySoft.Drawing.DebuggerVisualizers.Serialization;
-using KGySoft.Serialization.Binary;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;
 
@@ -30,7 +29,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
 {
     [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses",
         Justification = "False alarm, instantiated by VS debugger visualizers")]
-    internal sealed class PaletteDebuggerVisualizer : DialogDebuggerVisualizer
+    internal sealed class ColorPaletteDebuggerVisualizer : DialogDebuggerVisualizer
     {
         #region Methods
 
@@ -41,10 +40,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <param name="objectProvider">The object provider.</param>
         protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
         {
-            // ColorPalette is not serializable by default so obtaining/replacing it by serializable wrappers
-            ColorPalette newPalette = DebuggerHelper.DebugPalette((ColorPalette)SerializationHelper.DeserializeAnyObject(objectProvider.GetData()), objectProvider.IsObjectReplaceable);
+            ColorPalette newPalette = DebuggerHelper.DebugPalette(SerializationHelper.DeserializeColorPalette(objectProvider.GetData()), objectProvider.IsObjectReplaceable);
             if (objectProvider.IsObjectReplaceable && newPalette != null)
-                objectProvider.ReplaceObject(new AnyObjectSerializerWrapper(newPalette, true));
+                objectProvider.ReplaceObject(new ColorPaletteReference(newPalette));
         }
 
         #endregion

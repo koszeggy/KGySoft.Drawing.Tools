@@ -161,6 +161,9 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Are you sure you want to remove this installation?</summary>
         internal static string ConfirmMessageRemoveInstallation => Get("ConfirmMessage_RemoveInstallation");
 
+        /// <summary>You are about to install the .NET Core version, which might not be supported by Visual Studio as a debugger visualizer. Are you sure?</summary>
+        internal static string ConfirmMessageNetCoreVersion => Get("ConfirmMessage_NetCoreVersion");
+
         /// <summary>The palette contains no colors. Click OK to exit.</summary>
         internal static string InfoMessagePaletteEmpty => Get("InfoMessage_PaletteEmpty");
 
@@ -396,11 +399,17 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Debugger version: {0} - Runtime: {1}</summary>
         internal static string InstallationsAvailableWithRuntime(Version version, string runtimeVersion) => Get("Installation_AvailableWithRuntimeFormat", version, runtimeVersion);
 
+        /// <summary>Debugger version: {0} - Target: {1}</summary>
+        internal static string InstallationsAvailableWithTargetFramework(Version version, string targetFramework) => Get("Installation_AvailableWithTargetFrameworkFormat", version, targetFramework);
+
         /// <summary>Installed: {0}</summary>
         internal static string InstallationsStatusInstalled(Version version) => Get("Installations_StatusInstalledFormat", version);
 
         /// <summary>Installed: {0} - Runtime: {1}</summary>
         internal static string InstallationsStatusInstalledWithRuntime(Version version, string runtimeVersion) => Get("Installations_StatusInstalledWithRuntimeFormat", version, runtimeVersion);
+
+        /// <summary>Installed: {0} - Target: {1}</summary>
+        internal static string InstallationsStatusInstalledWithTargetFramework(Version version, string targetFramework) => Get("Installations_StatusInstalledWithTargetFrameworkFormat", version, targetFramework);
 
         #endregion
 

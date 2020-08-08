@@ -18,6 +18,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 #endregion
@@ -118,7 +119,20 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
             {
                 if (e.Item is ToolStripButton button && button.Checked && button.Enabled)
-                    e.Graphics.Clear(ProfessionalColors.ButtonSelectedGradientMiddle);
+                {
+                    if (OSUtils.IsWindows)
+                        e.Graphics.Clear(ProfessionalColors.ButtonSelectedGradientMiddle);
+                    else
+                    {
+                        // In Mono without this clipping the whole tool strip container is cleared
+                        GraphicsState state = e.Graphics.Save();
+                        Rectangle rect = e.Item.ContentRectangle;
+                        rect.Inflate(1, 1);
+                        e.Graphics.SetClip(rect);
+                        e.Graphics.Clear(ProfessionalColors.ButtonSelectedGradientMiddle);
+                        e.Graphics.Restore(state);
+                    }
+                }
 
                 base.OnRenderButtonBackground(e);
             }

@@ -22,7 +22,6 @@ using System.Drawing;
 using System.Drawing.Imaging;
 
 using KGySoft.Drawing.DebuggerVisualizers.Model;
-using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.ImagingTools.View;
 using KGySoft.Drawing.ImagingTools.ViewModel;
@@ -152,7 +151,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
             using (IViewModel<Color[]> vm = ViewModelFactory.FromPalette(entries, !isReplaceable))
             {
                 ViewFactory.ShowDialog(vm, ownerWindowHandle);
-                if (!isReplaceable)
+                if (!isReplaceable || !vm.IsModified)
                     return null;
                 Color[] result = vm.GetEditedModel();
 

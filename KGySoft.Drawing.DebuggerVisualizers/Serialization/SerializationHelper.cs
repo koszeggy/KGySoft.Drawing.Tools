@@ -25,7 +25,6 @@ using System.IO;
 using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Reflection;
-using KGySoft.Serialization.Binary;
 
 #endregion
 
@@ -70,7 +69,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
                 bitmapDataInfo.Write(new BinaryWriter(outgoingData));
         }
 
-        internal static void SerializeAnyObject(object target, Stream outgoingData) => BinarySerializer.SerializeToStream(outgoingData, target);
+        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
+            Justification = "False alarm, the stream must not be disposed and the leaveOpen parameter is not available on every targeted platform")]
+        internal static void SerializeColor(Color color, Stream outgoingData) => new ColorSerializationInfo(color).Write(new BinaryWriter(outgoingData));
+
+        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
+            Justification = "False alarm, the stream must not be disposed and the leaveOpen parameter is not available on every targeted platform")]
+        internal static void SerializeColorPalette(ColorPalette palette, Stream outgoingData) => new ColorPaletteSerializationInfo(palette).Write(new BinaryWriter(outgoingData));
 
         [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
             Justification = "False alarm, disposing would dispose the return value")]
@@ -84,7 +89,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
             Justification = "False alarm, disposing would dispose the return value")]
         internal static GraphicsInfo DeserializeGraphicsInfo(Stream stream) => new GraphicsSerializationInfo(stream).GraphicsInfo;
 
-        internal static object DeserializeAnyObject(Stream stream) => BinarySerializer.DeserializeFromStream(stream);
+        internal static Color DeserializeColor(Stream stream) => new ColorSerializationInfo(stream).Color;
+
+        internal static ColorPalette DeserializeColorPalette(Stream stream) => new ColorPaletteSerializationInfo(stream).Palette;
 
         internal static void WriteImage(BinaryWriter bw, Image image)
         {
