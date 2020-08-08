@@ -18,6 +18,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 #endregion
@@ -123,9 +124,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         e.Graphics.Clear(ProfessionalColors.ButtonSelectedGradientMiddle);
                     else
                     {
-                        // In Mono without this clipping the whole tool strip container is cleared (not enabling on Windows because the rectangle is a bit smaller than normally)
-                        var state = e.Graphics.Save();
-                        e.Graphics.SetClip(e.Item.ContentRectangle);
+                        // In Mono without this clipping the whole tool strip container is cleared
+                        GraphicsState state = e.Graphics.Save();
+                        Rectangle rect = e.Item.ContentRectangle;
+                        rect.Inflate(1, 1);
+                        e.Graphics.SetClip(rect);
                         e.Graphics.Clear(ProfessionalColors.ButtonSelectedGradientMiddle);
                         e.Graphics.Restore(state);
                     }

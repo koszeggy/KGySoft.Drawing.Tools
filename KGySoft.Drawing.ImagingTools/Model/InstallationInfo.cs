@@ -58,7 +58,9 @@ namespace KGySoft.Drawing.ImagingTools.Model
                     Assembly asm = Assembly.LoadFrom(InstallationManager.GetDebuggerVisualizerFilePath(path));
                     info.Version = asm.GetName().Version;
                     info.RuntimeVersion = asm.ImageRuntimeVersion;
-                    info.TargetFramework = (Attribute.GetCustomAttribute(asm, typeof(TargetFrameworkAttribute)) as TargetFrameworkAttribute)?.FrameworkName;
+#if !NET35
+                    info.TargetFramework = (Attribute.GetCustomAttribute(asm, typeof(TargetFrameworkAttribute)) as TargetFrameworkAttribute)?.FrameworkName; 
+#endif
                 }
                 catch (Exception e) when (!e.IsCritical())
                 {

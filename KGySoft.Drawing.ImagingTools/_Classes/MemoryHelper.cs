@@ -18,7 +18,9 @@
 
 using System;
 
-using KGySoft.Drawing.ImagingTools.WinApi;
+#if NETFRAMEWORK
+using KGySoft.Drawing.ImagingTools.WinApi; 
+#endif
 
 #endregion
 
@@ -35,13 +37,32 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Fields
 
-        private static long? maxMemoryForGC;
+#if NETFRAMEWORK
+        private static long? maxMemoryForGC; 
+#endif
 
         #endregion
 
         #region Properties
 
-        private static long MaxMemoryForGC => maxMemoryForGC ??= Math.Min(IntPtr.Size == 4 ? 1_600_000_000 : Int64.MaxValue, Kernel32.GetTotalMemory());
+        private static long MaxMemoryForGC
+#if NETFRAMEWORK
+        {
+            get
+            {
+                if (maxMemoryForGC == null)
+                {
+                    maxMemoryForGC = Math.Min(
+                        IntPtr.Size == 4 ? 1_600_000_000 : Int64.MaxValue,
+                        OSUtils.IsWindows ? Kernel32.GetTotalMemory() : Int64.MaxValue);
+                }
+
+                return maxMemoryForGC.Value;
+            }
+        }
+#else
+            => GC.GetGCMemoryInfo().TotalAvailableMemoryBytes;
+#endif
 
         #endregion
 
@@ -57,14 +78,16 @@ namespace KGySoft.Drawing.ImagingTools
             if (arraySize > maxArrayLength)
                 return false;
 
-            // TODO: in .NET Core 3.0 and above use GCMemoryInfo.TotalAvailableMemoryBytes for max (that should not be cached, it can change)
-            // Using the total physical available memory (or 1.6GB on 32-bit systems, whichever is smaller) to determine free memory.
-            // Virtual memory is ignored even if can be used to avoid slowing down the system very much.
-            if (MaxMemoryForGC - GC.GetTotalMemory(false) > arraySize)
+            var maxMem = MaxMemoryForGC;
+            if (maxMem == Int64.MaxValue)
                 return true;
 
-            // Here GC is enforced
-            return MaxMemoryForGC - GC.GetTotalMemory(true) - minFreeMemory > arraySize;
+            // Using the total physical available memory (or 1.6GB on 32-bit systems, whichever is smaller) to determine free memory.
+            // Virtual memory is ignored even if can be used to avoid slowing down the system very much.
+            if (maxMem - GC.GetTotalMemory(false) > arraySize)
+                return true;
+
+            return maxMem - GC.GetTotalMemory(true) - minFreeMemory > arraySize;
         }
 
         #endregion

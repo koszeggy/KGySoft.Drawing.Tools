@@ -217,54 +217,71 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
         {
             FreeTestObject();
 
-            // actually the transient steps should be disposed, too... as this is just a test, now we rely on the destructor
-            if (Bitmap)
-                return Icons.Shield.ExtractBitmap(0).ConvertPixelFormat(PixelFormat);
-            if (Metafile)
-                return GenerateMetafile();
-            if (HIcon)
-                return AsImage ? SystemIcons.Application.ToMultiResBitmap() : (object)SystemIcons.Application;
-            if (ManagedIcon)
-                return AsImage ? Icons.Application.ToMultiResBitmap() : (object)Icons.Application;
-            if (GraphicsBitmap)
-                return GetBitmapGraphics();
-            if (GraphicsHwnd)
-                return GetWindowGraphics();
-            if (BitmapData)
-                return GetBitmapData(PixelFormat);
-            if (Palette)
-                using (var bmp = new Bitmap(1, 1, PixelFormat))
-                    return bmp.Palette;
-            if (SingleColor)
-                return Color.Black;
-            if (ImageFromFile)
-                return FromFile(FileName);
+            try
+            {
+                // actually the transient steps should be disposed, too... as this is just a test, now we rely on the destructor
+                if (Bitmap)
+                    return Icons.Shield.ExtractBitmap(0).ConvertPixelFormat(PixelFormat);
+                if (Metafile)
+                    return GenerateMetafile();
+                if (HIcon)
+                    return AsImage ? SystemIcons.Application.ToMultiResBitmap() : (object)SystemIcons.Application;
+                if (ManagedIcon)
+                    return AsImage ? Icons.Application.ToMultiResBitmap() : (object)Icons.Application;
+                if (GraphicsBitmap)
+                    return GetBitmapGraphics();
+                if (GraphicsHwnd)
+                    return GetWindowGraphics();
+                if (BitmapData)
+                    return GetBitmapData(PixelFormat);
+                if (Palette)
+                    using (var bmp = new Bitmap(1, 1, PixelFormat))
+                        return bmp.Palette;
+                if (SingleColor)
+                    return Color.Black;
+                if (ImageFromFile)
+                    return FromFile(FileName);
+            }
+            catch (Exception e) when (!(e is StackOverflowException))
+            {
+                ErrorCallback?.Invoke($"Could not generate test object: {e.Message}");
+                return null;
+            }
 
             return null;
         }
 
         private Image GetPreviewImage(object obj)
         {
-            static Image ToSupportedFormat(Image image) => image.PixelFormat == PixelFormat.Format16bppGrayScale
-                ? image.ConvertPixelFormat(PixelFormat.Format8bppIndexed, PredefinedColorsQuantizer.Grayscale())
-                : image;
-
-            switch (obj)
+            try
             {
-                case Image image:
-                    return ToSupportedFormat(image);
-                case Icon icon:
-                    return icon.ToMultiResBitmap();
-                case Graphics graphics:
-                    return graphics.ToBitmap(false);
-                case BitmapData _:
-                    return ToSupportedFormat((Image)BitmapDataOwner.Clone());
-                case ColorPalette palette:
-                    return FromPalette(palette.Entries);
-                case Color color:
-                    return FromPalette(new[] { color });
-                default:
-                    return null;
+                static Image ToSupportedFormat(Image image) =>
+                    image.PixelFormat == PixelFormat.Format16bppGrayScale ? image.ConvertPixelFormat(PixelFormat.Format24bppRgb)
+                    : !OSUtils.IsWindows && image.PixelFormat.In(PixelFormat.Format16bppRgb555, PixelFormat.Format16bppRgb565) ? image.ConvertPixelFormat(PixelFormat.Format24bppRgb)
+                    : image;
+
+                switch (obj)
+                {
+                    case Image image:
+                        return ToSupportedFormat(image);
+                    case Icon icon:
+                        return icon.ToMultiResBitmap();
+                    case Graphics graphics:
+                        return graphics.ToBitmap(false);
+                    case BitmapData _:
+                        return ToSupportedFormat((Image)BitmapDataOwner.Clone());
+                    case ColorPalette palette:
+                        return FromPalette(palette.Entries);
+                    case Color color:
+                        return FromPalette(new[] { color });
+                    default:
+                        return null;
+                }
+            }
+            catch (Exception e) when (!(e is StackOverflowException))
+            {
+                ErrorCallback?.Invoke($"Could not generate preview image: {e.Message}");
+                return null;
             }
         }
 
@@ -311,7 +328,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
             {
                 return Graphics.FromImage(Icons.Shield.ExtractBitmap(0).ConvertPixelFormat(PixelFormat));
             }
-            catch (Exception e) when (!(e is StackOverflowException))
+            catch (Exception e)
             {
                 ErrorCallback?.Invoke($"Could not create Graphics from a Bitmap with PixelFormat '{PixelFormat}': {e.Message}");
                 return null;
@@ -357,63 +374,70 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
         {
             IntPtr hwnd = GetHwndCallback?.Invoke() ?? IntPtr.Zero;
 
-            switch (TestObject)
+            try
             {
-                case Image image:
-                    if (!ImageFromFile && AsImage || ImageFromFile && FileAsImage)
-                    {
-                        Image newImage = DebuggerHelper.DebugImage(image, !AsReadOnly, hwnd);
-                        if (newImage != image)
-                            TestObject = newImage;
-                    }
-                    else if (image is Metafile metafile)
-                    {
-                        Metafile newMetafile = DebuggerHelper.DebugMetafile(metafile, !AsReadOnly, hwnd);
-                        if (newMetafile != image)
-                            TestObject = newMetafile;
-                    }
-                    else if (image is Bitmap bitmap)
-                    {
-                        Bitmap newBitmap = DebuggerHelper.DebugBitmap(bitmap, !AsReadOnly, hwnd);
-                        if (newBitmap != bitmap)
-                            TestObject = newBitmap;
-                    }
+                switch (TestObject)
+                {
+                    case Image image:
+                        if (!ImageFromFile && AsImage || ImageFromFile && FileAsImage)
+                        {
+                            Image newImage = DebuggerHelper.DebugImage(image, !AsReadOnly, hwnd);
+                            if (newImage != image)
+                                TestObject = newImage;
+                        }
+                        else if (image is Metafile metafile)
+                        {
+                            Metafile newMetafile = DebuggerHelper.DebugMetafile(metafile, !AsReadOnly, hwnd);
+                            if (newMetafile != image)
+                                TestObject = newMetafile;
+                        }
+                        else if (image is Bitmap bitmap)
+                        {
+                            Bitmap newBitmap = DebuggerHelper.DebugBitmap(bitmap, !AsReadOnly, hwnd);
+                            if (newBitmap != bitmap)
+                                TestObject = newBitmap;
+                        }
 
-                    break;
+                        break;
 
-                case Icon icon:
-                    Icon newIcon = DebuggerHelper.DebugIcon(icon, !AsReadOnly, hwnd);
-                    if (newIcon != icon)
-                        TestObject = newIcon;
-                    break;
+                    case Icon icon:
+                        Icon newIcon = DebuggerHelper.DebugIcon(icon, !AsReadOnly, hwnd);
+                        if (newIcon != icon)
+                            TestObject = newIcon;
+                        break;
 
-                case BitmapData bitmapData:
-                    DebuggerHelper.DebugBitmapData(bitmapData, hwnd);
-                    break;
+                    case BitmapData bitmapData:
+                        DebuggerHelper.DebugBitmapData(bitmapData, hwnd);
+                        break;
 
-                case Graphics graphics:
-                    DebuggerHelper.DebugGraphics(graphics, hwnd);
-                    break;
+                    case Graphics graphics:
+                        DebuggerHelper.DebugGraphics(graphics, hwnd);
+                        break;
 
-                case ColorPalette palette:
-                    ColorPalette newPalette = DebuggerHelper.DebugPalette(palette, !AsReadOnly, hwnd);
-                    if (newPalette != null)
-                    {
-                        TestObject = newPalette;
-                        if (ReferenceEquals(palette, newPalette))
-                            OnPropertyChanged(new PropertyChangedExtendedEventArgs(palette, newPalette, nameof(TestObject)));
-                    }
+                    case ColorPalette palette:
+                        ColorPalette newPalette = DebuggerHelper.DebugPalette(palette, !AsReadOnly, hwnd);
+                        if (newPalette != null)
+                        {
+                            TestObject = newPalette;
+                            if (ReferenceEquals(palette, newPalette))
+                                OnPropertyChanged(new PropertyChangedExtendedEventArgs(palette, newPalette, nameof(TestObject)));
+                        }
 
-                    break;
+                        break;
 
-                case Color color:
-                    Color? newColor = DebuggerHelper.DebugColor(color, !AsReadOnly, hwnd);
-                    if (newColor != null)
-                        TestObject = newColor;
-                    break;
+                    case Color color:
+                        Color? newColor = DebuggerHelper.DebugColor(color, !AsReadOnly, hwnd);
+                        if (newColor != null)
+                            TestObject = newColor;
+                        break;
 
-                default:
-                    throw new InvalidOperationException($"Unexpected object type: {TestObject.GetType()}");
+                    default:
+                        throw new InvalidOperationException($"Unexpected object type: {TestObject.GetType()}");
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorCallback?.Invoke($"Failed to view object: {e.Message}");
             }
         }
 
@@ -433,13 +457,20 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
                 return;
             }
 
-            var windowService = new TestWindowService();
-            var objectProvider = new TestObjectProvider(testObject) { IsObjectReplaceable = !AsReadOnly };
-            DialogDebuggerVisualizer debugger = (DialogDebuggerVisualizer)Reflector.CreateInstance(Reflector.ResolveType(attr.VisualizerTypeName));
-            objectProvider.Serializer = (VisualizerObjectSource)Reflector.CreateInstance(Reflector.ResolveType(attr.VisualizerObjectSourceTypeName));
-            Reflector.InvokeMethod(debugger, "Show", windowService, objectProvider);
-            if (objectProvider.ObjectReplaced)
-                TestObject = objectProvider.Object;
+            try
+            {
+                var windowService = new TestWindowService();
+                var objectProvider = new TestObjectProvider(testObject) { IsObjectReplaceable = !AsReadOnly };
+                DialogDebuggerVisualizer debugger = (DialogDebuggerVisualizer)Reflector.CreateInstance(Reflector.ResolveType(attr.VisualizerTypeName));
+                objectProvider.Serializer = (VisualizerObjectSource)Reflector.CreateInstance(Reflector.ResolveType(attr.VisualizerObjectSourceTypeName));
+                Reflector.InvokeMethod(debugger, "Show", windowService, objectProvider);
+                if (objectProvider.ObjectReplaced)
+                    TestObject = objectProvider.Object;
+            }
+            catch (Exception e)
+            {
+                ErrorCallback?.Invoke($"Failed to debug object: {e.Message}");
+            }
         }
 
         #endregion

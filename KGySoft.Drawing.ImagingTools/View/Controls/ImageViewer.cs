@@ -239,7 +239,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
                         // For the resizing large managed buffer of source.Height * target.Width of ColorF (16 bytes) is allocated internally. To be safe we count with the doubled sizes.
                         long managedPressure = (task.Size.Width << 1) * (task.Size.Height << 1) * 16;
-                        //TODO if (managedPressure > maxSize || IntPtr.Size == 4 && maxSize - GC.GetTotalMemory(true) < managedPressure)
                         if (!MemoryHelper.CanAllocate(managedPressure))
                         {
                             Debug.WriteLine($"Discarding task because there is no {managedPressure:N0} bytes of available managed memory");
@@ -320,7 +319,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Static Fields
 
-        private static readonly PixelFormat[] convertedFormats = { PixelFormat.Format16bppGrayScale, PixelFormat.Format48bppRgb, PixelFormat.Format64bppArgb, PixelFormat.Format64bppPArgb };
+        private static readonly PixelFormat[] convertedFormats = OSUtils.IsWindows
+            // Windows: these are either not supported by Graphics or are very slow
+            ? new[] { PixelFormat.Format16bppGrayScale, PixelFormat.Format48bppRgb, PixelFormat.Format64bppArgb, PixelFormat.Format64bppPArgb }
+            // Non Windows (eg. Mono/Linux): these are not supported by Graphics
+            : new[] { PixelFormat.Format16bppRgb555, PixelFormat.Format16bppRgb565 };
+
         private static readonly Size referenceScrollSize = new Size(32, 32);
 
         #endregion

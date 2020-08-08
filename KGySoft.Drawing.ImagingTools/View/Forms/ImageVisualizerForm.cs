@@ -38,6 +38,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             : base(viewModel)
         {
             InitializeComponent();
+
+            if (OSUtils.IsWindows || SystemInformation.HighContrast)
+                return;
+
+            // fixing "dark on dark" menu issue on Linux
+            var menuItemBackColor = Color.FromArgb(ProfessionalColors.MenuStripGradientBegin.ToArgb());
+            miBackColor.BackColor = miShowPalette.BackColor = miBackColorDefault.BackColor = menuItemBackColor;
         }
 
         #endregion
