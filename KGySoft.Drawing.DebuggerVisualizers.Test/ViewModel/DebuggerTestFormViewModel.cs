@@ -315,7 +315,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
 
                 return image;
             }
-            catch (Exception e)
+            catch (Exception e) when (!(e is StackOverflowException))
             {
                 ErrorCallback?.Invoke($"Could not open file: {e.Message}");
                 return null;
@@ -328,7 +328,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
             {
                 return Graphics.FromImage(Icons.Shield.ExtractBitmap(0).ConvertPixelFormat(PixelFormat));
             }
-            catch (Exception e)
+            catch (Exception e) when (!(e is StackOverflowException))
             {
                 ErrorCallback?.Invoke($"Could not create Graphics from a Bitmap with PixelFormat '{PixelFormat}': {e.Message}");
                 return null;
@@ -435,7 +435,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
                         throw new InvalidOperationException($"Unexpected object type: {TestObject.GetType()}");
                 }
             }
-            catch (Exception e)
+            catch (Exception e) when (!(e is StackOverflowException))
             {
                 ErrorCallback?.Invoke($"Failed to view object: {e.Message}");
             }
@@ -467,7 +467,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
                 if (objectProvider.ObjectReplaced)
                     TestObject = objectProvider.Object;
             }
-            catch (Exception e)
+            catch (Exception e) when (!(e is StackOverflowException))
             {
                 ErrorCallback?.Invoke($"Failed to debug object: {e.Message}");
             }

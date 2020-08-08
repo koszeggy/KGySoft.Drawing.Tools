@@ -90,6 +90,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             #endregion
 
             #region Methods
+#pragma warning disable CS1690 // Accessing a member on a field of a marshal-by-reference class may cause a runtime exception - false alarm, owner is never a remote object
 
             #region Public Methods
 
@@ -308,6 +309,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             #endregion
 
+#pragma warning restore CS1690 // Accessing a member on a field of a marshal-by-reference class may cause a runtime exception
             #endregion
         }
 
@@ -458,8 +460,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             sbVertical.Width = scrollbarSize.Width;
             sbHorizontal.Height = scrollbarSize.Height;
 
-            sbVertical.ValueChanged += sbVertical_ValueChanged;
-            sbHorizontal.ValueChanged += sbHorizontal_ValueChanged;
+            sbVertical.ValueChanged += ScrollbarValueChanged;
+            sbHorizontal.ValueChanged += ScrollbarValueChanged;
         }
 
         #endregion
@@ -526,14 +528,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (IsDisposed)
                 return;
 
-            sbVertical.ValueChanged -= sbVertical_ValueChanged;
-            sbHorizontal.ValueChanged -= sbHorizontal_ValueChanged;
+            sbVertical.ValueChanged -= ScrollbarValueChanged;
+            sbHorizontal.ValueChanged -= ScrollbarValueChanged;
 
             if (disposing)
             {
                 FreeDisplayImage();
                 antiAliasedMetafileGenerator?.Dispose();
-                components?.Dispose();
             }
 
             base.Dispose(disposing);
@@ -814,8 +815,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Event handlers
 
-        private void sbHorizontal_ValueChanged(object sender, EventArgs e) => Invalidate();
-        private void sbVertical_ValueChanged(object sender, EventArgs e) => Invalidate();
+        private void ScrollbarValueChanged(object sender, EventArgs e) => Invalidate();
 
         #endregion
 

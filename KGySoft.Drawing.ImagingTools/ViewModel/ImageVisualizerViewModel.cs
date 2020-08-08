@@ -666,6 +666,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         [SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase",
             Justification = "This is not normalization, we want to set the default extension in lowercase")]
+        [SuppressMessage("Globalization", "CA1307:Specify StringComparison",
+            Justification = "IndexOf(char) uses ordinal lookup and the StringComparison overload is not available on every platform")]
         private void SetSaveFilter()
         {
             #region Local Methods

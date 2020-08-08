@@ -17,6 +17,7 @@
 #region Usings
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
@@ -133,6 +134,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             }
         }
 
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "This is just a test app")]
         private void OnShowErrorCommand()
         {
             timer.Enabled = false;

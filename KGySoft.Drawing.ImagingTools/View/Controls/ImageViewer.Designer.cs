@@ -5,8 +5,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
     partial class ImageViewer
     {
-        private IContainer components;
-
         private void InitializeComponent()
         {
             this.sbHorizontal = new System.Windows.Forms.HScrollBar();
@@ -34,7 +32,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             this.Controls.Add(this.sbHorizontal);
             this.Controls.Add(this.sbVertical);
             this.ResumeLayout(false);
-
         }
 
         private HScrollBar sbHorizontal;
