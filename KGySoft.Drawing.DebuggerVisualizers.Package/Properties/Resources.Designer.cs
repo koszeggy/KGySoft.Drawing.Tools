@@ -127,6 +127,15 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to KGy SOFT Drawing DebuggerVisualizers {0} have been upgraded to version {1} at {2}.
+        /// </summary>
+        internal static string InfoMessage_InstallationUpgradedFormat {
+            get {
+                return ResourceManager.GetString("InfoMessage_InstallationUpgradedFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The installation of KGy SOFT Drawing DebuggerVisualizers to {0} finished with a warning: {1}.
         /// </summary>
         internal static string WarningMessage_InstallationFinishedWithWarningFormat {

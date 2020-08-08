@@ -144,4 +144,7 @@ Make sure every running debugger is closed. Installing will be tried again on re
   <data name="InfoMessage_InstallationFinishedFormat" xml:space="preserve">
     <value>KGy SOFT Drawing DebuggerVisualizers {0} have been installed to {1}</value>
   </data>
+  <data name="InfoMessage_InstallationUpgradedFormat" xml:space="preserve">
+    <value>KGy SOFT Drawing DebuggerVisualizers {0} have been upgraded to version {1} at {2}</value>
+  </data>
 </root>

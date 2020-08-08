@@ -155,6 +155,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
                 ShellDialogs.Error(this, Res.ErrorMessageFailedToInstall(targetPath, error));
             else if (warning != null)
                 ShellDialogs.Warning(this, Res.WarningMessageInstallationFinishedWithWarning(targetPath, warning));
+            else if (installedVersion.Installed && installedVersion.Version != null)
+                ShellDialogs.Info(this, Res.InfoMessageUpgradeFinished(installedVersion.Version, availableVersion.Version, targetPath));
             else
                 ShellDialogs.Info(this, Res.InfoMessageInstallationFinished(availableVersion.Version, targetPath));
         }
