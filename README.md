@@ -55,11 +55,12 @@ You can perform the install also from Visual Studio by the _Tools/Extensions and
 
 #### Manual Install
 
-1. [Download](#download) the binaries and extract the .zip file to any folder.
+1. [Download](#download) the binaries and extract the .7z archive to any folder.
 2. Open the folder with the extracted content. You will find three folders there:
-  - `NET35` contains the .NET 3.5 version. Compatible with all Visual Studio versions starting with Visual Studio 2008 (tested with versions 2008-2019).
-  - `NET40` contains the .NET 4.0 version. You cannot use this one for Visual Studio 2008.
-  - `NET45` contains the .NET 4.5 version. You cannot use this one for Windows XP and Visual Studio 2008/2010.
+  - `net35` contains the .NET 3.5 version. Compatible with all Visual Studio versions starting with Visual Studio 2008 (tested with versions 2008-2019). Cannot be used to debug .NET Core applications.
+  - `net40` contains the .NET 4.0 version. You cannot use this one for Visual Studio 2008. Cannot be used to debug .NET Core applications.
+  - `net45` contains the .NET 4.5 version. You cannot use this one for Windows XP and Visual Studio 2008/2010. With some limitations supports also .NET Core projects (in case of issues see the [Troubleshooting](#Troubleshooting) section).
+  - `netcoreapp3.0` contains the .NET Core 3.0 binaries of the Imaging Tools application. Debugger visualizers are not included because it would not be recognized by Visual Studio aynway.
 3. Execute `KGySoft.Drawing.ImagingTools.exe` from one of the folders listed above. Click the _Manage Debugger Visualizer Installations..._ button (the gear icon) on the toolbar.
 
 ![Select Install](https://kgysoft.net/images/InstallSelectMenu.png)
@@ -98,7 +99,7 @@ You can download the sources and the binaries as .zip archives [here](https://gi
 
 ## Debugger Visualizers Test Tool
 
-A simple test application is also available in the download binaries. Though it was created mainly for testing purposes it also demonstrates the debugger visualizer and some `KGySoft.Drawing` features. If you are interested in using [KGy SOFT Drawing Libraries](https://kgysoft.net/drawing) (and [KGy SOFT Core Libraries](https://kgysoft.net/corelibraries)) as a developer, then it may worth checking its source code (especially the [`DebuggerTestFormViewModel`](https://github.com/koszeggy/KGySoft.Drawing.Tools/blob/master/KGySoft.Drawing.DebuggerVisualizers.Test/ViewModel/DebuggerTestFormViewModel.cs) class).
+A simple test application is also available in the download binaries. Though it was created mainly for testing purposes it also demonstrates the debugger visualizer and some `KGySoft.Drawing` features.
 
 ![Debugger Visualizer Test App](https://kgysoft.net/images/DebuggerVisualizerTest.png)
 
