@@ -6,12 +6,16 @@
 ===============================================================================
 
 ~~~~~~~~~
-- v2.2.1:
+* v2.2.1:
 ~~~~~~~~~
 
-- KGySoft.Drawing.ImagingTools.exe
+* KGySoft.Drawing.ImagingTools.exe
 ==================================
 - Tolerating if uncompressed icon stream does not have a transparency mask.
+* InstallationManager class:
+  * To avoid confusion the Install method installs the .NET Core support only for the .NET 4.5 build. This is
+    considered as a compatible change as .NET Core support didn't work for other builds anyway so only the error
+    message will be different (and more reasonable) if we try to debug a Core project with the wrong installation.
 
 
 ~~~~~~~~~

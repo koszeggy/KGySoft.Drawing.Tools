@@ -112,6 +112,10 @@ namespace KGySoft.Drawing.ImagingTools
                 return;
             }
 
+            Uninstall(directory, out error);
+            if (error != null)
+                return;
+
             foreach (string file in files)
             {
                 try
@@ -125,8 +129,10 @@ namespace KGySoft.Drawing.ImagingTools
                 }
             }
 
-            // .NET Core 3.0 support: the visualizer must be in a netstandard2.0 subdirectory.
+#if NET45
+            // .NET Core support: the visualizer must be in a netstandard2.0 subdirectory.
             // And actually it can contain framework assemblies so we just create a symbolic link to it
+            // NOTE: It must be the .NET 4.5 build, others do not work (even a Core build itself, even in netcoreapp folder)
             string netCorePath = Path.Combine(directory, netCoreSubdirectory);
             try
             {
@@ -156,7 +162,7 @@ namespace KGySoft.Drawing.ImagingTools
                 {
                     string source = Path.Combine(directory, file);
                     string target = Path.Combine(netCorePath, file);
-                    if (isNtfs)
+                    if (isNtfs && OSUtils.IsWindows)
                     {
                         if (File.Exists(target))
                             File.Delete(target);
@@ -172,7 +178,8 @@ namespace KGySoft.Drawing.ImagingTools
                         : Res.WarningMessageCouldNotCopyFileNetCore(file, e.Message);
                     return;
                 }
-            }
+            } 
+#endif
         }
 
         /// <summary>
