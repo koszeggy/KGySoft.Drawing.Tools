@@ -6,6 +6,15 @@
 ===============================================================================
 
 ~~~~~~~~~
+- v2.2.1:
+~~~~~~~~~
+
+- KGySoft.Drawing.ImagingTools.exe
+==================================
+- Tolerating if uncompressed icon stream does not have a transparency mask.
+
+
+~~~~~~~~~
 * v2.2.0:
 ~~~~~~~~~
 
@@ -21,7 +30,6 @@
   For metafiles toggles anti-aliasing on any size. Can be ignored on low memory when zooming is too large
 + API changes:
   + InstallationInfo class: New TargetFramework property (not used in the .NET Framework 3.5 version)
-
 
 - KGySoft.Drawing.DebuggerVisualizers.dll
 =========================================

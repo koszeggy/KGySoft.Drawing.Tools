@@ -20,7 +20,7 @@
 
   <ItemGroup>
     <PackageReference Include="KGySoft.CoreLibraries" Version="5.3.0" />
-    <PackageReference Include="KGySoft.Drawing" Version="5.2.0" />
+    <PackageReference Include="KGySoft.Drawing" Version="5.2.1" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

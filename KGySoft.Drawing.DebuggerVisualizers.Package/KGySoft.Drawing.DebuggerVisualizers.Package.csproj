@@ -104,8 +104,8 @@
     <Reference Include="KGySoft.CoreLibraries, Version=5.3.0.0, Culture=neutral, PublicKeyToken=b45eba277439ddfe, processorArchitecture=MSIL">
       <HintPath>..\..\packages\KGySoft.CoreLibraries.5.3.0\lib\net45\KGySoft.CoreLibraries.dll</HintPath>
     </Reference>
-    <Reference Include="KGySoft.Drawing, Version=5.2.0.0, Culture=neutral, PublicKeyToken=b45eba277439ddfe, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\KGySoft.Drawing.5.2.0\lib\net45\KGySoft.Drawing.dll</HintPath>
+    <Reference Include="KGySoft.Drawing, Version=5.2.1.0, Culture=neutral, PublicKeyToken=b45eba277439ddfe, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\KGySoft.Drawing.5.2.1\lib\net45\KGySoft.Drawing.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.GraphModel, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\VSSDK.GraphModel.11.0.4\lib\net45\Microsoft.VisualStudio.GraphModel.dll</HintPath>
