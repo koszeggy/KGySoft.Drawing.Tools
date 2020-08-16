@@ -28,13 +28,22 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.quantizerSelectorControl1 = new KGySoft.Drawing.ImagingTools.View.UserControls.QuantizerSelectorControl();
             this.SuspendLayout();
+            // 
+            // quantizerSelectorControl1
+            // 
+            this.quantizerSelectorControl1.Location = new System.Drawing.Point(36, 19);
+            this.quantizerSelectorControl1.Name = "quantizerSelectorControl1";
+            this.quantizerSelectorControl1.Size = new System.Drawing.Size(246, 220);
+            this.quantizerSelectorControl1.TabIndex = 0;
             // 
             // QuantizationForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(686, 390);
+            this.Controls.Add(this.quantizerSelectorControl1);
             this.Name = "QuantizationForm";
             this.Text = "QuantizationForm";
             this.ResumeLayout(false);
@@ -42,5 +51,7 @@
         }
 
         #endregion
+
+        private UserControls.QuantizerSelectorControl quantizerSelectorControl1;
     }
 }

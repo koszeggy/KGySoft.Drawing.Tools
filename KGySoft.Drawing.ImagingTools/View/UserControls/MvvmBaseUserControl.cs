@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: MvvmBaseForm.cs
+//  File: MvvmBaseUserControl.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2020 - All Rights Reserved
 //
@@ -17,16 +17,15 @@
 #region Usings
 
 using System;
-using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
 
-namespace KGySoft.Drawing.ImagingTools.View.Forms
+namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    internal class MvvmBaseForm<TViewModel> : BaseForm, IView
+    internal partial class MvvmBaseUserControl<TViewModel> : BaseUserControl
         where TViewModel : IDisposable // BUG: Actually should be ViewModelBase but WinForms designer with derived forms dies from that
     {
         #region Properties
@@ -51,7 +50,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Protected Constructors
 
-        protected MvvmBaseForm(TViewModel viewModel)
+        protected MvvmBaseUserControl(TViewModel viewModel)
         {
             if (DesignMode)
                 return;
@@ -62,8 +61,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             vm.ShowWarningCallback = Dialogs.WarningMessage;
             vm.ShowErrorCallback = Dialogs.ErrorMessage;
             vm.ConfirmCallback = Dialogs.ConfirmMessage;
-            vm.ShowChildViewCallback = ShowChildView;
-            vm.CloseViewCallback = () => BeginInvoke(new Action(Close));
 
             CommandBindings = new WinformsCommandBindingsCollection();
         }
@@ -72,7 +69,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Constructors
 
-        private MvvmBaseForm()
+        private MvvmBaseUserControl()
         {
             // this ctor is just for the designer
         }
@@ -83,8 +80,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Methods
 
-        #region Protected Methods
-
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
@@ -94,11 +89,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             ApplyViewModel();
         }
 
-        protected virtual void ApplyResources() => this.ApplyStaticStringResources();
+        protected virtual void ApplyResources()
+        {
+            // Not calling ApplyStaticStringResources because we assume this UC belong to an MvvmBaseForm.
+            // If not, then a derived instance still can call it.
+        }
 
         protected virtual void ApplyViewModel() => VM.ViewLoaded();
-
-        protected void ShowChildView(IViewModel vm) => ViewFactory.ShowDialog(vm, Handle);
 
         protected override void Dispose(bool disposing)
         {
@@ -107,28 +104,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
             base.Dispose(disposing);
         }
-
-        #endregion
-
-        #region Explicit Interface Implementations
-
-        void IView.ShowDialog(IntPtr ownerHandle) => ShowDialog(ownerHandle == IntPtr.Zero ? null : new OwnerWindowHandle(ownerHandle));
-
-        void IView.Show()
-        {
-            if (!Visible)
-            {
-                Show();
-                return;
-            }
-
-            if (WindowState == FormWindowState.Minimized)
-                WindowState = FormWindowState.Normal;
-            Activate();
-            BringToFront();
-        }
-
-        #endregion
 
         #endregion
     }
