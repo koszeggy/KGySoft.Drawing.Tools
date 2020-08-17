@@ -18,7 +18,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
+
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
@@ -34,9 +36,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         // not a static property so always can be reinitialized with the current language
         internal IList<QuantizerDescriptor> Quantizers => Get(InitQuantizers);
-        internal QuantizerDescriptor SelectedQuantizer { get => Get<QuantizerDescriptor>(); set => Set(value); }
-        internal CustomPropertiesObject Parameters { get => Get<CustomPropertiesObject>(); set => Set(value); }
-
+        internal QuantizerDescriptor SelectedQuantizer { get => Get<QuantizerDescriptor>(); private set => Set(value); }
+        internal CustomPropertiesObject Parameters { get => Get<CustomPropertiesObject>(); private set => Set(value); }
+        internal IQuantizer Quantizer { get => Get<IQuantizer>(); private set => Set(value); }
 
         #endregion
 
@@ -44,57 +46,33 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Static Methods
 
-        private static IList<QuantizerDescriptor> InitQuantizers()
-        {
-            var result = new List<QuantizerDescriptor>
+        private static IList<QuantizerDescriptor> InitQuantizers() =>
+            new List<QuantizerDescriptor>
             {
                 new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.Argb1555)),
                 new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.Argb8888)),
                 new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.BlackAndWhite)),
-                //new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.FromCustomPalette)),
-                //new QuantizerDescriptor(typeof(PredefinedColorsQuantizer).GetMethod(nameof(PredefinedColorsQuantizer.FromCustomPalette), new[] { typeof(Color[]), typeof(Color), typeof(byte) })),
-                //new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.FromPixelFormat)),
-                //new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.Grayscale)),
-                //new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.Grayscale4)),
-                //new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.Grayscale16)),
-                //new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.SystemDefault1BppPalette)),
-                //new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.SystemDefault4BppPalette)),
-                //new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.SystemDefault8BppPalette)),
-                //new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.Rgb888)),
-                //new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.Rgb565)),
-                //new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.Rgb555)),
-                //new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.Rgb332)),
+                new QuantizerDescriptor(typeof(PredefinedColorsQuantizer).GetMethod(nameof(PredefinedColorsQuantizer.FromCustomPalette), new[] { typeof(Color[]), typeof(Color), typeof(byte) })),
+                new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.FromPixelFormat)),
+                new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.Grayscale)),
+                new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.Grayscale4)),
+                new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.Grayscale16)),
+                new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.SystemDefault1BppPalette)),
+                new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.SystemDefault4BppPalette)),
+                new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.SystemDefault8BppPalette)),
+                new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.Rgb888)),
+                new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.Rgb565)),
+                new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.Rgb555)),
+                new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.Rgb332)),
 
-                //new QuantizerDescriptor(typeof(OptimizedPaletteQuantizer), nameof(OptimizedPaletteQuantizer.Octree)),
-                //new QuantizerDescriptor(typeof(OptimizedPaletteQuantizer), nameof(OptimizedPaletteQuantizer.MedianCut)),
-                //new QuantizerDescriptor(typeof(OptimizedPaletteQuantizer), nameof(OptimizedPaletteQuantizer.Wu)),
+                new QuantizerDescriptor(typeof(OptimizedPaletteQuantizer), nameof(OptimizedPaletteQuantizer.Octree)),
+                new QuantizerDescriptor(typeof(OptimizedPaletteQuantizer), nameof(OptimizedPaletteQuantizer.MedianCut)),
+                new QuantizerDescriptor(typeof(OptimizedPaletteQuantizer), nameof(OptimizedPaletteQuantizer.Wu)),
             };
-
-            //result.Sort(); // TODO
-            return result;
-        }
 
         #endregion
 
         #region Instance Methods
-
-        #region Internal Methods
-
-        internal override void ViewLoaded()
-        {
-            base.ViewLoaded();
-        }
-
-        internal IQuantizer CreateInstance()
-        {
-            QuantizerDescriptor descriptor = SelectedQuantizer;
-            if (descriptor == null)
-                return null;
-
-            return (IQuantizer)MethodAccessor.GetAccessor(descriptor.Method).Invoke(null, EvaluateParameters(descriptor.Parameters));
-        }
-
-        #endregion
 
         #region Protected Methods
 
@@ -109,10 +87,25 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     : new CustomPropertiesObject(previousParameters, SelectedQuantizer.Parameters);
                 return;
             }
+
+            if (e.PropertyName == nameof(Parameters))
+            {
+                if (e.OldValue is CustomPropertiesObject oldParams)
+                    oldParams.PropertyChanged -= ParametersPropertyChanged;
+                if (e.NewValue is CustomPropertiesObject newParams)
+                    newParams.PropertyChanged += ParametersPropertyChanged;
+                ResetQuantizer();
+                return;
+            }
         }
 
         protected override void Dispose(bool disposing)
         {
+            if (IsDisposed)
+                return;
+            CustomPropertiesObject parameters = Parameters;
+            if (parameters != null)
+                parameters.PropertyChanged -= ParametersPropertyChanged;
             base.Dispose(disposing);
         }
 
@@ -128,6 +121,23 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 result[i] = parameters[i].GetValue(values);
             return result;
         }
+
+        private void ResetQuantizer()
+        {
+            QuantizerDescriptor descriptor = SelectedQuantizer;
+            Quantizer = null;
+            if (descriptor == null)
+                return;
+
+            object[] parameters = EvaluateParameters(descriptor.Parameters);
+            Quantizer = (IQuantizer)MethodAccessor.GetAccessor(descriptor.Method).Invoke(null, parameters);
+        }
+
+        #endregion
+
+        #region Event Handlers
+
+        private void ParametersPropertyChanged(object sender, PropertyChangedEventArgs e) => ResetQuantizer();
 
         #endregion
 

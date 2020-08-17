@@ -23,6 +23,8 @@ using System.Drawing.Design;
 using System.Globalization;
 using System.Linq;
 
+using KGySoft.CoreLibraries;
+
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.Model
@@ -141,6 +143,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         internal object DefaultValue { get; set; }
         internal object[] AllowedValues { get; set; }
+        internal Func<object, object> AdjustValue { get; set; }
 
         #endregion
 
@@ -165,11 +168,26 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #region Methods
 
+        #region Public Methods
+        
         public override bool ShouldSerializeValue(object component) => !Equals(GetValue(component), DefaultValue);
         public override bool CanResetValue(object component) => ShouldSerializeValue(component);
-        public override void ResetValue(object component) => ((ICustomPropertiesProvider)component).ResetValue(this);
-        public override void SetValue(object component, object value) => ((ICustomPropertiesProvider)component).SetValue(this, value);
-        public override object GetValue(object component) => ((ICustomPropertiesProvider)component).GetValue(this);
+        public override void ResetValue(object component) => ((ICustomPropertiesProvider)component).ResetValue(Name);
+        public override void SetValue(object component, object value) => ((ICustomPropertiesProvider)component).SetValue(Name, DoAdjustValue(value));
+        public override object GetValue(object component) => DoAdjustValue(((ICustomPropertiesProvider)component).GetValue(Name, DefaultValue));
+        public override string ToString() => $"{Name}: {PropertyType}";
+
+        #endregion
+
+        #region Private Methods
+
+        private object DoAdjustValue(object value)
+            => AdjustValue != null ? AdjustValue.Invoke(value)
+                : !AllowedValues.IsNullOrEmpty() && !value.In(AllowedValues) ? AllowedValues[0]
+                : value == null && PropertyType.IsValueType ? DefaultValue ?? Activator.CreateInstance(PropertyType)
+                : value;
+
+        #endregion
 
         #endregion
     }

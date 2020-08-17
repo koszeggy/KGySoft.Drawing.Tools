@@ -22,7 +22,6 @@ using System.ComponentModel;
 using System.Linq;
 
 using KGySoft.ComponentModel;
-using KGySoft.CoreLibraries;
 
 #endregion
 
@@ -33,8 +32,6 @@ namespace KGySoft.Drawing.ImagingTools.Model
         #region Fields
 
         private readonly PropertyDescriptorCollection propertyDescriptors;
-
-        private bool isSuspended;
 
         #endregion
 
@@ -48,18 +45,8 @@ namespace KGySoft.Drawing.ImagingTools.Model
         internal CustomPropertiesObject(CustomPropertiesObject other, IEnumerable<CustomPropertyDescriptor> descriptors)
             : this(descriptors)
         {
-            other.Suspend();
-            Suspend();
-            try
-            {
-                // allowing to set any properties from other so old values are not lost when changing instances even they are not among currently available properties
-                ((IPersistableObject)this).SetProperties(((IPersistableObject)other).GetProperties());
-            }
-            finally
-            {
-                other.Resume();
-                Resume();
-            }
+            // allowing to set any properties from other so old values are not lost when changing instances even they are not among currently available properties
+            ((IPersistableObject)this).SetProperties(((IPersistableObject)other).GetProperties());
         }
 
         #endregion
@@ -68,32 +55,10 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #region Protected Methods
 
-        // if the object is suspended we allow to get/set any properties so the copy constructor can populate any data
-        protected override bool CanGetProperty(string propertyName) => isSuspended || propertyDescriptors.Find(propertyName, false) != null;
-
-        protected override bool CanSetProperty(string propertyName, object value) => isSuspended
-            || propertyDescriptors.Find(propertyName, false) is CustomPropertyDescriptor descriptor
-                && descriptor.PropertyType.CanAcceptValue(value) && (descriptor.AllowedValues == null || value.In(descriptor.AllowedValues));
-
-        #endregion
-
-        #region Private Methods
-
-        private void Suspend()
-        {
-            if (isSuspended)
-                return;
-            isSuspended = true;
-            SuspendChangedEvent();
-        }
-
-        private void Resume()
-        {
-            if (!isSuspended)
-                return;
-            isSuspended = false;
-            ResumeChangedEvent();
-        }
+        // Base allows to set reflected properties only. We could check propertyDescriptors here but ctor needs to set any property
+        // and validation is performed by CustomPropertyDescriptor
+        protected override bool CanGetProperty(string propertyName) => true;
+        protected override bool CanSetProperty(string propertyName, object value) => true;
 
         #endregion
 
@@ -113,19 +78,9 @@ namespace KGySoft.Drawing.ImagingTools.Model
         PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties(Attribute[] attributes)
             => new PropertyDescriptorCollection(propertyDescriptors.Cast<PropertyDescriptor>().Where(p => attributes == null || attributes.Any(a => p.Attributes.Contains(a))).ToArray());
 
-        void ICustomPropertiesProvider.ResetValue(CustomPropertyDescriptor descriptor) => ResetProperty(descriptor.Name);
-
-        void ICustomPropertiesProvider.SetValue(CustomPropertyDescriptor descriptor, object value)
-            // AllowedValues is checked in CanSetProperty
-            => Set(value, true, descriptor.Name);
-
-        object ICustomPropertiesProvider.GetValue(CustomPropertyDescriptor descriptor)
-        {
-            object result = Get(descriptor.DefaultValue, descriptor.Name);
-            if (descriptor.AllowedValues != null && !result.In(descriptor.AllowedValues))
-                result = descriptor.AllowedValues.Length > 0 ? descriptor.AllowedValues[0] : descriptor.DefaultValue;
-            return result;
-        }
+        void ICustomPropertiesProvider.ResetValue(string propertyName) => ResetProperty(propertyName);
+        void ICustomPropertiesProvider.SetValue(string propertyName, object value) => Set(value, true, propertyName);
+        object ICustomPropertiesProvider.GetValue(string propertyName, object defaultValue) => Get(defaultValue, propertyName);
 
         #endregion
 

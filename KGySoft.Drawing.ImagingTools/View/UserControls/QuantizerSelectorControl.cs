@@ -18,6 +18,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+
 using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
@@ -45,7 +46,17 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Properties
 
-        internal IQuantizer Quantizer => quantizer;
+        internal IQuantizer Quantizer
+        {
+            get => quantizer;
+            private set
+            {
+                if (quantizer == value)
+                    return;
+                quantizer = value;
+                OnQuantizerChanged(EventArgs.Empty);
+            }
+        }
 
         #endregion
 
@@ -107,6 +118,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
             // cmbQuantizer.SelectedValue -> VM.SelectedQuantizer
             CommandBindings.AddPropertyBinding(cmbQuantizer, nameof(cmbQuantizer.SelectedValue), nameof(ViewModel.SelectedQuantizer), ViewModel);
+
+            // VM.Quantizer -> this.Quantizer
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Quantizer), nameof(Quantizer), this);
         }
 
         private void InitCommandBindings()

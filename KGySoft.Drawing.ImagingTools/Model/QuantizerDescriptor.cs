@@ -17,8 +17,14 @@
 #region Usings
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.Linq;
 using System.Reflection;
+
+using KGySoft.CoreLibraries;
+using KGySoft.Reflection;
 
 #endregion
 
@@ -28,16 +34,26 @@ namespace KGySoft.Drawing.ImagingTools.Model
     {
         #region Fields
 
-        private static readonly CustomPropertyDescriptor backColor = new CustomPropertyDescriptor(nameof(backColor), typeof(Color));
-
-        private static readonly CustomPropertyDescriptor alphaThreshold = new CustomPropertyDescriptor(nameof(alphaThreshold), typeof(byte))
+        private static readonly Dictionary<string, CustomPropertyDescriptor> parametersMapping = new Dictionary<string, CustomPropertyDescriptor>
         {
-            DefaultValue = (byte)128
-        };
-
-        private static readonly CustomPropertyDescriptor whiteThreshold = new CustomPropertyDescriptor(nameof(whiteThreshold), typeof(byte))
-        {
-            DefaultValue = (byte)128
+            ["backColor"] = new CustomPropertyDescriptor("backColor", typeof(Color)) { DefaultValue = Color.Empty },
+            ["alphaThreshold"] = new CustomPropertyDescriptor("alphaThreshold", typeof(byte)) { DefaultValue = (byte)128 },
+            ["whiteThreshold"] = new CustomPropertyDescriptor("whiteThreshold", typeof(byte)) { DefaultValue = (byte)128 },
+            ["palette"] = new CustomPropertyDescriptor("palette", typeof(Color[]))
+            {
+                DefaultValue = Reflector.EmptyArray<Color>(),
+                AdjustValue = value => value is Color[] arr && arr.Length > 0 ? arr : new[] { Color.Black, Color.White }
+            },
+            ["pixelFormat"] = new CustomPropertyDescriptor("pixelFormat", typeof(PixelFormat))
+            {
+                AllowedValues = Enum<PixelFormat>.GetValues().Where(pf => pf.IsValidFormat()).OrderBy(pf => pf & PixelFormat.Max).Select(pf => (object)pf).ToArray(),
+            },
+            ["directMapping"] = new CustomPropertyDescriptor("directMapping", typeof(bool)) { DefaultValue = false },
+            ["maxColors"] = new CustomPropertyDescriptor("maxColors", typeof(int))
+            {
+                DefaultValue = 256,
+                AdjustValue = value => value is int i && i >= 2 && i <= 256 ? i : 256
+            },
         };
 
         #endregion
@@ -62,31 +78,14 @@ namespace KGySoft.Drawing.ImagingTools.Model
             ParameterInfo[] methodParams = method.GetParameters();
             Parameters = new CustomPropertyDescriptor[methodParams.Length];
             for (int i = 0; i < Parameters.Length; i++)
-                Parameters[i] = GetParameterDescriptor(methodParams[i]);
+                Parameters[i] = parametersMapping.GetValueOrDefault(methodParams[i].Name) ?? throw new InvalidOperationException(Res.InternalError($"Unexpected parameter: {methodParams[i].Name}"));
         }
 
         #endregion
 
         #region Methods
 
-        #region Static Methods
-
-        private static CustomPropertyDescriptor GetParameterDescriptor(ParameterInfo methodParam) =>
-            methodParam.Name switch
-            {
-                nameof(backColor) => backColor,
-                nameof(alphaThreshold) => alphaThreshold,
-                nameof(whiteThreshold) => whiteThreshold,
-                _ => throw new InvalidOperationException(Res.InternalError($"Unexpected parameter: {methodParam}"))
-            };
-
-        #endregion
-
-        #region Instance Methods
-
         public override string ToString() => $"{Method.DeclaringType.Name}.{Method.Name}";
-
-        #endregion
 
         #endregion
     }
