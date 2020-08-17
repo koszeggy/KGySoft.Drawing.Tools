@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.quantizerSelectorControl1 = new KGySoft.Drawing.ImagingTools.View.UserControls.QuantizerSelectorControl();
+            this.dithererSelectorControl1 = new KGySoft.Drawing.ImagingTools.View.UserControls.DithererSelectorControl();
             this.SuspendLayout();
             // 
             // quantizerSelectorControl1
@@ -38,11 +39,19 @@
             this.quantizerSelectorControl1.Size = new System.Drawing.Size(246, 220);
             this.quantizerSelectorControl1.TabIndex = 0;
             // 
+            // dithererSelectorControl1
+            // 
+            this.dithererSelectorControl1.Location = new System.Drawing.Point(344, 24);
+            this.dithererSelectorControl1.Name = "dithererSelectorControl1";
+            this.dithererSelectorControl1.Size = new System.Drawing.Size(314, 215);
+            this.dithererSelectorControl1.TabIndex = 1;
+            // 
             // QuantizationForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(686, 390);
+            this.Controls.Add(this.dithererSelectorControl1);
             this.Controls.Add(this.quantizerSelectorControl1);
             this.Name = "QuantizationForm";
             this.Text = "QuantizationForm";
@@ -53,5 +62,6 @@
         #endregion
 
         private UserControls.QuantizerSelectorControl quantizerSelectorControl1;
+        private UserControls.DithererSelectorControl dithererSelectorControl1;
     }
 }

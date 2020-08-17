@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: QuantizerSelectorControl.cs
+//  File: DithererSelectorControl.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2020 - All Rights Reserved
 //
@@ -26,35 +26,35 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    internal sealed partial class QuantizerSelectorControl : MvvmBaseUserControl<QuantizerSelectorViewModel>
+    internal sealed partial class DithererSelectorControl : MvvmBaseUserControl<DithererSelectorViewModel>
     {
         #region Fields
 
-        private IQuantizer quantizer;
+        private IDitherer ditherer;
 
         #endregion
 
         #region Events
 
-        internal event EventHandler QuantizerChanged
+        internal event EventHandler DithererChanged
         {
-            add => Events.AddHandler(nameof(QuantizerChanged), value);
-            remove => Events.RemoveHandler(nameof(QuantizerChanged), value);
+            add => Events.AddHandler(nameof(DithererChanged), value);
+            remove => Events.RemoveHandler(nameof(DithererChanged), value);
         }
 
         #endregion
 
         #region Properties
 
-        internal IQuantizer Quantizer
+        internal IDitherer Ditherer
         {
-            get => quantizer;
+            get => ditherer;
             private set
             {
-                if (quantizer == value)
+                if (ditherer == value)
                     return;
-                quantizer = value;
-                OnQuantizerChanged(EventArgs.Empty);
+                ditherer = value;
+                OnDithererChanged(EventArgs.Empty);
             }
         }
 
@@ -63,7 +63,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         #region Constructors
 
         [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Disposed in Dispose(bool)")]
-        public QuantizerSelectorControl() : base(new QuantizerSelectorViewModel())
+        public DithererSelectorControl() : base(new DithererSelectorViewModel())
         {
             InitializeComponent();
         }
@@ -104,19 +104,19 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         private void InitPropertyBindings()
         {
             // will not change so not as an actual binding
-            cmbQuantizer.DataSource = ViewModel.Quantizers;
+            cmbDitherer.DataSource = ViewModel.Ditherers;
 
             // VM.Parameters -> pgParameters.SelectedObject
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Parameters), nameof(pgParameters.SelectedObject), pgParameters);
 
-            // cmbQuantizer.SelectedValue -> VM.SelectedQuantizer
-            CommandBindings.AddPropertyBinding(cmbQuantizer, nameof(cmbQuantizer.SelectedValue), nameof(ViewModel.SelectedQuantizer), ViewModel);
+            // cmbDitherer.SelectedValue -> VM.SelectedDitherer
+            CommandBindings.AddPropertyBinding(cmbDitherer, nameof(cmbDitherer.SelectedValue), nameof(ViewModel.SelectedDitherer), ViewModel);
 
-            // VM.Quantizer -> this.Quantizer
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Quantizer), nameof(Quantizer), this);
+            // VM.Ditherer -> this.Ditherer
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Ditherer), nameof(Ditherer), this);
         }
 
-        private void OnQuantizerChanged(EventArgs e) => (Events[nameof(QuantizerChanged)] as EventHandler)?.Invoke(this, e);
+        private void OnDithererChanged(EventArgs e) => (Events[nameof(DithererChanged)] as EventHandler)?.Invoke(this, e);
 
         #endregion
 
