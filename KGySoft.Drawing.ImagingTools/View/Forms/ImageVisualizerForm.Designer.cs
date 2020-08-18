@@ -46,6 +46,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.lblNotification = new KGySoft.Drawing.ImagingTools.View.Controls.NotificationLabel();
             this.imageViewer = new KGySoft.Drawing.ImagingTools.View.Controls.ImageViewer();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.miColorSpace = new System.Windows.Forms.ToolStripMenuItem();
+            this.miColorLevels = new System.Windows.Forms.ToolStripMenuItem();
+            this.miCountColors = new System.Windows.Forms.ToolStripMenuItem();
             this.tsMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -104,7 +108,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.btnColorSettings.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnColorSettings.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.miBackColor,
-            this.miShowPalette});
+            this.miShowPalette,
+            this.miCountColors,
+            this.toolStripMenuItem1,
+            this.miColorSpace,
+            this.miColorLevels});
             this.btnColorSettings.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnColorSettings.Name = "btnColorSettings";
             this.btnColorSettings.Size = new System.Drawing.Size(13, 22);
@@ -116,12 +124,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.miBackColorWhite,
             this.miBackColorBlack});
             this.miBackColor.Name = "miBackColor";
-            this.miBackColor.Size = new System.Drawing.Size(67, 22);
+            this.miBackColor.Size = new System.Drawing.Size(180, 22);
             // 
             // miBackColorDefault
             // 
             this.miBackColorDefault.Name = "miBackColorDefault";
-            this.miBackColorDefault.Size = new System.Drawing.Size(67, 22);
+            this.miBackColorDefault.Size = new System.Drawing.Size(180, 22);
             this.miBackColorDefault.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
             // 
             // miBackColorWhite
@@ -129,19 +137,19 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.miBackColorWhite.BackColor = System.Drawing.Color.White;
             this.miBackColorWhite.ForeColor = System.Drawing.Color.Black;
             this.miBackColorWhite.Name = "miBackColorWhite";
-            this.miBackColorWhite.Size = new System.Drawing.Size(67, 22);
+            this.miBackColorWhite.Size = new System.Drawing.Size(180, 22);
             // 
             // miBackColorBlack
             // 
             this.miBackColorBlack.BackColor = System.Drawing.Color.Black;
             this.miBackColorBlack.ForeColor = System.Drawing.Color.White;
             this.miBackColorBlack.Name = "miBackColorBlack";
-            this.miBackColorBlack.Size = new System.Drawing.Size(67, 22);
+            this.miBackColorBlack.Size = new System.Drawing.Size(180, 22);
             // 
             // miShowPalette
             // 
             this.miShowPalette.Name = "miShowPalette";
-            this.miShowPalette.Size = new System.Drawing.Size(67, 22);
+            this.miShowPalette.Size = new System.Drawing.Size(180, 22);
             // 
             // toolStripSeparator1
             // 
@@ -242,6 +250,28 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.imageViewer.TabIndex = 1;
             this.imageViewer.TabStop = false;
             // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 6);
+            // 
+            // miColorSpace
+            // 
+            this.miColorSpace.Name = "miColorSpace";
+            this.miColorSpace.Size = new System.Drawing.Size(180, 22);
+            // 
+            // miColorLevels
+            // 
+            this.miColorLevels.Name = "miColorLevels";
+            this.miColorLevels.Size = new System.Drawing.Size(180, 22);
+            this.miColorLevels.Visible = false;
+            // 
+            // miCountColors
+            // 
+            this.miCountColors.Name = "miCountColors";
+            this.miCountColors.Size = new System.Drawing.Size(180, 22);
+            this.miCountColors.Visible = false;
+            // 
             // ImageVisualizerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -291,5 +321,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private ToolStripSeparator toolStripSeparator2;
         protected ToolStripButton btnConfiguration;
         private ToolStripButton btnAntiAlias;
+        private ToolStripMenuItem miCountColors;
+        private ToolStripSeparator toolStripMenuItem1;
+        private ToolStripMenuItem miColorSpace;
+        private ToolStripMenuItem miColorLevels;
     }
 }

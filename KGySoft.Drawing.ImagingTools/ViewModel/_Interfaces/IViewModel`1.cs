@@ -36,7 +36,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Methods
 
         /// <summary>
-        /// If <see cref="IsModified"/> returns <see langword="true"/>, then this method return the edited model.
+        /// If <see cref="IsModified"/> returns <see langword="true"/>, then this method returns the edited model.
         /// </summary>
         /// <returns>The edited model.</returns>
         TModel GetEditedModel();

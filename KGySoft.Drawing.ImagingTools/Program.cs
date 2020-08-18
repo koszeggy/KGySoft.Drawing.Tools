@@ -39,10 +39,9 @@ namespace KGySoft.Drawing.ImagingTools
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            //using IViewModel viewModel = ViewModelFactory.FromCommandLineArguments(args);
-            //using IView view = ViewFactory.CreateView(viewModel);
-            //Application.Run((Form)view);
-            Application.Run(new QuantizationForm());
+            using IViewModel viewModel = ViewModelFactory.FromCommandLineArguments(args);
+            using IView view = ViewFactory.CreateView(viewModel);
+            Application.Run((Form)view);
         }
 
         #endregion

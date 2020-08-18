@@ -162,6 +162,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// <returns>An <see cref="IViewModel"/> instance that represents a view model for a <see cref="Graphics"/>.</returns>
         public static IViewModel FromGraphics(GraphicsInfo graphicsInfo) => new GraphicsVisualizerViewModel { GraphicsInfo = graphicsInfo };
 
+        /// <summary>
+        /// Creates a view model for adjusting <see cref="PixelFormat"/> of a <see cref="Bitmap"/> with quantizing and dithering.
+        /// </summary>
+        /// <param name="bitmap">The bitmap to transform.</param>
+        /// <returns>An <see cref="IViewModel"/> instance that represents a view model for adjusting the colors of a <see cref="Bitmap"/>.</returns>
+        public static IViewModel<Bitmap> CreateAdjustColorSpace(Bitmap bitmap) => new ColorSpaceViewModel { Bitmap = bitmap };
+
         #endregion
     }
 }

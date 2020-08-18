@@ -161,8 +161,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.AutoZoom), nameof(imageViewer.AutoZoom), imageViewer);
 
             // VM.Zoom <-> imageViewer.Zoom
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Zoom), nameof(imageViewer.Zoom), imageViewer);
-            CommandBindings.AddPropertyBinding(imageViewer, nameof(imageViewer.Zoom), nameof(ViewModel.Zoom), ViewModel);
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.Zoom), imageViewer, nameof(imageViewer.Zoom));
 
             // VM.SmoothZooming -> btnAntiAlias.Checked, imageViewer.SmoothZooming
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SmoothZooming), nameof(btnAntiAlias.Checked), btnAntiAlias);
@@ -220,6 +219,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.Add(ViewModel.ViewImagePreviewSizeChangedCommand)
                 .AddSource(imageViewer, nameof(imageViewer.SizeChanged))
                 .AddSource(imageViewer, nameof(imageViewer.ZoomChanged));
+            CommandBindings.Add(ViewModel.AdjustColorSpaceCommand, ViewModel.AdjustColorSpaceCommandState)
+                .AddSource(miColorSpace, nameof(miColorSpace.Click));
 
             // View commands
             CommandBindings.Add(OnResizeCommand)

@@ -152,7 +152,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Constructors
 
-        internal ScalingToolStrip()
+        public ScalingToolStrip()
         {
             ImageScalingSize = Size.Round(this.ScaleSize(referenceSize));
             Renderer = new ScalingToolStripMenuRenderer();

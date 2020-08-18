@@ -451,7 +451,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Constructors
 
-        internal ImageViewer()
+        public ImageViewer()
         {
             InitializeComponent();
 

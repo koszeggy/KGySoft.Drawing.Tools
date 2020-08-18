@@ -56,6 +56,8 @@ namespace KGySoft.Drawing.ImagingTools.View
                     return new ColorVisualizerForm(colorVisualizerViewModel);
                 case ManageInstallationsViewModel manageInstallationsViewModel:
                     return new ManageInstallationsForm(manageInstallationsViewModel);
+                case ColorSpaceViewModel colorSpaceViewModel:
+                    return new ColorSpaceForm(colorSpaceViewModel);
                 default:
                     throw new InvalidOperationException(Res.InternalError($"Unexpected viewModel type: {viewModel.GetType()}"));
             }

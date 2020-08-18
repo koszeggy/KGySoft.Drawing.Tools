@@ -17,7 +17,6 @@
 #region Usings
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.ViewModel;
@@ -62,8 +61,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Constructors
 
-        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Disposed in Dispose(bool)")]
-        public QuantizerSelectorControl() : base(new QuantizerSelectorViewModel())
+        public QuantizerSelectorControl()
         {
             InitializeComponent();
         }
@@ -74,12 +72,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Protected Methods
 
-        protected override void ApplyResources()
-        {
-            base.ApplyResources();
-            // TODO
-        }
-
         protected override void ApplyViewModel()
         {
             InitPropertyBindings();
@@ -89,10 +81,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-            {
                 components?.Dispose();
-                ViewModel.Dispose();
-            }
 
             base.Dispose(disposing);
         }

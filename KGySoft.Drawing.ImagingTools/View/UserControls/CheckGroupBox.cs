@@ -16,6 +16,7 @@
 
 #region Usings
 
+using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing;
@@ -62,7 +63,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             }
 
             public override bool CanParent(Control control) => false;
-
             public override int NumberOfInternalControlDesigners() => 1;
 
             public override ControlDesigner InternalControlDesigner(int internalControlIndex)
@@ -151,6 +151,16 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #endregion
 
+        #region Events
+
+        internal event EventHandler CheckedChanged
+        {
+            add => Events.AddHandler(nameof(CheckedChanged), value);
+            remove => Events.RemoveHandler(nameof(CheckedChanged), value);
+        }
+
+        #endregion
+
         #region Properties
 
         /// <summary>
@@ -190,7 +200,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #endregion
 
-        /// <summary> 
+        #region Methods
+
+        #region Protected Methods
+
+        /// <summary>
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
@@ -203,11 +217,24 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             base.Dispose(disposing);
         }
 
+        #endregion
 
-        private void CheckBox_CheckedChanged(object sender, System.EventArgs e)
+        #region Private Methods
+
+        private void OnCheckedChanged(EventArgs e) => (Events[nameof(CheckedChanged)] as EventHandler)?.Invoke(this, e);
+
+        #endregion
+
+        #region Event handlers
+
+        private void CheckBox_CheckedChanged(object sender, EventArgs e)
         {
             groupBox.Enabled = checkBox.Checked;
+            OnCheckedChanged(e);
         }
 
+        #endregion
+
+        #endregion
     }
 }

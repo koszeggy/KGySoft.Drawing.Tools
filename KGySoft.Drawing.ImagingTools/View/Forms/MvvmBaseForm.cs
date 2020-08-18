@@ -98,8 +98,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected virtual void ApplyViewModel() => VM.ViewLoaded();
 
-        protected void ShowChildView(IViewModel vm) => ViewFactory.ShowDialog(vm, Handle);
-
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -107,6 +105,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
             base.Dispose(disposing);
         }
+
+        #endregion
+
+        #region Private Methods
+
+        private void ShowChildView(IViewModel vm) => ViewFactory.ShowDialog(vm, Handle);
 
         #endregion
 

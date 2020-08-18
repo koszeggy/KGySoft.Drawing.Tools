@@ -49,7 +49,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private static IList<DithererDescriptor> InitDitherers() =>
             new List<DithererDescriptor>
             {
-                new DithererDescriptor(typeof(OrderedDitherer).GetConstructor(new[] { typeof(byte[,]), typeof(float) })),
+                //new DithererDescriptor(typeof(OrderedDitherer).GetConstructor(new[] { typeof(byte[,]), typeof(float) })),
                 new DithererDescriptor(typeof(OrderedDitherer), nameof(OrderedDitherer.Bayer2x2)),
                 new DithererDescriptor(typeof(OrderedDitherer), nameof(OrderedDitherer.Bayer3x3)),
                 new DithererDescriptor(typeof(OrderedDitherer), nameof(OrderedDitherer.Bayer4x4)),
@@ -57,7 +57,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 new DithererDescriptor(typeof(OrderedDitherer), nameof(OrderedDitherer.DottedHalftone)),
                 new DithererDescriptor(typeof(OrderedDitherer), nameof(OrderedDitherer.BlueNoise)),
 
-                new DithererDescriptor(typeof(ErrorDiffusionDitherer).GetConstructor(new[] { typeof(byte[,]), typeof(int), typeof(int), typeof(bool), typeof(bool?) })),
+                //new DithererDescriptor(typeof(ErrorDiffusionDitherer).GetConstructor(new[] { typeof(byte[,]), typeof(int), typeof(int), typeof(bool), typeof(bool?) })),
                 new DithererDescriptor(typeof(ErrorDiffusionDitherer), nameof(ErrorDiffusionDitherer.Atkinson)),
                 new DithererDescriptor(typeof(ErrorDiffusionDitherer), nameof(ErrorDiffusionDitherer.Burkes)),
                 new DithererDescriptor(typeof(ErrorDiffusionDitherer), nameof(ErrorDiffusionDitherer.FloydSteinberg)),

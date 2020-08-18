@@ -18,7 +18,6 @@
             this.gbParameters = new System.Windows.Forms.GroupBox();
             this.pgParameters = new System.Windows.Forms.PropertyGrid();
             this.cmbDitherer = new System.Windows.Forms.ComboBox();
-            this.lblDitherer = new System.Windows.Forms.Label();
             this.gbParameters.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -26,9 +25,9 @@
             // 
             this.gbParameters.Controls.Add(this.pgParameters);
             this.gbParameters.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.gbParameters.Location = new System.Drawing.Point(0, 34);
+            this.gbParameters.Location = new System.Drawing.Point(0, 21);
             this.gbParameters.Name = "gbParameters";
-            this.gbParameters.Size = new System.Drawing.Size(150, 116);
+            this.gbParameters.Size = new System.Drawing.Size(150, 129);
             this.gbParameters.TabIndex = 5;
             this.gbParameters.TabStop = false;
             this.gbParameters.Text = "gbParameters";
@@ -40,7 +39,7 @@
             this.pgParameters.Location = new System.Drawing.Point(3, 16);
             this.pgParameters.Name = "pgParameters";
             this.pgParameters.PropertySort = System.Windows.Forms.PropertySort.NoSort;
-            this.pgParameters.Size = new System.Drawing.Size(144, 97);
+            this.pgParameters.Size = new System.Drawing.Size(144, 110);
             this.pgParameters.TabIndex = 0;
             this.pgParameters.ToolbarVisible = false;
             // 
@@ -50,21 +49,10 @@
             this.cmbDitherer.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbDitherer.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.cmbDitherer.FormattingEnabled = true;
-            this.cmbDitherer.Location = new System.Drawing.Point(0, 13);
+            this.cmbDitherer.Location = new System.Drawing.Point(0, 0);
             this.cmbDitherer.Name = "cmbDitherer";
             this.cmbDitherer.Size = new System.Drawing.Size(150, 21);
             this.cmbDitherer.TabIndex = 4;
-            // 
-            // lblDitherer
-            // 
-            this.lblDitherer.AutoSize = true;
-            this.lblDitherer.Dock = System.Windows.Forms.DockStyle.Top;
-            this.lblDitherer.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.lblDitherer.Location = new System.Drawing.Point(0, 0);
-            this.lblDitherer.Name = "lblDitherer";
-            this.lblDitherer.Size = new System.Drawing.Size(54, 13);
-            this.lblDitherer.TabIndex = 3;
-            this.lblDitherer.Text = "lblDitherer";
             // 
             // DithererSelectorControl
             // 
@@ -72,11 +60,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.gbParameters);
             this.Controls.Add(this.cmbDitherer);
-            this.Controls.Add(this.lblDitherer);
             this.Name = "DithererSelectorControl";
             this.gbParameters.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -85,6 +71,5 @@
         private System.Windows.Forms.GroupBox gbParameters;
         private System.Windows.Forms.PropertyGrid pgParameters;
         private System.Windows.Forms.ComboBox cmbDitherer;
-        private System.Windows.Forms.Label lblDitherer;
     }
 }

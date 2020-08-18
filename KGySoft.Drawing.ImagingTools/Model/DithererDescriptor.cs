@@ -37,14 +37,14 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         private static readonly Dictionary<string, CustomPropertyDescriptor> parametersMapping = new Dictionary<string, CustomPropertyDescriptor>
         {
-            ["matrix"] = new CustomPropertyDescriptor("matrix", typeof(byte[,]))
-            {
-                DefaultValue = new byte[,] { { 0, 1 }, { 2, 3 } }
-            },
+            //["matrix"] = new CustomPropertyDescriptor("matrix", typeof(byte[,]))
+            //{
+            //    DefaultValue = new byte[,] { { 0, 1 }, { 2, 3 } }
+            //},
             ["strength"] = new CustomPropertyDescriptor("strength", typeof(float)) { DefaultValue = 0f },
-            ["divisor"] = new CustomPropertyDescriptor("divisor", typeof(int)) { DefaultValue = 16 },
-            ["matrixFirstPixelIndex"] = new CustomPropertyDescriptor("matrixFirstPixelIndex", typeof(int)) { DefaultValue = 0 },
-            ["serpentineProcessing"] = new CustomPropertyDescriptor("serpentineProcessing", typeof(bool)) { DefaultValue = false },
+            //["divisor"] = new CustomPropertyDescriptor("divisor", typeof(int)) { DefaultValue = 16 },
+            //["matrixFirstPixelIndex"] = new CustomPropertyDescriptor("matrixFirstPixelIndex", typeof(int)) { DefaultValue = 0 },
+            //["serpentineProcessing"] = new CustomPropertyDescriptor("serpentineProcessing", typeof(bool)) { DefaultValue = false },
             ["serpentine"] = new CustomPropertyDescriptor("serpentineProcessing", typeof(bool)) { DefaultValue = false },
             ["byBrightness"] = new CustomPropertyDescriptor("byBrightness", typeof(bool?)),
             ["seed"] = new CustomPropertyDescriptor("seed", typeof(int?)),

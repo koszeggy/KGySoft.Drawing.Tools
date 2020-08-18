@@ -26,13 +26,36 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
     internal partial class MvvmBaseUserControl<TViewModel> : BaseUserControl
-        where TViewModel : IDisposable // BUG: Actually should be ViewModelBase but WinForms designer with derived forms dies from that
+        where TViewModel : IDisposable // BUG: Actually should be ViewModelBase but WinForms designer with derived types dies from that
     {
+        #region Fields
+
+        private TViewModel vm;
+        private bool isLoaded;
+
+        #endregion
+
         #region Properties
+
+        #region Internal Properties
+
+        internal TViewModel ViewModel
+        {
+            get => vm;
+            set
+            {
+                if (ReferenceEquals(vm, value))
+                    return;
+                vm = value;
+                if (isLoaded)
+                    ApplyViewModel();
+            }
+        }
+
+        #endregion
 
         #region Protected Properties
 
-        protected TViewModel ViewModel { get; }
         protected CommandBindingsCollection CommandBindings { get; }
 
         #endregion
@@ -48,33 +71,10 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Constructors
 
-        #region Protected Constructors
-
-        protected MvvmBaseUserControl(TViewModel viewModel)
+        protected MvvmBaseUserControl()
         {
-            if (DesignMode)
-                return;
-            ViewModel = viewModel;
-
-            ViewModelBase vm = VM;
-            vm.ShowInfoCallback = Dialogs.InfoMessage;
-            vm.ShowWarningCallback = Dialogs.WarningMessage;
-            vm.ShowErrorCallback = Dialogs.ErrorMessage;
-            vm.ConfirmCallback = Dialogs.ConfirmMessage;
-
             CommandBindings = new WinformsCommandBindingsCollection();
         }
-
-        #endregion
-
-        #region Private Constructors
-
-        private MvvmBaseUserControl()
-        {
-            // this ctor is just for the designer
-        }
-
-        #endregion
 
         #endregion
 
@@ -83,10 +83,13 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
+            isLoaded = true;
             ApplyResources();
             if (DesignMode)
                 return;
-            ApplyViewModel();
+
+            if (vm != null)
+                ApplyViewModel();
         }
 
         protected virtual void ApplyResources()
@@ -95,7 +98,16 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // If not, then a derived instance still can call it.
         }
 
-        protected virtual void ApplyViewModel() => VM.ViewLoaded();
+        protected virtual void ApplyViewModel()
+        {
+            ViewModelBase vm = VM;
+            vm.ShowInfoCallback = Dialogs.InfoMessage;
+            vm.ShowWarningCallback = Dialogs.WarningMessage;
+            vm.ShowErrorCallback = Dialogs.ErrorMessage;
+            vm.ConfirmCallback = Dialogs.ConfirmMessage;
+
+            VM.ViewLoaded();
+        }
 
         protected override void Dispose(bool disposing)
         {

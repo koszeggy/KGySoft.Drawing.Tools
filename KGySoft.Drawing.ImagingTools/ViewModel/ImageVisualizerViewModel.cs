@@ -123,6 +123,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommandState PrevImageCommandState => Get(() => new CommandState());
         internal ICommandState NextImageCommandState => Get(() => new CommandState());
         internal ICommandState ShowPaletteCommandState => Get(() => new CommandState { Enabled = false });
+        internal ICommandState AdjustColorSpaceCommandState => Get(() => new CommandState { Enabled = false });
 
         internal ICommand SetAutoZoomCommand => Get(() => new SimpleCommand<bool>(OnSetAutoZoomCommand));
         internal ICommand SetSmoothZoomingCommand => Get(() => new SimpleCommand<bool>(OnSetSmoothZoomingCommand));
@@ -136,6 +137,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommand NextImageCommand => Get(() => new SimpleCommand(OnNextImageCommand));
         internal ICommand ShowPaletteCommand => Get(() => new SimpleCommand(OnShowPaletteCommand));
         internal ICommand ManageInstallationsCommand => Get(() => new SimpleCommand(OnManageInstallationsCommand));
+        internal ICommand AdjustColorSpaceCommand => Get(() => new SimpleCommand(OnAdjustColorSpaceCommand));
 
         #endregion
 
@@ -362,6 +364,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             return imageInfo.Frames[currentFrame];
         }
 
+        private bool IsSingleImageShown() => imageInfo.Type != ImageInfoType.None && !imageInfo.HasFrames
+            || currentFrame >= 0 && !IsAutoPlaying;
 
         private void SetCompoundViewCommandStateImage()
         {
@@ -377,6 +381,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             ShowPaletteCommandState.Enabled = image.Palette.Length > 0;
             SaveFileCommandState.Enabled = imageInfo.Type != ImageInfoType.None;
             ClearCommandState.Enabled = imageInfo.Type != ImageInfoType.None && !ReadOnly;
+            AdjustColorSpaceCommandState.Enabled = imageInfo.Type != ImageInfoType.None && !ReadOnly && !imageInfo.IsMetafile
+                && IsSingleImageShown();
             UpdateInfo();
         }
 
@@ -799,6 +805,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 imageInfo.Image = null;
                 imageInfo.Icon = null;
             }
+
+            UpdatePreviewImageCallback.Invoke();
         }
 
         private bool CheckSaveExtension(string fileName)
@@ -988,7 +996,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 currentImage.Image.Palette = palette; // the preview changes only if we apply the palette
                 currentImage.Palette = palette.Entries; // the actual palette will be taken from here
                 InvalidateImage();
-                UpdatePreviewImageCallback.Invoke();
             }
         }
 
@@ -996,6 +1003,25 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             using (IViewModel viewModel = ViewModelFactory.CreateManageInstallations(Files.GetExecutingPath()))
                 ShowChildViewCallback?.Invoke(viewModel);
+        }
+
+        private void OnAdjustColorSpaceCommand()
+        {
+            Debug.Assert(imageInfo.Type != ImageInfoType.None && !imageInfo.IsMetafile, "Non-metafile image is expected");
+
+            ImageInfoBase image = GetCurrentImage();
+
+            Debug.Assert(image.Image is Bitmap, "Existing bitmap image is expected");
+            using (IViewModel<Bitmap> viewModel = ViewModelFactory.CreateAdjustColorSpace((Bitmap)image.Image))
+            {
+                ShowChildViewCallback?.Invoke(viewModel);
+                if (viewModel.IsModified)
+                {
+                    image.Image = viewModel.GetEditedModel();
+                    InvalidateImage();
+                    ImageChanged();
+                }
+            }
         }
 
         #endregion

@@ -421,6 +421,15 @@ Are you sure you want to save the file with the provided extension?</value>
   <data name="miShowPalette.Text" xml:space="preserve">
     <value>Show Palette...</value>
   </data>
+  <data name="miCountColors.Text" xml:space="preserve">
+    <value>Get Color Count...</value>
+  </data>
+  <data name="miColorSpace.Text" xml:space="preserve">
+    <value>Pixel Format/Quantizing/Dithering...</value>
+  </data>
+  <data name="miColorLevels.Text" xml:space="preserve">
+    <value>Brightness/Contrast/Gamma...</value>
+  </data>
   <data name="btnPrev.Text" xml:space="preserve">
     <value>Previous Image</value>
   </data>

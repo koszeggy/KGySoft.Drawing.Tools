@@ -6,6 +6,18 @@
 ===============================================================================
 
 ~~~~~~~~~
++ v2.3.0:
+~~~~~~~~~
+
++ KGySoft.Drawing.ImagingTools.exe
+==================================
++ New 'Pixel Format/Quantizing/Dithering...' menu
++ API changes:
+  + ViewModelFactory class:
+    + New CreateAdjustColorSpace method
+
+
+~~~~~~~~~
 * v2.2.1:
 ~~~~~~~~~
 
