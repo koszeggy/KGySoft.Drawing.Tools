@@ -167,7 +167,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// </summary>
         /// <param name="bitmap">The bitmap to transform.</param>
         /// <returns>An <see cref="IViewModel"/> instance that represents a view model for adjusting the colors of a <see cref="Bitmap"/>.</returns>
-        public static IViewModel<Bitmap> CreateAdjustColorSpace(Bitmap bitmap) => new ColorSpaceViewModel { Bitmap = bitmap };
+        public static IViewModel<Bitmap> CreateAdjustColorSpace(Bitmap bitmap) => new ColorSpaceViewModel(bitmap);
 
         #endregion
     }

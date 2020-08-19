@@ -61,6 +61,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected override void ApplyViewModel()
         {
+            InitCommandBindings();
             InitPropertyBindings();
             base.ApplyViewModel();
         }
@@ -76,15 +77,27 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Methods
 
+        private void InitCommandBindings()
+        {
+            CommandBindings.Add(ViewModel.ApplyCommand, ViewModel.ApplyCommandState)
+                .AddSource(okCancelButtons.OKButton, nameof(okCancelButtons.OKButton.Click));
+            CommandBindings.Add(ViewModel.CancelCommand)
+                .AddSource(okCancelButtons.CancelButton, nameof(okCancelButtons.CancelButton.Click));
+        }
+
         private void InitPropertyBindings()
         {
             // simple initializations rather than bindings because these will not change:
-            previewImage.ViewModel = ViewModel.PreviewImageViewModel;
+            cmbPixelFormat.DataSource = ViewModel.PixelFormats;
             quantizerSelector.ViewModel = ViewModel.QuantizerSelectorViewModel;
             dithererSelector.ViewModel = ViewModel.DithererSelectorViewModel;
+            previewImage.ViewModel = ViewModel.PreviewImageViewModel;
 
-            // VM.ChangePixelFormat <-> gbPixelFormat.Checked
-            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.ChangePixelFormat), gbPixelFormat, nameof(gbPixelFormat.Checked));
+            // VM.SelectedPixelFormat -> cmbPixelFormat.SelectedItem (cannot use two-way for SelectedItem because there is no SelectedItemChanged event)
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SelectedPixelFormat), nameof(cmbPixelFormat.SelectedItem), cmbPixelFormat);
+
+            // cmbPixelFormat.SelectedItem -> VM.SelectedPixelFormat (cannot use two-way for SelectedValue because ValueMember is not set)
+            CommandBindings.AddPropertyBinding(cmbPixelFormat, nameof(cmbPixelFormat.SelectedValue), nameof(ViewModel.SelectedPixelFormat), ViewModel);
 
             // VM.UseQuantizer <-> gbQuantizer.Checked
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.UseQuantizer), gbQuantizer, nameof(gbQuantizer.Checked));

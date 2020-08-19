@@ -16,9 +16,16 @@
 
 #region Usings
 
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.Linq;
 
 using KGySoft.ComponentModel;
+using KGySoft.CoreLibraries;
+using KGySoft.Drawing.Imaging;
 
 #endregion
 
@@ -26,15 +33,59 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
     internal class ColorSpaceViewModel : ViewModelBase, IViewModel<Bitmap>
     {
+        #region Fields
+
+        #region Static Fields
+
+        private readonly static HashSet<string> affectsGenerate = new HashSet<string>
+        {
+            nameof(SelectedPixelFormat)
+        };
+
+        #endregion
+
+        #region Instance Fields
+
+        private readonly Bitmap originalImage;
+        private readonly PixelFormat originalPixelFormat;
+
+        private bool keepResult;
+
+        #endregion
+
+        #endregion
+
         #region Properties
 
-        internal Bitmap Bitmap { get => Get<Bitmap>(); set => Set(value); }
         internal PreviewImageViewModel PreviewImageViewModel => Get(() => new PreviewImageViewModel());
         internal QuantizerSelectorViewModel QuantizerSelectorViewModel => Get(() => new QuantizerSelectorViewModel());
         internal DithererSelectorViewModel DithererSelectorViewModel => Get(() => new DithererSelectorViewModel());
-        internal bool ChangePixelFormat { get => Get(true); set => Set(value); }
+        
+        internal PixelFormat[] PixelFormats => Get(() => Enum<PixelFormat>.GetValues().Where(pf => pf.IsValidFormat()).OrderBy(pf => pf & PixelFormat.Max).ToArray());
+        internal PixelFormat SelectedPixelFormat { get => Get<PixelFormat>(); set => Set(value); }
+
         internal bool UseQuantizer { get => Get<bool>(); set => Set(value); }
         internal bool UseDitherer { get => Get<bool>(); set => Set(value); }
+
+        internal ICommand ApplyCommand => Get(() => new SimpleCommand(OnApplyCommand));
+        internal ICommand CancelCommand => Get(() => new SimpleCommand(OnCancelCommand));
+
+        internal ICommandState ApplyCommandState => Get(() => new CommandState());
+
+        #endregion
+
+        #region Constructors
+
+        internal ColorSpaceViewModel(Bitmap image)
+        {
+            originalImage = image ?? throw new ArgumentNullException(nameof(image), PublicResources.ArgumentNull);
+            originalPixelFormat = image.PixelFormat;
+            PreviewImageViewModel previewImage = PreviewImageViewModel;
+            previewImage.PropertyChanged += PreviewImage_PropertyChanged;
+
+            previewImage.Image = image;
+            SelectedPixelFormat = image.PixelFormat;
+        }
 
         #endregion
 
@@ -45,14 +96,16 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
         {
             base.OnPropertyChanged(e);
-            if (e.PropertyName == nameof(Bitmap))
+            if (affectsGenerate.Contains(e.PropertyName))
             {
-                PreviewImageViewModel.Image = (Bitmap)e.NewValue;
+                CheckGenerate();
                 return;
             }
+
         }
 
-        protected override bool AffectsModifiedState(string propertyName) => propertyName == nameof(Bitmap);
+        // IsModified is set explicitly from PreviewImage_PropertyChanged
+        protected override bool AffectsModifiedState(string propertyName) => false;
 
         protected override void Dispose(bool disposing)
         {
@@ -60,13 +113,15 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 return;
             if (disposing)
             {
+                Image preview = PreviewImageViewModel.Image;
+
+                // These disposals remove every subscriptions as well
                 PreviewImageViewModel?.Dispose();
                 QuantizerSelectorViewModel?.Dispose();
                 DithererSelectorViewModel?.Dispose();
 
-                // Disposing image only if it has been re-generated and was not discarded in the end
-                if (IsModified)
-                    Bitmap?.Dispose();
+                if (!ReferenceEquals(originalImage, preview) && !keepResult)
+                    preview?.Dispose();
             }
 
             base.Dispose(disposing);
@@ -74,14 +129,86 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #endregion
 
+        #region Private Methods
+
+        private void CheckGenerate()
+        {
+            // checking whether a new generate should be added
+            PixelFormat pixelFormat = SelectedPixelFormat;
+            bool useQuantizer = UseQuantizer;
+            bool useDitherer = UseDitherer;
+            IQuantizer quantizer = useQuantizer ? QuantizerSelectorViewModel.Quantizer : null;
+            IDitherer ditherer = useDitherer ? DithererSelectorViewModel.Ditherer : null;
+
+            // error - null
+            if (useQuantizer && quantizer == null || useDitherer && ditherer == null)
+            {
+                SetPreview(null);
+                return;
+            }
+
+            // original image
+            if (pixelFormat == originalPixelFormat && quantizer == null && ditherer == null)
+            {
+                SetPreview(originalImage);
+                return;
+            }
+
+            // generating a new image
+            SetPreview(originalImage.ConvertPixelFormat(pixelFormat, quantizer, ditherer));
+        }
+
+        private void SetPreview(Bitmap image)
+        {
+            PreviewImageViewModel preview = PreviewImageViewModel;
+            Image toDispose = preview.Image;
+            preview.Image = image;
+            if (toDispose != null && toDispose != originalImage)
+                toDispose.Dispose();
+        }
+
+        #endregion
+
+        #region Event Handlers
+
+        private void PreviewImage_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var vm = (PreviewImageViewModel)sender;
+
+            // preview image has been changed: updating IsModified accordingly
+            if (e.PropertyName == nameof(vm.Image))
+            {
+                Image image = vm.Image;
+                SetModified(image != null && originalImage != image);
+
+                // no need to check whether generating is in progress because otherwise it would not be set
+                ApplyCommandState.Enabled = IsModified;
+                return;
+            }
+        }
+
+        #endregion
+
+        #region Command Handlers
+
+        private void OnCancelCommand()
+        {
+            // TODO: cancel pending generate
+            CloseViewCallback?.Invoke();
+        }
+
+        private void OnApplyCommand()
+        {
+            // TODO: wait for pending generate but better if it cannot happen
+            keepResult = true;
+            CloseViewCallback?.Invoke();
+        }
+
+        #endregion
+
         #region Explicitly Implemented Interface Methods
 
-        Bitmap IViewModel<Bitmap>.GetEditedModel()
-        {
-            // indicating that the generated image should not be disposed
-            SetModified(false);
-            return Bitmap;
-        }
+        Bitmap IViewModel<Bitmap>.GetEditedModel() => PreviewImageViewModel.Image as Bitmap;
 
         #endregion
 
