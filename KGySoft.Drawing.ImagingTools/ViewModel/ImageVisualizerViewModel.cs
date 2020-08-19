@@ -805,8 +805,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 imageInfo.Image = null;
                 imageInfo.Icon = null;
             }
-
-            UpdatePreviewImageCallback.Invoke();
         }
 
         private bool CheckSaveExtension(string fileName)
@@ -818,6 +816,26 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (suggestedExt.Split(';').Contains('*' + actualExt))
                 return true;
             return Confirm(Res.ConfirmMessageSaveFileExtension(Path.GetFileName(fileName), filters[(filterIndex - 1) << 1]));
+        }
+
+        private void SetCurrentImage(Bitmap image)
+        {
+            // replacing the whole image
+            if (GetCurrentImage() == imageInfo)
+            {
+                // todo: this resets zoom - try to extract the main things
+                Image = image;
+                SetModified(true);
+                return;
+            }
+
+            // replacing the current frame only
+            Debug.Assert(currentFrame >= 0 && !IsAutoPlaying);
+            ImageFrameInfo[] frames = imageInfo.Frames;
+            frames[currentFrame] = new ImageFrameInfo(image);
+            InvalidateImage();
+            PreviewImage = frames[currentFrame].Image;
+            ImageChanged();
         }
 
         #endregion
@@ -996,6 +1014,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 currentImage.Image.Palette = palette; // the preview changes only if we apply the palette
                 currentImage.Palette = palette.Entries; // the actual palette will be taken from here
                 InvalidateImage();
+                UpdatePreviewImageCallback.Invoke();
             }
         }
 
@@ -1016,11 +1035,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             {
                 ShowChildViewCallback?.Invoke(viewModel);
                 if (viewModel.IsModified)
-                {
-                    image.Image = viewModel.GetEditedModel();
-                    InvalidateImage();
-                    ImageChanged();
-                }
+                    SetCurrentImage(viewModel.GetEditedModel());
             }
         }
 

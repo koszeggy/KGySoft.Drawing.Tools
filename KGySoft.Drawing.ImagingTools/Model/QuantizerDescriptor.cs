@@ -85,7 +85,23 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #region Methods
 
+        #region Public Methods
+        
         public override string ToString() => $"{Method.DeclaringType.Name}.{Method.Name}";
+
+        #endregion
+
+        #region Internal Methods
+
+        internal object[] EvaluateParameters(CustomPropertiesObject values)
+        {
+            var result = new object[Parameters.Length];
+            for (int i = 0; i < result.Length; i++)
+                result[i] = Parameters[i].GetValue(values);
+            return result;
+        }
+
+        #endregion
 
         #endregion
     }

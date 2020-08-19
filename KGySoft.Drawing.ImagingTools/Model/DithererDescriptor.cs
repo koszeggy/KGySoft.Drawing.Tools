@@ -45,7 +45,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
             //["divisor"] = new CustomPropertyDescriptor("divisor", typeof(int)) { DefaultValue = 16 },
             //["matrixFirstPixelIndex"] = new CustomPropertyDescriptor("matrixFirstPixelIndex", typeof(int)) { DefaultValue = 0 },
             //["serpentineProcessing"] = new CustomPropertyDescriptor("serpentineProcessing", typeof(bool)) { DefaultValue = false },
-            ["serpentine"] = new CustomPropertyDescriptor("serpentineProcessing", typeof(bool)) { DefaultValue = false },
+            ["serpentine"] = new CustomPropertyDescriptor("serpentine", typeof(bool)) { DefaultValue = false },
             ["byBrightness"] = new CustomPropertyDescriptor("byBrightness", typeof(bool?)),
             ["seed"] = new CustomPropertyDescriptor("seed", typeof(int?)),
         };
@@ -54,9 +54,9 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #region Properties
 
-        internal IList<MemberInfo> InvokeChain { get; }
+        internal List<MemberInfo> InvokeChain { get; }
 
-        internal IList<CustomPropertyDescriptor> Parameters { get; }
+        internal List<CustomPropertyDescriptor> Parameters { get; }
 
         #endregion
 
@@ -116,9 +116,29 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #region Instance Methods
 
+        #region Public Methods
+
         public override string ToString() => InvokeChain[0] is ConstructorInfo ctor
             ? ctor.DeclaringType.Name
             : $"{InvokeChain[0].DeclaringType.Name}.{InvokeChain[0].Name}";
+
+        #endregion
+
+        #region Internal Methods
+
+        internal object[] EvaluateParameters(ParameterInfo[] parameters, CustomPropertiesObject values)
+        {
+            var result = new object[parameters.Length];
+            for (int i = 0; i < result.Length; i++)
+            {
+                string paramName = parameters[i].Name;
+                result[i] = Parameters.Find(d => d.Name == paramName).GetValue(values);
+            }
+
+            return result;
+        }
+
+        #endregion
 
         #endregion
 

@@ -119,6 +119,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden), EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
             public new Point Location => Point.Empty;
 
+            [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden), EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
+            public new Padding Padding => base.Padding;
+
             [EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden), Browsable(false)]
             public new string Name => base.Name;
 
@@ -142,7 +145,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
             #region Constructors
 
-            public ContentGroupBox() => base.Dock = DockStyle.Fill;
+            public ContentGroupBox()
+            {
+                base.Dock = DockStyle.Fill;
+                base.Padding = new Padding(3, 4, 3, 3);
+            }
 
             #endregion
         }

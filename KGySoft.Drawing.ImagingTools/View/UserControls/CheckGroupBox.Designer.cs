@@ -30,10 +30,6 @@
             this.checkBox.TabIndex = 1;
             this.checkBox.UseVisualStyleBackColor = true;
             // 
-            // groupBox
-            // 
-            this.groupBox.Padding = new System.Windows.Forms.Padding(3, 4, 3, 3);
-            // 
             // CheckGroupBox
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);

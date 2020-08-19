@@ -16,9 +16,6 @@
 
 #region Usings
 
-using System;
-
-using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
@@ -27,38 +24,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
     internal sealed partial class DithererSelectorControl : MvvmBaseUserControl<DithererSelectorViewModel>
     {
-        #region Fields
-
-        private IDitherer ditherer;
-
-        #endregion
-
-        #region Events
-
-        internal event EventHandler DithererChanged
-        {
-            add => Events.AddHandler(nameof(DithererChanged), value);
-            remove => Events.RemoveHandler(nameof(DithererChanged), value);
-        }
-
-        #endregion
-
-        #region Properties
-
-        internal IDitherer Ditherer
-        {
-            get => ditherer;
-            private set
-            {
-                if (ditherer == value)
-                    return;
-                ditherer = value;
-                OnDithererChanged(EventArgs.Empty);
-            }
-        }
-
-        #endregion
-
         #region Constructors
 
         public DithererSelectorControl()
@@ -74,6 +39,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         protected override void ApplyViewModel()
         {
+            InitCommandBindings();
             InitPropertyBindings();
             base.ApplyViewModel();
         }
@@ -90,6 +56,13 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Private Methods
 
+        private void InitCommandBindings()
+        {
+            // not for ViewModel.Parameters.PropertyChanged because it is not triggered for expanded properties such as collection elements
+            CommandBindings.Add(ViewModel.ResetDitherer)
+                .AddSource(pgParameters, nameof(pgParameters.PropertyValueChanged));
+        }
+
         private void InitPropertyBindings()
         {
             // will not change so not as an actual binding
@@ -100,12 +73,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
             // cmbDitherer.SelectedValue -> VM.SelectedDitherer
             CommandBindings.AddPropertyBinding(cmbDitherer, nameof(cmbDitherer.SelectedValue), nameof(ViewModel.SelectedDitherer), ViewModel);
-
-            // VM.Ditherer -> this.Ditherer
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Ditherer), nameof(Ditherer), this);
         }
-
-        private void OnDithererChanged(EventArgs e) => (Events[nameof(DithererChanged)] as EventHandler)?.Invoke(this, e);
 
         #endregion
 

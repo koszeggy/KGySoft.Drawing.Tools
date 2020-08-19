@@ -16,9 +16,7 @@
 
 #region Usings
 
-using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 
 using KGySoft.ComponentModel;
@@ -74,6 +72,21 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Instance Methods
 
+        #region Internal Methods
+
+        internal void ResetQuantizer()
+        {
+            QuantizerDescriptor descriptor = SelectedQuantizer;
+            Quantizer = null;
+            if (descriptor == null)
+                return;
+
+            object[] parameters = descriptor.EvaluateParameters(Parameters);
+            Quantizer = (IQuantizer)MethodAccessor.GetAccessor(descriptor.Method).Invoke(null, parameters);
+        }
+
+        #endregion
+
         #region Protected Methods
 
         protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
@@ -90,10 +103,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             if (e.PropertyName == nameof(Parameters))
             {
-                if (e.OldValue is CustomPropertiesObject oldParams)
-                    oldParams.PropertyChanged -= ParametersPropertyChanged;
-                if (e.NewValue is CustomPropertiesObject newParams)
-                    newParams.PropertyChanged += ParametersPropertyChanged;
                 ResetQuantizer();
                 return;
             }
@@ -103,9 +112,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             if (IsDisposed)
                 return;
-            CustomPropertiesObject parameters = Parameters;
-            if (parameters != null)
-                parameters.PropertyChanged -= ParametersPropertyChanged;
             base.Dispose(disposing);
         }
 
@@ -113,31 +119,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Private Methods
 
-        private object[] EvaluateParameters(CustomPropertyDescriptor[] parameters)
-        {
-            CustomPropertiesObject values = Parameters;
-            var result = new object[parameters.Length];
-            for (int i = 0; i < result.Length; i++)
-                result[i] = parameters[i].GetValue(values);
-            return result;
-        }
-
-        private void ResetQuantizer()
-        {
-            QuantizerDescriptor descriptor = SelectedQuantizer;
-            Quantizer = null;
-            if (descriptor == null)
-                return;
-
-            object[] parameters = EvaluateParameters(descriptor.Parameters);
-            Quantizer = (IQuantizer)MethodAccessor.GetAccessor(descriptor.Method).Invoke(null, parameters);
-        }
-
-        #endregion
-
-        #region Event Handlers
-
-        private void ParametersPropertyChanged(object sender, PropertyChangedEventArgs e) => ResetQuantizer();
 
         #endregion
 

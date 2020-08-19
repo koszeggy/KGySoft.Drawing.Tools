@@ -17,13 +17,12 @@
         {
             this.quantizerSelector = new KGySoft.Drawing.ImagingTools.View.UserControls.QuantizerSelectorControl();
             this.dithererSelector = new KGySoft.Drawing.ImagingTools.View.UserControls.DithererSelectorControl();
-            this.gbPixelFormat = new KGySoft.Drawing.ImagingTools.View.UserControls.CheckGroupBox();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.gbPixelFormat = new System.Windows.Forms.GroupBox();
+            this.cmbPixelFormat = new System.Windows.Forms.ComboBox();
             this.gbQuantizer = new KGySoft.Drawing.ImagingTools.View.UserControls.CheckGroupBox();
             this.gbDitherer = new KGySoft.Drawing.ImagingTools.View.UserControls.CheckGroupBox();
             this.okCancelButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
             this.previewImage = new KGySoft.Drawing.ImagingTools.View.UserControls.PreviewImageControl();
-            this.gbPixelFormat.GroupBox.SuspendLayout();
             this.gbPixelFormat.SuspendLayout();
             this.gbQuantizer.GroupBox.SuspendLayout();
             this.gbQuantizer.SuspendLayout();
@@ -31,7 +30,7 @@
             this.gbDitherer.SuspendLayout();
             this.SuspendLayout();
             // 
-            // quantizerSelectorControl1
+            // quantizerSelector
             // 
             this.quantizerSelector.Dock = System.Windows.Forms.DockStyle.Fill;
             this.quantizerSelector.Location = new System.Drawing.Point(3, 17);
@@ -39,7 +38,7 @@
             this.quantizerSelector.Size = new System.Drawing.Size(460, 92);
             this.quantizerSelector.TabIndex = 0;
             // 
-            // dithererSelectorControl1
+            // dithererSelector
             // 
             this.dithererSelector.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dithererSelector.Location = new System.Drawing.Point(3, 17);
@@ -49,28 +48,25 @@
             // 
             // gbPixelFormat
             // 
+            this.gbPixelFormat.Controls.Add(this.cmbPixelFormat);
             this.gbPixelFormat.Dock = System.Windows.Forms.DockStyle.Top;
-            // 
-            // gbPixelFormat.GroupBox
-            // 
-            this.gbPixelFormat.GroupBox.Controls.Add(this.comboBox1);
-            this.gbPixelFormat.GroupBox.Padding = new System.Windows.Forms.Padding(3, 4, 3, 3);
             this.gbPixelFormat.Location = new System.Drawing.Point(3, 3);
             this.gbPixelFormat.Name = "gbPixelFormat";
             this.gbPixelFormat.Size = new System.Drawing.Size(466, 43);
             this.gbPixelFormat.TabIndex = 3;
+            this.gbPixelFormat.TabStop = false;
             this.gbPixelFormat.Text = "gbPixelFormat";
             // 
-            // comboBox1
+            // cmbPixelFormat
             // 
-            this.comboBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(3, 17);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(460, 21);
-            this.comboBox1.TabIndex = 0;
+            this.cmbPixelFormat.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cmbPixelFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbPixelFormat.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.cmbPixelFormat.FormattingEnabled = true;
+            this.cmbPixelFormat.Location = new System.Drawing.Point(3, 16);
+            this.cmbPixelFormat.Name = "cmbPixelFormat";
+            this.cmbPixelFormat.Size = new System.Drawing.Size(460, 21);
+            this.cmbPixelFormat.TabIndex = 0;
             // 
             // gbQuantizer
             // 
@@ -79,7 +75,6 @@
             // gbQuantizer.GroupBox
             // 
             this.gbQuantizer.GroupBox.Controls.Add(this.quantizerSelector);
-            this.gbQuantizer.GroupBox.Padding = new System.Windows.Forms.Padding(3, 4, 3, 3);
             this.gbQuantizer.Location = new System.Drawing.Point(3, 46);
             this.gbQuantizer.Name = "gbQuantizer";
             this.gbQuantizer.Size = new System.Drawing.Size(466, 112);
@@ -93,7 +88,6 @@
             // gbDitherer.GroupBox
             // 
             this.gbDitherer.GroupBox.Controls.Add(this.dithererSelector);
-            this.gbDitherer.GroupBox.Padding = new System.Windows.Forms.Padding(3, 4, 3, 3);
             this.gbDitherer.Location = new System.Drawing.Point(3, 158);
             this.gbDitherer.Name = "gbDitherer";
             this.gbDitherer.Size = new System.Drawing.Size(466, 112);
@@ -102,37 +96,37 @@
             // 
             // okCancelButtons
             // 
+            this.okCancelButtons.BackColor = System.Drawing.Color.Transparent;
             this.okCancelButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.okCancelButtons.Location = new System.Drawing.Point(3, 380);
+            this.okCancelButtons.Location = new System.Drawing.Point(3, 381);
             this.okCancelButtons.Name = "okCancelButtons";
             this.okCancelButtons.Size = new System.Drawing.Size(466, 31);
             this.okCancelButtons.TabIndex = 6;
             // 
-            // previewBitmapControl1
+            // previewImage
             // 
             this.previewImage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.previewImage.Location = new System.Drawing.Point(3, 270);
             this.previewImage.Name = "previewImage";
-            this.previewImage.Size = new System.Drawing.Size(466, 110);
+            this.previewImage.Size = new System.Drawing.Size(466, 111);
             this.previewImage.TabIndex = 7;
             // 
             // ColorSpaceForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(472, 411);
+            this.ClientSize = new System.Drawing.Size(472, 412);
             this.Controls.Add(this.previewImage);
             this.Controls.Add(this.okCancelButtons);
             this.Controls.Add(this.gbDitherer);
             this.Controls.Add(this.gbQuantizer);
             this.Controls.Add(this.gbPixelFormat);
             this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(450, 450);
             this.Name = "ColorSpaceForm";
             this.Padding = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.Text = "ColorSpaceForm";
-            this.gbPixelFormat.GroupBox.ResumeLayout(false);
             this.gbPixelFormat.ResumeLayout(false);
-            this.gbPixelFormat.PerformLayout();
             this.gbQuantizer.GroupBox.ResumeLayout(false);
             this.gbQuantizer.ResumeLayout(false);
             this.gbQuantizer.PerformLayout();
@@ -147,8 +141,8 @@
 
         private UserControls.QuantizerSelectorControl quantizerSelector;
         private UserControls.DithererSelectorControl dithererSelector;
-        private UserControls.CheckGroupBox gbPixelFormat;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.GroupBox gbPixelFormat;
+        private System.Windows.Forms.ComboBox cmbPixelFormat;
         private UserControls.CheckGroupBox gbQuantizer;
         private UserControls.CheckGroupBox gbDitherer;
         private UserControls.OkCancelButtons okCancelButtons;

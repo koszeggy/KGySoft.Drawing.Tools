@@ -16,9 +16,6 @@
 
 #region Usings
 
-using System;
-
-using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
@@ -27,38 +24,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
     internal sealed partial class QuantizerSelectorControl : MvvmBaseUserControl<QuantizerSelectorViewModel>
     {
-        #region Fields
-
-        private IQuantizer quantizer;
-
-        #endregion
-
-        #region Events
-
-        internal event EventHandler QuantizerChanged
-        {
-            add => Events.AddHandler(nameof(QuantizerChanged), value);
-            remove => Events.RemoveHandler(nameof(QuantizerChanged), value);
-        }
-
-        #endregion
-
-        #region Properties
-
-        internal IQuantizer Quantizer
-        {
-            get => quantizer;
-            private set
-            {
-                if (quantizer == value)
-                    return;
-                quantizer = value;
-                OnQuantizerChanged(EventArgs.Empty);
-            }
-        }
-
-        #endregion
-
         #region Constructors
 
         public QuantizerSelectorControl()
@@ -74,6 +39,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         protected override void ApplyViewModel()
         {
+            InitCommandBindings();
             InitPropertyBindings();
             base.ApplyViewModel();
         }
@@ -90,6 +56,13 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Private Methods
 
+        private void InitCommandBindings()
+        {
+            // not for ViewModel.Parameters.PropertyChanged because it is not triggered for expanded properties such as collection elements
+            CommandBindings.Add(ViewModel.ResetQuantizer)
+                .AddSource(pgParameters, nameof(pgParameters.PropertyValueChanged));
+        }
+
         private void InitPropertyBindings()
         {
             // will not change so not as an actual binding
@@ -100,12 +73,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
             // cmbQuantizer.SelectedValue -> VM.SelectedQuantizer
             CommandBindings.AddPropertyBinding(cmbQuantizer, nameof(cmbQuantizer.SelectedValue), nameof(ViewModel.SelectedQuantizer), ViewModel);
-
-            // VM.Quantizer -> this.Quantizer
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Quantizer), nameof(Quantizer), this);
         }
-
-        private void OnQuantizerChanged(EventArgs e) => (Events[nameof(QuantizerChanged)] as EventHandler)?.Invoke(this, e);
 
         #endregion
 

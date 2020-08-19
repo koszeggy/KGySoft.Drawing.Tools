@@ -505,4 +505,25 @@ Are you sure you want to save the file with the provided extension?</value>
   <data name="btnSelectColor.Text" xml:space="preserve">
     <value>Select Color</value>
   </data>
+  <data name="ColorSpaceForm.Text" xml:space="preserve">
+    <value>Pixel Format/Quantizing/Dithering</value>
+  </data>
+  <data name="gbPixelFormat.Text" xml:space="preserve">
+    <value>&amp;Pixel Format</value>
+  </data>
+  <data name="gbQuantizer.Text" xml:space="preserve">
+    <value>&amp;Quantizer</value>
+  </data>
+  <data name="gbDitherer.Text" xml:space="preserve">
+    <value>&amp;Ditherer</value>
+  </data>
+  <data name="gbParameters.Text" xml:space="preserve">
+    <value>Parameters</value>
+  </data>
+  <data name="btnOK.Text" xml:space="preserve">
+    <value>&amp;OK</value>
+  </data>
+  <data name="btnCancel.Text" xml:space="preserve">
+    <value>&amp;Cancel</value>
+  </data>
 </root>
