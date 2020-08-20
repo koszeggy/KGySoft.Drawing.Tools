@@ -40,6 +40,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal DithererDescriptor SelectedDitherer { get => Get<DithererDescriptor>(); private set => Set(value); }
         internal CustomPropertiesObject Parameters { get => Get<CustomPropertiesObject>(); private set => Set(value); }
         internal IDitherer Ditherer { get => Get<IDitherer>(); private set => Set(value); }
+        internal Exception CreateDithererError { get => Get<Exception>(); set => Set(value); }
 
         #endregion
 
@@ -50,9 +51,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private static IList<DithererDescriptor> InitDitherers() =>
             new List<DithererDescriptor>
             {
-                new DithererDescriptor(typeof(RandomNoiseDitherer).GetConstructor(new[] { typeof(float), typeof(int?) })),
-                new DithererDescriptor(typeof(InterleavedGradientNoiseDitherer).GetConstructor(new[] { typeof(float) })),
-
                 //new DithererDescriptor(typeof(OrderedDitherer).GetConstructor(new[] { typeof(byte[,]), typeof(float) })),
                 new DithererDescriptor(typeof(OrderedDitherer), nameof(OrderedDitherer.Bayer2x2)),
                 new DithererDescriptor(typeof(OrderedDitherer), nameof(OrderedDitherer.Bayer3x3)),
@@ -71,6 +69,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 new DithererDescriptor(typeof(ErrorDiffusionDitherer), nameof(ErrorDiffusionDitherer.SierraLite)),
                 new DithererDescriptor(typeof(ErrorDiffusionDitherer), nameof(ErrorDiffusionDitherer.StevensonArce)),
                 new DithererDescriptor(typeof(ErrorDiffusionDitherer), nameof(ErrorDiffusionDitherer.Stucki)),
+
+                new DithererDescriptor(typeof(RandomNoiseDitherer).GetConstructor(new[] { typeof(float), typeof(int?) })),
+                new DithererDescriptor(typeof(InterleavedGradientNoiseDitherer).GetConstructor(new[] { typeof(float) })),
             };
 
         #endregion
@@ -83,36 +84,44 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             DithererDescriptor descriptor = SelectedDitherer;
             Ditherer = null;
+            CreateDithererError = null;
             if (descriptor == null)
                 return;
 
             IDitherer ditherer = null;
             CustomPropertiesObject parameterValues = Parameters;
-            foreach (MemberInfo memberInfo in descriptor.InvokeChain)
+            try
             {
-                switch (memberInfo)
+                foreach (MemberInfo memberInfo in descriptor.InvokeChain)
                 {
-                    case ConstructorInfo ctor:
-                        Debug.Assert(ditherer == null);
-                        ditherer = (IDitherer)CreateInstanceAccessor.GetAccessor(ctor).CreateInstance(descriptor.EvaluateParameters(ctor.GetParameters(), parameterValues));
-                        break;
-                    
-                    case PropertyInfo property:
-                        Debug.Assert(ditherer == null && property.GetGetMethod().IsStatic);
-                        ditherer = (IDitherer)PropertyAccessor.GetAccessor(property).Get(null);
-                        break;
+                    switch (memberInfo)
+                    {
+                        case ConstructorInfo ctor:
+                            Debug.Assert(ditherer == null);
+                            ditherer = (IDitherer)CreateInstanceAccessor.GetAccessor(ctor).CreateInstance(descriptor.EvaluateParameters(ctor.GetParameters(), parameterValues));
+                            break;
 
-                    case MethodInfo method:
-                        Debug.Assert(ditherer != null && !method.IsStatic);
-                        ditherer = (IDitherer)MethodAccessor.GetAccessor(method).Invoke(ditherer, descriptor.EvaluateParameters(method.GetParameters(), parameterValues));
-                        break;
+                        case PropertyInfo property:
+                            Debug.Assert(ditherer == null && property.GetGetMethod().IsStatic);
+                            ditherer = (IDitherer)PropertyAccessor.GetAccessor(property).Get(null);
+                            break;
 
-                    default:
-                        throw new InvalidOperationException(Res.InternalError($"Unexpected member in invoke chain: {memberInfo}"));
+                        case MethodInfo method:
+                            Debug.Assert(ditherer != null && !method.IsStatic);
+                            ditherer = (IDitherer)MethodAccessor.GetAccessor(method).Invoke(ditherer, descriptor.EvaluateParameters(method.GetParameters(), parameterValues));
+                            break;
+
+                        default:
+                            throw new InvalidOperationException(Res.InternalError($"Unexpected member in invoke chain: {memberInfo}"));
+                    }
                 }
-            }
 
-            Ditherer = ditherer;
+                Ditherer = ditherer;
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                CreateDithererError = e;
+            }
         }
 
         #endregion

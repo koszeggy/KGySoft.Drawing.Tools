@@ -462,7 +462,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 {
                     image = Image.FromStream(stream);
                 }
-                catch (Exception e)
+                catch (Exception e) when (!e.IsCriticalGdi())
                 {
                     throw new ArgumentException(Res.ErrorMessageNotAnImageFile(e.Message), nameof(fileName), e);
                 }
@@ -474,7 +474,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 {
                     image = new Metafile(stream);
                 }
-                catch (Exception e)
+                catch (Exception e) when (!e.IsCriticalGdi())
                 {
                     throw new ArgumentException(Res.ErrorMessageNotAMetafile(e.Message), nameof(fileName), e);
                 }
@@ -486,7 +486,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 {
                     image = new Bitmap(stream);
                 }
-                catch (Exception e)
+                catch (Exception e) when (!e.IsCriticalGdi())
                 {
                     throw new ArgumentException(Res.ErrorMessageNotABitmapFile(e.Message), nameof(fileName), e);
                 }
@@ -509,7 +509,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     {
                         icon = new Icon(stream);
                     }
-                    catch (Exception e)
+                    catch (Exception e) when (!e.IsCriticalGdi())
                     {
                         throw new ArgumentException(Res.ErrorMessageNotAnIconFile(e.Message), nameof(fileName), e);
                     }
@@ -931,7 +931,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 else
                     throw new InvalidOperationException(Res.InternalError($"Unexpected format without encoder: {selectedFormat}"));
             }
-            catch (Exception e) when (!(e is StackOverflowException))
+            catch (Exception e) when (!e.IsCriticalGdi())
             {
                 ShowError(Res.ErrorMessageFailedToSaveImage(e.Message));
             }

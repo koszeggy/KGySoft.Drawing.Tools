@@ -335,6 +335,22 @@ See the Configuration button.</value>
   <data name="ErrorMessage_CouldNotDeleteFileFormat" xml:space="preserve">
     <value>Could not delete file {0}: {1}</value>
   </data>
+  <data name="ErrorMessage_PixelFormatNotSupportedFormat" xml:space="preserve">
+    <value>Pixel format '{0}' is not supported on current platform.</value>
+  </data>
+  <data name="ErrorMessage_QuantizerPaletteTooLargeFormat" xml:space="preserve">
+    <value>The selected quantizer returns a too large palette for pixel format '{0}'.
+Either select at least '{1}' or reduce the number of colors to {2}.</value>
+  </data>
+  <data name="ErrorMessage_FailedToInitializeQuantizerFormat" xml:space="preserve">
+    <value>Failed to initialize quantizer: {0}</value>
+  </data>
+  <data name="ErrorMessage_FailedToInitializeDithererFormat" xml:space="preserve">
+    <value>Failed to initialize ditherer: {0}</value>
+  </data>
+  <data name="ErrorMessage_FailedToGeneratePreviewFormat" xml:space="preserve">
+    <value>Failed to generate preview: {0}</value>
+  </data>
   <data name="WarningMessage_CouldNotCreateNetCoreDirectoryFormat" xml:space="preserve">
     <value>Could not create directory {0}: {1}
 
@@ -353,6 +369,19 @@ The debugger visualizer may will not work for .NET Core projects.</value>
   <data name="WarningMessage_InstallationWarningFormat" xml:space="preserve">
     <value>The installation finished with a warning: {0}</value>
   </data>
+  <data name="WarningMessage_WideConversionLossFormat" xml:space="preserve">
+    <value>When converting an image with wide pixel format '{0}' to another wide format,
+then colors will be quantized to the 32 bit ARGB color space during the conversion even if there is no quantizer used.</value>
+  </data>
+  <data name="WarningMessage_QuantizerTooWideFormat" xml:space="preserve">
+    <value>The selected quantizer uses more colors than the selected pixel format '{0}' supports.
+Either select at least {1} pixel format or use another quantizer that uses no more colors than '{0}' can represent;
+otherwise, the result might not be optimal even with dithering.</value>
+  </data>
+  <data name="WarningMessage_DithererNoAlphaGradient" xml:space="preserve">
+    <value>The selected quantizer supports partial transparency, which is not supported by ditherers,
+so partial transparent pixels will be blended with back color.</value>
+  </data>
   <data name="ConfirmMessage_OverwriteInstallation" xml:space="preserve">
     <value>Are you sure you want to overwrite this installation?</value>
   </data>
@@ -369,6 +398,35 @@ Are you sure you want to save the file with the provided extension?</value>
   </data>
   <data name="InfoMessage_PaletteEmpty" xml:space="preserve">
     <value>The palette contains no colors. Click OK to exit.</value>
+  </data>
+  <data name="InfoMessage_QuantizerMayHaveNoEffect" xml:space="preserve">
+    <value>The selected quantizer uses more colors than the original image.
+It is possible that is has no effect.</value>
+  </data>
+  <data name="InfoMessage_ArgbQuantizerHasNoEffect" xml:space="preserve">
+    <value>The selected quantizer can only remove partial transparency but it has practically no effect as source has no alpha.</value>
+  </data>
+  <data name="InfoMessage_AlphaTurnsBlack" xml:space="preserve">
+    <value>Without selecting a quantizer possible alpha pixels of the source image are blended with black.
+By selecting a quantizer you can specify a different back color.</value>
+  </data>
+  <data name="InfoMessage_QuantizerAutoSelectedFormat" xml:space="preserve">
+    <value>A quantizer has been auto selected for pixel format '{0}' using default settings.
+Use a specific instance to adjust parameters.</value>
+  </data>
+  <data name="InfoMessage_PaletteAutoSelectedFormat" xml:space="preserve">
+    <value>A system default palette of {0} colors has been auto selected for pixel format '{1}'.
+Select a quantizer to use specific colors.</value>
+  </data>
+  <data name="InfoMessage_DithererIgnoredFormat" xml:space="preserve">
+    <value>The ditherer is ignored for pixel format '{0}' if there is no quantizer specified.</value>
+  </data>
+  <data name="InfoMessage_PixelFormatUnnecessarilyWideFormat" xml:space="preserve">
+    <value>{0} is the lowest compatible pixel format, which still supports the selected quantizer.</value>
+  </data>
+  <data name="InfoMessage_UseDithererToPreserveDetailsFormat" xml:space="preserve">
+    <value>The selected pixel format can represent a narrower set of colors than the original '{0}'.
+Dithering may help to preserve more details.</value>
   </data>
   <data name="Installations_NotAvailable" xml:space="preserve">
     <value>N/A (KGySoft.Drawing.DebuggerVisualizers.dll is missing)</value>

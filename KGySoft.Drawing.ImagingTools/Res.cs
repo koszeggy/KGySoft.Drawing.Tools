@@ -155,6 +155,10 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>The current installation is being executed, which cannot be removed</summary>
         internal static string ErrorMessageInstallationCannotBeRemoved => Get("ErrorMessage_InstallationCannotBeRemoved");
 
+        /// <summary>The selected quantizer supports partial transparency, which is not supported by ditherers,
+        /// so partial transparent pixels will be blended with back color.</summary>
+        internal static string WarningMessageDithererNoAlphaGradient => Get("WarningMessage_DithererNoAlphaGradient");
+
         /// <summary>Are you sure you want to overwrite this installation?</summary>
         internal static string ConfirmMessageOverwriteInstallation => Get("ConfirmMessage_OverwriteInstallation");
 
@@ -166,6 +170,17 @@ namespace KGySoft.Drawing.ImagingTools
 
         /// <summary>The palette contains no colors. Click OK to exit.</summary>
         internal static string InfoMessagePaletteEmpty => Get("InfoMessage_PaletteEmpty");
+
+        /// <summary>The selected quantizer uses more colors than the original image.
+        /// It is possible that is has no effect.</summary>
+        internal static string InfoMessageQuantizerMayHaveNoEffect => Get("InfoMessage_QuantizerMayHaveNoEffect");
+
+        /// <summary>The selected quantizer can only remove partial transparency but it has practically no effect as source has no alpha.</summary>
+        internal static string InfoMessageArgbQuantizerHasNoEffect => Get("InfoMessage_ArgbQuantizerHasNoEffect");
+
+        /// <summary>Without selecting a quantizer possible alpha pixels of the source image are blended with black.
+        /// By selecting a quantizer you can specify a different back color.</summary>
+        internal static string InfoMessageAlphaTurnsBlack => Get("InfoMessage_AlphaTurnsBlack");
 
         #endregion
 
@@ -366,6 +381,22 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Could not delete file {0}: {1}</summary>
         internal static string ErrorMessageCouldNotDeleteFile(string path, string message) => Get("ErrorMessage_CouldNotDeleteFileFormat", path, message);
 
+        /// <summary>Pixel format '{0}' is not supported on current platform.</summary>
+        internal static string ErrorMessagePixelFormatNotSupported(PixelFormat pixelFormat) => Get("ErrorMessage_PixelFormatNotSupportedFormat", pixelFormat);
+
+        /// <summary>The selected quantizer returns a too large palette for pixel format '{0}'.
+        /// Either select at least '{1}' or reduce the number of colors to {2}.</summary>
+        internal static string ErrorMessageQuantizerPaletteTooLarge(PixelFormat selectedPixelFormat, PixelFormat pixelFormatHint, int maxColors) => Get("ErrorMessage_QuantizerPaletteTooLargeFormat", selectedPixelFormat, pixelFormatHint, maxColors);
+
+        /// <summary>Failed to initialize quantizer: {0}</summary>
+        internal static string ErrorMessageFailedToInitializeQuantizer(string message) => Get("ErrorMessage_FailedToInitializeQuantizerFormat", message);
+
+        /// <summary>Failed to initialize ditherer: {0}</summary>
+        internal static string ErrorMessageFailedToInitializeDitherer(string message) => Get("ErrorMessage_FailedToInitializeDithererFormat", message);
+
+        /// <summary>Failed to generate preview: {0}</summary>
+        internal static string ErrorMessageFailedToGeneratePreview(string message) => Get("ErrorMessage_FailedToGeneratePreviewFormat", message);
+
         /// <summary>Could not create directory {0}: {1}
         ///
         /// The debugger visualizer may will not work for .NET Core projects.</summary>
@@ -384,10 +415,37 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>The installation finished with a warning: {0}</summary>
         internal static string WarningMessageInstallationWarning(string warning) => Get("WarningMessage_InstallationWarningFormat", warning);
 
+        /// <summary>When converting an image with wide pixel format '{0}' to another wide format,
+        /// then colors will be quantized to the 32 bit ARGB color space during the conversion even if there is no quantizer used.</summary>
+        internal static string WarningMessageWideConversionLoss(PixelFormat pixelFormat) => Get("WarningMessage_WideConversionLossFormat", pixelFormat);
+
+        /// <summary>The selected quantizer uses more colors than the selected pixel format '{0}' supports.
+        /// Either select at least {1} pixel format or use another quantizer that uses no more colors than '{0}' can represent;
+        /// otherwise, the result might not be optimal even with dithering.</summary>
+        internal static string WarningMessageQuantizerTooWide(PixelFormat selectedPixelFormat, PixelFormat pixelFormatHint) => Get("WarningMessage_QuantizerTooWideFormat", selectedPixelFormat, pixelFormatHint);
+
         /// <summary>The extension of the provided filename '{0}' does not match to the selected format ({1}).
         /// 
         /// Are you sure you want to save the file with the provided extension?</summary>
         internal static string ConfirmMessageSaveFileExtension(string fileName, string format) => Get("ConfirmMessage_SaveFileExtensionFormat", fileName, format);
+
+        /// <summary>{0} is the lowest compatible pixel format, which still supports the selected quantizer.</summary>
+        internal static string InfoMessagePixelFormatUnnecessarilyWide(PixelFormat pixelFormat) => Get("InfoMessage_PixelFormatUnnecessarilyWideFormat", pixelFormat);
+
+        /// <summary>The selected pixel format can represent a narrower set of colors than the original '{0}'.
+        /// Dithering may help to preserve more details.</summary>
+        internal static string InfoMessageUseDithererToPreserveDetails(PixelFormat pixelFormat) => Get("InfoMessage_UseDithererToPreserveDetailsFormat", pixelFormat);
+
+        /// <summary>A quantizer has been auto selected for pixel format '{0}' using default settings.
+        /// Use a specific instance to adjust parameters.</summary>
+        internal static string InfoMessageQuantizerAutoSelected(PixelFormat pixelFormat) => Get("InfoMessage_QuantizerAutoSelectedFormat", pixelFormat);
+
+        /// <summary>A system default palette of {0} colors has been auto selected for pixel format '{1}'.
+        /// Select a quantizer to use specific colors.</summary>
+        internal static string InfoMessagePaletteAutoSelected(int colors, PixelFormat pixelFormat) => Get("InfoMessage_PaletteAutoSelectedFormat", colors, pixelFormat);
+
+        /// <summary>The ditherer is ignored for pixel format '{0}' if there is no quantizer specified.</summary>
+        internal static string InfoMessageDithererIgnored(PixelFormat pixelFormat) => Get("InfoMessage_DithererIgnoredFormat", pixelFormat);
 
         #endregion
 

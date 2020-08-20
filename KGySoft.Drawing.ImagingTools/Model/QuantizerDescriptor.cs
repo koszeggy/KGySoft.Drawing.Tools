@@ -24,7 +24,6 @@ using System.Linq;
 using System.Reflection;
 
 using KGySoft.CoreLibraries;
-using KGySoft.Reflection;
 
 #endregion
 
@@ -36,13 +35,12 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         private static readonly Dictionary<string, CustomPropertyDescriptor> parametersMapping = new Dictionary<string, CustomPropertyDescriptor>
         {
-            ["backColor"] = new CustomPropertyDescriptor("backColor", typeof(Color)) { DefaultValue = Color.Empty },
+            ["backColor"] = new CustomPropertyDescriptor("backColor", typeof(Color)) { DefaultValue = Color.Black },
             ["alphaThreshold"] = new CustomPropertyDescriptor("alphaThreshold", typeof(byte)) { DefaultValue = (byte)128 },
             ["whiteThreshold"] = new CustomPropertyDescriptor("whiteThreshold", typeof(byte)) { DefaultValue = (byte)128 },
             ["palette"] = new CustomPropertyDescriptor("palette", typeof(Color[]))
             {
-                DefaultValue = Reflector.EmptyArray<Color>(),
-                AdjustValue = value => value is Color[] arr && arr.Length > 0 ? arr : new[] { Color.Black, Color.White }
+                DefaultValue = new[] { Color.Black, Color.White },
             },
             ["pixelFormat"] = new CustomPropertyDescriptor("pixelFormat", typeof(PixelFormat))
             {
@@ -52,7 +50,15 @@ namespace KGySoft.Drawing.ImagingTools.Model
             ["maxColors"] = new CustomPropertyDescriptor("maxColors", typeof(int))
             {
                 DefaultValue = 256,
-                AdjustValue = value => value is int i && i >= 2 && i <= 256 ? i : 256
+                AdjustValue = value =>
+                {
+                    if (!(value is int i))
+                        return 0;
+
+                    return i < 0 ? 0
+                        : i > 256 ? 256
+                        : i;
+                }
             },
         };
 

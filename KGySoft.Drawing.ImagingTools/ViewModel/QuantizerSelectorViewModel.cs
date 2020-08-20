@@ -16,6 +16,7 @@
 
 #region Usings
 
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 
@@ -37,6 +38,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal QuantizerDescriptor SelectedQuantizer { get => Get<QuantizerDescriptor>(); private set => Set(value); }
         internal CustomPropertiesObject Parameters { get => Get<CustomPropertiesObject>(); private set => Set(value); }
         internal IQuantizer Quantizer { get => Get<IQuantizer>(); private set => Set(value); }
+        internal Exception CreateQuantizerError { get => Get<Exception>(); set => Set(value); }
 
         #endregion
 
@@ -78,11 +80,19 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             QuantizerDescriptor descriptor = SelectedQuantizer;
             Quantizer = null;
+            CreateQuantizerError = null;
             if (descriptor == null)
                 return;
 
             object[] parameters = descriptor.EvaluateParameters(Parameters);
-            Quantizer = (IQuantizer)MethodAccessor.GetAccessor(descriptor.Method).Invoke(null, parameters);
+            try
+            {
+                Quantizer = (IQuantizer)MethodAccessor.GetAccessor(descriptor.Method).Invoke(null, parameters);
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                CreateQuantizerError = e;
+            }
         }
 
         #endregion

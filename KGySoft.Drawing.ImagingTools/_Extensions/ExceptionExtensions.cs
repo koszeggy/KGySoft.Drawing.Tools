@@ -28,6 +28,9 @@ namespace KGySoft.Drawing.ImagingTools
 
         internal static bool IsCritical(this Exception e) => e is OutOfMemoryException || e is StackOverflowException;
 
+        // For GDI exceptions we allow even OutOfMemoryException
+        internal static bool IsCriticalGdi(this Exception e) => e is StackOverflowException;
+
         #endregion
     }
 }

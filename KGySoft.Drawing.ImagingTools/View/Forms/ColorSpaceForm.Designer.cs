@@ -15,6 +15,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.quantizerSelector = new KGySoft.Drawing.ImagingTools.View.UserControls.QuantizerSelectorControl();
             this.dithererSelector = new KGySoft.Drawing.ImagingTools.View.UserControls.DithererSelectorControl();
             this.gbPixelFormat = new System.Windows.Forms.GroupBox();
@@ -23,11 +24,17 @@
             this.gbDitherer = new KGySoft.Drawing.ImagingTools.View.UserControls.CheckGroupBox();
             this.okCancelButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
             this.previewImage = new KGySoft.Drawing.ImagingTools.View.UserControls.PreviewImageControl();
+            this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
+            this.warningProvider = new System.Windows.Forms.ErrorProvider(this.components);
+            this.infoProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.gbPixelFormat.SuspendLayout();
             this.gbQuantizer.GroupBox.SuspendLayout();
             this.gbQuantizer.SuspendLayout();
             this.gbDitherer.GroupBox.SuspendLayout();
             this.gbDitherer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.warningProvider)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.infoProvider)).BeginInit();
             this.SuspendLayout();
             // 
             // quantizerSelector
@@ -50,6 +57,12 @@
             // 
             this.gbPixelFormat.Controls.Add(this.cmbPixelFormat);
             this.gbPixelFormat.Dock = System.Windows.Forms.DockStyle.Top;
+            this.infoProvider.SetIconAlignment(this.gbPixelFormat, System.Windows.Forms.ErrorIconAlignment.TopRight);
+            this.warningProvider.SetIconAlignment(this.gbPixelFormat, System.Windows.Forms.ErrorIconAlignment.TopRight);
+            this.errorProvider.SetIconAlignment(this.gbPixelFormat, System.Windows.Forms.ErrorIconAlignment.TopRight);
+            this.warningProvider.SetIconPadding(this.gbPixelFormat, -20);
+            this.errorProvider.SetIconPadding(this.gbPixelFormat, -20);
+            this.infoProvider.SetIconPadding(this.gbPixelFormat, -20);
             this.gbPixelFormat.Location = new System.Drawing.Point(3, 3);
             this.gbPixelFormat.Name = "gbPixelFormat";
             this.gbPixelFormat.Size = new System.Drawing.Size(466, 43);
@@ -75,6 +88,12 @@
             // gbQuantizer.GroupBox
             // 
             this.gbQuantizer.GroupBox.Controls.Add(this.quantizerSelector);
+            this.infoProvider.SetIconAlignment(this.gbQuantizer, System.Windows.Forms.ErrorIconAlignment.TopRight);
+            this.errorProvider.SetIconAlignment(this.gbQuantizer, System.Windows.Forms.ErrorIconAlignment.TopRight);
+            this.warningProvider.SetIconAlignment(this.gbQuantizer, System.Windows.Forms.ErrorIconAlignment.TopRight);
+            this.warningProvider.SetIconPadding(this.gbQuantizer, -20);
+            this.infoProvider.SetIconPadding(this.gbQuantizer, -20);
+            this.errorProvider.SetIconPadding(this.gbQuantizer, -20);
             this.gbQuantizer.Location = new System.Drawing.Point(3, 46);
             this.gbQuantizer.Name = "gbQuantizer";
             this.gbQuantizer.Size = new System.Drawing.Size(466, 112);
@@ -88,6 +107,12 @@
             // gbDitherer.GroupBox
             // 
             this.gbDitherer.GroupBox.Controls.Add(this.dithererSelector);
+            this.infoProvider.SetIconAlignment(this.gbDitherer, System.Windows.Forms.ErrorIconAlignment.TopRight);
+            this.errorProvider.SetIconAlignment(this.gbDitherer, System.Windows.Forms.ErrorIconAlignment.TopRight);
+            this.warningProvider.SetIconAlignment(this.gbDitherer, System.Windows.Forms.ErrorIconAlignment.TopRight);
+            this.warningProvider.SetIconPadding(this.gbDitherer, -20);
+            this.infoProvider.SetIconPadding(this.gbDitherer, -20);
+            this.errorProvider.SetIconPadding(this.gbDitherer, -20);
             this.gbDitherer.Location = new System.Drawing.Point(3, 158);
             this.gbDitherer.Name = "gbDitherer";
             this.gbDitherer.Size = new System.Drawing.Size(466, 112);
@@ -106,10 +131,25 @@
             // previewImage
             // 
             this.previewImage.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.infoProvider.SetIconPadding(this.previewImage, -20);
+            this.errorProvider.SetIconPadding(this.previewImage, -20);
+            this.warningProvider.SetIconPadding(this.previewImage, -20);
             this.previewImage.Location = new System.Drawing.Point(3, 270);
             this.previewImage.Name = "previewImage";
             this.previewImage.Size = new System.Drawing.Size(466, 111);
             this.previewImage.TabIndex = 7;
+            // 
+            // errorProvider
+            // 
+            this.errorProvider.ContainerControl = this;
+            // 
+            // warningProvider
+            // 
+            this.warningProvider.ContainerControl = this;
+            // 
+            // infoProvider
+            // 
+            this.infoProvider.ContainerControl = this;
             // 
             // ColorSpaceForm
             // 
@@ -133,6 +173,9 @@
             this.gbDitherer.GroupBox.ResumeLayout(false);
             this.gbDitherer.ResumeLayout(false);
             this.gbDitherer.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.warningProvider)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.infoProvider)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -147,5 +190,8 @@
         private UserControls.CheckGroupBox gbDitherer;
         private UserControls.OkCancelButtons okCancelButtons;
         private UserControls.PreviewImageControl previewImage;
+        private System.Windows.Forms.ErrorProvider errorProvider;
+        private System.Windows.Forms.ErrorProvider infoProvider;
+        private System.Windows.Forms.ErrorProvider warningProvider;
     }
 }
