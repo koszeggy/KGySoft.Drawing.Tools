@@ -20,17 +20,17 @@
             this.dithererSelector = new KGySoft.Drawing.ImagingTools.View.UserControls.DithererSelectorControl();
             this.gbPixelFormat = new System.Windows.Forms.GroupBox();
             this.cmbPixelFormat = new System.Windows.Forms.ComboBox();
-            this.gbQuantizer = new KGySoft.Drawing.ImagingTools.View.UserControls.CheckGroupBox();
-            this.gbDitherer = new KGySoft.Drawing.ImagingTools.View.UserControls.CheckGroupBox();
+            this.gbQuantizer = new KGySoft.Drawing.ImagingTools.View.Controls.CheckGroupBox();
+            this.gbDitherer = new KGySoft.Drawing.ImagingTools.View.Controls.CheckGroupBox();
             this.okCancelButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
             this.previewImage = new KGySoft.Drawing.ImagingTools.View.UserControls.PreviewImageControl();
             this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.warningProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.infoProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.gbPixelFormat.SuspendLayout();
-            this.gbQuantizer.GroupBox.SuspendLayout();
             this.gbQuantizer.SuspendLayout();
-            this.gbDitherer.GroupBox.SuspendLayout();
+            this.gbQuantizer.SuspendLayout();
+            this.gbDitherer.SuspendLayout();
             this.gbDitherer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.warningProvider)).BeginInit();
@@ -84,10 +84,7 @@
             // gbQuantizer
             // 
             this.gbQuantizer.Dock = System.Windows.Forms.DockStyle.Top;
-            // 
-            // gbQuantizer.GroupBox
-            // 
-            this.gbQuantizer.GroupBox.Controls.Add(this.quantizerSelector);
+            this.gbQuantizer.Controls.Add(this.quantizerSelector);
             this.infoProvider.SetIconAlignment(this.gbQuantizer, System.Windows.Forms.ErrorIconAlignment.TopRight);
             this.errorProvider.SetIconAlignment(this.gbQuantizer, System.Windows.Forms.ErrorIconAlignment.TopRight);
             this.warningProvider.SetIconAlignment(this.gbQuantizer, System.Windows.Forms.ErrorIconAlignment.TopRight);
@@ -103,10 +100,7 @@
             // gbDitherer
             // 
             this.gbDitherer.Dock = System.Windows.Forms.DockStyle.Top;
-            // 
-            // gbDitherer.GroupBox
-            // 
-            this.gbDitherer.GroupBox.Controls.Add(this.dithererSelector);
+            this.gbDitherer.Controls.Add(this.dithererSelector);
             this.infoProvider.SetIconAlignment(this.gbDitherer, System.Windows.Forms.ErrorIconAlignment.TopRight);
             this.errorProvider.SetIconAlignment(this.gbDitherer, System.Windows.Forms.ErrorIconAlignment.TopRight);
             this.warningProvider.SetIconAlignment(this.gbDitherer, System.Windows.Forms.ErrorIconAlignment.TopRight);
@@ -167,10 +161,10 @@
             this.Padding = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.Text = "ColorSpaceForm";
             this.gbPixelFormat.ResumeLayout(false);
-            this.gbQuantizer.GroupBox.ResumeLayout(false);
+            this.gbQuantizer.ResumeLayout(false);
             this.gbQuantizer.ResumeLayout(false);
             this.gbQuantizer.PerformLayout();
-            this.gbDitherer.GroupBox.ResumeLayout(false);
+            this.gbDitherer.ResumeLayout(false);
             this.gbDitherer.ResumeLayout(false);
             this.gbDitherer.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();
@@ -186,8 +180,8 @@
         private UserControls.DithererSelectorControl dithererSelector;
         private System.Windows.Forms.GroupBox gbPixelFormat;
         private System.Windows.Forms.ComboBox cmbPixelFormat;
-        private UserControls.CheckGroupBox gbQuantizer;
-        private UserControls.CheckGroupBox gbDitherer;
+        private Controls.CheckGroupBox gbQuantizer;
+        private Controls.CheckGroupBox gbDitherer;
         private UserControls.OkCancelButtons okCancelButtons;
         private UserControls.PreviewImageControl previewImage;
         private System.Windows.Forms.ErrorProvider errorProvider;
