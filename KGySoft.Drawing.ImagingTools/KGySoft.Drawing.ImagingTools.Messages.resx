@@ -424,8 +424,12 @@ Select a quantizer to use specific colors.</value>
   <data name="InfoMessage_PixelFormatUnnecessarilyWideFormat" xml:space="preserve">
     <value>{0} is the lowest compatible pixel format, which still supports the selected quantizer.</value>
   </data>
-  <data name="InfoMessage_UseDithererToPreserveDetailsFormat" xml:space="preserve">
-    <value>The selected pixel format can represent a narrower set of colors than the original '{0}'.
+  <data name="InfoMessage_QuantizerCanBeDitheredFormat" xml:space="preserve">
+    <value>The selected quantizer represents a narrower set of colors than the original '{0}'.
+Dithering may help to preserve more details.</value>
+  </data>
+  <data name="InfoMessage_PixelFormatCanBeDitheredFormat" xml:space="preserve">
+    <value>The selected pixel format represents a narrower set of colors than the original '{0}'.
 Dithering may help to preserve more details.</value>
   </data>
   <data name="Installations_NotAvailable" xml:space="preserve">

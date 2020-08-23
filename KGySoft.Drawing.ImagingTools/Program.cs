@@ -20,7 +20,6 @@ using System;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.View;
-using KGySoft.Drawing.ImagingTools.View.Forms;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion

@@ -217,7 +217,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 toDispose.Dispose();
         }
 
-        private void Validate() => ValidationResults = DoValidation();
+        private void Validate()
+        {
+            if (initializing)
+                return;
+            ValidationResults = DoValidation();
+        }
 
         private ValidationResultsCollection DoValidation()
         {
@@ -282,8 +287,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             else if (bppHint == 32 && originalBpp >= 32 && !originalPixelFormat.HasAlpha())
                 result.AddInfo(nameof(QuantizerSelectorViewModel.Quantizer), Res.InfoMessageArgbQuantizerHasNoEffect);
 
-            if (bpp < originalBpp && !useDitherer && pixelFormat.CanBeDithered())
-                result.AddInfo(nameof(DithererSelectorViewModel.Ditherer), Res.InfoMessageUseDithererToPreserveDetails(originalPixelFormat));
+            if (bppHint < originalBpp && !useDitherer && quantizer.PixelFormatHint.CanBeDithered())
+                result.AddInfo(nameof(DithererSelectorViewModel.Ditherer), Res.InfoMessageQuantizerCanBeDithered(originalPixelFormat));
+            else if (bpp < originalBpp && !useDitherer && pixelFormat.CanBeDithered())
+                result.AddInfo(nameof(DithererSelectorViewModel.Ditherer), Res.InfoMessagePixelFormatCanBeDithered(originalPixelFormat));
             else if (!useQuantizer && ditherer != null && !pixelFormat.CanBeDithered())
                 result.AddInfo(nameof(DithererSelectorViewModel.Ditherer), Res.InfoMessageDithererIgnored(pixelFormat));
 

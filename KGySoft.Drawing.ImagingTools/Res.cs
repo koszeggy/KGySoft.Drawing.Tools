@@ -432,9 +432,13 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>{0} is the lowest compatible pixel format, which still supports the selected quantizer.</summary>
         internal static string InfoMessagePixelFormatUnnecessarilyWide(PixelFormat pixelFormat) => Get("InfoMessage_PixelFormatUnnecessarilyWideFormat", pixelFormat);
 
-        /// <summary>The selected pixel format can represent a narrower set of colors than the original '{0}'.
+        /// <summary>The selected quantizer represents a narrower set of colors than the original '{0}'.
         /// Dithering may help to preserve more details.</summary>
-        internal static string InfoMessageUseDithererToPreserveDetails(PixelFormat pixelFormat) => Get("InfoMessage_UseDithererToPreserveDetailsFormat", pixelFormat);
+        internal static string InfoMessageQuantizerCanBeDithered(PixelFormat pixelFormat) => Get("InfoMessage_QuantizerCanBeDitheredFormat", pixelFormat);
+
+        /// <summary>The selected pixel format represents a narrower set of colors than the original '{0}'.
+        /// Dithering may help to preserve more details.</summary>
+        internal static string InfoMessagePixelFormatCanBeDithered(PixelFormat pixelFormat) => Get("InfoMessage_PixelFormatCanBeDitheredFormat", pixelFormat);
 
         /// <summary>A quantizer has been auto selected for pixel format '{0}' using default settings.
         /// Use a specific instance to adjust parameters.</summary>

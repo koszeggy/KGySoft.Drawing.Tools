@@ -46,6 +46,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             cmbPixelFormat.DataSource = viewModel.PixelFormats;
 
             commandBindings.AddPropertyBinding(chbAsImage, nameof(CheckBox.Checked), nameof(viewModel.AsImage), viewModel);
+            commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.PixelFormat), nameof(ComboBox.SelectedItem), cmbPixelFormat);
             commandBindings.AddPropertyBinding(cmbPixelFormat, nameof(ComboBox.SelectedValue), nameof(viewModel.PixelFormat), viewModel);
 
             commandBindings.AddPropertyBinding(rbBitmap, nameof(RadioButton.Checked), nameof(viewModel.Bitmap), viewModel);
