@@ -21,6 +21,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
+using KGySoft.CoreLibraries;
 
 #endregion
 
@@ -58,6 +59,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #endregion
 
+        #region Internal Properties
+
+        internal CheckBox CheckBox => checkBox;
+
+        #endregion
+
         #region Protected Properties
 
         protected override Padding DefaultPadding => new Padding(3, 5, 3, 3);
@@ -76,7 +83,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             // Left should be 10 at 100% but only 8 at 175%, etc.
             checkBox.Left = Math.Max(1, 13 - (int)(this.GetScale().X * Padding.Left));
 
-            // Vista or later: System FlayStyle so animation is enabled with theming and while text is not misplaced with classic themes
+            // Vista or later: using System FlayStyle so animation is enabled with theming and while text is not misplaced with classic themes
             bool visualStylesEnabled = Application.RenderWithVisualStyles;
             checkBox.FlatStyle = OSUtils.IsVistaOrLater ? FlatStyle.System
                 // Windows XP: Using standard style with themes so CheckBox color can be set correctly, and using System with classic theme for good placement
@@ -91,7 +98,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             // making sure there is enough space before the CheckBox at every DPI
             base.Text = "   ";
 
-            // Making sure that text color is correct with themes (may not work with System style)
+            // Making sure that text color is correct with themes; may not work with System style)
             if (visualStylesEnabled)
                 checkBox.ForeColor = new VisualStyleRenderer(VisualStyleElement.Button.GroupBox.Normal).GetColor(ColorProperty.TextColor);
         }
@@ -101,7 +108,23 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         #region Methods
 
         #region Protected Methods
-        
+
+        protected override void OnControlAdded(ControlEventArgs e)
+        {
+            base.OnControlAdded(e);
+            if (DesignMode || e.Control.In(checkBox, contentPanel))
+                return;
+
+            // Linux/Mono workaround: preventing disabling of ErrorProvider's user control when the content is disabled
+            if (!OSUtils.IsWindows && e.Control.GetType().DeclaringType == typeof(ErrorProvider))
+                return;
+
+            // when not in design mode, adding custom controls to a panel so we can toggle only its Enabled
+            if (contentPanel.Parent == null)
+                contentPanel.Parent = this;
+            e.Control.Parent = contentPanel;
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -126,16 +149,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         private void CheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            // Known issues: toggling Checked disables/enables every top-level control regardless of their initial state
-            // Dynamically added controls are ignored
-            bool enabled = checkBox.Checked;
-            foreach (Control control in Controls)
-            {
-                if (control == checkBox)
-                    continue;
-                control.Enabled = enabled;
-            }
-
+            // Toggling the Enabled state of the content. This method preserves the original Enabled state of the controls.
+            contentPanel.Enabled = checkBox.Checked;
             OnCheckedChanged(EventArgs.Empty);
         }
 
