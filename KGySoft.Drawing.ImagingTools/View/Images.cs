@@ -29,7 +29,7 @@ namespace KGySoft.Drawing.ImagingTools.View
     {
         #region Fields
 
-        private static readonly Size referenceSize = new Size(16, 16);
+        #region Private Fields
 
         private static Bitmap check;
         private static Bitmap crop;
@@ -46,6 +46,14 @@ namespace KGySoft.Drawing.ImagingTools.View
         private static Bitmap multiSize;
         private static Bitmap multiPage;
         private static Bitmap smoothZoom;
+
+        #endregion
+
+        #region Internal Fields
+
+        internal static readonly Size ReferenceSize = new Size(16, 16);
+
+        #endregion
 
         #endregion
 
@@ -77,7 +85,14 @@ namespace KGySoft.Drawing.ImagingTools.View
         {
             if (icon == null)
                 throw new ArgumentNullException(nameof(icon), PublicResources.ArgumentNull);
-            return icon.ExtractNearestBitmap(referenceSize.Scale(OSUtils.SystemScale), PixelFormat.Format32bppArgb);
+            return icon.ExtractNearestBitmap(ReferenceSize.Scale(OSUtils.SystemScale), PixelFormat.Format32bppArgb);
+        }
+
+        internal static Icon ToScaledIcon(this Icon icon)
+        {
+            if (icon == null)
+                throw new ArgumentNullException(nameof(icon), PublicResources.ArgumentNull);
+            return icon.ExtractNearestIcon(ReferenceSize.Scale(OSUtils.SystemScale), PixelFormat.Format32bppArgb);
         }
 
         #endregion

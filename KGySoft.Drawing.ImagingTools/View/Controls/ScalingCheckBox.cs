@@ -25,7 +25,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             // The gap between the CheckBox and the text is 3px smaller with System at every DPI
             Size result = base.GetPreferredSize(proposedSize);
+#if !NET35
+            // The scaling is different in .NET 3.5 so there we don't subtract the padding difference
             result.Width -= 3;
+#endif
 
             FlatStyle = FlatStyle.System;
             ResumeLayout();
