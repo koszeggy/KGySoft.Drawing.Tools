@@ -41,7 +41,11 @@ namespace KGySoft.Drawing.ImagingTools.Model
             //{
             //    DefaultValue = new byte[,] { { 0, 1 }, { 2, 3 } }
             //},
-            ["strength"] = new CustomPropertyDescriptor("strength", typeof(float)) { DefaultValue = 0f },
+            ["strength"] = new CustomPropertyDescriptor("strength", typeof(float))
+            {
+                DefaultValue = 0f,
+                UITypeEditor = DesignDependencies.DithererStrengthEditor
+            },
             //["divisor"] = new CustomPropertyDescriptor("divisor", typeof(int)) { DefaultValue = 16 },
             //["matrixFirstPixelIndex"] = new CustomPropertyDescriptor("matrixFirstPixelIndex", typeof(int)) { DefaultValue = 0 },
             //["serpentineProcessing"] = new CustomPropertyDescriptor("serpentineProcessing", typeof(bool)) { DefaultValue = false },

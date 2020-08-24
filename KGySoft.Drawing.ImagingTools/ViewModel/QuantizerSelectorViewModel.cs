@@ -49,9 +49,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private static IList<QuantizerDescriptor> InitQuantizers() =>
             new List<QuantizerDescriptor>
             {
-                new QuantizerDescriptor(typeof(PredefinedColorsQuantizer).GetMethod(nameof(PredefinedColorsQuantizer.FromCustomPalette), new[] { typeof(Color[]), typeof(Color), typeof(byte) })),
                 //new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.FromPixelFormat)),
                 new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.BlackAndWhite)),
+                new QuantizerDescriptor(typeof(PredefinedColorsQuantizer).GetMethod(nameof(PredefinedColorsQuantizer.FromCustomPalette), new[] { typeof(Color[]), typeof(Color), typeof(byte) })),
                 new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.Grayscale4)),
                 new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.Grayscale16)),
                 new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.Grayscale)),

@@ -36,11 +36,24 @@ namespace KGySoft.Drawing.ImagingTools.Model
         private static readonly Dictionary<string, CustomPropertyDescriptor> parametersMapping = new Dictionary<string, CustomPropertyDescriptor>
         {
             ["backColor"] = new CustomPropertyDescriptor("backColor", typeof(Color)) { DefaultValue = Color.Black },
-            ["alphaThreshold"] = new CustomPropertyDescriptor("alphaThreshold", typeof(byte)) { DefaultValue = (byte)128 },
-            ["whiteThreshold"] = new CustomPropertyDescriptor("whiteThreshold", typeof(byte)) { DefaultValue = (byte)128 },
+            ["alphaThreshold"] = new CustomPropertyDescriptor("alphaThreshold", typeof(byte))
+            {
+                DefaultValue = (byte)128,
+                UITypeEditor = DesignDependencies.QuantizerThresholdEditor
+            },
+            ["whiteThreshold"] = new CustomPropertyDescriptor("whiteThreshold", typeof(byte))
+            {
+                DefaultValue = (byte)128,
+                UITypeEditor = DesignDependencies.QuantizerThresholdEditor
+            },
             ["palette"] = new CustomPropertyDescriptor("palette", typeof(Color[]))
             {
-                DefaultValue = new[] { Color.Black, Color.White },
+                DefaultValue = new[]
+                {
+                    Color.Black, Color.White, Color.Transparent, 
+                    Color.Red, Color.Lime, Color.Blue,
+                    Color.Cyan, Color.Yellow, Color.Magenta
+                },
             },
             //["pixelFormat"] = new CustomPropertyDescriptor("pixelFormat", typeof(PixelFormat))
             //{
