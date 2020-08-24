@@ -204,6 +204,9 @@
 • When checked, saving as TIFF saves every page.
 • When not checked, saving saves always the selected page only.</value>
   </data>
+  <data name="Text_Auto" xml:space="preserve">
+    <value>Auto</value>
+  </data>
   <data name="InfoText_SizeFormat" xml:space="preserve">
     <value>{{Width={0}, Height={1}}}</value>
   </data>

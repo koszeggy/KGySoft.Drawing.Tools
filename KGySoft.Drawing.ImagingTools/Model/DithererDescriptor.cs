@@ -44,6 +44,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
             ["strength"] = new CustomPropertyDescriptor("strength", typeof(float))
             {
                 DefaultValue = 0f,
+                AdjustValue = value => value is float f && f >= 0f && f <= 1f ? f : 0f,
                 UITypeEditor = DesignDependencies.DithererStrengthEditor
             },
             //["divisor"] = new CustomPropertyDescriptor("divisor", typeof(int)) { DefaultValue = 16 },

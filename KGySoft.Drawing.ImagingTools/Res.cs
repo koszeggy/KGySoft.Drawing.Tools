@@ -113,6 +113,9 @@ namespace KGySoft.Drawing.ImagingTools
         /// • When not checked, saving saves always the selected page only.</summary>
         internal static string TooltipTextCompoundMultiPage => Get("TooltipText_CompoundMultiPage");
 
+        /// <summary>Auto</summary>
+        internal static string TextAuto => Get("Text_Auto");
+
         #endregion
 
         #region Info Texts

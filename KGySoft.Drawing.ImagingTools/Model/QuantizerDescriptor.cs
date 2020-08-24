@@ -55,10 +55,10 @@ namespace KGySoft.Drawing.ImagingTools.Model
                     Color.Cyan, Color.Yellow, Color.Magenta
                 },
             },
-            //["pixelFormat"] = new CustomPropertyDescriptor("pixelFormat", typeof(PixelFormat))
-            //{
-            //    AllowedValues = Enum<PixelFormat>.GetValues().Where(pf => pf.IsValidFormat()).OrderBy(pf => pf & PixelFormat.Max).Select(pf => (object)pf).ToArray(),
-            //},
+            ["pixelFormat"] = new CustomPropertyDescriptor("pixelFormat", typeof(PixelFormat))
+            {
+                AllowedValues = Enum<PixelFormat>.GetValues().Where(pf => pf.IsValidFormat()).OrderBy(pf => pf & PixelFormat.Max).Select(pf => (object)pf).ToArray(),
+            },
             ["directMapping"] = new CustomPropertyDescriptor("directMapping", typeof(bool)) { DefaultValue = false },
             ["maxColors"] = new CustomPropertyDescriptor("maxColors", typeof(int))
             {
