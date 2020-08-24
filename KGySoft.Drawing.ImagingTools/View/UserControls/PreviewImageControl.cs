@@ -18,7 +18,7 @@
 
 using System.Drawing;
 using System.Windows.Forms;
-
+using KGySoft.Drawing.ImagingTools.View.Controls;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
@@ -40,6 +40,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             get => ViewModel.AutoZoom;
             set => ViewModel.AutoZoom = value;
         }
+
+        internal ImageViewer ImageViewer => ivPreview;
 
         #endregion
 

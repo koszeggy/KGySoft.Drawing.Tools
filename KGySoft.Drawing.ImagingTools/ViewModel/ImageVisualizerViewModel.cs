@@ -663,7 +663,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 sb.Append($"{codecInfo.FormatDescription} {Res.TextFiles}|{codecInfo.FilenameExtension.ToLowerInvariant()}");
                 if (sbImages.Length != 0)
                     sbImages.Append(';');
-                sbImages.Append(codecInfo.FilenameExtension);
+                sbImages.Append(codecInfo.FilenameExtension.ToLowerInvariant());
             }
 
             OpenFileFilter = $"{(imageTypes == AllowedImageTypes.Metafile ? Res.TextMetafiles : Res.TextImages)} ({sbImages})|{sbImages}|{sb}|{Res.TextAllFiles} (*.*)|*.*";

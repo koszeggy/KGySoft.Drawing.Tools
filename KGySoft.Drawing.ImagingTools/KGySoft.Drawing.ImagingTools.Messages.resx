@@ -406,6 +406,9 @@ It is possible that is has no effect.</value>
   <data name="InfoMessage_ArgbQuantizerHasNoEffect" xml:space="preserve">
     <value>The selected quantizer can only remove partial transparency but it has practically no effect as source has no alpha.</value>
   </data>
+  <data name="InfoMessage_SamePixelFormat" xml:space="preserve">
+    <value>The selected pixel format is the same as the original one.</value>
+  </data>
   <data name="InfoMessage_AlphaTurnsBlack" xml:space="preserve">
     <value>Without selecting a quantizer possible alpha pixels of the source image are blended with black.
 By selecting a quantizer you can specify a different back color.</value>
@@ -571,7 +574,7 @@ Dithering may help to preserve more details.</value>
     <value>Pixel Format/Quantizing/Dithering</value>
   </data>
   <data name="gbPixelFormat.Text" xml:space="preserve">
-    <value>&amp;Pixel Format</value>
+    <value>Change &amp;Pixel Format</value>
   </data>
   <data name="gbQuantizer.Text" xml:space="preserve">
     <value>&amp;Quantizer</value>

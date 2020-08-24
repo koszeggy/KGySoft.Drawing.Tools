@@ -18,7 +18,7 @@
             this.components = new System.ComponentModel.Container();
             this.quantizerSelector = new KGySoft.Drawing.ImagingTools.View.UserControls.QuantizerSelectorControl();
             this.dithererSelector = new KGySoft.Drawing.ImagingTools.View.UserControls.DithererSelectorControl();
-            this.gbPixelFormat = new System.Windows.Forms.GroupBox();
+            this.gbPixelFormat = new Controls.CheckGroupBox();
             this.cmbPixelFormat = new System.Windows.Forms.ComboBox();
             this.gbQuantizer = new KGySoft.Drawing.ImagingTools.View.Controls.CheckGroupBox();
             this.gbDitherer = new KGySoft.Drawing.ImagingTools.View.Controls.CheckGroupBox();
@@ -29,8 +29,6 @@
             this.infoProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.gbPixelFormat.SuspendLayout();
             this.gbQuantizer.SuspendLayout();
-            this.gbQuantizer.SuspendLayout();
-            this.gbDitherer.SuspendLayout();
             this.gbDitherer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.warningProvider)).BeginInit();
@@ -40,29 +38,23 @@
             // quantizerSelector
             // 
             this.quantizerSelector.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.quantizerSelector.Location = new System.Drawing.Point(3, 17);
+            this.quantizerSelector.Location = new System.Drawing.Point(3, 18);
             this.quantizerSelector.Name = "quantizerSelector";
-            this.quantizerSelector.Size = new System.Drawing.Size(460, 92);
+            this.quantizerSelector.Size = new System.Drawing.Size(460, 91);
             this.quantizerSelector.TabIndex = 0;
             // 
             // dithererSelector
             // 
             this.dithererSelector.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dithererSelector.Location = new System.Drawing.Point(3, 17);
+            this.dithererSelector.Location = new System.Drawing.Point(3, 18);
             this.dithererSelector.Name = "dithererSelector";
-            this.dithererSelector.Size = new System.Drawing.Size(460, 92);
+            this.dithererSelector.Size = new System.Drawing.Size(460, 91);
             this.dithererSelector.TabIndex = 1;
             // 
             // gbPixelFormat
             // 
             this.gbPixelFormat.Controls.Add(this.cmbPixelFormat);
             this.gbPixelFormat.Dock = System.Windows.Forms.DockStyle.Top;
-            this.infoProvider.SetIconAlignment(this.gbPixelFormat, System.Windows.Forms.ErrorIconAlignment.TopRight);
-            this.warningProvider.SetIconAlignment(this.gbPixelFormat, System.Windows.Forms.ErrorIconAlignment.TopRight);
-            this.errorProvider.SetIconAlignment(this.gbPixelFormat, System.Windows.Forms.ErrorIconAlignment.TopRight);
-            this.warningProvider.SetIconPadding(this.gbPixelFormat, -20);
-            this.errorProvider.SetIconPadding(this.gbPixelFormat, -20);
-            this.infoProvider.SetIconPadding(this.gbPixelFormat, -20);
             this.gbPixelFormat.Location = new System.Drawing.Point(3, 3);
             this.gbPixelFormat.Name = "gbPixelFormat";
             this.gbPixelFormat.Size = new System.Drawing.Size(466, 43);
@@ -83,34 +75,26 @@
             // 
             // gbQuantizer
             // 
-            this.gbQuantizer.Dock = System.Windows.Forms.DockStyle.Top;
             this.gbQuantizer.Controls.Add(this.quantizerSelector);
-            this.infoProvider.SetIconAlignment(this.gbQuantizer, System.Windows.Forms.ErrorIconAlignment.TopRight);
-            this.errorProvider.SetIconAlignment(this.gbQuantizer, System.Windows.Forms.ErrorIconAlignment.TopRight);
-            this.warningProvider.SetIconAlignment(this.gbQuantizer, System.Windows.Forms.ErrorIconAlignment.TopRight);
-            this.warningProvider.SetIconPadding(this.gbQuantizer, -20);
-            this.infoProvider.SetIconPadding(this.gbQuantizer, -20);
-            this.errorProvider.SetIconPadding(this.gbQuantizer, -20);
+            this.gbQuantizer.Dock = System.Windows.Forms.DockStyle.Top;
+            this.gbQuantizer.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.gbQuantizer.Location = new System.Drawing.Point(3, 46);
             this.gbQuantizer.Name = "gbQuantizer";
             this.gbQuantizer.Size = new System.Drawing.Size(466, 112);
             this.gbQuantizer.TabIndex = 4;
+            this.gbQuantizer.TabStop = false;
             this.gbQuantizer.Text = "gbQuantizer";
             // 
             // gbDitherer
             // 
-            this.gbDitherer.Dock = System.Windows.Forms.DockStyle.Top;
             this.gbDitherer.Controls.Add(this.dithererSelector);
-            this.infoProvider.SetIconAlignment(this.gbDitherer, System.Windows.Forms.ErrorIconAlignment.TopRight);
-            this.errorProvider.SetIconAlignment(this.gbDitherer, System.Windows.Forms.ErrorIconAlignment.TopRight);
-            this.warningProvider.SetIconAlignment(this.gbDitherer, System.Windows.Forms.ErrorIconAlignment.TopRight);
-            this.warningProvider.SetIconPadding(this.gbDitherer, -20);
-            this.infoProvider.SetIconPadding(this.gbDitherer, -20);
-            this.errorProvider.SetIconPadding(this.gbDitherer, -20);
+            this.gbDitherer.Dock = System.Windows.Forms.DockStyle.Top;
+            this.gbDitherer.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.gbDitherer.Location = new System.Drawing.Point(3, 158);
             this.gbDitherer.Name = "gbDitherer";
             this.gbDitherer.Size = new System.Drawing.Size(466, 112);
             this.gbDitherer.TabIndex = 5;
+            this.gbDitherer.TabStop = false;
             this.gbDitherer.Text = "gbDitherer";
             // 
             // okCancelButtons
@@ -125,9 +109,6 @@
             // previewImage
             // 
             this.previewImage.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.infoProvider.SetIconPadding(this.previewImage, -20);
-            this.errorProvider.SetIconPadding(this.previewImage, -20);
-            this.warningProvider.SetIconPadding(this.previewImage, -20);
             this.previewImage.Location = new System.Drawing.Point(3, 270);
             this.previewImage.Name = "previewImage";
             this.previewImage.Size = new System.Drawing.Size(466, 111);
@@ -162,9 +143,7 @@
             this.Text = "ColorSpaceForm";
             this.gbPixelFormat.ResumeLayout(false);
             this.gbQuantizer.ResumeLayout(false);
-            this.gbQuantizer.ResumeLayout(false);
             this.gbQuantizer.PerformLayout();
-            this.gbDitherer.ResumeLayout(false);
             this.gbDitherer.ResumeLayout(false);
             this.gbDitherer.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();
@@ -178,7 +157,7 @@
 
         private UserControls.QuantizerSelectorControl quantizerSelector;
         private UserControls.DithererSelectorControl dithererSelector;
-        private System.Windows.Forms.GroupBox gbPixelFormat;
+        private Controls.CheckGroupBox gbPixelFormat;
         private System.Windows.Forms.ComboBox cmbPixelFormat;
         private Controls.CheckGroupBox gbQuantizer;
         private Controls.CheckGroupBox gbDitherer;

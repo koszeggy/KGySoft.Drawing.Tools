@@ -71,6 +71,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal PixelFormat[] PixelFormats => Get(() => Enum<PixelFormat>.GetValues().Where(pf => pf.IsValidFormat()).OrderBy(pf => pf & PixelFormat.Max).ToArray());
         internal PixelFormat PixelFormat { get => Get<PixelFormat>(); set => Set(value); }
 
+        internal bool ChangePixelFormat { get => Get<bool>(); set => Set(value); }
         internal bool UseQuantizer { get => Get<bool>(); set => Set(value); }
         internal bool UseDitherer { get => Get<bool>(); set => Set(value); }
 
@@ -103,7 +104,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             DithererSelectorViewModel.PropertyChanged += Selector_PropertyChanged;
 
             previewImage.Image = image;
-            PixelFormat = image.PixelFormat;
+            PixelFormat = PixelFormats[0];
         }
 
         #endregion
@@ -115,13 +116,20 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
         {
             base.OnPropertyChanged(e);
-            if (e.PropertyName.In(nameof(PixelFormat), nameof(UseQuantizer), nameof(UseDitherer)))
+            if (e.PropertyName.In(nameof(PixelFormat), nameof(ChangePixelFormat), nameof(UseQuantizer), nameof(UseDitherer)))
             {
                 if (initializing)
                     return;
 
                 Validate();
                 GeneratePreview();
+                return;
+            }
+
+            if (e.PropertyName == nameof(ChangePixelFormat))
+            {
+                if (e.NewValue is false)
+                    PixelFormat = originalPixelFormat;
                 return;
             }
 
@@ -173,7 +181,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void GeneratePreview()
         {
             // checking whether a new generate should be added
-            PixelFormat pixelFormat = PixelFormat;
+            PixelFormat pixelFormat = ChangePixelFormat ? PixelFormat : originalPixelFormat;
             bool useQuantizer = UseQuantizer;
             bool useDitherer = UseDitherer;
             IQuantizer quantizer = useQuantizer ? QuantizerSelectorViewModel.Quantizer : null;
@@ -228,9 +236,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             // Note that !UseQuantizer and Quantizer == null are not interchangeable.
             // UseQuantizer indicates whether the selector is checked while Quantizer is not null if an instance could be successfully created
+            bool changePixelFormat = ChangePixelFormat;
             bool useQuantizer = UseQuantizer;
             bool useDitherer = UseDitherer;
-            PixelFormat pixelFormat = PixelFormat;
+            PixelFormat pixelFormat = changePixelFormat ? PixelFormat : originalPixelFormat;
             IQuantizer quantizer = useQuantizer ? QuantizerSelectorViewModel.Quantizer : null;
             IDitherer ditherer = useDitherer ? DithererSelectorViewModel.Ditherer : null;
             Exception convertError = ConvertPixelFormatError;
@@ -270,6 +279,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 result.AddWarning(nameof(DithererSelectorViewModel.Ditherer), Res.WarningMessageDithererNoAlphaGradient);
 
             // information
+            if (changePixelFormat && pixelFormat == originalPixelFormat)
+                result.AddInfo(nameof(PixelFormat), Res.InfoMessageSamePixelFormat);
             if (bppHint < bpp)
                 result.AddInfo(nameof(PixelFormat), Res.InfoMessagePixelFormatUnnecessarilyWide(quantizer.PixelFormatHint));
 

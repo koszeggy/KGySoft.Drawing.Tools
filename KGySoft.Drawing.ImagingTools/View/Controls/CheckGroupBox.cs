@@ -18,9 +18,9 @@
 
 using System;
 using System.ComponentModel;
-using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
+
 using KGySoft.CoreLibraries;
 
 #endregion
@@ -115,11 +115,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (DesignMode || e.Control.In(checkBox, contentPanel))
                 return;
 
-            // Linux/Mono workaround: preventing disabling of ErrorProvider's user control when the content is disabled
+            // Linux/Mono workaround: prevent disabling ErrorProvider's user control when the content is disabled
             if (!OSUtils.IsWindows && e.Control.GetType().DeclaringType == typeof(ErrorProvider))
                 return;
 
-            // when not in design mode, adding custom controls to a panel so we can toggle only its Enabled
+            // when not in design mode, adding custom controls to a panel so we can toggle its Enabled with preserving their original state
             if (contentPanel.Parent == null)
                 contentPanel.Parent = this;
             e.Control.Parent = contentPanel;

@@ -178,6 +178,9 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>The selected quantizer can only remove partial transparency but it has practically no effect as source has no alpha.</summary>
         internal static string InfoMessageArgbQuantizerHasNoEffect => Get("InfoMessage_ArgbQuantizerHasNoEffect");
 
+        /// <summary>The selected pixel format is the same as the original one.</summary>
+        internal static string InfoMessageSamePixelFormat => Get("InfoMessage_SamePixelFormat");
+
         /// <summary>Without selecting a quantizer possible alpha pixels of the source image are blended with black.
         /// By selecting a quantizer you can specify a different back color.</summary>
         internal static string InfoMessageAlphaTurnsBlack => Get("InfoMessage_AlphaTurnsBlack");

@@ -17,6 +17,8 @@
 #region Usings
 
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -46,13 +48,21 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             InitializeComponent();
             AcceptButton = okCancelButtons.OKButton;
             CancelButton = okCancelButtons.CancelButton;
+            errorProvider.SetIconAlignment(previewImage.ImageViewer, ErrorIconAlignment.MiddleLeft);
             validationMapping = new Dictionary<string, Control>
             {
-                [nameof(viewModel.PixelFormat)] = gbPixelFormat,
-                [nameof(viewModel.QuantizerSelectorViewModel.Quantizer)] = gbQuantizer,
-                [nameof(viewModel.DithererSelectorViewModel.Ditherer)] = gbDitherer,
-                [nameof(viewModel.PreviewImageViewModel.Image)] = previewImage,
+                [nameof(viewModel.PixelFormat)] = gbPixelFormat.CheckBox,
+                [nameof(viewModel.QuantizerSelectorViewModel.Quantizer)] = gbQuantizer.CheckBox,
+                [nameof(viewModel.DithererSelectorViewModel.Ditherer)] = gbDitherer.CheckBox,
+                [nameof(viewModel.PreviewImageViewModel.Image)] = previewImage.ImageViewer,
             };
+
+            foreach (Control control in validationMapping.Values.Where(c => c is CheckBox))
+            {
+                errorProvider.SetIconAlignment(control, ErrorIconAlignment.TopRight);
+                warningProvider.SetIconAlignment(control, ErrorIconAlignment.TopRight);
+                infoProvider.SetIconAlignment(control, ErrorIconAlignment.TopRight);
+            }
         }
 
         #endregion
@@ -76,9 +86,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             base.ApplyResources();
             Icon = Properties.Resources.Palette;
-            errorProvider.Icon = Icons.Error;
-            warningProvider.Icon = Icons.Warning;
-            infoProvider.Icon = Icons.Information;
+            PointF scale = this.GetScale();
+            Size iconSize = Images.ReferenceSize.Scale(scale);
+            errorProvider.Icon = Icons.SystemError.ExtractNearestIcon(iconSize, PixelFormat.Format32bppArgb);
+            warningProvider.Icon = Icons.SystemWarning.ExtractNearestIcon(iconSize, PixelFormat.Format32bppArgb);
+            infoProvider.Icon = Icons.SystemInformation.ExtractNearestIcon(iconSize, PixelFormat.Format32bppArgb);
         }
 
         protected override void ApplyViewModel()
@@ -127,6 +139,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             quantizerSelector.ViewModel = ViewModel.QuantizerSelectorViewModel;
             dithererSelector.ViewModel = ViewModel.DithererSelectorViewModel;
             previewImage.ViewModel = ViewModel.PreviewImageViewModel;
+
+            // VM.ChangePixelFormat <-> gbPixelFormat.Checked
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.ChangePixelFormat), gbPixelFormat, nameof(gbPixelFormat.Checked));
 
             // VM.SelectedPixelFormat -> cmbPixelFormat.SelectedItem (cannot use two-way for SelectedItem because there is no SelectedItemChanged event)
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.PixelFormat), nameof(cmbPixelFormat.SelectedItem), cmbPixelFormat);
