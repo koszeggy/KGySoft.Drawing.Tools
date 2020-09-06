@@ -86,11 +86,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             base.ApplyResources();
             Icon = Properties.Resources.Palette;
-            PointF scale = this.GetScale();
-            Size iconSize = Images.ReferenceSize.Scale(scale);
-            errorProvider.Icon = Icons.SystemError.ExtractNearestIcon(iconSize, PixelFormat.Format32bppArgb);
-            warningProvider.Icon = Icons.SystemWarning.ExtractNearestIcon(iconSize, PixelFormat.Format32bppArgb);
-            infoProvider.Icon = Icons.SystemInformation.ExtractNearestIcon(iconSize, PixelFormat.Format32bppArgb);
+            errorProvider.Icon = Icons.SystemError.ToScaledIcon();
+            warningProvider.Icon = Icons.SystemWarning.ToScaledIcon();
+            infoProvider.Icon = Icons.SystemInformation.ToScaledIcon();
         }
 
         protected override void ApplyViewModel()
