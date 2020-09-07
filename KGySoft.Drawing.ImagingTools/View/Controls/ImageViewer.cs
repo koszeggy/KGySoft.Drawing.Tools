@@ -25,6 +25,7 @@ using System.Threading;
 using System.Windows.Forms;
 
 using KGySoft.CoreLibraries;
+using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.WinApi;
 
 #endregion
@@ -222,24 +223,26 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 {
                     lock (this)
                     {
-                        if (!task.IsCanceled && TrySetPreview(task.ReferenceImage, task.Size))
+                        // checking if we already have the preview
+                        if (!task.IsCanceled)
                         {
-                            runningTask = null;
-                            return;
+                            if (TrySetPreview(task.ReferenceImage, task.Size))
+                            {
+                                runningTask = null;
+                                return;
+                            }
+
+                            // Before creating the preview releasing previous cached result. It is important to free it here, before checking the free memory.
+                            FreeCachedPreview();
                         }
                     }
 
-                    // delaying the start of generation a bit to prevent working on canceled tasks (eg when zooming, a task is canceled very often)
-                    Thread.Sleep(250);
                     Bitmap result = null;
-
                     if (!task.IsCanceled)
                     {
-                        // Before creating the preview releasing previous cached result. It is important to free it here, before checking the free memory.
-                        FreeCachedPreview();
-
                         // For the resizing large managed buffer of source.Height * target.Width of ColorF (16 bytes) is allocated internally. To be safe we count with the doubled sizes.
-                        long managedPressure = (task.Size.Width << 1) * (task.Size.Height << 1) * 16;
+                        Size doubledSize = new Size(task.Size.Width << 1, task.Size.Height << 1);
+                        long managedPressure = doubledSize.Width * doubledSize.Height * 16;
                         if (!MemoryHelper.CanAllocate(managedPressure))
                         {
                             Debug.WriteLine($"Discarding task because there is no {managedPressure:N0} bytes of available managed memory");
@@ -248,25 +251,51 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
                         if (!task.IsCanceled)
                         {
+                            // MetafileExtensions.ToBitmap does the same if anti aliasing is requested but this way the process can be canceled
                             Debug.WriteLine($"Generating anti aliased image {task.Size.Width}x{task.Size.Height} on thread #{Thread.CurrentThread.ManagedThreadId}");
+                            Bitmap doubled = null;
                             try
                             {
-                                result = task.Source.ToBitmap(task.Size, true, false);
+                                doubled = new Bitmap(task.Source, task.Size.Width << 1, task.Size.Height << 1);
+                                if (!task.IsCanceled)
+                                {
+                                    result = new Bitmap(task.Size.Width, task.Size.Height, PixelFormat.Format32bppPArgb);
+                                    using IReadableBitmapData src = doubled.GetReadableBitmapData();
+                                    using IReadWriteBitmapData dst = result.GetReadWriteBitmapData();
+
+                                    // not using Task and await, because this method's signature must match the WaitCallback delegate, and we want to be compatible with .NET 3.5, too
+                                    IAsyncResult asyncResult = src.BeginDrawInto(dst, new Rectangle(Point.Empty, doubled.Size), new Rectangle(Point.Empty, result.Size),
+                                        // ReSharper disable once AccessToModifiedClosure - intended, if IsCanceled is modified we need to return its modified value
+                                        asyncConfig: new AsyncConfig { IsCancelRequestedCallback = () => task.IsCanceled, ReturnDefaultIfCanceled = true });
+
+                                    // as we are already on a pool thread this is not a UI blocking call
+                                    asyncResult.AsyncWaitHandle.WaitOne();
+
+                                    // This will throw an exception if resizing failed (it also allocate.
+                                    BitmapDataExtensions.EndDrawInto(asyncResult);
+                                }
                             }
-                            catch (OutOfMemoryException)
+                            catch (Exception e) when (!e.IsCriticalGdi())
                             {
-                                // despite all of the preconditions the memory could not be allocated
+                                // Despite all of the preconditions the memory could not be allocated or some other error occurred (yes, we catch even OutOfMemoryException here)
                                 // NOTE: practically we always can recover from here: we simply don't use a generated preview and the worker thread can be finished
-                                result?.Dispose();
-                                result = null;
                                 task.IsCanceled = true;
+                            }
+                            finally
+                            {
+                                doubled?.Dispose();
+                                if (task.IsCanceled)
+                                {
+                                    result?.Dispose();
+                                    result = null;
+                                }
                             }
                         }
                     }
 
                     lock (this)
                     {
-                        // setting latest cache (even if task is canceled)
+                        // setting latest cache
                         if (result != null)
                         {
                             // it can be set again here due to a lost race
@@ -293,7 +322,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         if (task.ReferenceImage == owner.image && task.Size == owner.targetRectangle.Size)
                         {
                             Debug.WriteLine("Applying generated result");
-                            Debug.Assert(owner.displayImage == owner.image, "Display image is not the same as the original one: dispose is necessary");
+                            Debug.Assert(owner.displayImage == null || owner.displayImage == owner.image, "Display image is not the same as the original one: dispose is necessary");
 
                             // not freeing the display image because it is always the original image here
                             owner.displayImage = result;
