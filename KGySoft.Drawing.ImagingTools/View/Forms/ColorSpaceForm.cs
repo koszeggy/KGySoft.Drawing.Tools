@@ -17,6 +17,7 @@
 #region Usings
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -46,6 +47,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             InitializeComponent();
             AcceptButton = okCancelButtons.OKButton;
             CancelButton = okCancelButtons.CancelButton;
+
             errorProvider.SetIconAlignment(previewImage.ImageViewer, ErrorIconAlignment.MiddleLeft);
             validationMapping = new Dictionary<string, Control>
             {
@@ -150,6 +152,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
             // VM.UseDitherer <-> gbDitherer.Checked
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.UseDitherer), gbDitherer, nameof(gbDitherer.Checked));
+
+            // VM.IsGenerating -> progress.ProgressVisible
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsGenerating), nameof(progress.ProgressVisible), progress);
+
+            // VM.Progress -> progress.Progress
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Progress), nameof(progress.Progress), progress);
         }
 
         #endregion

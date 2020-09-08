@@ -73,10 +73,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private readonly PixelFormat originalPixelFormat;
         private readonly bool originalHasAlpha;
         private readonly object syncRoot = new object();
-        private GenerateTask activeTask;
 
         private bool initializing = true;
         private bool keepResult;
+        private GenerateTask activeTask;
+        private DrawingProgressManager drawingProgressManager;
 
         #endregion
 
@@ -114,8 +115,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal ICommand ApplyCommand => Get(() => new SimpleCommand(OnApplyCommand));
         internal ICommand CancelCommand => Get(() => new SimpleCommand(OnCancelCommand));
-
         internal ICommandState ApplyCommandState => Get(() => new CommandState { Enabled = false });
+
+        internal bool IsGenerating { get => Get<bool>(); set => Set(value); }
+        internal DrawingProgress Progress { get => Get<DrawingProgress>(); set => Set(value); }
 
         #endregion
 
@@ -123,7 +126,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private Exception ConvertPixelFormatError { get => Get<Exception>(); set => Set(value); }
         private EventHandler<EventArgs<ValidationResultsCollection>> ValidationResultsChangedHandler { get => Get<EventHandler<EventArgs<ValidationResultsCollection>>>(); set => Set(value); }
-        private bool IsGenerating { get => Get<bool>(); set => Set(value); }
 
         #endregion
 
@@ -188,6 +190,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal override void ViewLoaded()
         {
+            // could be in constructor but we only need it when there is a view
+            drawingProgressManager = new DrawingProgressManager(p => Progress = p);
             initializing = false;
             base.ViewLoaded();
         }
@@ -207,6 +211,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
                 if (!ReferenceEquals(originalImage, preview) && !keepResult)
                     preview?.Dispose();
+
+                drawingProgressManager = null;
             }
 
             base.Dispose(disposing);
@@ -262,7 +268,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                         IsCancelRequestedCallback = () => newTask.IsCanceled,
                         ReturnDefaultIfCanceled = true,
                         State = newTask,
-                        CompletedCallback = EndGeneratePreview
+                        CompletedCallback = EndGeneratePreview,
+                        Progress = drawingProgressManager
                     });
 
                 activeTask = newTask;
@@ -451,7 +458,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnCancelCommand()
         {
-            // canceling any pending generate and waiting for finishing so no "image is locked elsewhere" will come from the main form for the oroginal image
+            // canceling any pending generate and waiting for finishing so no "image is locked elsewhere" will come from the main form for the original image
             CancelGeneratePreview()?.WaitForCompletion();
             SetModified(false);
             CloseViewCallback?.Invoke();
