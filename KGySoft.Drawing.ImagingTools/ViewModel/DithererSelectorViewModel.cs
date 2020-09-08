@@ -83,10 +83,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal void ResetDitherer()
         {
             DithererDescriptor descriptor = SelectedDitherer;
-            Ditherer = null;
             CreateDithererError = null;
             if (descriptor == null)
+            {
+                Ditherer = null;
                 return;
+            }
 
             IDitherer ditherer = null;
             CustomPropertiesObject parameterValues = Parameters;
@@ -120,6 +122,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
             catch (Exception e) when (!e.IsCritical())
             {
+                Ditherer = null;
                 CreateDithererError = e;
             }
         }

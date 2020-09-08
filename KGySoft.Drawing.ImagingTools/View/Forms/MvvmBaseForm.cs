@@ -64,6 +64,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             vm.ConfirmCallback = Dialogs.ConfirmMessage;
             vm.ShowChildViewCallback = ShowChildView;
             vm.CloseViewCallback = () => BeginInvoke(new Action(Close));
+            vm.SynchronizedInvokeCallback = InvokeIfRequired;
 
             CommandBindings = new WinformsCommandBindingsCollection();
         }
@@ -111,6 +112,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         #region Private Methods
 
         private void ShowChildView(IViewModel vm) => ViewFactory.ShowDialog(vm, Handle);
+
+        private void InvokeIfRequired(Action action)
+        {
+            if (InvokeRequired)
+                Invoke(action);
+            else
+                action.Invoke();
+        }
 
         #endregion
 

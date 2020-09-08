@@ -79,10 +79,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal void ResetQuantizer()
         {
             QuantizerDescriptor descriptor = SelectedQuantizer;
-            Quantizer = null;
             CreateQuantizerError = null;
             if (descriptor == null)
+            {
+                Quantizer = null;
                 return;
+            }
 
             object[] parameters = descriptor.EvaluateParameters(Parameters);
             try
@@ -91,6 +93,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
             catch (Exception e) when (!e.IsCritical())
             {
+                Quantizer = null;
                 CreateQuantizerError = e;
             }
         }

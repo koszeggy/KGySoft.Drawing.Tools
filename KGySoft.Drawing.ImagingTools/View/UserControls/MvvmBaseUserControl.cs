@@ -80,6 +80,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Methods
 
+        #region Protected Methods
+
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
@@ -105,6 +107,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             vm.ShowWarningCallback = Dialogs.WarningMessage;
             vm.ShowErrorCallback = Dialogs.ErrorMessage;
             vm.ConfirmCallback = Dialogs.ConfirmMessage;
+            vm.SynchronizedInvokeCallback = InvokeIfRequired;
 
             VM.ViewLoaded();
         }
@@ -116,6 +119,20 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
             base.Dispose(disposing);
         }
+
+        #endregion
+
+        #region Private Methods
+
+        private void InvokeIfRequired(Action action)
+        {
+            if (InvokeRequired)
+                Invoke(action);
+            else
+                action.Invoke();
+        }
+
+        #endregion
 
         #endregion
     }

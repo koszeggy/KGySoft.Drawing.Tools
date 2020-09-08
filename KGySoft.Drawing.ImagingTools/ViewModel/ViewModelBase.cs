@@ -37,13 +37,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal Func<string, bool> ConfirmCallback { get => Get<Func<string, bool>>(); set => Set(value); }
         internal Action<IViewModel> ShowChildViewCallback { get => Get<Action<IViewModel>>(); set => Set(value); }
         internal Action CloseViewCallback { get => Get<Action>(); set => Set(value); }
+        internal Action<Action> SynchronizedInvokeCallback { get => Get<Action<Action>>(); set => Set(value); }
 
         #endregion
 
         #region Methods
 
         #region Protected Methods
-        
+
         protected void ShowError(string message) => ShowErrorCallback?.Invoke(message);
         protected void ShowWarning(string message) => ShowWarningCallback?.Invoke(message);
         protected void ShowInfo(string message) => ShowInfoCallback?.Invoke(message);
