@@ -97,8 +97,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.AutoZoom), btnAutoZoom, nameof(btnAutoZoom.Checked));
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.AutoZoom), nameof(ivPreview.AutoZoom), ivPreview);
 
-            // btnAntiAlias.Checked -> VM.SmoothZooming -> ivPreview.SmoothZooming
-            CommandBindings.AddPropertyBinding(btnAntiAlias, nameof(btnAntiAlias.Checked), nameof(ViewModel.SmoothZooming), ViewModel);
+            // btnAntiAlias.Checked <-> VM.SmoothZooming -> ivPreview.SmoothZooming
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.SmoothZooming), btnAntiAlias, nameof(btnAntiAlias.Checked));
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SmoothZooming), nameof(ivPreview.SmoothZooming), ivPreview);
         }
 

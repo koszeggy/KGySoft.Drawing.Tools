@@ -30,7 +30,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal Image Image { get => Get<Image>(); set => Set(value); }
         internal bool AutoZoom { get => Get(true); set => Set(value); }
-        internal bool SmoothZooming { get => Get<bool>(); set => Set(value); }
+        internal bool SmoothZooming { get => Get(true); set => Set(value); }
         internal bool ButtonsEnabled { get => Get<bool>(); set => Set(value); }
 
         #endregion

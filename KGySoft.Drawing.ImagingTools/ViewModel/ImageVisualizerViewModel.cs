@@ -792,7 +792,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             else
             {
                 // image is too large to fit
-                AutoZoom = true;
+                AutoZoom = SmoothZooming = true;
             }
         }
 
