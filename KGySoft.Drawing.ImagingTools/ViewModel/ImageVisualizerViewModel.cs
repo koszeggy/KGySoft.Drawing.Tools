@@ -820,21 +820,26 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void SetCurrentImage(Bitmap image)
         {
-            // replacing the whole image
+            // replacing the whole image (non-compound one)
             if (GetCurrentImage() == imageInfo)
             {
-                // todo: this resets zoom - try to extract the main things
-                Image = image;
-                SetModified(true);
-                return;
+                Debug.Assert(!imageInfo.HasFrames);
+                imageInfo.Dispose();
+                imageInfo = new ImageInfo(image);
+                PreviewImage = imageInfo.GetCreateImage();
+            }
+            // replacing the current frame only
+            else
+            {
+                Debug.Assert(currentFrame >= 0 && !IsAutoPlaying);
+                ImageFrameInfo[] frames = imageInfo.Frames;
+                ImageFrameInfo origFrame = frames[currentFrame];
+                frames[currentFrame] = new ImageFrameInfo(image) { Duration = origFrame.Duration };
+                origFrame.Dispose();
+                PreviewImage = frames[currentFrame].Image;
             }
 
-            // replacing the current frame only
-            Debug.Assert(currentFrame >= 0 && !IsAutoPlaying);
-            ImageFrameInfo[] frames = imageInfo.Frames;
-            frames[currentFrame] = new ImageFrameInfo(image);
             InvalidateImage();
-            PreviewImage = frames[currentFrame].Image;
             ImageChanged();
         }
 
