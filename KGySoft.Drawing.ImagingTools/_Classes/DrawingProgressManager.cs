@@ -57,48 +57,42 @@ namespace KGySoft.Drawing.ImagingTools
         }
 
         public void New(DrawingOperation operationType, int maximumValue, int currentValue)
-            => Report(new DrawingProgress { OperationType = operationType, MaximumValue = maximumValue, CurrentValue = currentValue });
+            => Report(new DrawingProgress(operationType, maximumValue, currentValue));
 
         public void Increment()
         {
-            DrawingProgress copy;
             lock (syncRoot)
             {
                 if (current.CurrentValue >= current.MaximumValue)
                     return;
-                current.CurrentValue++;
-                copy = current;
+                current = new DrawingProgress(current.OperationType, current.MaximumValue, current.CurrentValue + 1);
             }
 
-            reportCallback.Invoke(copy);
+            reportCallback.Invoke(current);
         }
 
         public void SetProgressValue(int value)
         {
-            DrawingProgress copy;
             lock (syncRoot)
             {
                 if (current.CurrentValue == value)
                     return;
-                current.CurrentValue = Math.Min(value, current.MaximumValue);
-                copy = current;
+                current = new DrawingProgress(current.OperationType, current.MaximumValue, Math.Min(value, current.MaximumValue));
             }
 
-            reportCallback.Invoke(copy);
+            reportCallback.Invoke(current);
         }
 
         public void Complete()
         {
-            DrawingProgress copy;
             lock (syncRoot)
             {
                 if (current.CurrentValue >= current.MaximumValue)
                     return;
-                current.CurrentValue = current.MaximumValue;
-                copy = current;
+                current = new DrawingProgress(current.OperationType, current.MaximumValue, current.MaximumValue);
             }
 
-            reportCallback.Invoke(copy);
+            reportCallback.Invoke(current);
         }
 
         #endregion

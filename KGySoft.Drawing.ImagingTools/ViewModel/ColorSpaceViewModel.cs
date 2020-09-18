@@ -266,7 +266,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     new AsyncConfig
                     {
                         IsCancelRequestedCallback = () => newTask.IsCanceled,
-                        ReturnDefaultIfCanceled = true,
+                        ThrowIfCanceled = false,
                         State = newTask,
                         CompletedCallback = EndGeneratePreview,
                         Progress = drawingProgressManager

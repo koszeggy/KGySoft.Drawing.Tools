@@ -266,7 +266,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                                     // not using Task and await, because this method's signature must match the WaitCallback delegate, and we want to be compatible with .NET 3.5, too
                                     IAsyncResult asyncResult = src.BeginDrawInto(dst, new Rectangle(Point.Empty, doubled.Size), new Rectangle(Point.Empty, result.Size),
                                         // ReSharper disable once AccessToModifiedClosure - intended, if IsCanceled is modified we need to return its modified value
-                                        asyncConfig: new AsyncConfig { IsCancelRequestedCallback = () => task.IsCanceled, ReturnDefaultIfCanceled = true });
+                                        asyncConfig: new AsyncConfig { IsCancelRequestedCallback = () => task.IsCanceled, ThrowIfCanceled = false });
 
                                     // as we are already on a pool thread this is not a UI blocking call
                                     asyncResult.AsyncWaitHandle.WaitOne();
