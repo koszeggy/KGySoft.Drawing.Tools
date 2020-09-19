@@ -171,6 +171,9 @@
   <data name="Text_Icon" xml:space="preserve">
     <value>Icon</value>
   </data>
+  <data name="Text_Raw" xml:space="preserve">
+    <value>Raw Bitmap Data</value>
+  </data>
   <data name="Text_Images" xml:space="preserve">
     <value>Images</value>
   </data>

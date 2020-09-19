@@ -92,6 +92,9 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Icon</summary>
         internal static string TextIcon => Get("Text_Icon");
 
+        /// <summary>Raw Bitmap Data</summary>
+        internal static string TextRaw => Get("Text_Raw");
+
         /// <summary>Images</summary>
         internal static string TextImages => Get("Text_Images");
 

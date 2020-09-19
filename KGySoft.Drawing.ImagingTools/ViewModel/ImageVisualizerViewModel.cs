@@ -27,6 +27,7 @@ using System.Text;
 
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
+using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
 
 #endregion
@@ -189,6 +190,28 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (imageFormat.Equals(ImageFormat.Icon.Guid))
                 return nameof(ImageFormat.Icon);
             return Res.InfoUnknownFormat(imageFormat);
+        }
+
+        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
+            Justification = "Not disposing reader because stream must be left open and the constructor with leaveOpen parameter is not available for every platform")]
+        private static bool TryLoadCustom(MemoryStream stream, out Image image)
+        {
+            const int bdatHeader = 0x54414442; // "BDAT"
+            image = null;
+
+            long pos = stream.Position;
+            if (pos > stream.Length - 4)
+                return false;
+
+            var reader = new BinaryReader(stream);
+            var head = reader.ReadInt32();
+            stream.Position = pos;
+
+            if (head != bdatHeader)
+                return false;
+            using IReadWriteBitmapData bitmapData = BitmapDataFactory.Load(stream);
+            image = bitmapData.ToBitmap();
+            return true;
         }
 
         #endregion
@@ -460,7 +483,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             {
                 try
                 {
-                    image = Image.FromStream(stream);
+                    image = LoadImage(stream);
                 }
                 catch (Exception e) when (!e.IsCriticalGdi())
                 {
@@ -484,7 +507,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             {
                 try
                 {
-                    image = new Bitmap(stream);
+                    image = LoadImage(stream);
                 }
                 catch (Exception e) when (!e.IsCriticalGdi())
                 {
@@ -537,6 +560,20 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             // null will be assigned if the image has been converted (see notifications)
             imageInfo.FileName = fileName;
+        }
+
+        private Image LoadImage(MemoryStream stream)
+        {
+            if (TryLoadCustom(stream, out Image image))
+                return image;
+
+            // bitmaps and metafiles are both allowed
+            if ((imageTypes & (AllowedImageTypes.Bitmap | AllowedImageTypes.Metafile)) == (AllowedImageTypes.Bitmap | AllowedImageTypes.Metafile))
+                return Image.FromStream(stream);
+
+            // as Bitmap
+            Debug.Assert(imageTypes != AllowedImageTypes.Metafile, "This method is not expected to be called if only metafiles are allowed");
+            return new Bitmap(stream);
         }
 
         private void ResetCompoundState()
@@ -644,6 +681,24 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             stream.Flush();
         }
 
+        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "False alarm, bmp is disposed if it differs from image")]
+        private void SaveBitmapData(string fileName)
+        {
+            using Stream stream = File.Create(fileName);
+            Image image = IsCompoundView ? imageInfo.GetCreateImage() : GetCurrentImage().Image;
+            Bitmap bmp = image as Bitmap ?? new Bitmap(image);
+            try
+            {
+                using IReadableBitmapData bitmapData = bmp.GetReadableBitmapData();
+                bitmapData.Save(stream);
+            }
+            finally
+            {
+                if (!ReferenceEquals(image, bmp))
+                    bmp.Dispose();
+            }
+        }
+
         [SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase",
             Justification = "This is not normalization, we want to display the extensions in lowercase")]
         private void SetOpenFilter()
@@ -664,6 +719,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 if (sbImages.Length != 0)
                     sbImages.Append(';');
                 sbImages.Append(codecInfo.FilenameExtension.ToLowerInvariant());
+            }
+
+            if ((imageTypes & AllowedImageTypes.Bitmap) != AllowedImageTypes.None)
+            {
+                sb.Append($"|{Res.TextRaw} {Res.TextFileFormat}|*.bdat");
+                sbImages.Append(";*.bdat");
             }
 
             OpenFileFilter = $"{(imageTypes == AllowedImageTypes.Metafile ? Res.TextMetafiles : Res.TextImages)} ({sbImages})|{sbImages}|{sb}|{Res.TextAllFiles} (*.*)|*.*";
@@ -707,6 +768,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     sb.Append($"|EMF {Res.TextFileFormat}|*.emf");
             }
 
+            sb.Append($"|{Res.TextRaw} {Res.TextFileFormat}|*.bdat");
             string filter = sb.ToString();
 
             // selecting appropriate format
@@ -933,6 +995,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 // Some unrecognized encoder - we assume it can handle every pixel format
                 else if (encoder != null)
                     GetCurrentImage().Image.Save(fileName, encoder, null);
+                else if (selectedFormat == "*.bdat")
+                    SaveBitmapData(fileName);
                 else
                     throw new InvalidOperationException(Res.InternalError($"Unexpected format without encoder: {selectedFormat}"));
             }
