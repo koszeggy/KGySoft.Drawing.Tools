@@ -192,6 +192,9 @@
   <data name="Text_BlueValueFormat" xml:space="preserve">
     <value>B: {0}</value>
   </data>
+  <data name="Text_ColorCountFormat" xml:space="preserve">
+    <value>Color Count: {0:N0}</value>
+  </data>
   <data name="TooltipText_CompoundAnimation" xml:space="preserve">
     <value>Toggles whether the animation is handled as a single image.
 • When checked, animation will play and saving as GIF saves the whole animation.
@@ -209,6 +212,12 @@
   </data>
   <data name="Text_Auto" xml:space="preserve">
     <value>Auto</value>
+  </data>
+  <data name="Text_CountingColors" xml:space="preserve">
+    <value>Counting colors...</value>
+  </data>
+  <data name="Text_OperationCanceled" xml:space="preserve">
+    <value>Operation has been canceled.</value>
   </data>
   <data name="InfoText_SizeFormat" xml:space="preserve">
     <value>{{Width={0}, Height={1}}}</value>
@@ -295,6 +304,9 @@ See the Configuration button.</value>
   </data>
   <data name="Notification_PaletteCannotBeRestored" xml:space="preserve">
     <value>The palette of an indexed BitmapData cannot be reconstructed, therefore a default palette is used. You can change palette colors in the menu.</value>
+  </data>
+  <data name="ErrorMessageFormat" xml:space="preserve">
+    <value>Error: {0}</value>
   </data>
   <data name="ErrorMessage_FailedToLoadFileFormat" xml:space="preserve">
     <value>Could not load file due to an error: {0}</value>
@@ -493,7 +505,7 @@ Dithering may help to preserve more details.</value>
     <value>Show Palette...</value>
   </data>
   <data name="miCountColors.Text" xml:space="preserve">
-    <value>Get Color Count...</value>
+    <value>Count Colors...</value>
   </data>
   <data name="miColorSpace.Text" xml:space="preserve">
     <value>Pixel Format/Quantizing/Dithering...</value>
@@ -596,5 +608,11 @@ Dithering may help to preserve more details.</value>
   </data>
   <data name="btnCancel.Text" xml:space="preserve">
     <value>&amp;Cancel</value>
+  </data>
+  <data name="btnClose.Text" xml:space="preserve">
+    <value>&amp;Close</value>
+  </data>
+  <data name="CountColorsForm.Text" xml:space="preserve">
+    <value>Colors Count</value>
   </data>
 </root>

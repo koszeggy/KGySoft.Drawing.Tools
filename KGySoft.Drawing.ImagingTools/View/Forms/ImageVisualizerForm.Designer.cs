@@ -161,7 +161,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.miCountColors.Name = "miCountColors";
             this.miCountColors.Size = new System.Drawing.Size(180, 22);
             this.miCountColors.Text = "miCountColors";
-            this.miCountColors.Visible = false;
             // 
             // miSeparatorColorSettings
             // 

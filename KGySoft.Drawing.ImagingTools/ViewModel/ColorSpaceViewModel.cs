@@ -284,7 +284,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             try
             {
-                result = ImageExtensions.EndConvertPixelFormat(asyncResult);
+                result = asyncResult.EndConvertPixelFormat();
             }
             catch (Exception e) when (!e.IsCriticalGdi())
             {

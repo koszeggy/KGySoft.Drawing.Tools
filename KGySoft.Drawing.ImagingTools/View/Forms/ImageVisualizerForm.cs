@@ -221,6 +221,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 .AddSource(imageViewer, nameof(imageViewer.ZoomChanged));
             CommandBindings.Add(ViewModel.AdjustColorSpaceCommand, ViewModel.AdjustColorSpaceCommandState)
                 .AddSource(miColorSpace, nameof(miColorSpace.Click));
+            CommandBindings.Add(ViewModel.CountColorsCommand, ViewModel.CountColorsCommandState)
+                .AddSource(miCountColors, nameof(miCountColors.Click));
 
             // View commands
             CommandBindings.Add(OnResizeCommand)

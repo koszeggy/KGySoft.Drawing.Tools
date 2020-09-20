@@ -119,6 +119,12 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Auto</summary>
         internal static string TextAuto => Get("Text_Auto");
 
+        /// <summary>Counting colors...</summary>
+        internal static string TextCountingColors => Get("Text_CountingColors");
+
+        /// <summary>Operation has been canceled.</summary>
+        internal static string TextOperationCanceled => Get("Text_OperationCanceled");
+
         #endregion
 
         #region Info Texts
@@ -281,6 +287,9 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>B: {0}</summary>
         internal static string TextBlueValue(byte a) => Get("Text_BlueValueFormat", a);
 
+        /// <summary>Color Count: {0}</summary>
+        internal static string TextColorCount(int a) => Get("Text_ColorCountFormat", a);
+
         #endregion
 
         #region Info Texts
@@ -353,6 +362,9 @@ namespace KGySoft.Drawing.ImagingTools
         #endregion
 
         #region Messages
+
+        /// <summary>Error: {0}</summary>
+        internal static string ErrorMessage(string error) => Get("ErrorMessageFormat", error);
 
         /// <summary>Could not load file due to an error: {0}</summary>
         internal static string ErrorMessageFailedToLoadFile(string error) => Get("ErrorMessage_FailedToLoadFileFormat", error);

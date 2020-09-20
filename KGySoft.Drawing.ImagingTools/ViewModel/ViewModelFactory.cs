@@ -166,8 +166,15 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// Creates a view model for adjusting <see cref="PixelFormat"/> of a <see cref="Bitmap"/> with quantizing and dithering.
         /// </summary>
         /// <param name="bitmap">The bitmap to transform.</param>
-        /// <returns>An <see cref="IViewModel"/> instance that represents a view model for adjusting the colors of a <see cref="Bitmap"/>.</returns>
+        /// <returns>An <see cref="IViewModel{TResult}"/> instance that represents a view model for adjusting the colors of a <see cref="Bitmap"/>.</returns>
         public static IViewModel<Bitmap> CreateAdjustColorSpace(Bitmap bitmap) => new ColorSpaceViewModel(bitmap);
+
+        /// <summary>
+        /// Creates a view model for counting colors of a <see cref="Bitmap"/>.
+        /// </summary>
+        /// <param name="bitmap">The bitmap to count its colors.</param>
+        /// <returns>An <see cref="IViewModel{TResult}"/> instance that represents a view model for counting colors of a <see cref="Bitmap"/>.</returns>
+        public static IViewModel<int?> CreateCountColors(Bitmap bitmap) => new CountColorsViewModel(bitmap);
 
         #endregion
     }
