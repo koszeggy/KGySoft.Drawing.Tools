@@ -29,7 +29,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             // 
             // timer
             // 
-            this.timer.Interval = 10;
+            this.timer.Interval = 30;
             // 
             // DrawingProgressStatusStrip
             // 

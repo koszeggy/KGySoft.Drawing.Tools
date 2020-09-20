@@ -44,7 +44,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
             // fixing "dark on dark" menu issue on Linux
             var menuItemBackColor = Color.FromArgb(ProfessionalColors.MenuStripGradientBegin.ToArgb());
-            miBackColor.BackColor = miShowPalette.BackColor = miBackColorDefault.BackColor = menuItemBackColor;
+            miBackColor.BackColor = miShowPalette.BackColor = miBackColorDefault.BackColor = miColorSpace.BackColor = miSeparatorColorSettings.BackColor = menuItemBackColor;
         }
 
         #endregion

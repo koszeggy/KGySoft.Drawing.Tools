@@ -45,7 +45,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 progressVisible = value;
                 if (value)
                     UpdateProgress(default);
-                lblProgress.Visible = pbProgress.Visible = progressVisible;
+                pbProgress.Visible = progressVisible;
+
+                // Instead of making the label invisible we just set an empty space text; otherwise, on Linux the preview image size would be toggled
+                if (!value)
+                    lblProgress.Text = " ";
                 timer.Enabled = value;
             }
         }
@@ -102,7 +106,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 pbProgress.Style = ProgressBarStyle.Marquee;
             else
             {
-                pbProgress.Style = ProgressBarStyle.Blocks;
+                pbProgress.Style = ProgressBarStyle.Continuous;
                 pbProgress.Maximum = progress.MaximumValue;
 
                 // Workaround for progress bar on Vista and above where it advances very slow

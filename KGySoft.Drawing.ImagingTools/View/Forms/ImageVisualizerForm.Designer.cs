@@ -30,7 +30,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.miBackColorBlack = new System.Windows.Forms.ToolStripMenuItem();
             this.miShowPalette = new System.Windows.Forms.ToolStripMenuItem();
             this.miCountColors = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.miSeparatorColorSettings = new System.Windows.Forms.ToolStripSeparator();
             this.miColorSpace = new System.Windows.Forms.ToolStripMenuItem();
             this.miColorLevels = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -110,7 +110,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.miBackColor,
             this.miShowPalette,
             this.miCountColors,
-            this.toolStripMenuItem1,
+            this.miSeparatorColorSettings,
             this.miColorSpace,
             this.miColorLevels});
             this.btnColorSettings.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -163,10 +163,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.miCountColors.Text = "miCountColors";
             this.miCountColors.Visible = false;
             // 
-            // toolStripMenuItem1
+            // miSeparatorColorSettings
             // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 6);
+            this.miSeparatorColorSettings.Name = "miSeparatorColorSettings";
+            this.miSeparatorColorSettings.Size = new System.Drawing.Size(177, 6);
             // 
             // miColorSpace
             // 
@@ -330,7 +330,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         protected ToolStripButton btnConfiguration;
         private ToolStripButton btnAntiAlias;
         private ToolStripMenuItem miCountColors;
-        private ToolStripSeparator toolStripMenuItem1;
+        private ToolStripSeparator miSeparatorColorSettings;
         private ToolStripMenuItem miColorSpace;
         private ToolStripMenuItem miColorLevels;
     }
