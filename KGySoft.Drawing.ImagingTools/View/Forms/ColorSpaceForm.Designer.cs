@@ -42,7 +42,7 @@
             this.previewImage.Location = new System.Drawing.Point(3, 270);
             this.previewImage.Name = "previewImage";
             this.previewImage.Size = new System.Drawing.Size(428, 88);
-            this.previewImage.TabIndex = 7;
+            this.previewImage.TabIndex = 3;
             // 
             // okCancelButtons
             // 
@@ -50,7 +50,7 @@
             this.okCancelButtons.Location = new System.Drawing.Point(3, 358);
             this.okCancelButtons.Name = "okCancelButtons";
             this.okCancelButtons.Size = new System.Drawing.Size(428, 31);
-            this.okCancelButtons.TabIndex = 6;
+            this.okCancelButtons.TabIndex = 4;
             // 
             // gbDitherer
             // 
@@ -60,7 +60,7 @@
             this.gbDitherer.Location = new System.Drawing.Point(3, 158);
             this.gbDitherer.Name = "gbDitherer";
             this.gbDitherer.Size = new System.Drawing.Size(428, 112);
-            this.gbDitherer.TabIndex = 5;
+            this.gbDitherer.TabIndex = 2;
             this.gbDitherer.TabStop = false;
             this.gbDitherer.Text = "gbDitherer";
             // 
@@ -70,7 +70,7 @@
             this.dithererSelector.Location = new System.Drawing.Point(3, 18);
             this.dithererSelector.Name = "dithererSelector";
             this.dithererSelector.Size = new System.Drawing.Size(422, 91);
-            this.dithererSelector.TabIndex = 1;
+            this.dithererSelector.TabIndex = 0;
             // 
             // gbQuantizer
             // 
@@ -80,7 +80,7 @@
             this.gbQuantizer.Location = new System.Drawing.Point(3, 46);
             this.gbQuantizer.Name = "gbQuantizer";
             this.gbQuantizer.Size = new System.Drawing.Size(428, 112);
-            this.gbQuantizer.TabIndex = 4;
+            this.gbQuantizer.TabIndex = 1;
             this.gbQuantizer.TabStop = false;
             this.gbQuantizer.Text = "gbQuantizer";
             // 
@@ -100,7 +100,7 @@
             this.gbPixelFormat.Location = new System.Drawing.Point(3, 3);
             this.gbPixelFormat.Name = "gbPixelFormat";
             this.gbPixelFormat.Size = new System.Drawing.Size(428, 43);
-            this.gbPixelFormat.TabIndex = 3;
+            this.gbPixelFormat.TabIndex = 0;
             this.gbPixelFormat.TabStop = false;
             this.gbPixelFormat.Text = "gbPixelFormat";
             // 
@@ -134,7 +134,7 @@
             this.progress.Name = "progress";
             this.progress.Size = new System.Drawing.Size(428, 22);
             this.progress.SizingGrip = false;
-            this.progress.TabIndex = 8;
+            this.progress.TabIndex = 5;
             this.progress.Text = "drawingProgressStatusStrip1";
             // 
             // ColorSpaceForm

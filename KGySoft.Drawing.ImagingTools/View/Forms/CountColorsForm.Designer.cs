@@ -29,7 +29,7 @@
             this.lblResult.Name = "lblResult";
             this.lblResult.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
             this.lblResult.Size = new System.Drawing.Size(274, 39);
-            this.lblResult.TabIndex = 2;
+            this.lblResult.TabIndex = 0;
             this.lblResult.Text = "lblResult";
             this.lblResult.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
@@ -40,7 +40,7 @@
             this.pnlButton.Location = new System.Drawing.Point(0, 39);
             this.pnlButton.Name = "pnlButton";
             this.pnlButton.Size = new System.Drawing.Size(274, 29);
-            this.pnlButton.TabIndex = 3;
+            this.pnlButton.TabIndex = 1;
             // 
             // btnClose
             // 
@@ -48,7 +48,7 @@
             this.btnClose.Location = new System.Drawing.Point(100, 3);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(75, 23);
-            this.btnClose.TabIndex = 2;
+            this.btnClose.TabIndex = 0;
             this.btnClose.Text = "btnClose";
             this.btnClose.UseVisualStyleBackColor = true;
             // 
@@ -59,7 +59,7 @@
             this.progress.Name = "progress";
             this.progress.Size = new System.Drawing.Size(274, 22);
             this.progress.SizingGrip = false;
-            this.progress.TabIndex = 0;
+            this.progress.TabIndex = 2;
             this.progress.Text = "drawingProgressStatusStrip1";
             // 
             // CountColorsForm
