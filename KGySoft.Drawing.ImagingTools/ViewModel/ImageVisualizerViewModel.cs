@@ -1117,8 +1117,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             ImageInfoBase image = GetCurrentImage();
 
             Debug.Assert(image.Image is Bitmap, "Existing bitmap image is expected");
-            using IViewModel viewModel = ViewModelFactory.CreateCountColors((Bitmap)image.Image);
+            using IViewModel<int?> viewModel = ViewModelFactory.CreateCountColors((Bitmap)image.Image);
             ShowChildViewCallback?.Invoke(viewModel);
+
+            // this prevents the viewModel from disposing until before the view is completely finished (on cancel, for example)
+            var _ = viewModel.GetEditedModel();
         }
 
         #endregion

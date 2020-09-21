@@ -25,6 +25,7 @@ using System.Linq;
 using System.Reflection;
 
 using KGySoft.Collections;
+using KGySoft.CoreLibraries;
 using KGySoft.Reflection;
 using KGySoft.Resources;
 
@@ -224,6 +225,8 @@ namespace KGySoft.Drawing.ImagingTools
         #region General
 
         internal static string Get(string id) => resourceManager.GetString(id, LanguageSettings.DisplayLanguage) ?? String.Format(CultureInfo.InvariantCulture, unavailableResource, id);
+
+        internal static string Get<TEnum>(TEnum value) where TEnum : struct, Enum => Get($"{value.GetType().Name}.{Enum<TEnum>.ToString(value)}");
 
         internal static void ApplyResources(object target, string name)
         {

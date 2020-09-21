@@ -101,7 +101,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 return;
 
             if (displayedProgress?.OperationType != progress.OperationType)
-                lblProgress.Text = progress.OperationType.ToString();
+                lblProgress.Text = Res.Get(progress.OperationType);
             if (progress.MaximumValue == 0)
                 pbProgress.Style = ProgressBarStyle.Marquee;
             else

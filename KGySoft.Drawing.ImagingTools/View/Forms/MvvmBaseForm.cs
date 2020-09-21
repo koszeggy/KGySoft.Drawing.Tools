@@ -29,6 +29,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
     internal class MvvmBaseForm<TViewModel> : BaseForm, IView
         where TViewModel : IDisposable // BUG: Actually should be ViewModelBase but WinForms designer with derived forms dies from that
     {
+        #region Fields
+
+        private bool isClosing;
+
+        #endregion
+
         #region Properties
 
         #region Protected Properties
@@ -99,6 +105,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected virtual void ApplyViewModel() => VM.ViewLoaded();
 
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (!e.Cancel)
+                isClosing = true;
+            base.OnFormClosing(e);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -115,10 +128,19 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void InvokeIfRequired(Action action)
         {
-            if (InvokeRequired)
-                Invoke(action);
-            else
-                action.Invoke();
+            if (isClosing || Disposing || IsDisposed)
+                return;
+            try
+            {
+                if (InvokeRequired)
+                    Invoke(action);
+                else
+                    action.Invoke();
+            }
+            catch (ObjectDisposedException)
+            {
+                // it can happen that actual Invoke is started to execute only after querying isClosing and when Disposing and IsDisposed both return false
+            }
         }
 
         #endregion

@@ -615,4 +615,25 @@ Dithering may help to preserve more details.</value>
   <data name="CountColorsForm.Text" xml:space="preserve">
     <value>Colors Count</value>
   </data>
+  <data name="DrawingOperation.UndefinedProcessing" xml:space="preserve">
+    <value>Processing...</value>
+  </data>
+  <data name="DrawingOperation.InitializingQuantizer" xml:space="preserve">
+    <value>Initializing Quantizer...</value>
+  </data>
+  <data name="DrawingOperation.InitializingDitherer" xml:space="preserve">
+    <value>Initializing Ditherer...</value>
+  </data>
+  <data name="DrawingOperation.GeneratingPalette" xml:space="preserve">
+    <value>Generating Palette...</value>
+  </data>
+  <data name="DrawingOperation.ProcessingPixels" xml:space="preserve">
+    <value>Processing...</value>
+  </data>
+  <data name="DrawingOperation.Saving" xml:space="preserve">
+    <value>Saving...</value>
+  </data>
+  <data name="DrawingOperation.Loading" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
 </root>

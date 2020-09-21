@@ -16,6 +16,7 @@
 
 #region Usings
 
+using System;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.ViewModel;
@@ -98,8 +99,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // VM.IsProcessing -> progress.ProgressVisible
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsProcessing), nameof(progress.ProgressVisible), progress);
 
-            // VM.Progress -> progress.Progress
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Progress), nameof(progress.Progress), progress);
+            // VM.Progress -> progress.Progress (in lock because it is already running)
+            lock (ViewModel.ProgressSyncRoot)
+                CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Progress), nameof(progress.Progress), progress);
         }
 
         #endregion

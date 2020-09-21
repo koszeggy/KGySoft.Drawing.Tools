@@ -77,6 +77,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Properties
 
+        internal object ProgressSyncRoot => drawingProgressManager;
         internal bool IsProcessing { get => Get<bool>(); set => Set(value); }
         internal DrawingProgress Progress { get => Get<DrawingProgress>(); set => Set(value); }
         internal string DisplayText { get => Get<string>(Res.TextCountingColors); set => Set(value); }
@@ -91,7 +92,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             if (bitmap == null)
                 throw new ArgumentNullException(nameof(bitmap), PublicResources.ArgumentNull);
-            drawingProgressManager = new DrawingProgressManager(p => Progress = p);
+            drawingProgressManager = new DrawingProgressManager(p =>
+            {
+                lock (ProgressSyncRoot)
+                    Progress = p;
+            });
             BeginCountColors(bitmap);
         }
 
@@ -117,6 +122,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 return;
             task.IsCanceled = true;
             SetModified(false);
+            task.WaitForCompletion();
         }
 
         #endregion
@@ -172,7 +178,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 IsProcessing = false;
             }
 
-            (SynchronizedInvokeCallback ?? (a => a.Invoke())).Invoke(Action);
+            SynchronizedInvokeCallback?.Invoke(Action);
         }
 
         #endregion
@@ -182,7 +188,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void OnCancelCommand()
         {
             CancelIfRunning();
-            task.WaitForCompletion();
             CloseViewCallback?.Invoke();
         }
 
