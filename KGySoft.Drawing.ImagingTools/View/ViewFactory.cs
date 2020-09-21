@@ -71,6 +71,8 @@ namespace KGySoft.Drawing.ImagingTools.View
                     return new ColorSpaceForm(colorSpaceViewModel);
                 case CountColorsViewModel countColorsViewModel:
                     return new CountColorsForm(countColorsViewModel);
+                case AdjustBrightnessViewModel adjustBrightnessViewModel:
+                    return new AdjustBrightnessForm(adjustBrightnessViewModel);
                 default:
                     throw new InvalidOperationException(Res.InternalError($"Unexpected viewModel type: {viewModel.GetType()}"));
             }

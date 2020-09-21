@@ -32,7 +32,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.miCountColors = new System.Windows.Forms.ToolStripMenuItem();
             this.miSeparatorColorSettings = new System.Windows.Forms.ToolStripSeparator();
             this.miColorSpace = new System.Windows.Forms.ToolStripMenuItem();
-            this.miColorLevels = new System.Windows.Forms.ToolStripMenuItem();
+            this.miAdjustColors = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.btnOpen = new System.Windows.Forms.ToolStripButton();
             this.btnSave = new System.Windows.Forms.ToolStripButton();
@@ -50,6 +50,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.lblNotification = new KGySoft.Drawing.ImagingTools.View.Controls.NotificationLabel();
             this.imageViewer = new KGySoft.Drawing.ImagingTools.View.Controls.ImageViewer();
+            this.miBrightness = new System.Windows.Forms.ToolStripMenuItem();
+            this.miContrast = new System.Windows.Forms.ToolStripMenuItem();
+            this.miGamma = new System.Windows.Forms.ToolStripMenuItem();
             this.tsMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -112,7 +115,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.miCountColors,
             this.miSeparatorColorSettings,
             this.miColorSpace,
-            this.miColorLevels});
+            this.miAdjustColors});
             this.btnColorSettings.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnColorSettings.Name = "btnColorSettings";
             this.btnColorSettings.Size = new System.Drawing.Size(13, 22);
@@ -173,12 +176,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.miColorSpace.Size = new System.Drawing.Size(180, 22);
             this.miColorSpace.Text = "miColorSpace";
             // 
-            // miColorLevels
+            // miAdjustColors
             // 
-            this.miColorLevels.Name = "miColorLevels";
-            this.miColorLevels.Size = new System.Drawing.Size(180, 22);
-            this.miColorLevels.Text = "miColorLevels";
-            this.miColorLevels.Visible = false;
+            this.miAdjustColors.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miBrightness,
+            this.miContrast,
+            this.miGamma});
+            this.miAdjustColors.Name = "miAdjustColors";
+            this.miAdjustColors.Size = new System.Drawing.Size(180, 22);
+            this.miAdjustColors.Text = "miAdjustColors";
             // 
             // toolStripSeparator1
             // 
@@ -279,6 +285,24 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.imageViewer.TabIndex = 1;
             this.imageViewer.TabStop = false;
             // 
+            // miBrightness
+            // 
+            this.miBrightness.Name = "miBrightness";
+            this.miBrightness.Size = new System.Drawing.Size(180, 22);
+            this.miBrightness.Text = "miBrightness";
+            // 
+            // miContrast
+            // 
+            this.miContrast.Name = "miContrast";
+            this.miContrast.Size = new System.Drawing.Size(180, 22);
+            this.miContrast.Text = "miContrast";
+            // 
+            // miGamma
+            // 
+            this.miGamma.Name = "miGamma";
+            this.miGamma.Size = new System.Drawing.Size(180, 22);
+            this.miGamma.Text = "miGamma";
+            // 
             // ImageVisualizerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -331,6 +355,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private ToolStripMenuItem miCountColors;
         private ToolStripSeparator miSeparatorColorSettings;
         private ToolStripMenuItem miColorSpace;
-        private ToolStripMenuItem miColorLevels;
+        private ToolStripMenuItem miAdjustColors;
+        private ToolStripMenuItem miBrightness;
+        private ToolStripMenuItem miContrast;
+        private ToolStripMenuItem miGamma;
     }
 }

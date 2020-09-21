@@ -176,6 +176,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// <returns>An <see cref="IViewModel{TResult}"/> instance that represents a view model for counting colors of a <see cref="Bitmap"/>.</returns>
         public static IViewModel<int?> CreateCountColors(Bitmap bitmap) => new CountColorsViewModel(bitmap);
 
+        /// <summary>
+        /// Creates a view model for adjusting the brightness of a <see cref="Bitmap"/>.
+        /// </summary>
+        /// <param name="bitmap">The bitmap to adjust.</param>
+        /// <returns>An <see cref="IViewModel{TResult}"/> instance that represents a view model for adjusting the brightness of a <see cref="Bitmap"/>.</returns>
+        public static IViewModel<Bitmap> CreateAdjustBrightness(Bitmap bitmap) => new AdjustBrightnessViewModel(bitmap);
+
         #endregion
     }
 }

@@ -219,10 +219,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.Add(ViewModel.ViewImagePreviewSizeChangedCommand)
                 .AddSource(imageViewer, nameof(imageViewer.SizeChanged))
                 .AddSource(imageViewer, nameof(imageViewer.ZoomChanged));
-            CommandBindings.Add(ViewModel.AdjustColorSpaceCommand, ViewModel.AdjustColorSpaceCommandState)
+            CommandBindings.Add(ViewModel.AdjustColorSpaceCommand, ViewModel.EditBitmapCommandState)
                 .AddSource(miColorSpace, nameof(miColorSpace.Click));
-            CommandBindings.Add(ViewModel.CountColorsCommand, ViewModel.CountColorsCommandState)
+            CommandBindings.Add(ViewModel.CountColorsCommand, ViewModel.EditBitmapCommandState)
                 .AddSource(miCountColors, nameof(miCountColors.Click));
+            CommandBindings.Add(ViewModel.AdjustBrightnessCommand, ViewModel.EditBitmapCommandState)
+                .AddSource(miBrightness, nameof(miBrightness.Click));
 
             // View commands
             CommandBindings.Add(OnResizeCommand)

@@ -124,8 +124,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommandState PrevImageCommandState => Get(() => new CommandState());
         internal ICommandState NextImageCommandState => Get(() => new CommandState());
         internal ICommandState ShowPaletteCommandState => Get(() => new CommandState { Enabled = false });
-        internal ICommandState AdjustColorSpaceCommandState => Get(() => new CommandState { Enabled = false });
-        internal ICommandState CountColorsCommandState => Get(() => new CommandState { Enabled = false });
+        internal ICommandState EditBitmapCommandState => Get(() => new CommandState { Enabled = false });
 
         internal ICommand SetAutoZoomCommand => Get(() => new SimpleCommand<bool>(OnSetAutoZoomCommand));
         internal ICommand SetSmoothZoomingCommand => Get(() => new SimpleCommand<bool>(OnSetSmoothZoomingCommand));
@@ -141,6 +140,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommand ManageInstallationsCommand => Get(() => new SimpleCommand(OnManageInstallationsCommand));
         internal ICommand AdjustColorSpaceCommand => Get(() => new SimpleCommand(OnAdjustColorSpaceCommand));
         internal ICommand CountColorsCommand => Get(() => new SimpleCommand(OnCountColorsCommand));
+        internal ICommand AdjustBrightnessCommand => Get(() => new SimpleCommand(OnAdjustBrightnessCommand));
 
         #endregion
 
@@ -406,8 +406,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             ShowPaletteCommandState.Enabled = image.Palette.Length > 0;
             SaveFileCommandState.Enabled = imageInfo.Type != ImageInfoType.None;
             ClearCommandState.Enabled = imageInfo.Type != ImageInfoType.None && !ReadOnly;
-            AdjustColorSpaceCommandState.Enabled = CountColorsCommandState.Enabled = imageInfo.Type != ImageInfoType.None && !ReadOnly && !imageInfo.IsMetafile
-                && IsSingleImageShown();
+            EditBitmapCommandState.Enabled = imageInfo.Type != ImageInfoType.None && !ReadOnly && !imageInfo.IsMetafile && IsSingleImageShown();
             UpdateInfo();
         }
 
@@ -1103,6 +1102,20 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             Debug.Assert(image.Image is Bitmap, "Existing bitmap image is expected");
             using (IViewModel<Bitmap> viewModel = ViewModelFactory.CreateAdjustColorSpace((Bitmap)image.Image))
+            {
+                ShowChildViewCallback?.Invoke(viewModel);
+                if (viewModel.IsModified)
+                    SetCurrentImage(viewModel.GetEditedModel());
+            }
+        }
+
+        private void OnAdjustBrightnessCommand()
+        {
+            Debug.Assert(imageInfo.Type != ImageInfoType.None && !imageInfo.IsMetafile, "Non-metafile image is expected");
+
+            ImageInfoBase image = GetCurrentImage();
+            Debug.Assert(image.Image is Bitmap, "Existing bitmap image is expected");
+            using (IViewModel<Bitmap> viewModel = ViewModelFactory.CreateAdjustBrightness((Bitmap)image.Image))
             {
                 ShowChildViewCallback?.Invoke(viewModel);
                 if (viewModel.IsModified)
