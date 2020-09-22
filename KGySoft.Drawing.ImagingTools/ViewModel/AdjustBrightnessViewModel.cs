@@ -213,23 +213,19 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             // waiting for the cancellation end to prevent the possible "The image is locked elsewhere" error
             canceledTask?.WaitForCompletion();
 
-            // generating a new image
-            lock (syncRoot)
-            {
-                // using Begin/EndConvertPixelFormat instead of await ConvertPixelFormatAsync so it is compatible even with .NET 3.5
-                var newTask = new GenerateTask(originalImage);
-                newTask.AsyncResult = newTask.BitmapData.BeginAdjustBrightness(value, channels: channels,
-                    asyncConfig: new AsyncConfig
-                    {
-                        IsCancelRequestedCallback = () => newTask.IsCanceled,
-                        ThrowIfCanceled = false,
-                        State = newTask,
-                        CompletedCallback = EndGeneratePreview,
-                        Progress = drawingProgressManager
-                    });
+            // using Begin/EndAdjustBrightness instead of await AdjustBrightnessAsync so it is compatible even with .NET 3.5
+            var newTask = new GenerateTask(originalImage);
+            newTask.AsyncResult = newTask.BitmapData.BeginAdjustBrightness(value, channels: channels,
+                asyncConfig: new AsyncConfig
+                {
+                    IsCancelRequestedCallback = () => newTask.IsCanceled,
+                    ThrowIfCanceled = false,
+                    State = newTask,
+                    CompletedCallback = EndGeneratePreview,
+                    Progress = drawingProgressManager
+                });
 
-                activeTask = newTask;
-            }
+            activeTask = newTask;
         }
 
         [SuppressMessage("ReSharper", "AccessToDisposedClosure",
@@ -280,9 +276,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private GenerateTask CancelGeneratePreview()
         {
-            GenerateTask runningTask;
-            //lock (syncRoot)
-                runningTask = activeTask;
+            GenerateTask runningTask = activeTask;
             if (runningTask != null)
                 runningTask.IsCanceled = true;
             return runningTask;

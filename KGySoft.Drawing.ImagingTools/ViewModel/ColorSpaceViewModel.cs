@@ -76,7 +76,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private bool initializing = true;
         private bool keepResult;
-        private GenerateTask activeTask;
+        private volatile GenerateTask activeTask;
         private DrawingProgressManager drawingProgressManager;
 
         #endregion
@@ -258,22 +258,19 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             canceledTask?.WaitForCompletion();
 
             // generating a new image
-            lock (syncRoot)
-            {
-                // using Begin/EndConvertPixelFormat instead of await ConvertPixelFormatAsync so it is compatible even with .NET 3.5
-                var newTask = new GenerateTask();
-                newTask.AsyncResult = originalImage.BeginConvertPixelFormat(pixelFormat, quantizer, ditherer,
-                    new AsyncConfig
-                    {
-                        IsCancelRequestedCallback = () => newTask.IsCanceled,
-                        ThrowIfCanceled = false,
-                        State = newTask,
-                        CompletedCallback = EndGeneratePreview,
-                        Progress = drawingProgressManager
-                    });
+            // using Begin/EndConvertPixelFormat instead of await ConvertPixelFormatAsync so it is compatible even with .NET 3.5
+            var newTask = new GenerateTask();
+            newTask.AsyncResult = originalImage.BeginConvertPixelFormat(pixelFormat, quantizer, ditherer,
+                new AsyncConfig
+                {
+                    IsCancelRequestedCallback = () => newTask.IsCanceled,
+                    ThrowIfCanceled = false,
+                    State = newTask,
+                    CompletedCallback = EndGeneratePreview,
+                    Progress = drawingProgressManager
+                });
 
-                activeTask = newTask;
-            }
+            activeTask = newTask;
         }
 
         private void EndGeneratePreview(IAsyncResult asyncResult)
@@ -321,9 +318,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private GenerateTask CancelGeneratePreview()
         {
-            GenerateTask runningTask;
-            lock (syncRoot)
-                runningTask = activeTask;
+            GenerateTask runningTask = activeTask;
             if (runningTask != null)
                 runningTask.IsCanceled = true;
             return runningTask;
