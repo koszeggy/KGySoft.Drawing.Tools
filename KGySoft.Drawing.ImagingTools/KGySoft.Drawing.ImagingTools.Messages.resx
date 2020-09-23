@@ -645,4 +645,19 @@ Dithering may help to preserve more details.</value>
   <data name="DrawingOperation.Loading" xml:space="preserve">
     <value>Loading...</value>
   </data>
+  <data name="AdjustBrightnessForm.Text" xml:space="preserve">
+    <value>Adjust Brightness</value>
+  </data>
+  <data name="btnReset.Text" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="chbRed.Text" xml:space="preserve">
+    <value>Red</value>
+  </data>
+  <data name="chbGreen.Text" xml:space="preserve">
+    <value>Green</value>
+  </data>
+  <data name="chbBlue.Text" xml:space="preserve">
+    <value>Blue</value>
+  </data>
 </root>

@@ -15,6 +15,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.progress = new KGySoft.Drawing.ImagingTools.View.Controls.DrawingProgressStatusStrip();
             this.okCancelButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
             this.previewImage = new KGySoft.Drawing.ImagingTools.View.UserControls.PreviewImageControl();
@@ -26,9 +27,11 @@
             this.chbBlue = new System.Windows.Forms.CheckBox();
             this.chbGreen = new System.Windows.Forms.CheckBox();
             this.chbRed = new System.Windows.Forms.CheckBox();
+            this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.pnlSettings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar)).BeginInit();
             this.pnlCheckBoxes.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
             this.SuspendLayout();
             // 
             // progress
@@ -152,6 +155,10 @@
             this.chbRed.Text = "chbRed";
             this.chbRed.UseVisualStyleBackColor = true;
             // 
+            // errorProvider
+            // 
+            this.errorProvider.ContainerControl = this;
+            // 
             // AdjustBrightnessForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -170,6 +177,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.trackBar)).EndInit();
             this.pnlCheckBoxes.ResumeLayout(false);
             this.pnlCheckBoxes.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -188,5 +196,6 @@
         private System.Windows.Forms.TrackBar trackBar;
         private System.Windows.Forms.Button btnReset;
         private System.Windows.Forms.Label lblValue;
+        private System.Windows.Forms.ErrorProvider errorProvider;
     }
 }

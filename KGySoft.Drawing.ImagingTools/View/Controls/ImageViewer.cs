@@ -18,6 +18,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -745,6 +746,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             targetRectangle = new Rectangle(targetLocation, scaledSize);
         }
 
+        [SuppressMessage("Reliability", "CA2002:Do not lock on objects with weak identity", Justification = "False alarm, displayImage is not a remote object")]
         private void PaintImage(Graphics g)
         {
             if (displayImage == null)
@@ -757,7 +759,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 dest.Y -= sbVertical.Value;
             g.InterpolationMode = !isMetafile && (smoothZooming || zoom < 1f) ? InterpolationMode.HighQualityBicubic : InterpolationMode.NearestNeighbor;
             g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-            g.DrawImage(displayImage, dest);
+
+            // Locking on display image so if it is the same as the original image, which is also locked when accessing its bitmap data
+            // the "bitmap region is already locked" can be avoided. Important: this cannot be ensured without locking here internally because
+            // OnPaint can occur any time after invalidating.
+            lock (displayImage)
+                g.DrawImage(displayImage, dest);
         }
 
         private void GenerateDisplayImage()
