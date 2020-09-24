@@ -18,10 +18,11 @@
 
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
+using System.Threading;
 
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
@@ -31,35 +32,92 @@ using KGySoft.Drawing.Imaging;
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal class ColorSpaceViewModel : ViewModelBase, IViewModel<Bitmap>, IValidatingObject
+    internal class ColorSpaceViewModel : TransformBitmapViewModelBase
     {
         #region Nested Classes
 
-        private sealed class GenerateTask
+        private sealed class GenerateTask : GenerateTaskBase
         {
             #region Fields
 
-            internal volatile bool IsCanceled;
-            internal IAsyncResult AsyncResult;
+            private Bitmap sourceBitmap;
+            private bool isSourceCloned;
+
+            #endregion
+
+            #region Properties
+
+            internal PixelFormat PixelFormat { get; }
+            internal IQuantizer Quantizer { get; }
+            internal IDitherer Ditherer { get; }
+
+            #endregion
+
+            #region Constructors
+
+            internal GenerateTask(PixelFormat pixelFormat, IQuantizer quantizer, IDitherer ditherer)
+            {
+                PixelFormat = pixelFormat;
+                Quantizer = quantizer;
+                Ditherer = ditherer;
+            }
 
             #endregion
 
             #region Methods
 
-            internal void WaitForCompletion()
+            [SuppressMessage("Reliability", "CA2002:Do not lock on objects with weak identity",
+                Justification = "False alarm, source is never a remote object")]
+            internal override void Initialize(Bitmap source, bool isInUse)
             {
-                if (AsyncResult.IsCompleted)
-                    return;
+                // Locking on source image to avoid "bitmap region is already locked" if the UI is painting the image when we clone it.
+                // This works this way because UI can repaint the image any time and is also locks the image for that period.
+                // Another solution could be if we used a clone of the original image but it is better to avoid using multiple clones.
+                if (isInUse)
+                {
+                    // if image is in use (in the view of this VM) we lock it only for a short time to prevent the UI freezing
+                    lock (source)
+                        sourceBitmap = source.CloneCurrentFrame();
+                    isSourceCloned = true;
+                }
+                else
+                {
+                    // If no direct use could be detected using a long-term lock to spare a clone.
+                    // It is still needed because the image still can be used in the main V/VM.
+                    Monitor.Enter(source);
+                    sourceBitmap = source;
+                }
+            }
 
-                try
+            internal override IAsyncResult BeginGenerate(AsyncConfig asyncConfig)
+                => sourceBitmap.BeginConvertPixelFormat(PixelFormat, Quantizer, Ditherer, asyncConfig);
+
+            internal override Bitmap EndGenerate(IAsyncResult asyncResult) => asyncResult.EndConvertPixelFormat();
+
+            internal override void SetCompleted()
+            {
+                if (isSourceCloned)
                 {
-                    AsyncResult.AsyncWaitHandle.WaitOne();
+                    sourceBitmap.Dispose();
+                    sourceBitmap = null;
                 }
-                catch (ObjectDisposedException)
+                else
+                    Monitor.Exit(sourceBitmap);
+
+                base.SetCompleted();
+            }
+
+            protected override void Dispose(bool disposing)
+            {
+                if (IsDisposed)
+                    return;
+                if (disposing)
                 {
-                    // it can happen that the task has just been completed after querying IsCompleted but this part
-                    // must not be in a lock because then EndGeneratePreview could possibly never end
+                    if (isSourceCloned)
+                        sourceBitmap?.Dispose();
                 }
+
+                base.Dispose(disposing);
             }
 
             #endregion
@@ -69,43 +127,19 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Fields
 
-        private readonly Bitmap originalImage;
         private readonly PixelFormat originalPixelFormat;
         private readonly bool originalHasAlpha;
-        private readonly object syncRoot = new object();
-
-        private bool initializing = true;
-        private bool keepResult;
-        private volatile GenerateTask activeTask;
-        private DrawingProgressManager drawingProgressManager;
-
-        #endregion
-
-        #region Events
-
-        internal event EventHandler<EventArgs<ValidationResultsCollection>> ValidationResultsChanged
-        {
-            add => ValidationResultsChangedHandler += value;
-            remove => ValidationResultsChangedHandler -= value;
-        }
 
         #endregion
 
         #region Properties
 
-        #region Public Properties
-
-        public bool IsValid { get => Get<bool>(); set => Set(value); }
-        public ValidationResultsCollection ValidationResults { get => Get(DoValidation); set => Set(value); }
-
-        #endregion
-
         #region Internal Properties
 
-        internal PreviewImageViewModel PreviewImageViewModel => Get(() => new PreviewImageViewModel());
         internal QuantizerSelectorViewModel QuantizerSelectorViewModel => Get(() => new QuantizerSelectorViewModel());
         internal DithererSelectorViewModel DithererSelectorViewModel => Get(() => new DithererSelectorViewModel());
 
+        // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
         internal PixelFormat[] PixelFormats => Get(() => Enum<PixelFormat>.GetValues().Where(pf => pf.IsValidFormat()).OrderBy(pf => pf & PixelFormat.Max).ToArray());
         internal PixelFormat PixelFormat { get => Get<PixelFormat>(); set => Set(value); }
 
@@ -113,19 +147,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal bool UseQuantizer { get => Get<bool>(); set => Set(value); }
         internal bool UseDitherer { get => Get<bool>(); set => Set(value); }
 
-        internal ICommand ApplyCommand => Get(() => new SimpleCommand(OnApplyCommand));
-        internal ICommand CancelCommand => Get(() => new SimpleCommand(OnCancelCommand));
-        internal ICommandState ApplyCommandState => Get(() => new CommandState { Enabled = false });
-
-        internal bool IsGenerating { get => Get<bool>(); set => Set(value); }
-        internal DrawingProgress Progress { get => Get<DrawingProgress>(); set => Set(value); }
-
         #endregion
 
-        #region Private Properties
+        #region Protected Properties
 
-        private Exception ConvertPixelFormatError { get => Get<Exception>(); set => Set(value); }
-        private EventHandler<EventArgs<ValidationResultsCollection>> ValidationResultsChangedHandler { get => Get<EventHandler<EventArgs<ValidationResultsCollection>>>(); set => Set(value); }
+        protected override bool AreSettingsChanged => ChangePixelFormat || UseQuantizer || UseDitherer;
 
         #endregion
 
@@ -133,17 +159,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Constructors
 
-        internal ColorSpaceViewModel(Bitmap image)
+        internal ColorSpaceViewModel(Bitmap image) : base(image)
         {
-            originalImage = image ?? throw new ArgumentNullException(nameof(image), PublicResources.ArgumentNull);
             originalPixelFormat = image.PixelFormat;
             originalHasAlpha = originalPixelFormat.HasAlpha() || originalPixelFormat.IsIndexed() && image.Palette.Entries.Any(c => c.A < Byte.MaxValue);
-            PreviewImageViewModel previewImage = PreviewImageViewModel;
-            previewImage.PropertyChanged += PreviewImage_PropertyChanged;
             QuantizerSelectorViewModel.PropertyChanged += Selector_PropertyChanged;
             DithererSelectorViewModel.PropertyChanged += Selector_PropertyChanged;
 
-            previewImage.Image = image;
             PixelFormat = PixelFormats[0];
         }
 
@@ -153,195 +175,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Protected Methods
 
-        protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
+        protected override ValidationResultsCollection DoValidation()
         {
-            base.OnPropertyChanged(e);
-            switch (e.PropertyName)
-            {
-                case nameof(PixelFormat):
-                case nameof(ChangePixelFormat):
-                case nameof(UseQuantizer):
-                case nameof(UseDitherer):
-                    if (initializing)
-                        return;
-                    Validate();
-                    BeginGeneratePreview();
-                    return;
+            ValidationResultsCollection result = base.DoValidation();
 
-                case nameof(ValidationResults):
-                    var validationResults = (ValidationResultsCollection)e.NewValue;
-                    IsValid = !validationResults.HasErrors;
-                    ValidationResultsChangedHandler?.Invoke(this, new EventArgs<ValidationResultsCollection>(validationResults));
-                    return;
-                
-                case nameof(ConvertPixelFormatError):
-                    Validate();
-                    return;
-
-                case nameof(IsModified):
-                case nameof(IsGenerating):
-                    ApplyCommandState.Enabled = IsModified && !IsGenerating;
-                    return;
-            }
-        }
-
-        // IsModified is set explicitly from PreviewImage_PropertyChanged
-        protected override bool AffectsModifiedState(string propertyName) => false;
-
-        internal override void ViewLoaded()
-        {
-            // could be in constructor but we only need it when there is a view
-            drawingProgressManager = new DrawingProgressManager(p => Progress = p);
-            initializing = false;
-            base.ViewLoaded();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (IsDisposed)
-                return;
-            if (disposing)
-            {
-                Image preview = PreviewImageViewModel.Image;
-
-                // These disposals remove every subscriptions as well
-                PreviewImageViewModel?.Dispose();
-                QuantizerSelectorViewModel?.Dispose();
-                DithererSelectorViewModel?.Dispose();
-
-                if (!ReferenceEquals(originalImage, preview) && !keepResult)
-                    preview?.Dispose();
-
-                drawingProgressManager = null;
-            }
-
-            base.Dispose(disposing);
-        }
-
-        #endregion
-
-        #region Private Methods
-
-        private void BeginGeneratePreview()
-        {
-            IsGenerating = true;
-
-            // canceling any current generating in progress (not nullifying ActiveTask because that could enable the Apply command,
-            // but it will done in EndGeneratePreview if no new task is added in this method)
-            GenerateTask canceledTask = CancelGeneratePreview();
-
-            // checking whether a new generate should be added
-            PixelFormat pixelFormat = ChangePixelFormat ? PixelFormat : originalPixelFormat;
-            bool useQuantizer = UseQuantizer;
-            bool useDitherer = UseDitherer;
-            IQuantizer quantizer = useQuantizer ? QuantizerSelectorViewModel.Quantizer : null;
-            IDitherer ditherer = useDitherer ? DithererSelectorViewModel.Ditherer : null;
-            ConvertPixelFormatError = null;
-
-            // error - null
-            if (useQuantizer && quantizer == null || useDitherer && ditherer == null || !IsValid)
-            {
-                SetPreview(null);
-                IsGenerating = false;
-                return;
-            }
-
-            // original image
-            if (pixelFormat == originalPixelFormat && quantizer == null && ditherer == null)
-            {
-                SetPreview(originalImage);
-                IsGenerating = false;
-                return;
-            }
-
-            // waiting for the cancellation end to prevent the possible "The image is locked elsewhere" error
-            canceledTask?.WaitForCompletion();
-
-            // generating a new image
-            // using Begin/EndConvertPixelFormat instead of await ConvertPixelFormatAsync so it is compatible even with .NET 3.5
-            var newTask = new GenerateTask();
-            newTask.AsyncResult = originalImage.BeginConvertPixelFormat(pixelFormat, quantizer, ditherer,
-                new AsyncConfig
-                {
-                    IsCancelRequestedCallback = () => newTask.IsCanceled,
-                    ThrowIfCanceled = false,
-                    State = newTask,
-                    CompletedCallback = EndGeneratePreview,
-                    Progress = drawingProgressManager
-                });
-
-            activeTask = newTask;
-        }
-
-        private void EndGeneratePreview(IAsyncResult asyncResult)
-        {
-            Bitmap result = null;
-            Exception error = null;
-            var task = (GenerateTask)asyncResult.AsyncState;
-
-            try
-            {
-                result = asyncResult.EndConvertPixelFormat();
-            }
-            catch (Exception e) when (!e.IsCriticalGdi())
-            {
-                error = e;
-            }
-
-            lock (syncRoot)
-            {
-                try
-                {
-                    if (task.IsCanceled)
-                    {
-                        result?.Dispose();
-                        return;
-                    }
-
-                    // the execution of this method will be marshaled back to the UI thread
-                    void Action()
-                    {
-                        if (error != null)
-                            ConvertPixelFormatError = error;
-                        SetPreview(result);
-                        IsGenerating = false;
-                    }
-
-                    SynchronizedInvokeCallback?.Invoke(Action);
-                }
-                finally
-                {
-                    activeTask = null;
-                }
-            }
-        }
-
-        private GenerateTask CancelGeneratePreview()
-        {
-            GenerateTask runningTask = activeTask;
-            if (runningTask != null)
-                runningTask.IsCanceled = true;
-            return runningTask;
-        }
-
-        private void SetPreview(Bitmap image)
-        {
-            PreviewImageViewModel preview = PreviewImageViewModel;
-            Image toDispose = preview.Image;
-            preview.Image = image;
-            if (toDispose != null && toDispose != originalImage)
-                toDispose.Dispose();
-        }
-
-        private void Validate()
-        {
-            if (initializing)
-                return;
-            ValidationResults = DoValidation();
-        }
-
-        private ValidationResultsCollection DoValidation()
-        {
             // Note that !UseQuantizer and Quantizer == null are not interchangeable.
             // UseQuantizer indicates whether the selector is checked while Quantizer is not null if an instance could be successfully created
             bool changePixelFormat = ChangePixelFormat;
@@ -350,13 +187,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             PixelFormat pixelFormat = changePixelFormat ? PixelFormat : originalPixelFormat;
             IQuantizer quantizer = useQuantizer ? QuantizerSelectorViewModel.Quantizer : null;
             IDitherer ditherer = useDitherer ? DithererSelectorViewModel.Ditherer : null;
-            Exception convertError = ConvertPixelFormatError;
             Exception quantizerError = useQuantizer ? QuantizerSelectorViewModel.CreateQuantizerError : null;
             Exception dithererError = useDitherer ? DithererSelectorViewModel.CreateDithererError : null;
             int bpp = pixelFormat.ToBitsPerPixel();
             int originalBpp = originalPixelFormat.ToBitsPerPixel();
             int? bppHint = quantizer?.PixelFormatHint.ToBitsPerPixel();
-            var result = new ValidationResultsCollection();
 
             // errors
             if (!pixelFormat.IsSupportedNatively())
@@ -369,9 +204,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             if (dithererError != null)
                 result.AddError(nameof(DithererSelectorViewModel.Ditherer), Res.ErrorMessageFailedToInitializeDitherer(dithererError.Message));
-
-            if (convertError != null)
-                result.AddError(nameof(PreviewImageViewModel.Image), Res.ErrorMessageFailedToGeneratePreview(convertError.Message));
 
             //if (result.HasErrors)
             //    return result;
@@ -416,22 +248,50 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             return result;
         }
 
+        protected override bool AffectsPreview(string propertyName)
+            => propertyName.In(nameof(PixelFormat), nameof(ChangePixelFormat), nameof(UseQuantizer), nameof(UseDitherer));
+
+        protected override GenerateTaskBase CreateGenerateTask()
+            => new GenerateTask(ChangePixelFormat ? PixelFormat : originalPixelFormat,
+                UseQuantizer ? QuantizerSelectorViewModel.Quantizer : null,
+                UseDitherer ? DithererSelectorViewModel.Ditherer : null);
+
+        protected override bool MatchesSettings(GenerateTaskBase task)
+        {
+            var t = (GenerateTask)task;
+            return t.PixelFormat == (ChangePixelFormat ? PixelFormat : originalPixelFormat)
+                && t.Quantizer == (UseQuantizer ? QuantizerSelectorViewModel.Quantizer : null)
+                && t.Ditherer == (UseDitherer ? DithererSelectorViewModel.Ditherer : null);
+        }
+
+        protected override bool MatchesOriginal(GenerateTaskBase task)
+        {
+            var t = (GenerateTask)task;
+            return t.PixelFormat == originalPixelFormat && t.Quantizer == null && t.Ditherer == null;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (IsDisposed)
+                return;
+            if (disposing)
+            {
+                // These disposals remove every subscriptions as well
+                QuantizerSelectorViewModel?.Dispose();
+                DithererSelectorViewModel?.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
+
+        #endregion
+
+        #region Private Methods
+
         #endregion
 
         #region Event Handlers
 
-        private void PreviewImage_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            var vm = (PreviewImageViewModel)sender;
-
-            // preview image has been changed: updating IsModified accordingly
-            if (e.PropertyName == nameof(vm.Image))
-            {
-                Image image = vm.Image;
-                SetModified(image != null && originalImage != image);
-            }
-        }
-        
         private void Selector_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName.In(nameof(QuantizerSelectorViewModel.Quantizer), nameof(QuantizerSelectorViewModel.CreateQuantizerError),
@@ -446,31 +306,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 BeginGeneratePreview();
             }
         }
-
-        #endregion
-
-        #region Command Handlers
-
-        private void OnCancelCommand()
-        {
-            // canceling any pending generate and waiting for finishing so no "image is locked elsewhere" will come from the main form for the original image
-            CancelGeneratePreview()?.WaitForCompletion();
-            SetModified(false);
-            CloseViewCallback?.Invoke();
-        }
-
-        private void OnApplyCommand()
-        {
-            Debug.Assert(!IsGenerating);
-            keepResult = true;
-            CloseViewCallback?.Invoke();
-        }
-
-        #endregion
-
-        #region Explicitly Implemented Interface Methods
-
-        Bitmap IViewModel<Bitmap>.GetEditedModel() => PreviewImageViewModel.Image as Bitmap;
 
         #endregion
 

@@ -1,0 +1,488 @@
+﻿#region Copyright
+
+///////////////////////////////////////////////////////////////////////////////
+//  File: TransformBitmapViewModelBase.cs
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright (C) KGy SOFT, 2005-2020 - All Rights Reserved
+//
+//  You should have received a copy of the LICENSE file at the top-level
+//  directory of this distribution. If not, then this file is considered as
+//  an illegal copy.
+//
+//  Unauthorized copying of this file, via any medium is strictly prohibited.
+///////////////////////////////////////////////////////////////////////////////
+
+#endregion
+
+#region Usings
+
+using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
+using System.Threading;
+
+using KGySoft.ComponentModel;
+using KGySoft.CoreLibraries;
+
+#endregion
+
+namespace KGySoft.Drawing.ImagingTools.ViewModel
+{
+    internal abstract class TransformBitmapViewModelBase : ViewModelBase, IViewModel<Bitmap>, IValidatingObject
+    {
+        #region Nested Classes
+
+        protected abstract class GenerateTaskBase : IDisposable
+        {
+            #region Fields
+
+            #region Private Fields
+
+            private readonly ManualResetEventSlim completedEvent;
+
+            #endregion
+
+            #region Internal Fields
+
+            internal volatile bool IsCanceled;
+
+            #endregion
+
+            #region Protected Fields
+
+            protected volatile bool IsDisposed;
+
+            #endregion
+
+            #endregion
+
+            #region Constructors
+
+            protected GenerateTaskBase() => completedEvent = new ManualResetEventSlim(false);
+
+            #endregion
+
+            #region Methods
+
+            #region Public Methods
+
+            public void Dispose()
+            {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            #endregion
+
+            #region Internal Methods
+
+            internal abstract void Initialize(Bitmap source, bool isInUse);
+            internal abstract IAsyncResult BeginGenerate(AsyncConfig asyncConfig);
+            internal abstract Bitmap EndGenerate(IAsyncResult asyncResult);
+            internal virtual void SetCompleted() => completedEvent.Set();
+
+            internal void WaitForCompletion()
+            {
+                if (IsDisposed)
+                    return;
+
+                try
+                {
+                    completedEvent.Wait();
+                }
+                catch (ObjectDisposedException)
+                {
+                    // it can happen that the task has just been completed after querying IsCompleted but this part
+                    // must not be in a lock because then EndGeneratePreview could possibly never end
+                }
+            }
+
+            #endregion
+
+            #region Protected Methods
+
+            protected virtual void Dispose(bool disposing)
+            {
+                if (IsDisposed)
+                    return;
+                if (disposing)
+                {
+                    completedEvent.Set();
+                    completedEvent.Dispose();
+                }
+
+                IsDisposed = true;
+            }
+
+            #endregion
+
+            #endregion
+        }
+
+        #endregion
+
+        #region Fields
+
+        private readonly Bitmap originalImage;
+        private readonly object syncRoot = new object();
+
+        private volatile GenerateTaskBase activeTask;
+        private bool initializing = true;
+        private bool keepResult;
+        private DrawingProgressManager drawingProgressManager;
+
+        #endregion
+
+        #region Events
+
+        internal event EventHandler<EventArgs<ValidationResultsCollection>> ValidationResultsChanged
+        {
+            add => ValidationResultsChangedHandler += value;
+            remove => ValidationResultsChangedHandler -= value;
+        }
+
+        #endregion
+
+        #region Properties
+
+        #region Public Properties
+
+        public bool IsValid { get => Get<bool>(); private set => Set(value); }
+        public ValidationResultsCollection ValidationResults { get => Get(DoValidation); private set => Set(value); }
+
+        #endregion
+
+        #region Internal Properties
+
+        internal PreviewImageViewModel PreviewImageViewModel => Get(() => new PreviewImageViewModel());
+
+        internal ICommand ApplyCommand => Get(() => new SimpleCommand(OnApplyCommand));
+        internal ICommand CancelCommand => Get(() => new SimpleCommand(OnCancelCommand));
+        internal ICommand ResetCommand => Get(() => new SimpleCommand(OnResetCommand));
+        internal ICommandState ApplyCommandState => Get(() => new CommandState { Enabled = false });
+        internal ICommandState ResetCommandState => Get(() => new CommandState { Enabled = false });
+
+        internal bool IsGenerating { get => Get<bool>(); set => Set(value); }
+        internal DrawingProgress Progress { get => Get<DrawingProgress>(); set => Set(value); }
+
+        #endregion
+
+        #region Protected Properties
+
+        protected abstract bool AreSettingsChanged { get; }
+
+        #endregion
+
+        #region Private Properties
+
+        private Exception GeneratePreviewError { get => Get<Exception>(); set => Set(value); }
+        private EventHandler<EventArgs<ValidationResultsCollection>> ValidationResultsChangedHandler { get => Get<EventHandler<EventArgs<ValidationResultsCollection>>>(); set => Set(value); }
+
+        #endregion
+
+        #endregion
+
+        #region Constructors
+
+        protected TransformBitmapViewModelBase(Bitmap image)
+        {
+            originalImage = image ?? throw new ArgumentNullException(nameof(image), PublicResources.ArgumentNull);
+            PreviewImageViewModel previewImage = PreviewImageViewModel;
+            previewImage.PropertyChanged += PreviewImage_PropertyChanged;
+            previewImage.Image = image;
+        }
+
+        #endregion
+
+        #region Methods
+
+        #region Internal Methods
+
+        internal override void ViewLoaded()
+        {
+            // could be in constructor but we only need it when there is a view
+            drawingProgressManager = new DrawingProgressManager(p => Progress = p);
+            initializing = false;
+            base.ViewLoaded();
+        }
+
+        #endregion
+
+        #region Protected Methods
+
+        protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+            switch (e.PropertyName)
+            {
+                case nameof(ValidationResults):
+                    var validationResults = (ValidationResultsCollection)e.NewValue;
+                    IsValid = !validationResults.HasErrors;
+                    ValidationResultsChangedHandler?.Invoke(this, new EventArgs<ValidationResultsCollection>(validationResults));
+                    return;
+
+                case nameof(GeneratePreviewError):
+                    Validate();
+                    return;
+
+                case nameof(IsModified):
+                case nameof(IsGenerating):
+                    ApplyCommandState.Enabled = IsModified && !IsGenerating;
+                    return;
+
+                default:
+                    if (initializing || !AffectsPreview(e.PropertyName))
+                        return;
+                    Validate();
+                    ResetCommandState.Enabled = AreSettingsChanged;
+                    BeginGeneratePreview();
+                    return;
+            }
+        }
+
+        protected void Validate()
+        {
+            if (initializing)
+                return;
+            ValidationResults = DoValidation();
+        }
+
+        protected virtual ValidationResultsCollection DoValidation()
+        {
+            Exception error = GeneratePreviewError;
+            var result = new ValidationResultsCollection();
+
+            // errors
+            if (error != null)
+                result.AddError(nameof(PreviewImageViewModel.Image), Res.ErrorMessageFailedToGeneratePreview(error.Message));
+
+            return result;
+        }
+
+        // IsModified is set explicitly from PreviewImage_PropertyChanged
+        protected override bool AffectsModifiedState(string propertyName) => false;
+
+        protected abstract bool AffectsPreview(string propertyName);
+
+        protected void BeginGeneratePreview()
+        {
+            // sending cancel request to pending generate but the completion is awaited on a pool thread to prevent deadlocks
+            CancelRunningGenerate();
+            GeneratePreviewError = null;
+
+            // error - null
+            if (!IsValid)
+            {
+                SetPreview(null);
+                IsGenerating = false;
+                return;
+            }
+
+            IsGenerating = true;
+            ThreadPool.QueueUserWorkItem(DoGenerate, CreateGenerateTask());
+        }
+
+        protected abstract GenerateTaskBase CreateGenerateTask();
+        protected abstract bool MatchesSettings(GenerateTaskBase task);
+        protected abstract bool MatchesOriginal(GenerateTaskBase task);
+        protected virtual void ResetParameters() { }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (IsDisposed)
+                return;
+            if (disposing)
+            {
+                Image preview = PreviewImageViewModel.Image;
+                PreviewImageViewModel?.Dispose();
+
+                if (!ReferenceEquals(originalImage, preview) && !keepResult)
+                    preview?.Dispose();
+
+                drawingProgressManager = null;
+            }
+
+            base.Dispose(disposing);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        [SuppressMessage("Reliability", "CA2002:Do not lock on objects with weak identity", Justification = "False alarm, originalImage is not a remote object")]
+        private void DoGenerate(object state)
+        {
+            var task = (GenerateTaskBase)state;
+
+            // this is a fairly large lock ensuring that only one generate task is running at once
+            lock (syncRoot)
+            {
+                // lost race
+                if (!MatchesSettings(task))
+                    return;
+
+                Debug.Assert(activeTask?.IsCanceled != false);
+                WaitForPendingGenerate();
+                Debug.Assert(activeTask == null);
+
+                // resetting possible previous progress
+                drawingProgressManager.Report(default);
+
+                // from now on the task can be canceled
+                activeTask = task;
+                try
+                {
+                    // original image
+                    if (MatchesOriginal(task))
+                    {
+                        SynchronizedInvokeCallback?.Invoke(() =>
+                        {
+                            SetPreview(originalImage);
+                            IsGenerating = false;
+                        });
+                        return;
+                    }
+
+                    // preparing generate (allocations, sync operations, etc.)
+                    try
+                    {
+                        task.Initialize(originalImage, PreviewImageViewModel.Image == originalImage);
+                    }
+                    catch (Exception e) when (!e.IsCriticalGdi())
+                    {
+                        SynchronizedInvokeCallback?.Invoke(() =>
+                        {
+                            GeneratePreviewError = e;
+                            SetPreview(null);
+                            IsGenerating = false;
+                        });
+                        return;
+                    }
+
+                    Exception error = null;
+                    Bitmap result = null;
+                    try
+                    {
+                        // starting generate: using Begin.../End... methods instead of await ...Async so it is compatible even with .NET 3.5
+                        IAsyncResult asyncResult = task.BeginGenerate(new AsyncConfig
+                        {
+                            // ReSharper disable once AccessToDisposedClosure - false alarm, newTask.Dispose() is called only on error
+                            IsCancelRequestedCallback = () => task.IsCanceled,
+                            ThrowIfCanceled = false,
+                            State = task,
+                            Progress = drawingProgressManager
+                        });
+
+                        // Waiting to be finished or canceled. As we are on a different thread blocking wait is alright
+                        result = task.EndGenerate(asyncResult);
+                    }
+                    catch (Exception e) when (!e.IsCriticalGdi())
+                    {
+                        error = e;
+                    }
+                    finally
+                    {
+                        task.SetCompleted();
+                    }
+
+                    if (task.IsCanceled)
+                    {
+                        result?.Dispose();
+                        return;
+                    }
+
+                    // applying result (or error)
+                    SynchronizedInvokeCallback?.Invoke(() =>
+                    {
+                        GeneratePreviewError = error;
+                        SetPreview(result);
+                        IsGenerating = false;
+                    });
+                }
+                finally
+                {
+                    task.Dispose();
+                    activeTask = null;
+                }
+            }
+        }
+
+        private void CancelRunningGenerate()
+        {
+            GenerateTaskBase runningTask = activeTask;
+            if (runningTask == null)
+                return;
+            runningTask.IsCanceled = true;
+        }
+
+        private void WaitForPendingGenerate()
+        {
+            // In a non-UI thread it should be in a lock
+            GenerateTaskBase runningTask = activeTask;
+            if (runningTask == null)
+                return;
+            runningTask.WaitForCompletion();
+            runningTask.Dispose();
+            activeTask = null;
+        }
+
+        private void SetPreview(Bitmap image)
+        {
+            PreviewImageViewModel preview = PreviewImageViewModel;
+            Image toDispose = preview.Image;
+            preview.Image = image;
+            if (toDispose != null && toDispose != originalImage)
+                toDispose.Dispose();
+        }
+
+        #endregion
+
+        #region Event Handlers
+
+        private void PreviewImage_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var vm = (PreviewImageViewModel)sender;
+
+            // preview image has been changed: updating IsModified accordingly
+            if (e.PropertyName == nameof(vm.Image))
+            {
+                Image image = vm.Image;
+                SetModified(image != null && originalImage != image);
+            }
+        }
+
+        #endregion
+
+        #region Command Handlers
+
+        private void OnCancelCommand()
+        {
+            // canceling any pending generate and waiting for finishing so no "image is locked elsewhere" will come from the main form for the original image
+            CancelRunningGenerate();
+            WaitForPendingGenerate();
+            SetModified(false);
+            CloseViewCallback?.Invoke();
+        }
+
+        private void OnApplyCommand()
+        {
+            Debug.Assert(!IsGenerating);
+            keepResult = true;
+            CloseViewCallback?.Invoke();
+        }
+
+        private void OnResetCommand() => ResetParameters();
+
+        #endregion
+
+        #region Explicitly Implemented Interface Methods
+
+        Bitmap IViewModel<Bitmap>.GetEditedModel() => PreviewImageViewModel.Image as Bitmap;
+
+        #endregion
+
+        #endregion
+    }
+}
