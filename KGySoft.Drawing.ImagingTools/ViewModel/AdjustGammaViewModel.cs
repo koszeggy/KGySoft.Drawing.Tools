@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: AdjustBrightnessViewModel.cs
+//  File: AdjustGammaViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2020 - All Rights Reserved
 //
@@ -25,7 +25,7 @@ using KGySoft.Drawing.Imaging;
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal class AdjustBrightnessViewModel : AdjustColorsViewModelBase
+    internal class AdjustGammaViewModel : AdjustColorsViewModelBase
     {
         #region Nested Classes
 
@@ -43,11 +43,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             #region Methods
 
             internal override IAsyncResult BeginGenerate(AsyncConfig asyncConfig)
-                => BitmapData.BeginAdjustBrightness(Value, channels: ColorChannels, asyncConfig: asyncConfig);
+                => BitmapData.BeginAdjustGamma(Value, channels: ColorChannels, asyncConfig: asyncConfig);
 
             internal override Bitmap EndGenerate(IAsyncResult asyncResult)
             {
-                asyncResult.EndAdjustBrightness();
+                asyncResult.EndAdjustGamma();
                 return base.EndGenerate(asyncResult);
             }
 
@@ -58,9 +58,17 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Constructors
 
-        internal AdjustBrightnessViewModel(Bitmap image) : base(image)
+        internal AdjustGammaViewModel(Bitmap image) : base(image)
         {
         }
+
+        #endregion
+
+        #region Properties
+
+        protected override float DefaultValue => 1f;
+        protected override float MinValue => 0f;
+        protected override float MaxValue => 10f;
 
         #endregion
 

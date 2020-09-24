@@ -183,6 +183,20 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// <returns>An <see cref="IViewModel{TResult}"/> instance that represents a view model for adjusting the brightness of a <see cref="Bitmap"/>.</returns>
         public static IViewModel<Bitmap> CreateAdjustBrightness(Bitmap bitmap) => new AdjustBrightnessViewModel(bitmap);
 
+        /// <summary>
+        /// Creates a view model for adjusting the contrast of a <see cref="Bitmap"/>.
+        /// </summary>
+        /// <param name="bitmap">The bitmap to adjust.</param>
+        /// <returns>An <see cref="IViewModel{TResult}"/> instance that represents a view model for adjusting the contrast of a <see cref="Bitmap"/>.</returns>
+        public static IViewModel<Bitmap> CreateAdjustContrast(Bitmap bitmap) => new AdjustContrastViewModel(bitmap);
+
+        /// <summary>
+        /// Creates a view model for adjusting the gamma of a <see cref="Bitmap"/>.
+        /// </summary>
+        /// <param name="bitmap">The bitmap to adjust.</param>
+        /// <returns>An <see cref="IViewModel{TResult}"/> instance that represents a view model for adjusting the gamma of a <see cref="Bitmap"/>.</returns>
+        public static IViewModel<Bitmap> CreateAdjustGamma(Bitmap bitmap) => new AdjustGammaViewModel(bitmap);
+
         #endregion
     }
 }

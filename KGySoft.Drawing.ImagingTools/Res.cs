@@ -421,6 +421,9 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Failed to generate preview: {0}</summary>
         internal static string ErrorMessageFailedToGeneratePreview(string message) => Get("ErrorMessage_FailedToGeneratePreviewFormat", message);
 
+        /// <summary>Value must be between {0} and {1}</summary>
+        internal static string ErrorMessageValueMustBeBetween<T>(T low, T high) => Get("ErrorMessage_ValueMustBeBetweenFormat", low, high);
+
         /// <summary>Could not create directory {0}: {1}
         ///
         /// The debugger visualizer may will not work for .NET Core projects.</summary>

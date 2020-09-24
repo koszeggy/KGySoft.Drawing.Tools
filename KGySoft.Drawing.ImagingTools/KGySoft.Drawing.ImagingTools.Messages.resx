@@ -369,6 +369,9 @@ Either select at least '{1}' or reduce the number of colors to {2}.</value>
   <data name="ErrorMessage_FailedToGeneratePreviewFormat" xml:space="preserve">
     <value>Failed to generate preview: {0}</value>
   </data>
+  <data name="ErrorMessage_ValueMustBeBetweenFormat" xml:space="preserve">
+    <value>Value must be between {0} and {1}</value>
+  </data>
   <data name="WarningMessage_CouldNotCreateNetCoreDirectoryFormat" xml:space="preserve">
     <value>Could not create directory {0}: {1}
 

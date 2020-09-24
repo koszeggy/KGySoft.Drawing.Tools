@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: AdjustBrightnessViewModel.cs
+//  File: AdjustContrastViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2020 - All Rights Reserved
 //
@@ -25,7 +25,7 @@ using KGySoft.Drawing.Imaging;
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal class AdjustBrightnessViewModel : AdjustColorsViewModelBase
+    internal class AdjustContrastViewModel : AdjustColorsViewModelBase
     {
         #region Nested Classes
 
@@ -43,11 +43,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             #region Methods
 
             internal override IAsyncResult BeginGenerate(AsyncConfig asyncConfig)
-                => BitmapData.BeginAdjustBrightness(Value, channels: ColorChannels, asyncConfig: asyncConfig);
+                => BitmapData.BeginAdjustContrast(Value, channels: ColorChannels, asyncConfig: asyncConfig);
 
             internal override Bitmap EndGenerate(IAsyncResult asyncResult)
             {
-                asyncResult.EndAdjustBrightness();
+                asyncResult.EndAdjustContrast();
                 return base.EndGenerate(asyncResult);
             }
 
@@ -58,7 +58,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Constructors
 
-        internal AdjustBrightnessViewModel(Bitmap image) : base(image)
+        internal AdjustContrastViewModel(Bitmap image) : base(image)
         {
         }
 
