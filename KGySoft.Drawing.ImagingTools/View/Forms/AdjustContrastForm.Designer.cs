@@ -1,6 +1,6 @@
 ﻿namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
-    partial class AdjustBrightnessForm
+    partial class AdjustContrastForm
     {
         /// <summary>
         /// Required designer variable.
@@ -34,13 +34,13 @@
             // 
             this.pnlSettings.Size = new System.Drawing.Size(264, 56);
             // 
-            // AdjustBrightnessForm
+            // AdjustContrastForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(264, 211);
-            this.Name = "AdjustBrightnessForm";
-            this.Text = "AdjustBrightnessForm";
+            this.Name = "AdjustContrastForm";
+            this.Text = "AdjustContrastForm";
             this.ResumeLayout(false);
             this.PerformLayout();
 

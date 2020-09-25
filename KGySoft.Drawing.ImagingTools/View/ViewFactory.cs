@@ -73,6 +73,10 @@ namespace KGySoft.Drawing.ImagingTools.View
                     return new CountColorsForm(countColorsViewModel);
                 case AdjustBrightnessViewModel adjustBrightnessViewModel:
                     return new AdjustBrightnessForm(adjustBrightnessViewModel);
+                case AdjustContrastViewModel adjustContrastViewModel:
+                    return new AdjustContrastForm(adjustContrastViewModel);
+                case AdjustGammaViewModel adjustGammaViewModel:
+                    return new AdjustGammaForm(adjustGammaViewModel);
                 default:
                     throw new InvalidOperationException(Res.InternalError($"Unexpected viewModel type: {viewModel.GetType()}"));
             }

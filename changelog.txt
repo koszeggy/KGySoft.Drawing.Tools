@@ -12,9 +12,14 @@
 + KGySoft.Drawing.ImagingTools.exe
 ==================================
 + New 'Pixel Format/Quantizing/Dithering...' menu
++ New 
 + API changes:
   + ViewModelFactory class:
     + New CreateAdjustColorSpace method
+    + New CreateCountColors method
+    + New CreateAdjustBrightness method
+    + New CreateAdjustContrast method
+    + New CreateAdjustGamma method
 
 
 ~~~~~~~~~

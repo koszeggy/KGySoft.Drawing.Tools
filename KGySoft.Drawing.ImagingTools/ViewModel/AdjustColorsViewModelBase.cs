@@ -125,15 +125,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         
         internal ColorChannels ColorChannels { get => Get(ColorChannels.Rgb); set => Set(value); }
         internal float Value { get => Get<float>(DefaultValue); set => Set(value); }
+        internal virtual float MinValue => -1f;
+        internal virtual float MaxValue => 1f;
 
         #endregion
 
         #region Protected Properties
 
-        protected virtual float DefaultValue => 0f;
-        protected virtual float MinValue => -1f;
-        protected virtual float MaxValue => 1f;
-        protected override bool AreSettingsChanged => !Value.Equals(DefaultValue) || ColorChannels != ColorChannels.Rgb;
+        protected virtual float DefaultValue => 0f; protected override bool AreSettingsChanged => !Value.Equals(DefaultValue) || ColorChannels != ColorChannels.Rgb;
 
         #endregion
 
@@ -173,7 +172,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         protected override bool MatchesOriginal(GenerateTaskBase task)
         {
             var t = (AdjustColorsTaskBase)task;
-            return t.Value.Equals(DefaultValue) && t.ColorChannels == ColorChannels.Rgb;
+            return t.Value.Equals(DefaultValue) && t.ColorChannels == ColorChannels.Rgb || t.ColorChannels == ColorChannels.None;
         }
 
         protected override void ResetParameters()

@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: AdjustBrightnessForm.cs
+//  File: AdjustGammaViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2020 - All Rights Reserved
 //
@@ -22,13 +22,13 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
-    internal partial class AdjustBrightnessForm : AdjustColorsFormBase
+    internal partial class AdjustGammaForm : AdjustColorsFormBase
     {
         #region Constructors
 
         #region Internal Constructors
 
-        internal AdjustBrightnessForm(AdjustBrightnessViewModel viewModel)
+        internal AdjustGammaForm(AdjustGammaViewModel viewModel)
             : base(viewModel)
         {
             InitializeComponent();
@@ -38,7 +38,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Constructors
 
-        private AdjustBrightnessForm() : this(null)
+        private AdjustGammaForm() : this(null)
         {
             // this ctor is just for the designer
         }

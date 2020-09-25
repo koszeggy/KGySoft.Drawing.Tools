@@ -66,9 +66,18 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Properties
 
+        #region Internal Properties
+        
+        internal override float MinValue => 0f;
+        internal override float MaxValue => 10f;
+
+        #endregion
+
+        #region Protected Properties
+        
         protected override float DefaultValue => 1f;
-        protected override float MinValue => 0f;
-        protected override float MaxValue => 10f;
+
+        #endregion
 
         #endregion
 

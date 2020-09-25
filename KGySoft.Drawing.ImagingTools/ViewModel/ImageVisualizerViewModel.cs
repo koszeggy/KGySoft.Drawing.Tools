@@ -141,6 +141,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommand AdjustColorSpaceCommand => Get(() => new SimpleCommand(OnAdjustColorSpaceCommand));
         internal ICommand CountColorsCommand => Get(() => new SimpleCommand(OnCountColorsCommand));
         internal ICommand AdjustBrightnessCommand => Get(() => new SimpleCommand(OnAdjustBrightnessCommand));
+        internal ICommand AdjustContrastCommand => Get(() => new SimpleCommand(OnAdjustContrastCommand));
+        internal ICommand AdjustGammaCommand => Get(() => new SimpleCommand(OnAdjustGammaCommand));
 
         #endregion
 
@@ -906,6 +908,21 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             ImageChanged();
         }
 
+        private void EditBitmap(Func<Bitmap, IViewModel<Bitmap>> createViewModel)
+        {
+            Debug.Assert(imageInfo.Type != ImageInfoType.None && !imageInfo.IsMetafile, "Non-metafile image is expected");
+
+            ImageInfoBase image = GetCurrentImage();
+
+            Debug.Assert(image.Image is Bitmap, "Existing bitmap image is expected");
+            using (IViewModel<Bitmap> viewModel = createViewModel.Invoke((Bitmap)image.Image))
+            {
+                ShowChildViewCallback?.Invoke(viewModel);
+                if (viewModel.IsModified)
+                    SetCurrentImage(viewModel.GetEditedModel());
+            }
+        }
+
         #endregion
 
         #region Explicitly Implemented Interface Methods
@@ -1094,35 +1111,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 ShowChildViewCallback?.Invoke(viewModel);
         }
 
-        private void OnAdjustColorSpaceCommand()
-        {
-            Debug.Assert(imageInfo.Type != ImageInfoType.None && !imageInfo.IsMetafile, "Non-metafile image is expected");
-
-            ImageInfoBase image = GetCurrentImage();
-
-            Debug.Assert(image.Image is Bitmap, "Existing bitmap image is expected");
-            using (IViewModel<Bitmap> viewModel = ViewModelFactory.CreateAdjustColorSpace((Bitmap)image.Image))
-            {
-                ShowChildViewCallback?.Invoke(viewModel);
-                if (viewModel.IsModified)
-                    SetCurrentImage(viewModel.GetEditedModel());
-            }
-        }
-
-        private void OnAdjustBrightnessCommand()
-        {
-            Debug.Assert(imageInfo.Type != ImageInfoType.None && !imageInfo.IsMetafile, "Non-metafile image is expected");
-
-            ImageInfoBase image = GetCurrentImage();
-            Debug.Assert(image.Image is Bitmap, "Existing bitmap image is expected");
-            using (IViewModel<Bitmap> viewModel = ViewModelFactory.CreateAdjustBrightness((Bitmap)image.Image))
-            {
-                ShowChildViewCallback?.Invoke(viewModel);
-                if (viewModel.IsModified)
-                    SetCurrentImage(viewModel.GetEditedModel());
-            }
-        }
-
         private void OnCountColorsCommand()
         {
             Debug.Assert(imageInfo.Type != ImageInfoType.None && !imageInfo.IsMetafile, "Non-metafile image is expected");
@@ -1136,6 +1124,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             // this prevents the viewModel from disposing until before the view is completely finished (on cancel, for example)
             var _ = viewModel.GetEditedModel();
         }
+
+        private void OnAdjustColorSpaceCommand() => EditBitmap(ViewModelFactory.CreateAdjustColorSpace);
+        private void OnAdjustBrightnessCommand() => EditBitmap(ViewModelFactory.CreateAdjustBrightness);
+        private void OnAdjustContrastCommand() => EditBitmap(ViewModelFactory.CreateAdjustContrast);
+        private void OnAdjustGammaCommand() => EditBitmap(ViewModelFactory.CreateAdjustGamma);
 
         #endregion
 

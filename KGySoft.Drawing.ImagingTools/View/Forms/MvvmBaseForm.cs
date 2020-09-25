@@ -59,7 +59,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected MvvmBaseForm(TViewModel viewModel)
         {
-            if (DesignMode)
+            // occurs in design mode but DesignMode is false for grandchild forms
+            if (viewModel == null)
                 return;
             ViewModel = viewModel;
 
@@ -95,9 +96,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            ApplyResources();
-            if (DesignMode)
+            if (ViewModel == null)
                 return;
+            ApplyResources();
             ApplyViewModel();
         }
 

@@ -35,6 +35,22 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="View\Forms\AdjustGammaForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="View\Forms\AdjustContrastForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="View\Forms\AdjustBrightnessForm - Copy.Designer.cs">
+      <DependentUpon>AdjustBrightnessForm.Designer.cs</DependentUpon>
+    </Compile>
+    <Compile Update="View\Forms\AdjustColorsFormBase.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="View\Forms\TransformBitmapFormBase.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Update="KGySoft.Drawing.ImagingTools.Messages.resx">
       <LogicalName>KGySoft.Drawing.ImagingTools.Messages.resources</LogicalName>
     </EmbeddedResource>

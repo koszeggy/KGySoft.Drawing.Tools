@@ -16,23 +16,21 @@
 
 #region Usings
 
-using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 
-using KGySoft.ComponentModel;
-using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
-    internal sealed partial class ColorSpaceForm : MvvmBaseForm<ColorSpaceViewModel>
+    internal sealed partial class ColorSpaceForm : TransformBitmapFormBase
     {
-        #region Fields
+        #region Properties
 
-        private readonly Dictionary<string, Control> validationMapping;
+        // this would not be needed if designer had better generics support
+        private ColorSpaceViewModel VM => (ColorSpaceViewModel)ViewModel;
 
         #endregion
 
@@ -44,23 +42,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             : base(viewModel)
         {
             InitializeComponent();
-            AcceptButton = okCancelButtons.OKButton;
-            CancelButton = okCancelButtons.CancelButton;
 
-            errorProvider.SetIconAlignment(previewImage.ImageViewer, ErrorIconAlignment.MiddleLeft);
-            validationMapping = new Dictionary<string, Control>
+            ValidationMapping[nameof(viewModel.PixelFormat)] = gbPixelFormat.CheckBox;
+            ValidationMapping[nameof(viewModel.QuantizerSelectorViewModel.Quantizer)] = gbQuantizer.CheckBox;
+            ValidationMapping[nameof(viewModel.DithererSelectorViewModel.Ditherer)] = gbDitherer.CheckBox;
+            foreach (Control control in ValidationMapping.Values.Where(c => c is CheckBox))
             {
-                [nameof(viewModel.PixelFormat)] = gbPixelFormat.CheckBox,
-                [nameof(viewModel.QuantizerSelectorViewModel.Quantizer)] = gbQuantizer.CheckBox,
-                [nameof(viewModel.DithererSelectorViewModel.Ditherer)] = gbDitherer.CheckBox,
-                [nameof(viewModel.PreviewImageViewModel.Image)] = previewImage.ImageViewer,
-            };
-
-            foreach (Control control in validationMapping.Values.Where(c => c is CheckBox))
-            {
-                errorProvider.SetIconAlignment(control, ErrorIconAlignment.TopRight);
-                warningProvider.SetIconAlignment(control, ErrorIconAlignment.TopRight);
-                infoProvider.SetIconAlignment(control, ErrorIconAlignment.TopRight);
+                ErrorProvider.SetIconAlignment(control, ErrorIconAlignment.TopRight);
+                WarningProvider.SetIconAlignment(control, ErrorIconAlignment.TopRight);
+                InfoProvider.SetIconAlignment(control, ErrorIconAlignment.TopRight);
             }
         }
 
@@ -81,28 +71,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Protected Methods
 
-        protected override void ApplyResources()
-        {
-            base.ApplyResources();
-            Icon = Properties.Resources.Palette;
-            errorProvider.Icon = Icons.SystemError.ToScaledIcon();
-            warningProvider.Icon = Icons.SystemWarning.ToScaledIcon();
-            infoProvider.Icon = Icons.SystemInformation.ToScaledIcon();
-        }
-
         protected override void ApplyViewModel()
         {
-            InitCommandBindings();
             InitPropertyBindings();
             base.ApplyViewModel();
-        }
-
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            // if user (or system) closes the window without pressing cancel we need to execute the cancel command
-            if (DialogResult != DialogResult.OK && e.CloseReason != CloseReason.None)
-                okCancelButtons.CancelButton.PerformClick();
-            base.OnFormClosing(e);
         }
 
         protected override void Dispose(bool disposing)
@@ -116,65 +88,27 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Methods
 
-        private void InitCommandBindings()
-        {
-            // ViewModel commands
-            CommandBindings.Add(ViewModel.ApplyCommand, ViewModel.ApplyCommandState)
-                .AddSource(okCancelButtons.OKButton, nameof(okCancelButtons.OKButton.Click));
-            CommandBindings.Add(ViewModel.CancelCommand)
-                .AddSource(okCancelButtons.CancelButton, nameof(okCancelButtons.CancelButton.Click));
-            
-            // View commands
-            CommandBindings.Add<EventArgs<ValidationResultsCollection>>(OnValidationResultsChangedCommand)
-                .AddSource(ViewModel, nameof(ViewModel.ValidationResultsChanged));
-        }
-
         private void InitPropertyBindings()
         {
             // simple initializations rather than bindings because these will not change:
-            cmbPixelFormat.DataSource = ViewModel.PixelFormats;
-            quantizerSelector.ViewModel = ViewModel.QuantizerSelectorViewModel;
-            dithererSelector.ViewModel = ViewModel.DithererSelectorViewModel;
-            previewImage.ViewModel = ViewModel.PreviewImageViewModel;
+            cmbPixelFormat.DataSource = VM.PixelFormats;
+            quantizerSelector.ViewModel = VM.QuantizerSelectorViewModel;
+            dithererSelector.ViewModel = VM.DithererSelectorViewModel;
 
             // VM.ChangePixelFormat <-> gbPixelFormat.Checked
-            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.ChangePixelFormat), gbPixelFormat, nameof(gbPixelFormat.Checked));
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.ChangePixelFormat), gbPixelFormat, nameof(gbPixelFormat.Checked));
 
             // VM.SelectedPixelFormat -> cmbPixelFormat.SelectedItem (cannot use two-way for SelectedItem because there is no SelectedItemChanged event)
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.PixelFormat), nameof(cmbPixelFormat.SelectedItem), cmbPixelFormat);
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(VM.PixelFormat), nameof(cmbPixelFormat.SelectedItem), cmbPixelFormat);
 
             // cmbPixelFormat.SelectedItem -> VM.SelectedPixelFormat (cannot use two-way for SelectedValue because ValueMember is not set)
-            CommandBindings.AddPropertyBinding(cmbPixelFormat, nameof(cmbPixelFormat.SelectedValue), nameof(ViewModel.PixelFormat), ViewModel);
+            CommandBindings.AddPropertyBinding(cmbPixelFormat, nameof(cmbPixelFormat.SelectedValue), nameof(VM.PixelFormat), ViewModel);
 
             // VM.UseQuantizer <-> gbQuantizer.Checked
-            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.UseQuantizer), gbQuantizer, nameof(gbQuantizer.Checked));
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.UseQuantizer), gbQuantizer, nameof(gbQuantizer.Checked));
 
             // VM.UseDitherer <-> gbDitherer.Checked
-            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.UseDitherer), gbDitherer, nameof(gbDitherer.Checked));
-
-            // VM.IsGenerating -> progress.ProgressVisible
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsGenerating), nameof(progress.ProgressVisible), progress);
-
-            // VM.Progress -> progress.Progress
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Progress), nameof(progress.Progress), progress);
-        }
-
-        #endregion
-
-        #region Command handlers
-
-        private void OnValidationResultsChangedCommand(ICommandSource<EventArgs<ValidationResultsCollection>> src)
-        {
-            foreach (KeyValuePair<string, Control> mapping in validationMapping)
-            {
-                var validationResults = src.EventArgs.EventData[mapping.Key];
-                ValidationResult error = validationResults.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Error);
-                ValidationResult warning = error == null ? validationResults.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Warning) : null;
-                ValidationResult info = error == null && warning == null ? validationResults.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Information) : null;
-                errorProvider.SetError(mapping.Value, error?.Message);
-                warningProvider.SetError(mapping.Value, warning?.Message);
-                infoProvider.SetError(mapping.Value, info?.Message);
-            }
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.UseDitherer), gbDitherer, nameof(gbDitherer.Checked));
         }
 
         #endregion

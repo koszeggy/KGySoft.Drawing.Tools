@@ -746,7 +746,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             targetRectangle = new Rectangle(targetLocation, scaledSize);
         }
 
-        [SuppressMessage("Reliability", "CA2002:Do not lock on objects with weak identity", Justification = "False alarm, displayImage is not a remote object")]
         private void PaintImage(Graphics g)
         {
             if (displayImage == null)
@@ -763,10 +762,21 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             // Locking on display image so if it is the same as the original image, which is also locked when accessing its bitmap data
             // the "bitmap region is already locked" can be avoided. Important: this cannot be ensured without locking here internally because
             // OnPaint can occur any time after invalidating.
-            lock (displayImage)
+            bool useLock = image == displayImage;
+            if (useLock)
+                Monitor.Enter(displayImage);
+            try
+            {
                 g.DrawImage(displayImage, dest);
+            }
+            finally
+            {
+                if (useLock)
+                    Monitor.Exit(displayImage);
+            }
         }
 
+        [SuppressMessage("Reliability", "CA2002:Do not lock on objects with weak identity", Justification = "False alarm, image is not a remote object")]
         private void GenerateDisplayImage()
         {
             Debug.Assert(image != null, "Image is not expected to be null here");
@@ -774,7 +784,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             // Converting non supported or too memory consuming and slow pixel formats
             if (image.PixelFormat.In(convertedFormats))
             {
-                displayImage = image.ConvertPixelFormat(PixelFormat.Format32bppPArgb);
+                // Locking on display image so if it is the same as the original image, which is also locked when accessing its bitmap data
+                // the "bitmap region is already locked" can be avoided. Important: this cannot be ensured without locking here internally because
+                // OnPaint can occur any time after invalidating.
+                lock (image)
+                    displayImage = image.ConvertPixelFormat(PixelFormat.Format32bppPArgb);
                 return;
             }
 

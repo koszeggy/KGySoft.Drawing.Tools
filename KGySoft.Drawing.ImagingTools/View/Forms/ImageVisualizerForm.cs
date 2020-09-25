@@ -225,6 +225,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 .AddSource(miCountColors, nameof(miCountColors.Click));
             CommandBindings.Add(ViewModel.AdjustBrightnessCommand, ViewModel.EditBitmapCommandState)
                 .AddSource(miBrightness, nameof(miBrightness.Click));
+            CommandBindings.Add(ViewModel.AdjustContrastCommand, ViewModel.EditBitmapCommandState)
+                .AddSource(miContrast, nameof(miContrast.Click));
+            CommandBindings.Add(ViewModel.AdjustGammaCommand, ViewModel.EditBitmapCommandState)
+                .AddSource(miGamma, nameof(miGamma.Click));
 
             // View commands
             CommandBindings.Add(OnResizeCommand)
