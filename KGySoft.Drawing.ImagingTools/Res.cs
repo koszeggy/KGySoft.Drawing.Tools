@@ -117,6 +117,13 @@ namespace KGySoft.Drawing.ImagingTools
         /// • When not checked, saving saves always the selected page only.</summary>
         internal static string TooltipTextCompoundMultiPage => Get("TooltipText_CompoundMultiPage");
 
+        /// <summary>Toggles whether the metafile is displayed with anti aliasing enabled.</summary>
+        internal static string TooltipTextSmoothMetafile => Get("TooltipText_SmoothMetafile");
+
+        /// <summary>Toggles whether an enlarged image is rendered with smoothing interpolation.
+        /// A shrunk image is always displayed with smoothing.</summary>
+        internal static string TooltipTextSmoothBitmap => Get("TooltipText_SmoothBitmap");
+
         /// <summary>Auto</summary>
         internal static string TextAuto => Get("Text_Auto");
 

@@ -210,6 +210,13 @@
 • When checked, saving as TIFF saves every page.
 • When not checked, saving saves always the selected page only.</value>
   </data>
+  <data name="TooltipText_SmoothMetafile" xml:space="preserve">
+    <value>Toggles whether the metafile is displayed with anti aliasing enabled.</value>
+  </data>
+  <data name="TooltipText_SmoothBitmap" xml:space="preserve">
+    <value>Toggles whether an enlarged image is rendered with smoothing interpolation.
+A shrunk image is always displayed with smoothing.</value>
+  </data>
   <data name="Text_Auto" xml:space="preserve">
     <value>Auto</value>
   </data>
@@ -504,11 +511,20 @@ Dithering may help to preserve more details.</value>
   <data name="btnColorSettings.Text" xml:space="preserve">
     <value>Color Settings</value>
   </data>
+  <data name="btnEdit.Text" xml:space="preserve">
+    <value>Edit Image/Current Frame</value>
+  </data>
   <data name="miShowPalette.Text" xml:space="preserve">
     <value>Show Palette...</value>
   </data>
   <data name="miCountColors.Text" xml:space="preserve">
     <value>Count Colors...</value>
+  </data>
+  <data name="miRotateLeft.Text" xml:space="preserve">
+    <value>Rotate Left</value>
+  </data>
+  <data name="miRotateRight.Text" xml:space="preserve">
+    <value>Rotate Right...</value>
   </data>
   <data name="miColorSpace.Text" xml:space="preserve">
     <value>Pixel Format/Quantizing/Dithering...</value>

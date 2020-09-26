@@ -138,6 +138,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommand NextImageCommand => Get(() => new SimpleCommand(OnNextImageCommand));
         internal ICommand ShowPaletteCommand => Get(() => new SimpleCommand(OnShowPaletteCommand));
         internal ICommand ManageInstallationsCommand => Get(() => new SimpleCommand(OnManageInstallationsCommand));
+        internal ICommand RotateLeftCommand => Get(() => new SimpleCommand(OnRotateLeftCommand));
+        internal ICommand RotateRightCommand => Get(() => new SimpleCommand(OnRotateRightCommand));
         internal ICommand AdjustColorSpaceCommand => Get(() => new SimpleCommand(OnAdjustColorSpaceCommand));
         internal ICommand CountColorsCommand => Get(() => new SimpleCommand(OnCountColorsCommand));
         internal ICommand AdjustBrightnessCommand => Get(() => new SimpleCommand(OnAdjustBrightnessCommand));
@@ -818,10 +820,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             {
                 SetAutoZoomCommandState.Enabled = AutoZoom = false;
                 SetSmoothZoomingCommandState.Enabled = SmoothZooming = false;
+                SetSmoothZoomingCommandState[stateToolTipText] = null;
                 return;
             }
 
             SetAutoZoomCommandState.Enabled = SetSmoothZoomingCommandState.Enabled = true;
+            SetSmoothZoomingCommandState[stateToolTipText] = imageInfo.IsMetafile
+                ? Res.TooltipTextSmoothMetafile
+                : Res.TooltipTextSmoothBitmap;
 
             // metafile: we always turn on auto zoom and preserve current smooth zooming
             if (imageInfo.IsMetafile)
@@ -870,6 +876,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 imageInfo.Image = null;
                 imageInfo.Icon = null;
             }
+
+            UpdatePreviewImageCallback.Invoke();
         }
 
         private bool CheckSaveExtension(string fileName)
@@ -889,7 +897,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (GetCurrentImage() == imageInfo)
             {
                 Debug.Assert(!imageInfo.HasFrames);
-                imageInfo.Dispose();
+                if (!ReferenceEquals(imageInfo.Image, image))
+                    imageInfo.Dispose();
                 imageInfo = new ImageInfo(image);
                 PreviewImage = imageInfo.GetCreateImage();
             }
@@ -900,7 +909,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 ImageFrameInfo[] frames = imageInfo.Frames;
                 ImageFrameInfo origFrame = frames[currentFrame];
                 frames[currentFrame] = new ImageFrameInfo(image) { Duration = origFrame.Duration };
-                origFrame.Dispose();
+                if (!ReferenceEquals(origFrame.Image, image))
+                    origFrame.Dispose();
                 PreviewImage = frames[currentFrame].Image;
             }
 
@@ -921,6 +931,16 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 if (viewModel.IsModified)
                     SetCurrentImage(viewModel.GetEditedModel());
             }
+        }
+
+        private void RotateBitmap(RotateFlipType direction)
+        {
+            Debug.Assert(imageInfo.Type != ImageInfoType.None && !imageInfo.IsMetafile, "Non-metafile image is expected");
+            ImageInfoBase image = GetCurrentImage();
+
+            Debug.Assert(image.Image is Bitmap, "Existing bitmap image is expected");
+            image.Image.RotateFlip(direction);
+            SetCurrentImage((Bitmap)image.Image);
         }
 
         #endregion
@@ -1101,7 +1121,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 currentImage.Image.Palette = palette; // the preview changes only if we apply the palette
                 currentImage.Palette = palette.Entries; // the actual palette will be taken from here
                 InvalidateImage();
-                UpdatePreviewImageCallback.Invoke();
             }
         }
 
@@ -1125,6 +1144,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             var _ = viewModel.GetEditedModel();
         }
 
+        private void OnRotateLeftCommand() => RotateBitmap(RotateFlipType.Rotate270FlipNone);
+        private void OnRotateRightCommand() => RotateBitmap(RotateFlipType.Rotate90FlipNone);
         private void OnAdjustColorSpaceCommand() => EditBitmap(ViewModelFactory.CreateAdjustColorSpace);
         private void OnAdjustBrightnessCommand() => EditBitmap(ViewModelFactory.CreateAdjustBrightness);
         private void OnAdjustContrastCommand() => EditBitmap(ViewModelFactory.CreateAdjustContrast);

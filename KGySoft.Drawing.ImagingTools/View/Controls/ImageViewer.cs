@@ -574,6 +574,25 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #endregion
 
+        #region Internal Methods
+
+        /// <summary>
+        /// Should be called when image content is changed
+        /// </summary>
+        internal void UpdateImage()
+        {
+            if (image == null)
+                return;
+
+            // can happen when image is rotated
+            if (image.Size != imageSize)
+                SetImage(image);
+            else
+                Invalidate();
+        }
+
+        #endregion
+
         #region Private Methods
 
         private void SetImage(Image value)

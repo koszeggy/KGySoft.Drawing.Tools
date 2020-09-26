@@ -46,6 +46,9 @@ namespace KGySoft.Drawing.ImagingTools.View
         private static Bitmap multiSize;
         private static Bitmap multiPage;
         private static Bitmap smoothZoom;
+        private static Bitmap edit;
+        private static Bitmap rotateLeft;
+        private static Bitmap rotateRight;
 
         #endregion
 
@@ -74,6 +77,9 @@ namespace KGySoft.Drawing.ImagingTools.View
         internal static Bitmap MultiSize => multiSize ??= GetResource(nameof(MultiSize));
         internal static Bitmap MultiPage => multiPage ??= GetResource(nameof(MultiPage));
         internal static Bitmap SmoothZoom => smoothZoom ??= GetResource(nameof(SmoothZoom));
+        internal static Bitmap Edit => edit ??= GetResource(nameof(Edit));
+        internal static Bitmap RotateLeft => rotateLeft ??= GetResource(nameof(RotateLeft));
+        internal static Bitmap RotateRight => rotateRight ??= GetResource(nameof(RotateRight));
 
         #endregion
 
