@@ -77,7 +77,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         protected override void ApplyResources()
         {
             base.ApplyResources();
-            Icon = Properties.Resources.Palette;
             errorProvider.Icon = Icons.SystemError.ToScaledIcon();
             warningProvider.Icon = Icons.SystemWarning.ToScaledIcon();
             infoProvider.Icon = Icons.SystemInformation.ToScaledIcon();

@@ -379,6 +379,9 @@ Either select at least '{1}' or reduce the number of colors to {2}.</value>
   <data name="ErrorMessage_ValueMustBeBetweenFormat" xml:space="preserve">
     <value>Value must be between {0} and {1}</value>
   </data>
+  <data name="ErrorMessage_ValueMustBeGreaterThanFormat" xml:space="preserve">
+    <value>Value must be greater than {0}</value>
+  </data>
   <data name="WarningMessage_CouldNotCreateNetCoreDirectoryFormat" xml:space="preserve">
     <value>Could not create directory {0}: {1}
 
@@ -524,7 +527,10 @@ Dithering may help to preserve more details.</value>
     <value>Rotate Left</value>
   </data>
   <data name="miRotateRight.Text" xml:space="preserve">
-    <value>Rotate Right...</value>
+    <value>Rotate Right</value>
+  </data>
+  <data name="miResizeBitmap.Text" xml:space="preserve">
+    <value>Resize...</value>
   </data>
   <data name="miColorSpace.Text" xml:space="preserve">
     <value>Pixel Format/Quantizing/Dithering...</value>
@@ -684,5 +690,38 @@ Dithering may help to preserve more details.</value>
   </data>
   <data name="chbBlue.Text" xml:space="preserve">
     <value>Blue</value>
+  </data>
+  <data name="ResizeBitmapForm.Text" xml:space="preserve">
+    <value>Resize Bitmap</value>
+  </data>
+  <data name="chbMaintainAspectRatio.Text" xml:space="preserve">
+    <value>&amp;Maintain aspect ratio</value>
+  </data>
+  <data name="rbByPercentage.Text" xml:space="preserve">
+    <value>By &amp;Percentage</value>
+  </data>
+  <data name="rbByPixels.Text" xml:space="preserve">
+    <value>By Pi&amp;xels</value>
+  </data>
+  <data name="lblWidth.Text" xml:space="preserve">
+    <value>Width:</value>
+  </data>
+  <data name="lblHeight.Text" xml:space="preserve">
+    <value>Height:</value>
+  </data>
+  <data name="lblWidthPercent.Text" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="lblHeightPercent.Text" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="lblWidthPx.Text" xml:space="preserve">
+    <value>pixels</value>
+  </data>
+  <data name="lblHeightPx.Text" xml:space="preserve">
+    <value>pixels</value>
+  </data>
+  <data name="lblScalingMode.Text" xml:space="preserve">
+    <value>Scaling Mode:</value>
   </data>
 </root>

@@ -352,6 +352,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     }
                     catch (Exception e) when (!e.IsCriticalGdi())
                     {
+                        task.SetCompleted();
                         SynchronizedInvokeCallback?.Invoke(() =>
                         {
                             GeneratePreviewError = e;

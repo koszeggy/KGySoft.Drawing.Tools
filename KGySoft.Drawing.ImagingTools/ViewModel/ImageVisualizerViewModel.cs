@@ -140,6 +140,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommand ManageInstallationsCommand => Get(() => new SimpleCommand(OnManageInstallationsCommand));
         internal ICommand RotateLeftCommand => Get(() => new SimpleCommand(OnRotateLeftCommand));
         internal ICommand RotateRightCommand => Get(() => new SimpleCommand(OnRotateRightCommand));
+        internal ICommand ResizeBitmapCommand => Get(() => new SimpleCommand(OnResizeBitmapCommand));
         internal ICommand AdjustColorSpaceCommand => Get(() => new SimpleCommand(OnAdjustColorSpaceCommand));
         internal ICommand CountColorsCommand => Get(() => new SimpleCommand(OnCountColorsCommand));
         internal ICommand AdjustBrightnessCommand => Get(() => new SimpleCommand(OnAdjustBrightnessCommand));
@@ -1146,6 +1147,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnRotateLeftCommand() => RotateBitmap(RotateFlipType.Rotate270FlipNone);
         private void OnRotateRightCommand() => RotateBitmap(RotateFlipType.Rotate90FlipNone);
+        private void OnResizeBitmapCommand() => EditBitmap(ViewModelFactory.CreateResizeBitmap);
         private void OnAdjustColorSpaceCommand() => EditBitmap(ViewModelFactory.CreateAdjustColorSpace);
         private void OnAdjustBrightnessCommand() => EditBitmap(ViewModelFactory.CreateAdjustBrightness);
         private void OnAdjustContrastCommand() => EditBitmap(ViewModelFactory.CreateAdjustContrast);

@@ -73,12 +73,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 // Locking on source image to avoid "bitmap region is already locked" if the UI is painting the image when we clone it.
                 // This works this way because UI can repaint the image any time and is also locks the image for that period.
                 // Another solution could be if we used a clone of the original image but it is better to avoid using multiple clones.
+                isSourceCloned = isInUse;
                 if (isInUse)
                 {
                     // if image is in use (in the view of this VM) we lock it only for a short time to prevent the UI freezing
                     lock (source)
                         sourceBitmap = source.CloneCurrentFrame();
-                    isSourceCloned = true;
                 }
                 else
                 {
@@ -98,7 +98,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             {
                 if (isSourceCloned)
                 {
-                    sourceBitmap.Dispose();
+                    sourceBitmap?.Dispose();
                     sourceBitmap = null;
                 }
                 else
@@ -161,6 +161,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal ColorSpaceViewModel(Bitmap image) : base(image)
         {
+            if (image == null)
+                throw new ArgumentNullException(nameof(image), PublicResources.ArgumentNull);
             originalPixelFormat = image.PixelFormat;
             originalHasAlpha = originalPixelFormat.HasAlpha() || originalPixelFormat.IsIndexed() && image.Palette.Entries.Any(c => c.A < Byte.MaxValue);
             QuantizerSelectorViewModel.PropertyChanged += Selector_PropertyChanged;

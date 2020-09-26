@@ -11,10 +11,17 @@
 
 + KGySoft.Drawing.ImagingTools.exe
 ==================================
-+ New 'Pixel Format/Quantizing/Dithering...' menu
-+ New 
++ Save/Load: Supporting saving load raw bitmap data, which preserves any pixel format
++ Color Settings:
+  + Count Colors
++ New Edit Image drop down button
+  + Rotate Left/Right
+  + Resize Bitmap
+  + Pixel Format/Quantizing/Dithering
+  + Adjust Brightness/Contrast/Gamma
 + API changes:
   + ViewModelFactory class:
+    + New CreateResizeBitmap method
     + New CreateAdjustColorSpace method
     + New CreateCountColors method
     + New CreateAdjustBrightness method

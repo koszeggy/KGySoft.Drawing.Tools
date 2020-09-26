@@ -84,9 +84,10 @@
             // 
             this.chbBlue.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.chbBlue.AutoSize = true;
-            this.chbBlue.Location = new System.Drawing.Point(173, 4);
+            this.chbBlue.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.chbBlue.Location = new System.Drawing.Point(170, 3);
             this.chbBlue.Name = "chbBlue";
-            this.chbBlue.Size = new System.Drawing.Size(65, 17);
+            this.chbBlue.Size = new System.Drawing.Size(71, 18);
             this.chbBlue.TabIndex = 2;
             this.chbBlue.Text = "chbBlue";
             this.chbBlue.UseVisualStyleBackColor = true;
@@ -95,9 +96,10 @@
             // 
             this.chbGreen.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.chbGreen.AutoSize = true;
-            this.chbGreen.Location = new System.Drawing.Point(86, 4);
+            this.chbGreen.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.chbGreen.Location = new System.Drawing.Point(85, 3);
             this.chbGreen.Name = "chbGreen";
-            this.chbGreen.Size = new System.Drawing.Size(73, 17);
+            this.chbGreen.Size = new System.Drawing.Size(76, 18);
             this.chbGreen.TabIndex = 1;
             this.chbGreen.Text = "chbGreen";
             this.chbGreen.UseVisualStyleBackColor = true;
@@ -106,9 +108,10 @@
             // 
             this.chbRed.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.chbRed.AutoSize = true;
-            this.chbRed.Location = new System.Drawing.Point(9, 4);
+            this.chbRed.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.chbRed.Location = new System.Drawing.Point(6, 3);
             this.chbRed.Name = "chbRed";
-            this.chbRed.Size = new System.Drawing.Size(64, 17);
+            this.chbRed.Size = new System.Drawing.Size(70, 18);
             this.chbRed.TabIndex = 0;
             this.chbRed.Text = "chbRed";
             this.chbRed.UseVisualStyleBackColor = true;

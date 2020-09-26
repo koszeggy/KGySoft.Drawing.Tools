@@ -61,6 +61,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Protected Methods
 
+        protected override void ApplyResources()
+        {
+            Icon = Properties.Resources.Colors;
+            base.ApplyResources();
+        }
+
         protected override void ApplyViewModel()
         {
             InitCommandBindings();

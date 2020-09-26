@@ -44,7 +44,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.btnEdit = new KGySoft.Drawing.ImagingTools.View.Controls.ScalingToolStripDropDownButton();
             this.miRotateLeft = new System.Windows.Forms.ToolStripMenuItem();
             this.miRotateRight = new System.Windows.Forms.ToolStripMenuItem();
-            this.miResize = new System.Windows.Forms.ToolStripMenuItem();
+            this.miResizeBitmap = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.miColorSpace = new System.Windows.Forms.ToolStripMenuItem();
             this.miAdjustColors = new System.Windows.Forms.ToolStripMenuItem();
@@ -225,7 +225,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.btnEdit.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.miRotateLeft,
             this.miRotateRight,
-            this.miResize,
+            this.miResizeBitmap,
             this.toolStripSeparator3,
             this.miColorSpace,
             this.miAdjustColors});
@@ -247,12 +247,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.miRotateRight.Size = new System.Drawing.Size(208, 22);
             this.miRotateRight.Text = "miRotateRight";
             // 
-            // miResize
+            // miResizeBitmap
             // 
-            this.miResize.Name = "miResize";
-            this.miResize.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.miResize.Size = new System.Drawing.Size(208, 22);
-            this.miResize.Text = "miResize";
+            this.miResizeBitmap.Name = "miResizeBitmap";
+            this.miResizeBitmap.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
+            this.miResizeBitmap.Size = new System.Drawing.Size(208, 22);
+            this.miResizeBitmap.Text = "miResizeBitmap";
             // 
             // toolStripSeparator3
             // 
@@ -394,7 +394,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private ToolStripMenuItem miRotateLeft;
         private ToolStripMenuItem miRotateRight;
         private ToolStripSeparator toolStripSeparator3;
-        private ToolStripMenuItem miResize;
+        private ToolStripMenuItem miResizeBitmap;
         private ToolStripMenuItem miColorSpace;
         private ToolStripMenuItem miAdjustColors;
         private ToolStripMenuItem miBrightness;

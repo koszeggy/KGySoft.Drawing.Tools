@@ -431,6 +431,9 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Value must be between {0} and {1}</summary>
         internal static string ErrorMessageValueMustBeBetween<T>(T low, T high) => Get("ErrorMessage_ValueMustBeBetweenFormat", low, high);
 
+        /// <summary>Value must be greater than {0}</summary>
+        internal static string ErrorMessageValueMustBeGreaterThan<T>(T value) => Get("ErrorMessage_ValueMustBeGreaterThanFormat", value);
+
         /// <summary>Could not create directory {0}: {1}
         ///
         /// The debugger visualizer may will not work for .NET Core projects.</summary>

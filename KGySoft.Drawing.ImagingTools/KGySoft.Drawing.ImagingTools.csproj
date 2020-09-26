@@ -54,6 +54,9 @@
     <EmbeddedResource Update="KGySoft.Drawing.ImagingTools.Messages.resx">
       <LogicalName>KGySoft.Drawing.ImagingTools.Messages.resources</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Update="View\Forms\AdjustColorsFormBase - Copy.resx">
+      <DependentUpon>AdjustColorsFormBase.resx</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

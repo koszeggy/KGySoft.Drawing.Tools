@@ -105,6 +105,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             miBackColorDefault.Image = Images.Check;
             miRotateLeft.Image = Images.RotateLeft;
             miRotateRight.Image = Images.RotateRight;
+            miResizeBitmap.Image = Images.Resize;
 
             toolTip.SetToolTip(lblNotification, Res.Get($"{nameof(lblNotification)}.ToolTip"));
 
@@ -225,6 +226,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 .AddSource(miRotateLeft, nameof(miRotateLeft.Click));
             CommandBindings.Add(ViewModel.RotateRightCommand, ViewModel.EditBitmapCommandState)
                 .AddSource(miRotateRight, nameof(miRotateRight.Click));
+            CommandBindings.Add(ViewModel.ResizeBitmapCommand, ViewModel.EditBitmapCommandState)
+                .AddSource(miResizeBitmap, nameof(miResizeBitmap.Click));
             CommandBindings.Add(ViewModel.AdjustColorSpaceCommand, ViewModel.EditBitmapCommandState)
                 .AddSource(miColorSpace, nameof(miColorSpace.Click));
             CommandBindings.Add(ViewModel.AdjustBrightnessCommand, ViewModel.EditBitmapCommandState)

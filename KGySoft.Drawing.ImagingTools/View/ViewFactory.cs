@@ -67,6 +67,8 @@ namespace KGySoft.Drawing.ImagingTools.View
                     return new ColorVisualizerForm(colorVisualizerViewModel);
                 case ManageInstallationsViewModel manageInstallationsViewModel:
                     return new ManageInstallationsForm(manageInstallationsViewModel);
+                case ResizeBitmapViewModel resizeBitmapViewModel:
+                    return new ResizeBitmapForm(resizeBitmapViewModel);
                 case ColorSpaceViewModel colorSpaceViewModel:
                     return new ColorSpaceForm(colorSpaceViewModel);
                 case CountColorsViewModel countColorsViewModel:

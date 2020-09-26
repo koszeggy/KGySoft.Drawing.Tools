@@ -71,6 +71,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Protected Methods
 
+        protected override void ApplyResources()
+        {
+            Icon = Properties.Resources.Colors; // TODO
+            base.ApplyResources();
+        }
+
         protected override void ApplyViewModel()
         {
             InitPropertyBindings();
@@ -101,7 +107,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // VM.SelectedPixelFormat -> cmbPixelFormat.SelectedItem (cannot use two-way for SelectedItem because there is no SelectedItemChanged event)
             CommandBindings.AddPropertyBinding(ViewModel, nameof(VM.PixelFormat), nameof(cmbPixelFormat.SelectedItem), cmbPixelFormat);
 
-            // cmbPixelFormat.SelectedItem -> VM.SelectedPixelFormat (cannot use two-way for SelectedValue because ValueMember is not set)
+            // cmbPixelFormat.SelectedValue -> VM.SelectedPixelFormat (cannot use two-way for SelectedValue because ValueMember is not set)
             CommandBindings.AddPropertyBinding(cmbPixelFormat, nameof(cmbPixelFormat.SelectedValue), nameof(VM.PixelFormat), ViewModel);
 
             // VM.UseQuantizer <-> gbQuantizer.Checked

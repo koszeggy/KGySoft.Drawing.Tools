@@ -90,7 +90,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             internal override void SetCompleted()
             {
-                BitmapData.Dispose();
+                BitmapData?.Dispose();
                 BitmapData = null;
                 base.SetCompleted();
             }
@@ -132,7 +132,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Protected Properties
 
-        protected virtual float DefaultValue => 0f; protected override bool AreSettingsChanged => !Value.Equals(DefaultValue) || ColorChannels != ColorChannels.Rgb;
+        protected virtual float DefaultValue => 0f;
+        protected override bool AreSettingsChanged => !Value.Equals(DefaultValue) || ColorChannels != ColorChannels.Rgb;
 
         #endregion
 
