@@ -1,14 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
+﻿#region Copyright
+
+///////////////////////////////////////////////////////////////////////////////
+//  File: ResizeBitmapForm.cs
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright (C) KGy SOFT, 2005-2020 - All Rights Reserved
+//
+//  You should have received a copy of the LICENSE file at the top-level
+//  directory of this distribution. If not, then this file is considered as
+//  an illegal copy.
+//
+//  Unauthorized copying of this file, via any medium is strictly prohibited.
+///////////////////////////////////////////////////////////////////////////////
+
+#endregion
+
+#region Usings
+
+using System;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+
 using KGySoft.Drawing.ImagingTools.ViewModel;
+
+#endregion
 
 namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
@@ -16,10 +29,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
     {
         #region Properties
 
-        // this would not be needed if designer had better generics support
         private ResizeBitmapViewModel VM => (ResizeBitmapViewModel)ViewModel;
 
         #endregion
+
+        #region Constructors
+
+        #region Internal Constructors
 
         internal ResizeBitmapForm(ResizeBitmapViewModel viewModel)
             : base(viewModel)
@@ -28,14 +44,35 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
             ValidationMapping[nameof(viewModel.Width)] = lblWidth;
             ValidationMapping[nameof(viewModel.Height)] = lblHeight;
-            foreach (Control control in ValidationMapping.Values.Where(c => c is Label))
-                ErrorProvider.SetIconAlignment(control, ErrorIconAlignment.MiddleLeft);
         }
+
+        #endregion
+
+        #region Private Constructors
 
         private ResizeBitmapForm() : this(null)
         {
             // this ctor is just for the designer
         }
+
+        #endregion
+
+        #endregion
+
+        #region Methods
+
+        #region Static Methods
+
+        private static object FormatPercentage(object value) => (((float)value) * 100f).ToString("N0", CultureInfo.CurrentCulture);
+        private static object ParsePercentage(object value) => Single.TryParse((string)value, NumberStyles.Number, CultureInfo.CurrentCulture, out float result) ? result / 100f : 0f;
+        private static object FormatInteger(object value) => ((int)value).ToString("N0", CultureInfo.CurrentCulture);
+        private static object ParseInteger(object value) => Int32.TryParse((string)value, NumberStyles.Number, CultureInfo.CurrentCulture, out int result) ? result : 0;
+
+        #endregion
+
+        #region Instance Methods
+
+        #region Protected Methods
 
         protected override void ApplyResources()
         {
@@ -55,6 +92,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 components?.Dispose();
             base.Dispose(disposing);
         }
+
+        #endregion
+
+        #region Private Methods
 
         private void InitPropertyBindings()
         {
@@ -95,10 +136,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 FormatInteger, ParseInteger);
         }
 
-        private object FormatPercentage(object value) => (((float)value) * 100f).ToString("N2", CultureInfo.CurrentCulture);
-        private object ParsePercentage(object value) => Single.TryParse((string)value, NumberStyles.Number, CultureInfo.CurrentCulture, out float result) ? result / 100f : 0f;
+        #endregion
 
-        private object FormatInteger(object value) => ((int)value).ToString("N0", CultureInfo.CurrentCulture);
-        private object ParseInteger(object value) => Int32.TryParse((string)value, NumberStyles.Number, CultureInfo.CurrentCulture, out int result) ? result : 0;
+        #endregion
+
+        #endregion
     }
 }

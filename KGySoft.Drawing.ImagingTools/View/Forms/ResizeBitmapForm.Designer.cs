@@ -15,8 +15,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.chbMaintainAspectRatio = new System.Windows.Forms.CheckBox();
             this.tblNewSize = new System.Windows.Forms.TableLayoutPanel();
+            this.chbMaintainAspectRatio = new System.Windows.Forms.CheckBox();
             this.lblScalingMode = new System.Windows.Forms.Label();
             this.pnlHeightPx = new System.Windows.Forms.Panel();
             this.lblHeightPx = new System.Windows.Forms.Label();
@@ -46,21 +46,8 @@
             // pnlSettings
             // 
             this.pnlSettings.Controls.Add(this.tblNewSize);
-            this.pnlSettings.Controls.Add(this.chbMaintainAspectRatio);
             this.pnlSettings.Padding = new System.Windows.Forms.Padding(5);
-            this.pnlSettings.Size = new System.Drawing.Size(304, 139);
-            // 
-            // chbMaintainAspectRatio
-            // 
-            this.chbMaintainAspectRatio.AutoSize = true;
-            this.chbMaintainAspectRatio.Dock = System.Windows.Forms.DockStyle.Top;
-            this.chbMaintainAspectRatio.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.chbMaintainAspectRatio.Location = new System.Drawing.Point(5, 5);
-            this.chbMaintainAspectRatio.Name = "chbMaintainAspectRatio";
-            this.chbMaintainAspectRatio.Size = new System.Drawing.Size(294, 18);
-            this.chbMaintainAspectRatio.TabIndex = 0;
-            this.chbMaintainAspectRatio.Text = "chbMaintainAspectRatio";
-            this.chbMaintainAspectRatio.UseVisualStyleBackColor = true;
+            this.pnlSettings.Size = new System.Drawing.Size(304, 143);
             // 
             // tblNewSize
             // 
@@ -68,35 +55,49 @@
             this.tblNewSize.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));
             this.tblNewSize.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tblNewSize.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tblNewSize.Controls.Add(this.lblScalingMode, 0, 3);
-            this.tblNewSize.Controls.Add(this.pnlHeightPx, 2, 2);
-            this.tblNewSize.Controls.Add(this.pnlHeightPercent, 1, 2);
-            this.tblNewSize.Controls.Add(this.pnlWidthPx, 2, 1);
-            this.tblNewSize.Controls.Add(this.rbByPixels, 2, 0);
-            this.tblNewSize.Controls.Add(this.rbByPercentage, 1, 0);
-            this.tblNewSize.Controls.Add(this.pnlWidthPercent, 1, 1);
-            this.tblNewSize.Controls.Add(this.lblWidth, 0, 1);
-            this.tblNewSize.Controls.Add(this.lblHeight, 0, 2);
-            this.tblNewSize.Controls.Add(this.cmbScalingMode, 1, 3);
+            this.tblNewSize.Controls.Add(this.chbMaintainAspectRatio, 1, 0);
+            this.tblNewSize.Controls.Add(this.lblScalingMode, 0, 4);
+            this.tblNewSize.Controls.Add(this.pnlHeightPx, 2, 3);
+            this.tblNewSize.Controls.Add(this.pnlHeightPercent, 1, 3);
+            this.tblNewSize.Controls.Add(this.pnlWidthPx, 2, 2);
+            this.tblNewSize.Controls.Add(this.rbByPixels, 2, 1);
+            this.tblNewSize.Controls.Add(this.rbByPercentage, 1, 1);
+            this.tblNewSize.Controls.Add(this.pnlWidthPercent, 1, 2);
+            this.tblNewSize.Controls.Add(this.lblWidth, 0, 2);
+            this.tblNewSize.Controls.Add(this.lblHeight, 0, 3);
+            this.tblNewSize.Controls.Add(this.cmbScalingMode, 1, 4);
             this.tblNewSize.Dock = System.Windows.Forms.DockStyle.Top;
-            this.tblNewSize.Location = new System.Drawing.Point(5, 23);
+            this.tblNewSize.Location = new System.Drawing.Point(5, 5);
             this.tblNewSize.Name = "tblNewSize";
-            this.tblNewSize.RowCount = 4;
-            this.tblNewSize.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tblNewSize.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tblNewSize.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tblNewSize.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tblNewSize.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tblNewSize.Size = new System.Drawing.Size(294, 108);
+            this.tblNewSize.RowCount = 5;
+            this.tblNewSize.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tblNewSize.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tblNewSize.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tblNewSize.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tblNewSize.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tblNewSize.Size = new System.Drawing.Size(294, 137);
             this.tblNewSize.TabIndex = 1;
+            // 
+            // chbMaintainAspectRatio
+            // 
+            this.chbMaintainAspectRatio.AutoSize = true;
+            this.tblNewSize.SetColumnSpan(this.chbMaintainAspectRatio, 2);
+            this.chbMaintainAspectRatio.Dock = System.Windows.Forms.DockStyle.Top;
+            this.chbMaintainAspectRatio.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.chbMaintainAspectRatio.Location = new System.Drawing.Point(83, 3);
+            this.chbMaintainAspectRatio.Name = "chbMaintainAspectRatio";
+            this.chbMaintainAspectRatio.Size = new System.Drawing.Size(208, 18);
+            this.chbMaintainAspectRatio.TabIndex = 10;
+            this.chbMaintainAspectRatio.Text = "chbMaintainAspectRatio";
+            this.chbMaintainAspectRatio.UseVisualStyleBackColor = true;
             // 
             // lblScalingMode
             // 
             this.lblScalingMode.AutoSize = true;
             this.lblScalingMode.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblScalingMode.Location = new System.Drawing.Point(3, 81);
+            this.lblScalingMode.Location = new System.Drawing.Point(3, 108);
             this.lblScalingMode.Name = "lblScalingMode";
-            this.lblScalingMode.Size = new System.Drawing.Size(74, 27);
+            this.lblScalingMode.Size = new System.Drawing.Size(74, 29);
             this.lblScalingMode.TabIndex = 8;
             this.lblScalingMode.Text = "lblScalingMode";
             this.lblScalingMode.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -106,18 +107,19 @@
             this.pnlHeightPx.Controls.Add(this.lblHeightPx);
             this.pnlHeightPx.Controls.Add(this.txtHeightPx);
             this.pnlHeightPx.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlHeightPx.Location = new System.Drawing.Point(190, 57);
+            this.pnlHeightPx.Location = new System.Drawing.Point(190, 84);
             this.pnlHeightPx.Name = "pnlHeightPx";
             this.pnlHeightPx.Size = new System.Drawing.Size(101, 21);
             this.pnlHeightPx.TabIndex = 7;
             // 
             // lblHeightPx
             // 
+            this.lblHeightPx.AutoSize = true;
             this.lblHeightPx.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblHeightPx.Location = new System.Drawing.Point(62, 0);
             this.lblHeightPx.Name = "lblHeightPx";
             this.lblHeightPx.Padding = new System.Windows.Forms.Padding(0, 3, 0, 0);
-            this.lblHeightPx.Size = new System.Drawing.Size(39, 21);
+            this.lblHeightPx.Size = new System.Drawing.Size(60, 16);
             this.lblHeightPx.TabIndex = 1;
             this.lblHeightPx.Text = "lblHeightPx";
             this.lblHeightPx.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -136,18 +138,19 @@
             this.pnlHeightPercent.Controls.Add(this.lblHeightPercent);
             this.pnlHeightPercent.Controls.Add(this.txtHeightPercent);
             this.pnlHeightPercent.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlHeightPercent.Location = new System.Drawing.Point(83, 57);
+            this.pnlHeightPercent.Location = new System.Drawing.Point(83, 84);
             this.pnlHeightPercent.Name = "pnlHeightPercent";
             this.pnlHeightPercent.Size = new System.Drawing.Size(101, 21);
             this.pnlHeightPercent.TabIndex = 6;
             // 
             // lblHeightPercent
             // 
+            this.lblHeightPercent.AutoSize = true;
             this.lblHeightPercent.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblHeightPercent.Location = new System.Drawing.Point(62, 0);
             this.lblHeightPercent.Name = "lblHeightPercent";
             this.lblHeightPercent.Padding = new System.Windows.Forms.Padding(0, 3, 0, 0);
-            this.lblHeightPercent.Size = new System.Drawing.Size(39, 21);
+            this.lblHeightPercent.Size = new System.Drawing.Size(85, 16);
             this.lblHeightPercent.TabIndex = 1;
             this.lblHeightPercent.Text = "lblHeightPercent";
             this.lblHeightPercent.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -166,18 +169,19 @@
             this.pnlWidthPx.Controls.Add(this.lblWidthPx);
             this.pnlWidthPx.Controls.Add(this.txtWidthPx);
             this.pnlWidthPx.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlWidthPx.Location = new System.Drawing.Point(190, 30);
+            this.pnlWidthPx.Location = new System.Drawing.Point(190, 57);
             this.pnlWidthPx.Name = "pnlWidthPx";
             this.pnlWidthPx.Size = new System.Drawing.Size(101, 21);
             this.pnlWidthPx.TabIndex = 4;
             // 
             // lblWidthPx
             // 
+            this.lblWidthPx.AutoSize = true;
             this.lblWidthPx.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblWidthPx.Location = new System.Drawing.Point(62, 0);
             this.lblWidthPx.Name = "lblWidthPx";
             this.lblWidthPx.Padding = new System.Windows.Forms.Padding(0, 3, 0, 0);
-            this.lblWidthPx.Size = new System.Drawing.Size(39, 21);
+            this.lblWidthPx.Size = new System.Drawing.Size(57, 16);
             this.lblWidthPx.TabIndex = 1;
             this.lblWidthPx.Text = "lblWidthPx";
             this.lblWidthPx.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -196,7 +200,7 @@
             this.rbByPixels.AutoSize = true;
             this.rbByPixels.Dock = System.Windows.Forms.DockStyle.Top;
             this.rbByPixels.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbByPixels.Location = new System.Drawing.Point(190, 3);
+            this.rbByPixels.Location = new System.Drawing.Point(190, 30);
             this.rbByPixels.Name = "rbByPixels";
             this.rbByPixels.Size = new System.Drawing.Size(101, 18);
             this.rbByPixels.TabIndex = 1;
@@ -209,7 +213,7 @@
             this.rbByPercentage.AutoSize = true;
             this.rbByPercentage.Dock = System.Windows.Forms.DockStyle.Top;
             this.rbByPercentage.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbByPercentage.Location = new System.Drawing.Point(83, 3);
+            this.rbByPercentage.Location = new System.Drawing.Point(83, 30);
             this.rbByPercentage.Name = "rbByPercentage";
             this.rbByPercentage.Size = new System.Drawing.Size(101, 18);
             this.rbByPercentage.TabIndex = 0;
@@ -222,18 +226,19 @@
             this.pnlWidthPercent.Controls.Add(this.lblWidthPercent);
             this.pnlWidthPercent.Controls.Add(this.txtWidthPercent);
             this.pnlWidthPercent.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlWidthPercent.Location = new System.Drawing.Point(83, 30);
+            this.pnlWidthPercent.Location = new System.Drawing.Point(83, 57);
             this.pnlWidthPercent.Name = "pnlWidthPercent";
             this.pnlWidthPercent.Size = new System.Drawing.Size(101, 21);
             this.pnlWidthPercent.TabIndex = 3;
             // 
             // lblWidthPercent
             // 
+            this.lblWidthPercent.AutoSize = true;
             this.lblWidthPercent.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblWidthPercent.Location = new System.Drawing.Point(62, 0);
             this.lblWidthPercent.Name = "lblWidthPercent";
             this.lblWidthPercent.Padding = new System.Windows.Forms.Padding(0, 3, 0, 0);
-            this.lblWidthPercent.Size = new System.Drawing.Size(39, 21);
+            this.lblWidthPercent.Size = new System.Drawing.Size(82, 16);
             this.lblWidthPercent.TabIndex = 1;
             this.lblWidthPercent.Text = "lblWidthPercent";
             this.lblWidthPercent.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -251,7 +256,7 @@
             // 
             this.lblWidth.AutoSize = true;
             this.lblWidth.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblWidth.Location = new System.Drawing.Point(3, 27);
+            this.lblWidth.Location = new System.Drawing.Point(3, 54);
             this.lblWidth.Name = "lblWidth";
             this.lblWidth.Size = new System.Drawing.Size(74, 27);
             this.lblWidth.TabIndex = 2;
@@ -262,7 +267,7 @@
             // 
             this.lblHeight.AutoSize = true;
             this.lblHeight.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblHeight.Location = new System.Drawing.Point(3, 54);
+            this.lblHeight.Location = new System.Drawing.Point(3, 81);
             this.lblHeight.Name = "lblHeight";
             this.lblHeight.Size = new System.Drawing.Size(74, 27);
             this.lblHeight.TabIndex = 5;
@@ -276,7 +281,7 @@
             this.cmbScalingMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbScalingMode.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.cmbScalingMode.FormattingEnabled = true;
-            this.cmbScalingMode.Location = new System.Drawing.Point(83, 84);
+            this.cmbScalingMode.Location = new System.Drawing.Point(83, 111);
             this.cmbScalingMode.Name = "cmbScalingMode";
             this.cmbScalingMode.Size = new System.Drawing.Size(208, 21);
             this.cmbScalingMode.TabIndex = 9;
@@ -290,7 +295,6 @@
             this.Name = "ResizeBitmapForm";
             this.Text = "ResizeBitmapForm";
             this.pnlSettings.ResumeLayout(false);
-            this.pnlSettings.PerformLayout();
             this.tblNewSize.ResumeLayout(false);
             this.tblNewSize.PerformLayout();
             this.pnlHeightPx.ResumeLayout(false);
@@ -314,7 +318,6 @@
         private System.Windows.Forms.Panel pnlWidthPercent;
         private System.Windows.Forms.Label lblWidthPercent;
         private System.Windows.Forms.TextBox txtWidthPercent;
-        private System.Windows.Forms.CheckBox chbMaintainAspectRatio;
         private System.Windows.Forms.Label lblWidth;
         private System.Windows.Forms.Label lblHeight;
         private System.Windows.Forms.Panel pnlHeightPx;
@@ -328,5 +331,6 @@
         private System.Windows.Forms.TextBox txtWidthPx;
         private System.Windows.Forms.Label lblScalingMode;
         private System.Windows.Forms.ComboBox cmbScalingMode;
+        private System.Windows.Forms.CheckBox chbMaintainAspectRatio;
     }
 }

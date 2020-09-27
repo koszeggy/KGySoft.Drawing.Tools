@@ -252,7 +252,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     adjustingHeight = true;
                     try
                     {
-                        HeightRatio = widthRatio / aspectRatio;
+                        HeightRatio = widthRatio;
                     }
                     finally
                     {
@@ -290,7 +290,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     adjustingWidth = true;
                     try
                     {
-                        WidthRatio = heightRatio * aspectRatio;
+                        WidthRatio = heightRatio;
                     }
                     finally
                     {
@@ -306,8 +306,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             ValidationResultsCollection result = base.DoValidation();
             if (Width <= 0)
                 result.AddError(nameof(Width), Res.ErrorMessageValueMustBeGreaterThan(0f));
-            if (Height < 1)
-                result.AddError(nameof(Width), Res.ErrorMessageValueMustBeGreaterThan(0f));
+            if (Height <= 0)
+                result.AddError(nameof(Height), Res.ErrorMessageValueMustBeGreaterThan(0f));
             return result;
         }
 
