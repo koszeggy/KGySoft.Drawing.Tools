@@ -585,7 +585,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 return;
 
             // can happen when image is rotated
-            if (image.Size != imageSize)
+            if (image.Size != imageSize || !ReferenceEquals(image, displayImage))
                 SetImage(image);
             else
                 Invalidate();
