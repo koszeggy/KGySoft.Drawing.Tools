@@ -218,7 +218,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 .AddSource(miBackColorWhite, nameof(miBackColorWhite.Click));
             CommandBindings.Add(ViewModel.ShowPaletteCommand, ViewModel.ShowPaletteCommandState)
                 .AddSource(miShowPalette, nameof(miShowPalette.Click));
-            CommandBindings.Add(ViewModel.CountColorsCommand, ViewModel.EditBitmapCommandState)
+            CommandBindings.Add(ViewModel.CountColorsCommand, ViewModel.CountColorsCommandState)
                 .AddSource(miCountColors, nameof(miCountColors.Click));
 
             // Edit

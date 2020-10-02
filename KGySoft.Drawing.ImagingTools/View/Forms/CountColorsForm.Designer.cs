@@ -44,6 +44,7 @@
             // 
             // btnClose
             // 
+            this.btnClose.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.btnClose.Location = new System.Drawing.Point(100, 3);
             this.btnClose.Name = "btnClose";

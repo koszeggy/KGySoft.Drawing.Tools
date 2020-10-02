@@ -124,6 +124,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommandState PrevImageCommandState => Get(() => new CommandState());
         internal ICommandState NextImageCommandState => Get(() => new CommandState());
         internal ICommandState ShowPaletteCommandState => Get(() => new CommandState { Enabled = false });
+        internal ICommandState CountColorsCommandState => Get(() => new CommandState());
         internal ICommandState EditBitmapCommandState => Get(() => new CommandState { Enabled = false });
 
         internal ICommand SetAutoZoomCommand => Get(() => new SimpleCommand<bool>(OnSetAutoZoomCommand));
@@ -411,7 +412,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             ShowPaletteCommandState.Enabled = image.Palette.Length > 0;
             SaveFileCommandState.Enabled = imageInfo.Type != ImageInfoType.None;
             ClearCommandState.Enabled = imageInfo.Type != ImageInfoType.None && !ReadOnly;
-            EditBitmapCommandState.Enabled = imageInfo.Type != ImageInfoType.None && !ReadOnly && !imageInfo.IsMetafile && IsSingleImageShown();
+            EditBitmapCommandState.Enabled = CanEditImage();
+            CountColorsCommandState.Enabled = imageInfo.Type != ImageInfoType.None && !imageInfo.IsMetafile && IsSingleImageShown();
             UpdateInfo();
         }
 
@@ -420,7 +422,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             bool readOnly = ReadOnly;
             OpenFileCommandState.Enabled = !readOnly;
             ClearCommandState.Enabled = !readOnly && imageInfo.Type != ImageInfoType.None;
+            EditBitmapCommandState.Enabled = CanEditImage();
         }
+
+        private bool CanEditImage() => imageInfo.Type != ImageInfoType.None && !ReadOnly && !imageInfo.IsMetafile && IsSingleImageShown();
 
         private string GetFrameInfo(bool singleLine)
         {
