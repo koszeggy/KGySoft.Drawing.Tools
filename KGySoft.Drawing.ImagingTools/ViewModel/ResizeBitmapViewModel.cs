@@ -20,6 +20,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Linq;
 using System.Threading;
 
 using KGySoft.ComponentModel;
@@ -73,7 +74,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             {
                 // this must be the first line to prevent disposing source if next lines fail
                 isSourceCloned = isInUse;
-                targetBitmap = new Bitmap(Size.Width, Size.Height, PixelFormat.Format32bppPArgb);
+                PixelFormat origPixelFormat = source.PixelFormat;
+                PixelFormat pixelFormat = origPixelFormat.HasAlpha() || origPixelFormat.IsIndexed() && source.Palette.Entries.Any(c => c.A != Byte.MaxValue)
+                    ? PixelFormat.Format32bppPArgb
+                    : PixelFormat.Format24bppRgb;
+                targetBitmap = new Bitmap(Size.Width, Size.Height, pixelFormat);
                 targetBitmapData = targetBitmap.GetReadWriteBitmapData();
 
                 // Locking on source image to avoid "bitmap region is already locked" if the UI is painting the image when we clone it.

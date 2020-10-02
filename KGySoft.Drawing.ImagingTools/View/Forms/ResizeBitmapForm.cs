@@ -63,10 +63,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Static Methods
 
-        private static object FormatPercentage(object value) => (((float)value) * 100f).ToString("N0", CultureInfo.CurrentCulture);
+        private static object FormatPercentage(object value) => ((float)value * 100f).ToString("F0", CultureInfo.CurrentCulture);
         private static object ParsePercentage(object value) => Single.TryParse((string)value, NumberStyles.Number, CultureInfo.CurrentCulture, out float result) ? result / 100f : 0f;
-        private static object FormatInteger(object value) => ((int)value).ToString("N0", CultureInfo.CurrentCulture);
-        private static object ParseInteger(object value) => Int32.TryParse((string)value, NumberStyles.Number, CultureInfo.CurrentCulture, out int result) ? result : 0;
+        private static object FormatInteger(object value) => ((int)value).ToString("F0", CultureInfo.CurrentCulture);
+        private static object ParseInteger(object value) => Int32.TryParse((string)value, NumberStyles.Integer, CultureInfo.CurrentCulture, out int result) ? result : 0;
 
         #endregion
 
