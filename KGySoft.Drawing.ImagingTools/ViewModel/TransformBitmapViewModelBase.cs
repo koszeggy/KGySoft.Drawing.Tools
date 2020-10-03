@@ -295,6 +295,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 return;
             if (disposing)
             {
+                activeTask?.Dispose();
                 Image preview = PreviewImageViewModel.Image;
                 PreviewImageViewModel?.Dispose();
 
@@ -321,7 +322,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             {
                 // lost race
                 if (!MatchesSettings(task))
+                {
+                    task.Dispose();
                     return;
+                }
 
                 Debug.Assert(activeTask?.IsCanceled != false);
                 WaitForPendingGenerate();

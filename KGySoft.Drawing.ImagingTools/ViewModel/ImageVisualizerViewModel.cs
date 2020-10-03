@@ -939,13 +939,16 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
         }
 
+        [SuppressMessage("Reliability", "CA2002:Do not lock on objects with weak identity", Justification = "False alarm, image is not a remote object")]
         private void RotateBitmap(RotateFlipType direction)
         {
             Debug.Assert(imageInfo.Type != ImageInfoType.None && !imageInfo.IsMetafile, "Non-metafile image is expected");
             ImageInfoBase image = GetCurrentImage();
-
             Debug.Assert(image.Image is Bitmap, "Existing bitmap image is expected");
-            image.Image.RotateFlip(direction);
+
+            // must be in a lock because it can be in use in the UI (where it is also locked)
+            lock (image.Image)
+                image.Image.RotateFlip(direction);
             SetCurrentImage((Bitmap)image.Image);
         }
 
