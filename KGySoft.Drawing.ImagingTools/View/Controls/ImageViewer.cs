@@ -518,6 +518,27 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 PaintImage(e.Graphics);
         }
 
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            switch (keyData)
+            {
+                case Keys.Up:
+                    VerticalScroll(SystemInformation.MouseWheelScrollDelta);
+                    return true;
+                case Keys.Down:
+                    VerticalScroll(-SystemInformation.MouseWheelScrollDelta);
+                    return true;
+                case Keys.Left:
+                    HorizontalScroll(SystemInformation.MouseWheelScrollDelta);
+                    return true;
+                case Keys.Right:
+                    HorizontalScroll(-SystemInformation.MouseWheelScrollDelta);
+                    return true;
+                default:
+                    return base.ProcessCmdKey(ref msg, keyData);
+            }
+        }
+
         protected override void OnMouseDown(MouseEventArgs e)
         {
             base.OnMouseDown(e);
