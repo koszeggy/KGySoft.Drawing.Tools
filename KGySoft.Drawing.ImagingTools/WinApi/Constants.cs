@@ -22,6 +22,10 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
 
         internal const int WS_BORDER = 0x00800000;
         internal const int WM_MOUSEHWHEEL = 0x020E;
+        internal const int WM_MOUSEACTIVATE = 0x021;
+
+        internal const int MA_ACTIVATEANDEAT= 2;
+        internal const int MA_ACTIVATE = 1;
 
         #endregion
     }

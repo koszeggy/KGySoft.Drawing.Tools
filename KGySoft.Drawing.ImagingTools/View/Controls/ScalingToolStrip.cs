@@ -16,10 +16,13 @@
 
 #region Usings
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+
+using KGySoft.Drawing.ImagingTools.WinApi;
 
 #endregion
 
@@ -156,6 +159,19 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         {
             ImageScalingSize = Size.Round(this.ScaleSize(referenceSize));
             Renderer = new ScalingToolStripMenuRenderer();
+        }
+
+        #endregion
+
+        #region Methods
+
+        protected override void WndProc(ref Message m)
+        {
+            base.WndProc(ref m);
+
+            // ensuring that items can be clicked even if the container form is not activated
+            if (m.Msg == Constants.WM_MOUSEACTIVATE && m.Result == (IntPtr)Constants.MA_ACTIVATEANDEAT)
+                m.Result = (IntPtr)Constants.MA_ACTIVATE;
         }
 
         #endregion
