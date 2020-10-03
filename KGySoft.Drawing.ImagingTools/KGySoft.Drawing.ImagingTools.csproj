@@ -35,6 +35,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </Compile>
     <Compile Update="View\Forms\AdjustGammaForm.cs">
       <SubType>Form</SubType>
     </Compile>

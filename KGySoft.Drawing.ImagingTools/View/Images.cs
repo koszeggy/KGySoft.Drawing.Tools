@@ -50,6 +50,8 @@ namespace KGySoft.Drawing.ImagingTools.View
         private static Bitmap rotateLeft;
         private static Bitmap rotateRight;
         private static Bitmap resize;
+        private static Bitmap quantize;
+        private static Bitmap colors;
 
         #endregion
 
@@ -82,6 +84,8 @@ namespace KGySoft.Drawing.ImagingTools.View
         internal static Bitmap RotateLeft => rotateLeft ??= GetResource(nameof(RotateLeft));
         internal static Bitmap RotateRight => rotateRight ??= GetResource(nameof(RotateRight));
         internal static Bitmap Resize => resize ??= GetResource(nameof(Resize));
+        internal static Bitmap Quantize => quantize ??= GetResource(nameof(Quantize));
+        internal static Bitmap Colors => colors ??= GetResource(nameof(Colors));
 
         #endregion
 

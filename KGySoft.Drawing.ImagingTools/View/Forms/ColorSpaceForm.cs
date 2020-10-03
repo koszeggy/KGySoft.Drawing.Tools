@@ -73,7 +73,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected override void ApplyResources()
         {
-            Icon = Properties.Resources.Colors; // TODO
+            Icon = Properties.Resources.Quantize;
             base.ApplyResources();
         }
 

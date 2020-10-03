@@ -181,13 +181,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.miBackColorWhite,
             this.miBackColorBlack});
             this.miBackColor.Name = "miBackColor";
-            this.miBackColor.Size = new System.Drawing.Size(155, 22);
+            this.miBackColor.Size = new System.Drawing.Size(193, 22);
             this.miBackColor.Text = "miBackColor";
             // 
             // miBackColorDefault
             // 
             this.miBackColorDefault.Name = "miBackColorDefault";
-            this.miBackColorDefault.Size = new System.Drawing.Size(180, 22);
+            this.miBackColorDefault.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.D1)));
+            this.miBackColorDefault.Size = new System.Drawing.Size(216, 22);
             this.miBackColorDefault.Text = "miBackColorDefault";
             this.miBackColorDefault.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
             // 
@@ -196,7 +197,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.miBackColorWhite.BackColor = System.Drawing.Color.White;
             this.miBackColorWhite.ForeColor = System.Drawing.Color.Black;
             this.miBackColorWhite.Name = "miBackColorWhite";
-            this.miBackColorWhite.Size = new System.Drawing.Size(180, 22);
+            this.miBackColorWhite.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.D2)));
+            this.miBackColorWhite.Size = new System.Drawing.Size(216, 22);
             this.miBackColorWhite.Text = "miBackColorWhite";
             // 
             // miBackColorBlack
@@ -204,19 +206,22 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.miBackColorBlack.BackColor = System.Drawing.Color.Black;
             this.miBackColorBlack.ForeColor = System.Drawing.Color.White;
             this.miBackColorBlack.Name = "miBackColorBlack";
-            this.miBackColorBlack.Size = new System.Drawing.Size(180, 22);
+            this.miBackColorBlack.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.D3)));
+            this.miBackColorBlack.Size = new System.Drawing.Size(216, 22);
             this.miBackColorBlack.Text = "miBackColorBlack";
             // 
             // miShowPalette
             // 
             this.miShowPalette.Name = "miShowPalette";
-            this.miShowPalette.Size = new System.Drawing.Size(155, 22);
+            this.miShowPalette.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.P)));
+            this.miShowPalette.Size = new System.Drawing.Size(193, 22);
             this.miShowPalette.Text = "miShowPalette";
             // 
             // miCountColors
             // 
             this.miCountColors.Name = "miCountColors";
-            this.miCountColors.Size = new System.Drawing.Size(155, 22);
+            this.miCountColors.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.C)));
+            this.miCountColors.Size = new System.Drawing.Size(193, 22);
             this.miCountColors.Text = "miCountColors";
             // 
             // btnEdit
@@ -262,6 +267,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // miColorSpace
             // 
             this.miColorSpace.Name = "miColorSpace";
+            this.miColorSpace.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q)));
             this.miColorSpace.Size = new System.Drawing.Size(208, 22);
             this.miColorSpace.Text = "miColorSpace";
             // 
@@ -278,19 +284,25 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // miBrightness
             // 
             this.miBrightness.Name = "miBrightness";
-            this.miBrightness.Size = new System.Drawing.Size(143, 22);
+            this.miBrightness.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.B)));
+            this.miBrightness.Size = new System.Drawing.Size(216, 22);
             this.miBrightness.Text = "miBrightness";
             // 
             // miContrast
             // 
             this.miContrast.Name = "miContrast";
-            this.miContrast.Size = new System.Drawing.Size(143, 22);
+            this.miContrast.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.C)));
+            this.miContrast.Size = new System.Drawing.Size(216, 22);
             this.miContrast.Text = "miContrast";
             // 
             // miGamma
             // 
             this.miGamma.Name = "miGamma";
-            this.miGamma.Size = new System.Drawing.Size(143, 22);
+            this.miGamma.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.G)));
+            this.miGamma.Size = new System.Drawing.Size(216, 22);
             this.miGamma.Text = "miGamma";
             // 
             // sepFrames

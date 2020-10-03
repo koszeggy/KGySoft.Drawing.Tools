@@ -163,6 +163,9 @@
   <data name="Prev" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Prev.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Quantize" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Quantize.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Resize" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Resize.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>

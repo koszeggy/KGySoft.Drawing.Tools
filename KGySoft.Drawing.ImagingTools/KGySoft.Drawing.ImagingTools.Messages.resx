@@ -497,19 +497,19 @@ Dithering may help to preserve more details.</value>
     <value>Installed: {0} - Target: {1}</value>
   </data>
   <data name="btnAutoZoom.Text" xml:space="preserve">
-    <value>Auto Zoom</value>
+    <value>Auto Zoom (Alt+Z)</value>
   </data>
   <data name="btnAntiAlias.Text" xml:space="preserve">
     <value>Smooth Zooming</value>
   </data>
   <data name="btnOpen.Text" xml:space="preserve">
-    <value>Open...</value>
+    <value>Open... (Ctrl+O)</value>
   </data>
   <data name="btnSave.Text" xml:space="preserve">
-    <value>Save As...</value>
+    <value>Save As... (Ctrl+S)</value>
   </data>
   <data name="btnClear.Text" xml:space="preserve">
-    <value>Clear</value>
+    <value>Clear (Ctrl+Del)</value>
   </data>
   <data name="btnColorSettings.Text" xml:space="preserve">
     <value>Color Settings</value>
@@ -548,10 +548,10 @@ Dithering may help to preserve more details.</value>
     <value>Adjust Gamma...</value>
   </data>
   <data name="btnPrev.Text" xml:space="preserve">
-    <value>Previous Image</value>
+    <value>Previous Image (Shift+Left)</value>
   </data>
   <data name="btnNext.Text" xml:space="preserve">
-    <value>Next Image</value>
+    <value>Next Image (Shift+Right)</value>
   </data>
   <data name="btnConfiguration.ToolTipText" xml:space="preserve">
     <value>Manage Debugger Visualizer Installations...</value>

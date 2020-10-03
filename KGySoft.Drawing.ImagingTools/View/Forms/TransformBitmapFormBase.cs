@@ -89,6 +89,18 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             base.ApplyViewModel();
         }
 
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            switch (keyData)
+            {
+                case Keys.Alt | Keys.Z:
+                    previewImage.AutoZoom = !previewImage.AutoZoom;
+                    return true;
+                default:
+                    return base.ProcessCmdKey(ref msg, keyData);
+            }
+        }
+
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             // if user (or system) closes the window without pressing cancel we need to execute the cancel command

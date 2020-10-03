@@ -106,6 +106,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             miRotateLeft.Image = Images.RotateLeft;
             miRotateRight.Image = Images.RotateRight;
             miResizeBitmap.Image = Images.Resize;
+            miColorSpace.Image = Images.Quantize;
+            miAdjustColors.Image = Images.Colors;
 
             toolTip.SetToolTip(lblNotification, Res.Get($"{nameof(lblNotification)}.ToolTip"));
 
@@ -121,6 +123,33 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             InitCommandBindings();
             base.ApplyViewModel();
             imageViewer.Focus();
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            switch (keyData)
+            {
+                case Keys.Control | Keys.O:
+                    btnOpen.PerformClick();
+                    return true;
+                case Keys.Control | Keys.S:
+                    btnSave.PerformClick();
+                    return true;
+                case Keys.Control | Keys.Delete:
+                    btnClear.PerformClick();
+                    return true;
+                case Keys.Alt | Keys.Z:
+                    btnAutoZoom.PerformClick();
+                    return true;
+                case Keys.Shift | Keys.Right:
+                    btnNext.PerformClick();
+                    return true;
+                case Keys.Shift | Keys.Left:
+                    btnPrev.PerformClick();
+                    return true;
+                default:
+                    return base.ProcessCmdKey(ref msg, keyData);
+            }
         }
 
         protected override void Dispose(bool disposing)
