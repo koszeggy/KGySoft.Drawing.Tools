@@ -241,7 +241,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 result.AddInfo(nameof(QuantizerSelectorViewModel.Quantizer), Res.InfoMessageArgbQuantizerHasNoEffect);
 
             if (bppHint < originalBpp && !useDitherer && quantizer.PixelFormatHint.CanBeDithered())
-                result.AddInfo(nameof(DithererSelectorViewModel.Ditherer), Res.InfoMessageQuantizerCanBeDithered(originalPixelFormat));
+            {
+                if (QuantizerSelectorViewModel.SelectedQuantizer.Method.Name != nameof(PredefinedColorsQuantizer.Grayscale))
+                    result.AddInfo(nameof(DithererSelectorViewModel.Ditherer), Res.InfoMessageQuantizerCanBeDithered(originalPixelFormat));
+            }
             else if (bpp < originalBpp && !useDitherer && pixelFormat.CanBeDithered())
                 result.AddInfo(nameof(DithererSelectorViewModel.Ditherer), Res.InfoMessagePixelFormatCanBeDithered(originalPixelFormat));
             else if (!useQuantizer && ditherer != null && !pixelFormat.CanBeDithered())

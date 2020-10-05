@@ -70,18 +70,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void ProcessArgs(string[] args)
         {
             if (args.IsNullOrEmpty())
-            {
-                Notification = Res.NotificationWelcome;
-                Image = null;
-            }
+                return;
+            string file = args[0];
+            if (!File.Exists(file))
+                ShowError(Res.ErrorMessageFileDoesNotExist(file));
             else
-            {
-                string file = args[0];
-                if (!File.Exists(file))
-                    ShowError(Res.ErrorMessageFileDoesNotExist(file));
-                else
-                    OpenFile(file);
-            }
+                OpenFile(file);
         }
 
         #endregion

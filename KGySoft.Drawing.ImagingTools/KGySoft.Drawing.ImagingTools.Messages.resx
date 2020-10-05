@@ -297,12 +297,6 @@ Brightness: {5:F0}%</value>
   <data name="InfoText_ResolutionFormat" xml:space="preserve">
     <value>Resolution: {0}x{1} DPI</value>
   </data>
-  <data name="Notification_Welcome" xml:space="preserve">
-    <value>As a standalone application, KGy SOFT Imaging Tools can be used to load images, save them in various formats, extract frames or pages, examine or change palette entries of indexed images, etc.
-
-But it can be used also as a debugger visualizer for Image, Bitmap, Metafile, BitmapData, Graphics, ColorPalette and Color types.
-See the Configuration button.</value>
-  </data>
   <data name="Notification_MetafileAsBitmap" xml:space="preserve">
     <value>The loaded metafile has been converted to Bitmap. To load it as a Metafile, choose the Image Debugger Visualizer instead.</value>
   </data>
@@ -450,7 +444,7 @@ Use a specific instance to adjust parameters.</value>
   </data>
   <data name="InfoMessage_PaletteAutoSelectedFormat" xml:space="preserve">
     <value>A system default palette of {0} colors has been auto selected for pixel format '{1}'.
-Select a quantizer to use specific colors.</value>
+Select a quantizer to use specific colors and settings.</value>
   </data>
   <data name="InfoMessage_DithererIgnoredFormat" xml:space="preserve">
     <value>The ditherer is ignored for pixel format '{0}' if there is no quantizer specified.</value>

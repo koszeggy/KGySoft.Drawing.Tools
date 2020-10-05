@@ -147,12 +147,6 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Notifications
 
-        /// <summary>As a standalone application, KGy SOFT Imaging Tools can be used to load images, save them in various formats, extract frames or pages, examine or change palette entries of indexed images, etc.
-        /// 
-        /// But it can be used also as a debugger visualizer for Image, Bitmap, Metafile, BitmapData, Graphics, ColorPalette and Color types.
-        /// See the Configuration button.</summary>
-        internal static string NotificationWelcome => Get("Notification_Welcome");
-
         /// <summary>The loaded metafile has been converted to Bitmap. To load it as a Metafile, choose the Image Debugger Visualizer instead.</summary>
         internal static string NotificationMetafileAsBitmap => Get("Notification_MetafileAsBitmap");
 
@@ -482,7 +476,7 @@ namespace KGySoft.Drawing.ImagingTools
         internal static string InfoMessageQuantizerAutoSelected(PixelFormat pixelFormat) => Get("InfoMessage_QuantizerAutoSelectedFormat", pixelFormat);
 
         /// <summary>A system default palette of {0} colors has been auto selected for pixel format '{1}'.
-        /// Select a quantizer to use specific colors.</summary>
+        /// Select a quantizer to use specific colors and settings.</summary>
         internal static string InfoMessagePaletteAutoSelected(int colors, PixelFormat pixelFormat) => Get("InfoMessage_PaletteAutoSelectedFormat", colors, pixelFormat);
 
         /// <summary>The ditherer is ignored for pixel format '{0}' if there is no quantizer specified.</summary>
