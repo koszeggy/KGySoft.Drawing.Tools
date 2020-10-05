@@ -421,6 +421,9 @@ Are you sure you want to save the file with the provided extension?</value>
   <data name="ConfirmMessage_NetCoreVersion" xml:space="preserve">
     <value>You are about to install the .NET Core version, which might not be supported by Visual Studio as a debugger visualizer. Are you sure?</value>
   </data>
+  <data name="ConfirmMessage_DiscardChanges" xml:space="preserve">
+    <value>There are unsaved modifications. Are sure to discard the changes?</value>
+  </data>
   <data name="InfoMessage_PaletteEmpty" xml:space="preserve">
     <value>The palette contains no colors. Click OK to exit.</value>
   </data>

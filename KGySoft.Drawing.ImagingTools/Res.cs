@@ -182,6 +182,9 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>You are about to install the .NET Core version, which might not be supported by Visual Studio as a debugger visualizer. Are you sure?</summary>
         internal static string ConfirmMessageNetCoreVersion => Get("ConfirmMessage_NetCoreVersion");
 
+        /// <summary>There are unsaved modifications. Are sure to discard the changes?</summary>
+        internal static string ConfirmMessageDiscardChanges => Get("ConfirmMessage_DiscardChanges");
+
         /// <summary>The palette contains no colors. Click OK to exit.</summary>
         internal static string InfoMessagePaletteEmpty => Get("InfoMessage_PaletteEmpty");
 

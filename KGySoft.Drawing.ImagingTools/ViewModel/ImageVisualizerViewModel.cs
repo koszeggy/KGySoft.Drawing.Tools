@@ -295,6 +295,17 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             InfoText = sb.ToString();
         }
 
+        protected virtual void OpenFile()
+        {
+            SetOpenFilter();
+            string fileName = SelectFileToOpenCallback?.Invoke();
+            if (fileName == null)
+                return;
+
+            Notification = null;
+            OpenFile(fileName);
+        }
+
         protected virtual bool OpenFile(string path)
         {
             try
@@ -976,16 +987,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             UpdateInfo();
         }
 
-        private void OnOpenFileCommand()
-        {
-            SetOpenFilter();
-            string fileName = SelectFileToOpenCallback?.Invoke();
-            if (fileName == null)
-                return;
-
-            Notification = null;
-            OpenFile(fileName);
-        }
+        private void OnOpenFileCommand() => OpenFile();
 
         private void OnSaveFileCommand()
         {

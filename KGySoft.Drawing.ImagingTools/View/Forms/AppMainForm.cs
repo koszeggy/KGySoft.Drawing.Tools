@@ -20,6 +20,7 @@ using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Windows.Forms;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
@@ -85,6 +86,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             InitPropertyBindings();
             base.ApplyViewModel();
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.UserClosing && ViewModel.IsModified)
+                e.Cancel = !ViewModel.ConfirmIfModified();
+            base.OnFormClosing(e);
         }
 
         protected override void Dispose(bool disposing)

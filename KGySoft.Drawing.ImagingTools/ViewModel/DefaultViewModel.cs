@@ -44,22 +44,37 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             base.ViewLoaded();
         }
 
+        internal bool ConfirmIfModified() => !IsModified || Confirm(Res.ConfirmMessageDiscardChanges);
+
         #endregion
 
         #region Protected Methods
+
+        protected override void OpenFile()
+        {
+            if (!ConfirmIfModified())
+                return;
+            base.OpenFile();
+        }
 
         protected override bool OpenFile(string path)
         {
             if (!base.OpenFile(path))
                 return false;
 
+            // in base IsModified means changes since opening the debugger visualizer,
+            // whereas as an application it means whether the lastly opened image changed
+            SetModified(false);
             FileName = Path.GetFileName(path);
             return true;
         }
 
         protected override void Clear()
         {
+            if (!ConfirmIfModified())
+                return;
             base.Clear();
+            SetModified(false);
             FileName = null;
         }
 
