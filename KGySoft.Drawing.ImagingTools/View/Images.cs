@@ -52,6 +52,7 @@ namespace KGySoft.Drawing.ImagingTools.View
         private static Bitmap resize;
         private static Bitmap quantize;
         private static Bitmap colors;
+        private static Bitmap compare;
 
         #endregion
 
@@ -86,6 +87,7 @@ namespace KGySoft.Drawing.ImagingTools.View
         internal static Bitmap Resize => resize ??= GetResource(nameof(Resize));
         internal static Bitmap Quantize => quantize ??= GetResource(nameof(Quantize));
         internal static Bitmap Colors => colors ??= GetResource(nameof(Colors));
+        internal static Bitmap Compare => compare ??= GetResource(nameof(Compare));
 
         #endregion
 
@@ -107,7 +109,7 @@ namespace KGySoft.Drawing.ImagingTools.View
 
             Size size = ReferenceSize.Scale(OSUtils.SystemScale);
             Icon result = icon.ExtractNearestIcon(size, PixelFormat.Format32bppArgb);
-            int mod = 0;
+            int mod;
             if (!legacyScaling || OSUtils.IsWindows8OrLater || !OSUtils.IsWindows || (mod = result.Width & 0xF) == 0)
                 return result;
 

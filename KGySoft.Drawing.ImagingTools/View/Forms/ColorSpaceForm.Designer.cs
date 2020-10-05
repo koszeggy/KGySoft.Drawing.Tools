@@ -33,7 +33,7 @@
             this.pnlSettings.Controls.Add(this.gbQuantizer);
             this.pnlSettings.Controls.Add(this.gbPixelFormat);
             this.pnlSettings.Location = new System.Drawing.Point(3, 3);
-            this.pnlSettings.Size = new System.Drawing.Size(428, 270);
+            this.pnlSettings.Size = new System.Drawing.Size(378, 270);
             // 
             // gbDitherer
             // 
@@ -42,7 +42,7 @@
             this.gbDitherer.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.gbDitherer.Location = new System.Drawing.Point(0, 155);
             this.gbDitherer.Name = "gbDitherer";
-            this.gbDitherer.Size = new System.Drawing.Size(428, 112);
+            this.gbDitherer.Size = new System.Drawing.Size(378, 112);
             this.gbDitherer.TabIndex = 2;
             this.gbDitherer.TabStop = false;
             this.gbDitherer.Text = "gbDitherer";
@@ -52,7 +52,7 @@
             this.dithererSelector.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dithererSelector.Location = new System.Drawing.Point(3, 18);
             this.dithererSelector.Name = "dithererSelector";
-            this.dithererSelector.Size = new System.Drawing.Size(422, 91);
+            this.dithererSelector.Size = new System.Drawing.Size(372, 91);
             this.dithererSelector.TabIndex = 0;
             // 
             // gbQuantizer
@@ -62,7 +62,7 @@
             this.gbQuantizer.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.gbQuantizer.Location = new System.Drawing.Point(0, 43);
             this.gbQuantizer.Name = "gbQuantizer";
-            this.gbQuantizer.Size = new System.Drawing.Size(428, 112);
+            this.gbQuantizer.Size = new System.Drawing.Size(378, 112);
             this.gbQuantizer.TabIndex = 1;
             this.gbQuantizer.TabStop = false;
             this.gbQuantizer.Text = "gbQuantizer";
@@ -72,7 +72,7 @@
             this.quantizerSelector.Dock = System.Windows.Forms.DockStyle.Fill;
             this.quantizerSelector.Location = new System.Drawing.Point(3, 18);
             this.quantizerSelector.Name = "quantizerSelector";
-            this.quantizerSelector.Size = new System.Drawing.Size(422, 91);
+            this.quantizerSelector.Size = new System.Drawing.Size(372, 91);
             this.quantizerSelector.TabIndex = 0;
             // 
             // gbPixelFormat
@@ -82,7 +82,7 @@
             this.gbPixelFormat.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.gbPixelFormat.Location = new System.Drawing.Point(0, 0);
             this.gbPixelFormat.Name = "gbPixelFormat";
-            this.gbPixelFormat.Size = new System.Drawing.Size(428, 43);
+            this.gbPixelFormat.Size = new System.Drawing.Size(378, 43);
             this.gbPixelFormat.TabIndex = 0;
             this.gbPixelFormat.TabStop = false;
             this.gbPixelFormat.Text = "gbPixelFormat";
@@ -95,15 +95,15 @@
             this.cmbPixelFormat.FormattingEnabled = true;
             this.cmbPixelFormat.Location = new System.Drawing.Point(3, 18);
             this.cmbPixelFormat.Name = "cmbPixelFormat";
-            this.cmbPixelFormat.Size = new System.Drawing.Size(422, 21);
+            this.cmbPixelFormat.Size = new System.Drawing.Size(372, 21);
             this.cmbPixelFormat.TabIndex = 0;
             // 
             // ColorSpaceForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(434, 411);
-            this.MinimumSize = new System.Drawing.Size(450, 450);
+            this.ClientSize = new System.Drawing.Size(384, 421);
+            this.MinimumSize = new System.Drawing.Size(400, 460);
             this.Name = "ColorSpaceForm";
             this.Padding = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.Text = "ColorSpaceForm";

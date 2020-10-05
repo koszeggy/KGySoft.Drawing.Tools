@@ -53,7 +53,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             errorProvider.SetIconAlignment(previewImage.ImageViewer, ErrorIconAlignment.MiddleLeft);
             ValidationMapping = new Dictionary<string, Control>
             {
-                [nameof(viewModel.PreviewImageViewModel.Image)] = previewImage.ImageViewer,
+                [nameof(viewModel.PreviewImageViewModel.PreviewImage)] = previewImage.ImageViewer,
             };
         }
 

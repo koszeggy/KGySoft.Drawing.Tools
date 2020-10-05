@@ -33,8 +33,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         internal Image Image
         {
-            get => ViewModel.Image;
-            set => ViewModel.Image = value;
+            get => ViewModel.PreviewImage;
+            set => ViewModel.PreviewImage = value;
         }
 
         internal bool AutoZoom
@@ -72,11 +72,13 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             btnAutoZoom.Image = Images.Magnifier;
             btnAntiAlias.Image = Images.SmoothZoom;
+            btnShowOriginal.Image = Images.Compare;
             base.ApplyResources();
         }
 
         protected override void ApplyViewModel()
         {
+            InitCommandBindings();
             InitPropertyBindings();
             base.ApplyViewModel();
         }
@@ -85,13 +87,24 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Private Methods
 
+        private void InitCommandBindings()
+        {
+            CommandBindings.Add(() => ViewModel.ShowOriginal = true)
+                .AddSource(btnShowOriginal, nameof(btnShowOriginal.MouseDown));
+            CommandBindings.Add(() => ViewModel.ShowOriginal = false)
+                .AddSource(btnShowOriginal, nameof(btnShowOriginal.MouseUp));
+        }
+
         private void InitPropertyBindings()
         {
-            // VM.Image -> ivPreview.Image
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Image), nameof(ivPreview.Image), ivPreview);
+            // VM.DisplayImage -> ivPreview.Image
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.DisplayImage), nameof(ivPreview.Image), ivPreview);
 
-            // VM.ButtonsEnabled -> btnAutoZoom/btnAntiAlias.Enabled
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.ButtonsEnabled), nameof(ToolStripItem.Enabled), btnAutoZoom, btnAntiAlias);
+            // VM.ZoomEnabled -> btnAutoZoom/btnAntiAlias.Enabled
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.ZoomEnabled), nameof(ToolStripItem.Enabled), btnAutoZoom, btnAntiAlias);
+
+            // VM.ShowOriginalEnabled -> btnShowOriginal.Enabled
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.ShowOriginalEnabled), nameof(ToolStripItem.Enabled), btnShowOriginal);
 
             // btnAutoZoom.Checked <-> VM.AutoZoom -> ivPreview.AutoZoom
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.AutoZoom), btnAutoZoom, nameof(btnAutoZoom.Checked));

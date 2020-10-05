@@ -191,7 +191,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             originalImage = image ?? throw new ArgumentNullException(nameof(image), PublicResources.ArgumentNull);
             PreviewImageViewModel previewImage = PreviewImageViewModel;
             previewImage.PropertyChanged += PreviewImage_PropertyChanged;
-            previewImage.Image = image;
+            previewImage.PreviewImage = previewImage.OriginalImage = image;
         }
 
         #endregion
@@ -230,6 +230,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 case nameof(IsModified):
                 case nameof(IsGenerating):
                     ApplyCommandState.Enabled = IsModified && !IsGenerating;
+                    if (e.PropertyName == nameof(IsGenerating))
+                        PreviewImageViewModel.ShowOriginalEnabled = e.NewValue is false;
                     return;
 
                 default:
@@ -256,7 +258,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             // errors
             if (error != null)
-                result.AddError(nameof(PreviewImageViewModel.Image), Res.ErrorMessageFailedToGeneratePreview(error.Message));
+                result.AddError(nameof(PreviewImageViewModel.PreviewImage), Res.ErrorMessageFailedToGeneratePreview(error.Message));
 
             return result;
         }
@@ -296,7 +298,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (disposing)
             {
                 activeTask?.Dispose();
-                Image preview = PreviewImageViewModel.Image;
+                Image preview = PreviewImageViewModel.PreviewImage;
                 PreviewImageViewModel?.Dispose();
 
                 if (!ReferenceEquals(originalImage, preview) && !keepResult)
@@ -352,7 +354,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     // preparing generate (allocations, sync operations, etc.)
                     try
                     {
-                        task.Initialize(originalImage, PreviewImageViewModel.Image == originalImage);
+                        task.Initialize(originalImage, PreviewImageViewModel.PreviewImage == originalImage);
                     }
                     catch (Exception e) when (!e.IsCriticalGdi())
                     {
@@ -436,8 +438,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void SetPreview(Bitmap image)
         {
             PreviewImageViewModel preview = PreviewImageViewModel;
-            Image toDispose = preview.Image;
-            preview.Image = image;
+            Image toDispose = preview.PreviewImage;
+            preview.PreviewImage = image;
             if (toDispose != null && toDispose != originalImage)
                 toDispose.Dispose();
         }
@@ -451,9 +453,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             var vm = (PreviewImageViewModel)sender;
 
             // preview image has been changed: updating IsModified accordingly
-            if (e.PropertyName == nameof(vm.Image))
+            if (e.PropertyName == nameof(vm.PreviewImage))
             {
-                Image image = vm.Image;
+                Image image = vm.PreviewImage;
                 SetModified(image != null && originalImage != image);
             }
         }
@@ -484,7 +486,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Explicitly Implemented Interface Methods
 
-        Bitmap IViewModel<Bitmap>.GetEditedModel() => PreviewImageViewModel.Image as Bitmap;
+        Bitmap IViewModel<Bitmap>.GetEditedModel() => PreviewImageViewModel.PreviewImage as Bitmap;
 
         #endregion
 

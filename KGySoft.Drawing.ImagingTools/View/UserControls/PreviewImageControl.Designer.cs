@@ -18,6 +18,7 @@
             this.scalingToolStrip1 = new KGySoft.Drawing.ImagingTools.View.Controls.ScalingToolStrip();
             this.btnAutoZoom = new System.Windows.Forms.ToolStripButton();
             this.btnAntiAlias = new System.Windows.Forms.ToolStripButton();
+            this.btnShowOriginal = new System.Windows.Forms.ToolStripButton();
             this.ivPreview = new KGySoft.Drawing.ImagingTools.View.Controls.ImageViewer();
             this.scalingToolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -27,10 +28,11 @@
             this.scalingToolStrip1.Dock = System.Windows.Forms.DockStyle.Left;
             this.scalingToolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnAutoZoom,
-            this.btnAntiAlias});
+            this.btnAntiAlias,
+            this.btnShowOriginal});
             this.scalingToolStrip1.Location = new System.Drawing.Point(0, 0);
             this.scalingToolStrip1.Name = "scalingToolStrip1";
-            this.scalingToolStrip1.Size = new System.Drawing.Size(24, 150);
+            this.scalingToolStrip1.Size = new System.Drawing.Size(32, 150);
             this.scalingToolStrip1.TabIndex = 0;
             this.scalingToolStrip1.Text = "tsMenu";
             // 
@@ -40,7 +42,7 @@
             this.btnAutoZoom.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnAutoZoom.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnAutoZoom.Name = "btnAutoZoom";
-            this.btnAutoZoom.Size = new System.Drawing.Size(21, 4);
+            this.btnAutoZoom.Size = new System.Drawing.Size(29, 4);
             // 
             // btnAntiAlias
             // 
@@ -48,17 +50,24 @@
             this.btnAntiAlias.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnAntiAlias.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnAntiAlias.Name = "btnAntiAlias";
-            this.btnAntiAlias.Size = new System.Drawing.Size(21, 4);
+            this.btnAntiAlias.Size = new System.Drawing.Size(29, 4);
+            // 
+            // btnShowOriginal
+            // 
+            this.btnShowOriginal.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnShowOriginal.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnShowOriginal.Name = "btnShowOriginal";
+            this.btnShowOriginal.Size = new System.Drawing.Size(29, 4);
             // 
             // ivPreview
             // 
             this.ivPreview.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ivPreview.Location = new System.Drawing.Point(24, 0);
+            this.ivPreview.Location = new System.Drawing.Point(32, 0);
             this.ivPreview.Name = "ivPreview";
-            this.ivPreview.Size = new System.Drawing.Size(126, 150);
+            this.ivPreview.Size = new System.Drawing.Size(118, 150);
             this.ivPreview.TabIndex = 1;
             // 
-            // PreviewBitmapControl
+            // PreviewImageControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -78,5 +87,6 @@
         private System.Windows.Forms.ToolStripButton btnAutoZoom;
         private System.Windows.Forms.ToolStripButton btnAntiAlias;
         private Controls.ImageViewer ivPreview;
+        private System.Windows.Forms.ToolStripButton btnShowOriginal;
     }
 }

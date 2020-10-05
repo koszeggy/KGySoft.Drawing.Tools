@@ -718,4 +718,7 @@ Dithering may help to preserve more details.</value>
   <data name="lblScalingMode.Text" xml:space="preserve">
     <value>Scaling Mode:</value>
   </data>
+  <data name="btnShowOriginal.Text" xml:space="preserve">
+    <value>Show Original</value>
+  </data>
 </root>

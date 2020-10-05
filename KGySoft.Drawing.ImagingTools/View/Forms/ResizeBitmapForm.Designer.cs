@@ -47,7 +47,7 @@
             // 
             this.pnlSettings.Controls.Add(this.tblNewSize);
             this.pnlSettings.Padding = new System.Windows.Forms.Padding(5);
-            this.pnlSettings.Size = new System.Drawing.Size(304, 143);
+            this.pnlSettings.Size = new System.Drawing.Size(314, 143);
             // 
             // tblNewSize
             // 
@@ -75,7 +75,7 @@
             this.tblNewSize.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tblNewSize.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tblNewSize.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tblNewSize.Size = new System.Drawing.Size(294, 137);
+            this.tblNewSize.Size = new System.Drawing.Size(304, 137);
             this.tblNewSize.TabIndex = 1;
             // 
             // chbMaintainAspectRatio
@@ -86,7 +86,7 @@
             this.chbMaintainAspectRatio.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.chbMaintainAspectRatio.Location = new System.Drawing.Point(103, 3);
             this.chbMaintainAspectRatio.Name = "chbMaintainAspectRatio";
-            this.chbMaintainAspectRatio.Size = new System.Drawing.Size(188, 18);
+            this.chbMaintainAspectRatio.Size = new System.Drawing.Size(198, 18);
             this.chbMaintainAspectRatio.TabIndex = 10;
             this.chbMaintainAspectRatio.Text = "chbMaintainAspectRatio";
             this.chbMaintainAspectRatio.UseVisualStyleBackColor = true;
@@ -107,9 +107,9 @@
             this.pnlHeightPx.Controls.Add(this.lblHeightPx);
             this.pnlHeightPx.Controls.Add(this.txtHeightPx);
             this.pnlHeightPx.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlHeightPx.Location = new System.Drawing.Point(200, 84);
+            this.pnlHeightPx.Location = new System.Drawing.Point(205, 84);
             this.pnlHeightPx.Name = "pnlHeightPx";
-            this.pnlHeightPx.Size = new System.Drawing.Size(91, 21);
+            this.pnlHeightPx.Size = new System.Drawing.Size(96, 21);
             this.pnlHeightPx.TabIndex = 7;
             // 
             // lblHeightPx
@@ -140,7 +140,7 @@
             this.pnlHeightPercent.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlHeightPercent.Location = new System.Drawing.Point(103, 84);
             this.pnlHeightPercent.Name = "pnlHeightPercent";
-            this.pnlHeightPercent.Size = new System.Drawing.Size(91, 21);
+            this.pnlHeightPercent.Size = new System.Drawing.Size(96, 21);
             this.pnlHeightPercent.TabIndex = 6;
             // 
             // lblHeightPercent
@@ -169,9 +169,9 @@
             this.pnlWidthPx.Controls.Add(this.lblWidthPx);
             this.pnlWidthPx.Controls.Add(this.txtWidthPx);
             this.pnlWidthPx.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlWidthPx.Location = new System.Drawing.Point(200, 57);
+            this.pnlWidthPx.Location = new System.Drawing.Point(205, 57);
             this.pnlWidthPx.Name = "pnlWidthPx";
-            this.pnlWidthPx.Size = new System.Drawing.Size(91, 21);
+            this.pnlWidthPx.Size = new System.Drawing.Size(96, 21);
             this.pnlWidthPx.TabIndex = 4;
             // 
             // lblWidthPx
@@ -200,9 +200,9 @@
             this.rbByPixels.AutoSize = true;
             this.rbByPixels.Dock = System.Windows.Forms.DockStyle.Top;
             this.rbByPixels.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbByPixels.Location = new System.Drawing.Point(200, 30);
+            this.rbByPixels.Location = new System.Drawing.Point(205, 30);
             this.rbByPixels.Name = "rbByPixels";
-            this.rbByPixels.Size = new System.Drawing.Size(91, 18);
+            this.rbByPixels.Size = new System.Drawing.Size(96, 18);
             this.rbByPixels.TabIndex = 1;
             this.rbByPixels.TabStop = true;
             this.rbByPixels.Text = "rbByPixels";
@@ -215,7 +215,7 @@
             this.rbByPercentage.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.rbByPercentage.Location = new System.Drawing.Point(103, 30);
             this.rbByPercentage.Name = "rbByPercentage";
-            this.rbByPercentage.Size = new System.Drawing.Size(91, 18);
+            this.rbByPercentage.Size = new System.Drawing.Size(96, 18);
             this.rbByPercentage.TabIndex = 0;
             this.rbByPercentage.TabStop = true;
             this.rbByPercentage.Text = "rbByPercentage";
@@ -228,7 +228,7 @@
             this.pnlWidthPercent.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlWidthPercent.Location = new System.Drawing.Point(103, 57);
             this.pnlWidthPercent.Name = "pnlWidthPercent";
-            this.pnlWidthPercent.Size = new System.Drawing.Size(91, 21);
+            this.pnlWidthPercent.Size = new System.Drawing.Size(96, 21);
             this.pnlWidthPercent.TabIndex = 3;
             // 
             // lblWidthPercent
@@ -283,15 +283,15 @@
             this.cmbScalingMode.FormattingEnabled = true;
             this.cmbScalingMode.Location = new System.Drawing.Point(103, 111);
             this.cmbScalingMode.Name = "cmbScalingMode";
-            this.cmbScalingMode.Size = new System.Drawing.Size(188, 21);
+            this.cmbScalingMode.Size = new System.Drawing.Size(198, 21);
             this.cmbScalingMode.TabIndex = 9;
             // 
             // ResizeBitmapForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(304, 281);
-            this.MinimumSize = new System.Drawing.Size(320, 320);
+            this.ClientSize = new System.Drawing.Size(314, 291);
+            this.MinimumSize = new System.Drawing.Size(330, 330);
             this.Name = "ResizeBitmapForm";
             this.Text = "ResizeBitmapForm";
             this.pnlSettings.ResumeLayout(false);

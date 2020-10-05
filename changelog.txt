@@ -12,7 +12,8 @@
 + KGySoft.Drawing.ImagingTools.exe
 ==================================
 + Key shortcuts for several commands
-+ Save/Load: Supporting saving load raw bitmap data, which preserves any pixel format
++ Improving the image viewer control performance for large images
++ Save/Load: Supporting saving/loading raw bitmap data, which preserves any pixel format
 + Color Settings:
   + Count Colors
 + New Edit Image drop down button
