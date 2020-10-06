@@ -16,8 +16,10 @@
 
 #region Usings
 
+using System;
 using System.IO;
 using KGySoft.CoreLibraries;
+using KGySoft.Drawing.ImagingTools.Model;
 
 #endregion
 
@@ -66,6 +68,40 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             // whereas as an application it means whether the lastly opened image changed
             SetModified(false);
             FileName = Path.GetFileName(path);
+            return true;
+        }
+
+        protected override bool SaveFile(string fileName, string selectedFormat)
+        {
+            bool success = base.SaveFile(fileName, selectedFormat);
+
+            // was not saved or just a single frame was saved
+            if (!success || ImageInfo.HasFrames && !IsCompoundView)
+                return false;
+
+            // not clearing the state if the compound image was not saved by its primary format
+            if (ImageInfo.HasFrames)
+            {
+                switch (ImageInfo.Type)
+                {
+                    case ImageInfoType.Pages:
+                        if (selectedFormat != "*.tiff")
+                            return false;
+                        break;
+                    case ImageInfoType.MultiRes:
+                    case ImageInfoType.Icon:
+                        if (selectedFormat != "*.ico")
+                            return false;
+                        break;
+                    case ImageInfoType.Animation:
+                        if (selectedFormat != "*.gif")
+                            return false;
+                        break;
+                }
+            }
+
+            FileName = fileName;
+            SetModified(false);
             return true;
         }
 

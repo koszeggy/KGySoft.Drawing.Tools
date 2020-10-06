@@ -321,6 +321,61 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
         }
 
+        protected virtual bool SaveFile(string fileName, string selectedFormat)
+        {
+            ImageCodecInfo encoder = encoderCodecs.FirstOrDefault(e => e.FilenameExtension.Equals(selectedFormat, StringComparison.OrdinalIgnoreCase));
+
+            try
+            {
+                // BMP
+                if (encoder?.FormatID == ImageFormat.Bmp.Guid)
+                    GetCurrentImage().Image.SaveAsBmp(fileName);
+                // JPEG
+                else if (encoder?.FormatID == ImageFormat.Jpeg.Guid)
+                    GetCurrentImage().Image.SaveAsJpeg(fileName, 95);
+                // GIF
+                else if (encoder?.FormatID == ImageFormat.Gif.Guid)
+                    GetCurrentImage().Image.SaveAsGif(fileName);
+                // Tiff
+                else if (encoder?.FormatID == ImageFormat.Tiff.Guid)
+                {
+                    if (imageInfo.HasFrames && IsCompoundView)
+                    {
+                        using (Stream stream = File.Create(fileName))
+                            imageInfo.Frames.Select(f => f.Image).SaveAsMultipageTiff(stream);
+                    }
+                    else
+                        GetCurrentImage().Image.SaveAsTiff(fileName);
+                }
+                // PNG
+                else if (encoder?.FormatID == ImageFormat.Png.Guid)
+                    GetCurrentImage().Image.SaveAsPng(fileName);
+                // icon
+                else if (selectedFormat == "*.ico")
+                    SaveIcon(fileName);
+                // windows metafile
+                else if (selectedFormat == "*.wmf" && imageInfo.IsMetafile)
+                    ((Metafile)imageInfo.Image).SaveAsWmf(fileName);
+                // enhanced metafile
+                else if (selectedFormat == "*.emf" && imageInfo.IsMetafile)
+                    ((Metafile)imageInfo.Image).SaveAsEmf(fileName);
+                // Some unrecognized encoder - we assume it can handle every pixel format
+                else if (encoder != null)
+                    GetCurrentImage().Image.Save(fileName, encoder, null);
+                else if (selectedFormat == "*.bdat")
+                    SaveBitmapData(fileName);
+                else
+                    throw new InvalidOperationException(Res.InternalError($"Unexpected format without encoder: {selectedFormat}"));
+
+                return true;
+            }
+            catch (Exception e) when (!e.IsCriticalGdi())
+            {
+                ShowError(Res.ErrorMessageFailedToSaveImage(e.Message));
+                return false;
+            }
+        }
+
         protected virtual void Clear()
         {
             Image = null;
@@ -1005,54 +1060,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             int filterIndex = SaveFileFilterIndex;
             string selectedFormat = SaveFileFilter.Split('|')[((filterIndex - 1) << 1) + 1];
-            ImageCodecInfo encoder = encoderCodecs.FirstOrDefault(e => e.FilenameExtension.Equals(selectedFormat, StringComparison.OrdinalIgnoreCase));
 
-            try
-            {
-                // BMP
-                if (encoder?.FormatID == ImageFormat.Bmp.Guid)
-                    GetCurrentImage().Image.SaveAsBmp(fileName);
-                // JPEG
-                else if (encoder?.FormatID == ImageFormat.Jpeg.Guid)
-                    GetCurrentImage().Image.SaveAsJpeg(fileName, 95);
-                // GIF
-                else if (encoder?.FormatID == ImageFormat.Gif.Guid)
-                    GetCurrentImage().Image.SaveAsGif(fileName);
-                // Tiff
-                else if (encoder?.FormatID == ImageFormat.Tiff.Guid)
-                {
-                    if (imageInfo.HasFrames && IsCompoundView)
-                    {
-                        using (Stream stream = File.Create(fileName))
-                            imageInfo.Frames.Select(f => f.Image).SaveAsMultipageTiff(stream);
-                    }
-                    else
-                        GetCurrentImage().Image.SaveAsTiff(fileName);
-                }
-                // PNG
-                else if (encoder?.FormatID == ImageFormat.Png.Guid)
-                    GetCurrentImage().Image.SaveAsPng(fileName);
-                // icon
-                else if (selectedFormat == "*.ico")
-                    SaveIcon(fileName);
-                // windows metafile
-                else if (selectedFormat == "*.wmf" && imageInfo.IsMetafile)
-                    ((Metafile)imageInfo.Image).SaveAsWmf(fileName);
-                // enhanced metafile
-                else if (selectedFormat == "*.emf" && imageInfo.IsMetafile)
-                    ((Metafile)imageInfo.Image).SaveAsEmf(fileName);
-                // Some unrecognized encoder - we assume it can handle every pixel format
-                else if (encoder != null)
-                    GetCurrentImage().Image.Save(fileName, encoder, null);
-                else if (selectedFormat == "*.bdat")
-                    SaveBitmapData(fileName);
-                else
-                    throw new InvalidOperationException(Res.InternalError($"Unexpected format without encoder: {selectedFormat}"));
-            }
-            catch (Exception e) when (!e.IsCriticalGdi())
-            {
-                ShowError(Res.ErrorMessageFailedToSaveImage(e.Message));
-            }
+            SaveFile(fileName, selectedFormat);
         }
 
         private void OnClearCommand() => Clear();

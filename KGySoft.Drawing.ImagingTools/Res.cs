@@ -102,6 +102,9 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>File Format</summary>
         internal static string TextFileFormat => Get("Text_FileFormat");
 
+        /// <summary>Unnamed</summary>
+        internal static string TextUnnamed => Get("Text_Unnamed");
+
         /// <summary>Toggles whether the animation is handled as a single image.
         /// • When checked, animation will play and saving as GIF saves the whole animation.
         /// • When not checked, frame navigation will be enabled and saving saves only the selected frame.</summary>

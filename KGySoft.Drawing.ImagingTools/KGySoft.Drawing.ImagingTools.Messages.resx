@@ -180,6 +180,9 @@
   <data name="Text_FileFormat" xml:space="preserve">
     <value>File Format</value>
   </data>
+  <data name="Text_Unnamed" xml:space="preserve">
+    <value>Unnamed</value>
+  </data>
   <data name="Text_AlphaValueFormat" xml:space="preserve">
     <value>A: {0}</value>
   </data>
