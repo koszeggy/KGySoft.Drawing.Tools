@@ -154,6 +154,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         protected override bool AffectsModifiedState(string propertyName) => false; // set explicitly
         protected virtual bool IsPaletteReadOnly => imageInfo.Type == ImageInfoType.Icon || ReadOnly;
+        protected virtual bool IsDebuggerVisualizer => true;
 
         #endregion
 
@@ -311,7 +312,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             try
             {
                 FromFile(path);
-                SetModified(true);
+                SetModified(IsDebuggerVisualizer);
                 return true;
             }
             catch (Exception e) when (!e.IsCritical())
@@ -379,7 +380,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         protected virtual void Clear()
         {
             Image = null;
-            SetModified(true);
+            SetModified(IsDebuggerVisualizer);
         }
 
         protected override void Dispose(bool disposing)
@@ -1038,6 +1039,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnViewImagePreviewSizeChangedCommand()
         {
+            if (!imageInfo.IsMultiRes || currentFrame != -1)
+                return;
             UpdateMultiResImage();
             UpdateInfo();
         }

@@ -29,8 +29,18 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
     {
         #region Properties
 
+        #region Internal Properties
+        
         internal string[] CommandLineArguments { get => Get<string[]>(); set => Set(value); }
         internal string FileName { get => Get<string>(); set => Set(value); }
+
+        #endregion
+
+        #region Protected Properties
+
+        protected override bool IsDebuggerVisualizer => false;
+
+        #endregion
 
         #endregion
 
@@ -41,8 +51,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal override void ViewLoaded()
         {
             string[] args = CommandLineArguments;
-            if (args != null)
+            if (!args.IsNullOrEmpty())
                 ProcessArgs(CommandLineArguments);
+            else
+                UpdateInfo();
             base.ViewLoaded();
         }
 
@@ -63,10 +75,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             if (!base.OpenFile(path))
                 return false;
-
-            // in base IsModified means changes since opening the debugger visualizer,
-            // whereas as an application it means whether the lastly opened image changed
-            SetModified(false);
             FileName = Path.GetFileName(path);
             return true;
         }
@@ -110,7 +118,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (!ConfirmIfModified())
                 return;
             base.Clear();
-            SetModified(false);
             FileName = null;
         }
 
