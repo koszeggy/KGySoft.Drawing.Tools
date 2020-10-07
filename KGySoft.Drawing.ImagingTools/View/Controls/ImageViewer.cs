@@ -27,6 +27,7 @@ using System.Windows.Forms;
 
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.Imaging;
+using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.ImagingTools.WinApi;
 
 #endregion
@@ -59,73 +60,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         {
             #region Nested classes
 
-            private sealed class GenerateTask : IDisposable
+            private sealed class GenerateTask : AsyncTaskBase
             {
                 #region Fields
 
-                #region Private Fields
-
-                private readonly ManualResetEventSlim completedEvent;
-
-                private volatile bool isDisposed;
-
-                #endregion
-
-                #region Internal Fields
-
                 internal Image SourceImage;
                 internal Size Size;
-                internal volatile bool IsCanceled;
 
                 #endregion
-
-                #endregion
-
-                #region Constructors
-
-                internal GenerateTask() => completedEvent = new ManualResetEventSlim(false);
-
-                #endregion
-
-                #region Methods
-
-                #region Public Methods
-
-                public void Dispose()
-                {
-                    if (isDisposed)
-                        return;
-                    completedEvent.Set();
-                    completedEvent.Dispose();
-                    isDisposed = true;
-                }
-
-                #endregion
-
-                #region Internal Methods
-
-                internal void SetCompleted() => completedEvent.Set();
-
-                internal void WaitForCompletion()
-                {
-                    if (isDisposed)
-                        return;
-
-                    try
-                    {
-                        completedEvent.Wait();
-                    }
-                    catch (ObjectDisposedException)
-                    {
-                        // it can happen that the task has just been completed after querying IsCompleted but this part
-                        // must not be in a lock because then EndGeneratePreview could possibly never end
-                    }
-                }
-
-                #endregion
-
-                #endregion
-
             }
 
             #endregion
@@ -328,9 +270,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 }
             }
 
-            /// <summary>
-            /// Generates the display image on a pool thread.
-            /// </summary>
             [SuppressMessage("Reliability", "CA2002:Do not lock on objects with weak identity", Justification = "False alarm, task.ReferenceImage is not a remote object")]
             private void DoGenerate(object state)
             {
@@ -363,6 +302,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     {
                         Debug.Assert(sourceClone == null && owner.image != null);
                         Image image = owner.image;
+
+                        // As OnPaint can occur any time in the UI thread we lock on it. See also PaintImage.
                         lock (image)
                         {
                             try
@@ -507,7 +448,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 try
                 {
                     result = new Bitmap(task.Size.Width, task.Size.Height, PixelFormat.Format32bppPArgb);
-
                     using IReadableBitmapData src = ((Bitmap)task.SourceImage).GetReadableBitmapData();
                     using IReadWriteBitmapData dst = result.GetReadWriteBitmapData();
                     var cfg = new AsyncConfig { IsCancelRequestedCallback = () => task.IsCanceled, ThrowIfCanceled = false, MaxDegreeOfParallelism = Environment.ProcessorCount >> 1 };
@@ -867,13 +807,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             if ((flags & InvalidateFlags.DisplayImage) != InvalidateFlags.None)
                 previewGenerator.BeginGenerateDisplayImage();
-            //{
-            //    FreeDisplayImage();
-            //    if (IsSmoothMetafileNeeded)
-            //        asyncPreviewGenerator.BeginGenerate();
-            //    else
-            //        asyncPreviewGenerator?.CancelPendingGenerate();
-            //}
 
             Invalidate();
         }

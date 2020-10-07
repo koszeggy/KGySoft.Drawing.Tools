@@ -22,6 +22,7 @@ using System.Threading;
 
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.Imaging;
+using KGySoft.Drawing.ImagingTools.Model;
 
 #endregion
 
@@ -33,73 +34,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region CountTask class
 
-        private sealed class CountTask : IDisposable
+        private sealed class CountTask : AsyncTaskBase
         {
             #region Fields
 
-            #region Private Fields
-
-            private readonly ManualResetEventSlim completedEvent;
-            private volatile bool isDisposed;
-
-            #endregion
-
-            #region Internal Fields
-
-            internal readonly Bitmap Bitmap;
-            internal volatile bool IsCanceled;
-
-            #endregion
-
-            #endregion
-
-            #region Constructors
-
-            internal CountTask(Bitmap bitmap)
-            {
-                completedEvent = new ManualResetEventSlim(false);
-                Bitmap = bitmap;
-            }
-
-            #endregion
-
-            #region Methods
-
-            #region Public Methods
-
-            public void Dispose()
-            {
-                if (isDisposed)
-                    return;
-                completedEvent.Set();
-                completedEvent.Dispose();
-                isDisposed = true;
-            }
-
-            #endregion
-
-            #region Internal Methods
-
-            internal void SetCompleted() => completedEvent.Set();
-
-            internal void WaitForCompletion()
-            {
-                if (isDisposed)
-                    return;
-
-                try
-                {
-                    completedEvent.Wait();
-                }
-                catch (ObjectDisposedException)
-                {
-                    // it can happen that the task has just been completed after querying IsCompleted but this part
-                    // must not be in a lock because then EndGeneratePreview could possibly never end
-                }
-            }
-
-            #endregion
-
+            internal Bitmap Bitmap;
 
             #endregion
         }
@@ -122,7 +61,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal object ProgressSyncRoot => drawingProgressManager;
         internal bool IsProcessing { get => Get<bool>(); set => Set(value); }
         internal DrawingProgress Progress { get => Get<DrawingProgress>(); set => Set(value); }
-        internal string DisplayText { get => Get<string>(Res.TextCountingColors); set => Set(value); }
+        internal string DisplayText { get => Get(() => Res.TextCountingColors); set => Set(value); }
 
         internal ICommand CancelCommand => Get(() => new SimpleCommand(OnCancelCommand));
 
@@ -178,7 +117,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void BeginCountColors(Bitmap bitmap)
         {
             IsProcessing = true;
-            task = new CountTask(bitmap);
+            task = new CountTask { Bitmap = bitmap };
             ThreadPool.QueueUserWorkItem(DoCountColors);
         }
 

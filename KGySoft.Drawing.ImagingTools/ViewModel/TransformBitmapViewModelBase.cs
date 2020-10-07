@@ -25,6 +25,7 @@ using System.Threading;
 
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
+using KGySoft.Drawing.ImagingTools.Model;
 
 #endregion
 
@@ -34,89 +35,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
     {
         #region Nested Classes
 
-        protected abstract class GenerateTaskBase : IDisposable
+        protected abstract class GenerateTaskBase : AsyncTaskBase
         {
-            #region Fields
-
-            #region Internal Fields
-
-            internal volatile bool IsCanceled;
-
-            #endregion
-
-            #region Protected Fields
-
-            protected volatile bool IsDisposed;
-
-            #endregion
-
-            #region Private Fields
-
-            private readonly ManualResetEventSlim completedEvent;
-
-            #endregion
-
-            #endregion
-
-            #region Constructors
-
-            protected GenerateTaskBase() => completedEvent = new ManualResetEventSlim(false);
-
-            #endregion
-
             #region Methods
-
-            #region Public Methods
-
-            public void Dispose()
-            {
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-
-            #endregion
-
-            #region Internal Methods
 
             internal abstract void Initialize(Bitmap source, bool isInUse);
             internal abstract IAsyncResult BeginGenerate(AsyncConfig asyncConfig);
             internal abstract Bitmap EndGenerate(IAsyncResult asyncResult);
-            internal virtual void SetCompleted() => completedEvent.Set();
-
-            internal void WaitForCompletion()
-            {
-                if (IsDisposed)
-                    return;
-
-                try
-                {
-                    completedEvent.Wait();
-                }
-                catch (ObjectDisposedException)
-                {
-                    // it can happen that the task has just been completed after querying IsCompleted but this part
-                    // must not be in a lock because then EndGeneratePreview could possibly never end
-                }
-            }
-
-            #endregion
-
-            #region Protected Methods
-
-            protected virtual void Dispose(bool disposing)
-            {
-                if (IsDisposed)
-                    return;
-                if (disposing)
-                {
-                    completedEvent.Set();
-                    completedEvent.Dispose();
-                }
-
-                IsDisposed = true;
-            }
-
-            #endregion
 
             #endregion
         }
