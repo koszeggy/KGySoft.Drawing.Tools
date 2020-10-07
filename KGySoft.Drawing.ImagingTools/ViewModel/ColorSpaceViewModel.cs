@@ -211,7 +211,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             //    return result;
 
             // warnings
-            if (!useQuantizer && originalPixelFormat != pixelFormat && originalBpp > 32 && bpp > 32)
+            if (!useQuantizer && originalPixelFormat != pixelFormat && originalPixelFormat.IsWide() && bpp > 32)
                 result.AddWarning(nameof(PixelFormat), Res.WarningMessageWideConversionLoss(originalPixelFormat));
 
             if (bppHint > bpp)
