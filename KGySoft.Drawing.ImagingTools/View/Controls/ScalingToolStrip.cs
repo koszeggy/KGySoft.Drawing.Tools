@@ -16,10 +16,13 @@
 
 #region Usings
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+
+using KGySoft.Drawing.ImagingTools.WinApi;
 
 #endregion
 
@@ -95,25 +98,24 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             {
                 Rectangle imageRect = e.ImageRectangle;
                 Image image = e.Image;
+                if (imageRect == Rectangle.Empty || image == null)
+                    return;
 
-                if (imageRect != Rectangle.Empty && image != null)
+                bool disposeImage = false;
+                if (!e.Item.Enabled)
                 {
-                    bool disposeImage = false;
-                    if (!e.Item.Enabled)
-                    {
-                        image = CreateDisabledImage(image);
-                        disposeImage = true;
-                    }
-
-                    // Draw the checkmark background (providing no image)
-                    base.OnRenderItemCheck(new ToolStripItemImageRenderEventArgs(e.Graphics, e.Item, null, e.ImageRectangle));
-
-                    // Draw the checkmark image scaled to the image rectangle
-                    e.Graphics.DrawImage(image, imageRect, new Rectangle(Point.Empty, image.Size), GraphicsUnit.Pixel);
-
-                    if (disposeImage)
-                        image.Dispose();
+                    image = CreateDisabledImage(image);
+                    disposeImage = true;
                 }
+
+                // Draw the checkmark background (providing no image)
+                base.OnRenderItemCheck(new ToolStripItemImageRenderEventArgs(e.Graphics, e.Item, null, e.ImageRectangle));
+
+                // Draw the checkmark image scaled to the image rectangle
+                e.Graphics.DrawImage(image, imageRect, new Rectangle(Point.Empty, image.Size), GraphicsUnit.Pixel);
+
+                if (disposeImage)
+                    image.Dispose();
             }
 
             protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
@@ -152,10 +154,23 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Constructors
 
-        internal ScalingToolStrip()
+        public ScalingToolStrip()
         {
             ImageScalingSize = Size.Round(this.ScaleSize(referenceSize));
             Renderer = new ScalingToolStripMenuRenderer();
+        }
+
+        #endregion
+
+        #region Methods
+
+        protected override void WndProc(ref Message m)
+        {
+            base.WndProc(ref m);
+
+            // ensuring that items can be clicked even if the container form is not activated
+            if (m.Msg == Constants.WM_MOUSEACTIVATE && m.Result == (IntPtr)Constants.MA_ACTIVATEANDEAT)
+                m.Result = (IntPtr)Constants.MA_ACTIVATE;
         }
 
         #endregion

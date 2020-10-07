@@ -28,7 +28,6 @@ using System.Linq;
 
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
-using KGySoft.Drawing.Imaging;
 using KGySoft.Reflection;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;
@@ -72,7 +71,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
         internal bool AsImage { get => Get<bool>(); set => Set(value); }
         internal bool AsImageEnabled { get => Get<bool>(); set => Set(value); }
         internal PixelFormat[] PixelFormats => Get(() => Enum<PixelFormat>.GetValues().Where(pf => pf.IsValidFormat()).OrderBy(pf => pf & PixelFormat.Max).ToArray());
-        internal PixelFormat PixelFormat { get => Get<PixelFormat>(); set => Set(value); }
+        internal PixelFormat PixelFormat { get => Get(PixelFormat.Format32bppArgb); set => Set(value); }
         internal bool PixelFormatEnabled { get => Get<bool>(); set => Set(value); }
 
         internal bool Bitmap { get => Get<bool>(); set => Set(value); }

@@ -6,6 +6,33 @@
 ===============================================================================
 
 ~~~~~~~~~
++ v2.3.0:
+~~~~~~~~~
+
++ KGySoft.Drawing.ImagingTools.exe
+==================================
++ Key shortcuts for several commands
++ Improving the image viewer control performance for large images
++ Save/Load: Supporting saving/loading raw bitmap data, which preserves any pixel format
++ Color Settings:
+  + Count Colors
++ New Edit Image drop down button
+  + Rotate Left/Right
+  + Resize Bitmap
+  + Pixel Format/Quantizing/Dithering
+  + Adjust Brightness/Contrast/Gamma
++ Tool strip items can be clicked even if the container form is not activated
++ API changes:
+  + ViewModelFactory class:
+    + New CreateResizeBitmap method
+    + New CreateAdjustColorSpace method
+    + New CreateCountColors method
+    + New CreateAdjustBrightness method
+    + New CreateAdjustContrast method
+    + New CreateAdjustGamma method
+
+
+~~~~~~~~~
 * v2.2.1:
 ~~~~~~~~~
 

@@ -38,13 +38,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             : base(viewModel)
         {
             InitializeComponent();
-
-            if (OSUtils.IsWindows || SystemInformation.HighContrast)
-                return;
-
-            // fixing "dark on dark" menu issue on Linux
-            var menuItemBackColor = Color.FromArgb(ProfessionalColors.MenuStripGradientBegin.ToArgb());
-            miBackColor.BackColor = miShowPalette.BackColor = miBackColorDefault.BackColor = menuItemBackColor;
         }
 
         #endregion
@@ -86,6 +79,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Protected Methods
 
+        protected override void OnLoad(EventArgs e)
+        {
+            tsMenu.FixAppearance();
+            base.OnLoad(e);
+        }
+
         protected override void ApplyResources()
         {
             // applying static resources
@@ -96,12 +95,20 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             btnSave.Image = Images.Save;
             btnClear.Image = Images.Clear;
             btnColorSettings.Image = Images.Palette;
-            miShowPalette.Image = Images.Palette;
-            miBackColorDefault.Image = Images.Check;
             btnPrev.Image = Images.Prev;
             btnNext.Image = Images.Next;
             btnConfiguration.Image = Images.Settings;
             btnAntiAlias.Image = Images.SmoothZoom;
+            btnEdit.Image = Images.Edit;
+
+            miShowPalette.Image = Images.Palette;
+            miBackColorDefault.Image = Images.Check;
+            miRotateLeft.Image = Images.RotateLeft;
+            miRotateRight.Image = Images.RotateRight;
+            miResizeBitmap.Image = Images.Resize;
+            miColorSpace.Image = Images.Quantize;
+            miAdjustColors.Image = Images.Colors;
+
             toolTip.SetToolTip(lblNotification, Res.Get($"{nameof(lblNotification)}.ToolTip"));
 
             // base cannot handle these because components do not have names and dialogs are not even added to components field
@@ -116,6 +123,33 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             InitCommandBindings();
             base.ApplyViewModel();
             imageViewer.Focus();
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            switch (keyData)
+            {
+                case Keys.Control | Keys.O:
+                    btnOpen.PerformClick();
+                    return true;
+                case Keys.Control | Keys.S:
+                    btnSave.PerformClick();
+                    return true;
+                case Keys.Control | Keys.Delete:
+                    btnClear.PerformClick();
+                    return true;
+                case Keys.Alt | Keys.Z:
+                    btnAutoZoom.PerformClick();
+                    return true;
+                case Keys.Shift | Keys.Right:
+                    btnNext.PerformClick();
+                    return true;
+                case Keys.Shift | Keys.Left:
+                    btnPrev.PerformClick();
+                    return true;
+                default:
+                    return base.ProcessCmdKey(ref msg, keyData);
+            }
         }
 
         protected override void Dispose(bool disposing)
@@ -138,7 +172,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             ViewModel.SelectFileToOpenCallback = SelectFileToOpen;
             ViewModel.SelectFileToSaveCallback = SelectFileToSave;
             ViewModel.ApplyViewSizeCallback = ApplySize;
-            ViewModel.UpdatePreviewImageCallback = () => imageViewer.Invalidate();
+            ViewModel.UpdatePreviewImageCallback = () => imageViewer.UpdateImage();
             ViewModel.GetCompoundViewIconCallback = GetCompoundViewIcon;
         }
 
@@ -161,8 +195,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.AutoZoom), nameof(imageViewer.AutoZoom), imageViewer);
 
             // VM.Zoom <-> imageViewer.Zoom
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Zoom), nameof(imageViewer.Zoom), imageViewer);
-            CommandBindings.AddPropertyBinding(imageViewer, nameof(imageViewer.Zoom), nameof(ViewModel.Zoom), ViewModel);
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.Zoom), imageViewer, nameof(imageViewer.Zoom));
 
             // VM.SmoothZooming -> btnAntiAlias.Checked, imageViewer.SmoothZooming
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SmoothZooming), nameof(btnAntiAlias.Checked), btnAntiAlias);
@@ -191,19 +224,49 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         }
         private void InitCommandBindings()
         {
-            // ViewModel commands
+            // View
             CommandBindings.Add(ViewModel.SetAutoZoomCommand, ViewModel.SetAutoZoomCommandState)
                 .WithParameter(() => btnAutoZoom.Checked)
                 .AddSource(btnAutoZoom, nameof(btnAutoZoom.CheckedChanged));
             CommandBindings.Add(ViewModel.SetSmoothZoomingCommand, ViewModel.SetSmoothZoomingCommandState)
                 .WithParameter(() => btnAntiAlias.Checked)
                 .AddSource(btnAntiAlias, nameof(btnAntiAlias.CheckedChanged));
+
+            // File
             CommandBindings.Add(ViewModel.OpenFileCommand, ViewModel.OpenFileCommandState)
                 .AddSource(btnOpen, nameof(btnOpen.Click));
             CommandBindings.Add(ViewModel.SaveFileCommand, ViewModel.SaveFileCommandState)
                 .AddSource(btnSave, nameof(btnSave.Click));
             CommandBindings.Add(ViewModel.ClearCommand, ViewModel.ClearCommandState)
                 .AddSource(btnClear, nameof(btnClear.Click));
+
+            // Color Settings
+            CommandBindings.Add<EventArgs>(OnSetBackColorCommand)
+                .AddSource(miBackColorDefault, nameof(miBackColorDefault.Click))
+                .AddSource(miBackColorBlack, nameof(miBackColorBlack.Click))
+                .AddSource(miBackColorWhite, nameof(miBackColorWhite.Click));
+            CommandBindings.Add(ViewModel.ShowPaletteCommand, ViewModel.ShowPaletteCommandState)
+                .AddSource(miShowPalette, nameof(miShowPalette.Click));
+            CommandBindings.Add(ViewModel.CountColorsCommand, ViewModel.CountColorsCommandState)
+                .AddSource(miCountColors, nameof(miCountColors.Click));
+
+            // Edit
+            CommandBindings.Add(ViewModel.RotateLeftCommand, ViewModel.EditBitmapCommandState)
+                .AddSource(miRotateLeft, nameof(miRotateLeft.Click));
+            CommandBindings.Add(ViewModel.RotateRightCommand, ViewModel.EditBitmapCommandState)
+                .AddSource(miRotateRight, nameof(miRotateRight.Click));
+            CommandBindings.Add(ViewModel.ResizeBitmapCommand, ViewModel.EditBitmapCommandState)
+                .AddSource(miResizeBitmap, nameof(miResizeBitmap.Click));
+            CommandBindings.Add(ViewModel.AdjustColorSpaceCommand, ViewModel.EditBitmapCommandState)
+                .AddSource(miColorSpace, nameof(miColorSpace.Click));
+            CommandBindings.Add(ViewModel.AdjustBrightnessCommand, ViewModel.EditBitmapCommandState)
+                .AddSource(miBrightness, nameof(miBrightness.Click));
+            CommandBindings.Add(ViewModel.AdjustContrastCommand, ViewModel.EditBitmapCommandState)
+                .AddSource(miContrast, nameof(miContrast.Click));
+            CommandBindings.Add(ViewModel.AdjustGammaCommand, ViewModel.EditBitmapCommandState)
+                .AddSource(miGamma, nameof(miGamma.Click));
+
+            // Compound controls
             CommandBindings.Add(ViewModel.SetCompoundViewCommand, ViewModel.SetCompoundViewCommandState)
                 .WithParameter(() => btnCompound.Checked)
                 .AddSource(btnCompound, nameof(btnCompound.CheckedChanged));
@@ -213,8 +276,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 .AddSource(btnPrev, nameof(btnPrev.Click));
             CommandBindings.Add(ViewModel.NextImageCommand, ViewModel.NextImageCommandState)
                 .AddSource(btnNext, nameof(btnNext.Click));
-            CommandBindings.Add(ViewModel.ShowPaletteCommand, ViewModel.ShowPaletteCommandState)
-                .AddSource(miShowPalette, nameof(miShowPalette.Click));
             CommandBindings.Add(ViewModel.ManageInstallationsCommand)
                 .AddSource(btnConfiguration, nameof(btnConfiguration.Click));
             CommandBindings.Add(ViewModel.ViewImagePreviewSizeChangedCommand)
@@ -226,10 +287,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 .AddSource(this, nameof(Resize));
             CommandBindings.Add(OnPreviewImageResizedCommand)
                 .AddSource(imageViewer, nameof(imageViewer.SizeChanged));
-            CommandBindings.Add<EventArgs>(OnSetBackColorCommand)
-                .AddSource(miBackColorDefault, nameof(miBackColorDefault.Click))
-                .AddSource(miBackColorBlack, nameof(miBackColorBlack.Click))
-                .AddSource(miBackColorWhite, nameof(miBackColorWhite.Click));
         }
 
         private Rectangle GetScreenRectangle() => Screen.FromHandle(Handle).WorkingArea;

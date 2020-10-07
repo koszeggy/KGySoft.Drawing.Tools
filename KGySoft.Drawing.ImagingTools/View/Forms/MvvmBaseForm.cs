@@ -29,6 +29,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
     internal class MvvmBaseForm<TViewModel> : BaseForm, IView
         where TViewModel : IDisposable // BUG: Actually should be ViewModelBase but WinForms designer with derived forms dies from that
     {
+        #region Fields
+
+        private bool isClosing;
+
+        #endregion
+
         #region Properties
 
         #region Protected Properties
@@ -53,7 +59,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected MvvmBaseForm(TViewModel viewModel)
         {
-            if (DesignMode)
+            // occurs in design mode but DesignMode is false for grandchild forms
+            if (viewModel == null)
                 return;
             ViewModel = viewModel;
 
@@ -64,6 +71,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             vm.ConfirmCallback = Dialogs.ConfirmMessage;
             vm.ShowChildViewCallback = ShowChildView;
             vm.CloseViewCallback = () => BeginInvoke(new Action(Close));
+            vm.SynchronizedInvokeCallback = InvokeIfRequired;
 
             CommandBindings = new WinformsCommandBindingsCollection();
         }
@@ -88,18 +96,22 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            ApplyResources();
-            if (DesignMode)
+            if (ViewModel == null)
                 return;
+            ApplyResources();
             ApplyViewModel();
-            ApplyViewModel(this, ViewModel);
         }
 
         protected virtual void ApplyResources() => this.ApplyStaticStringResources();
 
         protected virtual void ApplyViewModel() => VM.ViewLoaded();
 
-        protected void ShowChildView(IViewModel vm) => ViewFactory.ShowDialog(vm, Handle);
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (!e.Cancel)
+                isClosing = true;
+            base.OnFormClosing(e);
+        }
 
         protected override void Dispose(bool disposing)
         {
@@ -113,15 +125,22 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Methods
 
-        private static void ApplyViewModel(Control control, TViewModel viewModel)
+        private void ShowChildView(IViewModel vm) => ViewFactory.ShowDialog(vm, Handle);
+
+        private void InvokeIfRequired(Action action)
         {
-            foreach (Control child in control.Controls)
+            if (isClosing || Disposing || IsDisposed)
+                return;
+            try
             {
-                // TODO:
-                //if (child is MvvmBaseUserControl<TViewModel> userControl)
-                //    userControl.ApplyViewModel(viewModel);
-                //else
-                    ApplyViewModel(child, viewModel);
+                if (InvokeRequired)
+                    Invoke(action);
+                else
+                    action.Invoke();
+            }
+            catch (ObjectDisposedException)
+            {
+                // it can happen that actual Invoke is started to execute only after querying isClosing and when Disposing and IsDisposed both return false
             }
         }
 

@@ -16,8 +16,10 @@
 
 #region Usings
 
+using System;
 using System.IO;
 using KGySoft.CoreLibraries;
+using KGySoft.Drawing.ImagingTools.Model;
 
 #endregion
 
@@ -27,8 +29,18 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
     {
         #region Properties
 
+        #region Internal Properties
+        
         internal string[] CommandLineArguments { get => Get<string[]>(); set => Set(value); }
         internal string FileName { get => Get<string>(); set => Set(value); }
+
+        #endregion
+
+        #region Protected Properties
+
+        protected override bool IsDebuggerVisualizer => false;
+
+        #endregion
 
         #endregion
 
@@ -39,26 +51,72 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal override void ViewLoaded()
         {
             string[] args = CommandLineArguments;
-            if (args != null)
+            if (!args.IsNullOrEmpty())
                 ProcessArgs(CommandLineArguments);
+            else
+                UpdateInfo();
             base.ViewLoaded();
         }
+
+        internal bool ConfirmIfModified() => !IsModified || Confirm(Res.ConfirmMessageDiscardChanges);
 
         #endregion
 
         #region Protected Methods
 
+        protected override void OpenFile()
+        {
+            if (!ConfirmIfModified())
+                return;
+            base.OpenFile();
+        }
+
         protected override bool OpenFile(string path)
         {
             if (!base.OpenFile(path))
                 return false;
-
             FileName = Path.GetFileName(path);
+            return true;
+        }
+
+        protected override bool SaveFile(string fileName, string selectedFormat)
+        {
+            bool success = base.SaveFile(fileName, selectedFormat);
+
+            // was not saved or just a single frame was saved
+            if (!success || ImageInfo.HasFrames && !IsCompoundView)
+                return false;
+
+            // not clearing the state if the compound image was not saved by its primary format
+            if (ImageInfo.HasFrames)
+            {
+                switch (ImageInfo.Type)
+                {
+                    case ImageInfoType.Pages:
+                        if (selectedFormat != "*.tiff")
+                            return false;
+                        break;
+                    case ImageInfoType.MultiRes:
+                    case ImageInfoType.Icon:
+                        if (selectedFormat != "*.ico")
+                            return false;
+                        break;
+                    case ImageInfoType.Animation:
+                        if (selectedFormat != "*.gif")
+                            return false;
+                        break;
+                }
+            }
+
+            FileName = fileName;
+            SetModified(false);
             return true;
         }
 
         protected override void Clear()
         {
+            if (!ConfirmIfModified())
+                return;
             base.Clear();
             FileName = null;
         }
@@ -70,18 +128,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void ProcessArgs(string[] args)
         {
             if (args.IsNullOrEmpty())
-            {
-                Notification = Res.NotificationWelcome;
-                Image = null;
-            }
+                return;
+            string file = args[0];
+            if (!File.Exists(file))
+                ShowError(Res.ErrorMessageFileDoesNotExist(file));
             else
-            {
-                string file = args[0];
-                if (!File.Exists(file))
-                    ShowError(Res.ErrorMessageFileDoesNotExist(file));
-                else
-                    OpenFile(file);
-            }
+                OpenFile(file);
         }
 
         #endregion

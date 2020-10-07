@@ -87,7 +87,7 @@ namespace KGySoft.Drawing.ImagingTools
             {
                 directory = Path.GetFullPath(directory);
             }
-            catch (Exception e)
+            catch (Exception e) when (!e.IsCritical())
             {
                 throw new ArgumentException(PublicResources.ArgumentInvalidString, nameof(directory), e);
             }

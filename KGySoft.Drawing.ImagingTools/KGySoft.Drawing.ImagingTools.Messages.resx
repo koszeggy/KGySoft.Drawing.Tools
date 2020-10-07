@@ -171,11 +171,17 @@
   <data name="Text_Icon" xml:space="preserve">
     <value>Icon</value>
   </data>
+  <data name="Text_Raw" xml:space="preserve">
+    <value>Raw Bitmap Data</value>
+  </data>
   <data name="Text_Images" xml:space="preserve">
     <value>Images</value>
   </data>
   <data name="Text_FileFormat" xml:space="preserve">
     <value>File Format</value>
+  </data>
+  <data name="Text_Unnamed" xml:space="preserve">
+    <value>Unnamed</value>
   </data>
   <data name="Text_AlphaValueFormat" xml:space="preserve">
     <value>A: {0}</value>
@@ -188,6 +194,9 @@
   </data>
   <data name="Text_BlueValueFormat" xml:space="preserve">
     <value>B: {0}</value>
+  </data>
+  <data name="Text_ColorCountFormat" xml:space="preserve">
+    <value>Color Count: {0:N0}</value>
   </data>
   <data name="TooltipText_CompoundAnimation" xml:space="preserve">
     <value>Toggles whether the animation is handled as a single image.
@@ -203,6 +212,22 @@
     <value>Toggles whether the pages are handled as a compound image.
 • When checked, saving as TIFF saves every page.
 • When not checked, saving saves always the selected page only.</value>
+  </data>
+  <data name="TooltipText_SmoothMetafile" xml:space="preserve">
+    <value>Toggles whether the metafile is displayed with anti aliasing enabled.</value>
+  </data>
+  <data name="TooltipText_SmoothBitmap" xml:space="preserve">
+    <value>Toggles whether an enlarged image is rendered with smoothing interpolation.
+A shrunk image is always displayed with smoothing.</value>
+  </data>
+  <data name="Text_Auto" xml:space="preserve">
+    <value>Auto</value>
+  </data>
+  <data name="Text_CountingColors" xml:space="preserve">
+    <value>Counting colors...</value>
+  </data>
+  <data name="Text_OperationCanceled" xml:space="preserve">
+    <value>Operation has been canceled.</value>
   </data>
   <data name="InfoText_SizeFormat" xml:space="preserve">
     <value>{{Width={0}, Height={1}}}</value>
@@ -275,12 +300,6 @@ Brightness: {5:F0}%</value>
   <data name="InfoText_ResolutionFormat" xml:space="preserve">
     <value>Resolution: {0}x{1} DPI</value>
   </data>
-  <data name="Notification_Welcome" xml:space="preserve">
-    <value>As a standalone application, KGy SOFT Imaging Tools can be used to load images, save them in various formats, extract frames or pages, examine or change palette entries of indexed images, etc.
-
-But it can be used also as a debugger visualizer for Image, Bitmap, Metafile, BitmapData, Graphics, ColorPalette and Color types.
-See the Configuration button.</value>
-  </data>
   <data name="Notification_MetafileAsBitmap" xml:space="preserve">
     <value>The loaded metafile has been converted to Bitmap. To load it as a Metafile, choose the Image Debugger Visualizer instead.</value>
   </data>
@@ -289,6 +308,9 @@ See the Configuration button.</value>
   </data>
   <data name="Notification_PaletteCannotBeRestored" xml:space="preserve">
     <value>The palette of an indexed BitmapData cannot be reconstructed, therefore a default palette is used. You can change palette colors in the menu.</value>
+  </data>
+  <data name="ErrorMessageFormat" xml:space="preserve">
+    <value>Error: {0}</value>
   </data>
   <data name="ErrorMessage_FailedToLoadFileFormat" xml:space="preserve">
     <value>Could not load file due to an error: {0}</value>
@@ -335,6 +357,28 @@ See the Configuration button.</value>
   <data name="ErrorMessage_CouldNotDeleteFileFormat" xml:space="preserve">
     <value>Could not delete file {0}: {1}</value>
   </data>
+  <data name="ErrorMessage_PixelFormatNotSupportedFormat" xml:space="preserve">
+    <value>Pixel format '{0}' is not supported on current platform.</value>
+  </data>
+  <data name="ErrorMessage_QuantizerPaletteTooLargeFormat" xml:space="preserve">
+    <value>The selected quantizer returns a too large palette for pixel format '{0}'.
+Either select at least '{1}' or reduce the number of colors to {2}.</value>
+  </data>
+  <data name="ErrorMessage_FailedToInitializeQuantizerFormat" xml:space="preserve">
+    <value>Failed to initialize quantizer: {0}</value>
+  </data>
+  <data name="ErrorMessage_FailedToInitializeDithererFormat" xml:space="preserve">
+    <value>Failed to initialize ditherer: {0}</value>
+  </data>
+  <data name="ErrorMessage_FailedToGeneratePreviewFormat" xml:space="preserve">
+    <value>Failed to generate preview: {0}</value>
+  </data>
+  <data name="ErrorMessage_ValueMustBeBetweenFormat" xml:space="preserve">
+    <value>Value must be between {0} and {1}</value>
+  </data>
+  <data name="ErrorMessage_ValueMustBeGreaterThanFormat" xml:space="preserve">
+    <value>Value must be greater than {0}</value>
+  </data>
   <data name="WarningMessage_CouldNotCreateNetCoreDirectoryFormat" xml:space="preserve">
     <value>Could not create directory {0}: {1}
 
@@ -353,6 +397,19 @@ The debugger visualizer may will not work for .NET Core projects.</value>
   <data name="WarningMessage_InstallationWarningFormat" xml:space="preserve">
     <value>The installation finished with a warning: {0}</value>
   </data>
+  <data name="WarningMessage_WideConversionLossFormat" xml:space="preserve">
+    <value>When converting an image with wide pixel format '{0}' to another wide format,
+then colors will be quantized to the 32 bit ARGB color space during the conversion even if there is no quantizer used.</value>
+  </data>
+  <data name="WarningMessage_QuantizerTooWideFormat" xml:space="preserve">
+    <value>The selected quantizer uses more colors than the selected pixel format '{0}' supports.
+Either select at least {1} pixel format or use another quantizer that uses no more colors than '{0}' can represent;
+otherwise, the result might not be optimal even with dithering.</value>
+  </data>
+  <data name="WarningMessage_DithererNoAlphaGradient" xml:space="preserve">
+    <value>The selected quantizer supports partial transparency, which is not supported by ditherers,
+so partial transparent pixels will be blended with back color.</value>
+  </data>
   <data name="ConfirmMessage_OverwriteInstallation" xml:space="preserve">
     <value>Are you sure you want to overwrite this installation?</value>
   </data>
@@ -367,8 +424,47 @@ Are you sure you want to save the file with the provided extension?</value>
   <data name="ConfirmMessage_NetCoreVersion" xml:space="preserve">
     <value>You are about to install the .NET Core version, which might not be supported by Visual Studio as a debugger visualizer. Are you sure?</value>
   </data>
+  <data name="ConfirmMessage_DiscardChanges" xml:space="preserve">
+    <value>There are unsaved modifications. Are sure to discard the changes?</value>
+  </data>
   <data name="InfoMessage_PaletteEmpty" xml:space="preserve">
     <value>The palette contains no colors. Click OK to exit.</value>
+  </data>
+  <data name="InfoMessage_QuantizerMayHaveNoEffect" xml:space="preserve">
+    <value>The selected quantizer uses more colors than the original image.
+It is possible that is has no effect.</value>
+  </data>
+  <data name="InfoMessage_ArgbQuantizerHasNoEffect" xml:space="preserve">
+    <value>The selected quantizer can only remove partial transparency but it has practically no effect as source has no alpha.</value>
+  </data>
+  <data name="InfoMessage_SamePixelFormat" xml:space="preserve">
+    <value>The selected pixel format is the same as the original one.</value>
+  </data>
+  <data name="InfoMessage_AlphaTurnsBlack" xml:space="preserve">
+    <value>Without selecting a quantizer possible alpha pixels of the source image are blended with black.
+By selecting a quantizer you can specify a different back color.</value>
+  </data>
+  <data name="InfoMessage_QuantizerAutoSelectedFormat" xml:space="preserve">
+    <value>A quantizer has been auto selected for pixel format '{0}' using default settings.
+Use a specific instance to adjust parameters.</value>
+  </data>
+  <data name="InfoMessage_PaletteAutoSelectedFormat" xml:space="preserve">
+    <value>A system default palette of {0} colors has been auto selected for pixel format '{1}'.
+Select a quantizer to use specific colors and settings.</value>
+  </data>
+  <data name="InfoMessage_DithererIgnoredFormat" xml:space="preserve">
+    <value>The ditherer is ignored for pixel format '{0}' if there is no quantizer specified.</value>
+  </data>
+  <data name="InfoMessage_PixelFormatUnnecessarilyWideFormat" xml:space="preserve">
+    <value>{0} is the lowest compatible pixel format, which still supports the selected quantizer.</value>
+  </data>
+  <data name="InfoMessage_QuantizerCanBeDitheredFormat" xml:space="preserve">
+    <value>The selected quantizer represents a narrower set of colors than the original '{0}'.
+Dithering may help to preserve more details.</value>
+  </data>
+  <data name="InfoMessage_PixelFormatCanBeDitheredFormat" xml:space="preserve">
+    <value>The selected pixel format represents a narrower set of colors than the original '{0}'.
+Dithering may help to preserve more details.</value>
   </data>
   <data name="Installations_NotAvailable" xml:space="preserve">
     <value>N/A (KGySoft.Drawing.DebuggerVisualizers.dll is missing)</value>
@@ -401,31 +497,61 @@ Are you sure you want to save the file with the provided extension?</value>
     <value>Installed: {0} - Target: {1}</value>
   </data>
   <data name="btnAutoZoom.Text" xml:space="preserve">
-    <value>Auto Zoom</value>
+    <value>Auto Zoom (Alt+Z)</value>
   </data>
   <data name="btnAntiAlias.Text" xml:space="preserve">
     <value>Smooth Zooming</value>
   </data>
   <data name="btnOpen.Text" xml:space="preserve">
-    <value>Open...</value>
+    <value>Open... (Ctrl+O)</value>
   </data>
   <data name="btnSave.Text" xml:space="preserve">
-    <value>Save As...</value>
+    <value>Save As... (Ctrl+S)</value>
   </data>
   <data name="btnClear.Text" xml:space="preserve">
-    <value>Clear</value>
+    <value>Clear (Ctrl+Del)</value>
   </data>
   <data name="btnColorSettings.Text" xml:space="preserve">
     <value>Color Settings</value>
   </data>
+  <data name="btnEdit.Text" xml:space="preserve">
+    <value>Edit Image/Current Frame</value>
+  </data>
   <data name="miShowPalette.Text" xml:space="preserve">
     <value>Show Palette...</value>
   </data>
+  <data name="miCountColors.Text" xml:space="preserve">
+    <value>Count Colors...</value>
+  </data>
+  <data name="miRotateLeft.Text" xml:space="preserve">
+    <value>Rotate Left</value>
+  </data>
+  <data name="miRotateRight.Text" xml:space="preserve">
+    <value>Rotate Right</value>
+  </data>
+  <data name="miResizeBitmap.Text" xml:space="preserve">
+    <value>Resize...</value>
+  </data>
+  <data name="miColorSpace.Text" xml:space="preserve">
+    <value>Pixel Format/Quantizing/Dithering...</value>
+  </data>
+  <data name="miAdjustColors.Text" xml:space="preserve">
+    <value>Adjust Colors...</value>
+  </data>
+  <data name="miBrightness.Text" xml:space="preserve">
+    <value>Adjust Brightness...</value>
+  </data>
+  <data name="miContrast.Text" xml:space="preserve">
+    <value>Adjust Contrast...</value>
+  </data>
+  <data name="miGamma.Text" xml:space="preserve">
+    <value>Adjust Gamma...</value>
+  </data>
   <data name="btnPrev.Text" xml:space="preserve">
-    <value>Previous Image</value>
+    <value>Previous Image (Shift+Left)</value>
   </data>
   <data name="btnNext.Text" xml:space="preserve">
-    <value>Next Image</value>
+    <value>Next Image (Shift+Right)</value>
   </data>
   <data name="btnConfiguration.ToolTipText" xml:space="preserve">
     <value>Manage Debugger Visualizer Installations...</value>
@@ -495,5 +621,110 @@ Are you sure you want to save the file with the provided extension?</value>
   </data>
   <data name="btnSelectColor.Text" xml:space="preserve">
     <value>Select Color</value>
+  </data>
+  <data name="ColorSpaceForm.Text" xml:space="preserve">
+    <value>Pixel Format/Quantizing/Dithering</value>
+  </data>
+  <data name="gbPixelFormat.Text" xml:space="preserve">
+    <value>Change &amp;Pixel Format</value>
+  </data>
+  <data name="gbQuantizer.Text" xml:space="preserve">
+    <value>&amp;Quantizer</value>
+  </data>
+  <data name="gbDitherer.Text" xml:space="preserve">
+    <value>&amp;Ditherer</value>
+  </data>
+  <data name="gbParameters.Text" xml:space="preserve">
+    <value>Parameters</value>
+  </data>
+  <data name="btnOK.Text" xml:space="preserve">
+    <value>&amp;OK</value>
+  </data>
+  <data name="btnCancel.Text" xml:space="preserve">
+    <value>&amp;Cancel</value>
+  </data>
+  <data name="btnClose.Text" xml:space="preserve">
+    <value>&amp;Close</value>
+  </data>
+  <data name="CountColorsForm.Text" xml:space="preserve">
+    <value>Colors Count</value>
+  </data>
+  <data name="DrawingOperation.UndefinedProcessing" xml:space="preserve">
+    <value>Processing...</value>
+  </data>
+  <data name="DrawingOperation.InitializingQuantizer" xml:space="preserve">
+    <value>Initializing Quantizer...</value>
+  </data>
+  <data name="DrawingOperation.InitializingDitherer" xml:space="preserve">
+    <value>Initializing Ditherer...</value>
+  </data>
+  <data name="DrawingOperation.GeneratingPalette" xml:space="preserve">
+    <value>Generating Palette...</value>
+  </data>
+  <data name="DrawingOperation.ProcessingPixels" xml:space="preserve">
+    <value>Processing...</value>
+  </data>
+  <data name="DrawingOperation.Saving" xml:space="preserve">
+    <value>Saving...</value>
+  </data>
+  <data name="DrawingOperation.Loading" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="AdjustBrightnessForm.Text" xml:space="preserve">
+    <value>Adjust Brightness</value>
+  </data>
+  <data name="AdjustContrastForm.Text" xml:space="preserve">
+    <value>Adjust Contrast</value>
+  </data>
+  <data name="AdjustGammaForm.Text" xml:space="preserve">
+    <value>Adjust Gamma</value>
+  </data>
+  <data name="btnReset.Text" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="chbRed.Text" xml:space="preserve">
+    <value>Red</value>
+  </data>
+  <data name="chbGreen.Text" xml:space="preserve">
+    <value>Green</value>
+  </data>
+  <data name="chbBlue.Text" xml:space="preserve">
+    <value>Blue</value>
+  </data>
+  <data name="ResizeBitmapForm.Text" xml:space="preserve">
+    <value>Resize Bitmap</value>
+  </data>
+  <data name="chbMaintainAspectRatio.Text" xml:space="preserve">
+    <value>&amp;Maintain aspect ratio</value>
+  </data>
+  <data name="rbByPercentage.Text" xml:space="preserve">
+    <value>By &amp;Percentage</value>
+  </data>
+  <data name="rbByPixels.Text" xml:space="preserve">
+    <value>By Pi&amp;xels</value>
+  </data>
+  <data name="lblWidth.Text" xml:space="preserve">
+    <value>Width:</value>
+  </data>
+  <data name="lblHeight.Text" xml:space="preserve">
+    <value>Height:</value>
+  </data>
+  <data name="lblWidthPercent.Text" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="lblHeightPercent.Text" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="lblWidthPx.Text" xml:space="preserve">
+    <value>pixels</value>
+  </data>
+  <data name="lblHeightPx.Text" xml:space="preserve">
+    <value>pixels</value>
+  </data>
+  <data name="lblScalingMode.Text" xml:space="preserve">
+    <value>Scaling Mode:</value>
+  </data>
+  <data name="btnShowOriginal.Text" xml:space="preserve">
+    <value>Show Original</value>
   </data>
 </root>

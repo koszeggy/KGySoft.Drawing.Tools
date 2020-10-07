@@ -21,21 +21,31 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="KGySoft.CoreLibraries" Version="5.3.0" />
-    <PackageReference Include="KGySoft.Drawing" Version="5.2.1" />
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
+    <PackageReference Include="KGySoft.CoreLibraries" Version="5.4.0" />
+    <PackageReference Include="KGySoft.Drawing" Version="5.3.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)'=='net35' OR '$(TargetFramework)'=='net40' OR '$(TargetFramework)'=='net45'">
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Design" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Update="KGySoft.Drawing.ImagingTools.Messages.resx">
       <LogicalName>KGySoft.Drawing.ImagingTools.Messages.resources</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Update="View\Forms\AdjustColorsFormBase - Copy.resx">
+      <DependentUpon>AdjustColorsFormBase.resx</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
 

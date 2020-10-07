@@ -17,7 +17,8 @@
 #region Usings
 
 using System;
-
+using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.Drawing.ImagingTools.View.Design;
 using KGySoft.Drawing.ImagingTools.View.Forms;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
@@ -30,6 +31,16 @@ namespace KGySoft.Drawing.ImagingTools.View
     /// </summary>
     public static class ViewFactory
     {
+        #region Constructors
+
+        static ViewFactory()
+        {
+            DesignDependencies.QuantizerThresholdEditor = typeof(QuantizerThresholdEditor);
+            DesignDependencies.DithererStrengthEditor = typeof(DithererStrengthEditor);
+        }
+
+        #endregion
+
         #region Methods
 
         /// <summary>
@@ -56,6 +67,18 @@ namespace KGySoft.Drawing.ImagingTools.View
                     return new ColorVisualizerForm(colorVisualizerViewModel);
                 case ManageInstallationsViewModel manageInstallationsViewModel:
                     return new ManageInstallationsForm(manageInstallationsViewModel);
+                case ResizeBitmapViewModel resizeBitmapViewModel:
+                    return new ResizeBitmapForm(resizeBitmapViewModel);
+                case ColorSpaceViewModel colorSpaceViewModel:
+                    return new ColorSpaceForm(colorSpaceViewModel);
+                case CountColorsViewModel countColorsViewModel:
+                    return new CountColorsForm(countColorsViewModel);
+                case AdjustBrightnessViewModel adjustBrightnessViewModel:
+                    return new AdjustBrightnessForm(adjustBrightnessViewModel);
+                case AdjustContrastViewModel adjustContrastViewModel:
+                    return new AdjustContrastForm(adjustContrastViewModel);
+                case AdjustGammaViewModel adjustGammaViewModel:
+                    return new AdjustGammaForm(adjustGammaViewModel);
                 default:
                     throw new InvalidOperationException(Res.InternalError($"Unexpected viewModel type: {viewModel.GetType()}"));
             }

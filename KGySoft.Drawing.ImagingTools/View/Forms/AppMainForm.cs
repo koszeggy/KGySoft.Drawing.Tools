@@ -20,6 +20,7 @@ using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Windows.Forms;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
@@ -37,9 +38,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         #region Properties
 
         #region Public Properties
-        
+
         public override string Text
         {
+            // base has VM.TitleCaption -> Text binding so this solution makes possible to enrich it in a compatible way
             get => base.Text;
             set => base.Text = FormatText(value);
         }
@@ -87,6 +89,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             base.ApplyViewModel();
         }
 
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.UserClosing && ViewModel.IsModified)
+                e.Cancel = !ViewModel.ConfirmIfModified();
+            base.OnFormClosing(e);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -100,14 +109,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void InitPropertyBindings()
         {
-            // VM.FileName -> Text = VM.TitleCaption (text will be formatted to contain file name, if any)
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.FileName), nameof(Text), _ => ViewModel.TitleCaption, this);
+            // Base updates Text when ViewModel.TitleCaption changes.
+            // Here adding an update also for FileName and IsModified changes in a compatible way
+            CommandBindings.AddPropertyChangedHandler(() => Text = ViewModel.TitleCaption, ViewModel,
+                nameof(ViewModel.FileName), nameof(ViewModel.IsModified));
         }
 
         private string FormatText(string value)
         {
             string fileName = ViewModel.FileName;
-            return String.IsNullOrEmpty(value) ? title : $"{title}{(fileName == null ? null : $" [{Path.GetFileName(fileName)}]")} - {value}";
+            string name = fileName == null ? Res.TextUnnamed : Path.GetFileName(fileName);
+            return String.IsNullOrEmpty(value) ? title : $"{title} [{name}{(ViewModel.IsModified ? "*" : String.Empty)}] - {value}";
         }
 
         #endregion

@@ -89,7 +89,31 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
                 return ((System.Drawing.Icon)(obj));
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon Colors
+        {
+            get
+            {
+                object obj = ResourceManager.GetObject("Colors", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon Compare
+        {
+            get
+            {
+                object obj = ResourceManager.GetObject("Compare", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
@@ -189,7 +213,19 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
                 return ((System.Drawing.Icon)(obj));
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon Resize
+        {
+            get
+            {
+                object obj = ResourceManager.GetObject("Resize", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
@@ -206,6 +242,18 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         internal static System.Drawing.Icon Settings {
             get {
                 object obj = ResourceManager.GetObject("Settings", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon Quantize
+        {
+            get
+            {
+                object obj = ResourceManager.GetObject("Quantize", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }

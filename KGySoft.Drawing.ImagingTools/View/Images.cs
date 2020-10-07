@@ -29,7 +29,7 @@ namespace KGySoft.Drawing.ImagingTools.View
     {
         #region Fields
 
-        private static readonly Size referenceSize = new Size(16, 16);
+        #region Private Fields
 
         private static Bitmap check;
         private static Bitmap crop;
@@ -46,6 +46,21 @@ namespace KGySoft.Drawing.ImagingTools.View
         private static Bitmap multiSize;
         private static Bitmap multiPage;
         private static Bitmap smoothZoom;
+        private static Bitmap edit;
+        private static Bitmap rotateLeft;
+        private static Bitmap rotateRight;
+        private static Bitmap resize;
+        private static Bitmap quantize;
+        private static Bitmap colors;
+        private static Bitmap compare;
+
+        #endregion
+
+        #region Internal Fields
+
+        internal static readonly Size ReferenceSize = new Size(16, 16);
+
+        #endregion
 
         #endregion
 
@@ -66,6 +81,13 @@ namespace KGySoft.Drawing.ImagingTools.View
         internal static Bitmap MultiSize => multiSize ??= GetResource(nameof(MultiSize));
         internal static Bitmap MultiPage => multiPage ??= GetResource(nameof(MultiPage));
         internal static Bitmap SmoothZoom => smoothZoom ??= GetResource(nameof(SmoothZoom));
+        internal static Bitmap Edit => edit ??= GetResource(nameof(Edit));
+        internal static Bitmap RotateLeft => rotateLeft ??= GetResource(nameof(RotateLeft));
+        internal static Bitmap RotateRight => rotateRight ??= GetResource(nameof(RotateRight));
+        internal static Bitmap Resize => resize ??= GetResource(nameof(Resize));
+        internal static Bitmap Quantize => quantize ??= GetResource(nameof(Quantize));
+        internal static Bitmap Colors => colors ??= GetResource(nameof(Colors));
+        internal static Bitmap Compare => compare ??= GetResource(nameof(Compare));
 
         #endregion
 
@@ -77,7 +99,27 @@ namespace KGySoft.Drawing.ImagingTools.View
         {
             if (icon == null)
                 throw new ArgumentNullException(nameof(icon), PublicResources.ArgumentNull);
-            return icon.ExtractNearestBitmap(referenceSize.Scale(OSUtils.SystemScale), PixelFormat.Format32bppArgb);
+            return icon.ExtractNearestBitmap(ReferenceSize.Scale(OSUtils.SystemScale), PixelFormat.Format32bppArgb);
+        }
+
+        internal static Icon ToScaledIcon(this Icon icon, bool legacyScaling = true)
+        {
+            if (icon == null)
+                throw new ArgumentNullException(nameof(icon), PublicResources.ArgumentNull);
+
+            Size size = ReferenceSize.Scale(OSUtils.SystemScale);
+            Icon result = icon.ExtractNearestIcon(size, PixelFormat.Format32bppArgb);
+            int mod;
+            if (!legacyScaling || OSUtils.IsWindows8OrLater || !OSUtils.IsWindows || (mod = result.Width & 0xF) == 0)
+                return result;
+
+            // Windows XP-Windows 7 with legacy scaling: we need to make sure that icon size is dividable by 16
+            // so it will not be corrupted (eg. ErrorProvider)
+            using Bitmap iconImage = icon.ExtractBitmap(result.Size);
+            result.Dispose();
+
+            // returning a larger icon without scaling so apparently it will have the same size as the original one
+            return iconImage.ToIcon(size.Width + (16 - mod), ScalingMode.NoScaling);
         }
 
         #endregion

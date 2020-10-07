@@ -92,12 +92,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             cbInstallations.DataSource = ViewModel.Installations;
 
             // VM.SelectedInstallation <-> cbInstallations.SelectedValue
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SelectedInstallation), nameof(cbInstallations.SelectedValue), cbInstallations);
-            CommandBindings.AddPropertyBinding(cbInstallations, nameof(cbInstallations.SelectedValue), nameof(ViewModel.SelectedInstallation), ViewModel);
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.SelectedInstallation), cbInstallations, nameof(cbInstallations.SelectedValue));
 
             // VM.CurrentPath <-> tbPath.Text
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.CurrentPath), nameof(tbPath.Text), tbPath);
-            CommandBindings.AddPropertyBinding(tbPath, nameof(tbPath.Text), nameof(ViewModel.CurrentPath), ViewModel);
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.CurrentPath), tbPath, nameof(tbPath.Text));
 
             // VM.AvailableVersionText -> lblAvailableVersion.Text
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.AvailableVersionText), nameof(lblAvailableVersion.Text), lblAvailableVersion);

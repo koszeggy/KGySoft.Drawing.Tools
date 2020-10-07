@@ -29,6 +29,7 @@ namespace KGySoft.Drawing.ImagingTools
         #region Fields
 
         private static bool? isVistaOrLater;
+        private static bool? isWin8OrLater;
         private static bool? isWindows;
 
         #endregion
@@ -53,6 +54,25 @@ namespace KGySoft.Drawing.ImagingTools
 
                 isVistaOrLater = os.Version >= new Version(6, 0, 5243);
                 return isVistaOrLater.Value;
+            }
+        }
+
+        internal static bool IsWindows8OrLater
+        {
+            get
+            {
+                if (isWin8OrLater.HasValue)
+                    return isWin8OrLater.Value;
+
+                OperatingSystem os = Environment.OSVersion;
+                if (os.Platform != PlatformID.Win32NT)
+                {
+                    isWin8OrLater = false;
+                    return false;
+                }
+
+                isWin8OrLater = os.Version >= new Version(6, 2, 9200);
+                return isWin8OrLater.Value;
             }
         }
 
