@@ -17,6 +17,7 @@
 #region Usings
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Threading;
 
@@ -121,6 +122,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             ThreadPool.QueueUserWorkItem(DoCountColors);
         }
 
+        [SuppressMessage("Reliability", "CA2002:Do not lock on objects with weak identity", Justification = "False alarm, task.Bitmap is not a remote object")]
         private void DoCountColors(object state)
         {
             Exception error = null;

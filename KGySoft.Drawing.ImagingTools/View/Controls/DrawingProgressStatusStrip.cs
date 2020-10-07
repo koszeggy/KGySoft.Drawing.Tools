@@ -36,8 +36,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Properties
 
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Empty string")]
-        [SuppressMessage("ReSharper", "LocalizableElement", Justification = "Empty string")]
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Whitespace")]
+        [SuppressMessage("ReSharper", "LocalizableElement", Justification = "Whitespace")]
         internal bool ProgressVisible
         {
             get => progressVisible;
@@ -143,6 +143,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         #endregion
 
         #region Event handlers
+#pragma warning disable IDE1006 // Naming Styles
 
         private void lblProgress_TextChanged(object sender, EventArgs e) => AdjustSize();
         private void lblProgress_VisibleChanged(object sender, EventArgs e) => AdjustSize();
@@ -150,6 +151,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         private void timer_Tick(object sender, EventArgs e) => UpdateProgress(Progress);
 
+#pragma warning restore IDE1006 // Naming Styles
         #endregion
 
         #endregion

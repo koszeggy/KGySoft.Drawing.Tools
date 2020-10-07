@@ -18,6 +18,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 
@@ -75,6 +76,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Constructors
 
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Whitespace")]
+        [SuppressMessage("ReSharper", "LocalizableElement", Justification = "Whitespace")]
         public CheckGroupBox()
         {
             InitializeComponent();
@@ -92,7 +95,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 : FlatStyle.Standard;
 
             // GroupBox.FlayStyle must be the same as CheckBox; otherwise, System appearance would be transparent
-            base.FlatStyle = checkBox.FlatStyle;
+            FlatStyle = checkBox.FlatStyle;
             checkBox.CheckedChanged += this.CheckBox_CheckedChanged;
 
             // making sure there is enough space before the CheckBox at every DPI

@@ -84,7 +84,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             private Image safeDefaultImage; // The default image displayed when no generated preview is needed or while generation is in progress
             private bool isClonedSafeDefaultImage;
             private Size requestedSize;
-            private volatile Image displayImage; // The actual displayed image. If not null, it either equals safeDefaultImage or currentPreview.
+
+            [SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "False alarm, it is either equals safeDefaultImage or currentPreview")]
+            private volatile Image displayImage; // The actual displayed image. If not null, it is either equals safeDefaultImage or currentPreview.
             private volatile Bitmap cachedDisplayImage; // The lastly generated display image. Can be unused but is cached until a next preview is generated.
             private Size currentCachedDisplayImage; // just to cache cachedDisplayImage.Size, because accessing currentPreview can lead to "object is used elsewhere" error
 
@@ -253,6 +255,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 return true;
             }
 
+            [SuppressMessage("Reliability", "CA2002:Do not lock on objects with weak identity", Justification = "False alarm, this is not a remote object and is not exposed publicly")]
             private void FreeCachedPreview()
             {
                 lock (this) // It is alright, this is a private class. ImageViewer also locks on this instance when obtains display image so this ensures that no disposed image is painted.
@@ -912,6 +915,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             targetRectangle = new Rectangle(targetLocation, scaledSize);
         }
 
+        [SuppressMessage("Reliability", "CA2002:Do not lock on objects with weak identity", Justification = "False alarm, image is not a remote object")]
         private void PaintImage(Graphics g)
         {
             g.IntersectClip(clientRectangle);

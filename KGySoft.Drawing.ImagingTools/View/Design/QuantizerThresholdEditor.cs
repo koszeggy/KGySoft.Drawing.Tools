@@ -18,6 +18,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing.Design;
 using System.Windows.Forms.Design;
 
@@ -27,6 +28,8 @@ using KGySoft.Drawing.ImagingTools.View.UserControls;
 
 namespace KGySoft.Drawing.ImagingTools.View.Design
 {
+    [SuppressMessage("Microsoft.Performance", "CA1812:Avoid uninstantiated internal classes",
+        Justification = "Instantiated by ComponentModel via attribute")]
     internal class QuantizerThresholdEditor : UITypeEditor
     {
         #region Properties

@@ -832,7 +832,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             foreach (ImageCodecInfo codecInfo in encoderCodecs)
             {
                 if (sb.Length != 0)
-                    sb.Append("|");
+                    sb.Append('|');
                 sb.Append($"{codecInfo.FormatDescription} {Res.TextFileFormat}|{codecInfo.FilenameExtension.ToLowerInvariant()}");
             }
 
