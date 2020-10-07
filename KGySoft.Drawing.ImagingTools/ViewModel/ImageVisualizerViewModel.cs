@@ -124,7 +124,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommandState PrevImageCommandState => Get(() => new CommandState());
         internal ICommandState NextImageCommandState => Get(() => new CommandState());
         internal ICommandState ShowPaletteCommandState => Get(() => new CommandState { Enabled = false });
-        internal ICommandState CountColorsCommandState => Get(() => new CommandState());
+        internal ICommandState CountColorsCommandState => Get(() => new CommandState { Enabled = false });
         internal ICommandState EditBitmapCommandState => Get(() => new CommandState { Enabled = false });
 
         internal ICommand SetAutoZoomCommand => Get(() => new SimpleCommand<bool>(OnSetAutoZoomCommand));
