@@ -17,6 +17,7 @@
 #region Usings
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
 
 #endregion
@@ -35,6 +36,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Properties
 
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Empty string")]
+        [SuppressMessage("ReSharper", "LocalizableElement", Justification = "Empty string")]
         internal bool ProgressVisible
         {
             get => progressVisible;
@@ -45,11 +48,27 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 progressVisible = value;
                 if (value)
                     UpdateProgress(default);
-                pbProgress.Visible = progressVisible;
 
-                // Instead of making the label invisible we just set an empty space text; otherwise, on Linux the preview image size would be toggled
-                if (!value)
-                    lblProgress.Text = " ";
+                // In Windows we don't make label invisible but changing text to a space to prevent status strip height change
+                if (OSUtils.IsWindows)
+                {
+                    pbProgress.Visible = progressVisible;
+                    if (!progressVisible)
+                        lblProgress.Text = " ";
+                }
+                // On Linux we let the progress bar remain visible for the same reason and to prevent (sort of) appearing ugly thick black areas
+                else
+                {
+                    lblProgress.Visible = progressVisible;
+                    if (!progressVisible)
+                    {
+                        pbProgress.Style = ProgressBarStyle.Blocks;
+                        pbProgress.Value = 0;
+                    }
+
+                    AdjustSize();
+                }
+
                 timer.Enabled = value;
             }
         }
@@ -65,9 +84,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             InitializeComponent();
             if (DesignMode)
                 return;
+            this.FixAppearance();
             ProgressVisible = false;
             SizeChanged += DrawingProgressStatusStrip_SizeChanged;
             lblProgress.TextChanged += lblProgress_TextChanged;
+            lblProgress.VisibleChanged += lblProgress_VisibleChanged;
             timer.Tick += timer_Tick;
         }
 
@@ -84,6 +105,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             SizeChanged -= DrawingProgressStatusStrip_SizeChanged;
             lblProgress.TextChanged -= lblProgress_TextChanged;
+            lblProgress.VisibleChanged -= lblProgress_VisibleChanged;
             timer.Tick -= timer_Tick;
             base.Dispose(disposing);
         }
@@ -93,7 +115,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         #region Private Methods
 
         private void AdjustSize() =>
-            pbProgress.Width = Width - lblProgress.Width - lblProgress.Margin.Horizontal - pbProgress.Margin.Horizontal;
+            pbProgress.Width = Width - (lblProgress.Visible ? lblProgress.Width - lblProgress.Margin.Horizontal : 0) - pbProgress.Margin.Horizontal - 2;
 
         private void UpdateProgress(DrawingProgress progress)
         {
@@ -106,7 +128,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 pbProgress.Style = ProgressBarStyle.Marquee;
             else
             {
-                pbProgress.Style = ProgressBarStyle.Continuous;
+                pbProgress.Style = ProgressBarStyle.Blocks;
                 pbProgress.Maximum = progress.MaximumValue;
 
                 // Workaround for progress bar on Vista and above where it advances very slow
@@ -123,6 +145,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         #region Event handlers
 
         private void lblProgress_TextChanged(object sender, EventArgs e) => AdjustSize();
+        private void lblProgress_VisibleChanged(object sender, EventArgs e) => AdjustSize();
         private void DrawingProgressStatusStrip_SizeChanged(object sender, EventArgs e) => AdjustSize();
 
         private void timer_Tick(object sender, EventArgs e) => UpdateProgress(Progress);

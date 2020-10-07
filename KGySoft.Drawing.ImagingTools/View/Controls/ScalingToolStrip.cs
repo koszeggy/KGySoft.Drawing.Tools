@@ -98,25 +98,24 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             {
                 Rectangle imageRect = e.ImageRectangle;
                 Image image = e.Image;
+                if (imageRect == Rectangle.Empty || image == null)
+                    return;
 
-                if (imageRect != Rectangle.Empty && image != null)
+                bool disposeImage = false;
+                if (!e.Item.Enabled)
                 {
-                    bool disposeImage = false;
-                    if (!e.Item.Enabled)
-                    {
-                        image = CreateDisabledImage(image);
-                        disposeImage = true;
-                    }
-
-                    // Draw the checkmark background (providing no image)
-                    base.OnRenderItemCheck(new ToolStripItemImageRenderEventArgs(e.Graphics, e.Item, null, e.ImageRectangle));
-
-                    // Draw the checkmark image scaled to the image rectangle
-                    e.Graphics.DrawImage(image, imageRect, new Rectangle(Point.Empty, image.Size), GraphicsUnit.Pixel);
-
-                    if (disposeImage)
-                        image.Dispose();
+                    image = CreateDisabledImage(image);
+                    disposeImage = true;
                 }
+
+                // Draw the checkmark background (providing no image)
+                base.OnRenderItemCheck(new ToolStripItemImageRenderEventArgs(e.Graphics, e.Item, null, e.ImageRectangle));
+
+                // Draw the checkmark image scaled to the image rectangle
+                e.Graphics.DrawImage(image, imageRect, new Rectangle(Point.Empty, image.Size), GraphicsUnit.Pixel);
+
+                if (disposeImage)
+                    image.Dispose();
             }
 
             protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)

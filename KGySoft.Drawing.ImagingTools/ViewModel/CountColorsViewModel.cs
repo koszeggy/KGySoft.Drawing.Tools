@@ -18,6 +18,7 @@
 
 using System;
 using System.Drawing;
+using System.Threading;
 
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.Imaging;
@@ -32,33 +33,73 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region CountTask class
 
-        private sealed class CountTask
+        private sealed class CountTask : IDisposable
         {
             #region Fields
 
-            internal IReadableBitmapData BitmapData;
+            #region Private Fields
+
+            private readonly ManualResetEventSlim completedEvent;
+            private volatile bool isDisposed;
+
+            #endregion
+
+            #region Internal Fields
+
+            internal readonly Bitmap Bitmap;
             internal volatile bool IsCanceled;
-            internal IAsyncResult AsyncResult;
+
+            #endregion
+
+            #endregion
+
+            #region Constructors
+
+            internal CountTask(Bitmap bitmap)
+            {
+                completedEvent = new ManualResetEventSlim(false);
+                Bitmap = bitmap;
+            }
 
             #endregion
 
             #region Methods
 
+            #region Public Methods
+
+            public void Dispose()
+            {
+                if (isDisposed)
+                    return;
+                completedEvent.Set();
+                completedEvent.Dispose();
+                isDisposed = true;
+            }
+
+            #endregion
+
+            #region Internal Methods
+
+            internal void SetCompleted() => completedEvent.Set();
+
             internal void WaitForCompletion()
             {
-                if (AsyncResult.IsCompleted)
+                if (isDisposed)
                     return;
 
                 try
                 {
-                    AsyncResult.AsyncWaitHandle.WaitOne();
+                    completedEvent.Wait();
                 }
                 catch (ObjectDisposedException)
                 {
                     // it can happen that the task has just been completed after querying IsCompleted but this part
-                    // must not be in a lock because then EndCountColors could possibly never end
+                    // must not be in a lock because then EndGeneratePreview could possibly never end
                 }
             }
+
+            #endregion
+
 
             #endregion
         }
@@ -69,8 +110,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Fields
 
-        private CountTask task;
         private readonly DrawingProgressManager drawingProgressManager;
+        
+        private volatile CountTask task;
         private int? colorCount;
 
         #endregion
@@ -118,8 +160,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal void CancelIfRunning()
         {
-            if (task.AsyncResult.IsCompleted)
-                return;
             task.IsCanceled = true;
             SetModified(false);
             task.WaitForCompletion();
@@ -138,30 +178,41 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void BeginCountColors(Bitmap bitmap)
         {
             IsProcessing = true;
-            task = new CountTask { BitmapData = bitmap.GetReadableBitmapData() };
-            task.AsyncResult = task.BitmapData.BeginGetColorCount(new AsyncConfig
-            {
-                IsCancelRequestedCallback = () => task.IsCanceled,
-                ThrowIfCanceled = false,
-                Progress = drawingProgressManager,
-                CompletedCallback = EndCountColors
-            });
+            task = new CountTask(bitmap);
+            ThreadPool.QueueUserWorkItem(DoCountColors);
         }
 
-        private void EndCountColors(IAsyncResult asyncResult)
+        private void DoCountColors(object state)
         {
             Exception error = null;
-            try
+
+            // We must lock on the image to avoid the possible "bitmap region is already in use" error from the Paint of main view's image viewer,
+            // which also locks on the image to help avoiding this error
+            lock (task.Bitmap)
             {
-                colorCount = asyncResult.EndGetColorCount();
-            }
-            catch (Exception e) when (!e.IsCriticalGdi())
-            {
-                error = e;
-            }
-            finally
-            {
-                task.BitmapData.Dispose();
+                IReadableBitmapData bitmapData = null;
+                try
+                {
+                    bitmapData = task.Bitmap.GetReadableBitmapData();
+                    IAsyncResult asyncResult = bitmapData.BeginGetColorCount(new AsyncConfig
+                    {
+                        IsCancelRequestedCallback = () => task.IsCanceled,
+                        ThrowIfCanceled = false,
+                        Progress = drawingProgressManager
+                    });
+
+                    // Waiting to be finished or canceled. As we are on a different thread blocking wait is alright
+                    colorCount = asyncResult.EndGetColorCount();
+                }
+                catch (Exception e) when (!e.IsCriticalGdi())
+                {
+                    error = e;
+                }
+                finally
+                {
+                    bitmapData?.Dispose();
+                    task.SetCompleted();
+                }
             }
 
             if (task.IsCanceled)

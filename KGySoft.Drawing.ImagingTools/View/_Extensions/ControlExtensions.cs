@@ -56,6 +56,19 @@ namespace KGySoft.Drawing.ImagingTools.View
         /// </summary>
         internal static void ApplyStaticStringResources(this Control control)
         {
+            static void ApplyToolStripResources(ToolStripItemCollection items)
+            {
+                foreach (ToolStripItem item in items)
+                {
+                    // to self
+                    Res.ApplyResources(item, item.Name);
+
+                    // to children
+                    if (item is ToolStripDropDownItem dropDownItem)
+                        ApplyToolStripResources(dropDownItem.DropDownItems);
+                }
+            }
+
             string name = control.Name;
             if (String.IsNullOrEmpty(name))
                 name = control.GetType().Name;
@@ -70,22 +83,34 @@ namespace KGySoft.Drawing.ImagingTools.View
             switch (control)
             {
                 case ToolStrip toolStrip:
-                    toolStrip.Items.ApplyStaticStringResources();
+                    ApplyToolStripResources(toolStrip.Items);
                     break;
             }
         }
 
-        internal static void ApplyStaticStringResources(this ToolStripItemCollection items)
+        internal static void FixAppearance(this ToolStrip toolStrip)
         {
-            foreach (ToolStripItem item in items)
+            static void FixItems(ToolStripItemCollection items, Color replacementColor)
             {
-                // to self
-                Res.ApplyResources(item, item.Name);
+                foreach (ToolStripItem item in items)
+                {
+                    // to self
+                    if ((item is ToolStripMenuItem || item is ToolStripLabel || item is ToolStripSeparator || item is ToolStripProgressBar) && item.BackColor.ToArgb() == replacementColor.ToArgb())
+                        item.BackColor = replacementColor;
 
-                // to children
-                if (item is ToolStripDropDownItem dropDownItem)
-                    dropDownItem.DropDownItems.ApplyStaticStringResources();
+                    // to children
+                    if (item is ToolStripDropDownItem dropDownItem)
+                        FixItems(dropDownItem.DropDownItems, replacementColor);
+                }
             }
+
+            if (OSUtils.IsWindows || SystemInformation.HighContrast)
+                return;
+
+            // fixing "dark on dark" menu issue on Linux
+            Color replacementColor = Color.FromArgb(ProfessionalColors.MenuStripGradientBegin.ToArgb());
+            toolStrip.BackColor = replacementColor;
+            FixItems(toolStrip.Items, replacementColor);
         }
 
         #endregion

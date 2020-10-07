@@ -153,7 +153,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             foreach (KeyValuePair<string, Control> mapping in ValidationMapping)
             {
-                IReadOnlyList<ValidationResult> validationResults = src.EventArgs.EventData[mapping.Key];
+                var validationResults = src.EventArgs.EventData[mapping.Key];
                 ValidationResult error = validationResults.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Error);
                 ValidationResult warning = error == null ? validationResults.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Warning) : null;
                 ValidationResult info = error == null && warning == null ? validationResults.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Information) : null;

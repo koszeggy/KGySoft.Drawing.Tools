@@ -1003,6 +1003,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 {
                     g.DrawImage(toDraw, dest);
                 }
+                catch (Exception e) when (!e.IsCriticalGdi())
+                {
+                    // it is still possible that image is in use without lock,
+                    // in which case we simply re-invalidate the control and waiting for another chance to paint
+                    Invalidate();
+                }
                 finally
                 {
                     if (useLock)

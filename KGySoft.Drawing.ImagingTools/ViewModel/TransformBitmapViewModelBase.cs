@@ -38,12 +38,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             #region Fields
 
-            #region Private Fields
-
-            private readonly ManualResetEventSlim completedEvent;
-
-            #endregion
-
             #region Internal Fields
 
             internal volatile bool IsCanceled;
@@ -53,6 +47,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             #region Protected Fields
 
             protected volatile bool IsDisposed;
+
+            #endregion
+
+            #region Private Fields
+
+            private readonly ManualResetEventSlim completedEvent;
 
             #endregion
 
