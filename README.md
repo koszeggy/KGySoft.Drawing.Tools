@@ -21,7 +21,9 @@ KGy SOFT Drawing Tools repository contains [Debugger Visualizers](#debugger-visu
 ## KGy SOFT Imaging Tools
 ![KGySoft.Drawing.ImagingTools](https://kgysoft.net/images/ImagingTools.png)
 
-The Imaging Tools application makes possible to load images and icons from file, provides detailed information about images and you can convert them to other formats.
+The Imaging Tools application makes possible to load images and icons from file, manipulate and save them into various formats. Several modifications are possible such as rotating, resizing, changing pixel format with quantizing and dithering, adjusting brightness, contrast and gamma, or even editing the palette entries of indexed bitmaps.
+
+![Changing Pixel Format with Quantizing and Dithering](https://kgysoft.net/images/Quantizing.png)
 
 ## Debugger Visualizers
 
