@@ -19,7 +19,6 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Threading;
 
@@ -31,7 +30,7 @@ using KGySoft.Drawing.ImagingTools.Model;
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal abstract class TransformBitmapViewModelBase : ViewModelBase, IViewModel<Bitmap>, IValidatingObject
+    internal abstract class TransformBitmapViewModelBase : ViewModelBase, IViewModel<Bitmap?>, IValidatingObject
     {
         #region Nested Classes
 
@@ -41,7 +40,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             internal abstract void Initialize(Bitmap source, bool isInUse);
             internal abstract IAsyncResult BeginGenerate(AsyncConfig asyncConfig);
-            internal abstract Bitmap EndGenerate(IAsyncResult asyncResult);
+            internal abstract Bitmap? EndGenerate(IAsyncResult asyncResult);
 
             #endregion
         }
@@ -53,16 +52,16 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private readonly Bitmap originalImage;
         private readonly object syncRoot = new object();
 
-        private volatile GenerateTaskBase activeTask;
+        private volatile GenerateTaskBase? activeTask;
         private bool initializing = true;
         private bool keepResult;
-        private DrawingProgressManager drawingProgressManager;
+        private DrawingProgressManager? drawingProgressManager;
 
         #endregion
 
         #region Events
 
-        internal event EventHandler<EventArgs<ValidationResultsCollection>> ValidationResultsChanged
+        internal event EventHandler<EventArgs<ValidationResultsCollection>>? ValidationResultsChanged
         {
             add => ValidationResultsChangedHandler += value;
             remove => ValidationResultsChangedHandler -= value;
@@ -102,8 +101,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Private Properties
 
-        private Exception GeneratePreviewError { get => Get<Exception>(); set => Set(value); }
-        private EventHandler<EventArgs<ValidationResultsCollection>> ValidationResultsChangedHandler { get => Get<EventHandler<EventArgs<ValidationResultsCollection>>>(); set => Set(value); }
+        private Exception? GeneratePreviewError { get => Get<Exception?>(); set => Set(value); }
+        private EventHandler<EventArgs<ValidationResultsCollection>>? ValidationResultsChangedHandler { get => Get<EventHandler<EventArgs<ValidationResultsCollection>>?>(); set => Set(value); }
 
         #endregion
 
@@ -115,7 +114,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             originalImage = image ?? throw new ArgumentNullException(nameof(image), PublicResources.ArgumentNull);
             PreviewImageViewModel previewImage = PreviewImageViewModel;
-            previewImage.PropertyChanged += PreviewImage_PropertyChanged;
+            previewImage.PropertyChanged += PreviewImage_PropertyChanged!;
             previewImage.PreviewImage = previewImage.OriginalImage = image;
         }
 
@@ -143,7 +142,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             switch (e.PropertyName)
             {
                 case nameof(ValidationResults):
-                    var validationResults = (ValidationResultsCollection)e.NewValue;
+                    var validationResults = (ValidationResultsCollection)e.NewValue!;
                     IsValid = !validationResults.HasErrors;
                     ValidationResultsChangedHandler?.Invoke(this, new EventArgs<ValidationResultsCollection>(validationResults));
                     return;
@@ -160,7 +159,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     return;
 
                 default:
-                    if (initializing || !AffectsPreview(e.PropertyName))
+                    if (initializing || !AffectsPreview(e.PropertyName!))
                         return;
                     Validate();
                     ResetCommandState.Enabled = AreSettingsChanged;
@@ -178,7 +177,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         protected virtual ValidationResultsCollection DoValidation()
         {
-            Exception error = GeneratePreviewError;
+            Exception? error = GeneratePreviewError;
             var result = new ValidationResultsCollection();
 
             // errors
@@ -208,7 +207,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
 
             IsGenerating = true;
-            ThreadPool.QueueUserWorkItem(DoGenerate, CreateGenerateTask());
+            ThreadPool.QueueUserWorkItem(DoGenerate!, CreateGenerateTask());
         }
 
         protected abstract GenerateTaskBase CreateGenerateTask();
@@ -223,8 +222,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (disposing)
             {
                 activeTask?.Dispose();
-                Image preview = PreviewImageViewModel.PreviewImage;
-                PreviewImageViewModel?.Dispose();
+                Image? preview = PreviewImageViewModel.PreviewImage;
+                PreviewImageViewModel.Dispose();
 
                 if (!ReferenceEquals(originalImage, preview) && !keepResult)
                     preview?.Dispose();
@@ -239,7 +238,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Private Methods
 
-        [SuppressMessage("Reliability", "CA2002:Do not lock on objects with weak identity", Justification = "False alarm, originalImage is not a remote object")]
         private void DoGenerate(object state)
         {
             var task = (GenerateTaskBase)state;
@@ -259,7 +257,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 Debug.Assert(activeTask == null);
 
                 // resetting possible previous progress
-                drawingProgressManager.Report(default);
+                drawingProgressManager?.Report(default);
 
                 // from now on the task can be canceled
                 activeTask = task;
@@ -293,8 +291,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                         return;
                     }
 
-                    Exception error = null;
-                    Bitmap result = null;
+                    Exception? error = null;
+                    Bitmap? result = null;
                     try
                     {
                         // starting generate: using Begin.../End... methods instead of await ...Async so it is compatible even with .NET 3.5
@@ -343,7 +341,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void CancelRunningGenerate()
         {
-            GenerateTaskBase runningTask = activeTask;
+            GenerateTaskBase? runningTask = activeTask;
             if (runningTask == null)
                 return;
             runningTask.IsCanceled = true;
@@ -352,7 +350,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void WaitForPendingGenerate()
         {
             // In a non-UI thread it should be in a lock
-            GenerateTaskBase runningTask = activeTask;
+            GenerateTaskBase? runningTask = activeTask;
             if (runningTask == null)
                 return;
             runningTask.WaitForCompletion();
@@ -360,10 +358,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             activeTask = null;
         }
 
-        private void SetPreview(Bitmap image)
+        private void SetPreview(Bitmap? image)
         {
             PreviewImageViewModel preview = PreviewImageViewModel;
-            Image toDispose = preview.PreviewImage;
+            Image? toDispose = preview.PreviewImage;
             preview.PreviewImage = image;
             if (toDispose != null && toDispose != originalImage)
                 toDispose.Dispose();
@@ -380,7 +378,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             // preview image has been changed: updating IsModified accordingly
             if (e.PropertyName == nameof(vm.PreviewImage))
             {
-                Image image = vm.PreviewImage;
+                Image? image = vm.PreviewImage;
                 SetModified(image != null && originalImage != image);
             }
         }
@@ -411,7 +409,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Explicitly Implemented Interface Methods
 
-        Bitmap IViewModel<Bitmap>.GetEditedModel() => PreviewImageViewModel.PreviewImage as Bitmap;
+        Bitmap? IViewModel<Bitmap?>.GetEditedModel() => PreviewImageViewModel.PreviewImage as Bitmap;
 
         #endregion
 

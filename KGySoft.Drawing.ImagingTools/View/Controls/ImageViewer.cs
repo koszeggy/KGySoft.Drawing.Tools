@@ -18,7 +18,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -64,7 +63,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             {
                 #region Fields
 
-                internal Image SourceImage;
+                internal Image? SourceImage;
                 internal Size Size;
 
                 #endregion
@@ -78,16 +77,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             private readonly object syncRootGenerate = new object();
 
             private bool enabled;
-            private GenerateTask activeTask;
+            private GenerateTask? activeTask;
 
-            private Image sourceClone;
-            private Image safeDefaultImage; // The default image displayed when no generated preview is needed or while generation is in progress
+            private Image? sourceClone;
+            private Image? safeDefaultImage; // The default image displayed when no generated preview is needed or while generation is in progress
             private bool isClonedSafeDefaultImage;
             private Size requestedSize;
 
-            [SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "False alarm, it is either equals safeDefaultImage or currentPreview")]
-            private volatile Image displayImage; // The actual displayed image. If not null, it is either equals safeDefaultImage or currentPreview.
-            private volatile Bitmap cachedDisplayImage; // The lastly generated display image. Can be unused but is cached until a next preview is generated.
+            private volatile Image? displayImage; // The actual displayed image. If not null, it is either equals safeDefaultImage or currentPreview.
+            private volatile Bitmap? cachedDisplayImage; // The lastly generated display image. Can be unused but is cached until a next preview is generated.
             private Size currentCachedDisplayImage; // just to cache cachedDisplayImage.Size, because accessing currentPreview can lead to "object is used elsewhere" error
 
             #endregion
@@ -113,17 +111,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             #region Internal Methods
 
-            [SuppressMessage("Reliability", "CA2002:Do not lock on objects with weak identity", Justification = "False alarm, image is not a remote object")]
-            internal Image GetDisplayImage(bool generateSyncIfNull)
+            internal Image? GetDisplayImage(bool generateSyncIfNull)
             {
-                Image result = displayImage;
+                Image? result = displayImage;
                 if (result != null || !generateSyncIfNull)
                     return result;
 
                 if (safeDefaultImage == null)
                 {
-                    Image image = owner.image;
-                    Debug.Assert(image != null, "Image is not expected to be null here");
+                    Debug.Assert(owner.image != null, "Image is not expected to be null here");
+                    Image image = owner.image!;
                     PixelFormat pixelFormat = image.PixelFormat;
 
                     try
@@ -161,18 +158,18 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 }
 
                 // it is possible that we have a displayImage now but if not we return the default
-                return displayImage ??= safeDefaultImage;
+                if (displayImage == null)
+                    Interlocked.CompareExchange(ref displayImage, safeDefaultImage, null);
+                return displayImage;
             }
 
-            [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "False alarm, task is passed to DoGenerate")]
-            [SuppressMessage("Reliability", "CA2002:Do not lock on objects with weak identity", Justification = "False alarm, image is not a remote object")]
             internal void BeginGenerateDisplayImage()
             {
                 CancelRunningGenerate();
                 if (!enabled)
                     return;
 
-                Image image = owner.image;
+                Image? image = owner.image;
                 if (image == null)
                 {
                     Debug.Assert(cachedDisplayImage == null && displayImage == null);
@@ -191,7 +188,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 }
 
                 requestedSize = size;
-                ThreadPool.QueueUserWorkItem(DoGenerate, new GenerateTask { SourceImage = sourceClone, Size = size });
+                ThreadPool.QueueUserWorkItem(DoGenerate!, new GenerateTask { SourceImage = sourceClone, Size = size });
             }
 
             internal void Free()
@@ -216,7 +213,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             private void CancelRunningGenerate()
             {
-                GenerateTask runningTask = activeTask;
+                GenerateTask? runningTask = activeTask;
                 if (runningTask == null)
                     return;
                 runningTask.IsCanceled = true;
@@ -225,7 +222,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             private void WaitForPendingGenerate()
             {
                 // In a non-UI thread it should be in a lock
-                GenerateTask runningTask = activeTask;
+                GenerateTask? runningTask = activeTask;
                 if (runningTask == null)
                     return;
                 runningTask.WaitForCompletion();
@@ -233,7 +230,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 activeTask = null;
             }
 
-            private bool TrySetPreview(Image reference, Size size)
+            private bool TrySetPreview(Image? reference, Size size)
             {
                 if (sourceClone != null && reference != sourceClone)
                 {
@@ -255,7 +252,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 return true;
             }
 
-            [SuppressMessage("Reliability", "CA2002:Do not lock on objects with weak identity", Justification = "False alarm, this is not a remote object and is not exposed publicly")]
             private void FreeCachedPreview()
             {
                 lock (this) // It is alright, this is a private class. ImageViewer also locks on this instance when obtains display image so this ensures that no disposed image is painted.
@@ -266,14 +262,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         owner.Invalidate();
                     }
 
-                    Bitmap toFree = cachedDisplayImage;
+                    Bitmap? toFree = cachedDisplayImage;
                     cachedDisplayImage = null;
                     toFree?.Dispose();
                     currentCachedDisplayImage = default;
                 }
             }
 
-            [SuppressMessage("Reliability", "CA2002:Do not lock on objects with weak identity", Justification = "False alarm, task.ReferenceImage is not a remote object")]
             private void DoGenerate(object state)
             {
                 var task = (GenerateTask)state;
@@ -304,7 +299,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     if (task.SourceImage == null)
                     {
                         Debug.Assert(sourceClone == null && owner.image != null);
-                        Image image = owner.image;
+                        Image image = owner.image!;
 
                         // As OnPaint can occur any time in the UI thread we lock on it. See also PaintImage.
                         lock (image)
@@ -351,7 +346,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
                     try
                     {
-                        Bitmap result = null;
+                        Bitmap? result = null;
                         try
                         {
                             if (!task.IsCanceled)
@@ -387,7 +382,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 }
             }
 
-            private static Bitmap GenerateMetafilePreview(GenerateTask task)
+            private static Bitmap? GenerateMetafilePreview(GenerateTask task)
             {
                 // For the resizing large managed buffer of source.Height * target.Width of ColorF (16 bytes) is allocated internally. To be safe we count with the doubled sizes.
                 Size doubledSize = new Size(task.Size.Width << 1, task.Size.Height << 1);
@@ -402,11 +397,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     return null;
                 // MetafileExtensions.ToBitmap does the same if anti aliasing is requested but this way the process can be canceled
                 Debug.WriteLine($"Generating anti aliased image {task.Size.Width}x{task.Size.Height} on thread #{Thread.CurrentThread.ManagedThreadId}");
-                Bitmap result = null;
-                Bitmap doubled = null;
+                Bitmap? result = null;
+                Bitmap? doubled = null;
                 try
                 {
-                    doubled = new Bitmap(task.SourceImage, task.Size.Width << 1, task.Size.Height << 1);
+                    doubled = new Bitmap(task.SourceImage!, task.Size.Width << 1, task.Size.Height << 1);
                     if (!task.IsCanceled)
                     {
                         result = new Bitmap(task.Size.Width, task.Size.Height, PixelFormat.Format32bppPArgb);
@@ -442,22 +437,22 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 return result;
             }
 
-            private static Bitmap GenerateBitmapPreview(GenerateTask task)
+            private static Bitmap? GenerateBitmapPreview(GenerateTask task)
             {
                 // BitmapExtensions.Resize does the same but this way the process can be canceled
                 Debug.WriteLine($"Generating smoothed image {task.Size.Width}x{task.Size.Height} on thread #{Thread.CurrentThread.ManagedThreadId}");
 
-                Bitmap result = null;
+                Bitmap? result = null;
                 try
                 {
                     result = new Bitmap(task.Size.Width, task.Size.Height, PixelFormat.Format32bppPArgb);
-                    using IReadableBitmapData src = ((Bitmap)task.SourceImage).GetReadableBitmapData();
+                    using IReadableBitmapData src = ((Bitmap)task.SourceImage!).GetReadableBitmapData();
                     using IReadWriteBitmapData dst = result.GetReadWriteBitmapData();
                     var cfg = new AsyncConfig { IsCancelRequestedCallback = () => task.IsCanceled, ThrowIfCanceled = false, MaxDegreeOfParallelism = Environment.ProcessorCount >> 1 };
 
                     // Not using Task and await, because this method's signature must match the WaitCallback delegate, and we want to be compatible with .NET 3.5, too.
                     // As we are already on a pool thread the End... call does not block the UI.
-                    var srcRect = new Rectangle(Point.Empty, task.SourceImage.Size);
+                    var srcRect = new Rectangle(Point.Empty, task.SourceImage!.Size);
                     var dstRect = new Rectangle(Point.Empty, task.Size);
                     if (srcRect == dstRect)
                     {
@@ -522,7 +517,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         private readonly PreviewGenerator previewGenerator;
 
-        private Image image;
+        private Image? image;
         private Rectangle targetRectangle;
         private Rectangle clientRectangle;
         private bool smoothZooming;
@@ -543,7 +538,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Events
 
-        internal event EventHandler ZoomChanged
+        internal event EventHandler? ZoomChanged
         {
             add => Events.AddHandler(nameof(ZoomChanged), value);
             remove => Events.RemoveHandler(nameof(ZoomChanged), value);
@@ -555,7 +550,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Internal Properties
 
-        internal Image Image
+        internal Image? Image
         {
             get => image;
             set
@@ -760,7 +755,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Private Methods
 
-        private void SetImage(Image value)
+        private void SetImage(Image? value)
         {
             previewGenerator.Free();
             image = value;
@@ -915,7 +910,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             targetRectangle = new Rectangle(targetLocation, scaledSize);
         }
 
-        [SuppressMessage("Reliability", "CA2002:Do not lock on objects with weak identity", Justification = "False alarm, image is not a remote object")]
         private void PaintImage(Graphics g)
         {
             g.IntersectClip(clientRectangle);
@@ -932,7 +926,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 // Locking on display image so if it is the same as the original image, which is also locked when accessing its bitmap data
                 // the "bitmap region is already locked" can be avoided. Important: this cannot be ensured without locking here internally because
                 // OnPaint can occur any time after invalidating.
-                Image toDraw = previewGenerator.GetDisplayImage(true);
+                Image toDraw = previewGenerator.GetDisplayImage(true)!;
                 bool useLock = image == toDraw;
                 if (useLock)
                     Monitor.Enter(toDraw);
@@ -1017,7 +1011,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Event handlers
 
-        private void ScrollbarValueChanged(object sender, EventArgs e) => Invalidate();
+        private void ScrollbarValueChanged(object? sender, EventArgs e) => Invalidate();
 
         #endregion
 

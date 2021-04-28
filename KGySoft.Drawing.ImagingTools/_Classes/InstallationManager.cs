@@ -22,7 +22,9 @@ using System.Linq;
 
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
+#if NET45
 using KGySoft.Drawing.ImagingTools.WinApi;
+#endif
 
 #endregion
 
@@ -50,7 +52,7 @@ namespace KGySoft.Drawing.ImagingTools
             debuggerVisualizerFileName
         };
 
-        private static InstallationInfo availableVersion;
+        private static InstallationInfo? availableVersion;
 
         #endregion
 
@@ -77,7 +79,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// <param name="directory">The directory where the debugger visualizers have to be installed.</param>
         /// <param name="error">If the installation fails, then this parameter returns the error message; otherwise, this parameter returns <see langword="null"/>.</param>
         /// <param name="warning">If the installation succeeds with warnings, then this parameter returns the warning message; otherwise, this parameter returns <see langword="null"/>.</param>
-        public static void Install(string directory, out string error, out string warning)
+        public static void Install(string directory, out string? error, out string? warning)
         {
             if (directory == null)
                 throw new ArgumentNullException(nameof(directory), PublicResources.ArgumentNull);
@@ -187,7 +189,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// </summary>
         /// <param name="directory">The directory where the debugger visualizers have to be removed from.</param>
         /// <param name="error">If the removal fails, then this parameter returns the error message; otherwise, this parameter returns <see langword="null"/>.</param>
-        public static void Uninstall(string directory, out string error)
+        public static void Uninstall(string directory, out string? error)
         {
             error = null;
             if (!Directory.Exists(directory))

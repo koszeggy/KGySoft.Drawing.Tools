@@ -35,12 +35,12 @@ namespace KGySoft.Drawing.ImagingTools.Model
         /// <summary>
         /// Gets or sets a <see cref="Bitmap"/> that represents the content of the <see cref="BitmapData"/>.
         /// </summary>
-        public Bitmap BackingImage { get; set; }
+        public Bitmap? BackingImage { get; set; }
 
         /// <summary>
         /// Gets or sets the bitmap data.
         /// </summary>
-        public BitmapData BitmapData { get; set; }
+        public BitmapData? BitmapData { get; set; }
 
         #endregion
 

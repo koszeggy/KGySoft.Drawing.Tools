@@ -38,7 +38,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Constructors
 
-        private AdjustBrightnessForm() : this(null)
+        private AdjustBrightnessForm() : this(null!)
         {
             // this ctor is just for the designer
         }

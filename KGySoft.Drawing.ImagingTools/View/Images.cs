@@ -31,28 +31,28 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         #region Private Fields
 
-        private static Bitmap check;
-        private static Bitmap crop;
-        private static Bitmap highlightVisibleClip;
-        private static Bitmap magnifier;
-        private static Bitmap save;
-        private static Bitmap open;
-        private static Bitmap clear;
-        private static Bitmap prev;
-        private static Bitmap next;
-        private static Bitmap palette;
-        private static Bitmap settings;
-        private static Bitmap animation;
-        private static Bitmap multiSize;
-        private static Bitmap multiPage;
-        private static Bitmap smoothZoom;
-        private static Bitmap edit;
-        private static Bitmap rotateLeft;
-        private static Bitmap rotateRight;
-        private static Bitmap resize;
-        private static Bitmap quantize;
-        private static Bitmap colors;
-        private static Bitmap compare;
+        private static Bitmap? check;
+        private static Bitmap? crop;
+        private static Bitmap? highlightVisibleClip;
+        private static Bitmap? magnifier;
+        private static Bitmap? save;
+        private static Bitmap? open;
+        private static Bitmap? clear;
+        private static Bitmap? prev;
+        private static Bitmap? next;
+        private static Bitmap? palette;
+        private static Bitmap? settings;
+        private static Bitmap? animation;
+        private static Bitmap? multiSize;
+        private static Bitmap? multiPage;
+        private static Bitmap? smoothZoom;
+        private static Bitmap? edit;
+        private static Bitmap? rotateLeft;
+        private static Bitmap? rotateRight;
+        private static Bitmap? resize;
+        private static Bitmap? quantize;
+        private static Bitmap? colors;
+        private static Bitmap? compare;
 
         #endregion
 
@@ -115,7 +115,7 @@ namespace KGySoft.Drawing.ImagingTools.View
 
             // Windows XP-Windows 7 with legacy scaling: we need to make sure that icon size is dividable by 16
             // so it will not be corrupted (eg. ErrorProvider)
-            using Bitmap iconImage = icon.ExtractBitmap(result.Size);
+            using Bitmap iconImage = icon.ExtractBitmap(result.Size)!;
             result.Dispose();
 
             // returning a larger icon without scaling so apparently it will have the same size as the original one
@@ -128,7 +128,7 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         private static Bitmap GetResource(string resourceName)
         {
-            var icon = (Icon)Properties.Resources.ResourceManager.GetObject(resourceName, CultureInfo.InvariantCulture);
+            var icon = (Icon)Properties.Resources.ResourceManager.GetObject(resourceName, CultureInfo.InvariantCulture)!;
             if (OSUtils.IsVistaOrLater)
                 return icon.ToMultiResBitmap();
 

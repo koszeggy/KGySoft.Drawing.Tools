@@ -39,10 +39,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Properties
 
-        internal GraphicsInfo GraphicsInfo { get => Get<GraphicsInfo>(); set => Set(value); }
+        internal GraphicsInfo? GraphicsInfo { get => Get<GraphicsInfo?>(); init => Set(value); }
         internal bool Crop { get => Get<bool>(); set => Set(value); }
-        internal bool HighlightVisibleClip { get => Get<bool>(true); set => Set(value); }
-        internal Action<Graphics, Rectangle> DrawFocusRectangleCallback { get => Get<Action<Graphics, Rectangle>>(); set => Set(value); }
+        internal bool HighlightVisibleClip { get => Get(true); set => Set(value); }
+        internal Action<Graphics, Rectangle>? DrawFocusRectangleCallback { get => Get<Action<Graphics, Rectangle>?>(); set => Set(value); }
 
         internal ICommandState CropCommandState => Get(() => new CommandState());
         internal ICommandState HighlightVisibleClipCommandState => Get(() => new CommandState());
@@ -81,8 +81,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         protected override void UpdateInfo()
         {
-            GraphicsInfo graphicsInfo = GraphicsInfo;
-            Matrix transform = graphicsInfo?.Transform;
+            GraphicsInfo? graphicsInfo = GraphicsInfo;
+            Matrix? transform = graphicsInfo?.Transform;
             if (graphicsInfo?.GraphicsImage == null || transform == null)
             {
                 TitleCaption = Res.TitleNoImage;
@@ -142,9 +142,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void UpdateImageAndCommands()
         {
             UpdateGraphicImage();
-            GraphicsInfo graphicsInfo = GraphicsInfo;
-            Bitmap backingImage = graphicsInfo?.GraphicsImage;
-            bool commandsEnabled = backingImage != null && (backingImage.Size != graphicsInfo.OriginalVisibleClipBounds.Size || graphicsInfo.OriginalVisibleClipBounds.Location != Point.Empty);
+            GraphicsInfo? graphicsInfo = GraphicsInfo;
+            Bitmap? backingImage = graphicsInfo?.GraphicsImage;
+            bool commandsEnabled = backingImage != null && (backingImage.Size != graphicsInfo!.OriginalVisibleClipBounds.Size || graphicsInfo.OriginalVisibleClipBounds.Location != Point.Empty);
             CropCommandState.Enabled = HighlightVisibleClipCommandState.Enabled = commandsEnabled;
         }
 
@@ -152,18 +152,18 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             if (!viewInitialized)
                 return;
-            GraphicsInfo graphicsInfo = GraphicsInfo;
-            Bitmap backingImage = graphicsInfo?.GraphicsImage;
+            GraphicsInfo? graphicsInfo = GraphicsInfo;
+            Bitmap? backingImage = graphicsInfo?.GraphicsImage;
             if (backingImage == null)
                 return;
 
-            Rectangle visibleRect = graphicsInfo.OriginalVisibleClipBounds;
+            Rectangle visibleRect = graphicsInfo!.OriginalVisibleClipBounds;
             if (Crop && (visibleRect.Size != backingImage.Size || visibleRect.Location != Point.Empty))
             {
                 if (visibleRect.Width <= 0 || visibleRect.Height <= 0)
                     return;
 
-                Bitmap newImage = new Bitmap(visibleRect.Width, visibleRect.Height);
+                var newImage = new Bitmap(visibleRect.Width, visibleRect.Height);
                 using (Graphics g = Graphics.FromImage(newImage))
                     g.DrawImage(backingImage, new Rectangle(Point.Empty, visibleRect.Size), visibleRect, GraphicsUnit.Pixel);
 
@@ -173,7 +173,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             if (HighlightVisibleClip && (visibleRect.Size != backingImage.Size || visibleRect.Location != Point.Empty))
             {
-                Bitmap newImage = new Bitmap(backingImage);
+                var newImage = new Bitmap(backingImage);
                 using (Graphics g = Graphics.FromImage(newImage))
                 {
                     using (Brush b = new SolidBrush(Color.FromArgb(128, Color.Black)))

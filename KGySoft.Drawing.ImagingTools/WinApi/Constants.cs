@@ -19,6 +19,7 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
     internal static class Constants
     {
         #region Constants
+        // ReSharper disable InconsistentNaming
 
         internal const int WS_BORDER = 0x00800000;
         internal const int WM_MOUSEHWHEEL = 0x020E;
@@ -27,6 +28,7 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
         internal const int MA_ACTIVATEANDEAT= 2;
         internal const int MA_ACTIVATE = 1;
 
+        // ReSharper restore InconsistentNaming
         #endregion
     }
 }

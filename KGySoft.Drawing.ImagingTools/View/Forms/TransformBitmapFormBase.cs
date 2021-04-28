@@ -61,7 +61,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Constructors
 
-        private TransformBitmapFormBase() : this(null)
+        private TransformBitmapFormBase() : this(null!)
         {
             // this ctor is just for the designer
         }
@@ -154,9 +154,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             foreach (KeyValuePair<string, Control> mapping in ValidationMapping)
             {
                 var validationResults = src.EventArgs.EventData[mapping.Key];
-                ValidationResult error = validationResults.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Error);
-                ValidationResult warning = error == null ? validationResults.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Warning) : null;
-                ValidationResult info = error == null && warning == null ? validationResults.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Information) : null;
+                ValidationResult? error = validationResults.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Error);
+                ValidationResult? warning = error == null ? validationResults.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Warning) : null;
+                ValidationResult? info = error == null && warning == null ? validationResults.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Information) : null;
                 errorProvider.SetError(mapping.Value, error?.Message);
                 warningProvider.SetError(mapping.Value, warning?.Message);
                 infoProvider.SetError(mapping.Value, info?.Message);

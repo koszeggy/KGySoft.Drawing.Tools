@@ -17,10 +17,12 @@
 #region Usings
 
 using System;
+#if !NET5_0_OR_GREATER
 using System.Collections.Specialized;
 using System.Drawing;
 using System.Reflection;
 using System.Runtime.InteropServices;
+#endif
 using System.Windows.Forms;
 
 using KGySoft.Reflection;
@@ -36,6 +38,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
     {
         #region NativeMethods class
 
+#if !NET5_0_OR_GREATER
         private static class NativeMethods
         {
             #region Methods
@@ -45,25 +48,36 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
             #endregion
         }
+#endif
 
         #endregion
 
         #region Constants
 
+#if !NET5_0_OR_GREATER
+        // ReSharper disable once InconsistentNaming
         private const int WM_NCHITTEST = 0x0084;
+#endif
 
         #endregion
 
         #region Fields
 
-        private static readonly BitVector32.Section formStateRenderSizeGrip = OSUtils.IsWindows ? (BitVector32.Section)Reflector.GetField(typeof(Form), "FormStateRenderSizeGrip") : default;
-        private static FieldAccessor formStateField;
+#if !NET5_0_OR_GREATER
+        private static readonly BitVector32.Section formStateRenderSizeGrip = OSUtils.IsWindows
+            ? (BitVector32.Section)Reflector.GetField(typeof(Form), "FormStateRenderSizeGrip")!
+            : default;
+        private static FieldAccessor? formStateField;
+#endif
 
         #endregion
 
         #region Properties
 
-        private BitVector32 FormState => (BitVector32)(formStateField ??= FieldAccessor.GetAccessor(typeof(Form).GetField("formState", BindingFlags.Instance | BindingFlags.NonPublic))).Get(this);
+#if !NET5_0_OR_GREATER
+        private BitVector32 FormState => (BitVector32)(formStateField ??=
+            FieldAccessor.GetAccessor(typeof(Form).GetField("formState", BindingFlags.Instance | BindingFlags.NonPublic)!)).Get(this)!;
+#endif
 
         #endregion
 
@@ -71,7 +85,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         static BaseForm()
         {
-            Type dpiHelper = Reflector.ResolveType(typeof(Form).Assembly, "System.Windows.Forms.DpiHelper");
+            Type? dpiHelper = Reflector.ResolveType(typeof(Form).Assembly, "System.Windows.Forms.DpiHelper");
             if (dpiHelper == null)
                 return;
 
@@ -87,6 +101,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Protected Methods
 
+#if !NET5_0_OR_GREATER
         protected override void WndProc(ref Message m)
         {
             if (!OSUtils.IsWindows)
@@ -105,6 +120,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                     break;
             }
         }
+#endif
 
         protected override void Dispose(bool disposing)
         {
@@ -117,9 +133,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Methods
 
+#if !NET5_0_OR_GREATER
         /// <summary>
         /// Bugfix: When size grip is visible, and form is above and left of the primary monitor, form cannot be dragged anymore due to forced diagonal resizing.
-        /// Note: will be fixed in .NET Core (see also https://github.com/dotnet/winforms/issues/1504)
+        /// Note: Needed only below .NET 5.0 because I fixed this directly in WinForms repository: https://github.com/dotnet/winforms/pull/2032/commits
         /// </summary>
         private void WmNCHitTest(ref Message m)
         {
@@ -144,6 +161,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                     m.Result = (IntPtr)18;
             }
         }
+#endif
 
         #endregion
 

@@ -1,10 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿#region Copyright
+
+///////////////////////////////////////////////////////////////////////////////
+//  File: ScalingCheckBox.cs
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright (C) KGy SOFT, 2005-2020 - All Rights Reserved
+//
+//  You should have received a copy of the LICENSE file at the top-level
+//  directory of this distribution. If not, then this file is considered as
+//  an illegal copy.
+//
+//  Unauthorized copying of this file, via any medium is strictly prohibited.
+///////////////////////////////////////////////////////////////////////////////
+
+#endregion
+
+#region Usings
+
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
+
+#endregion
 
 namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
@@ -13,6 +28,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
     /// </summary>
     internal class ScalingCheckBox : CheckBox
     {
+        #region Methods
+
         public override Size GetPreferredSize(Size proposedSize)
         {
             var flatStyle = FlatStyle;
@@ -34,5 +51,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             ResumeLayout();
             return result;
         }
+
+        #endregion
     }
 }

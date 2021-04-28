@@ -31,13 +31,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
     {
         #region Properties
 
-        internal Action<string> ShowErrorCallback { get => Get<Action<string>>(); set => Set(value); }
-        internal Action<string> ShowWarningCallback { get => Get<Action<string>>(); set => Set(value); }
-        internal Action<string> ShowInfoCallback { get => Get<Action<string>>(); set => Set(value); }
-        internal Func<string, bool> ConfirmCallback { get => Get<Func<string, bool>>(); set => Set(value); }
-        internal Action<IViewModel> ShowChildViewCallback { get => Get<Action<IViewModel>>(); set => Set(value); }
-        internal Action CloseViewCallback { get => Get<Action>(); set => Set(value); }
-        internal Action<Action> SynchronizedInvokeCallback { get => Get<Action<Action>>(); set => Set(value); }
+        internal Action<string>? ShowErrorCallback { get => Get<Action<string>?>(); set => Set(value); }
+        internal Action<string>? ShowWarningCallback { get => Get<Action<string>?>(); set => Set(value); }
+        internal Action<string>? ShowInfoCallback { get => Get<Action<string>?>(); set => Set(value); }
+        internal Func<string, bool>? ConfirmCallback { get => Get<Func<string, bool>?>(); set => Set(value); }
+        internal Action<IViewModel>? ShowChildViewCallback { get => Get<Action<IViewModel>?>(); set => Set(value); }
+        internal Action? CloseViewCallback { get => Get<Action?>(); set => Set(value); }
+        internal Action<Action>? SynchronizedInvokeCallback { get => Get<Action<Action>?>(); set => Set(value); }
 
         #endregion
 

@@ -39,8 +39,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Protected Properties
 
-        protected TViewModel ViewModel { get; }
-        protected CommandBindingsCollection CommandBindings { get; }
+        protected TViewModel ViewModel { get; } = default!;
+        protected CommandBindingsCollection CommandBindings { get; } = new WinFormsCommandBindingsCollection();
 
         #endregion
 
@@ -60,8 +60,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         protected MvvmBaseForm(TViewModel viewModel)
         {
             // occurs in design mode but DesignMode is false for grandchild forms
-            if (viewModel == null)
+            if (viewModel == null!)
                 return;
+
             ViewModel = viewModel;
 
             ViewModelBase vm = VM;
@@ -72,8 +73,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             vm.ShowChildViewCallback = ShowChildView;
             vm.CloseViewCallback = () => BeginInvoke(new Action(Close));
             vm.SynchronizedInvokeCallback = InvokeIfRequired;
-
-            CommandBindings = new WinformsCommandBindingsCollection();
         }
 
         #endregion
@@ -96,8 +95,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            if (ViewModel == null)
+
+            // occurs in design mode but DesignMode is false for grandchild forms
+            if (ViewModel == null!)
                 return;
+            
             ApplyResources();
             ApplyViewModel();
         }
@@ -116,7 +118,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-                CommandBindings?.Dispose();
+                CommandBindings.Dispose();
 
             base.Dispose(disposing);
         }

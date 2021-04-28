@@ -35,10 +35,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         // not a static property so always can be reinitialized with the current language
         internal IList<QuantizerDescriptor> Quantizers => Get(InitQuantizers);
-        internal QuantizerDescriptor SelectedQuantizer { get => Get<QuantizerDescriptor>(); private set => Set(value); }
-        internal CustomPropertiesObject Parameters { get => Get<CustomPropertiesObject>(); private set => Set(value); }
-        internal IQuantizer Quantizer { get => Get<IQuantizer>(); private set => Set(value); }
-        internal Exception CreateQuantizerError { get => Get<Exception>(); set => Set(value); }
+        internal QuantizerDescriptor? SelectedQuantizer { get => Get<QuantizerDescriptor?>(); private set => Set(value); }
+        internal CustomPropertiesObject? Parameters { get => Get<CustomPropertiesObject?>(); private set => Set(value); }
+        internal IQuantizer? Quantizer { get => Get<IQuantizer?>(); private set => Set(value); }
+        internal Exception? CreateQuantizerError { get => Get<Exception?>(); set => Set(value); }
 
         #endregion
 
@@ -51,7 +51,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             {
                 //new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.FromPixelFormat)),
                 new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.BlackAndWhite)),
-                new QuantizerDescriptor(typeof(PredefinedColorsQuantizer).GetMethod(nameof(PredefinedColorsQuantizer.FromCustomPalette), new[] { typeof(Color[]), typeof(Color), typeof(byte) })),
+                new QuantizerDescriptor(typeof(PredefinedColorsQuantizer).GetMethod(nameof(PredefinedColorsQuantizer.FromCustomPalette), new[] { typeof(Color[]), typeof(Color), typeof(byte) })!),
                 new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.Grayscale4)),
                 new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.Grayscale16)),
                 new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.Grayscale)),
@@ -78,18 +78,19 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal void ResetQuantizer()
         {
-            QuantizerDescriptor descriptor = SelectedQuantizer;
+            QuantizerDescriptor? descriptor = SelectedQuantizer;
+            CustomPropertiesObject? parameters = Parameters;
             CreateQuantizerError = null;
-            if (descriptor == null)
+            if (descriptor == null || parameters == null)
             {
                 Quantizer = null;
                 return;
             }
 
-            object[] parameters = descriptor.EvaluateParameters(Parameters);
+            object?[] parameterValues = descriptor.EvaluateParameters(parameters);
             try
             {
-                Quantizer = (IQuantizer)MethodAccessor.GetAccessor(descriptor.Method).Invoke(null, parameters);
+                Quantizer = (IQuantizer)MethodAccessor.GetAccessor(descriptor.Method).Invoke(null, parameterValues)!;
             }
             catch (Exception e) when (!e.IsCritical())
             {
@@ -105,19 +106,18 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
         {
             base.OnPropertyChanged(e);
-            if (e.PropertyName == nameof(SelectedQuantizer))
+            switch (e.PropertyName)
             {
-                CustomPropertiesObject previousParameters = Parameters;
-                Parameters = previousParameters == null
-                    ? new CustomPropertiesObject(SelectedQuantizer.Parameters)
-                    : new CustomPropertiesObject(previousParameters, SelectedQuantizer.Parameters);
-                return;
-            }
+                case nameof(SelectedQuantizer):
+                    CustomPropertiesObject? previousParameters = Parameters;
+                    Parameters = previousParameters == null
+                        ? new CustomPropertiesObject(SelectedQuantizer!.Parameters)
+                        : new CustomPropertiesObject(previousParameters, SelectedQuantizer!.Parameters);
+                    return;
 
-            if (e.PropertyName == nameof(Parameters))
-            {
-                ResetQuantizer();
-                return;
+                case nameof(Parameters):
+                    ResetQuantizer();
+                    return;
             }
         }
 

@@ -16,8 +16,8 @@
 
 #region Usings
 
-using System;
 using System.IO;
+
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
 
@@ -31,8 +31,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Internal Properties
         
-        internal string[] CommandLineArguments { get => Get<string[]>(); set => Set(value); }
-        internal string FileName { get => Get<string>(); set => Set(value); }
+        internal string[]? CommandLineArguments { get => Get<string[]?>(); init => Set(value); }
+        internal string? FileName { get => Get<string?>(); set => Set(value); }
 
         #endregion
 
@@ -50,11 +50,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal override void ViewLoaded()
         {
-            string[] args = CommandLineArguments;
-            if (!args.IsNullOrEmpty())
-                ProcessArgs(CommandLineArguments);
-            else
+            string[]? args = CommandLineArguments;
+            if (args.IsNullOrEmpty())
                 UpdateInfo();
+            else
+                ProcessArgs(args!);
             base.ViewLoaded();
         }
 
@@ -127,7 +127,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void ProcessArgs(string[] args)
         {
-            if (args.IsNullOrEmpty())
+            if (args.Length == 0)
                 return;
             string file = args[0];
             if (!File.Exists(file))

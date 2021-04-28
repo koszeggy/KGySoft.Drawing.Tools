@@ -23,6 +23,7 @@ using System.Runtime.InteropServices;
 namespace KGySoft.Drawing.ImagingTools.WinApi
 {
     [StructLayout(LayoutKind.Sequential)]
+    // ReSharper disable once InconsistentNaming
     internal struct MEMORYSTATUSEX
     {
         #region Fields

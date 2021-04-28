@@ -59,14 +59,14 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         private void InitCommandBindings()
         {
             // not for ViewModel.Parameters.PropertyChanged because it is not triggered for expanded properties such as collection elements
-            CommandBindings.Add(ViewModel.ResetQuantizer)
+            CommandBindings.Add(ViewModel!.ResetQuantizer)
                 .AddSource(pgParameters, nameof(pgParameters.PropertyValueChanged));
         }
 
         private void InitPropertyBindings()
         {
             // will not change so not as an actual binding
-            cmbQuantizer.DataSource = ViewModel.Quantizers;
+            cmbQuantizer.DataSource = ViewModel!.Quantizers;
 
             // VM.Parameters -> pgParameters.SelectedObject
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Parameters), nameof(pgParameters.SelectedObject), pgParameters);

@@ -18,7 +18,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
@@ -40,7 +39,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             #region Fields
 
-            private Bitmap sourceBitmap;
+            private Bitmap? sourceBitmap;
             private bool isSourceCloned;
 
             #endregion
@@ -48,14 +47,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             #region Properties
 
             internal PixelFormat PixelFormat { get; }
-            internal IQuantizer Quantizer { get; }
-            internal IDitherer Ditherer { get; }
+            internal IQuantizer? Quantizer { get; }
+            internal IDitherer? Ditherer { get; }
 
             #endregion
 
             #region Constructors
 
-            internal GenerateTask(PixelFormat pixelFormat, IQuantizer quantizer, IDitherer ditherer)
+            internal GenerateTask(PixelFormat pixelFormat, IQuantizer? quantizer, IDitherer? ditherer)
             {
                 PixelFormat = pixelFormat;
                 Quantizer = quantizer;
@@ -66,8 +65,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             #region Methods
 
-            [SuppressMessage("Reliability", "CA2002:Do not lock on objects with weak identity",
-                Justification = "False alarm, source is never a remote object")]
             internal override void Initialize(Bitmap source, bool isInUse)
             {
                 // Locking on source image to avoid "bitmap region is already locked" if the UI is painting the image when we clone it.
@@ -90,9 +87,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
 
             internal override IAsyncResult BeginGenerate(AsyncConfig asyncConfig)
-                => sourceBitmap.BeginConvertPixelFormat(PixelFormat, Quantizer, Ditherer, asyncConfig);
+                => sourceBitmap!.BeginConvertPixelFormat(PixelFormat, Quantizer, Ditherer, asyncConfig);
 
-            internal override Bitmap EndGenerate(IAsyncResult asyncResult) => asyncResult.EndConvertPixelFormat();
+            internal override Bitmap? EndGenerate(IAsyncResult asyncResult) => asyncResult.EndConvertPixelFormat();
 
             internal override void SetCompleted()
             {
@@ -102,7 +99,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     sourceBitmap = null;
                 }
                 else
-                    Monitor.Exit(sourceBitmap);
+                    Monitor.Exit(sourceBitmap!);
 
                 base.SetCompleted();
             }
@@ -187,10 +184,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             bool useQuantizer = UseQuantizer;
             bool useDitherer = UseDitherer;
             PixelFormat pixelFormat = changePixelFormat ? PixelFormat : originalPixelFormat;
-            IQuantizer quantizer = useQuantizer ? QuantizerSelectorViewModel.Quantizer : null;
-            IDitherer ditherer = useDitherer ? DithererSelectorViewModel.Ditherer : null;
-            Exception quantizerError = useQuantizer ? QuantizerSelectorViewModel.CreateQuantizerError : null;
-            Exception dithererError = useDitherer ? DithererSelectorViewModel.CreateDithererError : null;
+            IQuantizer? quantizer = useQuantizer ? QuantizerSelectorViewModel.Quantizer : null;
+            IDitherer? ditherer = useDitherer ? DithererSelectorViewModel.Ditherer : null;
+            Exception? quantizerError = useQuantizer ? QuantizerSelectorViewModel.CreateQuantizerError : null;
+            Exception? dithererError = useDitherer ? DithererSelectorViewModel.CreateDithererError : null;
             int bpp = pixelFormat.ToBitsPerPixel();
             int originalBpp = originalPixelFormat.ToBitsPerPixel();
             int? bppHint = quantizer?.PixelFormatHint.ToBitsPerPixel();
@@ -202,7 +199,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (quantizerError != null)
                 result.AddError(nameof(QuantizerSelectorViewModel.Quantizer), Res.ErrorMessageFailedToInitializeQuantizer(quantizerError.Message));
             else if (bppHint <= 8 && bppHint > bpp)
-                result.AddError(nameof(QuantizerSelectorViewModel.Quantizer), Res.ErrorMessageQuantizerPaletteTooLarge(pixelFormat, quantizer.PixelFormatHint, 1 << bpp));
+                result.AddError(nameof(QuantizerSelectorViewModel.Quantizer), Res.ErrorMessageQuantizerPaletteTooLarge(pixelFormat, quantizer!.PixelFormatHint, 1 << bpp));
 
             if (dithererError != null)
                 result.AddError(nameof(DithererSelectorViewModel.Ditherer), Res.ErrorMessageFailedToInitializeDitherer(dithererError.Message));
@@ -215,7 +212,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 result.AddWarning(nameof(PixelFormat), Res.WarningMessageWideConversionLoss(originalPixelFormat));
 
             if (bppHint > bpp)
-                result.AddWarning(nameof(QuantizerSelectorViewModel.Quantizer), Res.WarningMessageQuantizerTooWide(pixelFormat, quantizer.PixelFormatHint));
+                result.AddWarning(nameof(QuantizerSelectorViewModel.Quantizer), Res.WarningMessageQuantizerTooWide(pixelFormat, quantizer!.PixelFormatHint));
 
             if (bppHint == 32 && ditherer != null)
                 result.AddWarning(nameof(DithererSelectorViewModel.Ditherer), Res.WarningMessageDithererNoAlphaGradient);
@@ -224,7 +221,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (changePixelFormat && pixelFormat == originalPixelFormat)
                 result.AddInfo(nameof(PixelFormat), Res.InfoMessageSamePixelFormat);
             if (bppHint < bpp)
-                result.AddInfo(nameof(PixelFormat), Res.InfoMessagePixelFormatUnnecessarilyWide(quantizer.PixelFormatHint));
+                result.AddInfo(nameof(PixelFormat), Res.InfoMessagePixelFormatUnnecessarilyWide(quantizer!.PixelFormatHint));
 
             if (!useQuantizer)
             {
@@ -240,9 +237,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             else if (bppHint == 32 && originalBpp >= 32 && !originalPixelFormat.HasAlpha())
                 result.AddInfo(nameof(QuantizerSelectorViewModel.Quantizer), Res.InfoMessageArgbQuantizerHasNoEffect);
 
-            if (bppHint < originalBpp && !useDitherer && quantizer.PixelFormatHint.CanBeDithered())
+            if (bppHint < originalBpp && !useDitherer && quantizer!.PixelFormatHint.CanBeDithered())
             {
-                if (QuantizerSelectorViewModel.SelectedQuantizer.Method.Name != nameof(PredefinedColorsQuantizer.Grayscale))
+                if (QuantizerSelectorViewModel.SelectedQuantizer!.Method.Name != nameof(PredefinedColorsQuantizer.Grayscale))
                     result.AddInfo(nameof(DithererSelectorViewModel.Ditherer), Res.InfoMessageQuantizerCanBeDithered(originalPixelFormat));
             }
             else if (bpp < originalBpp && !useDitherer && pixelFormat.CanBeDithered())
@@ -282,8 +279,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (disposing)
             {
                 // These disposals remove every subscriptions as well
-                QuantizerSelectorViewModel?.Dispose();
-                DithererSelectorViewModel?.Dispose();
+                QuantizerSelectorViewModel.Dispose();
+                DithererSelectorViewModel.Dispose();
             }
 
             base.Dispose(disposing);
@@ -297,7 +294,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Event Handlers
 
-        private void Selector_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void Selector_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName.In(nameof(QuantizerSelectorViewModel.Quantizer), nameof(QuantizerSelectorViewModel.CreateQuantizerError),
                 nameof(DithererSelectorViewModel.Ditherer), nameof(DithererSelectorViewModel.CreateDithererError)))

@@ -50,7 +50,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Constructors
 
-        private ResizeBitmapForm() : this(null)
+        private ResizeBitmapForm() : this(null!)
         {
             // this ctor is just for the designer
         }
@@ -121,19 +121,19 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
             // VM.WidthRatio <-> txtWidthPercent.Text
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.WidthRatio), txtWidthPercent, nameof(txtWidthPercent.Text),
-                FormatPercentage, ParsePercentage);
+                FormatPercentage!, ParsePercentage!);
 
             // VM.HeightRatio <-> txtHeightPercent.Text
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.HeightRatio), txtHeightPercent, nameof(txtHeightPercent.Text),
-                FormatPercentage, ParsePercentage);
+                FormatPercentage!, ParsePercentage!);
 
             // VM.Width <-> txtWidthPx.Text
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.Width), txtWidthPx, nameof(txtWidthPx.Text),
-                FormatInteger, ParseInteger);
+                FormatInteger!, ParseInteger!);
 
             // VM.Height <-> txtHeightPx.Text
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.Height), txtHeightPx, nameof(txtHeightPx.Text),
-                FormatInteger, ParseInteger);
+                FormatInteger!, ParseInteger!);
         }
 
         #endregion

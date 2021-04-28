@@ -45,7 +45,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Instance Fields
 
-        private IList<Color> palette;
+        private IList<Color>? palette;
         private int selectedColorIndex = -1;
         private int firstVisibleColor;
         private int visibleRowCount;
@@ -59,7 +59,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Events
 
-        internal event EventHandler SelectedColorChanged
+        internal event EventHandler? SelectedColorChanged
         {
             add => Events.AddHandler(nameof(SelectedColorChanged), value);
             remove => Events.RemoveHandler(nameof(SelectedColorChanged), value);
@@ -71,7 +71,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Internal Properties
 
-        internal IList<Color> Palette
+        internal IList<Color>? Palette
         {
             set
             {
@@ -194,7 +194,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 return;
 
             e.Graphics.PixelOffsetMode = PixelOffsetMode.Half;
-            int upper = Math.Min(palette.Count, firstVisibleColor + (visibleRowCount << 4));
+            int upper = Math.Min(palette!.Count, firstVisibleColor + (visibleRowCount << 4));
 
             // iterating through visible colors
             for (int i = firstVisibleColor; i < upper; i++)
@@ -366,7 +366,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             Invalidate();
             visibleRowCount = maxRows;
-            int colorRows = (int)Math.Ceiling((double)palette.Count / 16);
+            int colorRows = (int)Math.Ceiling((double)palette!.Count / 16);
             if (visibleRowCount >= colorRows)
             {
                 // scrollbar is not needed
@@ -408,14 +408,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         //ReSharper disable InconsistentNaming
 #pragma warning disable IDE1006 // Naming Styles
 
-        private void sbPalette_ValueChanged(object sender, EventArgs e)
+        private void sbPalette_ValueChanged(object? sender, EventArgs e)
         {
             firstVisibleColor = sbPalette.Value << 4;
             timerSelection.Enabled = IsSelectedColorVisible();
             Invalidate();
         }
 
-        private void timerSelection_Tick(object sender, EventArgs e)
+        private void timerSelection_Tick(object? sender, EventArgs e)
         {
             if (!IsSelectedColorVisible())
             {

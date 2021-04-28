@@ -38,7 +38,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Constructors
 
-        private AdjustContrastForm() : this(null)
+        private AdjustContrastForm() : this(null!)
         {
             // this ctor is just for the designer
         }

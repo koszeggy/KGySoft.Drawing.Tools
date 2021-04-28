@@ -39,7 +39,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Constructors
 
-        private ColorVisualizerForm() : this(null)
+        private ColorVisualizerForm() : this(null!)
         {
             // this ctor is just for the designer
         }
@@ -84,7 +84,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
             // VM.Color -> ucColorVisualizer.Color, Text
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Color), nameof(ucColorVisualizer.Color), ucColorVisualizer);
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Color), nameof(Text), c => Res.TitleColor((Color)c), this);
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Color), nameof(Text), c => Res.TitleColor((Color)c!), this);
         }
 
         private void InitCommandBindings()

@@ -27,7 +27,7 @@ namespace KGySoft.Drawing.ImagingTools.View
     {
         #region Methods
 
-        internal static TDelegate GetHandler<TDelegate>(this EventHandlerList handlers, object key) where TDelegate : Delegate => handlers?[key] as TDelegate;
+        internal static TDelegate? GetHandler<TDelegate>(this EventHandlerList? handlers, object key) where TDelegate : Delegate => handlers?[key] as TDelegate;
 
         #endregion
     }

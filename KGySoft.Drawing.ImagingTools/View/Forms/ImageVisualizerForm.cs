@@ -44,7 +44,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Constructors
 
-        private ImageVisualizerForm() : this(null)
+        private ImageVisualizerForm() : this(null!)
         {
             // this ctor is just for the designer
         }
@@ -291,14 +291,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private Rectangle GetScreenRectangle() => Screen.FromHandle(Handle).WorkingArea;
 
-        private string SelectFileToOpen()
+        private string? SelectFileToOpen()
         {
             if (dlgOpen.ShowDialog(this) != DialogResult.OK)
                 return null;
             return dlgOpen.FileName;
         }
 
-        private string SelectFileToSave()
+        private string? SelectFileToSave()
         {
             if (dlgSave.ShowDialog(this) != DialogResult.OK)
                 return null;

@@ -43,9 +43,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             #region Methods
 
             internal override IAsyncResult BeginGenerate(AsyncConfig asyncConfig)
-                => BitmapData.BeginAdjustBrightness(Value, channels: ColorChannels, asyncConfig: asyncConfig);
+                => BitmapData!.BeginAdjustBrightness(Value, channels: ColorChannels, asyncConfig: asyncConfig);
 
-            internal override Bitmap EndGenerate(IAsyncResult asyncResult)
+            internal override Bitmap? EndGenerate(IAsyncResult asyncResult)
             {
                 asyncResult.EndAdjustBrightness();
                 return base.EndGenerate(asyncResult);

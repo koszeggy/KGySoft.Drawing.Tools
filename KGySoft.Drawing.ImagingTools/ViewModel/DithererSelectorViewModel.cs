@@ -18,10 +18,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.Reflection;
+
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
@@ -37,10 +36,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         // not a static property so always can be reinitialized with the current language
         internal IList<DithererDescriptor> Ditherers => Get(InitDitherers);
-        internal DithererDescriptor SelectedDitherer { get => Get<DithererDescriptor>(); private set => Set(value); }
-        internal CustomPropertiesObject Parameters { get => Get<CustomPropertiesObject>(); private set => Set(value); }
-        internal IDitherer Ditherer { get => Get<IDitherer>(); private set => Set(value); }
-        internal Exception CreateDithererError { get => Get<Exception>(); set => Set(value); }
+        internal DithererDescriptor? SelectedDitherer { get => Get<DithererDescriptor?>(); private set => Set(value); }
+        internal CustomPropertiesObject? Parameters { get => Get<CustomPropertiesObject?>(); private set => Set(value); }
+        internal IDitherer? Ditherer { get => Get<IDitherer?>(); private set => Set(value); }
+        internal Exception? CreateDithererError { get => Get<Exception?>(); set => Set(value); }
 
         #endregion
 
@@ -70,8 +69,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 new DithererDescriptor(typeof(ErrorDiffusionDitherer), nameof(ErrorDiffusionDitherer.StevensonArce)),
                 new DithererDescriptor(typeof(ErrorDiffusionDitherer), nameof(ErrorDiffusionDitherer.Stucki)),
 
-                new DithererDescriptor(typeof(RandomNoiseDitherer).GetConstructor(new[] { typeof(float), typeof(int?) })),
-                new DithererDescriptor(typeof(InterleavedGradientNoiseDitherer).GetConstructor(new[] { typeof(float) })),
+                new DithererDescriptor(typeof(RandomNoiseDitherer).GetConstructor(new[] { typeof(float), typeof(int?) })!),
+                new DithererDescriptor(typeof(InterleavedGradientNoiseDitherer).GetConstructor(new[] { typeof(float) })!),
             };
 
         #endregion
@@ -82,16 +81,17 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal void ResetDitherer()
         {
-            DithererDescriptor descriptor = SelectedDitherer;
+            DithererDescriptor? descriptor = SelectedDitherer;
+            CustomPropertiesObject? parameters = Parameters;
             CreateDithererError = null;
-            if (descriptor == null)
+
+            if (descriptor == null || parameters == null)
             {
                 Ditherer = null;
                 return;
             }
 
-            IDitherer ditherer = null;
-            CustomPropertiesObject parameterValues = Parameters;
+            IDitherer? ditherer = null;
             try
             {
                 foreach (MemberInfo memberInfo in descriptor.InvokeChain)
@@ -100,17 +100,17 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     {
                         case ConstructorInfo ctor:
                             Debug.Assert(ditherer == null);
-                            ditherer = (IDitherer)CreateInstanceAccessor.GetAccessor(ctor).CreateInstance(descriptor.EvaluateParameters(ctor.GetParameters(), parameterValues));
+                            ditherer = (IDitherer)CreateInstanceAccessor.GetAccessor(ctor).CreateInstance(descriptor.EvaluateParameters(ctor.GetParameters(), parameters));
                             break;
 
                         case PropertyInfo property:
-                            Debug.Assert(ditherer == null && property.GetGetMethod().IsStatic);
-                            ditherer = (IDitherer)PropertyAccessor.GetAccessor(property).Get(null);
+                            Debug.Assert(ditherer == null && property.GetGetMethod()!.IsStatic);
+                            ditherer = (IDitherer)PropertyAccessor.GetAccessor(property).Get(null)!;
                             break;
 
                         case MethodInfo method:
                             Debug.Assert(ditherer != null && !method.IsStatic);
-                            ditherer = (IDitherer)MethodAccessor.GetAccessor(method).Invoke(ditherer, descriptor.EvaluateParameters(method.GetParameters(), parameterValues));
+                            ditherer = (IDitherer)MethodAccessor.GetAccessor(method).Invoke(ditherer, descriptor.EvaluateParameters(method.GetParameters(), parameters))!;
                             break;
 
                         default:
@@ -134,19 +134,18 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
         {
             base.OnPropertyChanged(e);
-            if (e.PropertyName == nameof(SelectedDitherer))
+            switch (e.PropertyName)
             {
-                CustomPropertiesObject previousParameters = Parameters;
-                Parameters = previousParameters == null
-                    ? new CustomPropertiesObject(SelectedDitherer.Parameters)
-                    : new CustomPropertiesObject(previousParameters, SelectedDitherer.Parameters);
-                return;
-            }
+                case nameof(SelectedDitherer):
+                    CustomPropertiesObject? previousParameters = Parameters;
+                    Parameters = previousParameters == null
+                        ? new CustomPropertiesObject(SelectedDitherer!.Parameters)
+                        : new CustomPropertiesObject(previousParameters, SelectedDitherer!.Parameters);
+                    return;
 
-            if (e.PropertyName == nameof(Parameters))
-            {
-                ResetDitherer();
-                return;
+                case nameof(Parameters):
+                    ResetDitherer();
+                    return;
             }
         }
 
@@ -154,7 +153,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             if (IsDisposed)
                 return;
-            CustomPropertiesObject parameters = Parameters;
             base.Dispose(disposing);
         }
 

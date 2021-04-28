@@ -17,10 +17,10 @@
 #region Usings
 
 using System;
-using System.Drawing;
-using System.Drawing.Imaging;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Windows.Forms;
+
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
@@ -31,7 +31,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
     {
         #region Fields
 
-        private static readonly string title = Res.TitleAppNameAndVersion(typeof(Res).Assembly.GetName().Version);
+        private static readonly string title = Res.TitleAppNameAndVersion(typeof(Res).Assembly.GetName().Version!);
 
         #endregion
 
@@ -39,6 +39,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Public Properties
 
+        [AllowNull]
         public override string Text
         {
             // base has VM.TitleCaption -> Text binding so this solution makes possible to enrich it in a compatible way
@@ -70,7 +71,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Constructors
 
-        private AppMainForm() : this(null)
+        private AppMainForm() : this(null!)
         {
             // this ctor is just for the designer
         }
@@ -115,9 +116,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 nameof(ViewModel.FileName), nameof(ViewModel.IsModified));
         }
 
-        private string FormatText(string value)
+        private string FormatText(string? value)
         {
-            string fileName = ViewModel.FileName;
+            string? fileName = ViewModel.FileName;
             string name = fileName == null ? Res.TextUnnamed : Path.GetFileName(fileName);
             return String.IsNullOrEmpty(value) ? title : $"{title} [{name}{(ViewModel.IsModified ? "*" : String.Empty)}] - {value}";
         }

@@ -43,7 +43,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
         /// Gets or sets the image to be displayed or saved
         /// when debugging the corresponding <see cref="System.Drawing.Image"/> or <see cref="Icon"/> instance.
         /// </summary>
-        public Image Image { get => Get<Image>(); set => Set(value); }
+        public Image? Image { get => Get<Image?>(); set => Set(value); }
 
         /// <summary>
         /// Gets or sets the horizontal resolution to be displayed
@@ -73,7 +73,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
         /// Gets or sets the palette color entries to be displayed
         /// when debugging the corresponding <see cref="System.Drawing.Image"/> or <see cref="Icon"/> instance.
         /// </summary>
-        [SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Justification = "This is a DTO class")]
+        [AllowNull]
         public Color[] Palette { get => Get(Reflector.EmptyArray<Color>()); set => Set(value ?? Reflector.EmptyArray<Color>()); }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #region Private Protected Methods
 
-        private protected void InitMeta(Image image)
+        private protected void InitMeta(Image? image)
         {
             if (image == null)
                 return;

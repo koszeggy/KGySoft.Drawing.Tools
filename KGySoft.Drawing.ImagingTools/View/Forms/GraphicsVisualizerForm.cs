@@ -16,7 +16,6 @@
 
 #region Usings
 
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -30,12 +29,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
     {
         #region Fields
 
-        [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed",
-            Justification = "False alarm, added to tsMenu, which is disposed by base")]
         private readonly ToolStripButton btnCrop;
-
-        [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed",
-            Justification = "False alarm, added to tsMenu, which is disposed by base")]
         private readonly ToolStripButton btnHighlightClip;
 
         #endregion
@@ -77,7 +71,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Constructors
 
-        private GraphicsVisualizerForm() : this(null)
+        private GraphicsVisualizerForm() : this(null!)
         {
             // this ctor is just for the designer
         }

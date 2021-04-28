@@ -58,7 +58,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Constructors
 
-        private ColorSpaceForm() : this(null)
+        private ColorSpaceForm() : this(null!)
         {
             // this ctor is just for the designer
         }

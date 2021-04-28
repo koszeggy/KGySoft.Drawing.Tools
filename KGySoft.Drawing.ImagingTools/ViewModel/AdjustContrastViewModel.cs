@@ -43,9 +43,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             #region Methods
 
             internal override IAsyncResult BeginGenerate(AsyncConfig asyncConfig)
-                => BitmapData.BeginAdjustContrast(Value, channels: ColorChannels, asyncConfig: asyncConfig);
+                => BitmapData!.BeginAdjustContrast(Value, channels: ColorChannels, asyncConfig: asyncConfig);
 
-            internal override Bitmap EndGenerate(IAsyncResult asyncResult)
+            internal override Bitmap? EndGenerate(IAsyncResult asyncResult)
             {
                 asyncResult.EndAdjustContrast();
                 return base.EndGenerate(asyncResult);

@@ -44,7 +44,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// </summary>
         /// <param name="args">The command line arguments.</param>
         /// <returns>An <see cref="IViewModel"/> instance that represents a view model for the specified command line arguments.</returns>
-        public static IViewModel FromCommandLineArguments(string[] args) => new DefaultViewModel { CommandLineArguments = args };
+        public static IViewModel FromCommandLineArguments(string[]? args) => new DefaultViewModel { CommandLineArguments = args };
 
         /// <summary>
         /// Creates a view model from an <see cref="Image"/>.
@@ -52,7 +52,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// <param name="image">The image.</param>
         /// <param name="readOnly"><see langword="true"/>, to create a read-only instance; otherwise, <see langword="false"/>.</param>
         /// <returns>An <see cref="IViewModel{TModel}"/> instance that represents a view model for an <see cref="Image"/>.</returns>
-        public static IViewModel<Image> FromImage(Image image, bool readOnly = false) => new ImageVisualizerViewModel { Image = (Image)image?.Clone(), ReadOnly = readOnly };
+        public static IViewModel<Image?> FromImage(Image? image, bool readOnly = false)
+            => new ImageVisualizerViewModel { Image = (Image?)image?.Clone(), ReadOnly = readOnly };
 
         /// <summary>
         /// Creates a view model for an <see cref="Image"/> from arbitrary debug information.
@@ -60,7 +61,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// <param name="imageInfo">The debug information for an image.</param>
         /// <param name="readOnly"><see langword="true"/>, to create a read-only instance; otherwise, <see langword="false"/>.</param>
         /// <returns>An <see cref="IViewModel{TModel}"/> instance that represents a view model for an <see cref="Image"/>.</returns>
-        public static IViewModel<ImageInfo> FromImage(ImageInfo imageInfo, bool readOnly) => new ImageVisualizerViewModel { ImageInfo = imageInfo, ReadOnly = readOnly };
+        public static IViewModel<ImageInfo> FromImage(ImageInfo? imageInfo, bool readOnly)
+            => new ImageVisualizerViewModel { ImageInfo = imageInfo, ReadOnly = readOnly };
 
         /// <summary>
         /// Creates a view model from a <see cref="Bitmap"/>.
@@ -68,7 +70,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// <param name="bitmap">The bitmap.</param>
         /// <param name="readOnly"><see langword="true"/>, to create a read-only instance; otherwise, <see langword="false"/>.</param>
         /// <returns>An <see cref="IViewModel{TModel}"/> instance that represents a view model for a <see cref="Bitmap"/>.</returns>
-        public static IViewModel<Bitmap> FromBitmap(Bitmap bitmap, bool readOnly = false) => new ImageVisualizerViewModel(AllowedImageTypes.Bitmap | AllowedImageTypes.Icon) { Image = (Bitmap)bitmap?.Clone(), ReadOnly = readOnly };
+        public static IViewModel<Bitmap?> FromBitmap(Bitmap? bitmap, bool readOnly = false)
+            => new ImageVisualizerViewModel(AllowedImageTypes.Bitmap | AllowedImageTypes.Icon) { Image = (Bitmap?)bitmap?.Clone(), ReadOnly = readOnly };
 
         /// <summary>
         /// Creates a view model for a <see cref="Bitmap"/> from arbitrary debug information.
@@ -76,7 +79,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// <param name="bitmapInfo">The debug information for a bitmap.</param>
         /// <param name="readOnly"><see langword="true"/>, to create a read-only instance; otherwise, <see langword="false"/>.</param>
         /// <returns>An <see cref="IViewModel{TModel}"/> instance that represents a view model for a <see cref="Bitmap"/>.</returns>
-        public static IViewModel<ImageInfo> FromBitmap(ImageInfo bitmapInfo, bool readOnly) => new ImageVisualizerViewModel(AllowedImageTypes.Bitmap | AllowedImageTypes.Icon) { ImageInfo = bitmapInfo, ReadOnly = readOnly };
+        public static IViewModel<ImageInfo> FromBitmap(ImageInfo? bitmapInfo, bool readOnly)
+            => new ImageVisualizerViewModel(AllowedImageTypes.Bitmap | AllowedImageTypes.Icon) { ImageInfo = bitmapInfo, ReadOnly = readOnly };
 
         /// <summary>
         /// Creates a view model from a <see cref="Metafile"/>.
@@ -84,7 +88,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// <param name="metafile">The metafile.</param>
         /// <param name="readOnly"><see langword="true"/>, to create a read-only instance; otherwise, <see langword="false"/>.</param>
         /// <returns>An <see cref="IViewModel{TModel}"/> instance that represents a view model for a <see cref="Metafile"/>.</returns>
-        public static IViewModel<Metafile> FromMetafile(Metafile metafile, bool readOnly = false) => new ImageVisualizerViewModel(AllowedImageTypes.Metafile) { Image = (Metafile)metafile?.Clone(), ReadOnly = readOnly };
+        public static IViewModel<Metafile?> FromMetafile(Metafile? metafile, bool readOnly = false)
+            => new ImageVisualizerViewModel(AllowedImageTypes.Metafile) { Image = (Metafile?)metafile?.Clone(), ReadOnly = readOnly };
 
         /// <summary>
         /// Creates a view model for a <see cref="Metafile"/> from arbitrary debug information.
@@ -92,7 +97,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// <param name="metafileInfo">The debug information for a metafile.</param>
         /// <param name="readOnly"><see langword="true"/>, to create a read-only instance; otherwise, <see langword="false"/>.</param>
         /// <returns>An <see cref="IViewModel{TModel}"/> instance that represents a view model for a <see cref="Metafile"/>.</returns>
-        public static IViewModel<ImageInfo> FromMetafile(ImageInfo metafileInfo, bool readOnly) => new ImageVisualizerViewModel(AllowedImageTypes.Metafile) { ImageInfo = metafileInfo, ReadOnly = readOnly };
+        public static IViewModel<ImageInfo> FromMetafile(ImageInfo? metafileInfo, bool readOnly)
+            => new ImageVisualizerViewModel(AllowedImageTypes.Metafile) { ImageInfo = metafileInfo, ReadOnly = readOnly };
 
         /// <summary>
         /// Creates a view model from an <see cref="Icon"/>.
@@ -100,7 +106,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// <param name="icon">The icon.</param>
         /// <param name="readOnly"><see langword="true"/>, to create a read-only instance; otherwise, <see langword="false"/>.</param>
         /// <returns>An <see cref="IViewModel{TModel}"/> instance that represents a view model for an <see cref="Icon"/>.</returns>
-        public static IViewModel<Icon> FromIcon(Icon icon, bool readOnly = false) => new ImageVisualizerViewModel(AllowedImageTypes.Icon) { Icon = (Icon)icon?.Clone(), ReadOnly = readOnly };
+        public static IViewModel<Icon?> FromIcon(Icon? icon, bool readOnly = false)
+            => new ImageVisualizerViewModel(AllowedImageTypes.Icon) { Icon = (Icon?)icon?.Clone(), ReadOnly = readOnly };
 
         /// <summary>
         /// Creates a view model for an <see cref="Icon"/> from arbitrary debug information.
@@ -108,7 +115,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// <param name="iconInfo">The debug information for an icon.</param>
         /// <param name="readOnly"><see langword="true"/>, to create a read-only instance; otherwise, <see langword="false"/>.</param>
         /// <returns>An <see cref="IViewModel{TModel}"/> instance that represents a view model for an <see cref="Icon"/>.</returns>
-        public static IViewModel<ImageInfo> FromIcon(ImageInfo iconInfo, bool readOnly) => new ImageVisualizerViewModel(AllowedImageTypes.Icon) { ImageInfo = iconInfo, ReadOnly = readOnly };
+        public static IViewModel<ImageInfo> FromIcon(ImageInfo? iconInfo, bool readOnly)
+            => new ImageVisualizerViewModel(AllowedImageTypes.Icon) { ImageInfo = iconInfo, ReadOnly = readOnly };
 
         /// <summary>
         /// Creates a view model from a palette.
@@ -132,35 +140,37 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// <param name="hintPath">If the provided path is among the detected Visual Studio installations, then it will be preselected in the view. This parameter is optional.
         /// <br/>Default value: <see langword="null"/>.</param>
         /// <returns>An <see cref="IViewModel"/> instance that represents a view model for managing debugger visualizer installations.</returns>
-        public static IViewModel CreateManageInstallations(string hintPath = null) => new ManageInstallationsViewModel(hintPath);
+        public static IViewModel CreateManageInstallations(string? hintPath = null) => new ManageInstallationsViewModel(hintPath);
 
         /// <summary>
         /// Creates a view model from a <see cref="BitmapData"/>.
         /// </summary>
         /// <param name="bitmapData">The bitmap data.</param>
         /// <returns>An <see cref="IViewModel"/> instance that represents a view model for a <see cref="BitmapData"/>.</returns>
-        public static IViewModel FromBitmapData(BitmapData bitmapData) => new BitmapDataVisualizerViewModel { BitmapDataInfo = new BitmapDataInfo(bitmapData) };
+        public static IViewModel FromBitmapData(BitmapData? bitmapData)
+            => new BitmapDataVisualizerViewModel { BitmapDataInfo = bitmapData == null ? null : new BitmapDataInfo(bitmapData) };
 
         /// <summary>
         /// Creates a view model for a <see cref="BitmapData"/> from arbitrary debug information.
         /// </summary>
         /// <param name="bitmapDataInfo">The debug information for a <see cref="BitmapData"/>.</param>
         /// <returns>An <see cref="IViewModel"/> instance that represents a view model for a <see cref="BitmapData"/>.</returns>
-        public static IViewModel FromBitmapData(BitmapDataInfo bitmapDataInfo) => new BitmapDataVisualizerViewModel { BitmapDataInfo = bitmapDataInfo };
+        public static IViewModel FromBitmapData(BitmapDataInfo? bitmapDataInfo) => new BitmapDataVisualizerViewModel { BitmapDataInfo = bitmapDataInfo };
 
         /// <summary>
         /// Creates a view model from a <see cref="Graphics"/>.
         /// </summary>
         /// <param name="graphics">The graphics.</param>
         /// <returns>An <see cref="IViewModel"/> instance that represents a view model for a <see cref="Graphics"/>.</returns>
-        public static IViewModel FromGraphics(Graphics graphics) => new GraphicsVisualizerViewModel { GraphicsInfo = new GraphicsInfo(graphics)};
+        public static IViewModel FromGraphics(Graphics? graphics)
+            => new GraphicsVisualizerViewModel { GraphicsInfo = graphics == null ? null : new GraphicsInfo(graphics)};
 
         /// <summary>
         /// Creates a view model for a <see cref="Graphics"/> from arbitrary debug information.
         /// </summary>
         /// <param name="graphicsInfo">The debug information for a <see cref="Graphics"/>.</param>
         /// <returns>An <see cref="IViewModel"/> instance that represents a view model for a <see cref="Graphics"/>.</returns>
-        public static IViewModel FromGraphics(GraphicsInfo graphicsInfo) => new GraphicsVisualizerViewModel { GraphicsInfo = graphicsInfo };
+        public static IViewModel FromGraphics(GraphicsInfo? graphicsInfo) => new GraphicsVisualizerViewModel { GraphicsInfo = graphicsInfo };
 
         /// <summary>
         /// Creates a view model for counting colors of a <see cref="Bitmap"/>.
@@ -174,35 +184,35 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// </summary>
         /// <param name="bitmap">The bitmap to resize.</param>
         /// <returns>An <see cref="IViewModel{TResult}"/> instance that represents a view model for resizing a <see cref="Bitmap"/>.</returns>
-        public static IViewModel<Bitmap> CreateResizeBitmap(Bitmap bitmap) => new ResizeBitmapViewModel(bitmap);
+        public static IViewModel<Bitmap?> CreateResizeBitmap(Bitmap bitmap) => new ResizeBitmapViewModel(bitmap);
 
         /// <summary>
         /// Creates a view model for adjusting <see cref="PixelFormat"/> of a <see cref="Bitmap"/> with quantizing and dithering.
         /// </summary>
         /// <param name="bitmap">The bitmap to transform.</param>
         /// <returns>An <see cref="IViewModel{TResult}"/> instance that represents a view model for adjusting the colors of a <see cref="Bitmap"/>.</returns>
-        public static IViewModel<Bitmap> CreateAdjustColorSpace(Bitmap bitmap) => new ColorSpaceViewModel(bitmap);
+        public static IViewModel<Bitmap?> CreateAdjustColorSpace(Bitmap bitmap) => new ColorSpaceViewModel(bitmap);
 
         /// <summary>
         /// Creates a view model for adjusting the brightness of a <see cref="Bitmap"/>.
         /// </summary>
         /// <param name="bitmap">The bitmap to adjust.</param>
         /// <returns>An <see cref="IViewModel{TResult}"/> instance that represents a view model for adjusting the brightness of a <see cref="Bitmap"/>.</returns>
-        public static IViewModel<Bitmap> CreateAdjustBrightness(Bitmap bitmap) => new AdjustBrightnessViewModel(bitmap);
+        public static IViewModel<Bitmap?> CreateAdjustBrightness(Bitmap bitmap) => new AdjustBrightnessViewModel(bitmap);
 
         /// <summary>
         /// Creates a view model for adjusting the contrast of a <see cref="Bitmap"/>.
         /// </summary>
         /// <param name="bitmap">The bitmap to adjust.</param>
         /// <returns>An <see cref="IViewModel{TResult}"/> instance that represents a view model for adjusting the contrast of a <see cref="Bitmap"/>.</returns>
-        public static IViewModel<Bitmap> CreateAdjustContrast(Bitmap bitmap) => new AdjustContrastViewModel(bitmap);
+        public static IViewModel<Bitmap?> CreateAdjustContrast(Bitmap bitmap) => new AdjustContrastViewModel(bitmap);
 
         /// <summary>
         /// Creates a view model for adjusting the gamma of a <see cref="Bitmap"/>.
         /// </summary>
         /// <param name="bitmap">The bitmap to adjust.</param>
         /// <returns>An <see cref="IViewModel{TResult}"/> instance that represents a view model for adjusting the gamma of a <see cref="Bitmap"/>.</returns>
-        public static IViewModel<Bitmap> CreateAdjustGamma(Bitmap bitmap) => new AdjustGammaViewModel(bitmap);
+        public static IViewModel<Bitmap?> CreateAdjustGamma(Bitmap bitmap) => new AdjustGammaViewModel(bitmap);
 
         #endregion
     }

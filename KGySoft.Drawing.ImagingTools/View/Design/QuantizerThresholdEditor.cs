@@ -42,11 +42,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Design
 
         public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context) => UITypeEditorEditStyle.DropDown;
 
-        public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
+        public override object? EditValue(ITypeDescriptorContext context, IServiceProvider? provider, object? value)
         {
             if (provider == null || value == null)
                 return value;
-            IWindowsFormsEditorService editorService = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
+            var editorService = (IWindowsFormsEditorService?)provider.GetService(typeof(IWindowsFormsEditorService));
             if (editorService == null)
                 return value;
 

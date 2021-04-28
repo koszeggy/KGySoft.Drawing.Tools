@@ -43,7 +43,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Constructors
 
-        private ManageInstallationsForm() : this(null)
+        private ManageInstallationsForm() : this(null!)
         {
             // this ctor is just for the designer
         }
@@ -114,7 +114,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 .AddSource(btnRemove, nameof(btnRemove.Click));
         }
 
-        private string SelectFolder()
+        private string? SelectFolder()
         {
             using (var dlg = new FolderBrowserDialog { SelectedPath = ViewModel.CurrentPath })
                 return dlg.ShowDialog() != DialogResult.OK ? null : dlg.SelectedPath;

@@ -16,7 +16,6 @@
 
 #region Usings
 
-using System;
 using System.Windows.Forms;
 
 #endregion

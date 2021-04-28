@@ -17,7 +17,6 @@
 #region Usings
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
@@ -39,11 +38,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             #region Fields
 
-            private Bitmap sourceBitmap;
-            private Bitmap targetBitmap;
+            private Bitmap? sourceBitmap;
+            private Bitmap? targetBitmap;
             private bool isSourceCloned;
-            private IReadableBitmapData sourceBitmapData;
-            private IReadWriteBitmapData targetBitmapData;
+            private IReadableBitmapData? sourceBitmapData;
+            private IReadWriteBitmapData? targetBitmapData;
 
             #endregion
 
@@ -68,8 +67,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             #region Internal Methods
 
-            [SuppressMessage("Reliability", "CA2002:Do not lock on objects with weak identity",
-                    Justification = "False alarm, source is never a remote object")]
             internal override void Initialize(Bitmap source, bool isInUse)
             {
                 // this must be the first line to prevent disposing source if next lines fail
@@ -102,17 +99,17 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
 
             internal override IAsyncResult BeginGenerate(AsyncConfig asyncConfig)
-                => sourceBitmapData.BeginDrawInto(targetBitmapData, new Rectangle(0, 0, sourceBitmapData.Width, sourceBitmapData.Height),
-                    new Rectangle(0, 0, targetBitmapData.Width, targetBitmapData.Height),
+                => sourceBitmapData!.BeginDrawInto(targetBitmapData!, new Rectangle(0, 0, sourceBitmapData!.Width, sourceBitmapData.Height),
+                    new Rectangle(0, 0, targetBitmapData!.Width, targetBitmapData.Height),
                     scalingMode: ScalingMode, asyncConfig: asyncConfig);
 
-            internal override Bitmap EndGenerate(IAsyncResult asyncResult)
+            internal override Bitmap? EndGenerate(IAsyncResult asyncResult)
             {
                 asyncResult.EndDrawInto();
 
                 // If there was no exception returning result and clearing the field to prevent disposing.
                 // The caller will take care of disposing if the operation was canceled and the result is discarded.
-                Bitmap bmp = targetBitmap;
+                Bitmap? bmp = targetBitmap;
                 targetBitmap = null;
                 return bmp;
             }
@@ -231,7 +228,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 case nameof(Width):
                     if (!ByPixels)
                         break;
-                    int width = (int)e.NewValue;
+                    int width = (int)e.NewValue!;
                     WidthRatio = width <= 0 ? 0f : (float)width / originalSize.Width;
                     if (!KeepAspectRatio || adjustingWidth)
                         break;
@@ -250,7 +247,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 case nameof(WidthRatio):
                     if (!ByPercentage)
                         break;
-                    float widthRatio = (float)e.NewValue;
+                    float widthRatio = (float)e.NewValue!;
                     Width = widthRatio <= 0f ? 0 : (int)(originalSize.Width * widthRatio);
                     if (!KeepAspectRatio || adjustingWidth)
                         break;
@@ -269,7 +266,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 case nameof(Height):
                     if (!ByPixels)
                         break;
-                    int height = (int)e.NewValue;
+                    int height = (int)e.NewValue!;
                     HeightRatio = height <= 0 ? 0f : (float)height / originalSize.Height;
                     if (!KeepAspectRatio || adjustingHeight)
                         break;
@@ -288,7 +285,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 case nameof(HeightRatio):
                     if (!ByPercentage)
                         break;
-                    float heightRatio = (float)e.NewValue;
+                    float heightRatio = (float)e.NewValue!;
                     Height = heightRatio <= 0f ? 0 : (int)(originalSize.Height * heightRatio);
                     if (!KeepAspectRatio || adjustingHeight)
                         break;

@@ -41,7 +41,7 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Fields
 
-        private static ICommand propertyChangedCommand = new SourceAwareCommand<PropertyChangedEventArgs>(OnPropertyChangedCommand);
+        private static readonly ICommand propertyChangedCommand = new SourceAwareCommand<PropertyChangedEventArgs>(OnPropertyChangedCommand);
 
         #endregion
 
@@ -50,7 +50,7 @@ namespace KGySoft.Drawing.ImagingTools
         #region Internal Methods
 
         internal static void AddTwoWayPropertyBinding(this CommandBindingsCollection collection, object source, string sourcePropertyName, object target,
-            string targetPropertyName = null, Func<object, object> format = null, Func<object, object> parse = null)
+            string? targetPropertyName = null, Func<object?, object?>? format = null, Func<object?, object?>? parse = null)
         {
             collection.AddPropertyBinding(source, sourcePropertyName, targetPropertyName ?? sourcePropertyName, format, target);
             collection.AddPropertyBinding(target, targetPropertyName ?? sourcePropertyName, sourcePropertyName, parse, source);
@@ -63,7 +63,7 @@ namespace KGySoft.Drawing.ImagingTools
             if (propertyNames == null)
                 throw new ArgumentNullException(nameof(propertyNames));
 
-            var state = new Dictionary<string, object>
+            var state = new Dictionary<string, object?>
             {
                 [stateHandler] = handler,
                 [statePropertyNames] = propertyNames
@@ -81,7 +81,7 @@ namespace KGySoft.Drawing.ImagingTools
         {
             if (!source.EventArgs.PropertyName.In(state.GetValueOrDefault<string[]>(statePropertyNames)))
                 return;
-            state.GetValueOrDefault<Action>(stateHandler)?.Invoke();
+            state.GetValueOrDefault<Action?>(stateHandler)?.Invoke();
         }
 
         #endregion

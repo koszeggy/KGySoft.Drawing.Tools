@@ -29,7 +29,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
     {
         #region Fields
 
-        private readonly IWindowsFormsEditorService editorService;
+        private readonly IWindowsFormsEditorService? editorService;
         private readonly byte originalValue;
 
         #endregion
@@ -96,21 +96,21 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Event handlers
 
-        private void TrackBar_ValueChanged(object sender, EventArgs e)
+        private void TrackBar_ValueChanged(object? sender, EventArgs e)
         {
             Value = (byte)trackBar.Value;
             lblValue.Text = Value.ToString(CultureInfo.CurrentCulture);
         }
 
-        private void OKButton_Click(object sender, EventArgs e)
+        private void OKButton_Click(object? sender, EventArgs e)
         {
-            editorService.CloseDropDown();
+            editorService?.CloseDropDown();
         }
 
-        private void CancelButton_Click(object sender, EventArgs e)
+        private void CancelButton_Click(object? sender, EventArgs e)
         {
             Value = originalValue;
-            editorService.CloseDropDown();
+            editorService?.CloseDropDown();
         }
 
         #endregion

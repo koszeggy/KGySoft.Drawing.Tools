@@ -51,7 +51,7 @@ namespace KGySoft.Drawing.ImagingTools
         };
 
         // ReSharper disable once CollectionNeverUpdated.Local
-        private static readonly Cache<Type, PropertyInfo[]> localizablePropertiesCache = new Cache<Type, PropertyInfo[]>(GetLocalizableProperties);
+        private static readonly Cache<Type, PropertyInfo[]?> localizablePropertiesCache = new Cache<Type, PropertyInfo[]?>(GetLocalizableProperties);
 
         #endregion
 
@@ -239,13 +239,13 @@ namespace KGySoft.Drawing.ImagingTools
         {
             // Unlike ComponentResourceManager we don't go by ResourceSet because that would kill resource fallback traversal
             // so we go by localizable properties
-            PropertyInfo[] properties = localizablePropertiesCache[target.GetType()];
+            PropertyInfo[]? properties = localizablePropertiesCache[target.GetType()];
             if (properties == null)
                 return;
 
             foreach (PropertyInfo property in properties)
             {
-                string value = resourceManager.GetString(name + "." + property.Name, LanguageSettings.DisplayLanguage);
+                string? value = resourceManager.GetString(name + "." + property.Name, LanguageSettings.DisplayLanguage);
                 if (value == null)
                     continue;
                 Reflector.SetProperty(target, property, value);
@@ -429,10 +429,10 @@ namespace KGySoft.Drawing.ImagingTools
         internal static string ErrorMessageFailedToGeneratePreview(string message) => Get("ErrorMessage_FailedToGeneratePreviewFormat", message);
 
         /// <summary>Value must be between {0} and {1}</summary>
-        internal static string ErrorMessageValueMustBeBetween<T>(T low, T high) => Get("ErrorMessage_ValueMustBeBetweenFormat", low, high);
+        internal static string ErrorMessageValueMustBeBetween<T>(T low, T high) where T : struct => Get("ErrorMessage_ValueMustBeBetweenFormat", low, high);
 
         /// <summary>Value must be greater than {0}</summary>
-        internal static string ErrorMessageValueMustBeGreaterThan<T>(T value) => Get("ErrorMessage_ValueMustBeGreaterThanFormat", value);
+        internal static string ErrorMessageValueMustBeGreaterThan<T>(T value) where T : struct => Get("ErrorMessage_ValueMustBeGreaterThanFormat", value);
 
         /// <summary>Could not create directory {0}: {1}
         ///
@@ -516,13 +516,13 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Private Methods
 
-        private static string Get(string id, params object[] args)
+        private static string Get(string id, params object?[]? args)
         {
             string format = Get(id);
             return args == null ? format : SafeFormat(format, args);
         }
 
-        private static string SafeFormat(string format, object[] args)
+        private static string SafeFormat(string format, object?[] args)
         {
             try
             {
@@ -531,10 +531,7 @@ namespace KGySoft.Drawing.ImagingTools
                 {
                     string nullRef = PublicResources.Null;
                     for (; i < args.Length; i++)
-                    {
-                        if (args[i] == null)
-                            args[i] = nullRef;
-                    }
+                        args[i] ??= nullRef;
                 }
 
                 return String.Format(LanguageSettings.FormattingLanguage, format, args);
@@ -545,7 +542,7 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static PropertyInfo[] GetLocalizableProperties(Type type)
+        private static PropertyInfo[]? GetLocalizableProperties(Type type)
         {
             // Getting string properties only. The resource manager in this class works in safe mode anyway.
             var result = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)

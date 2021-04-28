@@ -76,8 +76,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Constructors
 
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Whitespace")]
         [SuppressMessage("ReSharper", "LocalizableElement", Justification = "Whitespace")]
+        [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "ReSharper issue")]
         public CheckGroupBox()
         {
             InitializeComponent();
@@ -96,7 +96,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             // GroupBox.FlayStyle must be the same as CheckBox; otherwise, System appearance would be transparent
             FlatStyle = checkBox.FlatStyle;
-            checkBox.CheckedChanged += this.CheckBox_CheckedChanged;
+            checkBox.CheckedChanged += CheckBox_CheckedChanged;
 
             // making sure there is enough space before the CheckBox at every DPI
             base.Text = "   ";
@@ -150,7 +150,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Event handlers
 
-        private void CheckBox_CheckedChanged(object sender, EventArgs e)
+        private void CheckBox_CheckedChanged(object? sender, EventArgs e)
         {
             // Toggling the Enabled state of the content. This method preserves the original Enabled state of the controls.
             contentPanel.Enabled = checkBox.Checked;

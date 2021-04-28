@@ -18,19 +18,23 @@
 
 using System;
 using System.Diagnostics;
+#if NETFRAMEWORK
 using System.Diagnostics.CodeAnalysis;
+#endif
 using System.IO;
 using System.Reflection;
-using System.Runtime.Versioning;
-
-#if NETFRAMEWORK
-using KGySoft.CoreLibraries; 
+#if !NET35
+using System.Runtime.Versioning; 
 #endif
 #if NETCOREAPP
 using System.Runtime.Loader;
 #endif
 #if NETFRAMEWORK
 using System.Security.Policy; 
+#endif
+
+#if NETFRAMEWORK
+using KGySoft.CoreLibraries; 
 #endif
 
 #endregion
@@ -98,14 +102,14 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
             #region Methods
 
-            protected override Assembly Load(AssemblyName name)
+            protected override Assembly? Load(AssemblyName name)
             {
                 // ensuring that dependencies of the main assembly are also loaded into this context
-                string assemblyPath = resolver.ResolveAssemblyToPath(name);
+                string? assemblyPath = resolver.ResolveAssemblyToPath(name);
                 if (assemblyPath == null)
                     return null;
 
-                using var fs = File.OpenRead(assemblyPath);
+                using FileStream fs = File.OpenRead(assemblyPath);
                 return LoadFromStream(fs);
             }
 
@@ -131,26 +135,32 @@ namespace KGySoft.Drawing.ImagingTools.Model
         /// Gets the version of an identified debugger visualizer installation.
         /// Can return <see langword="null"/>&#160;even if <see cref="Installed"/> is <see langword="true"/>, if the installed version could not be determined.
         /// </summary>
-        public Version Version { get; private set; }
+        public Version? Version { get; private set; }
 
         /// <summary>
         /// Gets the runtime version of an identified debugger visualizer installation.
         /// Can return <see langword="null"/>&#160;even if <see cref="Installed"/> is <see langword="true"/>, if the runtime version could not be determined.
         /// </summary>
-        public string RuntimeVersion { get; private set; }
+        public string? RuntimeVersion { get; private set; }
 
         /// <summary>
         /// Gets the target framework of an identified debugger visualizer installation.
         /// Can return <see langword="null"/>&#160;even if <see cref="Installed"/> is <see langword="true"/>, if the assembly does no contain target framework information
         /// (typically .NET 3.5 version).
         /// </summary>
-        public string TargetFramework { get; private set; }
+        // ReSharper disable once UnassignedGetOnlyAutoProperty
+        public string? TargetFramework
+        {
+            get;
+#if NET40 || NET45
+            private set; 
+#endif
+        }
 
         #endregion
 
         #region Constructors
 
-        [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute", Justification = "typeof().FullName will not be null")]
         internal InstallationInfo(string path)
         {
             Path = path;
@@ -211,7 +221,8 @@ namespace KGySoft.Drawing.ImagingTools.Model
         {
             try
             {
-                Version = new Version(FileVersionInfo.GetVersionInfo(InstallationManager.GetDebuggerVisualizerFilePath(path)).FileVersion);
+                string? fileVersion = FileVersionInfo.GetVersionInfo(InstallationManager.GetDebuggerVisualizerFilePath(path)).FileVersion;
+                Version = fileVersion == null ? null : new Version(fileVersion);
             }
             catch (Exception e) when (!e.IsCritical())
             {

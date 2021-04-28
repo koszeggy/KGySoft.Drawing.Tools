@@ -17,7 +17,6 @@
 #region Usings
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Threading;
 
@@ -39,7 +38,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             #region Fields
 
-            internal Bitmap Bitmap;
+            internal Bitmap Bitmap = default!;
 
             #endregion
         }
@@ -52,7 +51,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private readonly DrawingProgressManager drawingProgressManager;
         
-        private volatile CountTask task;
+        private volatile CountTask? task;
         private int? colorCount;
 
         #endregion
@@ -90,7 +89,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         public int? GetEditedModel()
         {
-            task.WaitForCompletion();
+            task?.WaitForCompletion();
             return colorCount;
         }
 
@@ -100,9 +99,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal void CancelIfRunning()
         {
-            task.IsCanceled = true;
+            CountTask? t = task;
+            if (t == null)
+                return;
+
+            t.IsCanceled = true;
             SetModified(false);
-            task.WaitForCompletion();
+            t.WaitForCompletion();
         }
 
         #endregion
@@ -122,16 +125,15 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             ThreadPool.QueueUserWorkItem(DoCountColors);
         }
 
-        [SuppressMessage("Reliability", "CA2002:Do not lock on objects with weak identity", Justification = "False alarm, task.Bitmap is not a remote object")]
-        private void DoCountColors(object state)
+        private void DoCountColors(object? state)
         {
-            Exception error = null;
+            Exception? error = null;
 
             // We must lock on the image to avoid the possible "bitmap region is already in use" error from the Paint of main view's image viewer,
             // which also locks on the image to help avoiding this error
-            lock (task.Bitmap)
+            lock (task!.Bitmap)
             {
-                IReadableBitmapData bitmapData = null;
+                IReadableBitmapData? bitmapData = null;
                 try
                 {
                     bitmapData = task.Bitmap.GetReadableBitmapData();

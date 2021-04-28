@@ -35,10 +35,7 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Constructors
 
-        internal DrawingProgressManager(Action<DrawingProgress> reportCallback)
-        {
-            this.reportCallback = reportCallback;
-        }
+        internal DrawingProgressManager(Action<DrawingProgress> reportCallback) => this.reportCallback = reportCallback;
 
         #endregion
 

@@ -16,7 +16,6 @@
 
 #region Usings
 
-using System;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.ViewModel;
@@ -42,7 +41,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Constructors
 
-        private CountColorsForm() : this(null)
+        private CountColorsForm() : this(null!)
         {
             // this ctor is just for the designer
         }
@@ -96,12 +95,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // VM.DisplayText <-> lblResult.Text
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.DisplayText), nameof(lblResult.Text), lblResult);
 
-            // VM.IsProcessing -> progress.ProgressVisible
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsProcessing), nameof(progress.ProgressVisible), progress);
-
-            // VM.Progress -> progress.Progress (in lock because it is already running)
+            // in lock because it is already running
             lock (ViewModel.ProgressSyncRoot)
+            {
+                // VM.IsProcessing -> progress.ProgressVisible
+                CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsProcessing), nameof(progress.ProgressVisible), progress);
+
+                // VM.Progress -> progress.Progress
                 CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Progress), nameof(progress.Progress), progress);
+            }
         }
 
         #endregion

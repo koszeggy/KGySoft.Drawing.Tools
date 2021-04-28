@@ -17,7 +17,6 @@
 #region Usings
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
@@ -93,7 +92,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 }
             }
 
-            [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "False alarm, see the disposing at the end")]
             protected override void OnRenderItemCheck(ToolStripItemImageRenderEventArgs e)
             {
                 Rectangle imageRect = e.ImageRectangle;
