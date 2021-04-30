@@ -21,6 +21,8 @@ using System.Globalization;
 
 #endregion
 
+#nullable enable
+
 namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
     #region Usings
@@ -72,9 +74,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
         private static string Get(string id) => Resources.ResourceManager.GetString(id) ?? String.Format(CultureInfo.InvariantCulture, unavailableResource, id);
 
-        private static string Get(string format, params object[] args) => args == null ? format : SafeFormat(format, args);
+        private static string Get(string format, params object?[]? args) => args == null ? format : SafeFormat(format, args);
 
-        private static string SafeFormat(string format, object[] args)
+        private static string SafeFormat(string format, object?[] args)
         {
             try
             {
@@ -83,10 +85,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
                 {
                     string nullRef = PublicResources.Null;
                     for (; i < args.Length; i++)
-                    {
-                        if (args[i] == null)
-                            args[i] = nullRef;
-                    }
+                        args[i] ??= nullRef;
                 }
 
                 return String.Format(LanguageSettings.FormattingLanguage, format, args);

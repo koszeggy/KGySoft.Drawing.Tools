@@ -20,6 +20,8 @@ using System;
 
 #endregion
 
+#nullable enable
+
 namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
     internal static class Ids

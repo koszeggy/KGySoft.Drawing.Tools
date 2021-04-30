@@ -24,6 +24,8 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 #endregion
 
+#nullable enable
+
 namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
     /// <summary>
@@ -46,7 +48,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         public override void Register(RegistrationContext context)
         {
             Type t = context.ComponentType;
-            Key packageKey = null;
+            Key? packageKey = null;
             try
             {
                 packageKey = context.CreateKey(RegKeyName(context));

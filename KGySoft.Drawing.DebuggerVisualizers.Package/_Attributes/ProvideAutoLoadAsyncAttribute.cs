@@ -22,6 +22,8 @@ using Microsoft.VisualStudio.Shell;
 
 #endregion
 
+#nullable enable
+
 namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
     /// <summary>
@@ -47,8 +49,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
         public override void Register(RegistrationContext context)
         {
-            using (Key childKey = context.CreateKey(RegKeyName))
-                childKey.SetValue(context.ComponentType.GUID.ToString("B"), backgroundLoad);
+            using Key childKey = context.CreateKey(RegKeyName);
+            childKey.SetValue(context.ComponentType.GUID.ToString("B"), backgroundLoad);
         }
 
         public override void Unregister(RegistrationContext context) => context.RemoveValue(RegKeyName, context.ComponentType.GUID.ToString("B"));

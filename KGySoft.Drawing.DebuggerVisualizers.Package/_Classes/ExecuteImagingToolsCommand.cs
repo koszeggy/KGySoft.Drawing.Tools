@@ -26,16 +26,18 @@ using Microsoft.VisualStudio.Shell;
 
 #endregion
 
+#nullable enable
+
 namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
     internal static class ExecuteImagingToolsCommand
     {
         #region Fields
 
-        private static MenuCommand commandInstance;
-        private static IServiceProvider serviceProvider;
-        private static IViewModel imagingToolsViewModel;
-        private static IView imagingToolsView;
+        private static MenuCommand? commandInstance;
+        private static IServiceProvider? serviceProvider;
+        private static IViewModel? imagingToolsViewModel;
+        private static IView? imagingToolsView;
 
         #endregion
 
@@ -84,7 +86,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
                 imagingToolsView?.Dispose();
                 imagingToolsViewModel?.Dispose();
                 imagingToolsView = null;
-                ShellDialogs.Error(serviceProvider, Res.ErrorMessageUnexpectedError(ex.Message));
+                ShellDialogs.Error(serviceProvider!, Res.ErrorMessageUnexpectedError(ex.Message));
             }
         }
 

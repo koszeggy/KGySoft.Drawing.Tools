@@ -27,17 +27,19 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 #endregion
 
+#nullable enable
+
 namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
     internal static class ManageDebuggerVisualizerInstallationsCommand
     {
         #region Fields
 
-        private static MenuCommand commandInstance;
-        private static IServiceProvider serviceProvider;
-        private static IVsShell shellService;
-        private static IViewModel manageInstallationsViewModel;
-        private static IView manageInstallationsView;
+        private static MenuCommand? commandInstance;
+        private static IServiceProvider serviceProvider = default!;
+        private static IVsShell? shellService;
+        private static IViewModel? manageInstallationsViewModel;
+        private static IView? manageInstallationsView;
 
         #endregion
 
@@ -45,7 +47,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
         #region Internal Methods
 
-        internal static MenuCommand GetCreateCommand(IServiceProvider package, IVsShell vsShell)
+        internal static MenuCommand GetCreateCommand(IServiceProvider package, IVsShell? vsShell)
         {
             if (commandInstance == null)
             {
@@ -75,10 +77,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             {
                 if (manageInstallationsView == null || manageInstallationsView.IsDisposed)
                 {
+                    object? documentsDirObj = null;
                     manageInstallationsViewModel?.Dispose();
-#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread - invoked in UI thread. And ThreadHelper.ThrowIfNotOnUIThread() just emits another warning.
-                    shellService.GetProperty((int)__VSSPROPID2.VSSPROPID_VisualStudioDir, out object documentsDirObj);
-#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
+                    shellService?.GetProperty((int)__VSSPROPID2.VSSPROPID_VisualStudioDir, out documentsDirObj);
                     manageInstallationsViewModel = ViewModelFactory.CreateManageInstallations(documentsDirObj?.ToString());
                     manageInstallationsView = ViewFactory.CreateView(manageInstallationsViewModel);
                 }
