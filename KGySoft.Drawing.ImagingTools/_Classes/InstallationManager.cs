@@ -19,7 +19,7 @@
 using System;
 using System.IO;
 using System.Linq;
-
+using System.Security;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
 #if NET45
@@ -79,6 +79,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// <param name="directory">The directory where the debugger visualizers have to be installed.</param>
         /// <param name="error">If the installation fails, then this parameter returns the error message; otherwise, this parameter returns <see langword="null"/>.</param>
         /// <param name="warning">If the installation succeeds with warnings, then this parameter returns the warning message; otherwise, this parameter returns <see langword="null"/>.</param>
+        [SecuritySafeCritical]
         public static void Install(string directory, out string? error, out string? warning)
         {
             if (directory == null)

@@ -18,10 +18,12 @@
 
 using System;
 #if !NET5_0_OR_GREATER
+using System.Security;
 using System.Collections.Specialized;
 using System.Drawing;
 using System.Reflection;
-using System.Runtime.InteropServices;
+
+using KGySoft.Drawing.ImagingTools.WinApi;
 #endif
 using System.Windows.Forms;
 
@@ -36,22 +38,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
     /// </summary>
     internal class BaseForm : Form
     {
-        #region NativeMethods class
-
-#if !NET5_0_OR_GREATER
-        private static class NativeMethods
-        {
-            #region Methods
-
-            [DllImport("user32.dll")]
-            internal static extern bool ScreenToClient(IntPtr hWnd, ref Point lpPoint);
-
-            #endregion
-        }
-#endif
-
-        #endregion
-
         #region Constants
 
 #if !NET5_0_OR_GREATER
@@ -138,13 +124,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         /// Bugfix: When size grip is visible, and form is above and left of the primary monitor, form cannot be dragged anymore due to forced diagonal resizing.
         /// Note: Needed only below .NET 5.0 because I fixed this directly in WinForms repository: https://github.com/dotnet/winforms/pull/2032/commits
         /// </summary>
+        [SecuritySafeCritical]
         private void WmNCHitTest(ref Message m)
         {
             if (FormState[formStateRenderSizeGrip] != 0)
             {
                 // Here is the bug in original code: LParam contains two shorts. Without the cast negative values are positive ints
                 Point pt = new Point(m.LParam.GetSignedLoWord(), m.LParam.GetSignedHiWord());
-                NativeMethods.ScreenToClient(Handle, ref pt);
+                User32.ScreenToClient(this, ref pt);
                 Size clientSize = ClientSize;
                 if (pt.X >= clientSize.Width - 16 && pt.Y >= clientSize.Height - 16 && clientSize.Height >= 16)
                 {

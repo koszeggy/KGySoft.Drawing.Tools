@@ -19,11 +19,13 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.Security;
 
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.WinApi
 {
+    [SecurityCritical]
     internal static class Kernel32
     {
         #region NativeMethods class
