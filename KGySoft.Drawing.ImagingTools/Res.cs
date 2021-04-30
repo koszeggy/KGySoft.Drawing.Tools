@@ -253,7 +253,6 @@ namespace KGySoft.Drawing.ImagingTools
         }
 
         /// <summary>Internal Error: {0}</summary>
-        /// <remarks>Use this method to avoid CA1303 for using string literals in internal errors that never supposed to occur.</remarks>
         internal static string InternalError(string msg) => Get("General_InternalErrorFormat", msg);
 
         #endregion

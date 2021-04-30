@@ -40,7 +40,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <param name="objectProvider">The object provider.</param>
         protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
         {
-            ColorPalette newPalette = DebuggerHelper.DebugPalette(SerializationHelper.DeserializeColorPalette(objectProvider.GetData()), objectProvider.IsObjectReplaceable);
+            ColorPalette? newPalette = DebuggerHelper.DebugPalette(SerializationHelper.DeserializeColorPalette(objectProvider.GetData()), objectProvider.IsObjectReplaceable);
             if (objectProvider.IsObjectReplaceable && newPalette != null)
                 objectProvider.ReplaceObject(new ColorPaletteReference(newPalette));
         }

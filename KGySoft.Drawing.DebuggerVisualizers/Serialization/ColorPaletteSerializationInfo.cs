@@ -16,10 +16,10 @@
 
 #region Usings
 
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+
 using KGySoft.Reflection;
 
 #endregion
@@ -30,7 +30,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
     {
         #region Properties
 
-        internal ColorPalette Palette { get; private set; }
+        internal ColorPalette Palette { get; private set; } = default!;
 
         #endregion
 
@@ -41,8 +41,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
             Palette = palette;
         }
 
-        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
-            Justification = "False alarm, the stream must not be disposed and the leaveOpen parameter is not available on every targeted platform")]
         internal ColorPaletteSerializationInfo(Stream stream)
         {
             ReadFrom(new BinaryReader(stream));

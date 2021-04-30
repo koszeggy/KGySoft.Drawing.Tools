@@ -16,7 +16,6 @@
 
 #region Usings
 
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 
@@ -39,8 +38,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
             Color = color;
         }
 
-        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
-            Justification = "False alarm, the stream must not be disposed and the leaveOpen parameter is not available on every targeted platform")]
         internal ColorSerializationInfo(Stream stream)
         {
             ReadFrom(new BinaryReader(stream));

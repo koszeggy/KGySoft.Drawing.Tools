@@ -26,6 +26,16 @@ using Microsoft.VisualStudio.DebuggerVisualizers;
 
 #endregion
 
+#region Suppressions
+
+#if NET5_0_OR_GREATER
+#pragma warning disable SYSLIB0011 // Type or member is obsolete - must use BinaryFormatter to be compatible with the MS implementation
+#pragma warning disable IDE0079 // Remove unnecessary suppression - must use BinaryFormatter to be compatible with the MS implementation
+#pragma warning disable CS0618 // Use of obsolete symbol - as above  
+#endif
+
+#endregion
+
 namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
 {
     internal class TestObjectProvider : IVisualizerObjectProvider
@@ -42,7 +52,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
 
         internal object Object { get; private set; }
 
-        internal VisualizerObjectSource Serializer { get; set; }
+        internal VisualizerObjectSource Serializer { get; set; } = default!;
 
         internal bool ObjectReplaced { get; private set; }
 
@@ -60,7 +70,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
 
         public Stream GetData()
         {
-            MemoryStream ms = new MemoryStream();
+            var ms = new MemoryStream();
             Serializer.GetData(Object, ms);
             ms.Position = 0;
             return ms;

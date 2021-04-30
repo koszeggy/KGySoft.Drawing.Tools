@@ -17,16 +17,20 @@
 #region Usings
 
 using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization;
 using System.Security;
 
 using KGySoft.Drawing.DebuggerVisualizers.Serialization;
-using KGySoft.Drawing.ImagingTools.Model;
+
+#endregion
+
+#region Suppressions
+
+#if NETCOREAPP3_0_OR_GREATER
+#pragma warning disable 8766 // false alarm, GetRealObject CAN return null
+#endif
 
 #endregion
 
@@ -37,13 +41,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Model
     {
         #region Fields
 
-        private readonly byte[] rawData;
+        private readonly byte[]? rawData;
 
         #endregion
 
         #region Constructors
 
-        internal ColorPaletteReference(ColorPalette palette)
+        internal ColorPaletteReference(ColorPalette? palette)
         {
             if (palette == null)
                 return;
@@ -60,12 +64,12 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Model
         #region Methods
 
         [SecurityCritical]
-        public object GetRealObject(StreamingContext context)
+        public object? GetRealObject(StreamingContext context)
         {
             if (rawData == null)
                 return null;
 
-            using MemoryStream ms = new MemoryStream(rawData);
+            using var ms = new MemoryStream(rawData);
             return SerializationHelper.DeserializeColorPalette(ms);
         }
 

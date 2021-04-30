@@ -17,16 +17,12 @@
 #region Usings
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization;
 using System.Security;
 
 using KGySoft.Drawing.DebuggerVisualizers.Serialization;
-using KGySoft.Drawing.ImagingTools.Model;
 
 #endregion
 
@@ -59,10 +55,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Model
         [SecurityCritical]
         public object GetRealObject(StreamingContext context)
         {
-            if (rawData == null)
-                return null;
-
-            using MemoryStream ms = new MemoryStream(rawData);
+            using var ms = new MemoryStream(rawData);
             return SerializationHelper.DeserializeColor(ms);
         }
 

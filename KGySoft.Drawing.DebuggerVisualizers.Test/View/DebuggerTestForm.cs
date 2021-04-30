@@ -17,7 +17,6 @@
 #region Usings
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
@@ -34,7 +33,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
         private readonly CommandBindingsCollection commandBindings = new CommandBindingsCollection();
         private readonly DebuggerTestFormViewModel viewModel = new DebuggerTestFormViewModel();
         private readonly Timer timer;
-        private string errorMessage;
+        
+        private string? errorMessage;
 
         #endregion
 
@@ -113,7 +113,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
                 components?.Dispose();
                 commandBindings.Dispose();
                 viewModel.Dispose();
-                timer?.Dispose();
+                timer.Dispose();
             }
 
             base.Dispose(disposing);
@@ -128,14 +128,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             // simple click opens the file dialog only if text was empty
             if (tbFile.Text.Length != 0 && source.TriggeringEvent == nameof(tbFile.Click))
                 return;
-            using (OpenFileDialog ofd = new OpenFileDialog { FileName = tbFile.Text })
+            using (var ofd = new OpenFileDialog { FileName = tbFile.Text })
             {
                 if (ofd.ShowDialog() == DialogResult.OK)
                     tbFile.Text = ofd.FileName;
             }
         }
 
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "This is just a test app")]
         private void OnShowErrorCommand()
         {
             timer.Enabled = false;

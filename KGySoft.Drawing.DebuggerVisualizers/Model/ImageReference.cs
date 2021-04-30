@@ -17,7 +17,6 @@
 #region Usings
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -29,6 +28,14 @@ using KGySoft.Drawing.ImagingTools.Model;
 
 #endregion
 
+#region Suppressions
+
+#if NETCOREAPP3_0_OR_GREATER
+#pragma warning disable 8766 // false alarm, GetRealObject CAN return null
+#endif
+
+#endregion
+
 namespace KGySoft.Drawing.DebuggerVisualizers.Model
 {
     [Serializable]
@@ -36,9 +43,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Model
     {
         #region Fields
 
-        private readonly string fileName;
+        private readonly string? fileName;
         private readonly bool asIcon;
-        private readonly byte[] rawData;
+        private readonly byte[]? rawData;
 
         #endregion
 
@@ -69,7 +76,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Model
             {
                 if (asIcon)
                 {
-                    (imageInfo.Icon ?? imageInfo.GetCreateIcon()).SaveAsIcon(ms);
+                    (imageInfo.Icon ?? imageInfo.GetCreateIcon()!).SaveAsIcon(ms);
                     return ms.ToArray();
                 }
 
@@ -84,9 +91,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Model
                             using (var inner = new MemoryStream())
                             {
                                 if (imageInfo.Type == ImageInfoType.Pages)
-                                    imageInfo.Frames.Select(f => f.Image).SaveAsMultipageTiff(inner);
+                                    imageInfo.Frames!.Select(f => f.Image!).SaveAsMultipageTiff(inner);
                                 else
-                                    (imageInfo.Icon ?? imageInfo.GetCreateIcon()).SaveAsIcon(inner);
+                                    (imageInfo.Icon ?? imageInfo.GetCreateIcon()!).SaveAsIcon(inner);
 
                                 bw.Write(true); // AsImage
                                 bw.Write((int)inner.Length);
@@ -96,11 +103,11 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Model
                             break;
 
                         case ImageInfoType.Animation:
-                            SerializationHelper.WriteImage(bw, imageInfo.GetCreateImage());
+                            SerializationHelper.WriteImage(bw, imageInfo.GetCreateImage()!);
                             break;
 
                         default:
-                            SerializationHelper.WriteImage(bw, imageInfo.Image);
+                            SerializationHelper.WriteImage(bw, imageInfo.Image!);
                             break;
                     }
 
@@ -114,9 +121,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Model
         #region Instance Methods
 
         [SecurityCritical]
-        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
-            Justification = "False alarm, the icon is disposed by the container ImageInfo")]
-        public object GetRealObject(StreamingContext context)
+        public object? GetRealObject(StreamingContext context)
         {
             if (fileName == null && rawData == null)
                 return null;
@@ -137,12 +142,12 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Model
 
                     // special handling for icon files: as a Bitmap icons may throw an exception
                     using (var info = new ImageInfo(new Icon(fileName)))
-                        return info.GetCreateImage().Clone();
+                        return info.GetCreateImage()!.Clone();
                 }
             }
 
-            MemoryStream ms = new MemoryStream(rawData);
-            return asIcon ? (object)new Icon(ms) : SerializationHelper.ReadImage(new BinaryReader(ms));
+            var ms = new MemoryStream(rawData!);
+            return asIcon ? new Icon(ms) : SerializationHelper.ReadImage(new BinaryReader(ms));
         }
 
         #endregion

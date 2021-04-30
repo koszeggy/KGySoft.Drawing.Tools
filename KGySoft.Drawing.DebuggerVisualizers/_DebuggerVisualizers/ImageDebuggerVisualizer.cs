@@ -43,7 +43,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         {
             using (ImageInfo imageInfo = SerializationHelper.DeserializeImageInfo(objectProvider.GetData()))
             {
-                ImageReference replacementObject = DebuggerHelper.DebugImage(imageInfo, objectProvider.IsObjectReplaceable);
+                ImageReference? replacementObject = DebuggerHelper.DebugImage(imageInfo, objectProvider.IsObjectReplaceable);
                 if (objectProvider.IsObjectReplaceable && replacementObject != null)
                     objectProvider.ReplaceObject(replacementObject);
             }
