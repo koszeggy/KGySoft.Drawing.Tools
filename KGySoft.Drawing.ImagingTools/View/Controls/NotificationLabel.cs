@@ -113,8 +113,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 lastProposedSize = proposedSize;
             }
 
-            //TextFormatFlags formatFlags = this.GetFormatFlags();
-
             Size padding = GetBordersAndPadding();
             Size proposedTextSize = proposedSize - padding;
 

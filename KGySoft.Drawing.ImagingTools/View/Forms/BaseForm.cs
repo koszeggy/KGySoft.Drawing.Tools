@@ -71,6 +71,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         static BaseForm()
         {
+#if NETFRAMEWORK
             Type? dpiHelper = Reflector.ResolveType(typeof(Form).Assembly, "System.Windows.Forms.DpiHelper");
             if (dpiHelper == null)
                 return;
@@ -78,7 +79,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // Turning off WinForms auto resize logic to prevent interferences.
             // Occurs when executed as visualizer debugger and devenv.exe.config contains some random DpiAwareness
             Reflector.TrySetField(dpiHelper, "isInitialized", true);
-            Reflector.TrySetField(dpiHelper, "enableHighDpi", false);
+            Reflector.TrySetField(dpiHelper, "enableHighDpi", false); 
+#endif
         }
 
         #endregion

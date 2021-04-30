@@ -171,6 +171,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 m.Result = (IntPtr)Constants.MA_ACTIVATE;
         }
 
-        #endregion
+        #endregion  
     }
 }

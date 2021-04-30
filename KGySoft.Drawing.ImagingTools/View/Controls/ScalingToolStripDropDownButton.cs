@@ -108,6 +108,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             return preferredSize;
         }
 
-        #endregion
+        #endregion  
     }
 }
