@@ -18,8 +18,8 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.IO;
 
-using KGySoft.Drawing.DebuggerVisualizers.Model;
 using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 using Microsoft.VisualStudio.DebuggerVisualizers;
 
@@ -41,8 +41,12 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
         {
             Color? newColor = DebuggerHelper.DebugColor(SerializationHelper.DeserializeColor(objectProvider.GetData()), objectProvider.IsObjectReplaceable);
-            if (objectProvider.IsObjectReplaceable && newColor != null)
-                objectProvider.ReplaceObject(new ColorReference(newColor.Value));
+            if (!objectProvider.IsObjectReplaceable || newColor == null)
+                return;
+
+            using var ms = new MemoryStream();
+            SerializationHelper.SerializeColor(newColor.Value, ms);
+            objectProvider.ReplaceData(ms);
         }
 
         #endregion

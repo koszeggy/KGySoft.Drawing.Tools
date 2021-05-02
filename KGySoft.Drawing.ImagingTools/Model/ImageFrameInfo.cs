@@ -41,6 +41,8 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #region Constructors
 
+        #region Public Constructors
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageFrameInfo"/> class from a <see cref="Bitmap"/>.
         /// </summary>
@@ -50,6 +52,17 @@ namespace KGySoft.Drawing.ImagingTools.Model
             Image = bitmap;
             InitMeta(bitmap);
         }
+
+        #endregion
+
+        #region Internal Constructors
+
+        internal ImageFrameInfo(ImageFrameInfo other) : base(other)
+        {
+            Duration = other.Duration;
+        }
+
+        #endregion
 
         #endregion
 

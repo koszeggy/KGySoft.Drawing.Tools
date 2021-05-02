@@ -36,6 +36,12 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
     {
         #region Internal Methods
 
+        internal static void SerializeImageInfo(ImageInfo image, Stream outgoingData)
+        {
+            using (var imageInfo = new ImageSerializationInfo(image))
+                imageInfo.Write(new BinaryWriter(outgoingData));
+        }
+
         internal static void SerializeImageInfo(Image image, Stream outgoingData)
         {
             using (var imageInfo = new ImageSerializationInfo(image))

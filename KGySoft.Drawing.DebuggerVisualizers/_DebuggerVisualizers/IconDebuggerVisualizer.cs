@@ -17,8 +17,8 @@
 #region Usings
 
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
-using KGySoft.Drawing.DebuggerVisualizers.Model;
 using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 using KGySoft.Drawing.ImagingTools.Model;
 
@@ -43,9 +43,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         {
             using (ImageInfo iconInfo = SerializationHelper.DeserializeImageInfo(objectProvider.GetData()))
             {
-                ImageReference? replacementObject = DebuggerHelper.DebugIcon(iconInfo, objectProvider.IsObjectReplaceable);
-                if (objectProvider.IsObjectReplaceable && replacementObject != null)
-                    objectProvider.ReplaceObject(replacementObject);
+                ImageInfo? replacementObject = DebuggerHelper.DebugIcon(iconInfo, objectProvider.IsObjectReplaceable);
+                if (!objectProvider.IsObjectReplaceable || replacementObject == null)
+                    return;
+
+                using var ms = new MemoryStream();
+                SerializationHelper.SerializeImageInfo(replacementObject, ms);
+                objectProvider.ReplaceData(ms);
             }
         }
 

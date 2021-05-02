@@ -1019,7 +1019,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         Icon? IViewModel<Icon?>.GetEditedModel() => Icon?.Clone() as Icon;
         Bitmap? IViewModel<Bitmap?>.GetEditedModel() => Image?.Clone() as Bitmap;
         Metafile? IViewModel<Metafile?>.GetEditedModel() => Image?.Clone() as Metafile;
-        ImageInfo IViewModel<ImageInfo>.GetEditedModel() => imageTypes == AllowedImageTypes.Icon ? imageInfo.AsIcon() : imageInfo.AsImage();
+        ImageInfo IViewModel<ImageInfo>.GetEditedModel() => new ImageInfo(imageInfo);
 
         #endregion
 

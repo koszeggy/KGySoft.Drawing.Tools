@@ -50,6 +50,7 @@ namespace KGySoft.Drawing.ImagingTools
             UseLanguageSettings = true,
         };
 
+        // Note: No need to use ThreadSafeCacheFactory here because used only from the UI thread
         // ReSharper disable once CollectionNeverUpdated.Local
         private static readonly Cache<Type, PropertyInfo[]?> localizablePropertiesCache = new Cache<Type, PropertyInfo[]?>(GetLocalizableProperties);
 

@@ -90,7 +90,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
             ObjectReplaced = true;
         }
 
-        public void ReplaceData(Stream newObjectData) => throw new NotImplementedException();
+        public void ReplaceData(Stream newObjectData)
+        {
+            newObjectData.Position = 0L;
+            Object = Serializer.CreateReplacementObject(Object, newObjectData);
+            ObjectReplaced = true;
+        }
+
         public Stream TransferData(Stream outgoingData) => throw new NotImplementedException();
         public object TransferObject(object outgoingObject) => throw new NotImplementedException();
 

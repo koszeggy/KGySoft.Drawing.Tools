@@ -186,25 +186,25 @@ namespace KGySoft.Drawing.DebuggerVisualizers
 
         #region Internal Methods
 
-        internal static ImageReference? DebugImage(ImageInfo imageInfo, bool isReplaceable)
+        internal static ImageInfo? DebugImage(ImageInfo imageInfo, bool isReplaceable)
         {
             using (IViewModel<ImageInfo> viewModel = ViewModelFactory.FromImage(imageInfo, !isReplaceable))
                 return DebugImageInfo(viewModel, isReplaceable);
         }
 
-        internal static ImageReference? DebugBitmap(ImageInfo bitmapInfo, bool isReplaceable)
+        internal static ImageInfo? DebugBitmap(ImageInfo bitmapInfo, bool isReplaceable)
         {
             using (IViewModel<ImageInfo> viewModel = ViewModelFactory.FromBitmap(bitmapInfo, !isReplaceable))
                 return DebugImageInfo(viewModel, isReplaceable);
         }
 
-        internal static ImageReference? DebugMetafile(ImageInfo metafileInfo, bool isReplaceable)
+        internal static ImageInfo? DebugMetafile(ImageInfo metafileInfo, bool isReplaceable)
         {
             using (IViewModel<ImageInfo> viewModel = ViewModelFactory.FromMetafile(metafileInfo, !isReplaceable))
                 return DebugImageInfo(viewModel, isReplaceable);
         }
 
-        internal static ImageReference? DebugIcon(ImageInfo iconInfo, bool isReplaceable)
+        internal static ImageInfo? DebugIcon(ImageInfo iconInfo, bool isReplaceable)
         {
             using (IViewModel<ImageInfo> viewModel = ViewModelFactory.FromIcon(iconInfo, !isReplaceable))
                 return DebugImageInfo(viewModel, isReplaceable);
@@ -226,11 +226,11 @@ namespace KGySoft.Drawing.DebuggerVisualizers
 
         #region Private Methods
 
-        private static ImageReference? DebugImageInfo(IViewModel<ImageInfo> viewModel, bool isReplaceable)
+        private static ImageInfo? DebugImageInfo(IViewModel<ImageInfo> viewModel, bool isReplaceable)
         {
             ViewFactory.ShowDialog(viewModel);
             if (isReplaceable && viewModel.IsModified)
-                return new ImageReference(viewModel.GetEditedModel());
+                return viewModel.GetEditedModel();
 
             return null;
         }

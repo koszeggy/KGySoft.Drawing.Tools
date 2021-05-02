@@ -92,11 +92,38 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #endregion
 
+        #region Construction and Destruction
+
+        #region Constructors
+
+        private protected ImageInfoBase()
+        {
+        }
+
+        private protected ImageInfoBase(ImageInfoBase other)
+        {
+            if (other == null)
+                throw new ArgumentNullException(nameof(other), PublicResources.ArgumentNull);
+
+            if (other.Image is Image image)
+                Image = (Image)image.Clone();
+            if (other.Palette.Length > 0)
+                Palette = (Color[])Palette.Clone();
+            HorizontalRes = other.HorizontalRes;
+            VerticalRes = other.VerticalRes;
+            PixelFormat = other.PixelFormat;
+            RawFormat = other.RawFormat;
+        }
+
+        #endregion
+
         #region Destructor
 
 
         /// <inheritdoc/>
         ~ImageInfoBase() => Dispose(false);
+
+        #endregion
 
         #endregion
 

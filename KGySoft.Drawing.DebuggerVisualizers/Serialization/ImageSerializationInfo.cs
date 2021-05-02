@@ -39,6 +39,11 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 
         #region Constructors
 
+        internal ImageSerializationInfo(ImageInfo imageInfo)
+        {
+            ImageInfo = imageInfo;
+        }
+
         internal ImageSerializationInfo(Image image)
         {
             ImageInfo = new ImageInfo((Image)image.Clone());

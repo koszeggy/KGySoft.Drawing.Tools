@@ -80,6 +80,8 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #region Constructors
 
+        #region Public Constructors
+
         /// <summary>
         /// Initializes an empty instance of the <see cref="ImageInfo"/> class.
         /// The properties are expected to be initialized individually. Use the <see cref="ValidatingObjectBase.IsValid"/>
@@ -112,6 +114,25 @@ namespace KGySoft.Drawing.ImagingTools.Model
             InitFromIcon(icon);
             SetModified(false);
         }
+
+        #endregion
+
+        #region Internal Constructors
+
+        internal ImageInfo(ImageInfo other) : base(other)
+        {
+            Type = other.Type;
+            if (Type == ImageInfoType.None)
+                return;
+
+            if (other.Icon is Icon icon)
+                Icon = (Icon)icon.Clone();
+            if (other.Frames is ImageFrameInfo[] frames)
+                Frames = frames.Select(f => new ImageFrameInfo(f)).ToArray();
+            FileName = other.FileName;
+        }
+
+        #endregion
 
         #endregion
 
