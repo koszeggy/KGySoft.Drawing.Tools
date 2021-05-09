@@ -152,7 +152,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         void IView.ShowDialog(IntPtr ownerHandle) => ShowDialog(ownerHandle == IntPtr.Zero ? null : new OwnerWindowHandle(ownerHandle));
 
-        void IView.Show()
+        void IView.Show() => InvokeIfRequired(() =>
         {
             if (!Visible)
             {
@@ -164,7 +164,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 WindowState = FormWindowState.Normal;
             Activate();
             BringToFront();
-        }
+        });
 
         #endregion
 

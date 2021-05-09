@@ -9,7 +9,7 @@
 * v2.4.0:
 ~~~~~~~~~
 
-+ KGySoft.Drawing.ImagingTools.exe
+* KGySoft.Drawing.ImagingTools.exe
 ==================================
 + Targeting also .NET 5.0
 - Fixing possible errors when closing forms while an async operation is still in progress.
@@ -20,6 +20,11 @@
 =========================================
 - Fixing a possible IndexOutOfRangeException when debugging an animated GIF.
 * Improved performance and reduced memory consumption when serializing and deserializing debugged objects.
+
+* KGySoft.Drawing.DebuggerVisualizers.Package.dll
+=================================================
+* When ImagingTools is executed from Visual Studio Tools menu a new thread is created so the possible lagging of
+  Visual Studio does not affect the performance of ImagingTools anymore.
 
 
 ~~~~~~~~~

@@ -17,6 +17,7 @@
 #region Usings
 
 using System;
+
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.ImagingTools.View.Design;
 using KGySoft.Drawing.ImagingTools.View.Forms;
