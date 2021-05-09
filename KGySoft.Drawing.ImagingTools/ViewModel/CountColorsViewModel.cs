@@ -172,7 +172,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 IsProcessing = false;
             }
 
-            SynchronizedInvokeCallback?.Invoke(Action);
+            TryInvokeSync(Action);
         }
 
         #endregion

@@ -37,7 +37,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal Func<string, bool>? ConfirmCallback { get => Get<Func<string, bool>?>(); set => Set(value); }
         internal Action<IViewModel>? ShowChildViewCallback { get => Get<Action<IViewModel>?>(); set => Set(value); }
         internal Action? CloseViewCallback { get => Get<Action?>(); set => Set(value); }
-        internal Action<Action>? SynchronizedInvokeCallback { get => Get<Action<Action>?>(); set => Set(value); }
+        internal Action<Action>? SynchronizedInvokeCallback { private get => Get<Action<Action>?>(); set => Set(value); }
 
         #endregion
 
@@ -49,6 +49,28 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         protected void ShowWarning(string message) => ShowWarningCallback?.Invoke(message);
         protected void ShowInfo(string message) => ShowInfoCallback?.Invoke(message);
         protected bool Confirm(string message) => ConfirmCallback?.Invoke(message) ?? true;
+
+        protected bool TryInvokeSync(Action action)
+        {
+            if (IsDisposed)
+                return false;
+
+            Action<Action>? callback;
+            try
+            {
+                callback = SynchronizedInvokeCallback;
+            }
+            catch (ObjectDisposedException)
+            {
+                return false;
+            }
+
+            if (callback == null)
+                return false;
+
+            callback.Invoke(action);
+            return true;
+        }
 
         #endregion
 

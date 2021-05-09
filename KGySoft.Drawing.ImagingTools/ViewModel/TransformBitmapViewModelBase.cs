@@ -127,7 +127,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal override void ViewLoaded()
         {
             // could be in constructor but we only need it when there is a view
-            drawingProgressManager = new DrawingProgressManager(p => Progress = p);
+            drawingProgressManager = new DrawingProgressManager(TrySetProgress);
             initializing = false;
             base.ViewLoaded();
         }
@@ -221,7 +221,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 return;
             if (disposing)
             {
-                activeTask?.Dispose();
+                if (activeTask != null)
+                {
+                    CancelRunningGenerate();
+                    WaitForPendingGenerate();
+                }
+
+                Debug.Assert(activeTask == null);
                 Image? preview = PreviewImageViewModel.PreviewImage;
                 PreviewImageViewModel.Dispose();
 
@@ -246,7 +252,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             lock (syncRoot)
             {
                 // lost race
-                if (!MatchesSettings(task))
+                if (IsDisposed || !MatchesSettings(task))
                 {
                     task.Dispose();
                     return;
@@ -266,7 +272,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     // original image
                     if (MatchesOriginal(task))
                     {
-                        SynchronizedInvokeCallback?.Invoke(() =>
+                        TryInvokeSync(() =>
                         {
                             SetPreview(originalImage);
                             IsGenerating = false;
@@ -282,7 +288,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     catch (Exception e) when (!e.IsCriticalGdi())
                     {
                         task.SetCompleted();
-                        SynchronizedInvokeCallback?.Invoke(() =>
+                        TryInvokeSync(() =>
                         {
                             GeneratePreviewError = e;
                             SetPreview(null);
@@ -324,7 +330,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     }
 
                     // applying result (or error)
-                    SynchronizedInvokeCallback?.Invoke(() =>
+                    TryInvokeSync(() =>
                     {
                         GeneratePreviewError = error;
                         SetPreview(result);
@@ -336,6 +342,20 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     task.Dispose();
                     activeTask = null;
                 }
+            }
+        }
+
+        private void TrySetProgress(DrawingProgress progress)
+        {
+            if (IsDisposed)
+                return;
+            try
+            {
+                Progress = progress;
+            }
+            catch (ObjectDisposedException)
+            {
+                // lost race - just ignoring it
             }
         }
 
