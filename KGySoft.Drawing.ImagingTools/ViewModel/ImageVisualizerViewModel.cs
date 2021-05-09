@@ -59,6 +59,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private readonly AllowedImageTypes imageTypes;
 
         private ImageInfo imageInfo = new ImageInfo(ImageInfoType.None);
+        private bool keepAliveImageInfo;
         private int currentFrame = -1;
         private bool isOpenFilterUpToDate;
         private Size currentResolution;
@@ -384,7 +385,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
+            if (disposing && !keepAliveImageInfo)
                 imageInfo.Dispose();
             base.Dispose(disposing);
         }
@@ -1019,7 +1020,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         Icon? IViewModel<Icon?>.GetEditedModel() => Icon?.Clone() as Icon;
         Bitmap? IViewModel<Bitmap?>.GetEditedModel() => Image?.Clone() as Bitmap;
         Metafile? IViewModel<Metafile?>.GetEditedModel() => Image?.Clone() as Metafile;
-        ImageInfo IViewModel<ImageInfo>.GetEditedModel() => new ImageInfo(imageInfo);
+        ImageInfo IViewModel<ImageInfo>.GetEditedModel()
+        {
+            keepAliveImageInfo = true;
+            return imageTypes == AllowedImageTypes.Icon ? imageInfo.AsIcon() : imageInfo.AsImage();
+        }
 
         #endregion
 

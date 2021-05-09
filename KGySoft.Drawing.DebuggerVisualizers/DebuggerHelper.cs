@@ -21,7 +21,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 
-using KGySoft.Drawing.DebuggerVisualizers.Model;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.ImagingTools.View;
 using KGySoft.Drawing.ImagingTools.ViewModel;

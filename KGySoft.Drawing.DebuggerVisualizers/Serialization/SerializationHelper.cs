@@ -36,12 +36,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
     {
         #region Internal Methods
 
-        internal static void SerializeImageInfo(ImageInfo image, Stream outgoingData)
-        {
-            using (var imageInfo = new ImageSerializationInfo(image))
-                imageInfo.Write(new BinaryWriter(outgoingData));
-        }
-
         internal static void SerializeImageInfo(Image image, Stream outgoingData)
         {
             using (var imageInfo = new ImageSerializationInfo(image))
@@ -52,6 +46,12 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
         {
             using (var iconInfo = new ImageSerializationInfo(icon))
                 iconInfo.Write(new BinaryWriter(outgoingData));
+        }
+
+        internal static void SerializeReplacementImageInfo(ImageInfo imageInfo, Stream outgoingData)
+        {
+            using (var replacementInfo = new ImageReplacementSerializationInfo(imageInfo))
+                replacementInfo.Write(new BinaryWriter(outgoingData));
         }
 
         internal static void SerializeGraphicsInfo(Graphics g, Stream outgoingData)
@@ -72,6 +72,10 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 
         internal static ImageInfo DeserializeImageInfo(Stream stream) => new ImageSerializationInfo(stream).ImageInfo;
 
+        internal static Image? DeserializeReplacementImage(Stream stream) => (Image?)new ImageReplacementSerializationInfo(stream).GetReplacementObject();
+
+        internal static Icon? DeserializeReplacementIcon(Stream stream) => (Icon?)new ImageReplacementSerializationInfo(stream).GetReplacementObject();
+
         internal static BitmapDataInfo DeserializeBitmapDataInfo(Stream stream) => new BitmapDataSerializationInfo(stream).BitmapDataInfo;
 
         internal static GraphicsInfo DeserializeGraphicsInfo(Stream stream) => new GraphicsSerializationInfo(stream).GraphicsInfo;
@@ -88,7 +92,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
             bool asImage = image is Metafile
                 // ... or is a TIFF with 48/64 BPP because saving as TIFF can preserve pixel format only if the raw format is also TIFF...
                 || (bpp = image.GetBitsPerPixel()) > 32 && image.RawFormat.Guid == ImageFormat.Tiff.Guid
-                // ... or is an animated GIF, which always have 32 BPP pixel format
+                // ... or is an animated GIF, which always has 32 BPP pixel format
                 || bpp == 32 && image.RawFormat.Guid == ImageFormat.Gif.Guid
                 // ... or image is an icon - actually needed only for Windows XP to prevent error from LockBits when sizes are not recognized
                 || image.RawFormat.Guid == ImageFormat.Icon.Guid;
@@ -103,6 +107,10 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
             WriteRawBitmap((Bitmap)image, bw);
         }
 
+        internal static Image ReadImage(BinaryReader br) => br.ReadBoolean()
+            ? Image.FromStream(new MemoryStream(br.ReadBytes(br.ReadInt32())))
+            : ReadRawBitmap(br);
+
         internal static void WriteIcon(BinaryWriter bw, Icon icon)
         {
             using (var ms = new MemoryStream())
@@ -113,11 +121,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
             }
         }
 
-        internal static Image ReadImage(BinaryReader br) => br.ReadBoolean()
-            ? Image.FromStream(new MemoryStream(br.ReadBytes(br.ReadInt32())))
-            : ReadRawBitmap(br);
-
-        internal static Icon ReadIcon(BinaryReader br) => new Icon(new MemoryStream(br.ReadBytes(br.ReadInt32())));
+        internal static Icon? ReadIcon(BinaryReader br) => Icons.FromStream(new MemoryStream(br.ReadBytes(br.ReadInt32())));
 
         #endregion
 

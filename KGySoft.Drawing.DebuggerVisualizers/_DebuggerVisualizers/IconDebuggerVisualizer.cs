@@ -41,16 +41,14 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <param name="objectProvider">The object provider.</param>
         protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
         {
-            using (ImageInfo iconInfo = SerializationHelper.DeserializeImageInfo(objectProvider.GetData()))
-            {
-                ImageInfo? replacementObject = DebuggerHelper.DebugIcon(iconInfo, objectProvider.IsObjectReplaceable);
-                if (!objectProvider.IsObjectReplaceable || replacementObject == null)
-                    return;
+            using ImageInfo iconInfo = SerializationHelper.DeserializeImageInfo(objectProvider.GetData());
+            ImageInfo? replacementObject = DebuggerHelper.DebugIcon(iconInfo, objectProvider.IsObjectReplaceable);
+            if (replacementObject == null)
+                return;
 
-                using var ms = new MemoryStream();
-                SerializationHelper.SerializeImageInfo(replacementObject, ms);
-                objectProvider.ReplaceData(ms);
-            }
+            using var ms = new MemoryStream();
+            SerializationHelper.SerializeReplacementImageInfo(replacementObject, ms);
+            objectProvider.ReplaceData(ms);
         }
 
         #endregion

@@ -40,7 +40,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
         /// <summary>
         /// Called when the debugged object has been replaced
         /// </summary>
-        public override object? CreateReplacementObject(object target, Stream incomingData) => SerializationHelper.DeserializeImageInfo(incomingData).GetCreateImage();
+        public override object? CreateReplacementObject(object target, Stream incomingData) => SerializationHelper.DeserializeReplacementImage(incomingData);
 
         #endregion
     }

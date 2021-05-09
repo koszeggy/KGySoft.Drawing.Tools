@@ -19,7 +19,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing.Imaging;
 using System.IO;
-using KGySoft.Drawing.DebuggerVisualizers.Model;
 using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;

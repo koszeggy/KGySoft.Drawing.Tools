@@ -6,6 +6,22 @@
 ===============================================================================
 
 ~~~~~~~~~
+* v2.4.0:
+~~~~~~~~~
+
++ KGySoft.Drawing.ImagingTools.exe
+==================================
++ Targeting also .NET 5.0
+* API changes:
+  * Members are annotated for using C# 8.0 nullable references
+
+- KGySoft.Drawing.DebuggerVisualizers.dll
+=========================================
+- Fixing a possible IndexOutOfRangeException when debugging an animated GIF.
+* Improved performance and reduced memory consumption when serializing and deserializing debugged objects.
+
+
+~~~~~~~~~
 + v2.3.0:
 ~~~~~~~~~
 

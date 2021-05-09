@@ -39,19 +39,14 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 
         #region Constructors
 
-        internal ImageSerializationInfo(ImageInfo imageInfo)
-        {
-            ImageInfo = imageInfo;
-        }
-
         internal ImageSerializationInfo(Image image)
         {
-            ImageInfo = new ImageInfo((Image)image.Clone());
+            ImageInfo = new ImageInfo(image);
         }
 
         internal ImageSerializationInfo(Icon icon)
         {
-            ImageInfo = new ImageInfo((Icon)icon.Clone());
+            ImageInfo = new ImageInfo(icon);
         }
 
         internal ImageSerializationInfo(Stream stream)
@@ -100,7 +95,15 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 
         #region Public Methods
 
-        public void Dispose() => ImageInfo.Dispose();
+        public void Dispose()
+        {
+            // image was not cloned so disposing only possibly created frames
+            if (!ImageInfo.HasFrames)
+                return;
+
+            foreach (ImageFrameInfo frame in ImageInfo.Frames!)
+                frame.Dispose();
+        }
 
         #endregion
 
