@@ -121,39 +121,41 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 {
                     Debug.Assert(owner.image != null, "Image is not expected to be null here");
                     Image image = owner.image!;
-                    PixelFormat pixelFormat = image.PixelFormat;
 
-                    try
+                    // Locking on display image so if it is the same as the original image, which is also locked when accessing its bitmap data
+                    // the "bitmap region is already locked" can be avoided. Important: this cannot be ensured without locking here internally because
+                    // OnPaint can occur any time after invalidating.
+                    lock (image)
                     {
-                        // Converting non supported or too slow pixel formats
-                        if (pixelFormat.In(convertedFormats))
+                        PixelFormat pixelFormat = image.PixelFormat;
+
+                        try
                         {
-                            // Locking on display image so if it is the same as the original image, which is also locked when accessing its bitmap data
-                            // the "bitmap region is already locked" can be avoided. Important: this cannot be ensured without locking here internally because
-                            // OnPaint can occur any time after invalidating.
-                            isClonedSafeDefaultImage = true;
-                            lock (image)
+                            // Converting non supported or too slow pixel formats
+                            if (pixelFormat.In(convertedFormats))
+                            {
+                                isClonedSafeDefaultImage = true;
                                 safeDefaultImage = pixelFormat == PixelFormat.Format16bppGrayScale
                                     ? image.ConvertPixelFormat(PixelFormat.Format8bppIndexed, PredefinedColorsQuantizer.Grayscale())
                                     : image.ConvertPixelFormat(pixelFormat.HasAlpha() ? PixelFormat.Format32bppPArgb : PixelFormat.Format24bppRgb);
-                        }
+                            }
 
-                        // Raw icons: converting because icons are handled oddly by GDI+, for example, the first column has half pixel width
-                        else if (image is Bitmap bmp && bmp.RawFormat.Guid == ImageFormat.Icon.Guid)
-                        {
-                            isClonedSafeDefaultImage = true;
-                            lock (image)
+                            // Raw icons: converting because icons are handled oddly by GDI+, for example, the first column has half pixel width
+                            else if (image is Bitmap bmp && bmp.RawFormat.Guid == ImageFormat.Icon.Guid)
+                            {
+                                isClonedSafeDefaultImage = true;
                                 safeDefaultImage = bmp.CloneCurrentFrame();
+                            }
+                            else
+                                safeDefaultImage = image;
                         }
-                        else
+                        catch (Exception e) when (!e.IsCriticalGdi())
+                        {
+                            // It may happen if no clone could be created (maybe on low memory)
+                            // If pixel format is not supported at all then we let rendering die; otherwise, it may work but slowly or with visual glitches
+                            isClonedSafeDefaultImage = false;
                             safeDefaultImage = image;
-                    }
-                    catch (Exception e) when (!e.IsCriticalGdi())
-                    {
-                        // It may happen if no clone could be created (maybe on low memory)
-                        // If pixel format is not supported at all then we let rendering die; otherwise, it may work but slowly or with visual glitches
-                        isClonedSafeDefaultImage = false;
-                        safeDefaultImage = image;
+                        }
                     }
                 }
 
