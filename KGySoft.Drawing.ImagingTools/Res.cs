@@ -124,8 +124,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Toggles whether the metafile is displayed with anti aliasing enabled.</summary>
         internal static string TooltipTextSmoothMetafile => Get("TooltipText_SmoothMetafile");
 
-        /// <summary>Toggles whether an enlarged image is rendered with smoothing interpolation.
-        /// A shrunk image is always displayed with smoothing.</summary>
+        /// <summary>Toggles whether the enlarged or shrunk image is rendered with smoothing interpolation.</summary>
         internal static string TooltipTextSmoothBitmap => Get("TooltipText_SmoothBitmap");
 
         /// <summary>Auto</summary>

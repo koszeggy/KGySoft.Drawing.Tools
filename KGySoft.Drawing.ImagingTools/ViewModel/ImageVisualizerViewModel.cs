@@ -886,7 +886,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (imageInfo.Type == ImageInfoType.None)
             {
                 SetAutoZoomCommandState.Enabled = AutoZoom = false;
-                SetSmoothZoomingCommandState.Enabled = SmoothZooming = false;
                 SetSmoothZoomingCommandState[stateToolTipText] = null;
                 return;
             }

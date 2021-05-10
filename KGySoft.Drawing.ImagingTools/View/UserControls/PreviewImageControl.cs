@@ -50,6 +50,16 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             }
         }
 
+        internal bool SmoothZooming
+        {
+            get => ViewModel?.SmoothZooming ?? false;
+            set
+            {
+                if (ViewModel is PreviewImageViewModel vm)
+                    vm.SmoothZooming = value;
+            }
+        }
+
         internal ImageViewer ImageViewer => ivPreview;
 
         #endregion
@@ -106,9 +116,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             // VM.DisplayImage -> ivPreview.Image
             CommandBindings.AddPropertyBinding(ViewModel!, nameof(ViewModel.DisplayImage), nameof(ivPreview.Image), ivPreview);
-
-            // VM.ZoomEnabled -> btnAutoZoom/btnAntiAlias.Enabled
-            CommandBindings.AddPropertyBinding(ViewModel!, nameof(ViewModel.ZoomEnabled), nameof(ToolStripItem.Enabled), btnAutoZoom, btnAntiAlias);
 
             // VM.ShowOriginalEnabled -> btnShowOriginal.Enabled
             CommandBindings.AddPropertyBinding(ViewModel!, nameof(ViewModel.ShowOriginalEnabled), nameof(ToolStripItem.Enabled), btnShowOriginal);

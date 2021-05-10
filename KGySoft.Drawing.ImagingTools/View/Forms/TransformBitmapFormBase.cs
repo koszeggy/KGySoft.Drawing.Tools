@@ -96,6 +96,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 case Keys.Alt | Keys.Z:
                     previewImage.AutoZoom = !previewImage.AutoZoom;
                     return true;
+                case Keys.Alt | Keys.S:
+                    previewImage.SmoothZooming = !previewImage.SmoothZooming;
+                    return true;
                 default:
                     return base.ProcessCmdKey(ref msg, keyData);
             }

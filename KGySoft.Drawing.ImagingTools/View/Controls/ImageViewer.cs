@@ -181,7 +181,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 Size size = owner.targetRectangle.Size;
                 bool isGenerateNeeded = owner.isMetafile
                     ? owner.smoothZooming
-                    : owner.zoom < 1f && (owner.imageSize.Width >= generateThreshold || owner.imageSize.Height >= generateThreshold);
+                    : owner.smoothZooming && owner.zoom < 1f && (owner.imageSize.Width >= generateThreshold || owner.imageSize.Height >= generateThreshold);
 
                 if (!isGenerateNeeded || size.Width < 1 || size.Height < 1)
                 {
@@ -920,9 +920,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 dest.X -= sbHorizontal.Value;
             if (sbVerticalVisible)
                 dest.Y -= sbVertical.Value;
-            g.InterpolationMode = !isMetafile && (smoothZooming && zoom > 1f || zoom < 1f && imageSize.Width < generateThreshold && imageSize.Height < generateThreshold) ? InterpolationMode.HighQualityBicubic : InterpolationMode.NearestNeighbor;
+            g.InterpolationMode = !isMetafile && (smoothZooming && zoom > 1f || smoothZooming && zoom < 1f && imageSize.Width < generateThreshold && imageSize.Height < generateThreshold) ? InterpolationMode.HighQualityBicubic : InterpolationMode.NearestNeighbor;
             g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
+            // This lock ensures that no disposed image is painted. The generator also locks on itself when frees the cached preview.
             lock (previewGenerator)
             {
                 // Locking on display image so if it is the same as the original image, which is also locked when accessing its bitmap data

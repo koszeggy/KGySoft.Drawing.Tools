@@ -13,6 +13,7 @@
 ==================================
 + Targeting also .NET 5.0
 - Fixing possible errors when closing forms while an async operation is still in progress.
+* Smooth Zooming on/off affects also shrunk images (previously affected enlarged images only)
 * API changes:
   * Members are annotated for using C# 8.0 nullable references
 

@@ -217,8 +217,7 @@
     <value>Toggles whether the metafile is displayed with anti aliasing enabled.</value>
   </data>
   <data name="TooltipText_SmoothBitmap" xml:space="preserve">
-    <value>Toggles whether an enlarged image is rendered with smoothing interpolation.
-A shrunk image is always displayed with smoothing.</value>
+    <value>Toggles whether the enlarged or shrunk image is rendered with smoothing interpolation.</value>
   </data>
   <data name="Text_Auto" xml:space="preserve">
     <value>Auto</value>
@@ -500,7 +499,7 @@ Dithering may help to preserve more details.</value>
     <value>Auto Zoom (Alt+Z)</value>
   </data>
   <data name="btnAntiAlias.Text" xml:space="preserve">
-    <value>Smooth Zooming</value>
+    <value>Smooth Zooming (Alt+S)</value>
   </data>
   <data name="btnOpen.Text" xml:space="preserve">
     <value>Open... (Ctrl+O)</value>

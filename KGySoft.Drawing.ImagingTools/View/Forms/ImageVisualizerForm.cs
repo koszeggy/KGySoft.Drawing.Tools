@@ -141,6 +141,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 case Keys.Alt | Keys.Z:
                     btnAutoZoom.PerformClick();
                     return true;
+                case Keys.Alt | Keys.S:
+                    btnAntiAlias.PerformClick();
+                    return true;
                 case Keys.Shift | Keys.Right:
                     btnNext.PerformClick();
                     return true;
