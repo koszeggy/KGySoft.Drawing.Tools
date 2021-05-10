@@ -132,12 +132,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         try
                         {
                             // Converting non supported or too slow pixel formats
-                            if (pixelFormat.In(convertedFormats))
+                            if (pixelFormat.In(convertedFormats) || pixelFormat != PixelFormat.Format32bppPArgb && (image.Width > generateThreshold || image.Height > generateThreshold))
                             {
+                                safeDefaultImage = image.ConvertPixelFormat(PixelFormat.Format32bppPArgb);
                                 isClonedSafeDefaultImage = true;
-                                safeDefaultImage = pixelFormat == PixelFormat.Format16bppGrayScale
-                                    ? image.ConvertPixelFormat(PixelFormat.Format8bppIndexed, PredefinedColorsQuantizer.Grayscale())
-                                    : image.ConvertPixelFormat(pixelFormat.HasAlpha() ? PixelFormat.Format32bppPArgb : PixelFormat.Format24bppRgb);
                             }
 
                             // Raw icons: converting because icons are handled oddly by GDI+, for example, the first column has half pixel width
@@ -151,10 +149,30 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         }
                         catch (Exception e) when (!e.IsCriticalGdi())
                         {
-                            // It may happen if no clone could be created (maybe on low memory)
-                            // If pixel format is not supported at all then we let rendering die; otherwise, it may work but slowly or with visual glitches
-                            isClonedSafeDefaultImage = false;
-                            safeDefaultImage = image;
+                            // for converted formats trying again with more compact formats
+                            if (pixelFormat.In(convertedFormats))
+                            {
+                                try
+                                {
+                                    safeDefaultImage = pixelFormat == PixelFormat.Format16bppGrayScale
+                                        ? image.ConvertPixelFormat(PixelFormat.Format8bppIndexed, PredefinedColorsQuantizer.Grayscale())
+                                        : image.ConvertPixelFormat(pixelFormat.HasAlpha() ? PixelFormat.Format32bppPArgb : PixelFormat.Format24bppRgb);
+                                    isClonedSafeDefaultImage = true;
+                                }
+                                catch (Exception eInner) when (!eInner.IsCriticalGdi())
+                                {
+                                    // If pixel format is not supported at all then we let rendering die; otherwise, it may work but slowly or with visual glitches
+                                    isClonedSafeDefaultImage = false;
+                                    safeDefaultImage = image;
+                                }
+                            }
+                            else
+                            {
+                                // It may happen if no clone could be created (maybe on low memory)
+                                // Here it is not so important after all because we wanted to use it for performance reasons.
+                                isClonedSafeDefaultImage = false;
+                                safeDefaultImage = image;
+                            }
                         }
                     }
                 }
