@@ -388,7 +388,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                             return;
 
                         Debug.WriteLine("Applying generated result");
-                        Debug.Assert(displayImage == null || displayImage == safeDefaultImage, "Display image is not the same as the original one: dispose is necessary");
+                        Debug.Assert(displayImage == null || displayImage == safeDefaultImage || displayImage == owner.image, "Display image is not the same as the original one: dispose is necessary");
 
                         // not freeing the display image because it is always the original image here
                         displayImage = result;
