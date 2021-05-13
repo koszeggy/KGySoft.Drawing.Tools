@@ -101,7 +101,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             base.Dispose(disposing);
             if (!disposing)
                 return;
-            DestroyCommands();
+            ExecuteImagingToolsCommand.DestroyCommand();
+            ManageDebuggerVisualizerInstallationsCommand.DestroyCommand();
         }
 
         #endregion
@@ -168,12 +169,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
             menuCommandService.AddCommand(ExecuteImagingToolsCommand.GetCreateCommand(this));
             menuCommandService.AddCommand(ManageDebuggerVisualizerInstallationsCommand.GetCreateCommand(this, shellService));
-        }
-
-        private void DestroyCommands()
-        {
-            ExecuteImagingToolsCommand.DestroyCommand();
-            ManageDebuggerVisualizerInstallationsCommand.DestroyCommand();
         }
 
         #endregion

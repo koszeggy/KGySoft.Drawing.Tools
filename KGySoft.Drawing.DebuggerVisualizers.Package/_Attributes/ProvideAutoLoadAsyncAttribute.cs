@@ -41,7 +41,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
         #region Properties
 
-        private string RegKeyName => $"AutoLoadPackages\\{new Guid(VSConstants.UICONTEXT.NoSolution_string):B}";
+        private static string RegKeyName => $"AutoLoadPackages\\{new Guid(VSConstants.UICONTEXT.NoSolution_string):B}";
 
         #endregion
 
