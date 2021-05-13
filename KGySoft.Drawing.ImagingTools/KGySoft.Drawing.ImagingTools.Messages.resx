@@ -498,6 +498,12 @@ Dithering may help to preserve more details.</value>
   <data name="btnAutoZoom.Text" xml:space="preserve">
     <value>Auto Zoom (Alt+Z)</value>
   </data>
+  <data name="btnZoom.Text" xml:space="preserve">
+    <value>Zoom Options</value>
+  </data>
+  <data name="miAutoZoom.Text" xml:space="preserve">
+    <value>Auto Zoom</value>
+  </data>
   <data name="btnAntiAlias.Text" xml:space="preserve">
     <value>Smooth Zooming (Alt+S)</value>
   </data>

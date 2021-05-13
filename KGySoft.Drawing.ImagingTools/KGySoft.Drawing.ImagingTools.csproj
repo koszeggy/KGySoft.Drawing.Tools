@@ -39,6 +39,9 @@
     <Compile Update="Properties\Resources.Designer.cs">
       <Generator>PublicResXFileCodeGenerator</Generator>
     </Compile>
+    <Compile Update="View\Controls\CheckableToolStripSplitButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
