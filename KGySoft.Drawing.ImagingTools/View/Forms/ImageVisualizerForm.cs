@@ -193,14 +193,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // VM.InfoText -> txtInfo.Text
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.InfoText), nameof(TextBox.Text), txtInfo);
 
-            // VM.AutoZoom -> btnAutoZoom.Checked, imageViewer.AutoZoom
+            // imageViewer.AutoZoom <-> VM.AutoZoom -> btnAutoZoom.Checked
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.AutoZoom), imageViewer, nameof(imageViewer.AutoZoom));
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.AutoZoom), nameof(btnAutoZoom.Checked), btnAutoZoom);
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.AutoZoom), nameof(imageViewer.AutoZoom), imageViewer);
 
             // VM.Zoom <-> imageViewer.Zoom
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.Zoom), imageViewer, nameof(imageViewer.Zoom));
 
-            // VM.SmoothZooming -> btnAntiAlias.Checked, imageViewer.SmoothZooming
+            // VM.SmoothZooming -> btnAntiAlias.Checked
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SmoothZooming), nameof(btnAntiAlias.Checked), btnAntiAlias);
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SmoothZooming), nameof(imageViewer.SmoothZooming), imageViewer);
 

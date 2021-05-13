@@ -120,9 +120,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // VM.ShowOriginalEnabled -> btnShowOriginal.Enabled
             CommandBindings.AddPropertyBinding(ViewModel!, nameof(ViewModel.ShowOriginalEnabled), nameof(ToolStripItem.Enabled), btnShowOriginal);
 
-            // btnAutoZoom.Checked <-> VM.AutoZoom -> ivPreview.AutoZoom
+            // btnAutoZoom.Checked <-> VM.AutoZoom <-> ivPreview.AutoZoom
             CommandBindings.AddTwoWayPropertyBinding(ViewModel!, nameof(ViewModel.AutoZoom), btnAutoZoom, nameof(btnAutoZoom.Checked));
-            CommandBindings.AddPropertyBinding(ViewModel!, nameof(ViewModel.AutoZoom), nameof(ivPreview.AutoZoom), ivPreview);
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel!, nameof(ViewModel.AutoZoom), ivPreview, nameof(ivPreview.AutoZoom));
 
             // btnAntiAlias.Checked <-> VM.SmoothZooming -> ivPreview.SmoothZooming
             CommandBindings.AddTwoWayPropertyBinding(ViewModel!, nameof(ViewModel.SmoothZooming), btnAntiAlias, nameof(btnAntiAlias.Checked));

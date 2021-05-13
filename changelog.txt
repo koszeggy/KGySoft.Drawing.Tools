@@ -13,6 +13,7 @@
 ==================================
 + Targeting also .NET 5.0
 + Now panning a zoomed image is possible also by clicking and dragging with the mouse (besides usual scrolling).
+* Manual zooming is enabled even if Auto Zoom is on; this turns off Auto Zoom automatically.
 * Smooth Zooming on/off affects also shrunk images (previously affected enlarged images only)
 - Fixing possible errors when closing forms while an async operation is still in progress.
 * API changes:

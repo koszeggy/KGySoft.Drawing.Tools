@@ -561,6 +561,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Events
 
+        internal event EventHandler? AutoZoomChanged
+        {
+            add => Events.AddHandler(nameof(AutoZoomChanged), value);
+            remove => Events.RemoveHandler(nameof(AutoZoomChanged), value);
+        }
+
         internal event EventHandler? ZoomChanged
         {
             add => Events.AddHandler(nameof(ZoomChanged), value);
@@ -588,16 +594,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         internal bool AutoZoom
         {
             get => autoZoom;
-            set
-            {
-                if (autoZoom == value)
-                    return;
-                autoZoom = value;
-                if (!autoZoom && !isMetafile)
-                    SetZoom(1f);
-
-                Invalidate(InvalidateFlags.Sizes | (autoZoom ? InvalidateFlags.DisplayImage : InvalidateFlags.None));
-            }
+            set => SetAutoZoom(value, true);
         }
 
         internal float Zoom
@@ -745,7 +742,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 // zoom
                 case Keys.Control:
                     if (autoZoom)
-                        return;
+                        SetAutoZoom(false, false);
                     float delta = (float)e.Delta / SystemInformation.MouseWheelScrollDelta / 5;
                     ApplyZoomChange(delta);
                     break;
@@ -999,6 +996,19 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             SetZoom(zoom * delta);
         }
 
+        private void SetAutoZoom(bool value, bool resetIfBitmap)
+        {
+            if (autoZoom == value)
+                return;
+            autoZoom = value;
+            if (resetIfBitmap && !autoZoom && !isMetafile)
+                SetZoom(1f);
+
+            // TODO: do not invalidate if zoom did not change
+            Invalidate(InvalidateFlags.Sizes | (autoZoom ? InvalidateFlags.DisplayImage : InvalidateFlags.None));
+            OnAutoZoomChanged(EventArgs.Empty);
+        }
+
         private void SetZoom(float value)
         {
             if (autoZoom || isApplyingZoom)
@@ -1048,6 +1058,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             }
         }
 
+        private void OnAutoZoomChanged(EventArgs e) => Events.GetHandler<EventHandler>(nameof(AutoZoomChanged))?.Invoke(this, e);
         private void OnZoomChanged(EventArgs e) => Events.GetHandler<EventHandler>(nameof(ZoomChanged))?.Invoke(this, e);
 
         #endregion
