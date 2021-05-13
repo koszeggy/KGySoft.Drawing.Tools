@@ -34,14 +34,16 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         private static readonly Size referenceSize = new Size(16, 16);
 
-        private static StringKeyedDictionary<CursorInfo> cursors = new StringKeyedDictionary<CursorInfo>();
+        private static readonly StringKeyedDictionary<CursorInfo> cursors = new StringKeyedDictionary<CursorInfo>();
 
 
-        internal static Cursor HandOpen => GetCreateCursor();
-        internal static Cursor HandGrab => GetCreateCursor();
+        internal static Cursor HandOpen => GetCreateCursor() ?? System.Windows.Forms.Cursors.Hand;
+        internal static Cursor HandGrab => GetCreateCursor() ?? System.Windows.Forms.Cursors.NoMove2D;
 
-        private static Cursor GetCreateCursor([CallerMemberName]string resourceName = null!)
+        private static Cursor? GetCreateCursor([CallerMemberName]string resourceName = null!)
         {
+            if (!OSUtils.IsWindows)
+                return null;
             if (!cursors.TryGetValue(resourceName, out CursorInfo? info))
                 cursors[resourceName] = info = new CursorInfo((Icon)Properties.Resources.ResourceManager.GetObject(resourceName, CultureInfo.InvariantCulture)!);
             return info.GetCreateCursor(referenceSize.Scale(OSUtils.SystemScale));
