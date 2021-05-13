@@ -12,8 +12,9 @@
 * KGySoft.Drawing.ImagingTools.exe
 ==================================
 + Targeting also .NET 5.0
-- Fixing possible errors when closing forms while an async operation is still in progress.
++ Now panning a zoomed image is possible also by clicking and dragging with the mouse (besides usual scrolling).
 * Smooth Zooming on/off affects also shrunk images (previously affected enlarged images only)
+- Fixing possible errors when closing forms while an async operation is still in progress.
 * API changes:
   * Members are annotated for using C# 8.0 nullable references
 

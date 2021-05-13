@@ -29,7 +29,7 @@ namespace KGySoft.Drawing.ImagingTools.View
     {
         #region Fields
 
-        #region Private Fields
+        private static readonly Size referenceSize = new Size(16, 16);
 
         private static Bitmap? check;
         private static Bitmap? crop;
@@ -53,14 +53,6 @@ namespace KGySoft.Drawing.ImagingTools.View
         private static Bitmap? quantize;
         private static Bitmap? colors;
         private static Bitmap? compare;
-
-        #endregion
-
-        #region Internal Fields
-
-        internal static readonly Size ReferenceSize = new Size(16, 16);
-
-        #endregion
 
         #endregion
 
@@ -99,7 +91,7 @@ namespace KGySoft.Drawing.ImagingTools.View
         {
             if (icon == null)
                 throw new ArgumentNullException(nameof(icon), PublicResources.ArgumentNull);
-            return icon.ExtractNearestBitmap(ReferenceSize.Scale(OSUtils.SystemScale), PixelFormat.Format32bppArgb);
+            return icon.ExtractNearestBitmap(referenceSize.Scale(OSUtils.SystemScale), PixelFormat.Format32bppArgb);
         }
 
         internal static Icon ToScaledIcon(this Icon icon, bool legacyScaling = true)
@@ -107,7 +99,7 @@ namespace KGySoft.Drawing.ImagingTools.View
             if (icon == null)
                 throw new ArgumentNullException(nameof(icon), PublicResources.ArgumentNull);
 
-            Size size = ReferenceSize.Scale(OSUtils.SystemScale);
+            Size size = referenceSize.Scale(OSUtils.SystemScale);
             Icon result = icon.ExtractNearestIcon(size, PixelFormat.Format32bppArgb);
             int mod;
             if (!legacyScaling || OSUtils.IsWindows8OrLater || !OSUtils.IsWindows || (mod = result.Width & 0xF) == 0)

@@ -551,6 +551,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         private int scrollFractionVertical;
         private int scrollFractionHorizontal;
         private bool isApplyingZoom;
+        private bool isDragging;
+        private Size draggingOrigin;
+        private Point scrollingOrigin;
 
         #endregion
 
@@ -705,6 +708,33 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         {
             base.OnMouseDown(e);
             Focus();
+            if (!(sbHorizontalVisible || sbVerticalVisible) || (e.Button & MouseButtons.Left) == MouseButtons.None)
+                return;
+            isDragging = true;
+            draggingOrigin = new Size(e.Location);
+            scrollingOrigin = new Point(sbHorizontal.Value, sbVertical.Value);
+            Cursor = Cursors.HandGrab;
+        }
+
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            base.OnMouseUp(e);
+            if ((e.Button & MouseButtons.Left) == MouseButtons.None)
+                return;
+            isDragging = false;
+            Cursor = sbHorizontalVisible || sbVerticalVisible ? Cursors.HandOpen : null;
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+            if (!isDragging)
+                return;
+            Point distance = e.Location - draggingOrigin;
+            if (sbHorizontalVisible && distance.X != 0)
+                sbHorizontal.SetValueSafe(scrollingOrigin.X - distance.X);
+            if (sbVerticalVisible && distance.Y != 0)
+                sbVertical.SetValueSafe(scrollingOrigin.Y - distance.Y);
         }
 
         protected override void OnMouseWheel(MouseEventArgs e)
@@ -795,12 +825,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             int totalDelta = scrollFractionVertical + delta * sbVertical.SmallChange;
             scrollFractionVertical = totalDelta % SystemInformation.MouseWheelScrollDelta;
             int newValue = sbVertical.Value - totalDelta / SystemInformation.MouseWheelScrollDelta;
-            if (newValue < sbVertical.Minimum)
-                newValue = sbVertical.Minimum;
-            else if (newValue > sbVertical.Maximum - sbVertical.LargeChange + 1)
-                newValue = sbVertical.Maximum - sbVertical.LargeChange + 1;
-
-            sbVertical.Value = newValue;
+            sbVertical.SetValueSafe(newValue);
         }
 
         private void HorizontalScroll(int delta)
@@ -810,12 +835,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             int totalDelta = scrollFractionHorizontal + delta * sbVertical.SmallChange;
             scrollFractionHorizontal = totalDelta % SystemInformation.MouseWheelScrollDelta;
             int newValue = sbHorizontal.Value - totalDelta / SystemInformation.MouseWheelScrollDelta;
-            if (newValue < sbHorizontal.Minimum)
-                newValue = sbHorizontal.Minimum;
-            else if (newValue > sbHorizontal.Maximum - sbHorizontal.LargeChange + 1)
-                newValue = sbHorizontal.Maximum - sbHorizontal.LargeChange + 1;
-
-            sbHorizontal.Value = newValue;
+            sbHorizontal.SetValueSafe(newValue);
         }
 
         private void Invalidate(InvalidateFlags flags)
@@ -925,6 +945,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             sbHorizontal.Visible = sbHorizontalVisible;
             sbVertical.Visible = sbVerticalVisible;
+            Cursor = sbHorizontalVisible || sbVerticalVisible ? Cursors.HandOpen : null;
+            isDragging = false;
 
             clientRectangle = new Rectangle(Point.Empty, clientSize);
             targetRectangle = new Rectangle(targetLocation, scaledSize);
