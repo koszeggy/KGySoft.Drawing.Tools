@@ -874,6 +874,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 targetRectangle = new Rectangle(targetLocation, scaledSize);
                 clientRectangle = new Rectangle(Point.Empty, clientSize);
                 sbHorizontal.Visible = sbVertical.Visible = sbHorizontalVisible = sbVerticalVisible = false;
+                Cursor = null;
                 return;
             }
 
@@ -1004,7 +1005,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (resetIfBitmap && !autoZoom && !isMetafile)
                 SetZoom(1f);
 
-            // TODO: do not invalidate if zoom did not change
             Invalidate(InvalidateFlags.Sizes | (autoZoom ? InvalidateFlags.DisplayImage : InvalidateFlags.None));
             OnAutoZoomChanged(EventArgs.Empty);
         }
