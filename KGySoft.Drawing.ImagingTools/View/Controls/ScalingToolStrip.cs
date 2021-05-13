@@ -47,11 +47,26 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             #region Methods
 
+            #region Static Methods
+
+            private static void ClearButtonBackground(Graphics g, Rectangle rect, Color color)
+            {
+                GraphicsState state = g.Save();
+                rect.Inflate(1, 1);
+                g.SetClip(rect);
+                g.Clear(color);
+                g.Restore(state);
+            }
+
+            #endregion
+
+            #region Instance Methods
+
             protected override void OnRenderArrow(ToolStripArrowRenderEventArgs e)
             {
                 Graphics g = e.Graphics;
                 Rectangle dropDownRect = e.Item is ScalingToolStripDropDownButton scalingButton ? scalingButton.ArrowRectangle : e.ArrowRectangle;
-                using (Brush brush = new SolidBrush(e.ArrowColor))
+                using (Brush brush = new SolidBrush(e.Item.Enabled ? e.ArrowColor : SystemColors.ControlDark))
                 {
                     Point middle = new Point(dropDownRect.Left + dropDownRect.Width / 2, dropDownRect.Top + dropDownRect.Height / 2);
 
@@ -118,24 +133,44 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
             {
-                if (e.Item is ToolStripButton button && button.Checked && button.Enabled)
-                {
-                    if (OSUtils.IsWindows)
-                        e.Graphics.Clear(ProfessionalColors.ButtonSelectedGradientMiddle);
-                    else
-                    {
-                        // In Mono without this clipping the whole tool strip container is cleared
-                        GraphicsState state = e.Graphics.Save();
-                        Rectangle rect = e.Item.ContentRectangle;
-                        rect.Inflate(1, 1);
-                        e.Graphics.SetClip(rect);
-                        e.Graphics.Clear(ProfessionalColors.ButtonSelectedGradientMiddle);
-                        e.Graphics.Restore(state);
-                    }
-                }
+                if (e.Item is ToolStripButton { Checked: true, Enabled: true } btn)
+                    ClearButtonBackground(e.Graphics, btn.ContentRectangle, ProfessionalColors.ButtonSelectedGradientMiddle);
 
                 base.OnRenderButtonBackground(e);
             }
+
+            protected override void OnRenderSplitButtonBackground(ToolStripItemRenderEventArgs e)
+            {
+                base.OnRenderSplitButtonBackground(e);
+                if (e.Item is not CheckableToolStripSplitButton btn)
+                    return;
+
+                // overriding background to behave the same way as ToolStripButton
+                Rectangle rect = btn.ButtonBounds;
+                if (!OSUtils.IsWindows)
+                    rect.Location = Point.Empty;
+
+                if (btn.Enabled && (btn.Checked || !btn.DropDownButtonPressed))
+                {
+                    rect.Inflate(-1, -1);
+                    if (btn.ButtonPressed)
+                        ClearButtonBackground(e.Graphics, rect, ProfessionalColors.ButtonPressedHighlight);
+                    else if (btn.Selected)
+                        ClearButtonBackground(e.Graphics, rect, btn.Checked ? ProfessionalColors.ButtonPressedHighlight : ProfessionalColors.ButtonSelectedGradientMiddle);
+                    else if (btn.Checked)
+                        ClearButtonBackground(e.Graphics, rect, ProfessionalColors.ButtonSelectedGradientMiddle);
+                    rect.Inflate(1, 1);
+                }
+
+                // drawing border (maybe again, because it can be overridden by background)
+                if (btn.Checked || !btn.DropDownButtonPressed && (btn.ButtonPressed || btn.ButtonSelected))
+                {
+                    using (Pen pen = new Pen(ProfessionalColors.ButtonSelectedBorder))
+                        e.Graphics.DrawRectangle(pen, rect.X, rect.Y, rect.Width, rect.Height - 1);
+                }
+            }
+
+            #endregion
 
             #endregion
         }
