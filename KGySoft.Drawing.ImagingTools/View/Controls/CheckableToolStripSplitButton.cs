@@ -28,8 +28,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
     /// <summary>
     /// A <see cref="ToolStripSplitButton"/> whose button part can be checked.
     /// </summary>
-    // NOTE: Unlike ToolStripDropDownButton, ToolStripSplitButton is scaled well so no special handling is needed here
-    // The properly scaled arrow and the checked appearance is rendered by ScalingToolStripMenuRenderer
+    // NOTE: The properly scaled arrow and the checked appearance is rendered by ScalingToolStripMenuRenderer, while
+    // the drop-down button size is adjusted in ScalingToolStrip for all ToolStripSplitButtons
     internal class CheckableToolStripSplitButton : ToolStripSplitButton
     {
         #region Fields
@@ -71,6 +71,21 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Methods
 
+        #region Public Methods
+
+        public override Size GetPreferredSize(Size constrainingSize)
+        {
+            if (Owner.Orientation == Orientation.Horizontal)
+                return base.GetPreferredSize(constrainingSize);
+            Size result = base.GetPreferredSize(constrainingSize);
+
+            return new Size(result.Width + Owner.ScaleWidth(2), result.Height);
+        }
+
+        #endregion
+
+        #region Protected Methods
+
         protected override void OnButtonClick(EventArgs e)
         {
             if (CheckOnClick)
@@ -80,14 +95,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         protected virtual void OnCheckedChanged(EventArgs e) => (Events[nameof(CheckedChanged)] as EventHandler)?.Invoke(this, e);
 
-        public override Size GetPreferredSize(Size constrainingSize)
-        {
-            if (Owner.Orientation == Orientation.Horizontal)
-                return base.GetPreferredSize(constrainingSize);
-            Size result = base.GetPreferredSize(constrainingSize);
-
-            return new Size(result.Width, result.Height) + Owner.ScaleSize(new Size(2, 0));
-        }
+        #endregion
 
         #endregion
     }

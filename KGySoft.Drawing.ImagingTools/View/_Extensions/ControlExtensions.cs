@@ -51,6 +51,8 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         internal static Size ScaleSize(this Control control, Size size) => size.Scale(control.GetScale());
 
+        internal static int ScaleWidth(this Control control, int width) => width.Scale(control.GetScale().X);
+
         /// <summary>
         /// Applies fixed string resources (which do not change unless language is changed) to a control.
         /// </summary>

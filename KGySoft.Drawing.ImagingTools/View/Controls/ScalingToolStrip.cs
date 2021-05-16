@@ -206,6 +206,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 m.Result = (IntPtr)Constants.MA_ACTIVATE;
         }
 
+        protected override void OnItemAdded(ToolStripItemEventArgs e)
+        {
+            if (e.Item is ToolStripSplitButton btn)
+                btn.DropDownButtonWidth = this.ScaleWidth(11);
+            base.OnItemAdded(e);
+        }
+
         #endregion  
     }
 }
