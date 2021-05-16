@@ -93,9 +93,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             switch (keyData)
             {
-                case Keys.Alt | Keys.Z:
-                    previewImage.AutoZoom = !previewImage.AutoZoom;
-                    return true;
                 case Keys.Alt | Keys.S:
                     previewImage.SmoothZooming = !previewImage.SmoothZooming;
                     return true;

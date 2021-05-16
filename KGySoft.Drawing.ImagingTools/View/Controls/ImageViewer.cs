@@ -784,7 +784,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         #region Internal Methods
 
         /// <summary>
-        /// Should be called when image content is changed
+        /// Should be called when image content is changed while image reference remains the same (eg. rotation, palette change)
         /// </summary>
         internal void UpdateImage()
         {
@@ -796,6 +796,26 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 SetImage(image);
             else
                 Invalidate();
+        }
+
+        internal void IncreaseZoom()
+        {
+            SetAutoZoom(false, false);
+            ApplyZoomChange(0.25f);
+        }
+
+        internal void DecreaseZoom()
+        {
+            SetAutoZoom(false, false);
+            ApplyZoomChange(-0.25f);
+        }
+
+        internal void ResetZoom()
+        {
+            if (zoom.Equals(1f))
+                return;
+            AutoZoom = false;
+            Zoom = 1f;
         }
 
         #endregion

@@ -16,7 +16,7 @@
         private void InitializeComponent()
         {
             this.scalingToolStrip1 = new KGySoft.Drawing.ImagingTools.View.Controls.ScalingToolStrip();
-            this.btnAutoZoom = new System.Windows.Forms.ToolStripButton();
+            this.btnZoom = new KGySoft.Drawing.ImagingTools.View.Controls.ZoomSplitButton();
             this.btnAntiAlias = new System.Windows.Forms.ToolStripButton();
             this.btnShowOriginal = new System.Windows.Forms.ToolStripButton();
             this.ivPreview = new KGySoft.Drawing.ImagingTools.View.Controls.ImageViewer();
@@ -27,7 +27,7 @@
             // 
             this.scalingToolStrip1.Dock = System.Windows.Forms.DockStyle.Left;
             this.scalingToolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.btnAutoZoom,
+            this.btnZoom,
             this.btnAntiAlias,
             this.btnShowOriginal});
             this.scalingToolStrip1.Location = new System.Drawing.Point(0, 0);
@@ -38,11 +38,11 @@
             // 
             // btnAutoZoom
             // 
-            this.btnAutoZoom.CheckOnClick = true;
-            this.btnAutoZoom.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnAutoZoom.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnAutoZoom.Name = "btnAutoZoom";
-            this.btnAutoZoom.Size = new System.Drawing.Size(29, 4);
+            this.btnZoom.CheckOnClick = true;
+            this.btnZoom.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnZoom.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnZoom.Name = "btnZoom";
+            this.btnZoom.Size = new System.Drawing.Size(29, 4);
             // 
             // btnAntiAlias
             // 
@@ -84,7 +84,7 @@
         #endregion
 
         private Controls.ScalingToolStrip scalingToolStrip1;
-        private System.Windows.Forms.ToolStripButton btnAutoZoom;
+        private Controls.ZoomSplitButton btnZoom;
         private System.Windows.Forms.ToolStripButton btnAntiAlias;
         private Controls.ImageViewer ivPreview;
         private System.Windows.Forms.ToolStripButton btnShowOriginal;

@@ -35,6 +35,9 @@ namespace KGySoft.Drawing.ImagingTools.View
         private static Bitmap? crop;
         private static Bitmap? highlightVisibleClip;
         private static Bitmap? magnifier;
+        private static Bitmap? magnifierPlus;
+        private static Bitmap? magnifierMinus;
+        private static Bitmap? magnifier1;
         private static Bitmap? save;
         private static Bitmap? open;
         private static Bitmap? clear;
@@ -62,6 +65,9 @@ namespace KGySoft.Drawing.ImagingTools.View
         internal static Bitmap Crop => crop ??= GetResource(nameof(Crop));
         internal static Bitmap HighlightVisibleClip => highlightVisibleClip ??= GetResource(nameof(HighlightVisibleClip));
         internal static Bitmap Magnifier => magnifier ??= GetResource(nameof(Magnifier));
+        internal static Bitmap MagnifierPlus => magnifierPlus ??= GetResource(nameof(MagnifierPlus));
+        internal static Bitmap MagnifierMinus => magnifierMinus ??= GetResource(nameof(MagnifierMinus));
+        internal static Bitmap Magnifier1 => magnifier1 ??= GetResource(nameof(Magnifier1));
         internal static Bitmap Save => save ??= GetResource(nameof(Save));
         internal static Bitmap Open => open ??= GetResource(nameof(Open));
         internal static Bitmap Clear => clear ??= GetResource(nameof(Clear));

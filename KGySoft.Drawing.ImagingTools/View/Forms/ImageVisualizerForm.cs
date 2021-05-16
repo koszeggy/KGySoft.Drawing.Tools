@@ -18,6 +18,7 @@
 
 using System;
 using System.Drawing;
+using System.Globalization;
 using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
@@ -90,7 +91,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // applying static resources
             base.ApplyResources();
             Icon = Properties.Resources.ImagingTools;
-            miAutoZoom.Image = btnZoom.Image = Images.Magnifier;
             btnOpen.Image = Images.Open;
             btnSave.Image = Images.Save;
             btnClear.Image = Images.Clear;
@@ -190,9 +190,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // VM.InfoText -> txtInfo.Text
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.InfoText), nameof(TextBox.Text), txtInfo);
 
-            // imageViewer.AutoZoom <-> VM.AutoZoom -> btnZoom.Checked, miAutoZoom.Checked
+            // imageViewer.AutoZoom <-> VM.AutoZoom -> btnZoom.Checked
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.AutoZoom), imageViewer, nameof(imageViewer.AutoZoom));
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.AutoZoom), nameof(btnZoom.Checked), btnZoom, miAutoZoom);
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.AutoZoom), nameof(btnZoom.Checked), btnZoom);
 
             // VM.Zoom <-> imageViewer.Zoom
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.Zoom), imageViewer, nameof(imageViewer.Zoom));
@@ -228,9 +228,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.Add(ViewModel.SetAutoZoomCommand, ViewModel.SetAutoZoomCommandState)
                 .WithParameter(() => btnZoom.Checked)
                 .AddSource(btnZoom, nameof(btnZoom.CheckedChanged));
-            CommandBindings.Add(ViewModel.SetAutoZoomCommand, ViewModel.SetAutoZoomCommandState)
-                .WithParameter(() => miAutoZoom.Checked)
-                .AddSource(miAutoZoom, nameof(miAutoZoom.CheckedChanged));
+            CommandBindings.Add(imageViewer.IncreaseZoom)
+                .AddSource(btnZoom.IncreaseZoomMenuItem, nameof(btnZoom.IncreaseZoomMenuItem.Click));
+            CommandBindings.Add(imageViewer.DecreaseZoom)
+                .AddSource(btnZoom.DecreaseZoomMenuItem, nameof(btnZoom.DecreaseZoomMenuItem.Click));
+            CommandBindings.Add(imageViewer.ResetZoom)
+                .AddSource(btnZoom.ResetZoomMenuItem, nameof(btnZoom.ResetZoomMenuItem.Click));
             CommandBindings.Add(ViewModel.SetSmoothZoomingCommand, ViewModel.SetSmoothZoomingCommandState)
                 .WithParameter(() => btnAntiAlias.Checked)
                 .AddSource(btnAntiAlias, nameof(btnAntiAlias.CheckedChanged));

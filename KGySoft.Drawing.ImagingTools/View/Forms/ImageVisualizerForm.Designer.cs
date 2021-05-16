@@ -27,8 +27,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.lblNotification = new KGySoft.Drawing.ImagingTools.View.Controls.NotificationLabel();
             this.splitter = new System.Windows.Forms.Splitter();
             this.tsMenu = new KGySoft.Drawing.ImagingTools.View.Controls.ScalingToolStrip();
-            this.btnZoom = new KGySoft.Drawing.ImagingTools.View.Controls.CheckableToolStripSplitButton();
-            this.miAutoZoom = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnZoom = new KGySoft.Drawing.ImagingTools.View.Controls.ZoomSplitButton();
             this.btnAntiAlias = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.btnOpen = new System.Windows.Forms.ToolStripButton();
@@ -121,19 +120,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // 
             this.btnZoom.CheckOnClick = true;
             this.btnZoom.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnZoom.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.miAutoZoom});
             this.btnZoom.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnZoom.Name = "btnZoom";
             this.btnZoom.Size = new System.Drawing.Size(16, 22);
-            // 
-            // miAutoZoom
-            // 
-            this.miAutoZoom.CheckOnClick = true;
-            this.miAutoZoom.Name = "miAutoZoom";
-            this.miAutoZoom.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Z)));
-            this.miAutoZoom.Size = new System.Drawing.Size(183, 22);
-            this.miAutoZoom.Text = "miAutoZoom";
             // 
             // btnAntiAlias
             // 
@@ -386,7 +375,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         #endregion
 
         private KGySoft.Drawing.ImagingTools.View.Controls.ImageViewer imageViewer;
-        private CheckableToolStripSplitButton btnZoom;
+        private KGySoft.Drawing.ImagingTools.View.Controls.ZoomSplitButton btnZoom;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton btnSave;
         private System.Windows.Forms.ToolStripButton btnOpen;
@@ -423,6 +412,5 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private ToolStripMenuItem miBrightness;
         private ToolStripMenuItem miContrast;
         private ToolStripMenuItem miGamma;
-        private ToolStripMenuItem miAutoZoom;
     }
 }

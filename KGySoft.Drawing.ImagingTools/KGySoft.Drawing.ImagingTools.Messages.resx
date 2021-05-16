@@ -217,7 +217,7 @@
     <value>Smoothing Edges (Alt+S)</value>
   </data>
   <data name="TooltipText_SmoothBitmap" xml:space="preserve">
-    <value>Smooth Zooming (Alt+S)</value>
+    <value>Smoothing Resized Image (Alt+S)</value>
   </data>
   <data name="Text_Auto" xml:space="preserve">
     <value>Auto</value>
@@ -495,17 +495,23 @@ Dithering may help to preserve more details.</value>
   <data name="Installations_StatusInstalledWithTargetFrameworkFormat" xml:space="preserve">
     <value>Installed: {0} - Target: {1}</value>
   </data>
-  <data name="btnAutoZoom.Text" xml:space="preserve">
-    <value>Auto Zoom (Alt+Z)</value>
-  </data>
   <data name="btnZoom.Text" xml:space="preserve">
-    <value>Zoom Options</value>
+    <value>Auto Zoom (Alt+Z) / Zoom Options</value>
   </data>
   <data name="miAutoZoom.Text" xml:space="preserve">
     <value>Auto Zoom</value>
   </data>
+  <data name="miIncreaseZoom.Text" xml:space="preserve">
+    <value>Zoom In</value>
+  </data>
+  <data name="miDecreaseZoom.Text" xml:space="preserve">
+    <value>Zoom Out</value>
+  </data>
+  <data name="miResetZoom.Text" xml:space="preserve">
+    <value>Actual Size</value>
+  </data>
   <data name="btnAntiAlias.Text" xml:space="preserve">
-    <value>Smooth Zooming (Alt+S)</value>
+    <value>Smoothing Resized Image (Alt+S)</value>
   </data>
   <data name="btnOpen.Text" xml:space="preserve">
     <value>Open... (Ctrl+O)</value>

@@ -154,6 +154,15 @@
   <data name="Magnifier" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Magnifier.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Magnifier1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Magnifier1.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="MagnifierMinus" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\MagnifierMinus.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="MagnifierPlus" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\MagnifierPlus.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="MultiPage" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\MultiPage.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
