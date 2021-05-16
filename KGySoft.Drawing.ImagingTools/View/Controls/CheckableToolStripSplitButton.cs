@@ -18,6 +18,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Drawing;
 using System.Windows.Forms;
 
 #endregion
@@ -78,6 +79,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         }
 
         protected virtual void OnCheckedChanged(EventArgs e) => (Events[nameof(CheckedChanged)] as EventHandler)?.Invoke(this, e);
+
+        public override Size GetPreferredSize(Size constrainingSize)
+        {
+            if (Owner.Orientation == Orientation.Horizontal)
+                return base.GetPreferredSize(constrainingSize);
+            Size result = base.GetPreferredSize(constrainingSize);
+
+            return new Size(result.Width, result.Height) + Owner.ScaleSize(new Size(2, 0));
+        }
 
         #endregion
     }
