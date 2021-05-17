@@ -23,7 +23,7 @@ using System.Windows.Forms;
 
 namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
-    internal class ZoomSplitButton : CheckableToolStripSplitButton
+    internal class ZoomSplitButton : AdvancedToolStripSplitButton
     {
         #region Properties
 

@@ -142,7 +142,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             protected override void OnRenderSplitButtonBackground(ToolStripItemRenderEventArgs e)
             {
                 base.OnRenderSplitButtonBackground(e);
-                if (e.Item is not CheckableToolStripSplitButton btn)
+                if (e.Item is not AdvancedToolStripSplitButton btn)
                     return;
 
                 // overriding background to behave the same way as ToolStripButton
@@ -208,8 +208,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         protected override void OnItemAdded(ToolStripItemEventArgs e)
         {
-            if (e.Item is ToolStripSplitButton btn)
-                btn.DropDownButtonWidth = this.ScaleWidth(11);
+            if (e.Item is ToolStripSplitButton splitBtn)
+                splitBtn.DropDownButtonWidth = this.ScaleWidth(11);
+
             base.OnItemAdded(e);
         }
 

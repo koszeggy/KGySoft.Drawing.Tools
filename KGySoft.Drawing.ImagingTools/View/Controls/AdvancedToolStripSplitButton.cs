@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: CheckableToolStripSplitButton.cs
+//  File: AdvancedToolStripSplitButton.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2021 - All Rights Reserved
 //
@@ -30,11 +30,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
     /// </summary>
     // NOTE: The properly scaled arrow and the checked appearance is rendered by ScalingToolStripMenuRenderer, while
     // the drop-down button size is adjusted in ScalingToolStrip for all ToolStripSplitButtons
-    internal class CheckableToolStripSplitButton : ToolStripSplitButton
+    internal class AdvancedToolStripSplitButton : ToolStripSplitButton
     {
         #region Fields
 
         private bool isChecked;
+        private bool autoChangeDefaultItem;
 
         #endregion
 
@@ -54,6 +55,20 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 isChecked = value;
                 OnCheckedChanged(EventArgs.Empty);
                 Invalidate();
+            }
+        }
+
+        [DefaultValue(false)]
+        public bool AutoChangeDefaultItem
+        {
+            get => autoChangeDefaultItem;
+            set
+            {
+                if (value == autoChangeDefaultItem)
+                    return;
+                autoChangeDefaultItem = value;
+                if (value && DropDownItems.Count > 0)
+                    SetDefaultItem(DropDownItems[0]);
             }
         }
 
@@ -84,6 +99,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #endregion
 
+        #region Internal Methods
+
+        internal void SetDefaultItem(ToolStripItem item)
+        {
+            DefaultItem = item;
+            Image = item.Image;
+            Text = item.Text;
+        }
+
+        #endregion
+
         #region Protected Methods
 
         protected override void OnButtonClick(EventArgs e)
@@ -94,6 +120,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         }
 
         protected virtual void OnCheckedChanged(EventArgs e) => (Events[nameof(CheckedChanged)] as EventHandler)?.Invoke(this, e);
+
+        protected override void OnDropDownItemClicked(ToolStripItemClickedEventArgs e)
+        {
+            base.OnDropDownItemClicked(e);
+            if (autoChangeDefaultItem && DefaultItem != e.ClickedItem)
+                SetDefaultItem(e.ClickedItem);
+        }
 
         #endregion
 
