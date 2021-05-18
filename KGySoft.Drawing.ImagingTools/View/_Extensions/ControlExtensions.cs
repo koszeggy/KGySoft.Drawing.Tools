@@ -19,7 +19,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-
+using KGySoft.Drawing.ImagingTools.View.Controls;
 using KGySoft.Reflection;
 
 #endregion
@@ -28,6 +28,12 @@ namespace KGySoft.Drawing.ImagingTools.View
 {
     internal static class ControlExtensions
     {
+        #region Constants
+
+        private const string toolTipPropertyName = "ToolTipText";
+
+        #endregion
+
         #region Methods
 
         /// <summary>
@@ -56,8 +62,20 @@ namespace KGySoft.Drawing.ImagingTools.View
         /// <summary>
         /// Applies fixed string resources (which do not change unless language is changed) to a control.
         /// </summary>
-        internal static void ApplyStaticStringResources(this Control control)
+        internal static void ApplyStaticStringResources(this Control control, ToolTip? toolTip = null)
         {
+            #region Local Methods
+
+            static void ApplyToolTip(Control control, string name, ToolTip toolTip)
+            {
+                string? value = Res.GetStringOrNull(name + "." + toolTipPropertyName);
+                toolTip.SetToolTip(control, value);
+
+                // CheckGroupBox: applying the ToolTip to the contained CheckBox
+                if (control is CheckGroupBox checkGroupBox)
+                    toolTip.SetToolTip(checkGroupBox.CheckBox, value);
+            }
+
             static void ApplyToolStripResources(ToolStripItemCollection items)
             {
                 foreach (ToolStripItem item in items)
@@ -71,6 +89,8 @@ namespace KGySoft.Drawing.ImagingTools.View
                 }
             }
 
+            #endregion
+
             string name = control.Name;
             if (String.IsNullOrEmpty(name))
                 name = control.GetType().Name;
@@ -78,14 +98,24 @@ namespace KGySoft.Drawing.ImagingTools.View
             // to self
             Res.ApplyResources(control, name);
 
-            // to children
-            foreach (Control child in control.Controls) child.ApplyStaticStringResources();
+            // applying tool tip
+            if (toolTip != null)
+                ApplyToolTip(control, name, toolTip);
 
-            // to non-control sub-components
+            // to children
             switch (control)
             {
                 case ToolStrip toolStrip:
                     ApplyToolStripResources(toolStrip.Items);
+                    break;
+
+                // preventing recursion
+                case CheckGroupBox:
+                    break;
+
+                default:
+                    foreach (Control child in control.Controls)
+                        child.ApplyStaticStringResources(toolTip);
                     break;
             }
         }

@@ -19,10 +19,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ImageVisualizerForm));
             this.dlgOpen = new System.Windows.Forms.OpenFileDialog();
             this.dlgSave = new System.Windows.Forms.SaveFileDialog();
             this.timerPlayer = new System.Windows.Forms.Timer(this.components);
-            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.imageViewer = new KGySoft.Drawing.ImagingTools.View.Controls.ImageViewer();
             this.lblNotification = new KGySoft.Drawing.ImagingTools.View.Controls.NotificationLabel();
             this.splitter = new System.Windows.Forms.Splitter();
@@ -55,8 +55,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.btnCompound = new System.Windows.Forms.ToolStripButton();
             this.btnPrev = new System.Windows.Forms.ToolStripButton();
             this.btnNext = new System.Windows.Forms.ToolStripButton();
-            this.btnConfiguration = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.btnConfiguration = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedToolStripSplitButton();
             this.txtInfo = new System.Windows.Forms.TextBox();
+            this.miManageInstallations = new System.Windows.Forms.ToolStripMenuItem();
+            this.miLanguageSettings = new System.Windows.Forms.ToolStripMenuItem();
             this.tsMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -110,6 +113,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.btnCompound,
             this.btnPrev,
             this.btnNext,
+            this.toolStripSeparator4,
             this.btnConfiguration});
             this.tsMenu.Location = new System.Drawing.Point(0, 0);
             this.tsMenu.Name = "tsMenu";
@@ -122,7 +126,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.btnZoom.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnZoom.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnZoom.Name = "btnZoom";
-            this.btnZoom.Size = new System.Drawing.Size(16, 22);
+            this.btnZoom.Size = new System.Drawing.Size(32, 22);
             // 
             // btnAntiAlias
             // 
@@ -332,12 +336,21 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.btnNext.Name = "btnNext";
             this.btnNext.Size = new System.Drawing.Size(23, 22);
             // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
+            // 
             // btnConfiguration
             // 
+            this.btnConfiguration.AutoChangeDefaultItem = true;
             this.btnConfiguration.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnConfiguration.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miManageInstallations,
+            this.miLanguageSettings});
             this.btnConfiguration.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnConfiguration.Name = "btnConfiguration";
-            this.btnConfiguration.Size = new System.Drawing.Size(23, 22);
+            this.btnConfiguration.Size = new System.Drawing.Size(16, 22);
             // 
             // txtInfo
             // 
@@ -351,6 +364,18 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.txtInfo.TabIndex = 0;
             this.txtInfo.TabStop = false;
             this.txtInfo.WordWrap = false;
+            // 
+            // miManageInstallations
+            // 
+            this.miManageInstallations.Name = "miManageInstallations";
+            this.miManageInstallations.Size = new System.Drawing.Size(194, 22);
+            this.miManageInstallations.Text = "miManageInstallations";
+            // 
+            // miLanguageSettings
+            // 
+            this.miLanguageSettings.Name = "miLanguageSettings";
+            this.miLanguageSettings.Size = new System.Drawing.Size(194, 22);
+            this.miLanguageSettings.Text = "miLanguageSettings";
             // 
             // ImageVisualizerForm
             // 
@@ -397,9 +422,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         protected KGySoft.Drawing.ImagingTools.View.Controls.ScalingToolStrip tsMenu;
         protected System.Windows.Forms.TextBox txtInfo;
         private KGySoft.Drawing.ImagingTools.View.Controls.NotificationLabel lblNotification;
-        private ToolTip toolTip;
         private ToolStripSeparator toolStripSeparator2;
-        protected ToolStripButton btnConfiguration;
+        protected AdvancedToolStripSplitButton btnConfiguration;
         private ToolStripButton btnAntiAlias;
         private ToolStripMenuItem miCountColors;
         private ScalingToolStripDropDownButton btnEdit;
@@ -412,5 +436,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private ToolStripMenuItem miBrightness;
         private ToolStripMenuItem miContrast;
         private ToolStripMenuItem miGamma;
+        private ToolStripSeparator toolStripSeparator4;
+        private ToolStripMenuItem miManageInstallations;
+        private ToolStripMenuItem miLanguageSettings;
     }
 }

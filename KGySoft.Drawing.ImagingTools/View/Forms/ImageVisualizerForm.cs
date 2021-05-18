@@ -18,7 +18,6 @@
 
 using System;
 using System.Drawing;
-using System.Globalization;
 using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
@@ -91,15 +90,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // applying static resources
             base.ApplyResources();
             Icon = Properties.Resources.ImagingTools;
+            btnAntiAlias.Image = Images.SmoothZoom;
             btnOpen.Image = Images.Open;
             btnSave.Image = Images.Save;
             btnClear.Image = Images.Clear;
-            btnColorSettings.Image = Images.Palette;
             btnPrev.Image = Images.Prev;
             btnNext.Image = Images.Next;
-            btnConfiguration.Image = Images.Settings;
-            btnAntiAlias.Image = Images.SmoothZoom;
+            btnColorSettings.Image = Images.Palette;
             btnEdit.Image = Images.Edit;
+            miManageInstallations.Image = Images.Settings;
+            miLanguageSettings.Image = Images.Language;
+            btnConfiguration.SetDefaultItem(miManageInstallations);
 
             miShowPalette.Image = Images.Palette;
             miBackColorDefault.Image = Images.Check;
@@ -108,8 +109,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             miResizeBitmap.Image = Images.Resize;
             miColorSpace.Image = Images.Quantize;
             miAdjustColors.Image = Images.Colors;
-
-            toolTip.SetToolTip(lblNotification, Res.Get($"{nameof(lblNotification)}.ToolTip"));
 
             // base cannot handle these because components do not have names and dialogs are not even added to components field
             dlgOpen.Title = Res.Get($"{nameof(dlgOpen)}.{nameof(dlgOpen.Title)}");
@@ -237,6 +236,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.Add(ViewModel.SetSmoothZoomingCommand, ViewModel.SetSmoothZoomingCommandState)
                 .WithParameter(() => btnAntiAlias.Checked)
                 .AddSource(btnAntiAlias, nameof(btnAntiAlias.CheckedChanged));
+            CommandBindings.Add(ViewModel.PrevImageCommand, ViewModel.PrevImageCommandState)
+                .AddSource(btnPrev, nameof(btnPrev.Click));
+            CommandBindings.Add(ViewModel.NextImageCommand, ViewModel.NextImageCommandState)
+                .AddSource(btnNext, nameof(btnNext.Click));
 
             // File
             CommandBindings.Add(ViewModel.OpenFileCommand, ViewModel.OpenFileCommandState)
@@ -272,18 +275,18 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.Add(ViewModel.AdjustGammaCommand, ViewModel.EditBitmapCommandState)
                 .AddSource(miGamma, nameof(miGamma.Click));
 
+            // Configuration
+            CommandBindings.Add(ViewModel.ManageInstallationsCommand)
+                .AddSource(miManageInstallations, nameof(miManageInstallations.Click));
+            CommandBindings.Add(ViewModel.SetLanguageCommand)
+                .AddSource(miLanguageSettings, nameof(miLanguageSettings.Click));
+
             // Compound controls
             CommandBindings.Add(ViewModel.SetCompoundViewCommand, ViewModel.SetCompoundViewCommandState)
                 .WithParameter(() => btnCompound.Checked)
                 .AddSource(btnCompound, nameof(btnCompound.CheckedChanged));
             CommandBindings.Add(ViewModel.AdvanceAnimationCommand, ViewModel.AdvanceAnimationCommandState)
                 .AddSource(timerPlayer, nameof(timerPlayer.Tick));
-            CommandBindings.Add(ViewModel.PrevImageCommand, ViewModel.PrevImageCommandState)
-                .AddSource(btnPrev, nameof(btnPrev.Click));
-            CommandBindings.Add(ViewModel.NextImageCommand, ViewModel.NextImageCommandState)
-                .AddSource(btnNext, nameof(btnNext.Click));
-            CommandBindings.Add(ViewModel.ManageInstallationsCommand)
-                .AddSource(btnConfiguration, nameof(btnConfiguration.Click));
             CommandBindings.Add(ViewModel.ViewImagePreviewSizeChangedCommand)
                 .AddSource(imageViewer, nameof(imageViewer.SizeChanged))
                 .AddSource(imageViewer, nameof(imageViewer.ZoomChanged));

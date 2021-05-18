@@ -231,7 +231,9 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region General
 
-        internal static string Get(string id) => resourceManager.GetString(id, LanguageSettings.DisplayLanguage) ?? String.Format(CultureInfo.InvariantCulture, unavailableResource, id);
+        internal static string? GetStringOrNull(string id) => resourceManager.GetString(id, LanguageSettings.DisplayLanguage);
+
+        internal static string Get(string id) => GetStringOrNull(id) ?? String.Format(CultureInfo.InvariantCulture, unavailableResource, id);
 
         internal static string Get<TEnum>(TEnum value) where TEnum : struct, Enum => Get($"{value.GetType().Name}.{Enum<TEnum>.ToString(value)}");
 
@@ -245,7 +247,7 @@ namespace KGySoft.Drawing.ImagingTools
 
             foreach (PropertyInfo property in properties)
             {
-                string? value = resourceManager.GetString(name + "." + property.Name, LanguageSettings.DisplayLanguage);
+                string? value = GetStringOrNull(name + "." + property.Name);
                 if (value == null)
                     continue;
                 Reflector.SetProperty(target, property, value);

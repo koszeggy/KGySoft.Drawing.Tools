@@ -26,7 +26,7 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
-    internal class MvvmBaseForm<TViewModel> : BaseForm, IView
+    internal partial class MvvmBaseForm<TViewModel> : BaseForm, IView
         where TViewModel : IDisposable // BUG: Actually should be ViewModelBase but WinForms designer with derived forms dies from that
     {
         #region Fields
@@ -59,6 +59,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected MvvmBaseForm(TViewModel viewModel)
         {
+            InitializeComponent();
+
             // occurs in design mode but DesignMode is false for grandchild forms
             if (viewModel == null!)
                 return;
@@ -79,7 +81,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Constructors
 
-        private MvvmBaseForm()
+        private MvvmBaseForm() : this(default!)
         {
             // this ctor is just for the designer
         }
@@ -104,7 +106,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             ApplyViewModel();
         }
 
-        protected virtual void ApplyResources() => this.ApplyStaticStringResources();
+        protected virtual void ApplyResources() => this.ApplyStaticStringResources(toolTip);
 
         protected virtual void ApplyViewModel() => VM.ViewLoaded();
 
@@ -118,7 +120,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         protected override void Dispose(bool disposing)
         {
             if (disposing)
+            {
+                components?.Dispose();
                 CommandBindings.Dispose();
+            }
 
             base.Dispose(disposing);
         }
