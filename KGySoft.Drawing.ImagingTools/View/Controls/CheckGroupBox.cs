@@ -28,7 +28,7 @@ using KGySoft.CoreLibraries;
 
 namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
-    internal partial class CheckGroupBox : GroupBox
+    internal partial class CheckGroupBox : GroupBox, ICustomLocalizable
     {
         #region Events
 
@@ -86,7 +86,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             // Left should be 10 at 100% but only 8 at 175%, etc.
             checkBox.Left = Math.Max(1, 13 - (int)(this.GetScale().X * Padding.Left));
 
-            // Vista or later: using System FlayStyle so animation is enabled with theming and while text is not misplaced with classic themes
+            // Vista or later: using System FlayStyle so animation is enabled with theming and text is not misplaced with classic themes
             bool visualStylesEnabled = Application.RenderWithVisualStyles;
             checkBox.FlatStyle = OSUtils.IsVistaOrLater ? FlatStyle.System
                 // Windows XP: Using standard style with themes so CheckBox color can be set correctly, and using System with classic theme for good placement
@@ -155,6 +155,31 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             // Toggling the Enabled state of the content. This method preserves the original Enabled state of the controls.
             contentPanel.Enabled = checkBox.Checked;
             OnCheckedChanged(EventArgs.Empty);
+        }
+
+        #endregion
+
+        #region Explicitly Implemented Interface Methods
+
+        void ICustomLocalizable.ApplyStringResources(ToolTip? toolTip)
+        {
+            string? name = Name;
+            if (String.IsNullOrEmpty(name))
+                return;
+
+            // Self properties
+            Res.ApplyStringResources(this, name);
+
+            // tool tip: forwarding to the check box
+            if (toolTip != null)
+            {
+                string? value = Res.GetStringOrNull(name + "." + ControlExtensions.ToolTipPropertyName);
+                toolTip.SetToolTip(checkBox, value);
+            }
+
+            // children: only contentPanel controls so checkBox is skipped (otherwise, could be overwritten by checkbox.Name)
+            foreach (Control child in contentPanel.Controls)
+                child.ApplyStringResources(toolTip);
         }
 
         #endregion

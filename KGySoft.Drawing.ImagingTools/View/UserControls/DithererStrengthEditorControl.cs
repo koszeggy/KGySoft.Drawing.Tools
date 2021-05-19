@@ -52,7 +52,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             trackBar.ValueChanged += TrackBar_ValueChanged;
             okCancelButtons.CancelButton.Click += CancelButton_Click;
             okCancelButtons.OKButton.Click += OKButton_Click;
-            okCancelButtons.ApplyStaticStringResources();
+            okCancelButtons.ApplyStringResources();
 
             originalValue = value;
             trackBar.Value = value >= 0f && value <= 1f ? (int)(value * 100) : 0;

@@ -30,7 +30,7 @@ namespace KGySoft.Drawing.ImagingTools.View
     {
         #region Constants
 
-        private const string toolTipPropertyName = "ToolTipText";
+        internal const string ToolTipPropertyName = "ToolTipText";
 
         #endregion
 
@@ -62,18 +62,14 @@ namespace KGySoft.Drawing.ImagingTools.View
         /// <summary>
         /// Applies fixed string resources (which do not change unless language is changed) to a control.
         /// </summary>
-        internal static void ApplyStaticStringResources(this Control control, ToolTip? toolTip = null)
+        internal static void ApplyStringResources(this Control control, ToolTip? toolTip = null)
         {
             #region Local Methods
 
             static void ApplyToolTip(Control control, string name, ToolTip toolTip)
             {
-                string? value = Res.GetStringOrNull(name + "." + toolTipPropertyName);
+                string? value = Res.GetStringOrNull(name + "." + ToolTipPropertyName);
                 toolTip.SetToolTip(control, value);
-
-                // CheckGroupBox: applying the ToolTip to the contained CheckBox
-                if (control is CheckGroupBox checkGroupBox)
-                    toolTip.SetToolTip(checkGroupBox.CheckBox, value);
             }
 
             static void ApplyToolStripResources(ToolStripItemCollection items)
@@ -81,7 +77,7 @@ namespace KGySoft.Drawing.ImagingTools.View
                 foreach (ToolStripItem item in items)
                 {
                     // to self
-                    Res.ApplyResources(item, item.Name);
+                    Res.ApplyStringResources(item, item.Name);
 
                     // to children
                     if (item is ToolStripDropDownItem dropDownItem)
@@ -95,8 +91,15 @@ namespace KGySoft.Drawing.ImagingTools.View
             if (String.IsNullOrEmpty(name))
                 name = control.GetType().Name;
 
+            // custom localization
+            if (control is ICustomLocalizable customLocalizable)
+            {
+                customLocalizable.ApplyStringResources(toolTip);
+                return;
+            }
+
             // to self
-            Res.ApplyResources(control, name);
+            Res.ApplyStringResources(control, name);
 
             // applying tool tip
             if (toolTip != null)
@@ -109,13 +112,9 @@ namespace KGySoft.Drawing.ImagingTools.View
                     ApplyToolStripResources(toolStrip.Items);
                     break;
 
-                // preventing recursion
-                case CheckGroupBox:
-                    break;
-
                 default:
                     foreach (Control child in control.Controls)
-                        child.ApplyStaticStringResources(toolTip);
+                        child.ApplyStringResources(toolTip);
                     break;
             }
         }

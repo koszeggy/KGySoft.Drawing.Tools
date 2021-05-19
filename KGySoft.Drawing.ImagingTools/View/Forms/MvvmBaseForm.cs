@@ -106,7 +106,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             ApplyViewModel();
         }
 
-        protected virtual void ApplyResources() => this.ApplyStaticStringResources(toolTip);
+        protected virtual void ApplyResources() => this.ApplyStringResources(toolTip);
 
         protected virtual void ApplyViewModel() => VM.ViewLoaded();
 
