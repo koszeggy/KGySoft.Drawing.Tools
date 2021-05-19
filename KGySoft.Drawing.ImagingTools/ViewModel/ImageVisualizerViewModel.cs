@@ -141,6 +141,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommand NextImageCommand => Get(() => new SimpleCommand(OnNextImageCommand));
         internal ICommand ShowPaletteCommand => Get(() => new SimpleCommand(OnShowPaletteCommand));
         internal ICommand ManageInstallationsCommand => Get(() => new SimpleCommand(OnManageInstallationsCommand));
+        internal ICommand SetLanguageCommand => Get(() => new SimpleCommand(OnSetLanguageCommand));
         internal ICommand RotateLeftCommand => Get(() => new SimpleCommand(OnRotateLeftCommand));
         internal ICommand RotateRightCommand => Get(() => new SimpleCommand(OnRotateRightCommand));
         internal ICommand ResizeBitmapCommand => Get(() => new SimpleCommand(OnResizeBitmapCommand));
@@ -1170,6 +1171,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void OnAdjustBrightnessCommand() => EditBitmap(ViewModelFactory.CreateAdjustBrightness);
         private void OnAdjustContrastCommand() => EditBitmap(ViewModelFactory.CreateAdjustContrast);
         private void OnAdjustGammaCommand() => EditBitmap(ViewModelFactory.CreateAdjustGamma);
+
+        private void OnSetLanguageCommand()
+        {
+            using IViewModel viewModel = ViewModelFactory.CreateLanguageSettings();
+            ShowChildViewCallback?.Invoke(viewModel);
+        }
 
         #endregion
 

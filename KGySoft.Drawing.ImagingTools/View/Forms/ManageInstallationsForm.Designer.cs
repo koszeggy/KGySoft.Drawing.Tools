@@ -27,7 +27,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.tbPath = new System.Windows.Forms.TextBox();
             this.lblPath = new System.Windows.Forms.Label();
             this.gbVisualStudioVersions = new System.Windows.Forms.GroupBox();
-            this.cbInstallations = new System.Windows.Forms.ComboBox();
+            this.cmbInstallations = new System.Windows.Forms.ComboBox();
             this.gbAvailableVersion = new System.Windows.Forms.GroupBox();
             this.lblAvailableVersion = new System.Windows.Forms.Label();
             this.gbInstallation.SuspendLayout();
@@ -146,7 +146,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // 
             // gbVisualStudioVersions
             // 
-            this.gbVisualStudioVersions.Controls.Add(this.cbInstallations);
+            this.gbVisualStudioVersions.Controls.Add(this.cmbInstallations);
             this.gbVisualStudioVersions.Dock = System.Windows.Forms.DockStyle.Top;
             this.gbVisualStudioVersions.Location = new System.Drawing.Point(3, 43);
             this.gbVisualStudioVersions.Name = "gbVisualStudioVersions";
@@ -155,16 +155,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.gbVisualStudioVersions.TabStop = false;
             this.gbVisualStudioVersions.Text = "gbVisualStudioVersions";
             // 
-            // cbInstallations
+            // cmbInstallations
             // 
-            this.cbInstallations.Dock = System.Windows.Forms.DockStyle.Top;
-            this.cbInstallations.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbInstallations.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.cbInstallations.FormattingEnabled = true;
-            this.cbInstallations.Location = new System.Drawing.Point(3, 16);
-            this.cbInstallations.Name = "cbInstallations";
-            this.cbInstallations.Size = new System.Drawing.Size(372, 21);
-            this.cbInstallations.TabIndex = 0;
+            this.cmbInstallations.Dock = System.Windows.Forms.DockStyle.Top;
+            this.cmbInstallations.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbInstallations.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.cmbInstallations.FormattingEnabled = true;
+            this.cmbInstallations.Location = new System.Drawing.Point(3, 16);
+            this.cmbInstallations.Name = "cmbInstallations";
+            this.cmbInstallations.Size = new System.Drawing.Size(372, 21);
+            this.cmbInstallations.TabIndex = 0;
             // 
             // gbAvailableVersion
             // 
@@ -225,7 +225,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private System.Windows.Forms.TextBox tbPath;
         private System.Windows.Forms.Label lblPath;
         private GroupBox gbVisualStudioVersions;
-        private ComboBox cbInstallations;
+        private ComboBox cmbInstallations;
         private GroupBox gbAvailableVersion;
         private Label lblAvailableVersion;
     }

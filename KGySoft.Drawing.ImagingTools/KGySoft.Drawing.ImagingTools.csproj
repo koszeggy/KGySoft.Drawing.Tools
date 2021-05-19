@@ -38,9 +38,20 @@
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
       <Generator>PublicResXFileCodeGenerator</Generator>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Update="View\Controls\CheckableToolStripSplitButton.cs">
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Update="View\Controls\AdvancedToolStripSplitButton.cs">
       <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="View\UserControls\OkCancelApplyButtons.cs">
+      <SubType>UserControl</SubType>
     </Compile>
   </ItemGroup>
 
@@ -48,9 +59,17 @@
     <EmbeddedResource Update="KGySoft.Drawing.ImagingTools.Messages.resx">
       <LogicalName>KGySoft.Drawing.ImagingTools.Messages.resources</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Update="View\Forms\AdjustColorsFormBase - Copy.resx">
-      <DependentUpon>AdjustColorsFormBase.resx</DependentUpon>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
 
 </Project>

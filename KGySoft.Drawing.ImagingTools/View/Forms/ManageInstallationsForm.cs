@@ -35,8 +35,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             : base(viewModel)
         {
             InitializeComponent();
-            cbInstallations.ValueMember = nameof(KeyValuePair<string, string>.Key);
-            cbInstallations.DisplayMember = nameof(KeyValuePair<string, string>.Value);
+            cmbInstallations.ValueMember = nameof(KeyValuePair<string, string>.Key);
+            cmbInstallations.DisplayMember = nameof(KeyValuePair<string, string>.Value);
         }
 
         #endregion
@@ -89,10 +89,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private void InitPropertyBindings()
         {
             // will not change so not as an actual binding
-            cbInstallations.DataSource = ViewModel.Installations;
+            cmbInstallations.DataSource = ViewModel.Installations;
 
-            // VM.SelectedInstallation <-> cbInstallations.SelectedValue
-            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.SelectedInstallation), cbInstallations, nameof(cbInstallations.SelectedValue));
+            // VM.SelectedInstallation <-> cmbInstallations.SelectedValue
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.SelectedInstallation), cmbInstallations, nameof(cmbInstallations.SelectedValue));
 
             // VM.CurrentPath <-> tbPath.Text
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.CurrentPath), tbPath, nameof(tbPath.Text));

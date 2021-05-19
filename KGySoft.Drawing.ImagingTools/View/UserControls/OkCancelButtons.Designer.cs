@@ -73,9 +73,8 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.TableLayoutPanel pnlButtons;
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.Button btnCancel;
+        protected System.Windows.Forms.TableLayoutPanel pnlButtons;
     }
 }

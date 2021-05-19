@@ -34,6 +34,7 @@ namespace KGySoft.Drawing.ImagingTools.View
         private static Bitmap? check;
         private static Bitmap? crop;
         private static Bitmap? highlightVisibleClip;
+        private static Bitmap? language;
         private static Bitmap? magnifier;
         private static Bitmap? magnifierPlus;
         private static Bitmap? magnifierMinus;
@@ -64,6 +65,7 @@ namespace KGySoft.Drawing.ImagingTools.View
         internal static Bitmap Check => check ??= GetResource(nameof(Check));
         internal static Bitmap Crop => crop ??= GetResource(nameof(Crop));
         internal static Bitmap HighlightVisibleClip => highlightVisibleClip ??= GetResource(nameof(HighlightVisibleClip));
+        internal static Bitmap Language => language ??= GetResource(nameof(Language));
         internal static Bitmap Magnifier => magnifier ??= GetResource(nameof(Magnifier));
         internal static Bitmap MagnifierPlus => magnifierPlus ??= GetResource(nameof(MagnifierPlus));
         internal static Bitmap MagnifierMinus => magnifierMinus ??= GetResource(nameof(MagnifierMinus));

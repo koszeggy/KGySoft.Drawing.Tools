@@ -54,35 +54,23 @@ namespace KGySoft.Drawing.ImagingTools.View
             if (viewModel == null)
                 throw new ArgumentNullException(nameof(viewModel), PublicResources.ArgumentNull);
 
-            switch (viewModel)
+            return viewModel switch
             {
-                case DefaultViewModel defaultViewModel:
-                    return new AppMainForm(defaultViewModel);
-                case GraphicsVisualizerViewModel graphicsVisualizerViewModel:
-                    return new GraphicsVisualizerForm(graphicsVisualizerViewModel);
-                case ImageVisualizerViewModel imageVisualizerViewModel: // also for BitmapData
-                    return new ImageVisualizerForm(imageVisualizerViewModel);
-                case PaletteVisualizerViewModel paletteVisualizerViewModel:
-                    return new PaletteVisualizerForm(paletteVisualizerViewModel);
-                case ColorVisualizerViewModel colorVisualizerViewModel:
-                    return new ColorVisualizerForm(colorVisualizerViewModel);
-                case ManageInstallationsViewModel manageInstallationsViewModel:
-                    return new ManageInstallationsForm(manageInstallationsViewModel);
-                case ResizeBitmapViewModel resizeBitmapViewModel:
-                    return new ResizeBitmapForm(resizeBitmapViewModel);
-                case ColorSpaceViewModel colorSpaceViewModel:
-                    return new ColorSpaceForm(colorSpaceViewModel);
-                case CountColorsViewModel countColorsViewModel:
-                    return new CountColorsForm(countColorsViewModel);
-                case AdjustBrightnessViewModel adjustBrightnessViewModel:
-                    return new AdjustBrightnessForm(adjustBrightnessViewModel);
-                case AdjustContrastViewModel adjustContrastViewModel:
-                    return new AdjustContrastForm(adjustContrastViewModel);
-                case AdjustGammaViewModel adjustGammaViewModel:
-                    return new AdjustGammaForm(adjustGammaViewModel);
-                default:
-                    throw new InvalidOperationException(Res.InternalError($"Unexpected viewModel type: {viewModel.GetType()}"));
-            }
+                DefaultViewModel defaultViewModel => new AppMainForm(defaultViewModel),
+                GraphicsVisualizerViewModel graphicsVisualizerViewModel => new GraphicsVisualizerForm(graphicsVisualizerViewModel),
+                ImageVisualizerViewModel imageVisualizerViewModel => new ImageVisualizerForm(imageVisualizerViewModel), // also for BitmapData
+                PaletteVisualizerViewModel paletteVisualizerViewModel => new PaletteVisualizerForm(paletteVisualizerViewModel),
+                ColorVisualizerViewModel colorVisualizerViewModel => new ColorVisualizerForm(colorVisualizerViewModel),
+                ManageInstallationsViewModel manageInstallationsViewModel => new ManageInstallationsForm(manageInstallationsViewModel),
+                ResizeBitmapViewModel resizeBitmapViewModel => new ResizeBitmapForm(resizeBitmapViewModel),
+                ColorSpaceViewModel colorSpaceViewModel => new ColorSpaceForm(colorSpaceViewModel),
+                CountColorsViewModel countColorsViewModel => new CountColorsForm(countColorsViewModel),
+                AdjustBrightnessViewModel adjustBrightnessViewModel => new AdjustBrightnessForm(adjustBrightnessViewModel),
+                AdjustContrastViewModel adjustContrastViewModel => new AdjustContrastForm(adjustContrastViewModel),
+                AdjustGammaViewModel adjustGammaViewModel => new AdjustGammaForm(adjustGammaViewModel),
+                LanguageSettingsViewModel languageSettingsViewModel => new LanguageSettingsForm(languageSettingsViewModel),
+                _ => throw new InvalidOperationException(Res.InternalError($"Unexpected viewModel type: {viewModel.GetType()}"))
+            };
         }
 
         /// <summary>

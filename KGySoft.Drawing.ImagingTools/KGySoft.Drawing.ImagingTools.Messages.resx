@@ -378,6 +378,9 @@ Either select at least '{1}' or reduce the number of colors to {2}.</value>
   <data name="ErrorMessage_ValueMustBeGreaterThanFormat" xml:space="preserve">
     <value>Value must be greater than {0}</value>
   </data>
+  <data name="ErrorMessage_FailedToSaveSettingsFormat" xml:space="preserve">
+    <value>Failed to save settings: {0}</value>
+  </data>
   <data name="WarningMessage_CouldNotCreateNetCoreDirectoryFormat" xml:space="preserve">
     <value>Could not create directory {0}: {1}
 
@@ -565,9 +568,15 @@ Dithering may help to preserve more details.</value>
     <value>Next Image (Shift+Right)</value>
   </data>
   <data name="btnConfiguration.ToolTipText" xml:space="preserve">
+    <value>Application Settings</value>
+  </data>
+  <data name="miManageInstallations.Text" xml:space="preserve">
     <value>Manage Debugger Visualizer Installations...</value>
   </data>
-  <data name="lblNotification.ToolTip" xml:space="preserve">
+  <data name="miLanguageSettings.Text" xml:space="preserve">
+    <value>Language Settings...</value>
+  </data>
+  <data name="lblNotification.ToolTipText" xml:space="preserve">
     <value>Click to hide</value>
   </data>
   <data name="miBackColor.Text" xml:space="preserve">
@@ -737,5 +746,32 @@ Dithering may help to preserve more details.</value>
   </data>
   <data name="btnShowOriginal.Text" xml:space="preserve">
     <value>Show Original</value>
+  </data>
+  <data name="LanguageSettingsForm.Text" xml:space="preserve">
+    <value>Language Settings</value>
+  </data>
+  <data name="gbAllowResxResources.Text" xml:space="preserve">
+    <value>Allow using resource files</value>
+  </data>
+  <data name="gbAllowResxResources.ToolTipText" xml:space="preserve">
+    <value>When checked, allows using resources from .resx files directly</value>
+  </data>
+  <data name="chbUseOSLanguage.Text" xml:space="preserve">
+    <value>Use Operating System Language</value>
+  </data>
+  <data name="chbUseOSLanguage.ToolTipText" xml:space="preserve">
+    <value>When checked, uses the language of the operating system. The possibly non-existing resources will be automatically generated.</value>
+  </data>
+  <data name="chbExistingResourcesOnly.Text" xml:space="preserve">
+    <value>Show Languages Only With Existing Resources</value>
+  </data>
+  <data name="chbExistingResourcesOnly.ToolTipText" xml:space="preserve">
+    <value>When checked, enlists languages only with existing resource files. Uncheck to allow generating resources for any language.</value>
+  </data>
+  <data name="gbDisplayLanguage.Text" xml:space="preserve">
+    <value>Display Language</value>
+  </data>
+  <data name="btnEditResources.Text" xml:space="preserve">
+    <value>Edit Resources...</value>
   </data>
 </root>

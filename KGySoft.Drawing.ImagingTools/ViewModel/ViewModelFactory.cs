@@ -17,8 +17,9 @@
 #region Usings
 
 using System.Drawing;
-using System.Drawing.Imaging;
 
+using System.Drawing.Imaging;
+using System.Globalization;
 using KGySoft.Drawing.ImagingTools.Model;
 
 #endregion
@@ -31,6 +32,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
     /// </summary>
     public static class ViewModelFactory
     {
+        #region Constructors
+
+        static ViewModelFactory() =>  Res.EnsureInitialized();
+
+        #endregion
+
         #region Methods
 
         /// <summary>
@@ -163,7 +170,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// <param name="graphics">The graphics.</param>
         /// <returns>An <see cref="IViewModel"/> instance that represents a view model for a <see cref="Graphics"/>.</returns>
         public static IViewModel FromGraphics(Graphics? graphics)
-            => new GraphicsVisualizerViewModel { GraphicsInfo = graphics == null ? null : new GraphicsInfo(graphics)};
+            => new GraphicsVisualizerViewModel { GraphicsInfo = graphics == null ? null : new GraphicsInfo(graphics) };
 
         /// <summary>
         /// Creates a view model for a <see cref="Graphics"/> from arbitrary debug information.
@@ -213,6 +220,18 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// <param name="bitmap">The bitmap to adjust.</param>
         /// <returns>An <see cref="IViewModel{TResult}"/> instance that represents a view model for adjusting the gamma of a <see cref="Bitmap"/>.</returns>
         public static IViewModel<Bitmap?> CreateAdjustGamma(Bitmap bitmap) => new AdjustGammaViewModel(bitmap);
+
+        /// <summary>
+        /// Creates a view model for managing language settings.
+        /// </summary>
+        /// <returns>An <see cref="IViewModel"/> instance that represents a view model for managing language settings.</returns>
+        public static IViewModel CreateLanguageSettings() => new LanguageSettingsViewModel();
+
+        ///// <summary>
+        ///// Creates a view model for managing language settings.
+        ///// </summary>
+        ///// <returns>An <see cref="IViewModel"/> instance that represents a view model for managing language settings.</returns>
+        //public static IViewModel CreateEditResources(CultureInfo culture) => new EditResourcesViewModel(culture);
 
         #endregion
     }

@@ -106,9 +106,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             ApplyViewModel();
         }
 
-        protected virtual void ApplyResources() => this.ApplyStringResources(toolTip);
+        protected virtual void ApplyResources() => ApplyStringResources();
 
-        protected virtual void ApplyViewModel() => VM.ViewLoaded();
+        protected virtual void ApplyStringResources() => this.ApplyStringResources(toolTip);
+
+        protected virtual void ApplyViewModel()
+        {
+            InitCommandBindings();
+            VM.ViewLoaded();
+        }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
@@ -131,6 +137,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         #endregion
 
         #region Private Methods
+
+        private void InitCommandBindings()
+        {
+            CommandBindings.Add(ApplyStringResources)
+                .AddSource(typeof(LanguageSettings), nameof(LanguageSettings.DisplayLanguageChanged));
+        }
 
         private void ShowChildView(IViewModel vm) => ViewFactory.ShowDialog(vm, Handle);
 

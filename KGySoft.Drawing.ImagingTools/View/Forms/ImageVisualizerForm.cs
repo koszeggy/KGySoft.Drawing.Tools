@@ -87,7 +87,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected override void ApplyResources()
         {
-            // applying static resources
             base.ApplyResources();
             Icon = Properties.Resources.ImagingTools;
             btnAntiAlias.Image = Images.SmoothZoom;
@@ -109,8 +108,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             miResizeBitmap.Image = Images.Resize;
             miColorSpace.Image = Images.Quantize;
             miAdjustColors.Image = Images.Colors;
+        }
 
+        protected override void ApplyStringResources()
+        {
+            base.ApplyStringResources();
             // base cannot handle these because components do not have names and dialogs are not even added to components field
+
             dlgOpen.Title = Res.Get($"{nameof(dlgOpen)}.{nameof(dlgOpen.Title)}");
             dlgSave.Title = Res.Get($"{nameof(dlgSave)}.{nameof(dlgSave.Title)}");
         }

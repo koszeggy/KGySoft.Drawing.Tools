@@ -17,15 +17,19 @@
 #region Usings
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Resources;
 
 using KGySoft.Collections;
 using KGySoft.CoreLibraries;
+using KGySoft.Drawing.ImagingTools.Properties;
 using KGySoft.Reflection;
 using KGySoft.Resources;
 
@@ -50,13 +54,24 @@ namespace KGySoft.Drawing.ImagingTools
             UseLanguageSettings = true,
         };
 
-        // Note: No need to use ThreadSafeCacheFactory here because used only from the UI thread
+        // Note: No need to use ThreadSafeCacheFactory here because used only from the UI thread when applying resources
         // ReSharper disable once CollectionNeverUpdated.Local
-        private static readonly Cache<Type, PropertyInfo[]?> localizablePropertiesCache = new Cache<Type, PropertyInfo[]?>(GetLocalizableProperties);
+        private static readonly Cache<Type, PropertyInfo[]?> localizableStringPropertiesCache = new Cache<Type, PropertyInfo[]?>(GetLocalizableStringProperties);
+
+        private static StringKeyedDictionary<CultureInfo>? culturesCache;
 
         #endregion
 
         #region Properties
+
+        #region Internal Properties
+
+        #region General
+
+        internal static CultureInfo OSLanguage { get; }
+        internal static CultureInfo DefaultLanguage { get; }
+
+        #endregion
 
         #region Title Captions
 
@@ -225,11 +240,73 @@ namespace KGySoft.Drawing.ImagingTools
 
         #endregion
 
+        #region Private Properties
+
+        private static StringKeyedDictionary<CultureInfo> CulturesCache
+            => culturesCache ??= CultureInfo.GetCultures(CultureTypes.AllCultures).ToStringKeyedDictionary(ci => ci.Name);
+
+        #endregion
+
+        #endregion
+
+        #region Constructors
+
+        static Res()
+        {
+            OSLanguage = LanguageSettings.DisplayLanguage.GetClosestNeutralCulture();
+            DefaultLanguage = (Attribute.GetCustomAttribute(typeof(Res).Assembly, typeof(NeutralResourcesLanguageAttribute)) is NeutralResourcesLanguageAttribute attr
+                ? CultureInfo.GetCultureInfo(attr.CultureName)
+                : CultureInfo.InvariantCulture).GetClosestNeutralCulture();
+            DrawingModule.Initialize();
+
+            bool allowResXResources = Settings.Default.AllowResXResources;
+            LanguageSettings.DisplayLanguage = allowResXResources
+                ? Settings.Default.UseOSLanguage ? OSLanguage : Settings.Default.DisplayLanguage.GetClosestNeutralCulture()
+                : DefaultLanguage;
+            LanguageSettings.DynamicResourceManagersSource = allowResXResources ? ResourceManagerSources.CompiledAndResX : ResourceManagerSources.CompiledOnly;
+        }
+
+        #endregion
+
         #region Methods
 
         #region Internal Methods
 
         #region General
+
+        /// <summary>
+        /// Just an empty method to be able to trigger the static constructor without running any code other than field initializations.
+        /// </summary>
+        internal static void EnsureInitialized()
+        {
+        }
+
+        internal static IList<CultureInfo> GetAvailableLanguages()
+        {
+            string dir = resourceManager.ResXResourcesDir;
+            try
+            {
+                var result = new List<CultureInfo> { DefaultLanguage };
+                if (!Directory.Exists(dir))
+                    return result;
+
+                string baseName = resourceManager.BaseName;
+                int startIndex = dir.Length + baseName.Length + 2;
+                string[] files = Directory.GetFiles(dir, $"{baseName}.*.resx", SearchOption.TopDirectoryOnly);
+                foreach (string file in files)
+                {
+                    StringSegment resName = file.AsSegment(startIndex, file.Length - startIndex - 5);
+                    if (CulturesCache.TryGetValue(resName, out CultureInfo? ci) && !ci.In(CultureInfo.InvariantCulture, DefaultLanguage))
+                        result.Add(ci);
+                }
+
+                return result;
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                return new[] { DefaultLanguage };
+            }
+        }
 
         internal static string? GetStringOrNull(string id) => resourceManager.GetString(id, LanguageSettings.DisplayLanguage);
 
@@ -237,11 +314,11 @@ namespace KGySoft.Drawing.ImagingTools
 
         internal static string Get<TEnum>(TEnum value) where TEnum : struct, Enum => Get($"{value.GetType().Name}.{Enum<TEnum>.ToString(value)}");
 
-        internal static void ApplyResources(object target, string name)
+        internal static void ApplyStringResources(object target, string name)
         {
             // Unlike ComponentResourceManager we don't go by ResourceSet because that would kill resource fallback traversal
             // so we go by localizable properties
-            PropertyInfo[]? properties = localizablePropertiesCache[target.GetType()];
+            PropertyInfo[]? properties = localizableStringPropertiesCache[target.GetType()];
             if (properties == null)
                 return;
 
@@ -435,6 +512,9 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Value must be greater than {0}</summary>
         internal static string ErrorMessageValueMustBeGreaterThan<T>(T value) where T : struct => Get("ErrorMessage_ValueMustBeGreaterThanFormat", value);
 
+        /// <summary>Failed to save settings: {0}</summary>
+        internal static string ErrorMessageFailedToSaveSettings(string message) => Get("ErrorMessage_FailedToSaveSettingsFormat", message);
+
         /// <summary>Could not create directory {0}: {1}
         ///
         /// The debugger visualizer may will not work for .NET Core projects.</summary>
@@ -543,13 +623,24 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static PropertyInfo[]? GetLocalizableProperties(Type type)
+        private static PropertyInfo[]? GetLocalizableStringProperties(Type type)
         {
             // Getting string properties only. The resource manager in this class works in safe mode anyway.
             var result = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(p => p.PropertyType == typeof(string)
-                            && Attribute.GetCustomAttribute(p, typeof(LocalizableAttribute)) is LocalizableAttribute la && la.IsLocalizable).ToArray();
+                    && Attribute.GetCustomAttribute(p, typeof(LocalizableAttribute)) is LocalizableAttribute la && la.IsLocalizable).ToArray();
             return result.Length == 0 ? null : result;
+        }
+
+        private static CultureInfo GetClosestNeutralCulture(this CultureInfo culture)
+        {
+            if (CultureInfo.InvariantCulture.Equals(culture))
+                return culture;
+
+            while (!culture.IsNeutralCulture)
+                culture = culture.Parent;
+
+            return culture;
         }
 
         #endregion
