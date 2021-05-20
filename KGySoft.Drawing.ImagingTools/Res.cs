@@ -17,12 +17,10 @@
 #region Usings
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Resources;
@@ -58,18 +56,15 @@ namespace KGySoft.Drawing.ImagingTools
         // ReSharper disable once CollectionNeverUpdated.Local
         private static readonly Cache<Type, PropertyInfo[]?> localizableStringPropertiesCache = new Cache<Type, PropertyInfo[]?>(GetLocalizableStringProperties);
 
-        private static StringKeyedDictionary<CultureInfo>? culturesCache;
-
         #endregion
 
         #region Properties
-
-        #region Internal Properties
 
         #region General
 
         internal static CultureInfo OSLanguage { get; }
         internal static CultureInfo DefaultLanguage { get; }
+        internal static string ResourcesDir => resourceManager.ResXResourcesDir;
 
         #endregion
 
@@ -240,15 +235,6 @@ namespace KGySoft.Drawing.ImagingTools
 
         #endregion
 
-        #region Private Properties
-
-        private static StringKeyedDictionary<CultureInfo> CulturesCache
-            => culturesCache ??= CultureInfo.GetCultures(CultureTypes.AllCultures).ToStringKeyedDictionary(ci => ci.Name);
-
-        #endregion
-
-        #endregion
-
         #region Constructors
 
         static Res()
@@ -279,33 +265,6 @@ namespace KGySoft.Drawing.ImagingTools
         /// </summary>
         internal static void EnsureInitialized()
         {
-        }
-
-        internal static IList<CultureInfo> GetAvailableLanguages()
-        {
-            string dir = resourceManager.ResXResourcesDir;
-            try
-            {
-                var result = new List<CultureInfo> { DefaultLanguage };
-                if (!Directory.Exists(dir))
-                    return result;
-
-                string baseName = resourceManager.BaseName;
-                int startIndex = dir.Length + baseName.Length + 2;
-                string[] files = Directory.GetFiles(dir, $"{baseName}.*.resx", SearchOption.TopDirectoryOnly);
-                foreach (string file in files)
-                {
-                    StringSegment resName = file.AsSegment(startIndex, file.Length - startIndex - 5);
-                    if (CulturesCache.TryGetValue(resName, out CultureInfo? ci) && !ci.In(CultureInfo.InvariantCulture, DefaultLanguage))
-                        result.Add(ci);
-                }
-
-                return result;
-            }
-            catch (Exception e) when (!e.IsCritical())
-            {
-                return new[] { DefaultLanguage };
-            }
         }
 
         internal static string? GetStringOrNull(string id) => resourceManager.GetString(id, LanguageSettings.DisplayLanguage);
@@ -358,6 +317,9 @@ namespace KGySoft.Drawing.ImagingTools
 
         /// <summary>Color: {0}</summary>
         internal static string TitleColor(Color color) => Get("Title_ColorFormat", color.Name);
+
+        /// <summary>Edit Resources - {0}</summary>
+        internal static string TitleEditResources(string langName) => Get("Title_EditResourcesFormat", langName);
 
         #endregion
 
@@ -515,6 +477,12 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Failed to save settings: {0}</summary>
         internal static string ErrorMessageFailedToSaveSettings(string message) => Get("ErrorMessage_FailedToSaveSettingsFormat", message);
 
+        /// <summary>Failed to regenerate resource file {0}: {1}</summary>
+        internal static string ErrorMessageFailedToRegenerateResource(string fileName, string message) => Get("ErrorMessage_FailedToRegenerateResourceFormat", fileName, message);
+
+        /// <summary>Failed to save resource file {0}: {1}</summary>
+        internal static string ErrorMessageFailedToSaveResource(string fileName, string message) => Get("ErrorMessage_FailedToSaveResourceFormat", fileName, message);
+
         /// <summary>Could not create directory {0}: {1}
         ///
         /// The debugger visualizer may will not work for .NET Core projects.</summary>
@@ -546,6 +514,11 @@ namespace KGySoft.Drawing.ImagingTools
         /// 
         /// Are you sure you want to save the file with the provided extension?</summary>
         internal static string ConfirmMessageSaveFileExtension(string fileName, string format) => Get("ConfirmMessage_SaveFileExtensionFormat", fileName, format);
+
+        /// <summary>Failed to read resource file {0}: {1}
+        /// 
+        /// Do you want to try to regenerate it? The current file will be deleted.</summary>
+        internal static string ConfirmMessageTryRegenerateResource(string fileName, string message) => Get("ConfirmMessage_TryRegenerateResourceFormat", fileName, message);
 
         /// <summary>{0} is the lowest compatible pixel format, which still supports the selected quantizer.</summary>
         internal static string InfoMessagePixelFormatUnnecessarilyWide(PixelFormat pixelFormat) => Get("InfoMessage_PixelFormatUnnecessarilyWideFormat", pixelFormat);

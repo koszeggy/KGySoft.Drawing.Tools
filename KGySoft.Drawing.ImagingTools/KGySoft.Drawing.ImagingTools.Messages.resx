@@ -159,6 +159,9 @@
   <data name="Title_ColorFormat" xml:space="preserve">
     <value>Color: {0}</value>
   </data>
+  <data name="Title_EditResourcesFormat" xml:space="preserve">
+    <value>Edit Resources - {0}</value>
+  </data>
   <data name="Text_Files" xml:space="preserve">
     <value>files</value>
   </data>
@@ -381,6 +384,12 @@ Either select at least '{1}' or reduce the number of colors to {2}.</value>
   <data name="ErrorMessage_FailedToSaveSettingsFormat" xml:space="preserve">
     <value>Failed to save settings: {0}</value>
   </data>
+  <data name="ErrorMessage_FailedToRegenerateResourceFormat" xml:space="preserve">
+    <value>Failed to regenerate resource file {0}: {1}</value>
+  </data>
+  <data name="ErrorMessage_FailedToSaveResourceFormat" xml:space="preserve">
+    <value>Failed to save resource file {0}: {1}</value>
+  </data>
   <data name="WarningMessage_CouldNotCreateNetCoreDirectoryFormat" xml:space="preserve">
     <value>Could not create directory {0}: {1}
 
@@ -419,6 +428,11 @@ so partial transparent pixels will be blended with back color.</value>
     <value>The extension of the provided filename '{0}' does not match to the selected format ({1}).
 
 Are you sure you want to save the file with the provided extension?</value>
+  </data>
+  <data name="ConfirmMessage_TryRegenerateResourceFormat" xml:space="preserve">
+    <value>Failed to read resource file {0}: {1}
+
+Do you want to try to regenerate it? The current file will be deleted.</value>
   </data>
   <data name="ConfirmMessage_RemoveInstallation" xml:space="preserve">
     <value>Are you sure you want to remove this installation?</value>
@@ -663,6 +677,9 @@ Dithering may help to preserve more details.</value>
   <data name="btnCancel.Text" xml:space="preserve">
     <value>&amp;Cancel</value>
   </data>
+  <data name="btnApply.Text" xml:space="preserve">
+    <value>&amp;Apply</value>
+  </data>
   <data name="btnClose.Text" xml:space="preserve">
     <value>&amp;Close</value>
   </data>
@@ -766,7 +783,8 @@ Dithering may help to preserve more details.</value>
     <value>Show Languages Only With Existing Resources</value>
   </data>
   <data name="chbExistingResourcesOnly.ToolTipText" xml:space="preserve">
-    <value>When checked, enlists languages only with existing resource files. Uncheck to allow generating resources for any language.</value>
+    <value>When checked, enlists languages only with existing resource files. Uncheck to allow generating resources for any language.
+Newly generated resources will contain English texts prefixed with "[T]". You can then edit the resources to translate these texts. </value>
   </data>
   <data name="gbDisplayLanguage.Text" xml:space="preserve">
     <value>Display Language</value>

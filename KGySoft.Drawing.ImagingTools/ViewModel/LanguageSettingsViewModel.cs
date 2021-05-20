@@ -142,7 +142,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 return;
             }
 
-            var result = new SortableBindingList<CultureInfo>(ExistingLanguagesOnly ? Res.GetAvailableLanguages() : NeutralLanguages);
+            var result = new SortableBindingList<CultureInfo>(ExistingLanguagesOnly ? ResHelper.GetAvailableLanguages() : NeutralLanguages);
             result.ApplySort(nameof(CultureInfo.EnglishName), ListSortDirection.Ascending);
             CultureInfo lastSelectedLanguage = CurrentLanguage;
             Languages = result;
@@ -156,7 +156,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void OnApplyCommand()
         {
             LanguageSettings.DynamicResourceManagersSource = AllowResXResources ? ResourceManagerSources.CompiledAndResX : ResourceManagerSources.CompiledOnly;
-            LanguageSettings.DisplayLanguage = CurrentLanguage;
+            LanguageSettings.DisplayLanguage = activeLanguage = CurrentLanguage;
+
+            // Note: Ensure is not really needed because main .resx is generated, while others are saved on demand in the editor, too
+            // TODO If used, then add to EditResourcesVM.Save, too to be consistent
+            //ResHelper.EnsureResourcesGenerated();
+            ResHelper.SavePendingResources();
+
             ApplyCommandState.Enabled = false;
         }
 
@@ -184,8 +190,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnEditResourcesCommand()
         {
-            //using IViewModel viewModel = ViewModelFactory.CreateEditResources(CurrentLanguage);
-            //ShowChildViewCallback?.Invoke(viewModel);
+            using IViewModel viewModel = ViewModelFactory.CreateEditResources(CurrentLanguage);
+            ShowChildViewCallback?.Invoke(viewModel);
         }
 
         #endregion

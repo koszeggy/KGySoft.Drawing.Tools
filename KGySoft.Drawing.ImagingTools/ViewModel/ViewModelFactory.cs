@@ -227,11 +227,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// <returns>An <see cref="IViewModel"/> instance that represents a view model for managing language settings.</returns>
         public static IViewModel CreateLanguageSettings() => new LanguageSettingsViewModel();
 
-        ///// <summary>
-        ///// Creates a view model for managing language settings.
-        ///// </summary>
-        ///// <returns>An <see cref="IViewModel"/> instance that represents a view model for managing language settings.</returns>
-        //public static IViewModel CreateEditResources(CultureInfo culture) => new EditResourcesViewModel(culture);
+        /// <summary>
+        /// Creates a view model for managing language settings.
+        /// </summary>
+        /// <returns>An <see cref="IViewModel"/> instance that represents a view model for managing language settings.</returns>
+        public static IViewModel CreateEditResources(CultureInfo culture) => new EditResourcesViewModel(culture);
 
         #endregion
     }
