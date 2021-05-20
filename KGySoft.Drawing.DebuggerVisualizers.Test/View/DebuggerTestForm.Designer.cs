@@ -19,7 +19,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
         {
             this.btnViewDirect = new System.Windows.Forms.Button();
             this.btnViewByDebugger = new System.Windows.Forms.Button();
-            this.tbFile = new System.Windows.Forms.TextBox();
+            this.txtFile = new System.Windows.Forms.TextBox();
             this.rbFromFile = new System.Windows.Forms.RadioButton();
             this.rbManagedIcon = new System.Windows.Forms.RadioButton();
             this.rbHIcon = new System.Windows.Forms.RadioButton();
@@ -67,15 +67,15 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             this.btnViewByDebugger.Text = "View by Debugger";
             this.btnViewByDebugger.UseVisualStyleBackColor = true;
             // 
-            // tbFile
+            // txtFile
             // 
-            this.tbFile.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
-            this.tbFile.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.FileSystem;
-            this.tbFile.Dock = System.Windows.Forms.DockStyle.Top;
-            this.tbFile.Location = new System.Drawing.Point(3, 16);
-            this.tbFile.Name = "tbFile";
-            this.tbFile.Size = new System.Drawing.Size(190, 20);
-            this.tbFile.TabIndex = 0;
+            this.txtFile.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.txtFile.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.FileSystem;
+            this.txtFile.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtFile.Location = new System.Drawing.Point(3, 16);
+            this.txtFile.Name = "txtFile";
+            this.txtFile.Size = new System.Drawing.Size(190, 20);
+            this.txtFile.TabIndex = 0;
             // 
             // rbFromFile
             // 
@@ -194,7 +194,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             this.gbFile.Controls.Add(this.rbAsMetafile);
             this.gbFile.Controls.Add(this.rbAsBitmap);
             this.gbFile.Controls.Add(this.rbAsImage);
-            this.gbFile.Controls.Add(this.tbFile);
+            this.gbFile.Controls.Add(this.txtFile);
             this.gbFile.Dock = System.Windows.Forms.DockStyle.Top;
             this.gbFile.Enabled = false;
             this.gbFile.Location = new System.Drawing.Point(0, 219);
@@ -367,7 +367,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
         private RadioButton rbHIcon;
         private RadioButton rbManagedIcon;
         private RadioButton rbFromFile;
-        private TextBox tbFile;
+        private TextBox txtFile;
         private Button btnViewByDebugger;
         private Button btnViewDirect;
         private PictureBox pictureBox;

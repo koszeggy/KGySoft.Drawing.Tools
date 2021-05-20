@@ -60,7 +60,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             commandBindings.AddPropertyBinding(rbColor, nameof(RadioButton.Checked), nameof(viewModel.SingleColor), viewModel);
             commandBindings.AddPropertyBinding(rbFromFile, nameof(RadioButton.Checked), nameof(viewModel.ImageFromFile), viewModel);
 
-            commandBindings.AddPropertyBinding(tbFile, nameof(tbFile.Text), nameof(viewModel.FileName), viewModel);
+            commandBindings.AddPropertyBinding(txtFile, nameof(txtFile.Text), nameof(viewModel.FileName), viewModel);
             commandBindings.AddPropertyBinding(rbAsImage, nameof(RadioButton.Checked), nameof(viewModel.FileAsImage), viewModel);
             commandBindings.AddPropertyBinding(rbAsBitmap, nameof(RadioButton.Checked), nameof(viewModel.FileAsBitmap), viewModel);
             commandBindings.AddPropertyBinding(rbAsMetafile, nameof(RadioButton.Checked), nameof(viewModel.FileAsMetafile), viewModel);
@@ -76,8 +76,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.PreviewImage), nameof(pictureBox.Image), pictureBox);
 
             commandBindings.Add<EventArgs>(OnSelectFileCommand)
-                .AddSource(tbFile, nameof(tbFile.Click))
-                .AddSource(tbFile, nameof(tbFile.DoubleClick));
+                .AddSource(txtFile, nameof(txtFile.Click))
+                .AddSource(txtFile, nameof(txtFile.DoubleClick));
             commandBindings.Add(viewModel.DirectViewCommand).AddSource(btnViewDirect, nameof(btnViewDirect.Click));
             commandBindings.Add(viewModel.DebugCommand).AddSource(btnViewByDebugger, nameof(btnViewByDebugger.Click));
 
@@ -126,12 +126,12 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
         private void OnSelectFileCommand(ICommandSource<EventArgs> source)
         {
             // simple click opens the file dialog only if text was empty
-            if (tbFile.Text.Length != 0 && source.TriggeringEvent == nameof(tbFile.Click))
+            if (txtFile.Text.Length != 0 && source.TriggeringEvent == nameof(txtFile.Click))
                 return;
-            using (var ofd = new OpenFileDialog { FileName = tbFile.Text })
+            using (var ofd = new OpenFileDialog { FileName = txtFile.Text })
             {
                 if (ofd.ShowDialog() == DialogResult.OK)
-                    tbFile.Text = ofd.FileName;
+                    txtFile.Text = ofd.FileName;
             }
         }
 
