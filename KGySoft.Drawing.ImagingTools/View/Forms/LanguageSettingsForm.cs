@@ -35,6 +35,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         internal LanguageSettingsForm(LanguageSettingsViewModel viewModel) : base(viewModel)
         {
             InitializeComponent();
+            AcceptButton = okCancelApplyButtons.OKButton;
+            CancelButton = okCancelApplyButtons.CancelButton;
         }
 
         #endregion

@@ -35,9 +35,9 @@ namespace KGySoft.Drawing.ImagingTools
     {
         #region Constants
 
-        internal const string CoreLibrariesBaseName = "KGySoft.CoreLibraries.Messages";
-        internal const string DrawingLibrariesBaseName = "KGySoft.Drawing.Messages";
-        internal const string DrawingToolsBaseName = "KGySoft.Drawing.ImagingTools.Messages";
+        private const string coreLibrariesBaseName = "KGySoft.CoreLibraries.Messages";
+        private const string drawingLibrariesBaseName = "KGySoft.Drawing.Messages";
+        private const string drawingToolsBaseName = "KGySoft.Drawing.ImagingTools.Messages";
 
         #endregion
 
@@ -74,8 +74,8 @@ namespace KGySoft.Drawing.ImagingTools
                 if (!Directory.Exists(dir))
                     return result;
 
-                int startIndex = dir.Length + DrawingToolsBaseName.Length + 2;
-                string[] files = Directory.GetFiles(dir, $"{DrawingToolsBaseName}.*.resx", SearchOption.TopDirectoryOnly);
+                int startIndex = dir.Length + drawingToolsBaseName.Length + 2;
+                string[] files = Directory.GetFiles(dir, $"{drawingToolsBaseName}.*.resx", SearchOption.TopDirectoryOnly);
                 foreach (string file in files)
                 {
                     StringSegment resName = file.AsSegment(startIndex, file.Length - startIndex - 5);
@@ -91,12 +91,20 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        internal static Assembly GetAssembly(string baseName) => baseName switch
+        internal static string GetBaseName(ResourceOwner owner) => owner switch
         {
-            CoreLibrariesBaseName => typeof(LanguageSettings).Assembly,
-            DrawingLibrariesBaseName => typeof(DrawingModule).Assembly,
-            DrawingToolsBaseName => typeof(Res).Assembly,
-            _ => throw new InvalidOperationException(Res.InternalError($"Unexpected baseName: {baseName}"))
+            ResourceOwner.CoreLibraries => coreLibrariesBaseName,
+            ResourceOwner.DrawingLibraries => drawingLibrariesBaseName,
+            ResourceOwner.DrawingTools => drawingToolsBaseName,
+            _ => throw new ArgumentOutOfRangeException(nameof(owner), PublicResources.EnumOutOfRange(owner))
+        };
+
+        internal static Assembly GetAssembly(ResourceOwner owner) => owner switch
+        {
+            ResourceOwner.CoreLibraries => typeof(LanguageSettings).Assembly,
+            ResourceOwner.DrawingLibraries => typeof(DrawingModule).Assembly,
+            ResourceOwner.DrawingTools => typeof(Res).Assembly,
+            _ => throw new ArgumentOutOfRangeException(nameof(owner), PublicResources.EnumOutOfRange(owner))
         };
 
         /// <summary>
@@ -128,6 +136,11 @@ namespace KGySoft.Drawing.ImagingTools
             foreach (DynamicResourceManager resourceManager in KnownResourceManagers)
                 resourceManager.ReleaseAllResources();
         }
+
+        /// <summary>
+        /// TODO: Remove when LanguageSettings.RaiseLanguageChanged will be available.
+        /// </summary>
+        internal static void RaiseLanguageChanged() => Reflector.InvokeMethod(typeof(LanguageSettings), "OnDisplayLanguageChanged", EventArgs.Empty);
 
         #endregion
     }

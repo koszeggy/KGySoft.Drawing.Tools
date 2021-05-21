@@ -35,7 +35,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private readonly bool initializing;
 
-        private CultureInfo activeLanguage;
         private CultureInfo[]? neutralLanguages;
 
         #endregion
@@ -72,7 +71,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal LanguageSettingsViewModel()
         {
             initializing = true;
-            CurrentLanguage = activeLanguage = LanguageSettings.DisplayLanguage;
+            CurrentLanguage = LanguageSettings.DisplayLanguage;
             AllowResXResources = Settings.Default.AllowResXResources;
             UseOSLanguage = Settings.Default.UseOSLanguage;
             ExistingLanguagesOnly = true; // could be the default value but this way we spare one reset when initializing binding
@@ -105,7 +104,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     break;
 
                 case nameof(CurrentLanguage):
-                    ApplyCommandState.Enabled = !Equals(e.NewValue, activeLanguage);
+                    ApplyCommandState.Enabled = !Equals(e.NewValue, LanguageSettings.DisplayLanguage);
                     EditResourcesCommandState.Enabled = !Equals(e.NewValue, Res.DefaultLanguage);
                     break;
             }
@@ -155,11 +154,16 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnApplyCommand()
         {
+            CultureInfo currentLanguage = CurrentLanguage;
             LanguageSettings.DynamicResourceManagersSource = AllowResXResources ? ResourceManagerSources.CompiledAndResX : ResourceManagerSources.CompiledOnly;
-            LanguageSettings.DisplayLanguage = activeLanguage = CurrentLanguage;
+
+            if (Equals(LanguageSettings.DisplayLanguage, currentLanguage))
+                ResHelper.RaiseLanguageChanged();
+            else
+                LanguageSettings.DisplayLanguage = currentLanguage;
 
             // Note: Ensure is not really needed because main .resx is generated, while others are saved on demand in the editor, too
-            // TODO If used, then add to EditResourcesVM.Save, too to be consistent
+            // TODO If used, then add to EditResourcesVM.Save, too, to be consistent ()
             //ResHelper.EnsureResourcesGenerated();
             ResHelper.SavePendingResources();
 
@@ -177,7 +181,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             // saving the configuration
             Settings.Default.AllowResXResources = AllowResXResources;
             Settings.Default.UseOSLanguage = UseOSLanguage;
-            Settings.Default.DisplayLanguage = activeLanguage = CurrentLanguage;
+            Settings.Default.DisplayLanguage = CurrentLanguage;
             try
             {
                 Settings.Default.Save();
@@ -192,6 +196,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             using IViewModel viewModel = ViewModelFactory.CreateEditResources(CurrentLanguage);
             ShowChildViewCallback?.Invoke(viewModel);
+
+            // If the language was edited, then enabling apply even if it was disabled
+            if (viewModel.IsModified)
+                ApplyCommandState.Enabled = true;
         }
 
         #endregion

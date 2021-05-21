@@ -16,6 +16,7 @@
 
 #region Usings
 
+using System.Linq;
 using KGySoft.Resources;
 
 #region Used Namespaces
@@ -29,7 +30,6 @@ using System.Globalization;
 using System.IO;
 using System.Resources;
 
-using KGySoft.Collections;
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
@@ -51,26 +51,26 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
     {
         #region Constants
 
-        internal const string CommandStateExecutedWithError = nameof(CommandStateExecutedWithError);
+        internal const string StateSaveExecutedWithError = nameof(StateSaveExecutedWithError);
 
         #endregion
 
         #region Fields
 
         private readonly CultureInfo culture;
-        private readonly StringKeyedDictionary<IList<ResourceEntry>> resources = new(3);
+        private readonly Dictionary<ResourceOwner, (IList<ResourceEntry> ResourceSet, bool IsModified)> resources;
 
         #endregion
 
         #region Properties
 
+        internal KeyValuePair<ResourceOwner, string>[] ResourceFiles { get; } // get only because never changes
         internal string TitleCaption { get => Get<string>(); set => Set(value); }
-        internal string[] ResourceFiles { get => Get<string[]>(); set => Set(value); }
-        internal string SelectedFile { get => Get<string>(); set => Set(value); }
+        internal ResourceOwner SelectedLibrary { get => Get<ResourceOwner>(); set => Set(value); }
         internal IList<ResourceEntry> SelectedSet { get => Get<IList<ResourceEntry>>(); set => Set(value); }
 
         internal ICommand SaveResourcesCommand => Get(() => new SimpleCommand(OnSaveResourcesCommand));
-        internal ICommandState SaveResourcesCommandState => Get(() => new CommandState());
+        internal ICommand CancelEditCommand => Get(() => new SimpleCommand(OnCancelEditCommand));
 
         #endregion
 
@@ -79,9 +79,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal EditResourcesViewModel(CultureInfo culture)
         {
             this.culture = culture ?? throw new ArgumentNullException(nameof(culture), PublicResources.ArgumentNull);
-            ResourceFiles = new[] { ResHelper.CoreLibrariesBaseName, ResHelper.DrawingLibrariesBaseName, ResHelper.DrawingToolsBaseName };
+            resources = new Dictionary<ResourceOwner, (IList<ResourceEntry>, bool)>(3, EnumComparer<ResourceOwner>.Comparer);
+            ResourceFiles = Enum<ResourceOwner>.GetValues().Select(o => new KeyValuePair<ResourceOwner, string>(o, ToFileName(o))).ToArray();
             ResetTitle();
-            SelectedFile = ResHelper.DrawingToolsBaseName;
+            SelectedLibrary = ResourceOwner.DrawingTools;
         }
 
         #endregion
@@ -90,13 +91,15 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Protected Methods
 
+        protected override bool AffectsModifiedState(string propertyName) => false; // set explicitly
+
         protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
         {
             base.OnPropertyChanged(e);
             switch (e.PropertyName)
             {
-                case nameof(SelectedFile):
-                    UpdateSelectedResources((string)e.NewValue!);
+                case nameof(SelectedLibrary):
+                    UpdateSelectedResources((ResourceOwner)e.NewValue!);
                     break;
             }
         }
@@ -105,7 +108,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             if (IsDisposed)
                 return;
-            resources.Values.ForEach(set => (set as IDisposable)?.Dispose());
+            resources.Values.ForEach(v => (v.ResourceSet as IDisposable)?.Dispose());
             base.Dispose(disposing);
         }
 
@@ -115,22 +118,21 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void ResetTitle() => TitleCaption = Res.TitleEditResources($"{culture.EnglishName} ({culture.NativeName})");
 
-        private string ToFileName(string baseName) => $"{baseName}.{culture.Name}.resx";
+        private string ToFileName(ResourceOwner owner) => $"{ResHelper.GetBaseName(owner)}.{culture.Name}.resx";
 
-        private string ToFileNameWithPath(string baseName) => Path.Combine(Res.ResourcesDir, ToFileName(baseName));
+        private string ToFileNameWithPath(ResourceOwner owner) => Path.Combine(Res.ResourcesDir, ToFileName(owner));
 
-        private void UpdateSelectedResources(string baseName)
+        private void UpdateSelectedResources(ResourceOwner owner)
         {
-            IList<ResourceEntry>? set = resources.GetValueOrDefault(baseName);
-            if (set != null)
+            if (resources.TryGetValue(owner, out var value))
             {
-                SelectedSet = set;
+                SelectedSet = value.ResourceSet;
                 return;
             }
 
-            if (!TryReadResources(baseName, out set, out Exception? error))
+            if (!TryReadResources(owner, out IList<ResourceEntry>? set, out Exception? error))
             {
-                if (!Confirm(Res.ConfirmMessageTryRegenerateResource(ToFileName(baseName), error.Message)))
+                if (!Confirm(Res.ConfirmMessageTryRegenerateResource(ToFileName(owner), error.Message)))
                 {
                     SelectedSet = Reflector.EmptyArray<ResourceEntry>();
                     return;
@@ -138,35 +140,35 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
                 try
                 {
-                    File.Delete(ToFileNameWithPath(baseName));
+                    File.Delete(ToFileNameWithPath(owner));
                 }
                 catch (Exception e) when (!e.IsCritical())
                 {
-                    ShowError(Res.ErrorMessageFailedToRegenerateResource(ToFileName(baseName), error.Message));
+                    ShowError(Res.ErrorMessageFailedToRegenerateResource(ToFileName(owner), error.Message));
                     SelectedSet = Reflector.EmptyArray<ResourceEntry>();
                     return;
                 }
 
-                if (!TryReadResources(baseName, out set, out error))
+                if (!TryReadResources(owner, out set, out error))
                 {
-                    ShowError(Res.ErrorMessageFailedToRegenerateResource(ToFileName(baseName), error.Message));
+                    ShowError(Res.ErrorMessageFailedToRegenerateResource(ToFileName(owner), error.Message));
                     SelectedSet = Reflector.EmptyArray<ResourceEntry>();
                     return;
                 }
             }
 
-            resources[baseName] = set;
+            resources[owner] = (set, false);
             SelectedSet = set;
         }
 
-        private bool TryReadResources(string baseName, [MaybeNullWhen(false)]out IList<ResourceEntry> set, [MaybeNullWhen(true)]out Exception error)
+        private bool TryReadResources(ResourceOwner owner, [MaybeNullWhen(false)]out IList<ResourceEntry> set, [MaybeNullWhen(true)]out Exception error)
         {
             try
             {
                 // Creating a local resource manager so we can generate the entries that currently found in the compiled resource set.
                 // Auto appending only the queried keys so we can add the missing ones since the last creation and also remove the possibly removed ones.
                 // Note that this will not generate any .resx files as we use the default AutoSave = None
-                using var resourceManger = new DynamicResourceManager(baseName, ResHelper.GetAssembly(baseName))
+                using var resourceManger = new DynamicResourceManager(ResHelper.GetBaseName(owner), ResHelper.GetAssembly(owner))
                 {
                     SafeMode = true,
                     Source = ResourceManagerSources.CompiledOnly,
@@ -181,6 +183,17 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 foreach (DictionaryEntry entry in compiled)
                     result.Add(new ResourceEntry((string)entry.Key, (string)entry.Value, resourceManger.GetString((string)entry.Key, culture) ?? LanguageSettings.UntranslatedResourcePrefix + entry.Value));
 
+                result.ListChanged += (_, args) =>
+                {
+                    if (args.ListChangedType != ListChangedType.ItemChanged)
+                        return;
+
+                    if (!resources.TryGetValue(owner, out var value) || value.IsModified)
+                        return;
+
+                    resources[owner] = (value.ResourceSet, true);
+                    SetModified(true);
+                };
                 result.ApplySort(nameof(ResourceEntry.Key), ListSortDirection.Ascending);
                 error = null;
                 set = result;
@@ -194,7 +207,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
         }
 
-        private bool TrySaveResources(string baseName, IList<ResourceEntry> set, [MaybeNullWhen(true)]out Exception error)
+        private bool TrySaveResources(ResourceOwner owner, IList<ResourceEntry> set, [MaybeNullWhen(true)]out Exception error)
         {
             // Note: We do not use a DynamicResourceManager for saving. This works because we let the actual DRMs drop their content after saving.
             try
@@ -203,7 +216,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 foreach (ResourceEntry res in set)
                     resx.SetObject(res.Key, res.TranslatedText);
 
-                resx.Save(ToFileNameWithPath(baseName));
+                resx.Save(ToFileNameWithPath(owner));
                 error = null;
                 return true;
             }
@@ -220,21 +233,23 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnSaveResourcesCommand(ICommandState state)
         {
-            foreach (KeyValuePair<string, IList<ResourceEntry>> set in resources)
+            foreach (var set in resources)
             {
-                if (set.Value.Count == 0)
+                if (!set.Value.IsModified)
                     continue;
-                if (TrySaveResources(set.Key, set.Value, out Exception? error))
+                if (TrySaveResources(set.Key, set.Value.ResourceSet, out Exception? error))
                     continue;
 
                 ShowError(Res.ErrorMessageFailedToSaveResource(ToFileName(set.Key), error.Message));
-                state[CommandStateExecutedWithError] = true;
+                state[StateSaveExecutedWithError] = true;
                 return;
             }
 
-            state[CommandStateExecutedWithError] = false;
+            state[StateSaveExecutedWithError] = false;
             ResHelper.ReleaseAllResources();
         }
+
+        private void OnCancelEditCommand() => SetModified(false);
 
         #endregion
 

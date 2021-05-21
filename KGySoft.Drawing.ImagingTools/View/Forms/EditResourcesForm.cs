@@ -16,6 +16,7 @@
 
 #region Usings
 
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.Model;
@@ -33,7 +34,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         internal EditResourcesForm(EditResourcesViewModel viewModel) : base(viewModel)
         {
+            // Note: Not setting Accept/CancelButton because they would be very annoying during the editing
             InitializeComponent();
+            cmbResourceFiles.ValueMember = nameof(KeyValuePair<ResourceOwner, string>.Key);
+            cmbResourceFiles.DisplayMember = nameof(KeyValuePair<ResourceOwner, string>.Value);
         }
 
         #endregion
@@ -72,17 +76,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void InitPropertyBindings()
         {
+            // VM.ResourceFiles -> cmbResourceFiles.DataSource
+            cmbResourceFiles.DataSource = ViewModel.ResourceFiles;
+
             // VM.TitleCaption -> Text
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.TitleCaption), this, nameof(Text));
 
-            // VM.ResourceFiles -> cmbResourceFiles.DataSource
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.ResourceFiles), nameof(cmbResourceFiles.DataSource), cmbResourceFiles);
-
-            // VM.SelectedFile -> cmbResourceFiles.SelectedItem (cannot use two-way for SelectedItem because there is no SelectedItemChanged event)
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SelectedFile), nameof(cmbResourceFiles.SelectedItem), cmbResourceFiles);
-
-            // cmbResourceFiles.SelectedValue -> VM.SelectedFile (cannot use two-way for SelectedValue because ValueMember is not set)
-            CommandBindings.AddPropertyBinding(cmbResourceFiles, nameof(cmbResourceFiles.SelectedValue), nameof(ViewModel.SelectedFile), ViewModel);
+            // VM.SelectedLibrary <-> cmbResourceFiles.SelectedValue
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.SelectedLibrary), cmbResourceFiles, nameof(cmbResourceFiles.SelectedValue));
 
             // VM.SelectedSet -> resourceEntryBindingSource.DataSource
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SelectedSet), nameof(resourceEntryBindingSource.DataSource), resourceEntryBindingSource);
@@ -97,9 +98,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private void InitCommandBindings()
         {
             // OKButton.Click -> ViewModel.SaveResourcesCommand, and preventing closing the form if the command has executed with errors
-            CommandBindings.Add(ViewModel.SaveResourcesCommand, ViewModel.SaveResourcesCommandState)
+            CommandBindings.Add(ViewModel.SaveResourcesCommand)
                 .AddSource(okCancelButtons.OKButton, nameof(okCancelButtons.OKButton.Click))
-                .Executed += (_, args) => DialogResult = args.State[EditResourcesViewModel.CommandStateExecutedWithError] is true ? DialogResult.None : DialogResult.OK;
+                .Executed += (_, args) => DialogResult = args.State[EditResourcesViewModel.StateSaveExecutedWithError] is true ? DialogResult.None : DialogResult.OK;
+
+            // CancelButton.Click -> ViewModel.CancelResourcesCommand
+            CommandBindings.Add(ViewModel.CancelEditCommand)
+                .AddSource(okCancelButtons.CancelButton, nameof(okCancelButtons.CancelButton.Click));
         }
 
         #endregion
