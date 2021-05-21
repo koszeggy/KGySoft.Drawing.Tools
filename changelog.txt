@@ -23,6 +23,10 @@
   + ViewModelFactory class:
     + New CreateLanguageSettings method
     + New CreateEditResources method
+  + IViewModel interface
+    + New IsModified property
+  * IViewModel<TModel> interface
+    * The IsModified property is now inherited from IViewModel
 
 - KGySoft.Drawing.DebuggerVisualizers.dll
 =========================================
