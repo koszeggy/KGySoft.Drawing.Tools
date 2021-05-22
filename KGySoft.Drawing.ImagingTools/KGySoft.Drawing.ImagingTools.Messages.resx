@@ -792,4 +792,25 @@ Newly generated resources will contain English texts prefixed with "[T]". You ca
   <data name="btnEditResources.Text" xml:space="preserve">
     <value>Edit Resources...</value>
   </data>
+  <data name="gbResourceFile.Text" xml:space="preserve">
+    <value>Resource File</value>
+  </data>
+  <data name="gbResourceEntries.Text" xml:space="preserve">
+    <value>Resource Entries</value>
+  </data>
+  <data name="colResourceKey.HeaderText" xml:space="preserve">
+    <value>Resource Key</value>
+  </data>
+  <data name="colOriginalText.HeaderText" xml:space="preserve">
+    <value>Original Text</value>
+  </data>
+  <data name="colTranslatedText.HeaderText" xml:space="preserve">
+    <value>Translated Text</value>
+  </data>
+  <data name="gbOriginalText.Text" xml:space="preserve">
+    <value>Original Text</value>
+  </data>
+  <data name="gbTranslatedText.Text" xml:space="preserve">
+    <value>Translated Text</value>
+  </data>
 </root>

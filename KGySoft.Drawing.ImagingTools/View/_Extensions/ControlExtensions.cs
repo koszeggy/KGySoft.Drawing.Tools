@@ -112,6 +112,11 @@ namespace KGySoft.Drawing.ImagingTools.View
                     ApplyToolStripResources(toolStrip.Items);
                     break;
 
+                case DataGridView dataGridView:
+                    foreach (DataGridViewColumn item in dataGridView.Columns)
+                        Res.ApplyStringResources(item, item.Name);
+                    break;
+
                 default:
                     foreach (Control child in control.Controls)
                         child.ApplyStringResources(toolTip);
