@@ -17,6 +17,7 @@
 #region Usings
 
 using System.Drawing;
+using KGySoft.ComponentModel;
 
 #endregion
 
@@ -33,7 +34,17 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Methods
 
+        #region Public Methods
+        
         public Color GetEditedModel() => Color;
+
+        #endregion
+
+        #region Protected Methods
+
+        protected override void ApplyDisplayLanguage() => OnPropertyChanged(new PropertyChangedExtendedEventArgs(Color, Color, nameof(Color)));
+
+        #endregion
 
         #endregion
     }

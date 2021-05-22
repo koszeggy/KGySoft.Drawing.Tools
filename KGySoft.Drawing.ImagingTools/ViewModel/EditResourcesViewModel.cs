@@ -81,7 +81,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             this.culture = culture ?? throw new ArgumentNullException(nameof(culture), PublicResources.ArgumentNull);
             resources = new Dictionary<ResourceOwner, (IList<ResourceEntry>, bool)>(3, EnumComparer<ResourceOwner>.Comparer);
             ResourceFiles = Enum<ResourceOwner>.GetValues().Select(o => new KeyValuePair<ResourceOwner, string>(o, ToFileName(o))).ToArray();
-            ResetTitle();
+            UpdateTitle();
             SelectedLibrary = ResourceOwner.DrawingTools;
         }
 
@@ -104,6 +104,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
         }
 
+        protected override void ApplyDisplayLanguage() => UpdateTitle();
+
         protected override void Dispose(bool disposing)
         {
             if (IsDisposed)
@@ -116,7 +118,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Private Methods
 
-        private void ResetTitle() => TitleCaption = Res.TitleEditResources($"{culture.EnglishName} ({culture.NativeName})");
+        private void UpdateTitle() => TitleCaption = Res.TitleEditResources($"{culture.EnglishName} ({culture.NativeName})");
 
         private string ToFileName(ResourceOwner owner) => $"{ResHelper.GetBaseName(owner)}.{culture.Name}.resx";
 

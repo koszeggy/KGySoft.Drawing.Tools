@@ -41,6 +41,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #endregion
 
+        #region Constructors
+
+        protected ViewModelBase() => LanguageSettings.DisplayLanguageChanged += LanguageSettings_DisplayLanguageChanged;
+
+        #endregion
+
         #region Methods
 
         #region Protected Methods
@@ -72,11 +78,28 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             return true;
         }
 
+        protected virtual void ApplyDisplayLanguage() { }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (IsDisposed)
+                return;
+
+            LanguageSettings.DisplayLanguageChanged -= LanguageSettings_DisplayLanguageChanged;
+            base.Dispose(disposing);
+        }
+
         #endregion
 
         #region Internal Methods
 
         internal virtual void ViewLoaded() => SetModified(false);
+
+        #endregion
+
+        #region Event Handlers
+
+        private void LanguageSettings_DisplayLanguageChanged(object sender, EventArgs e) => ApplyDisplayLanguage();
 
         #endregion
 

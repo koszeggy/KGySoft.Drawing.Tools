@@ -64,6 +64,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private bool isOpenFilterUpToDate;
         private Size currentResolution;
         private bool deferSettingCompoundStateImage;
+        private string? notificationId;
 
         #endregion
 
@@ -96,7 +97,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal bool ReadOnly { get => Get<bool>(); set => Set(value); }
         internal string? TitleCaption { get => Get<string?>(); set => Set(value); }
         internal string? InfoText { get => Get<string?>(); set => Set(value); }
-        internal string? Notification { get => Get<string?>(); set => Set(value); }
+        internal string? Notification { get => Get<string?>(); private set => Set(value); }
         internal bool AutoZoom { get => Get<bool>(); set => Set(value); }
         internal float Zoom { get => Get(1f); set => Set(value); }
         internal bool SmoothZooming { get => Get<bool>(); set => Set(value); }
@@ -304,8 +305,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (fileName == null)
                 return;
 
-            Notification = null;
+            SetNotification(null);
             OpenFile(fileName);
+        }
+
+        protected void SetNotification(string? resourceId)
+        {
+            notificationId = resourceId;
+            UpdateNotification();
         }
 
         protected virtual bool OpenFile(string path)
@@ -384,6 +391,16 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             SetModified(IsDebuggerVisualizer);
         }
 
+        protected override void ApplyDisplayLanguage()
+        {
+            isOpenFilterUpToDate = false;
+            UpdateSmoothZoomingTooltip();
+            UpdateNotification();
+            UpdateInfo();
+            if (imageInfo.HasFrames)
+                UpdateCompoundToolTip();
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing && !keepAliveImageInfo)
@@ -443,17 +460,18 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void InitMultiImage()
         {
-            SetCompoundViewCommandState[stateToolTipText] = imageInfo.Type switch
-            {
-                ImageInfoType.Pages => Res.TooltipTextCompoundMultiPage,
-                ImageInfoType.Animation => Res.TooltipTextCompoundAnimation,
-                _ => Res.TooltipTextCompoundMultiSize
-            };
-
+            UpdateCompoundToolTip();
             SetCompoundViewCommandStateImage();
             SetCompoundViewCommandState[stateVisible] = true;
             ResetCompoundState();
         }
+
+        private void UpdateCompoundToolTip() => SetCompoundViewCommandState[stateToolTipText] = imageInfo.Type switch
+        {
+            ImageInfoType.Pages => Res.TooltipTextCompoundMultiPage,
+            ImageInfoType.Animation => Res.TooltipTextCompoundAnimation,
+            _ => Res.TooltipTextCompoundMultiSize
+        };
 
         private ImageInfoBase GetCurrentImage()
         {
@@ -594,7 +612,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
                 if (image.RawFormat.Guid == ImageFormat.MemoryBmp.Guid)
                 {
-                    Notification = Res.NotificationMetafileAsBitmap;
+                    SetNotification(Res.NotificationMetafileAsBitmapId);
                     openedFileName = null;
                 }
             }
@@ -622,10 +640,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     Bitmap iconImage = image as Bitmap ?? new Bitmap(image);
                     icon = iconImage.ToIcon();
                     iconImage.Dispose();
-                    Notification = Res.NotificationImageAsIcon;
+                    SetNotification(Res.NotificationImageAsIconId);
                     openedFileName = null;
                 }
-
             }
 
             if (icon != null)
@@ -884,17 +901,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void InitAutoZoom(bool viewLoading)
         {
+            UpdateSmoothZoomingTooltip();
             if (imageInfo.Type == ImageInfoType.None)
             {
                 SetAutoZoomCommandState.Enabled = AutoZoom = false;
-                SetSmoothZoomingCommandState[stateToolTipText] = null;
                 return;
             }
 
             SetAutoZoomCommandState.Enabled = SetSmoothZoomingCommandState.Enabled = true;
-            SetSmoothZoomingCommandState[stateToolTipText] = imageInfo.IsMetafile
-                ? Res.TooltipTextSmoothMetafile
-                : Res.TooltipTextSmoothBitmap;
 
             // metafile: we always turn on auto zoom and preserve current smooth zooming
             if (imageInfo.IsMetafile)
@@ -1011,6 +1025,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 image.Image.RotateFlip(direction);
             SetCurrentImage((Bitmap)image.Image);
         }
+
+        private void UpdateSmoothZoomingTooltip()
+            => SetSmoothZoomingCommandState[stateToolTipText] =
+                imageInfo.Type == ImageInfoType.None ? null
+                : imageInfo.IsMetafile ? Res.TooltipTextSmoothMetafile
+                : Res.TooltipTextSmoothBitmap;
+
+        private void UpdateNotification() => Notification = notificationId == null ? null : Res.Get(notificationId);
 
         #endregion
 

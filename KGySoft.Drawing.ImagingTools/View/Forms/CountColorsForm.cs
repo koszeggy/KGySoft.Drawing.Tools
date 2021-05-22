@@ -92,8 +92,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void InitPropertyBindings()
         {
-            // VM.DisplayText <-> lblResult.Text
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.DisplayText), nameof(lblResult.Text), lblResult);
+            // VM.DisplayText <-> lblCountColorsStatus.Text
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.DisplayText), nameof(lblCountColorsStatus.Text), lblCountColorsStatus);
 
             // in lock because it is already running
             lock (ViewModel.ProgressSyncRoot)

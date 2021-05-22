@@ -215,6 +215,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         protected abstract bool MatchesOriginal(GenerateTaskBase task);
         protected virtual void ResetParameters() { }
 
+        protected override void ApplyDisplayLanguage() => Validate();
+
         protected override void Dispose(bool disposing)
         {
             if (IsDisposed)

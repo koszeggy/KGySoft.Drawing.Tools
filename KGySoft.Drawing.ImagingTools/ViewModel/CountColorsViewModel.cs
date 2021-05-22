@@ -53,6 +53,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         
         private volatile CountTask? task;
         private int? colorCount;
+        private string displayTextId;
+        private object[]? displayTextArgs;
 
         #endregion
 
@@ -61,7 +63,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal object ProgressSyncRoot => drawingProgressManager;
         internal bool IsProcessing { get => Get<bool>(); set => Set(value); }
         internal DrawingProgress Progress { get => Get<DrawingProgress>(); set => Set(value); }
-        internal string DisplayText { get => Get(() => Res.TextCountingColors); set => Set(value); }
+        internal string DisplayText { get => Get<string>(); set => Set(value); }
 
         internal ICommand CancelCommand => Get(() => new SimpleCommand(OnCancelCommand));
 
@@ -73,6 +75,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             if (bitmap == null)
                 throw new ArgumentNullException(nameof(bitmap), PublicResources.ArgumentNull);
+            SetDisplayText(Res.TextCountingColorsId);
             drawingProgressManager = new DrawingProgressManager(p =>
             {
                 lock (ProgressSyncRoot)
@@ -113,6 +116,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Protected Methods
 
         protected override bool AffectsModifiedState(string propertyName) => false;
+
+        protected override void ApplyDisplayLanguage() => UpdateDisplayText();
 
         #endregion
 
@@ -166,14 +171,26 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             // the execution of this method will be marshaled back to the UI thread
             void Action()
             {
-                DisplayText = error != null ? Res.ErrorMessage(error.Message)
-                    : colorCount == null ? Res.TextOperationCanceled
-                    : Res.TextColorCount(colorCount.Value);
+                if (error != null)
+                    SetDisplayText(Res.ErrorMessageId, error.Message);
+                else if (colorCount == null)
+                    SetDisplayText(Res.TextOperationCanceledId);
+                else
+                    SetDisplayText(Res.TextColorCountId, colorCount.Value);
                 IsProcessing = false;
             }
 
             TryInvokeSync(Action);
         }
+
+        private void SetDisplayText(string resourceId, params object[] args)
+        {
+            displayTextId = resourceId;
+            displayTextArgs = args;
+            UpdateDisplayText();
+        }
+
+        private void UpdateDisplayText() => DisplayText = Res.Get(displayTextId, displayTextArgs);
 
         #endregion
 

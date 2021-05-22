@@ -96,6 +96,15 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 UpdateStatus((string)e.NewValue!);
         }
 
+        protected override void ApplyDisplayLanguage()
+        {
+            InitAvailableVersion();
+            var currentPath = CurrentPath;
+            InitInstallations();
+            CurrentPath = currentPath;
+            UpdateStatus(currentPath);
+        }
+
         #endregion
 
         #region Private Methods

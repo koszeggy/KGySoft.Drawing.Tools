@@ -141,10 +141,13 @@ namespace KGySoft.Drawing.ImagingTools
         internal static string TextAuto => Get("Text_Auto");
 
         /// <summary>Counting colors...</summary>
-        internal static string TextCountingColors => Get("Text_CountingColors");
+        internal static string TextCountingColorsId => "Text_CountingColors";
 
         /// <summary>Operation has been canceled.</summary>
-        internal static string TextOperationCanceled => Get("Text_OperationCanceled");
+        internal static string TextOperationCanceledId => "Text_OperationCanceled";
+
+        /// <summary>Color Count: {0}</summary>
+        internal static string TextColorCountId => "Text_ColorCountFormat";
 
         #endregion
 
@@ -161,17 +164,20 @@ namespace KGySoft.Drawing.ImagingTools
         #region Notifications
 
         /// <summary>The loaded metafile has been converted to Bitmap. To load it as a Metafile, choose the Image Debugger Visualizer instead.</summary>
-        internal static string NotificationMetafileAsBitmap => Get("Notification_MetafileAsBitmap");
+        internal static string NotificationMetafileAsBitmapId => "Notification_MetafileAsBitmap";
 
         /// <summary>The loaded image has been converted to Icon</summary>
-        internal static string NotificationImageAsIcon => Get("Notification_ImageAsIcon");
+        internal static string NotificationImageAsIconId => "Notification_ImageAsIcon";
 
         /// <summary>The palette of an indexed BitmapData cannot be reconstructed, therefore a default palette is used. You can change palette colors in the menu.</summary>
-        internal static string NotificationPaletteCannotBeRestored => Get("Notification_PaletteCannotBeRestored");
+        internal static string NotificationPaletteCannotBeRestoredId => "Notification_PaletteCannotBeRestored";
 
         #endregion
 
         #region Messages
+
+        /// <summary>Error: {0}</summary>
+        internal static string ErrorMessageId => "ErrorMessageFormat";
 
         /// <summary>Saving modifications as animated GIF is not supported</summary>
         internal static string ErrorMessageAnimGifNotSupported => Get("ErrorMessage_AnimGifNotSupported");
@@ -271,6 +277,12 @@ namespace KGySoft.Drawing.ImagingTools
 
         internal static string Get(string id) => GetStringOrNull(id) ?? String.Format(CultureInfo.InvariantCulture, unavailableResource, id);
 
+        internal static string Get(string id, params object?[]? args)
+        {
+            string format = Get(id);
+            return args == null ? format : SafeFormat(format, args);
+        }
+
         internal static string Get<TEnum>(TEnum value) where TEnum : struct, Enum => Get($"{value.GetType().Name}.{Enum<TEnum>.ToString(value)}");
 
         internal static void ApplyStringResources(object target, string name)
@@ -336,9 +348,6 @@ namespace KGySoft.Drawing.ImagingTools
 
         /// <summary>B: {0}</summary>
         internal static string TextBlueValue(byte a) => Get("Text_BlueValueFormat", a);
-
-        /// <summary>Color Count: {0}</summary>
-        internal static string TextColorCount(int a) => Get("Text_ColorCountFormat", a);
 
         #endregion
 
@@ -412,9 +421,6 @@ namespace KGySoft.Drawing.ImagingTools
         #endregion
 
         #region Messages
-
-        /// <summary>Error: {0}</summary>
-        internal static string ErrorMessage(string error) => Get("ErrorMessageFormat", error);
 
         /// <summary>Could not load file due to an error: {0}</summary>
         internal static string ErrorMessageFailedToLoadFile(string error) => Get("ErrorMessage_FailedToLoadFileFormat", error);
@@ -569,12 +575,6 @@ namespace KGySoft.Drawing.ImagingTools
         #endregion
 
         #region Private Methods
-
-        private static string Get(string id, params object?[]? args)
-        {
-            string format = Get(id);
-            return args == null ? format : SafeFormat(format, args);
-        }
 
         private static string SafeFormat(string format, object?[] args)
         {

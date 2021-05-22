@@ -63,7 +63,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 var bitmapDataInfo = (BitmapDataInfo?)e.NewValue;
                 Image = bitmapDataInfo?.BackingImage;
                 if ((bitmapDataInfo?.BitmapData?.PixelFormat ?? PixelFormat.Format32bppArgb).ToBitsPerPixel() <= 8)
-                    Notification = Res.NotificationPaletteCannotBeRestored;
+                    SetNotification(Res.NotificationPaletteCannotBeRestoredId);
             }
         }
 
