@@ -192,7 +192,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 // Note: this way we add even possibly missing entries that were added to compiled resources since last creation while removed entries will be skipped
                 var result = new SortableBindingList<ResourceEntry>();
                 foreach (DictionaryEntry entry in compiled)
-                    result.Add(new ResourceEntry((string)entry.Key, (string)entry.Value, resourceManger.GetString((string)entry.Key, culture) ?? LanguageSettings.UntranslatedResourcePrefix + entry.Value));
+                    result.Add(new ResourceEntry((string)entry.Key, 
+                        (string)entry.Value, 
+                        resourceManger.GetString((string)entry.Key, culture) ?? LanguageSettings.UntranslatedResourcePrefix + (string)entry.Value));
 
                 result.ListChanged += (_, args) =>
                 {
@@ -257,6 +259,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void ApplyResources()
         {
+            LanguageSettings.DynamicResourceManagersSource = ResourceManagerSources.CompiledAndResX;
             if (Equals(LanguageSettings.DisplayLanguage, culture))
                 ResHelper.RaiseLanguageChanged();
             else
@@ -270,7 +273,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnApplyResourcesCommand(ICommandState state)
         {
-            Debug.Assert(IsModified);
+            Debug.Assert(IsModified || !Equals(culture, LanguageSettings.DisplayLanguage));
             ResHelper.ReleaseAllResources();
             bool success = TrySaveResources();
             if (success)

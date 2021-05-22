@@ -65,12 +65,12 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Methods
 
-        internal static IList<CultureInfo> GetAvailableLanguages()
+        internal static HashSet<CultureInfo> GetAvailableLanguages()
         {
             string dir = Res.ResourcesDir;
+            var result = new HashSet<CultureInfo>();
             try
             {
-                var result = new List<CultureInfo> { Res.DefaultLanguage };
                 if (!Directory.Exists(dir))
                     return result;
 
@@ -79,7 +79,7 @@ namespace KGySoft.Drawing.ImagingTools
                 foreach (string file in files)
                 {
                     StringSegment resName = file.AsSegment(startIndex, file.Length - startIndex - 5);
-                    if (CulturesCache.TryGetValue(resName, out CultureInfo? ci) && !ci.In(CultureInfo.InvariantCulture, Res.DefaultLanguage))
+                    if (CulturesCache.TryGetValue(resName, out CultureInfo? ci) && !ci.Equals(CultureInfo.InvariantCulture))
                         result.Add(ci);
                 }
 
@@ -87,7 +87,8 @@ namespace KGySoft.Drawing.ImagingTools
             }
             catch (Exception e) when (!e.IsCritical())
             {
-                return new[] { Res.DefaultLanguage };
+                result.Clear();
+                return result;
             }
         }
 

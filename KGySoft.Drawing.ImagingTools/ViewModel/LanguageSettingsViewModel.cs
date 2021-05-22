@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 
 using KGySoft.ComponentModel;
@@ -33,9 +34,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
     {
         #region Fields
 
-        private readonly bool initializing;
-
         private CultureInfo[]? neutralLanguages;
+        private HashSet<CultureInfo>? availableResXLanguages;
+        private List<CultureInfo>? selectableLanguages;
+        private CultureInfo? dirtyCulture;
 
         #endregion
 
@@ -61,6 +63,22 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Private Properties
 
         private CultureInfo[] NeutralLanguages => neutralLanguages ??= CultureInfo.GetCultures(CultureTypes.NeutralCultures);
+        private HashSet<CultureInfo> AvailableLanguages => availableResXLanguages ??= ResHelper.GetAvailableLanguages();
+        
+        private List<CultureInfo> SelectableLanguages
+        {
+            get
+            {
+                if (selectableLanguages == null)
+                {
+                    selectableLanguages = new List<CultureInfo>(AvailableLanguages);
+                    if (!AvailableLanguages.Contains(Res.DefaultLanguage))
+                        selectableLanguages.Add(Res.DefaultLanguage);
+                }
+
+                return selectableLanguages;
+            }
+        }
 
         #endregion
 
@@ -70,13 +88,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal LanguageSettingsViewModel()
         {
-            initializing = true;
             CurrentLanguage = LanguageSettings.DisplayLanguage;
             AllowResXResources = Settings.Default.AllowResXResources;
             UseOSLanguage = Settings.Default.UseOSLanguage;
             ExistingLanguagesOnly = true; // could be the default value but this way we spare one reset when initializing binding
-            initializing = false;
             ResetLanguages();
+            UpdateApplyCommandState();
         }
 
         #endregion
@@ -91,11 +108,15 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             switch (e.PropertyName)
             {
                 case nameof(AllowResXResources):
+                    EditResourcesCommandState.Enabled = e.NewValue is true;
+                    ResetLanguages();
+                    UpdateApplyCommandState();
+                    break;
+
                 case nameof(UseOSLanguage):
                 case nameof(ExistingLanguagesOnly):
-                    if (initializing)
-                        return;
                     ResetLanguages();
+                    UpdateApplyCommandState();
                     break;
 
                 case nameof(Languages):
@@ -104,13 +125,16 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     break;
 
                 case nameof(CurrentLanguage):
-                    ApplyCommandState.Enabled = !Equals(e.NewValue, LanguageSettings.DisplayLanguage);
-                    EditResourcesCommandState.Enabled = !Equals(e.NewValue, Res.DefaultLanguage);
+                    UpdateApplyCommandState();
                     break;
             }
         }
 
-        protected override void ApplyDisplayLanguage() => ApplyCommandState.Enabled = false;
+        protected override void ApplyDisplayLanguage()
+        {
+            Debug.Assert(Equals(LanguageSettings.DisplayLanguage, CurrentLanguage), "Only the selected language should be applied");
+            UpdateApplyCommandState();
+        }
 
         protected override void Dispose(bool disposing)
         {
@@ -143,11 +167,23 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 return;
             }
 
-            var result = new SortableBindingList<CultureInfo>(ExistingLanguagesOnly ? ResHelper.GetAvailableLanguages() : NeutralLanguages);
+            var result = new SortableBindingList<CultureInfo>(ExistingLanguagesOnly ? SelectableLanguages : NeutralLanguages);
             result.ApplySort(nameof(CultureInfo.EnglishName), ListSortDirection.Ascending);
             CultureInfo lastSelectedLanguage = CurrentLanguage;
             Languages = result;
             CurrentLanguage = result.Contains(lastSelectedLanguage) ? lastSelectedLanguage : Res.DefaultLanguage;
+        }
+
+        private void UpdateApplyCommandState()
+        {
+            // Apply is enabled if current language is different than display language,
+            // or when turning on/off .resx resources for the default language matters because it also has a resource file
+            CultureInfo selected = CurrentLanguage;
+            ApplyCommandState.Enabled = !Equals(selected, LanguageSettings.DisplayLanguage)
+                || selected.Equals(dirtyCulture)
+                || (Equals(selected, Res.DefaultLanguage)
+                    && (AllowResXResources ^ LanguageSettings.DynamicResourceManagersSource != ResourceManagerSources.CompiledOnly)
+                    && AvailableLanguages.Contains(Res.DefaultLanguage));
         }
 
         #endregion
@@ -156,6 +192,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnApplyCommand()
         {
+            dirtyCulture = null;
             CultureInfo currentLanguage = CurrentLanguage;
             LanguageSettings.DynamicResourceManagersSource = AllowResXResources ? ResourceManagerSources.CompiledAndResX : ResourceManagerSources.CompiledOnly;
 
@@ -168,6 +205,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             // TODO If used, then add to EditResourcesVM.Save, too, to be consistent ()
             //ResHelper.EnsureResourcesGenerated();
             ResHelper.SavePendingResources();
+            availableResXLanguages = null;
+            selectableLanguages = null;
         }
 
         private void OnSaveConfigCommand()
@@ -198,8 +237,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             ShowChildViewCallback?.Invoke(viewModel);
 
             // If the language was edited, then enabling apply even if it was disabled
-            if (viewModel.IsModified)
-                ApplyCommandState.Enabled = true;
+            dirtyCulture = viewModel.IsModified ? CurrentLanguage : null;
+            availableResXLanguages = null;
+            selectableLanguages = null;
+            UpdateApplyCommandState();
         }
 
         #endregion
