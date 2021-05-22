@@ -35,10 +35,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         public OkCancelApplyButtons()
         {
             pnlButtons.SuspendLayout();
-            pnlButtons.ColumnCount = 3;
-            foreach (ColumnStyle columnStyle in pnlButtons.ColumnStyles)
-                columnStyle.Width = 33.3f;
-            pnlButtons.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3f));
             ApplyButton = new Button
             {
                 Anchor = AnchorStyles.None,
@@ -49,7 +45,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 UseVisualStyleBackColor = true
 
             };
-            pnlButtons.Controls.Add(ApplyButton, 2, 0);
+            pnlButtons.Controls.Add(ApplyButton);
+            ApplyButton.BringToFront();
             pnlButtons.ResumeLayout(false);
         }
 

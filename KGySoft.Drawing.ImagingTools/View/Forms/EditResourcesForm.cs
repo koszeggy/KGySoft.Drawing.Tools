@@ -97,14 +97,18 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void InitCommandBindings()
         {
+            // ApplyButton.Click -> ViewModel.ApplyResourcesCommand
+            CommandBindings.Add(ViewModel.ApplyResourcesCommand, ViewModel.ApplyResourcesCommandState)
+                .AddSource(okCancelApplyButtons.ApplyButton, nameof(okCancelApplyButtons.ApplyButton.Click));
+
             // OKButton.Click -> ViewModel.SaveResourcesCommand, and preventing closing the form if the command has executed with errors
             CommandBindings.Add(ViewModel.SaveResourcesCommand)
-                .AddSource(okCancelButtons.OKButton, nameof(okCancelButtons.OKButton.Click))
+                .AddSource(okCancelApplyButtons.OKButton, nameof(okCancelApplyButtons.OKButton.Click))
                 .Executed += (_, args) => DialogResult = args.State[EditResourcesViewModel.StateSaveExecutedWithError] is true ? DialogResult.None : DialogResult.OK;
 
             // CancelButton.Click -> ViewModel.CancelResourcesCommand
             CommandBindings.Add(ViewModel.CancelEditCommand)
-                .AddSource(okCancelButtons.CancelButton, nameof(okCancelButtons.CancelButton.Click));
+                .AddSource(okCancelApplyButtons.CancelButton, nameof(okCancelApplyButtons.CancelButton.Click));
         }
 
         #endregion

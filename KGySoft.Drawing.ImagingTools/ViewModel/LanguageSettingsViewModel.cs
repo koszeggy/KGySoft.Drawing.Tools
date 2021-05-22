@@ -110,6 +110,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
         }
 
+        protected override void ApplyDisplayLanguage() => ApplyCommandState.Enabled = false;
+
         protected override void Dispose(bool disposing)
         {
             if (IsDisposed)
@@ -166,8 +168,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             // TODO If used, then add to EditResourcesVM.Save, too, to be consistent ()
             //ResHelper.EnsureResourcesGenerated();
             ResHelper.SavePendingResources();
-
-            ApplyCommandState.Enabled = false;
         }
 
         private void OnSaveConfigCommand()

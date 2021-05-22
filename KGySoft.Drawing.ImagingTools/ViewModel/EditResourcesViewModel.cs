@@ -16,6 +16,7 @@
 
 #region Usings
 
+using System.Diagnostics;
 using System.Linq;
 using KGySoft.Resources;
 
@@ -69,8 +70,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ResourceOwner SelectedLibrary { get => Get<ResourceOwner>(); set => Set(value); }
         internal IList<ResourceEntry> SelectedSet { get => Get<IList<ResourceEntry>>(); set => Set(value); }
 
+        internal ICommand ApplyResourcesCommand => Get(() => new SimpleCommand(OnApplyResourcesCommand));
         internal ICommand SaveResourcesCommand => Get(() => new SimpleCommand(OnSaveResourcesCommand));
         internal ICommand CancelEditCommand => Get(() => new SimpleCommand(OnCancelEditCommand));
+
+        internal ICommandState ApplyResourcesCommandState => Get(() => new CommandState());
 
         #endregion
 
@@ -81,6 +85,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             this.culture = culture ?? throw new ArgumentNullException(nameof(culture), PublicResources.ArgumentNull);
             resources = new Dictionary<ResourceOwner, (IList<ResourceEntry>, bool)>(3, EnumComparer<ResourceOwner>.Comparer);
             ResourceFiles = Enum<ResourceOwner>.GetValues().Select(o => new KeyValuePair<ResourceOwner, string>(o, ToFileName(o))).ToArray();
+            ApplyResourcesCommandState.Enabled = !Equals(LanguageSettings.DisplayLanguage, culture);
             UpdateTitle();
             SelectedLibrary = ResourceOwner.DrawingTools;
         }
@@ -104,7 +109,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
         }
 
-        protected override void ApplyDisplayLanguage() => UpdateTitle();
+        protected override void ApplyDisplayLanguage()
+        {
+            UpdateTitle();
+            ApplyResourcesCommandState.Enabled = false;
+        }
 
         protected override void Dispose(bool disposing)
         {
@@ -190,6 +199,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     if (args.ListChangedType != ListChangedType.ItemChanged)
                         return;
 
+                    ApplyResourcesCommandState.Enabled = true;
                     if (!resources.TryGetValue(owner, out var value) || value.IsModified)
                         return;
 
@@ -229,11 +239,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
         }
 
-        #endregion
-
-        #region Command Handlers
-
-        private void OnSaveResourcesCommand(ICommandState state)
+        private bool TrySaveResources()
         {
             foreach (var set in resources)
             {
@@ -243,12 +249,49 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     continue;
 
                 ShowError(Res.ErrorMessageFailedToSaveResource(ToFileName(set.Key), error.Message));
-                state[StateSaveExecutedWithError] = true;
-                return;
+                return false;
             }
 
-            state[StateSaveExecutedWithError] = false;
+            return true;
+        }
+
+        private void ApplyResources()
+        {
+            if (Equals(LanguageSettings.DisplayLanguage, culture))
+                ResHelper.RaiseLanguageChanged();
+            else
+                LanguageSettings.DisplayLanguage = culture;
+            SetModified(false);
+        }
+
+        #endregion
+
+        #region Command Handlers
+
+        private void OnApplyResourcesCommand(ICommandState state)
+        {
+            Debug.Assert(IsModified);
             ResHelper.ReleaseAllResources();
+            bool success = TrySaveResources();
+            if (success)
+                ApplyResources();
+        }
+
+        private void OnSaveResourcesCommand(ICommandState state)
+        {
+            bool success = true;
+            if (IsModified)
+            {
+                ResHelper.ReleaseAllResources();
+                success = TrySaveResources();
+                if (success)
+                {
+                    if (Equals(LanguageSettings.DisplayLanguage, culture))
+                        ApplyResources();
+                }
+            }
+
+            state[StateSaveExecutedWithError] = !success;
         }
 
         private void OnCancelEditCommand() => SetModified(false);

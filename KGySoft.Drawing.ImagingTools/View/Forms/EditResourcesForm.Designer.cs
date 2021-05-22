@@ -43,7 +43,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.txtOriginalText = new System.Windows.Forms.TextBox();
             this.gbTranslatedText = new System.Windows.Forms.GroupBox();
             this.txtTranslatedText = new System.Windows.Forms.TextBox();
-            this.okCancelButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
+            this.okCancelApplyButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelApplyButtons();
             this.colResourceKey = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colOriginalText = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colTranslatedText = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -193,11 +193,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // 
             // okCancelButtons
             // 
-            this.okCancelButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.okCancelButtons.Location = new System.Drawing.Point(3, 268);
-            this.okCancelButtons.Name = "okCancelButtons";
-            this.okCancelButtons.Size = new System.Drawing.Size(578, 40);
-            this.okCancelButtons.TabIndex = 1;
+            this.okCancelApplyButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.okCancelApplyButtons.Location = new System.Drawing.Point(3, 268);
+            this.okCancelApplyButtons.Name = "okCancelApplyButtons";
+            this.okCancelApplyButtons.Size = new System.Drawing.Size(578, 40);
+            this.okCancelApplyButtons.TabIndex = 1;
             // 
             // colResourceKey
             // 
@@ -230,7 +230,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.Controls.Add(this.gbResourceFile);
             this.Controls.Add(this.splitterEditResources);
             this.Controls.Add(this.pnlEditResourceEntry);
-            this.Controls.Add(this.okCancelButtons);
+            this.Controls.Add(this.okCancelApplyButtons);
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(300, 300);
             this.Name = "EditResourcesForm";
@@ -251,7 +251,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #endregion
 
-        private UserControls.OkCancelButtons okCancelButtons;
+        private UserControls.OkCancelApplyButtons okCancelApplyButtons;
         private System.Windows.Forms.GroupBox gbResourceEntries;
         private System.Windows.Forms.DataGridView gridResources;
         private System.Windows.Forms.TableLayoutPanel pnlEditResourceEntry;

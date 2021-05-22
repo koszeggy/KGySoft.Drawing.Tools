@@ -629,9 +629,6 @@ Dithering may help to preserve more details.</value>
   <data name="gbAvailableVersion.Text" xml:space="preserve">
     <value>Installable Version:</value>
   </data>
-  <data name="lblAvailableVersion.Text" xml:space="preserve">
-    <value>-</value>
-  </data>
   <data name="gbVisualStudioVersions.Text" xml:space="preserve">
     <value>Identified Visual Studio Versions:</value>
   </data>
@@ -646,9 +643,6 @@ Dithering may help to preserve more details.</value>
   </data>
   <data name="lblStatus.Text" xml:space="preserve">
     <value>Status:</value>
-  </data>
-  <data name="lblStatusText.Text" xml:space="preserve">
-    <value>-</value>
   </data>
   <data name="lblPath.Text" xml:space="preserve">
     <value>&amp;Path:</value>
@@ -790,7 +784,7 @@ Newly generated resources will contain English texts prefixed with "[T]". You ca
     <value>Display Language</value>
   </data>
   <data name="btnEditResources.Text" xml:space="preserve">
-    <value>Edit Resources...</value>
+    <value>&amp;Edit Resources...</value>
   </data>
   <data name="gbResourceFile.Text" xml:space="preserve">
     <value>Resource File</value>
