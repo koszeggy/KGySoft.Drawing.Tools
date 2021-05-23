@@ -11,6 +11,10 @@
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.SuspendLayout();
             // 
+            // toolTip
+            // 
+            this.toolTip.AutoPopDelay = 10000;
+            // 
             // MvvmBaseForm
             // 
             this.ClientSize = new System.Drawing.Size(284, 261);
