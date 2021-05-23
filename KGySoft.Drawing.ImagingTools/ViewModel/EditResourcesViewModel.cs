@@ -59,6 +59,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Fields
 
         private readonly CultureInfo culture;
+        private readonly bool useInvariant;
         private readonly Dictionary<ResourceOwner, (IList<ResourceEntry> ResourceSet, bool IsModified)> resources;
 
         #endregion
@@ -83,8 +84,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal EditResourcesViewModel(CultureInfo culture)
         {
             this.culture = culture ?? throw new ArgumentNullException(nameof(culture), PublicResources.ArgumentNull);
+
+            // The default language is used as the invariant resource set.
+            // The invariant file name is preferred, unless only the language-specific file exists.
+            useInvariant = Equals(culture, Res.DefaultLanguage) && !File.Exists(ToFileNameWithPath(ResourceOwner.DrawingTools));
             resources = new Dictionary<ResourceOwner, (IList<ResourceEntry>, bool)>(3, EnumComparer<ResourceOwner>.Comparer);
-            ResourceFiles = Enum<ResourceOwner>.GetValues().Select(o => new KeyValuePair<ResourceOwner, string>(o, ToFileName(o))).ToArray();
+            ResourceFiles = Enum<ResourceOwner>.GetValues().Select(owner => new KeyValuePair<ResourceOwner, string>(owner, ToFileName(owner))).ToArray();
             ApplyResourcesCommandState.Enabled = !Equals(LanguageSettings.DisplayLanguage, culture);
             UpdateTitle();
             SelectedLibrary = ResourceOwner.DrawingTools;
@@ -129,7 +134,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void UpdateTitle() => TitleCaption = Res.TitleEditResources($"{culture.EnglishName} ({culture.NativeName})");
 
-        private string ToFileName(ResourceOwner owner) => $"{ResHelper.GetBaseName(owner)}.{culture.Name}.resx";
+        private string ToFileName(ResourceOwner owner) => useInvariant
+            ? ResHelper.GetBaseName(owner) + ".resx"
+            : $"{ResHelper.GetBaseName(owner)}.{culture.Name}.resx";
 
         private string ToFileNameWithPath(ResourceOwner owner) => Path.Combine(Res.ResourcesDir, ToFileName(owner));
 

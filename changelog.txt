@@ -15,6 +15,7 @@
 + Now panning a zoomed image is possible also by clicking and dragging with the mouse (besides usual scrolling).
 + Zooming is now possible also with keyboard shortcuts, the Auto Zoom button has now a drop-down part for the
   additional options.
++ Supporting localization from .resx files with editing and on-the-fly application.
 * Manual zooming is enabled even if Auto Zoom is on; this turns off Auto Zoom automatically.
 * Turning smoothing of zoomed images on/off affects also shrunk images (previously affected enlarged images only).
 - Fixing possible errors when closing forms while an async operation is still in progress.

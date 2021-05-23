@@ -252,9 +252,11 @@ namespace KGySoft.Drawing.ImagingTools
             DrawingModule.Initialize();
 
             bool allowResXResources = Settings.Default.AllowResXResources;
-            LanguageSettings.DisplayLanguage = allowResXResources
-                ? Settings.Default.UseOSLanguage ? OSLanguage : Settings.Default.DisplayLanguage.GetClosestNeutralCulture()
+            CultureInfo desiredDisplayLanguage = allowResXResources
+                ? Settings.Default.UseOSLanguage ? OSLanguage : Settings.Default.DisplayLanguage // here, allowing specific languages, too
                 : DefaultLanguage;
+
+            LanguageSettings.DisplayLanguage = Equals(desiredDisplayLanguage, CultureInfo.InvariantCulture) ? DefaultLanguage : desiredDisplayLanguage;
             LanguageSettings.DynamicResourceManagersSource = allowResXResources ? ResourceManagerSources.CompiledAndResX : ResourceManagerSources.CompiledOnly;
         }
 
@@ -608,7 +610,7 @@ namespace KGySoft.Drawing.ImagingTools
         private static CultureInfo GetClosestNeutralCulture(this CultureInfo culture)
         {
             if (CultureInfo.InvariantCulture.Equals(culture))
-                return culture;
+                return CultureInfo.GetCultureInfo("en");
 
             while (!culture.IsNeutralCulture)
                 culture = culture.Parent;

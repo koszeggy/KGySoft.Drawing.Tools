@@ -83,6 +83,9 @@ namespace KGySoft.Drawing.ImagingTools
                         result.Add(ci);
                 }
 
+                // checking the invariant resource as it should act as default language
+                if (!result.Contains(Res.DefaultLanguage) && File.Exists(Path.Combine(dir, $"{drawingToolsBaseName}.resx")))
+                    result.Add(Res.DefaultLanguage);
                 return result;
             }
             catch (Exception e) when (!e.IsCritical())

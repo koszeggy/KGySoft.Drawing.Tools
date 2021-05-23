@@ -47,7 +47,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal bool AllowResXResources { get => Get<bool>(); set => Set(value); }
         internal bool UseOSLanguage { get => Get<bool>(); set => Set(value); }
-        internal bool ExistingLanguagesOnly { get => Get<bool>(); set => Set(value); }
+        internal bool ExistingLanguagesOnly { get => Get(true); set => Set(value); }
         internal CultureInfo CurrentLanguage { get => Get<CultureInfo>(); set => Set(value); }
         internal IList<CultureInfo> Languages { get => Get<IList<CultureInfo>>(); set => Set(value); }
 
