@@ -17,6 +17,7 @@
 #region Usings
 
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
@@ -32,6 +33,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         #region Fields
 
         private bool isClosing;
+        private bool isLoaded;
+        private bool isRtlChanging;
+        private Point location;
 
         #endregion
 
@@ -59,6 +63,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected MvvmBaseForm(TViewModel viewModel)
         {
+            ApplyRightToLeft();
             InitializeComponent();
 
             // occurs in design mode but DesignMode is false for grandchild forms
@@ -66,7 +71,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 return;
 
             ViewModel = viewModel;
-
             ViewModelBase vm = VM;
             vm.ShowInfoCallback = Dialogs.InfoMessage;
             vm.ShowWarningCallback = Dialogs.WarningMessage;
@@ -98,10 +102,20 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             base.OnLoad(e);
 
-            // occurs in design mode but DesignMode is false for grandchild forms
-            if (ViewModel == null!)
+            // Null VM occurs in design mode but DesignMode is false for grandchild forms
+            // Loaded can be true if handle was recreated
+            if (isLoaded || ViewModel == null!)
+            {
+                if (!isRtlChanging)
+                    return;
+
+                // dialog has been reopened after changing RTL
+                isRtlChanging = false;
+                Location = location;
                 return;
-            
+            }
+
+            isLoaded = true;
             ApplyResources();
             ApplyViewModel();
         }
@@ -118,6 +132,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
+            // Changing RightToLeft causes the dialog close. We let it happen because the parent may also change,
+            // and if we cancel the closing here, then a dialog may turn a non-modal form. Reopen as a dialog is handled in IView.ShowDialog
+            if (isRtlChanging)
+            {
+                if (DialogResult == DialogResult.OK)
+                    isRtlChanging = false;
+                else
+                    location = Location;
+            }
+
             if (!e.Cancel)
                 isClosing = true;
             base.OnFormClosing(e);
@@ -140,11 +164,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void InitCommandBindings()
         {
-            CommandBindings.Add(ApplyStringResources)
+            CommandBindings.Add(OnDisplayLanguageChangedCommand)
                 .AddSource(typeof(LanguageSettings), nameof(LanguageSettings.DisplayLanguageChanged));
         }
 
-        private void ShowChildView(IViewModel vm) => ViewFactory.ShowDialog(vm, Handle);
+        private void ShowChildView(IViewModel vm) => ViewFactory.ShowDialog(vm, this);
 
         private void InvokeIfRequired(Action action)
         {
@@ -163,11 +187,51 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             }
         }
 
+        private void ApplyRightToLeft()
+        {
+            RightToLeft rtl = LanguageSettings.DisplayLanguage.TextInfo.IsRightToLeft ? RightToLeft.Yes : RightToLeft.No;
+            if (RightToLeft == rtl)
+                return;
+
+            if (!IsHandleCreated)
+            {
+                RightToLeft = rtl;
+                return;
+            }
+
+            isRtlChanging = true;
+            RightToLeft = rtl;
+        }
+
+        #endregion
+
+        #region Command Handlers
+
+        private void OnDisplayLanguageChangedCommand()
+        {
+            ApplyRightToLeft();
+            ApplyStringResources();
+        }
+
         #endregion
 
         #region Explicit Interface Implementations
 
-        void IView.ShowDialog(IntPtr ownerHandle) => ShowDialog(ownerHandle == IntPtr.Zero ? null : new OwnerWindowHandle(ownerHandle));
+        void IView.ShowDialog(IntPtr ownerHandle)
+        {
+            do
+            {
+                ShowDialog(ownerHandle == IntPtr.Zero ? null : new OwnerWindowHandle(ownerHandle));
+            } while (isRtlChanging);
+        }
+
+        void IView.ShowDialog(IView? owner)
+        {
+            do
+            {
+                ShowDialog(owner is IWin32Window window ? window : null);
+            } while (isRtlChanging);
+        }
 
         void IView.Show() => InvokeIfRequired(() =>
         {

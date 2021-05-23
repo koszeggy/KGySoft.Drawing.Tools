@@ -17,7 +17,6 @@
 #region Usings
 
 using System;
-using System.Windows.Forms;
 
 #endregion
 
@@ -29,22 +28,37 @@ namespace KGySoft.Drawing.ImagingTools.View
     /// </summary>
     public interface IView : IDisposable
     {
+        #region Properties
+
+        /// <summary>
+        /// Gets whether this view is disposed.
+        /// </summary>
+        public bool IsDisposed { get; }
+
+        #endregion
+
+        #region Methods
+
         /// <summary>
         /// Shows the view as a modal dialog.
+        /// When using this overload, do not let the handle of the owner destroyed (some operations such as changing right-to-left may cause the handle recreated).
         /// </summary>
         /// <param name="ownerWindowHandle">If specified, then the created dialog will be owned by the window that has specified handle. This parameter is optional.
         /// <br/>Default value: <see cref="IntPtr.Zero">IntPtr.Zero</see>.</param>
         void ShowDialog(IntPtr ownerWindowHandle = default);
 
         /// <summary>
-        /// Gets whether this view is disposed.
+        /// Shows the view as a modal dialog.
         /// </summary>
-        bool IsDisposed { get; }
+        /// <param name="owner">If not <see langword="null"/>, then the created dialog will be owned by the specified <see cref="IView"/> instance.</param>
+        void ShowDialog(IView? owner);
 
         /// <summary>
         /// Shows the view as a non-modal window.
         /// If the view was already shown, then makes it the active window.
         /// </summary>
         void Show();
+
+        #endregion
     }
 }

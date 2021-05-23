@@ -84,8 +84,21 @@ namespace KGySoft.Drawing.ImagingTools.View
         /// <returns>A view for the specified <see cref="IViewModel"/> instance.</returns>
         public static void ShowDialog(IViewModel viewModel, IntPtr ownerWindowHandle = default)
         {
-            using (IView view = CreateView(viewModel))
-                view.ShowDialog(ownerWindowHandle);
+            using IView view = CreateView(viewModel);
+            view.ShowDialog(ownerWindowHandle);
+        }
+
+        /// <summary>
+        /// Shows an internally created view for the specified <see cref="IViewModel"/> instance,
+        /// which will be discarded when the view is closed.
+        /// </summary>
+        /// <param name="viewModel">The view model to create the view for.</param>
+        /// <param name="owner">If not <see langword="null"/>, then the created dialog will be owned by the specified <see cref="IView"/> instance.</param>
+        /// <returns>A view for the specified <see cref="IViewModel"/> instance.</returns>
+        public static void ShowDialog(IViewModel viewModel, IView? owner)
+        {
+            using IView view = CreateView(viewModel);
+            view.ShowDialog(owner);
         }
 
         #endregion

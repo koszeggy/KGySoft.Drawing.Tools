@@ -28,6 +28,10 @@
     + New IsModified property
   * IViewModel<TModel> interface
     * The IsModified property is now inherited from IViewModel
+  + IView interface:
+    + New ShowDialog(IView) overload
+  + ViewFactory class:
+    + New ShowDialog(IViewModel, IView) overload
 
 - KGySoft.Drawing.DebuggerVisualizers.dll
 =========================================
