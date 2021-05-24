@@ -14,12 +14,16 @@
             // toolTip
             // 
             this.toolTip.AutoPopDelay = 10000;
+            this.toolTip.InitialDelay = 500;
+            this.toolTip.ReshowDelay = 100;
             // 
             // MvvmBaseForm
             // 
             this.ClientSize = new System.Drawing.Size(284, 261);
             this.Name = "MvvmBaseForm";
+            this.RightToLeftLayout = true;
             this.ResumeLayout(false);
+
         }
     }
 }

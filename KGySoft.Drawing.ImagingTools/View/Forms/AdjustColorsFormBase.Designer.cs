@@ -39,6 +39,7 @@
             this.trackBar.Dock = System.Windows.Forms.DockStyle.Fill;
             this.trackBar.Location = new System.Drawing.Point(35, 25);
             this.trackBar.Name = "trackBar";
+            this.trackBar.RightToLeftLayout = true;
             this.trackBar.Size = new System.Drawing.Size(161, 31);
             this.trackBar.TabIndex = 2;
             // 

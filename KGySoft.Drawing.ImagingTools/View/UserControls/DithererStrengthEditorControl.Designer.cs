@@ -27,6 +27,7 @@
             this.trackBar.Location = new System.Drawing.Point(35, 0);
             this.trackBar.Maximum = 100;
             this.trackBar.Name = "trackBar";
+            this.trackBar.RightToLeftLayout = true;
             this.trackBar.Size = new System.Drawing.Size(147, 27);
             this.trackBar.TabIndex = 0;
             this.trackBar.TickFrequency = 10;

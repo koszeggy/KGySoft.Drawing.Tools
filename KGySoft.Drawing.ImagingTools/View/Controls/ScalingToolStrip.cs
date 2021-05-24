@@ -181,7 +181,18 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Fields
 
+        #region Static Fields
+        
         private static readonly Size referenceSize = new Size(16, 16);
+
+        #endregion
+
+        #region Instance Fields
+
+        private DockStyle explicitDock = DockStyle.Top;
+        private bool isAdjustingRtl;
+
+        #endregion
 
         #endregion
 
@@ -212,6 +223,31 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 splitBtn.DropDownButtonWidth = this.ScaleWidth(11);
 
             base.OnItemAdded(e);
+        }
+
+        protected override void OnDockChanged(EventArgs e)
+        {
+            base.OnDockChanged(e);
+            if (isAdjustingRtl)
+                return;
+            explicitDock = Dock;
+        }
+
+        protected override void OnRightToLeftChanged(EventArgs e)
+        {
+            base.OnRightToLeftChanged(e);
+            DockStyle dock = Dock;
+            if (dock is not (DockStyle.Left or DockStyle.Right))
+                return;
+
+            bool isMirrored = RightToLeft == RightToLeft.Yes;
+            if (isMirrored ^ dock == explicitDock)
+                return;
+            isAdjustingRtl = true;
+            Dock = isMirrored
+                ? explicitDock == DockStyle.Left ? DockStyle.Right : DockStyle.Left
+                : explicitDock;
+            isAdjustingRtl = false;
         }
 
         #endregion  

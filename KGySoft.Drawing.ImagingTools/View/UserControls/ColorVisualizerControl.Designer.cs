@@ -32,7 +32,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.lblAlpha = new System.Windows.Forms.Label();
             this.pnlAlpha = new System.Windows.Forms.Panel();
             this.tbAlpha = new System.Windows.Forms.TrackBar();
-            this.tsMenu = new ScalingToolStrip();
+            this.tsMenu = new KGySoft.Drawing.ImagingTools.View.Controls.ScalingToolStrip();
             this.btnSelectColor = new System.Windows.Forms.ToolStripButton();
             this.txtColor = new System.Windows.Forms.TextBox();
             this.colorDialog = new System.Windows.Forms.ColorDialog();
@@ -114,6 +114,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.tbRed.Location = new System.Drawing.Point(0, 0);
             this.tbRed.Maximum = 255;
             this.tbRed.Name = "tbRed";
+            this.tbRed.RightToLeftLayout = true;
             this.tbRed.Size = new System.Drawing.Size(78, 18);
             this.tbRed.TabIndex = 0;
             this.tbRed.TickFrequency = 64;
@@ -146,6 +147,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.tbGreen.Location = new System.Drawing.Point(0, 0);
             this.tbGreen.Maximum = 255;
             this.tbGreen.Name = "tbGreen";
+            this.tbGreen.RightToLeftLayout = true;
             this.tbGreen.Size = new System.Drawing.Size(78, 18);
             this.tbGreen.TabIndex = 0;
             this.tbGreen.TickFrequency = 64;
@@ -178,6 +180,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.tbBlue.Location = new System.Drawing.Point(0, 0);
             this.tbBlue.Maximum = 255;
             this.tbBlue.Name = "tbBlue";
+            this.tbBlue.RightToLeftLayout = true;
             this.tbBlue.Size = new System.Drawing.Size(78, 18);
             this.tbBlue.TabIndex = 0;
             this.tbBlue.TickFrequency = 64;
@@ -221,6 +224,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.tbAlpha.Location = new System.Drawing.Point(0, 0);
             this.tbAlpha.Maximum = 255;
             this.tbAlpha.Name = "tbAlpha";
+            this.tbAlpha.RightToLeftLayout = true;
             this.tbAlpha.Size = new System.Drawing.Size(78, 18);
             this.tbAlpha.TabIndex = 0;
             this.tbAlpha.TickFrequency = 64;
@@ -259,13 +263,13 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.colorDialog.AnyColor = true;
             this.colorDialog.FullOpen = true;
             // 
-            // ucColorVisualizer
+            // ColorVisualizerControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.txtColor);
             this.Controls.Add(this.pnlControls);
-            this.Name = "ucColorVisualizer";
+            this.Name = "ColorVisualizerControl";
             this.Size = new System.Drawing.Size(247, 188);
             this.pnlControls.ResumeLayout(false);
             this.pnlControls.PerformLayout();

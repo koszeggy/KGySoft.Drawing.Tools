@@ -82,9 +82,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         {
             InitializeComponent();
             Controls.Add(checkBox);
-
-            // Left should be 10 at 100% but only 8 at 175%, etc.
-            checkBox.Left = Math.Max(1, 13 - (int)(this.GetScale().X * Padding.Left));
+            checkBox.SizeChanged += CheckBox_SizeChanged;
 
             // Vista or later: using System FlayStyle so animation is enabled with theming and text is not misplaced with classic themes
             bool visualStylesEnabled = Application.RenderWithVisualStyles;
@@ -123,9 +121,23 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 return;
 
             // when not in design mode, adding custom controls to a panel so we can toggle its Enabled with preserving their original state
-            if (contentPanel.Parent == null)
-                contentPanel.Parent = this;
+            contentPanel.Parent ??= this;
             e.Control.Parent = contentPanel;
+        }
+
+        protected virtual void OnCheckedChanged(EventArgs e) => (Events[nameof(CheckedChanged)] as EventHandler)?.Invoke(this, e);
+
+        protected override void OnLayout(LayoutEventArgs levent)
+        {
+            base.OnLayout(levent);
+            if (levent.AffectedProperty == nameof(Bounds))
+                ResetCheckBoxLocation();
+        }
+
+        protected override void OnRightToLeftChanged(EventArgs e)
+        {
+            base.OnRightToLeftChanged(e);
+            ResetCheckBoxLocation();
         }
 
         protected override void Dispose(bool disposing)
@@ -137,6 +149,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             }
 
             checkBox.CheckedChanged -= CheckBox_CheckedChanged;
+            checkBox.SizeChanged -= CheckBox_SizeChanged;
             base.Dispose(disposing);
         }
 
@@ -144,7 +157,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Private Methods
 
-        private void OnCheckedChanged(EventArgs e) => (Events[nameof(CheckedChanged)] as EventHandler)?.Invoke(this, e);
+        private void ResetCheckBoxLocation()
+            => checkBox.Left = RightToLeft == RightToLeft.No
+                ? (int)(10 * this.GetScale().X)
+                : Width - checkBox.Width - (int)(10 * this.GetScale().X);
 
         #endregion
 
@@ -155,6 +171,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             // Toggling the Enabled state of the content. This method preserves the original Enabled state of the controls.
             contentPanel.Enabled = checkBox.Checked;
             OnCheckedChanged(EventArgs.Empty);
+        }
+
+        private void CheckBox_SizeChanged(object sender, EventArgs e)
+        {
+            if (RightToLeft == RightToLeft.Yes)
+                ResetCheckBoxLocation();
         }
 
         #endregion

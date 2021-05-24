@@ -65,6 +65,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private DithererStrengthEditorControl()
         {
+            RightToLeft = LanguageSettings.DisplayLanguage.TextInfo.IsRightToLeft ? RightToLeft.Yes : RightToLeft.No;
             InitializeComponent();
         }
 

@@ -25,6 +25,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             // 
             this.pbProgress.AutoSize = false;
             this.pbProgress.Name = "pbProgress";
+            this.pbProgress.RightToLeftLayout = true;
             this.pbProgress.Size = new System.Drawing.Size(100, 16);
             // 
             // timer

@@ -193,13 +193,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             if (RightToLeft == rtl)
                 return;
 
-            if (!IsHandleCreated)
-            {
-                RightToLeft = rtl;
-                return;
-            }
+            if (IsHandleCreated)
+                isRtlChanging = true;
 
-            isRtlChanging = true;
             RightToLeft = rtl;
         }
 

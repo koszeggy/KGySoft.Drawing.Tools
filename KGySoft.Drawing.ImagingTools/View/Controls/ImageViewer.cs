@@ -660,6 +660,45 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Methods
 
+        #region Internal Methods
+
+        /// <summary>
+        /// Should be called when image content is changed while image reference remains the same (eg. rotation, palette change)
+        /// </summary>
+        internal void UpdateImage()
+        {
+            if (image == null)
+                return;
+
+            // can happen when image is rotated
+            if (image.Size != imageSize || !ReferenceEquals(image, previewGenerator.GetDisplayImage(false)))
+                SetImage(image);
+            else
+                Invalidate();
+        }
+
+        internal void IncreaseZoom()
+        {
+            SetAutoZoom(false, false);
+            ApplyZoomChange(0.25f);
+        }
+
+        internal void DecreaseZoom()
+        {
+            SetAutoZoom(false, false);
+            ApplyZoomChange(-0.25f);
+        }
+
+        internal void ResetZoom()
+        {
+            if (zoom.Equals(1f))
+                return;
+            AutoZoom = false;
+            Zoom = 1f;
+        }
+
+        #endregion
+
         #region Protected Methods
 
         protected override void OnSizeChanged(EventArgs e)
@@ -763,6 +802,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 HorizontalScroll(-e.Delta);
         }
 
+        protected override void OnRightToLeftChanged(EventArgs e) => AdjustSizes();
+
         protected override void Dispose(bool disposing)
         {
             if (IsDisposed)
@@ -777,45 +818,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             base.Dispose(disposing);
             if (disposing)
                 Events.Dispose();
-        }
-
-        #endregion
-
-        #region Internal Methods
-
-        /// <summary>
-        /// Should be called when image content is changed while image reference remains the same (eg. rotation, palette change)
-        /// </summary>
-        internal void UpdateImage()
-        {
-            if (image == null)
-                return;
-
-            // can happen when image is rotated
-            if (image.Size != imageSize || !ReferenceEquals(image, previewGenerator.GetDisplayImage(false)))
-                SetImage(image);
-            else
-                Invalidate();
-        }
-
-        internal void IncreaseZoom()
-        {
-            SetAutoZoom(false, false);
-            ApplyZoomChange(0.25f);
-        }
-
-        internal void DecreaseZoom()
-        {
-            SetAutoZoom(false, false);
-            ApplyZoomChange(-0.25f);
-        }
-
-        internal void ResetZoom()
-        {
-            if (zoom.Equals(1f))
-                return;
-            AutoZoom = false;
-            Zoom = 1f;
         }
 
         #endregion
@@ -916,11 +918,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 return;
             }
 
+            Point clientLocation = Point.Empty;
             targetLocation = new Point((clientSize.Width >> 1) - (scaledSize.Width >> 1),
                 (clientSize.Height >> 1) - (scaledSize.Height >> 1));
 
-            targetRectangle = new Rectangle(targetLocation, scaledSize);
-            clientRectangle = new Rectangle(Point.Empty, clientSize);
+            bool isRtl = RightToLeft == RightToLeft.Yes;
 
             // both scrollbars
             if (sbHorizontalVisible && sbVerticalVisible)
@@ -928,8 +930,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 sbHorizontal.Dock = sbVertical.Dock = DockStyle.None;
                 sbHorizontal.Width = clientSize.Width;
                 sbHorizontal.Top = clientSize.Height;
+                sbHorizontal.Left = isRtl ? scrollbarSize.Width : 0;
                 sbVertical.Height = clientSize.Height;
-                sbVertical.Left = clientSize.Width;
+                sbVertical.Left = isRtl ? 0 : clientSize.Width;
             }
             // horizontal scrollbar
             else if (sbHorizontalVisible)
@@ -939,14 +942,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             // vertical scrollbar
             else if (sbVerticalVisible)
             {
-                sbVertical.Dock = DockStyle.Right;
+                sbVertical.Dock = isRtl ? DockStyle.Left : DockStyle.Right;
             }
 
             // adjust scrollbar values
             if (sbHorizontalVisible)
             {
-                sbHorizontal.Minimum = targetRectangle.X;
-                sbHorizontal.Maximum = targetRectangle.Right;
+                sbHorizontal.Minimum = targetLocation.X;
+                sbHorizontal.Maximum = targetLocation.X + scaledSize.Width;
                 sbHorizontal.LargeChange = clientSize.Width;
                 sbHorizontal.SmallChange = this.ScaleSize(referenceScrollSize).Width;
                 sbHorizontal.Value = Math.Min(sbHorizontal.Value, sbHorizontal.Maximum - sbHorizontal.LargeChange);
@@ -954,8 +957,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             if (sbVerticalVisible)
             {
-                sbVertical.Minimum = targetRectangle.Y;
-                sbVertical.Maximum = targetRectangle.Bottom;
+                if (isRtl)
+                {
+                    targetLocation.X += scrollbarSize.Width;
+                    clientLocation.X = scrollbarSize.Width;
+                }
+
+                sbVertical.Minimum = targetLocation.Y;
+                sbVertical.Maximum = targetLocation.Y + scaledSize.Height;
                 sbVertical.LargeChange = clientSize.Height;
                 sbVertical.SmallChange = this.ScaleSize(referenceScrollSize).Height;
                 sbVertical.Value = Math.Min(sbVertical.Value, sbVertical.Maximum - sbVertical.LargeChange);
@@ -966,8 +975,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             Cursor = sbHorizontalVisible || sbVerticalVisible ? Cursors.HandOpen : null;
             isDragging = false;
 
-            clientRectangle = new Rectangle(Point.Empty, clientSize);
+            clientRectangle = new Rectangle(clientLocation, clientSize);
             targetRectangle = new Rectangle(targetLocation, scaledSize);
+            if (!isRtl || !sbVerticalVisible)
+                return;
+
+            clientRectangle.X = scrollbarSize.Width;
         }
 
         private void PaintImage(Graphics g)
