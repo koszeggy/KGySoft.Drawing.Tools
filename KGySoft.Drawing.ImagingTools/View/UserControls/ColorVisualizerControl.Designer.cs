@@ -32,7 +32,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.lblAlpha = new System.Windows.Forms.Label();
             this.pnlAlpha = new System.Windows.Forms.Panel();
             this.tbAlpha = new System.Windows.Forms.TrackBar();
-            this.tsMenu = new KGySoft.Drawing.ImagingTools.View.Controls.ScalingToolStrip();
+            this.tsMenu = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedToolStrip();
             this.btnSelectColor = new System.Windows.Forms.ToolStripButton();
             this.txtColor = new System.Windows.Forms.TextBox();
             this.colorDialog = new System.Windows.Forms.ColorDialog();
@@ -297,7 +297,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         #endregion
 
         private System.Windows.Forms.Panel pnlControls;
-        private ScalingToolStrip tsMenu;
+        private AdvancedToolStrip tsMenu;
         private System.Windows.Forms.TableLayoutPanel tblColor;
         private System.Windows.Forms.Label lblRed;
         private System.Windows.Forms.Panel pnlRed;

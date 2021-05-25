@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: ScalingToolStrip.cs
+//  File: AdvancedToolStrip.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2019 - All Rights Reserved
 //
@@ -22,18 +22,20 @@ using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using KGySoft.Drawing.ImagingTools.View.Components;
 using KGySoft.Drawing.ImagingTools.WinApi;
+using KGySoft.Reflection;
 
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
     /// <summary>
-    /// A <see cref="ToolStrip"/> that can scale its content regardless of .NET version and app.config settings.
+    /// A <see cref="ToolStrip"/> with some additional features:
+    /// - It can scale its content regardless of .NET version and app.config settings.
+    /// - Custom renderer for checked state and scaled arrows.
+    /// - Tool tip supports right-to-left
     /// </summary>
-    internal class ScalingToolStrip : ToolStrip
+    internal class AdvancedToolStrip : ToolStrip
     {
-        #region Nested classes
-
         #region ScalingToolStripMenuRenderer class
 
         private class ScalingToolStripMenuRenderer : ToolStripProfessionalRenderer
@@ -177,8 +179,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #endregion
 
-        #endregion
-
         #region Fields
 
         #region Static Fields
@@ -189,6 +189,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Instance Fields
 
+        private readonly ToolTip toolTip;
+
         private DockStyle explicitDock = DockStyle.Top;
         private bool isAdjustingRtl;
 
@@ -198,15 +200,27 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Constructors
 
-        public ScalingToolStrip()
+        public AdvancedToolStrip()
         {
             ImageScalingSize = Size.Round(this.ScaleSize(referenceSize));
             Renderer = new ScalingToolStripMenuRenderer();
+            toolTip = (ToolTip)Reflector.GetProperty(this, nameof(ToolTip))!;
+            toolTip.AutoPopDelay = 10_000;
+            toolTip.OwnerDraw = true;
+            toolTip.Draw += ToolTip_Draw;
         }
 
         #endregion
 
         #region Methods
+
+        #region Static Methods
+
+        private static void ToolTip_Draw(object sender, DrawToolTipEventArgs e) => e.DrawToolTipAdvanced();
+
+        #endregion
+
+        #region Instance Methods
 
         protected override void WndProc(ref Message m)
         {
@@ -250,6 +264,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             isAdjustingRtl = false;
         }
 
-        #endregion  
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+                toolTip.Draw -= ToolTip_Draw;
+            base.Dispose(disposing);
+        }
+
+        #endregion
+
+        #endregion
     }
 }

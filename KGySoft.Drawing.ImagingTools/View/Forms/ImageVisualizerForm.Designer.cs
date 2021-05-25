@@ -27,7 +27,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.imageViewer = new KGySoft.Drawing.ImagingTools.View.Controls.ImageViewer();
             this.lblNotification = new KGySoft.Drawing.ImagingTools.View.Controls.NotificationLabel();
             this.splitter = new System.Windows.Forms.Splitter();
-            this.tsMenu = new KGySoft.Drawing.ImagingTools.View.Controls.ScalingToolStrip();
+            this.tsMenu = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedToolStrip();
             this.btnZoom = new ZoomSplitButton();
             this.btnAntiAlias = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -420,7 +420,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private System.Windows.Forms.ToolStripMenuItem miBackColorWhite;
         private System.Windows.Forms.ToolStripMenuItem miBackColorBlack;
         private System.Windows.Forms.ToolStripMenuItem miShowPalette;
-        protected KGySoft.Drawing.ImagingTools.View.Controls.ScalingToolStrip tsMenu;
+        protected KGySoft.Drawing.ImagingTools.View.Controls.AdvancedToolStrip tsMenu;
         protected System.Windows.Forms.TextBox txtInfo;
         private KGySoft.Drawing.ImagingTools.View.Controls.NotificationLabel lblNotification;
         private ToolStripSeparator toolStripSeparator2;

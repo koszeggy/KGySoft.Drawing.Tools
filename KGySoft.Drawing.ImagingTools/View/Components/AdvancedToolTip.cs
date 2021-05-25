@@ -50,18 +50,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
 
         #region Static Methods
 
-        private static void AdvancedToolTip_Draw(object sender, DrawToolTipEventArgs e)
-        {
-            // same as DrawBackground but will not recreate the brush again and again
-            e.Graphics.FillRectangle(SystemBrushes.Info, e.Bounds);
-            e.DrawBorder();
-
-            var flags = TextFormatFlags.HidePrefix | TextFormatFlags.VerticalCenter;
-            if (LanguageSettings.DisplayLanguage.TextInfo.IsRightToLeft)
-                flags |= TextFormatFlags.RightToLeft | TextFormatFlags.Right;
-
-            e.DrawText(flags);
-        }
+        private static void AdvancedToolTip_Draw(object sender, DrawToolTipEventArgs e) => e.DrawToolTipAdvanced();
 
         #endregion
 
