@@ -23,7 +23,7 @@ using System.Windows.Forms;
 
 #endregion
 
-namespace KGySoft.Drawing.ImagingTools.View.Controls
+namespace KGySoft.Drawing.ImagingTools.View.Components
 {
     /// <summary>
     /// A <see cref="ToolStripSplitButton"/> whose button part can be checked.

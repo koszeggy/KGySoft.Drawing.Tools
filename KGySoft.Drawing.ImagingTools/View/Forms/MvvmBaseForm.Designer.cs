@@ -2,13 +2,13 @@
 {
     partial class MvvmBaseForm<TViewModel>
     {
-        private System.Windows.Forms.ToolTip toolTip;
+        private KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolTip toolTip;
         private System.ComponentModel.IContainer components;
 
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.toolTip = new KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolTip(this.components);
             this.SuspendLayout();
             // 
             // toolTip

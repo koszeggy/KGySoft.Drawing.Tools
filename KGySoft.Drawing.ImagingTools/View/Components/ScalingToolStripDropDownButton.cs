@@ -21,7 +21,7 @@ using System.Windows.Forms;
 
 #endregion
 
-namespace KGySoft.Drawing.ImagingTools.View.Controls
+namespace KGySoft.Drawing.ImagingTools.View.Components
 {
     /// <summary>
     /// A <see cref="ToolStripDropDownButton"/> that can scale its arrow regardless of .NET version and app.config settings.

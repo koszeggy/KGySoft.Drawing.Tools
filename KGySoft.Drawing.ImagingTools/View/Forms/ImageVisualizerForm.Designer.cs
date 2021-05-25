@@ -1,4 +1,5 @@
 ﻿using System.Windows.Forms;
+using KGySoft.Drawing.ImagingTools.View.Components;
 using KGySoft.Drawing.ImagingTools.View.Controls;
 
 namespace KGySoft.Drawing.ImagingTools.View.Forms
@@ -27,21 +28,21 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.lblNotification = new KGySoft.Drawing.ImagingTools.View.Controls.NotificationLabel();
             this.splitter = new System.Windows.Forms.Splitter();
             this.tsMenu = new KGySoft.Drawing.ImagingTools.View.Controls.ScalingToolStrip();
-            this.btnZoom = new KGySoft.Drawing.ImagingTools.View.Controls.ZoomSplitButton();
+            this.btnZoom = new ZoomSplitButton();
             this.btnAntiAlias = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.btnOpen = new System.Windows.Forms.ToolStripButton();
             this.btnSave = new System.Windows.Forms.ToolStripButton();
             this.btnClear = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.btnColorSettings = new KGySoft.Drawing.ImagingTools.View.Controls.ScalingToolStripDropDownButton();
+            this.btnColorSettings = new ScalingToolStripDropDownButton();
             this.miBackColor = new System.Windows.Forms.ToolStripMenuItem();
             this.miBackColorDefault = new System.Windows.Forms.ToolStripMenuItem();
             this.miBackColorWhite = new System.Windows.Forms.ToolStripMenuItem();
             this.miBackColorBlack = new System.Windows.Forms.ToolStripMenuItem();
             this.miShowPalette = new System.Windows.Forms.ToolStripMenuItem();
             this.miCountColors = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnEdit = new KGySoft.Drawing.ImagingTools.View.Controls.ScalingToolStripDropDownButton();
+            this.btnEdit = new ScalingToolStripDropDownButton();
             this.miRotateLeft = new System.Windows.Forms.ToolStripMenuItem();
             this.miRotateRight = new System.Windows.Forms.ToolStripMenuItem();
             this.miResizeBitmap = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,7 +57,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.btnPrev = new System.Windows.Forms.ToolStripButton();
             this.btnNext = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-            this.btnConfiguration = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedToolStripSplitButton();
+            this.btnConfiguration = new AdvancedToolStripSplitButton();
             this.txtInfo = new System.Windows.Forms.TextBox();
             this.miManageInstallations = new System.Windows.Forms.ToolStripMenuItem();
             this.miLanguageSettings = new System.Windows.Forms.ToolStripMenuItem();
@@ -400,7 +401,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         #endregion
 
         private KGySoft.Drawing.ImagingTools.View.Controls.ImageViewer imageViewer;
-        private KGySoft.Drawing.ImagingTools.View.Controls.ZoomSplitButton btnZoom;
+        private ZoomSplitButton btnZoom;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton btnSave;
         private System.Windows.Forms.ToolStripButton btnOpen;
@@ -413,7 +414,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private System.Windows.Forms.SaveFileDialog dlgSave;
         private System.Windows.Forms.Splitter splitter;
         private System.Windows.Forms.Timer timerPlayer;
-        private KGySoft.Drawing.ImagingTools.View.Controls.ScalingToolStripDropDownButton btnColorSettings;
+        private ScalingToolStripDropDownButton btnColorSettings;
         private System.Windows.Forms.ToolStripMenuItem miBackColor;
         private System.Windows.Forms.ToolStripMenuItem miBackColorDefault;
         private System.Windows.Forms.ToolStripMenuItem miBackColorWhite;

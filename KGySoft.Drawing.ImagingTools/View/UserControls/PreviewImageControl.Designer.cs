@@ -1,4 +1,6 @@
-﻿namespace KGySoft.Drawing.ImagingTools.View.UserControls
+﻿using KGySoft.Drawing.ImagingTools.View.Components;
+
+namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
     partial class PreviewImageControl
     {
@@ -18,7 +20,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PreviewImageControl));
             this.ivPreview = new KGySoft.Drawing.ImagingTools.View.Controls.ImageViewer();
             this.tsMenu = new KGySoft.Drawing.ImagingTools.View.Controls.ScalingToolStrip();
-            this.btnZoom = new KGySoft.Drawing.ImagingTools.View.Controls.ZoomSplitButton();
+            this.btnZoom = new ZoomSplitButton();
             this.btnAntiAlias = new System.Windows.Forms.ToolStripButton();
             this.btnShowOriginal = new System.Windows.Forms.ToolStripButton();
             this.tsMenu.SuspendLayout();
@@ -85,7 +87,7 @@
         #endregion
 
         private Controls.ScalingToolStrip tsMenu;
-        private Controls.ZoomSplitButton btnZoom;
+        private ZoomSplitButton btnZoom;
         private System.Windows.Forms.ToolStripButton btnAntiAlias;
         private Controls.ImageViewer ivPreview;
         private System.Windows.Forms.ToolStripButton btnShowOriginal;
