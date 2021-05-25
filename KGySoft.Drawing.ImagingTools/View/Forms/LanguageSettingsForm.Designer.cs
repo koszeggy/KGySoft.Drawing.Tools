@@ -30,7 +30,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.okCancelApplyButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelApplyButtons();
+            this.okCancelApplyButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
             this.gbAllowResxResources = new KGySoft.Drawing.ImagingTools.View.Controls.CheckGroupBox();
             this.gbDisplayLanguage = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -46,6 +46,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // 
             // okCancelApplyButtons
             // 
+            this.okCancelApplyButtons.ApplyButtonVisible = true;
             this.okCancelApplyButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.okCancelApplyButtons.Location = new System.Drawing.Point(3, 108);
             this.okCancelApplyButtons.Name = "okCancelApplyButtons";
@@ -165,7 +166,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #endregion
 
-        private UserControls.OkCancelApplyButtons okCancelApplyButtons;
+        private UserControls.OkCancelButtons okCancelApplyButtons;
         private KGySoft.Drawing.ImagingTools.View.Controls.CheckGroupBox gbAllowResxResources;
         private System.Windows.Forms.CheckBox chbExistingResourcesOnly;
         private System.Windows.Forms.ToolTip toolTip;

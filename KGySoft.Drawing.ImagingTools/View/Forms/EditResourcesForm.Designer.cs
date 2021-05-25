@@ -34,6 +34,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.gbResourceEntries = new System.Windows.Forms.GroupBox();
             this.gridResources = new System.Windows.Forms.DataGridView();
+            this.colResourceKey = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colOriginalText = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colTranslatedText = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.resourceEntryBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.gbResourceFile = new System.Windows.Forms.GroupBox();
             this.cmbResourceFiles = new System.Windows.Forms.ComboBox();
@@ -43,10 +46,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.txtOriginalText = new System.Windows.Forms.TextBox();
             this.gbTranslatedText = new System.Windows.Forms.GroupBox();
             this.txtTranslatedText = new System.Windows.Forms.TextBox();
-            this.okCancelApplyButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelApplyButtons();
-            this.colResourceKey = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colOriginalText = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colTranslatedText = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.okCancelApplyButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
             this.gbResourceEntries.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridResources)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.resourceEntryBindingSource)).BeginInit();
@@ -93,6 +93,28 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.gridResources.Name = "gridResources";
             this.gridResources.Size = new System.Drawing.Size(572, 93);
             this.gridResources.TabIndex = 3;
+            // 
+            // colResourceKey
+            // 
+            this.colResourceKey.DataPropertyName = "Key";
+            this.colResourceKey.HeaderText = "colResourceKey";
+            this.colResourceKey.Name = "colResourceKey";
+            this.colResourceKey.ReadOnly = true;
+            // 
+            // colOriginalText
+            // 
+            this.colOriginalText.DataPropertyName = "OriginalText";
+            this.colOriginalText.HeaderText = "colOriginalText";
+            this.colOriginalText.Name = "colOriginalText";
+            this.colOriginalText.ReadOnly = true;
+            this.colOriginalText.Width = 200;
+            // 
+            // colTranslatedText
+            // 
+            this.colTranslatedText.DataPropertyName = "TranslatedText";
+            this.colTranslatedText.HeaderText = "colTranslatedText";
+            this.colTranslatedText.Name = "colTranslatedText";
+            this.colTranslatedText.Width = 200;
             // 
             // resourceEntryBindingSource
             // 
@@ -191,35 +213,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.txtTranslatedText.TabIndex = 1;
             this.txtTranslatedText.WordWrap = false;
             // 
-            // okCancelButtons
+            // okCancelApplyButtons
             // 
+            this.okCancelApplyButtons.ApplyButtonVisible = true;
             this.okCancelApplyButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.okCancelApplyButtons.Location = new System.Drawing.Point(3, 268);
             this.okCancelApplyButtons.Name = "okCancelApplyButtons";
             this.okCancelApplyButtons.Size = new System.Drawing.Size(578, 40);
             this.okCancelApplyButtons.TabIndex = 1;
-            // 
-            // colResourceKey
-            // 
-            this.colResourceKey.DataPropertyName = "Key";
-            this.colResourceKey.HeaderText = "colResourceKey";
-            this.colResourceKey.Name = "colResourceKey";
-            this.colResourceKey.ReadOnly = true;
-            // 
-            // colOriginalText
-            // 
-            this.colOriginalText.DataPropertyName = "OriginalText";
-            this.colOriginalText.HeaderText = "colOriginalText";
-            this.colOriginalText.Name = "colOriginalText";
-            this.colOriginalText.ReadOnly = true;
-            this.colOriginalText.Width = 200;
-            // 
-            // colTranslatedText
-            // 
-            this.colTranslatedText.DataPropertyName = "TranslatedText";
-            this.colTranslatedText.HeaderText = "colTranslatedText";
-            this.colTranslatedText.Name = "colTranslatedText";
-            this.colTranslatedText.Width = 200;
             // 
             // EditResourcesForm
             // 
@@ -251,7 +252,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #endregion
 
-        private UserControls.OkCancelApplyButtons okCancelApplyButtons;
+        private UserControls.OkCancelButtons okCancelApplyButtons;
         private System.Windows.Forms.GroupBox gbResourceEntries;
         private System.Windows.Forms.DataGridView gridResources;
         private System.Windows.Forms.TableLayoutPanel pnlEditResourceEntry;

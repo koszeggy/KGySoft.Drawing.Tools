@@ -47,12 +47,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Update="View\Controls\AdvancedToolStripSplitButton.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="View\UserControls\OkCancelApplyButtons.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
   </ItemGroup>
 
   <ItemGroup>

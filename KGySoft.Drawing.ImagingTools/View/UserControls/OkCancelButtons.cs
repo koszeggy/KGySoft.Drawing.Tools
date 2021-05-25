@@ -16,18 +16,46 @@
 
 #region Usings
 
+using System.ComponentModel;
 using System.Windows.Forms;
 
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    internal partial class OkCancelButtons : BaseUserControl
+    internal sealed partial class OkCancelButtons : BaseUserControl
     {
+        #region Fields
+
+        private bool isApplyVisible;
+
+        #endregion
+
         #region Properties
+
+        #region Public Properties
+
+        [DefaultValue(false)]
+        public bool ApplyButtonVisible
+        {
+            get => isApplyVisible;
+            set
+            {
+                if (isApplyVisible == value)
+                    return;
+                ApplyButton.Visible = isApplyVisible = value;
+            }
+        }
+
+        #endregion
+
+        #region Internal Properties
 
         internal Button OKButton => btnOK;
         internal Button CancelButton => btnCancel;
+        internal Button ApplyButton => btnApply;
+
+        #endregion
 
         #endregion
 
@@ -35,6 +63,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         public OkCancelButtons()
         {
+            AutoScaleMode = AutoScaleMode.Inherit;
             InitializeComponent();
         }
 
