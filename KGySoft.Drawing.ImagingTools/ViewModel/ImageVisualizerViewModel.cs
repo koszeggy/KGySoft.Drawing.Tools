@@ -969,7 +969,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             string suggestedExt = filters[((filterIndex - 1) << 1) + 1].ToUpperInvariant();
             if (suggestedExt.Split(';').Contains('*' + actualExt))
                 return true;
-            return Confirm(Res.ConfirmMessageSaveFileExtension(Path.GetFileName(fileName), filters[(filterIndex - 1) << 1]));
+            return Confirm(Res.ConfirmMessageSaveFileExtension(Path.GetFileName(fileName), filters[(filterIndex - 1) << 1]), false);
         }
 
         private void SetCurrentImage(Bitmap? image)

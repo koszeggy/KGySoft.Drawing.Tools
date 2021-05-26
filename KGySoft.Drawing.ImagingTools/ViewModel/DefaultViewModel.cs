@@ -58,7 +58,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             base.ViewLoaded();
         }
 
-        internal bool ConfirmIfModified() => !IsModified || Confirm(Res.ConfirmMessageDiscardChanges);
+        internal bool ConfirmIfModified() => !IsModified || Confirm(Res.ConfirmMessageDiscardChanges, false);
 
         #endregion
 

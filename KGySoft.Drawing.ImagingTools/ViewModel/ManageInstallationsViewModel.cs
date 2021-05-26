@@ -210,10 +210,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnInstallCommand()
         {
-            if (currentStatus.Installed && !Confirm(Res.ConfirmMessageOverwriteInstallation))
+            if (currentStatus.Installed && !Confirm(Res.ConfirmMessageOverwriteInstallation, InstallationManager.AvailableVersion.Version > currentStatus.Version))
                 return;
 #if NETCOREAPP
-            if (!Confirm(Res.ConfirmMessageNetCoreVersion))
+            if (!Confirm(Res.ConfirmMessageNetCoreVersion, false))
                 return;
 #endif
 
@@ -227,7 +227,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnRemoveCommand()
         {
-            if (!Confirm(Res.ConfirmMessageRemoveInstallation))
+            if (!Confirm(Res.ConfirmMessageRemoveInstallation, false))
                 return;
             InstallationManager.Uninstall(currentStatus.Path, out string? error);
             if (error != null)
