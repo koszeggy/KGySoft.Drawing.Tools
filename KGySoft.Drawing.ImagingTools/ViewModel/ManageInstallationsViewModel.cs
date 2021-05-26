@@ -188,6 +188,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 StatusText = currentStatus.TargetFramework != null ? Res.InstallationsStatusInstalledWithTargetFramework(currentStatus.Version, currentStatus.TargetFramework)
                     : currentStatus.RuntimeVersion != null ? Res.InstallationsStatusInstalledWithRuntime(currentStatus.Version, currentStatus.RuntimeVersion)
                     : Res.InstallationsStatusInstalled(currentStatus.Version);
+            RemoveCommandState.Enabled = currentStatus.Installed;
         }
 
         private void SelectFolder()
