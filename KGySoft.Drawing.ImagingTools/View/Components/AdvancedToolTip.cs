@@ -16,6 +16,7 @@
 
 #region Usings
 
+using System;
 using System.ComponentModel;
 using System.Windows.Forms;
 
@@ -31,17 +32,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
     {
         #region Constructors
 
-        public AdvancedToolTip()
-        {
-            OwnerDraw = true;
-            Draw += AdvancedToolTip_Draw;
-        }
+        public AdvancedToolTip() => Initialize();
 
-        public AdvancedToolTip(IContainer container) : base(container)
-        {
-            OwnerDraw = true;
-            Draw += AdvancedToolTip_Draw;
-        }
+        public AdvancedToolTip(IContainer container) : base(container) => Initialize();
 
         #endregion
 
@@ -58,10 +51,32 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
         protected override void Dispose(bool disposing)
         {
             if (disposing)
+            {
                 Draw -= AdvancedToolTip_Draw;
+                LanguageSettings.DisplayLanguageChanged -= LanguageSettings_DisplayLanguageChanged;
+            }
 
             base.Dispose(disposing);
         }
+
+        #endregion
+
+        #region Private Methods
+
+        private void Initialize()
+        {
+            LanguageSettings.DisplayLanguageChanged += LanguageSettings_DisplayLanguageChanged;
+            Draw += AdvancedToolTip_Draw;
+            ResetOwnerDraw();
+        }
+
+        private void ResetOwnerDraw() => OwnerDraw = LanguageSettings.DisplayLanguage.TextInfo.IsRightToLeft;
+
+        #endregion
+
+        #region Event Handlers
+
+        private void LanguageSettings_DisplayLanguageChanged(object sender, EventArgs e) => ResetOwnerDraw();
 
         #endregion
 

@@ -214,7 +214,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 return;
             toolTip = (ToolTip)Reflector.GetProperty(this, nameof(ToolTip))!;
             toolTip.AutoPopDelay = 10_000;
-            toolTip.OwnerDraw = true;
+
+            // Effectively used only when RTL is true because OwnerDraw is enabled only in that case
             toolTip.Draw += ToolTip_Draw;
         }
 
@@ -258,15 +259,18 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         protected override void OnRightToLeftChanged(EventArgs e)
         {
             base.OnRightToLeftChanged(e);
+            bool isRtl = RightToLeft == RightToLeft.Yes;
+            if (toolTip != null)
+                toolTip.OwnerDraw = isRtl;
+
             DockStyle dock = Dock;
             if (dock is not (DockStyle.Left or DockStyle.Right))
                 return;
 
-            bool isMirrored = RightToLeft == RightToLeft.Yes;
-            if (isMirrored ^ dock == explicitDock)
+            if (isRtl ^ dock == explicitDock)
                 return;
             isAdjustingRtl = true;
-            Dock = isMirrored
+            Dock = isRtl
                 ? explicitDock == DockStyle.Left ? DockStyle.Right : DockStyle.Left
                 : explicitDock;
             isAdjustingRtl = false;
