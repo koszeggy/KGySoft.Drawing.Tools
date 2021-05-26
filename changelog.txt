@@ -16,8 +16,13 @@
 + Zooming is now possible also with keyboard shortcuts, the Auto Zoom button has now a drop-down part for the
   additional options.
 + Supporting localization from .resx files with editing and on-the-fly application.
+  Note: Right-to-left languages are also supported though with some limitations, especially under Linux/Mono.
+  On Windows some validation tool tips are not aligned right but otherwise the layout is arranged correctly.
 * Manual zooming is enabled even if Auto Zoom is on; this turns off Auto Zoom automatically.
 * Turning smoothing of zoomed images on/off affects also shrunk images (previously affected enlarged images only).
+- Resize: Preventing that invalid sizes replace current text to 0
+- Manage Installations:
+  - Remove was always enabled even it there was no installed version
 - Fixing possible errors when closing forms while an async operation is still in progress.
 * API changes:
   * Members are annotated for using C# 8.0 nullable references
