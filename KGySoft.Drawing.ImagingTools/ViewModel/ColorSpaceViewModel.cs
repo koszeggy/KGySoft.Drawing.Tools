@@ -227,9 +227,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             {
                 if (bpp <= 8 && bpp < originalBpp)
                     result.AddInfo(nameof(QuantizerSelectorViewModel.Quantizer), Res.InfoMessagePaletteAutoSelected(1 << bpp, pixelFormat));
-                else if (ditherer != null && pixelFormat.CanBeDithered())
+                else if (changePixelFormat && ditherer != null && pixelFormat.CanBeDithered() && !(bpp <= 8 && bpp >= originalBpp))
                     result.AddInfo(nameof(QuantizerSelectorViewModel.Quantizer), Res.InfoMessageQuantizerAutoSelected(pixelFormat));
-                else if (!useDitherer && originalHasAlpha && !pixelFormat.HasAlpha())
+                else if (changePixelFormat && !useDitherer && originalHasAlpha && !pixelFormat.HasAlpha())
                     result.AddInfo(nameof(QuantizerSelectorViewModel.Quantizer), Res.InfoMessageAlphaTurnsBlack);
             }
             else if (bppHint > originalBpp)
