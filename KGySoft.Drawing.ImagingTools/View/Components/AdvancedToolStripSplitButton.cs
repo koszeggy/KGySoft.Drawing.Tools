@@ -116,7 +116,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
         {
             if (CheckOnClick)
                 Checked = !Checked;
-            base.OnButtonClick(e);
+            if (OSUtils.IsWindows)
+                base.OnButtonClick(e);
+            else
+                DefaultItem?.PerformClick();
         }
 
         protected virtual void OnCheckedChanged(EventArgs e) => (Events[nameof(CheckedChanged)] as EventHandler)?.Invoke(this, e);

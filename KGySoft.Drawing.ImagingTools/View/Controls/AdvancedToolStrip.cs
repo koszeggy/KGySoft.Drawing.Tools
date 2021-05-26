@@ -152,6 +152,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 Rectangle rect = btn.ButtonBounds;
                 if (!OSUtils.IsWindows)
                     rect.Location = Point.Empty;
+                else if (e.Item.RightToLeft == RightToLeft.Yes)
+                    rect.Offset(-1, 0);
 
                 if (btn.Enabled && (btn.Checked || !btn.DropDownButtonPressed))
                 {
