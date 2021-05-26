@@ -33,6 +33,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
     /// - It can scale its content regardless of .NET version and app.config settings.
     /// - Custom renderer for checked state and scaled arrows.
     /// - Tool tip supports right-to-left
+    /// - Clicking works even if the owner form was not active
     /// </summary>
     internal class AdvancedToolStrip : ToolStrip
     {
@@ -189,7 +190,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Instance Fields
 
-        private readonly ToolTip toolTip;
+        private readonly ToolTip? toolTip;
 
         private DockStyle explicitDock = DockStyle.Top;
         private bool isAdjustingRtl;
@@ -204,6 +205,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         {
             ImageScalingSize = Size.Round(this.ScaleSize(referenceSize));
             Renderer = new ScalingToolStripMenuRenderer();
+
+            toolTip = Reflector.TryGetProperty(this, nameof(ToolTip), out object? result) ? (ToolTip)result!
+                : Reflector.TryGetField(this, "tooltip_window", out result) ? (ToolTip)result!
+                : null;
+
+            if (toolTip == null)
+                return;
             toolTip = (ToolTip)Reflector.GetProperty(this, nameof(ToolTip))!;
             toolTip.AutoPopDelay = 10_000;
             toolTip.OwnerDraw = true;
@@ -267,7 +275,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-                toolTip.Draw -= ToolTip_Draw;
+            {
+                if (toolTip != null)
+                    toolTip.Draw -= ToolTip_Draw;
+            }
+
             base.Dispose(disposing);
         }
 
