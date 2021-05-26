@@ -143,6 +143,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
             // VM.Progress -> progress.Progress
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Progress), nameof(progress.Progress), progress);
+
+            // this.RightToLeft -> errorProvider/warningProvider/infoProvider.RightToLeft
+            CommandBindings.AddPropertyBinding(this, nameof(RightToLeft), nameof(ErrorProvider.RightToLeft),
+                rtl => rtl is RightToLeft.Yes, errorProvider, warningProvider, infoProvider);
         }
 
         #endregion
