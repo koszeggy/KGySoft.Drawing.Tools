@@ -132,7 +132,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         try
                         {
                             // Converting non supported or too slow pixel formats
-                            if (pixelFormat.In(convertedFormats) || pixelFormat != PixelFormat.Format32bppPArgb && (image.Width > generateThreshold || image.Height > generateThreshold))
+                            if (pixelFormat.In(convertedFormats) || pixelFormat != PixelFormat.Format32bppPArgb && (image.Width > sizeThreshold || image.Height > sizeThreshold))
                             {
                                 safeDefaultImage = image.ConvertPixelFormat(PixelFormat.Format32bppPArgb);
                                 isClonedSafeDefaultImage = true;
@@ -199,7 +199,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 Size size = owner.targetRectangle.Size;
                 bool isGenerateNeeded = owner.isMetafile
                     ? owner.smoothZooming
-                    : owner.smoothZooming && owner.zoom < 1f && (owner.imageSize.Width >= generateThreshold || owner.imageSize.Height >= generateThreshold);
+                    : owner.smoothZooming && owner.zoom < 1f && (owner.imageSize.Width > sizeThreshold || owner.imageSize.Height > sizeThreshold);
 
                 if (!isGenerateNeeded || size.Width < 1 || size.Height < 1)
                 {
@@ -515,7 +515,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Constants
 
-        private const int generateThreshold = 1000;
+        private const int sizeThreshold = 1024;
 
         #endregion
 
@@ -991,7 +991,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 dest.X -= sbHorizontal.Value;
             if (sbVerticalVisible)
                 dest.Y -= sbVertical.Value;
-            g.InterpolationMode = !isMetafile && (smoothZooming && zoom > 1f || smoothZooming && zoom < 1f && imageSize.Width < generateThreshold && imageSize.Height < generateThreshold) ? InterpolationMode.HighQualityBicubic : InterpolationMode.NearestNeighbor;
+
+            // metafile or smoothing is off (smoothed metafile is generated async so it replaces the aliased result after some delay): NN
+            g.InterpolationMode = isMetafile || !smoothZooming ? InterpolationMode.NearestNeighbor
+                // large zoom or small shrunk image: BC because these cases it's not so slow
+                : zoom >= 4f || zoom < 1f && imageSize.Width <= sizeThreshold && imageSize.Height <= sizeThreshold ? InterpolationMode.HighQualityBicubic
+                // small zoom: BL for large images to prevent heavy lagging; otherwise, BC
+                : zoom > 1f ? imageSize.Width > sizeThreshold || imageSize.Height > sizeThreshold ? InterpolationMode.HighQualityBilinear : InterpolationMode.HighQualityBicubic
+                // anything else, including large shrunk images: NN (the good quality preview is generated async so it replaces the NN result after some delay)
+                : InterpolationMode.NearestNeighbor;
+
             g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
             // This lock ensures that no disposed image is painted. The generator also locks on itself when frees the cached preview.
