@@ -16,6 +16,7 @@
 
 #region Usings
 
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -76,6 +77,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         #region Methods
 
         #region Protected Methods
+
+        protected override void OnLoad(EventArgs e)
+        {
+            tsMenu.FixAppearance();
+            base.OnLoad(e);
+        }
 
         protected override void Dispose(bool disposing)
         {
