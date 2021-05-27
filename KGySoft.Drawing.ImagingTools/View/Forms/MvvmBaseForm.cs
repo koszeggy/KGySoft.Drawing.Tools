@@ -18,6 +18,7 @@
 
 using System;
 using System.Drawing;
+using System.Threading;
 using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
@@ -31,6 +32,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         where TViewModel : IDisposable // BUG: Actually should be ViewModelBase but WinForms designer with derived forms dies from that
     {
         #region Fields
+
+        private readonly int threadId;
+        private readonly ManualResetEventSlim handleCreated;
 
         private bool isClosing;
         private bool isLoaded;
@@ -63,6 +67,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected MvvmBaseForm(TViewModel viewModel)
         {
+            threadId = Thread.CurrentThread.ManagedThreadId;
+            handleCreated = new ManualResetEventSlim(false);
             ApplyRightToLeft();
             InitializeComponent();
 
@@ -130,6 +136,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             VM.ViewLoaded();
         }
 
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            handleCreated.Set();
+        }
+
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             // Changing RightToLeft causes the dialog close. We let it happen because the parent may also change,
@@ -174,12 +186,20 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             if (isClosing || Disposing || IsDisposed)
                 return;
+
             try
             {
-                if (InvokeRequired)
-                    Invoke(action);
-                else
+                // no invoke is required (not using InvokeRequired because that may return false if handle is not created yet)
+                if (threadId == Thread.CurrentThread.ManagedThreadId)
+                {
                     action.Invoke();
+                    return;
+                }
+
+                if (!handleCreated.IsSet)
+                    handleCreated.Wait();
+
+                Invoke(action);
             }
             catch (ObjectDisposedException)
             {

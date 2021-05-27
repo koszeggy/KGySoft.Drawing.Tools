@@ -228,9 +228,6 @@
   <data name="Text_CountingColors" xml:space="preserve">
     <value>Counting colors...</value>
   </data>
-  <data name="Text_OperationCanceled" xml:space="preserve">
-    <value>Operation has been canceled.</value>
-  </data>
   <data name="InfoText_SizeFormat" xml:space="preserve">
     <value>{{Width={0}, Height={1}}}</value>
   </data>

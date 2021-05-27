@@ -143,9 +143,6 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Counting colors...</summary>
         internal static string TextCountingColorsId => "Text_CountingColors";
 
-        /// <summary>Operation has been canceled.</summary>
-        internal static string TextOperationCanceledId => "Text_OperationCanceled";
-
         /// <summary>Color Count: {0}</summary>
         internal static string TextColorCountId => "Text_ColorCountFormat";
 

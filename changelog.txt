@@ -23,6 +23,7 @@
 + Image visualizer form: OK/Cancel buttons
 * Manual zooming is enabled even if Auto Zoom is on; this turns off Auto Zoom automatically.
 * Turning smoothing of zoomed images on/off affects also shrunk images (previously affected enlarged images only).
+- Color Count: Result was not always shown (and progress bar was not removed) if the operation ended very quickly.
 - Resize:
   - Preventing that invalid sizes replace current text to 0
   - Changing error provider associated controls so the layout is not messed up on Linux

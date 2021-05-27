@@ -95,15 +95,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // VM.DisplayText <-> lblCountColorsStatus.Text
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.DisplayText), nameof(lblCountColorsStatus.Text), lblCountColorsStatus);
 
-            // in lock because it is already running
-            lock (ViewModel.ProgressSyncRoot)
-            {
-                // VM.IsProcessing -> progress.ProgressVisible
-                CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsProcessing), nameof(progress.ProgressVisible), progress);
+            // VM.IsProcessing -> progress.ProgressVisible
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsProcessing), nameof(progress.ProgressVisible), progress);
 
-                // VM.Progress -> progress.Progress
-                CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Progress), nameof(progress.Progress), progress);
-            }
+            // VM.Progress -> progress.Progress
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Progress), nameof(progress.Progress), progress);
         }
 
         #endregion

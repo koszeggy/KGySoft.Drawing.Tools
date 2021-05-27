@@ -50,10 +50,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Fields
 
         private readonly DrawingProgressManager drawingProgressManager;
+        private readonly Bitmap bitmap;
         
         private volatile CountTask? task;
         private int? colorCount;
-        private string displayTextId;
+        private string displayTextId = default!;
         private object[]? displayTextArgs;
 
         #endregion
@@ -73,15 +74,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal CountColorsViewModel(Bitmap bitmap)
         {
-            if (bitmap == null)
-                throw new ArgumentNullException(nameof(bitmap), PublicResources.ArgumentNull);
+            this.bitmap = bitmap ?? throw new ArgumentNullException(nameof(bitmap), PublicResources.ArgumentNull);
             SetDisplayText(Res.TextCountingColorsId);
-            drawingProgressManager = new DrawingProgressManager(p =>
-            {
-                lock (ProgressSyncRoot)
-                    Progress = p;
-            });
-            BeginCountColors(bitmap);
+            drawingProgressManager = new DrawingProgressManager(p => Progress = p);
         }
 
         #endregion
@@ -117,13 +112,19 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         protected override bool AffectsModifiedState(string propertyName) => false;
 
+        internal override void ViewLoaded()
+        {
+            base.ViewLoaded();
+            BeginCountColors();
+        }
+
         protected override void ApplyDisplayLanguage() => UpdateDisplayText();
 
         #endregion
 
         #region Private Methods
 
-        private void BeginCountColors(Bitmap bitmap)
+        private void BeginCountColors()
         {
             IsProcessing = true;
             task = new CountTask { Bitmap = bitmap };
@@ -166,15 +167,17 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (task.IsCanceled)
                 colorCount = null;
 
-            SetModified(colorCount.HasValue);
+            // returning if task was canceled because cancel closes the UI
+            if (colorCount.HasValue)
+                SetModified(true);
+            else
+                return;
 
             // the execution of this method will be marshaled back to the UI thread
             void Action()
             {
                 if (error != null)
                     SetDisplayText(Res.ErrorMessageId, error.Message);
-                else if (colorCount == null)
-                    SetDisplayText(Res.TextOperationCanceledId);
                 else
                     SetDisplayText(Res.TextColorCountId, colorCount.Value);
                 IsProcessing = false;
