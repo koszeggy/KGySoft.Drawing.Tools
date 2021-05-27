@@ -16,9 +16,9 @@
         private void InitializeComponent()
         {
             this.pnlButtons = new System.Windows.Forms.FlowLayoutPanel();
+            this.btnApply = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnOK = new System.Windows.Forms.Button();
-            this.btnApply = new System.Windows.Forms.Button();
             this.pnlButtons.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -32,8 +32,20 @@
             this.pnlButtons.Location = new System.Drawing.Point(0, 0);
             this.pnlButtons.Name = "pnlButtons";
             this.pnlButtons.Padding = new System.Windows.Forms.Padding(3);
-            this.pnlButtons.Size = new System.Drawing.Size(260, 40);
+            this.pnlButtons.Size = new System.Drawing.Size(260, 35);
             this.pnlButtons.TabIndex = 0;
+            // 
+            // btnApply
+            // 
+            this.btnApply.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnApply.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btnApply.Location = new System.Drawing.Point(176, 6);
+            this.btnApply.Name = "btnApply";
+            this.btnApply.Size = new System.Drawing.Size(75, 23);
+            this.btnApply.TabIndex = 2;
+            this.btnApply.Text = "btnApply";
+            this.btnApply.UseVisualStyleBackColor = true;
+            this.btnApply.Visible = false;
             // 
             // btnCancel
             // 
@@ -59,25 +71,13 @@
             this.btnOK.Text = "btnOK";
             this.btnOK.UseVisualStyleBackColor = true;
             // 
-            // btnApply
-            // 
-            this.btnApply.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.btnApply.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnApply.Location = new System.Drawing.Point(176, 6);
-            this.btnApply.Name = "btnApply";
-            this.btnApply.Size = new System.Drawing.Size(75, 23);
-            this.btnApply.TabIndex = 2;
-            this.btnApply.Text = "btnApply";
-            this.btnApply.UseVisualStyleBackColor = true;
-            this.btnApply.Visible = false;
-            // 
             // OkCancelButtons
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.pnlButtons);
             this.Name = "OkCancelButtons";
-            this.Size = new System.Drawing.Size(260, 40);
+            this.Size = new System.Drawing.Size(260, 35);
             this.pnlButtons.ResumeLayout(false);
             this.ResumeLayout(false);
 

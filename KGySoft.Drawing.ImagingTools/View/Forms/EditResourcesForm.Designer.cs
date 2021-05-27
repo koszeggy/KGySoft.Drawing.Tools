@@ -219,7 +219,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.okCancelApplyButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.okCancelApplyButtons.Location = new System.Drawing.Point(3, 268);
             this.okCancelApplyButtons.Name = "okCancelApplyButtons";
-            this.okCancelApplyButtons.Size = new System.Drawing.Size(578, 40);
+            this.okCancelApplyButtons.Size = new System.Drawing.Size(578, 35);
             this.okCancelApplyButtons.TabIndex = 1;
             // 
             // EditResourcesForm

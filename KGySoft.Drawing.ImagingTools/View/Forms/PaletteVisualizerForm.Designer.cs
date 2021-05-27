@@ -69,7 +69,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.okCancelButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.okCancelButtons.Location = new System.Drawing.Point(0, 450);
             this.okCancelButtons.Name = "okCancelButtons";
-            this.okCancelButtons.Size = new System.Drawing.Size(247, 40);
+            this.okCancelButtons.Size = new System.Drawing.Size(247, 35);
             this.okCancelButtons.TabIndex = 2;
             // 
             // PaletteVisualizerForm
@@ -82,7 +82,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.Controls.Add(this.okCancelButtons);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.MaximumSize = new System.Drawing.Size(280, 32867);
-            this.MinimumSize = new System.Drawing.Size(255, 300);
+            this.MinimumSize = new System.Drawing.Size(255, 335);
             this.Name = "PaletteVisualizerForm";
             this.gbPalette.ResumeLayout(false);
             this.gbSelectedColor.ResumeLayout(false);

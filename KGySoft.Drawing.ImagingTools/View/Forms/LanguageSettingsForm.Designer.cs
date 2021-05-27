@@ -50,7 +50,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.okCancelApplyButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.okCancelApplyButtons.Location = new System.Drawing.Point(3, 108);
             this.okCancelApplyButtons.Name = "okCancelApplyButtons";
-            this.okCancelApplyButtons.Size = new System.Drawing.Size(298, 40);
+            this.okCancelApplyButtons.Size = new System.Drawing.Size(298, 35);
             this.okCancelApplyButtons.TabIndex = 1;
             // 
             // gbAllowResxResources

@@ -43,7 +43,7 @@
             this.okCancelButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.okCancelButtons.Location = new System.Drawing.Point(0, 149);
             this.okCancelButtons.Name = "okCancelButtons";
-            this.okCancelButtons.Size = new System.Drawing.Size(248, 40);
+            this.okCancelButtons.Size = new System.Drawing.Size(248, 35);
             this.okCancelButtons.TabIndex = 2;
             // 
             // previewImage
