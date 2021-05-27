@@ -38,6 +38,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             : base(viewModel)
         {
             InitializeComponent();
+            AcceptButton = okCancelButtons.OKButton;
+            CancelButton = okCancelButtons.CancelButton;
         }
 
         #endregion
@@ -155,6 +157,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             }
         }
 
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (DialogResult == DialogResult.Cancel)
+                ViewModel.SetModified(false);
+            base.OnFormClosing(e);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -224,7 +233,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SaveFileFilter), nameof(dlgSave.Filter), dlgSave);
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SaveFileFilterIndex), nameof(dlgSave.FilterIndex), dlgSave);
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SaveFileDefaultExtension), nameof(dlgSave.DefaultExt), dlgSave);
+
+            // VM.IsModified -> OKButton.Enabled
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsModified), nameof(okCancelButtons.OKButton.Enabled), okCancelButtons.OKButton);
         }
+
         private void InitCommandBindings()
         {
             // View
@@ -324,7 +337,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             int minHeight = new Size(16, 16).Scale(this.GetScale()).Height + SystemInformation.HorizontalScrollBarHeight;
             if (imageViewer.Height >= minHeight)
                 return;
-            txtInfo.Height = ClientSize.Height - tsMenu.Height - splitter.Height - minHeight;
+            int buttonsHeight = okCancelButtons.Visible ? okCancelButtons.Height : 0;
+            txtInfo.Height = ClientSize.Height - tsMenu.Height - splitter.Height - buttonsHeight - minHeight;
             PerformLayout();
         }
 

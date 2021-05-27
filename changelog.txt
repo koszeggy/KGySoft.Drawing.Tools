@@ -20,6 +20,7 @@
   On Windows some validation tool tips are not aligned right but otherwise the layout is arranged correctly.
 + Palette visualizer form: OK/Cancel buttons
 + Color visualizer form: OK/Cancel buttons
++ Image visualizer form: OK/Cancel buttons
 * Manual zooming is enabled even if Auto Zoom is on; this turns off Auto Zoom automatically.
 * Turning smoothing of zoomed images on/off affects also shrunk images (previously affected enlarged images only).
 - Resize:

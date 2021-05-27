@@ -65,6 +65,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             : base(viewModel)
         {
             InitializeComponent();
+            okCancelButtons.Visible = false;
         }
 
         #endregion
@@ -93,7 +94,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             if (e.CloseReason == CloseReason.UserClosing && ViewModel.IsModified)
+            {
                 e.Cancel = !ViewModel.ConfirmIfModified();
+                if (e.Cancel)
+                    DialogResult = DialogResult.None;
+            }
+
             base.OnFormClosing(e);
         }
 
