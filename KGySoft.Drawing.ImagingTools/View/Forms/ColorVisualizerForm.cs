@@ -33,6 +33,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             : base(viewModel)
         {
             InitializeComponent();
+            AcceptButton = okCancelButtons.OKButton;
+            CancelButton = okCancelButtons.CancelButton;
         }
 
         #endregion
@@ -91,6 +93,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             CommandBindings.Add(OnColorEditedCommand)
                 .AddSource(ucColorVisualizer, nameof(ucColorVisualizer.ColorEdited));
+            CommandBindings.Add(OnCancelCommand)
+                .AddSource(okCancelButtons.CancelButton, nameof(okCancelButtons.CancelButton.Click));
         }
 
         #endregion
@@ -103,6 +107,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 return;
             ViewModel.Color = ucColorVisualizer.Color;
         }
+
+        private void OnCancelCommand() => ViewModel.SetModified(false);
 
         #endregion
 
