@@ -18,6 +18,8 @@
 
 using System;
 using System.Globalization;
+using System.Windows.Forms;
+
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
@@ -40,9 +42,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             : base(viewModel)
         {
             InitializeComponent();
-
-            ValidationMapping[nameof(viewModel.Width)] = lblWidth;
-            ValidationMapping[nameof(viewModel.Height)] = lblHeight;
+            ValidationMapping[nameof(viewModel.Width)] = lblWidthPercent;
+            ValidationMapping[nameof(viewModel.Height)] = lblHeightPercent;
         }
 
         #endregion
@@ -118,21 +119,40 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.ByPixels), rbByPixels, nameof(rbByPixels.Checked));
             CommandBindings.AddPropertyBinding(ViewModel, nameof(VM.ByPixels), nameof(Enabled), txtWidthPx, txtHeightPx);
 
+            // Regular WinForms binding behaves a bit better because it does not clear the currently edited text box on parse error
+            // but it fails to sync the other properties properly on Linux/Mono so using KGy SOFT binding on non-Windows systems.
+
             // VM.WidthRatio <-> txtWidthPercent.Text
-            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.WidthRatio), txtWidthPercent, nameof(txtWidthPercent.Text),
-                FormatPercentage!, ParsePercentage!);
+            if (OSUtils.IsWindows)
+                AddWinFormsBinding(nameof(VM.WidthRatio), txtWidthPercent, nameof(txtWidthPercent.Text), FormatPercentage, ParsePercentage);
+            else
+                CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.WidthRatio), txtWidthPercent, nameof(txtWidthPercent.Text), FormatPercentage!, ParsePercentage!);
 
             // VM.HeightRatio <-> txtHeightPercent.Text
-            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.HeightRatio), txtHeightPercent, nameof(txtHeightPercent.Text),
-                FormatPercentage!, ParsePercentage!);
+            if (OSUtils.IsWindows)
+                AddWinFormsBinding(nameof(VM.HeightRatio), txtHeightPercent, nameof(txtHeightPercent.Text), FormatPercentage, ParsePercentage);
+            else
+                CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.HeightRatio), txtHeightPercent, nameof(txtHeightPercent.Text), FormatPercentage!, ParsePercentage!);
 
             // VM.Width <-> txtWidthPx.Text
-            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.Width), txtWidthPx, nameof(txtWidthPx.Text),
-                FormatInteger!, ParseInteger!);
+            if (OSUtils.IsWindows)
+                AddWinFormsBinding(nameof(VM.Width), txtWidthPx, nameof(txtWidthPx.Text), FormatInteger, ParseInteger);
+            else
+                CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.Width), txtWidthPx, nameof(txtWidthPx.Text), FormatInteger!, ParseInteger!);
 
             // VM.Height <-> txtHeightPx.Text
-            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.Height), txtHeightPx, nameof(txtHeightPx.Text),
-                FormatInteger!, ParseInteger!);
+            if (OSUtils.IsWindows)
+                AddWinFormsBinding(nameof(VM.Height), txtHeightPx, nameof(txtHeightPx.Text), FormatInteger, ParseInteger);
+            else
+                CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.Height), txtHeightPx, nameof(txtHeightPx.Text), FormatInteger!, ParseInteger!);
+        }
+
+        private void AddWinFormsBinding(string sourceName, IBindableComponent target, string propertyName, Func<object, object> format, Func<object, object> parse)
+        {
+            var binding = new Binding(propertyName, ViewModel, sourceName, true, DataSourceUpdateMode.OnPropertyChanged);
+            binding.Format += (_, e) => e.Value = format.Invoke(e.Value);
+            binding.Parse += (_, e) => e.Value = parse.Invoke(e.Value);
+            target.DataBindings.Add(binding);
         }
 
         #endregion

@@ -76,7 +76,7 @@
             this.tblNewSize.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tblNewSize.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tblNewSize.Size = new System.Drawing.Size(304, 137);
-            this.tblNewSize.TabIndex = 1;
+            this.tblNewSize.TabIndex = 0;
             // 
             // chbMaintainAspectRatio
             // 
@@ -87,7 +87,7 @@
             this.chbMaintainAspectRatio.Location = new System.Drawing.Point(103, 3);
             this.chbMaintainAspectRatio.Name = "chbMaintainAspectRatio";
             this.chbMaintainAspectRatio.Size = new System.Drawing.Size(198, 18);
-            this.chbMaintainAspectRatio.TabIndex = 10;
+            this.chbMaintainAspectRatio.TabIndex = 0;
             this.chbMaintainAspectRatio.Text = "chbMaintainAspectRatio";
             this.chbMaintainAspectRatio.UseVisualStyleBackColor = true;
             // 
@@ -98,7 +98,7 @@
             this.lblScalingMode.Location = new System.Drawing.Point(3, 108);
             this.lblScalingMode.Name = "lblScalingMode";
             this.lblScalingMode.Size = new System.Drawing.Size(94, 29);
-            this.lblScalingMode.TabIndex = 8;
+            this.lblScalingMode.TabIndex = 5;
             this.lblScalingMode.Text = "lblScalingMode";
             this.lblScalingMode.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -203,7 +203,7 @@
             this.rbByPixels.Location = new System.Drawing.Point(205, 30);
             this.rbByPixels.Name = "rbByPixels";
             this.rbByPixels.Size = new System.Drawing.Size(96, 18);
-            this.rbByPixels.TabIndex = 1;
+            this.rbByPixels.TabIndex = 2;
             this.rbByPixels.TabStop = true;
             this.rbByPixels.Text = "rbByPixels";
             this.rbByPixels.UseVisualStyleBackColor = true;
@@ -216,7 +216,7 @@
             this.rbByPercentage.Location = new System.Drawing.Point(103, 30);
             this.rbByPercentage.Name = "rbByPercentage";
             this.rbByPercentage.Size = new System.Drawing.Size(96, 18);
-            this.rbByPercentage.TabIndex = 0;
+            this.rbByPercentage.TabIndex = 1;
             this.rbByPercentage.TabStop = true;
             this.rbByPercentage.Text = "rbByPercentage";
             this.rbByPercentage.UseVisualStyleBackColor = true;
@@ -259,7 +259,7 @@
             this.lblWidth.Location = new System.Drawing.Point(3, 54);
             this.lblWidth.Name = "lblWidth";
             this.lblWidth.Size = new System.Drawing.Size(94, 27);
-            this.lblWidth.TabIndex = 2;
+            this.lblWidth.TabIndex = 3;
             this.lblWidth.Text = "lblWidth";
             this.lblWidth.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -270,7 +270,7 @@
             this.lblHeight.Location = new System.Drawing.Point(3, 81);
             this.lblHeight.Name = "lblHeight";
             this.lblHeight.Size = new System.Drawing.Size(94, 27);
-            this.lblHeight.TabIndex = 5;
+            this.lblHeight.TabIndex = 4;
             this.lblHeight.Text = "lblHeight";
             this.lblHeight.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -284,7 +284,7 @@
             this.cmbScalingMode.Location = new System.Drawing.Point(103, 111);
             this.cmbScalingMode.Name = "cmbScalingMode";
             this.cmbScalingMode.Size = new System.Drawing.Size(198, 21);
-            this.cmbScalingMode.TabIndex = 9;
+            this.cmbScalingMode.TabIndex = 6;
             // 
             // ResizeBitmapForm
             // 

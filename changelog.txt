@@ -20,7 +20,9 @@
   On Windows some validation tool tips are not aligned right but otherwise the layout is arranged correctly.
 * Manual zooming is enabled even if Auto Zoom is on; this turns off Auto Zoom automatically.
 * Turning smoothing of zoomed images on/off affects also shrunk images (previously affected enlarged images only).
-- Resize: Preventing that invalid sizes replace current text to 0
+- Resize:
+  - Preventing that invalid sizes replace current text to 0
+  - Changing error provider associated controls so the layout is not messed up on Linux
 - Manage Installations:
   - Remove was always enabled even it there was no installed version
 - Fixing possible errors when closing forms while an async operation is still in progress.

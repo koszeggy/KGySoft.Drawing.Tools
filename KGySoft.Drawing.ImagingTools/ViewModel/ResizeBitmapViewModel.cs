@@ -168,15 +168,21 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Properties
 
+        #region Public Properties
+
+        // The binding needs these to be public
+        public int Width { get => Get(originalSize.Width); set => Set(value); }
+        public int Height { get => Get(originalSize.Height); set => Set(value); }
+        public float WidthRatio { get => Get(1f); set => Set(value); }
+        public float HeightRatio { get => Get(1f); set => Set(value); }
+
+        #endregion
+
         #region Internal Properties
 
         internal bool KeepAspectRatio { get => Get(true); set => Set(value); }
         internal bool ByPercentage { get => Get(true); set => Set(value); }
         internal bool ByPixels { get => Get(false); set => Set(value); }
-        internal int Width { get => Get(originalSize.Width); set => Set(value); }
-        internal int Height { get => Get(originalSize.Height); set => Set(value); }
-        internal float WidthRatio { get => Get(1f); set => Set(value); }
-        internal float HeightRatio { get => Get(1f); set => Set(value); }
         internal ScalingMode[] ScalingModes => Get(Enum<ScalingMode>.GetValues);
         internal ScalingMode ScalingMode { get => Get<ScalingMode>(); set => Set(value); }
 
