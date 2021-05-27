@@ -32,6 +32,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             : base(viewModel)
         {
             InitializeComponent();
+            AcceptButton = okCancelButtons.OKButton;
+            CancelButton = okCancelButtons.CancelButton;
         }
 
         #endregion
@@ -97,6 +99,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 .AddSource(ucColorVisualizer, nameof(ucColorVisualizer.ColorEdited));
             CommandBindings.Add(OnSelectedColorChangedCommand)
                 .AddSource(pnlPalette, nameof(pnlPalette.SelectedColorChanged));
+            CommandBindings.Add(OnCancelCommand)
+                .AddSource(okCancelButtons.CancelButton, nameof(okCancelButtons.CancelButton.Click));
         }
 
         private void UpdateInfo() => ucColorVisualizer.SpecialInfo = Res.InfoSelectedIndex(pnlPalette.SelectedColorIndex);
@@ -117,6 +121,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         }
 
         private void OnSelectedColorChangedCommand() => UpdateInfo();
+
+        private void OnCancelCommand() => ViewModel.SetModified(false);
 
         #endregion
 

@@ -158,7 +158,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Constructors
 
-        internal PalettePanel()
+        public PalettePanel()
         {
             InitializeComponent();
 

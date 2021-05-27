@@ -21,7 +21,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.gbPalette = new System.Windows.Forms.GroupBox();
             this.pnlPalette = new PalettePanel();
             this.gbSelectedColor = new System.Windows.Forms.GroupBox();
-            this.ucColorVisualizer = new ColorVisualizerControl();
+            this.ucColorVisualizer = new KGySoft.Drawing.ImagingTools.View.UserControls.ColorVisualizerControl();
+            this.okCancelButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
             this.gbPalette.SuspendLayout();
             this.gbSelectedColor.SuspendLayout();
             this.SuspendLayout();
@@ -63,13 +64,22 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.ucColorVisualizer.Size = new System.Drawing.Size(241, 197);
             this.ucColorVisualizer.TabIndex = 0;
             // 
+            // okCancelButtons
+            // 
+            this.okCancelButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.okCancelButtons.Location = new System.Drawing.Point(0, 450);
+            this.okCancelButtons.Name = "okCancelButtons";
+            this.okCancelButtons.Size = new System.Drawing.Size(247, 40);
+            this.okCancelButtons.TabIndex = 2;
+            // 
             // PaletteVisualizerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(247, 450);
+            this.ClientSize = new System.Drawing.Size(247, 490);
             this.Controls.Add(this.gbPalette);
             this.Controls.Add(this.gbSelectedColor);
+            this.Controls.Add(this.okCancelButtons);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.MaximumSize = new System.Drawing.Size(280, 32867);
             this.MinimumSize = new System.Drawing.Size(255, 300);
@@ -86,5 +96,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private PalettePanel pnlPalette;
         private System.Windows.Forms.GroupBox gbSelectedColor;
         private ColorVisualizerControl ucColorVisualizer;
+        private OkCancelButtons okCancelButtons;
     }
 }
