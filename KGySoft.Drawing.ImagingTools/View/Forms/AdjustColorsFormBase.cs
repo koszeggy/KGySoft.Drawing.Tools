@@ -16,8 +16,6 @@
 
 #region Usings
 
-using System.Globalization;
-
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
@@ -120,7 +118,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 value => (int)value! / 100f);
 
             // VM.Value -> lblValue.Text
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(VM.Value), nameof(lblValue.Text), v => ((float)v!).ToString("F2", CultureInfo.CurrentCulture), lblValue);
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(VM.Value), nameof(lblValue.Text), v => ((float)v!).ToString("F2", LanguageSettings.FormattingLanguage), lblValue);
         }
 
         #endregion

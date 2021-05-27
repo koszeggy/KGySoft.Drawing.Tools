@@ -17,7 +17,6 @@
 #region Usings
 
 using System;
-using System.Globalization;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
@@ -100,7 +99,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         private void TrackBar_ValueChanged(object? sender, EventArgs e)
         {
             Value = (byte)trackBar.Value;
-            lblValue.Text = Value.ToString(CultureInfo.CurrentCulture);
+            lblValue.Text = Value.ToString(LanguageSettings.FormattingLanguage);
         }
 
         private void OKButton_Click(object? sender, EventArgs e)

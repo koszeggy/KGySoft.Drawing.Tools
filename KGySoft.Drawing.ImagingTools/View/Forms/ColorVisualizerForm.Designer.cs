@@ -30,7 +30,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.ucColorVisualizer.Size = new System.Drawing.Size(244, 201);
             this.ucColorVisualizer.TabIndex = 1;
             // 
-            // okCancelButtons1
+            // okCancelButtons
             // 
             this.okCancelButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.okCancelButtons.Location = new System.Drawing.Point(0, 201);

@@ -17,7 +17,6 @@
 #region Usings
 
 using System;
-using System.Globalization;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
@@ -99,7 +98,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Private Methods
 
-        private void UpdateLabel() => lblValue.Text = Value <= 0f ? Res.TextAuto : Value.ToString("F2", CultureInfo.CurrentCulture);
+        private void UpdateLabel() => lblValue.Text = Value <= 0f ? Res.TextAuto : Value.ToString("F2", LanguageSettings.FormattingLanguage);
 
         #endregion
 
