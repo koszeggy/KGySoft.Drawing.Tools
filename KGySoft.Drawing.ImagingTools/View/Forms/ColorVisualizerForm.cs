@@ -17,6 +17,8 @@
 #region Usings
 
 using System.Drawing;
+using System.Windows.Forms;
+
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
@@ -67,6 +69,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             base.ApplyViewModel();
         }
 
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.UserClosing || DialogResult == DialogResult.Cancel)
+                ViewModel.SetModified(false);
+            base.OnFormClosing(e);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -87,6 +96,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // VM.Color -> ucColorVisualizer.Color, Text
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Color), nameof(ucColorVisualizer.Color), ucColorVisualizer);
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Color), nameof(Text), c => Res.TitleColor((Color)c!), this);
+
+            // VM.IsModified -> OKButton.Enabled
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsModified), nameof(okCancelButtons.OKButton.Enabled), okCancelButtons.OKButton);
         }
 
         private void InitCommandBindings()
