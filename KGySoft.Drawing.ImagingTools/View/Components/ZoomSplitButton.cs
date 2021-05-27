@@ -17,6 +17,8 @@
 #region Usings
 
 using System;
+using System.ComponentModel;
+using System.Drawing;
 using System.Windows.Forms;
 
 #endregion
@@ -27,10 +29,22 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
     {
         #region Properties
 
+        #region Public Properties
+        
+        // Overridden just to prevent saving a fixed low-res image in the .resx file
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public override Image Image { get => base.Image; set => base.Image = value; }
+
+        #endregion
+
+        #region Internal Properties
+        
         internal ToolStripMenuItem AutoZoomMenuItem { get; }
         internal ToolStripMenuItem IncreaseZoomMenuItem { get; }
         internal ToolStripMenuItem DecreaseZoomMenuItem { get; }
         internal ToolStripMenuItem ResetZoomMenuItem { get; }
+
+        #endregion
 
         #endregion
 
