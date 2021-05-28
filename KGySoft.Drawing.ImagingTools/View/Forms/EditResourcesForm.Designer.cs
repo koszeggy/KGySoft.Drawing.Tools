@@ -32,6 +32,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.gbResourceEntries = new System.Windows.Forms.GroupBox();
             this.gridResources = new System.Windows.Forms.DataGridView();
             this.colResourceKey = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -62,7 +63,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.gbResourceEntries.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gbResourceEntries.Location = new System.Drawing.Point(3, 49);
             this.gbResourceEntries.Name = "gbResourceEntries";
-            this.gbResourceEntries.Size = new System.Drawing.Size(578, 112);
+            this.gbResourceEntries.Size = new System.Drawing.Size(578, 117);
             this.gbResourceEntries.TabIndex = 2;
             this.gbResourceEntries.TabStop = false;
             this.gbResourceEntries.Text = "gbResourceEntries";
@@ -72,26 +73,35 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.gridResources.AllowUserToAddRows = false;
             this.gridResources.AllowUserToDeleteRows = false;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.ControlLight;
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
             this.gridResources.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             this.gridResources.AutoGenerateColumns = false;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.gridResources.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.gridResources.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.gridResources.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colResourceKey,
             this.colOriginalText,
             this.colTranslatedText});
             this.gridResources.DataSource = this.resourceEntryBindingSource;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.gridResources.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.gridResources.DefaultCellStyle = dataGridViewCellStyle3;
             this.gridResources.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gridResources.Location = new System.Drawing.Point(3, 16);
             this.gridResources.Name = "gridResources";
-            this.gridResources.Size = new System.Drawing.Size(572, 93);
+            this.gridResources.Size = new System.Drawing.Size(572, 98);
             this.gridResources.TabIndex = 3;
             // 
             // colResourceKey
@@ -145,7 +155,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // splitterEditResources
             // 
             this.splitterEditResources.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.splitterEditResources.Location = new System.Drawing.Point(3, 161);
+            this.splitterEditResources.Location = new System.Drawing.Point(3, 166);
             this.splitterEditResources.MinExtra = 50;
             this.splitterEditResources.MinSize = 50;
             this.splitterEditResources.Name = "splitterEditResources";
@@ -161,7 +171,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.pnlEditResourceEntry.Controls.Add(this.gbOriginalText, 0, 0);
             this.pnlEditResourceEntry.Controls.Add(this.gbTranslatedText, 1, 0);
             this.pnlEditResourceEntry.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlEditResourceEntry.Location = new System.Drawing.Point(3, 164);
+            this.pnlEditResourceEntry.Location = new System.Drawing.Point(3, 169);
             this.pnlEditResourceEntry.Name = "pnlEditResourceEntry";
             this.pnlEditResourceEntry.RowCount = 1;
             this.pnlEditResourceEntry.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -217,7 +227,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // 
             this.okCancelApplyButtons.ApplyButtonVisible = true;
             this.okCancelApplyButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.okCancelApplyButtons.Location = new System.Drawing.Point(3, 268);
+            this.okCancelApplyButtons.Location = new System.Drawing.Point(3, 273);
             this.okCancelApplyButtons.Name = "okCancelApplyButtons";
             this.okCancelApplyButtons.Size = new System.Drawing.Size(578, 35);
             this.okCancelApplyButtons.TabIndex = 1;

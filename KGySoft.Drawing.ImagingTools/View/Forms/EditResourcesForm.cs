@@ -16,7 +16,9 @@
 
 #region Usings
 
+using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.Model;
@@ -36,8 +38,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             // Note: Not setting Accept/CancelButton because they would be very annoying during the editing
             InitializeComponent();
-            cmbResourceFiles.ValueMember = nameof(KeyValuePair<ResourceOwner, string>.Key);
-            cmbResourceFiles.DisplayMember = nameof(KeyValuePair<ResourceOwner, string>.Value);
+            if (SystemInformation.HighContrast)
+                gridResources.AlternatingRowsDefaultCellStyle = null;
+            cmbResourceFiles.ValueMember = nameof(KeyValuePair<ResourceLibrary, string>.Key);
+            cmbResourceFiles.DisplayMember = nameof(KeyValuePair<ResourceLibrary, string>.Value);
         }
 
         #endregion
@@ -68,6 +72,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             InitCommandBindings();
             InitPropertyBindings();
             base.ApplyViewModel();
+        }
+
+        protected override void OnSystemColorsChanged(EventArgs e)
+        {
+            base.OnSystemColorsChanged(e);
+            gridResources.AlternatingRowsDefaultCellStyle = SystemInformation.HighContrast
+                ? null
+                : new DataGridViewCellStyle { BackColor = SystemColors.ControlLight, ForeColor = SystemColors.ControlText };
         }
 
         #endregion
