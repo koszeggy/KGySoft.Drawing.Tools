@@ -60,15 +60,15 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private readonly CultureInfo culture;
         private readonly bool useInvariant;
-        private readonly Dictionary<ResourceOwner, (IList<ResourceEntry> ResourceSet, bool IsModified)> resources;
+        private readonly Dictionary<ResourceLibrary, (IList<ResourceEntry> ResourceSet, bool IsModified)> resources;
 
         #endregion
 
         #region Properties
 
-        internal KeyValuePair<ResourceOwner, string>[] ResourceFiles { get; } // get only because never changes
+        internal KeyValuePair<ResourceLibrary, string>[] ResourceFiles { get; } // get only because never changes
         internal string TitleCaption { get => Get<string>(); set => Set(value); }
-        internal ResourceOwner SelectedLibrary { get => Get<ResourceOwner>(); set => Set(value); }
+        internal ResourceLibrary SelectedLibrary { get => Get<ResourceLibrary>(); set => Set(value); }
         internal IList<ResourceEntry> SelectedSet { get => Get<IList<ResourceEntry>>(); set => Set(value); }
 
         internal ICommand ApplyResourcesCommand => Get(() => new SimpleCommand(OnApplyResourcesCommand));
@@ -87,12 +87,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             // The default language is used as the invariant resource set.
             // The invariant file name is preferred, unless only the language-specific file exists.
-            useInvariant = Equals(culture, Res.DefaultLanguage) && !File.Exists(ToFileNameWithPath(ResourceOwner.DrawingTools));
-            resources = new Dictionary<ResourceOwner, (IList<ResourceEntry>, bool)>(3, EnumComparer<ResourceOwner>.Comparer);
-            ResourceFiles = Enum<ResourceOwner>.GetValues().Select(owner => new KeyValuePair<ResourceOwner, string>(owner, ToFileName(owner))).ToArray();
+            useInvariant = Equals(culture, Res.DefaultLanguage) && !File.Exists(ToFileNameWithPath(ResourceLibrary.DrawingTools));
+            resources = new Dictionary<ResourceLibrary, (IList<ResourceEntry>, bool)>(3, EnumComparer<ResourceLibrary>.Comparer);
+            ResourceFiles = Enum<ResourceLibrary>.GetValues().Select(lib => new KeyValuePair<ResourceLibrary, string>(lib, ToFileName(lib))).ToArray();
             ApplyResourcesCommandState.Enabled = !Equals(LanguageSettings.DisplayLanguage, culture);
             UpdateTitle();
-            SelectedLibrary = ResourceOwner.DrawingTools;
+            SelectedLibrary = ResourceLibrary.DrawingTools;
         }
 
         #endregion
@@ -109,7 +109,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             switch (e.PropertyName)
             {
                 case nameof(SelectedLibrary):
-                    UpdateSelectedResources((ResourceOwner)e.NewValue!);
+                    UpdateSelectedResources((ResourceLibrary)e.NewValue!);
                     break;
             }
         }
@@ -134,23 +134,23 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void UpdateTitle() => TitleCaption = Res.TitleEditResources($"{culture.EnglishName} ({culture.NativeName})");
 
-        private string ToFileName(ResourceOwner owner) => useInvariant
-            ? ResHelper.GetBaseName(owner) + ".resx"
-            : $"{ResHelper.GetBaseName(owner)}.{culture.Name}.resx";
+        private string ToFileName(ResourceLibrary library) => useInvariant
+            ? ResHelper.GetBaseName(library) + ".resx"
+            : $"{ResHelper.GetBaseName(library)}.{culture.Name}.resx";
 
-        private string ToFileNameWithPath(ResourceOwner owner) => Path.Combine(Res.ResourcesDir, ToFileName(owner));
+        private string ToFileNameWithPath(ResourceLibrary library) => Path.Combine(Res.ResourcesDir, ToFileName(library));
 
-        private void UpdateSelectedResources(ResourceOwner owner)
+        private void UpdateSelectedResources(ResourceLibrary library)
         {
-            if (resources.TryGetValue(owner, out var value))
+            if (resources.TryGetValue(library, out var value))
             {
                 SelectedSet = value.ResourceSet;
                 return;
             }
 
-            if (!TryReadResources(owner, out IList<ResourceEntry>? set, out Exception? error))
+            if (!TryReadResources(library, out IList<ResourceEntry>? set, out Exception? error))
             {
-                if (!Confirm(Res.ConfirmMessageTryRegenerateResource(ToFileName(owner), error.Message)))
+                if (!Confirm(Res.ConfirmMessageTryRegenerateResource(ToFileName(library), error.Message)))
                 {
                     SelectedSet = Reflector.EmptyArray<ResourceEntry>();
                     return;
@@ -158,35 +158,35 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
                 try
                 {
-                    File.Delete(ToFileNameWithPath(owner));
+                    File.Delete(ToFileNameWithPath(library));
                 }
                 catch (Exception e) when (!e.IsCritical())
                 {
-                    ShowError(Res.ErrorMessageFailedToRegenerateResource(ToFileName(owner), error.Message));
+                    ShowError(Res.ErrorMessageFailedToRegenerateResource(ToFileName(library), error.Message));
                     SelectedSet = Reflector.EmptyArray<ResourceEntry>();
                     return;
                 }
 
-                if (!TryReadResources(owner, out set, out error))
+                if (!TryReadResources(library, out set, out error))
                 {
-                    ShowError(Res.ErrorMessageFailedToRegenerateResource(ToFileName(owner), error.Message));
+                    ShowError(Res.ErrorMessageFailedToRegenerateResource(ToFileName(library), error.Message));
                     SelectedSet = Reflector.EmptyArray<ResourceEntry>();
                     return;
                 }
             }
 
-            resources[owner] = (set, false);
+            resources[library] = (set, false);
             SelectedSet = set;
         }
 
-        private bool TryReadResources(ResourceOwner owner, [MaybeNullWhen(false)]out IList<ResourceEntry> set, [MaybeNullWhen(true)]out Exception error)
+        private bool TryReadResources(ResourceLibrary library, [MaybeNullWhen(false)]out IList<ResourceEntry> set, [MaybeNullWhen(true)]out Exception error)
         {
             try
             {
                 // Creating a local resource manager so we can generate the entries that currently found in the compiled resource set.
                 // Auto appending only the queried keys so we can add the missing ones since the last creation and also remove the possibly removed ones.
                 // Note that this will not generate any .resx files as we use the default AutoSave = None
-                using var resourceManger = new DynamicResourceManager(ResHelper.GetBaseName(owner), ResHelper.GetAssembly(owner))
+                using var resourceManger = new DynamicResourceManager(ResHelper.GetBaseName(library), ResHelper.GetAssembly(library))
                 {
                     SafeMode = true,
                     Source = ResourceManagerSources.CompiledOnly,
@@ -209,10 +209,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                         return;
 
                     ApplyResourcesCommandState.Enabled = true;
-                    if (!resources.TryGetValue(owner, out var value) || value.IsModified)
+                    if (!resources.TryGetValue(library, out var value) || value.IsModified)
                         return;
 
-                    resources[owner] = (value.ResourceSet, true);
+                    resources[library] = (value.ResourceSet, true);
                     SetModified(true);
                 };
                 result.ApplySort(nameof(ResourceEntry.Key), ListSortDirection.Ascending);
@@ -228,7 +228,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
         }
 
-        private bool TrySaveResources(ResourceOwner owner, IList<ResourceEntry> set, [MaybeNullWhen(true)]out Exception error)
+        private bool TrySaveResources(ResourceLibrary library, IList<ResourceEntry> set, [MaybeNullWhen(true)]out Exception error)
         {
             // Note: We do not use a DynamicResourceManager for saving. This works because we let the actual DRMs drop their content after saving.
             try
@@ -237,7 +237,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 foreach (ResourceEntry res in set)
                     resx.SetObject(res.Key, res.TranslatedText);
 
-                resx.Save(ToFileNameWithPath(owner));
+                resx.Save(ToFileNameWithPath(library));
                 error = null;
                 return true;
             }

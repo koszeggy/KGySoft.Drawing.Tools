@@ -54,6 +54,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommand ApplyCommand => Get(() => new SimpleCommand(OnApplyCommand));
         internal ICommand SaveConfigCommand => Get(() => new SimpleCommand(OnSaveConfigCommand));
         internal ICommand EditResourcesCommand => Get(() => new SimpleCommand(OnEditResourcesCommand));
+        internal ICommand DownloadResourcesCommand => Get(() => new SimpleCommand(OnDownloadResourcesCommand));
 
         internal ICommandState ApplyCommandState => Get(() => new CommandState());
         internal ICommandState EditResourcesCommandState => Get(() => new CommandState());
@@ -240,6 +241,19 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             dirtyCulture = viewModel.IsModified ? CurrentLanguage : null;
             availableResXLanguages = null;
             selectableLanguages = null;
+            UpdateApplyCommandState();
+        }
+
+        private void OnDownloadResourcesCommand()
+        {
+            using IViewModel viewModel = ViewModelFactory.CreateDownloadResources();
+            ShowChildViewCallback?.Invoke(viewModel);
+
+            // If the language was edited, then enabling apply even if it was disabled
+            dirtyCulture = viewModel.IsModified ? CurrentLanguage : null;
+            availableResXLanguages = null;
+            selectableLanguages = null;
+            ResetLanguages();
             UpdateApplyCommandState();
         }
 

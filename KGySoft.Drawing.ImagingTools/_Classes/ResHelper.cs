@@ -24,6 +24,7 @@ using System.Reflection;
 
 using KGySoft.Collections;
 using KGySoft.CoreLibraries;
+using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Reflection;
 using KGySoft.Resources;
 
@@ -95,20 +96,20 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        internal static string GetBaseName(ResourceOwner owner) => owner switch
+        internal static string GetBaseName(ResourceLibrary library) => library switch
         {
-            ResourceOwner.CoreLibraries => coreLibrariesBaseName,
-            ResourceOwner.DrawingLibraries => drawingLibrariesBaseName,
-            ResourceOwner.DrawingTools => drawingToolsBaseName,
-            _ => throw new ArgumentOutOfRangeException(nameof(owner), PublicResources.EnumOutOfRange(owner))
+            ResourceLibrary.CoreLibraries => coreLibrariesBaseName,
+            ResourceLibrary.DrawingLibraries => drawingLibrariesBaseName,
+            ResourceLibrary.DrawingTools => drawingToolsBaseName,
+            _ => throw new ArgumentOutOfRangeException(nameof(library), PublicResources.EnumOutOfRange(library))
         };
 
-        internal static Assembly GetAssembly(ResourceOwner owner) => owner switch
+        internal static Assembly GetAssembly(ResourceLibrary library) => library switch
         {
-            ResourceOwner.CoreLibraries => typeof(LanguageSettings).Assembly,
-            ResourceOwner.DrawingLibraries => typeof(DrawingModule).Assembly,
-            ResourceOwner.DrawingTools => typeof(Res).Assembly,
-            _ => throw new ArgumentOutOfRangeException(nameof(owner), PublicResources.EnumOutOfRange(owner))
+            ResourceLibrary.CoreLibraries => typeof(LanguageSettings).Assembly,
+            ResourceLibrary.DrawingLibraries => typeof(DrawingModule).Assembly,
+            ResourceLibrary.DrawingTools => typeof(Res).Assembly,
+            _ => throw new ArgumentOutOfRangeException(nameof(library), PublicResources.EnumOutOfRange(library))
         };
 
         /// <summary>
