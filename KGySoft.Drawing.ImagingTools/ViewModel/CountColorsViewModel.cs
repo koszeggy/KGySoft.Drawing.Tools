@@ -61,7 +61,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Properties
 
-        internal object ProgressSyncRoot => drawingProgressManager;
         internal bool IsProcessing { get => Get<bool>(); set => Set(value); }
         internal DrawingProgress Progress { get => Get<DrawingProgress>(); set => Set(value); }
         internal string DisplayText { get => Get<string>(); set => Set(value); }

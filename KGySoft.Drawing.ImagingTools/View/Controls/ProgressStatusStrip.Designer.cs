@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
-    partial class DrawingProgressStatusStrip
+    partial class ProgressStatusStrip<TProgress>
     {
         private void InitializeComponent()
         {
