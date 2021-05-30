@@ -68,7 +68,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         protected MvvmBaseForm(TViewModel viewModel)
         {
             threadId = Thread.CurrentThread.ManagedThreadId;
-            handleCreated = new ManualResetEventSlim(false);
+            handleCreated = new ManualResetEventSlim();
             ApplyRightToLeft();
             InitializeComponent();
 
@@ -82,6 +82,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             vm.ShowWarningCallback = Dialogs.WarningMessage;
             vm.ShowErrorCallback = Dialogs.ErrorMessage;
             vm.ConfirmCallback = Dialogs.ConfirmMessage;
+            vm.CancellableConfirmCallback = (msg, btn) => Dialogs.CancellableConfirmMessage(msg, btn switch { 0 => MessageBoxDefaultButton.Button1, 1 => MessageBoxDefaultButton.Button2, _ => MessageBoxDefaultButton.Button3 });
             vm.ShowChildViewCallback = ShowChildView;
             vm.CloseViewCallback = () => BeginInvoke(new Action(Close));
             vm.SynchronizedInvokeCallback = InvokeIfRequired;

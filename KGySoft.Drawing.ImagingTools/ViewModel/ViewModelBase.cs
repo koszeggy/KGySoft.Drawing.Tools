@@ -35,6 +35,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal Action<string>? ShowWarningCallback { get => Get<Action<string>?>(); set => Set(value); }
         internal Action<string>? ShowInfoCallback { get => Get<Action<string>?>(); set => Set(value); }
         internal Func<string, bool, bool>? ConfirmCallback { get => Get<Func<string, bool, bool>?>(); set => Set(value); }
+        internal Func<string, int, bool?>? CancellableConfirmCallback { get => Get<Func<string, int, bool?>?>(); set => Set(value); }
         internal Action<IViewModel>? ShowChildViewCallback { get => Get<Action<IViewModel>?>(); set => Set(value); }
         internal Action? CloseViewCallback { get => Get<Action?>(); set => Set(value); }
         internal Action<Action>? SynchronizedInvokeCallback { private get => Get<Action<Action>?>(); set => Set(value); }
@@ -55,6 +56,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         protected void ShowWarning(string message) => ShowWarningCallback?.Invoke(message);
         protected void ShowInfo(string message) => ShowInfoCallback?.Invoke(message);
         protected bool Confirm(string message, bool isYesDefault = true) => ConfirmCallback?.Invoke(message, isYesDefault) ?? true;
+        protected bool? CancellableConfirm(string message, int defaultButton = 0) => CancellableConfirmCallback?.Invoke(message, defaultButton);
 
         protected bool TryInvokeSync(Action action)
         {
