@@ -201,6 +201,9 @@
   <data name="Text_ColorCountFormat" xml:space="preserve">
     <value>Color Count: {0:N0}</value>
   </data>
+  <data name="Text_Downloading" xml:space="preserve">
+    <value>Downloading...</value>
+  </data>
   <data name="TooltipText_CompoundAnimation" xml:space="preserve">
     <value>Toggles whether the animation is handled as a single image.
 • When checked, animation will play and saving as GIF saves the whole animation.
@@ -387,6 +390,12 @@ Either select at least '{1}' or reduce the number of colors to {2}.</value>
   <data name="ErrorMessage_FailedToSaveResourceFormat" xml:space="preserve">
     <value>Failed to save resource file {0}: {1}</value>
   </data>
+  <data name="ErrorMessage_CouldNotAccessOnlineResourcesFormat" xml:space="preserve">
+    <value>Failed to access online resources: {0}</value>
+  </data>
+  <data name="ErrorMessage_FailedToDownloadResourceFormat" xml:space="preserve">
+    <value>Failed to download resource file {0}: {1}</value>
+  </data>
   <data name="WarningMessage_CouldNotCreateNetCoreDirectoryFormat" xml:space="preserve">
     <value>Could not create directory {0}: {1}
 
@@ -430,6 +439,12 @@ Are you sure you want to save the file with the provided extension?</value>
     <value>Failed to read resource file {0}: {1}
 
 Do you want to try to regenerate it? The current file will be deleted.</value>
+  </data>
+  <data name="ConfirmMessage_MessageOverwriteResourcesFormat" xml:space="preserve">
+    <value>The following files already exist:
+{0}
+
+Do you want to overwrite them?</value>
   </data>
   <data name="ConfirmMessage_RemoveInstallation" xml:space="preserve">
     <value>Are you sure you want to remove this installation?</value>
@@ -478,6 +493,9 @@ Dithering may help to preserve more details.</value>
   <data name="InfoMessage_PixelFormatCanBeDitheredFormat" xml:space="preserve">
     <value>The selected pixel format represents a narrower set of colors than the original '{0}'.
 Dithering may help to preserve more details.</value>
+  </data>
+  <data name="InfoMessage_DownloadCompleteFormat" xml:space="preserve">
+    <value>{0} file(s) have been downloaded.</value>
   </data>
   <data name="Installations_NotAvailable" xml:space="preserve">
     <value>N/A (KGySoft.Drawing.DebuggerVisualizers.dll is missing)</value>

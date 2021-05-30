@@ -9,8 +9,13 @@ namespace System.Threading
 
         private readonly object syncRoot = new object();
 
-        private bool isSet;
         private bool isDisposed;
+
+        #endregion
+        
+        #region Properties
+        
+        internal bool IsSet { get; private set; }
 
         #endregion
 
@@ -25,7 +30,7 @@ namespace System.Threading
                 if (isDisposed)
                     return;
                 isDisposed = true;
-                isSet = true;
+                IsSet = true;
                 Monitor.PulseAll(syncRoot);
             }
         }
@@ -40,7 +45,7 @@ namespace System.Threading
             {
                 if (isDisposed)
                     return;
-                isSet = true;
+                IsSet = true;
                 Monitor.PulseAll(syncRoot);
             }
         }
@@ -51,7 +56,7 @@ namespace System.Threading
             {
                 if (isDisposed)
                     return;
-                while (!isSet)
+                while (!IsSet)
                     Monitor.Wait(syncRoot);
             }
         }

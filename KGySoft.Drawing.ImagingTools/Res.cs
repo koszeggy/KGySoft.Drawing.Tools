@@ -27,7 +27,6 @@ using System.Resources;
 
 using KGySoft.Collections;
 using KGySoft.CoreLibraries;
-using KGySoft.Drawing.ImagingTools.Properties;
 using KGySoft.Reflection;
 using KGySoft.Resources;
 
@@ -146,6 +145,9 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Color Count: {0}</summary>
         internal static string TextColorCountId => "Text_ColorCountFormat";
 
+        /// <summary>Downloading...</summary>
+        internal static string TextDownloading => Get("Text_Downloading");
+
         #endregion
 
         #region Info Texts
@@ -195,8 +197,10 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Are you sure you want to remove this installation?</summary>
         internal static string ConfirmMessageRemoveInstallation => Get("ConfirmMessage_RemoveInstallation");
 
+#if NETCOREAPP
         /// <summary>You are about to install the .NET Core version, which might not be supported by Visual Studio as a debugger visualizer. Are you sure?</summary>
-        internal static string ConfirmMessageNetCoreVersion => Get("ConfirmMessage_NetCoreVersion");
+        internal static string ConfirmMessageNetCoreVersion => Get("ConfirmMessage_NetCoreVersion"); 
+#endif
 
         /// <summary>There are unsaved modifications. Are sure to discard the changes?</summary>
         internal static string ConfirmMessageDiscardChanges => Get("ConfirmMessage_DiscardChanges");
@@ -248,9 +252,9 @@ namespace KGySoft.Drawing.ImagingTools
                 : CultureInfo.InvariantCulture).GetClosestNeutralCulture();
             DrawingModule.Initialize();
 
-            bool allowResXResources = Settings.Default.AllowResXResources;
+            bool allowResXResources = Configuration.AllowResXResources;
             CultureInfo desiredDisplayLanguage = allowResXResources
-                ? Settings.Default.UseOSLanguage ? OSLanguage : Settings.Default.DisplayLanguage // here, allowing specific languages, too
+                ? Configuration.UseOSLanguage ? OSLanguage : Configuration.DisplayLanguage // here, allowing specific languages, too
                 : DefaultLanguage;
 
             LanguageSettings.DisplayLanguage = Equals(desiredDisplayLanguage, CultureInfo.InvariantCulture) ? DefaultLanguage : desiredDisplayLanguage;
@@ -488,6 +492,13 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Failed to save resource file {0}: {1}</summary>
         internal static string ErrorMessageFailedToSaveResource(string fileName, string message) => Get("ErrorMessage_FailedToSaveResourceFormat", fileName, message);
 
+        /// <summary>Failed to access online resources: {0}</summary>
+        internal static string ErrorMessageCouldNotAccessOnlineResources(string message) => Get("ErrorMessage_CouldNotAccessOnlineResourcesFormat", message);
+
+        /// <summary>Failed to download resource file {0}: {1}</summary>
+        internal static string ErrorMessageFailedToDownloadResource(string fileName, string message) => Get("ErrorMessage_FailedToDownloadResourceFormat", fileName, message);
+
+#if NETCOREAPP
         /// <summary>Could not create directory {0}: {1}
         ///
         /// The debugger visualizer may will not work for .NET Core projects.</summary>
@@ -501,7 +512,8 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Could not copy file {0}: {1}
         ///
         /// The debugger visualizer may will not work for .NET Core projects.</summary>
-        internal static string WarningMessageCouldNotCopyFileNetCore(string path, string message) => Get("WarningMessage_CouldNotCopyFileNetCoreFormat", path, message);
+        internal static string WarningMessageCouldNotCopyFileNetCore(string path, string message) => Get("WarningMessage_CouldNotCopyFileNetCoreFormat", path, message); 
+#endif
 
         /// <summary>The installation finished with a warning: {0}</summary>
         internal static string WarningMessageInstallationWarning(string warning) => Get("WarningMessage_InstallationWarningFormat", warning);
@@ -525,6 +537,12 @@ namespace KGySoft.Drawing.ImagingTools
         /// Do you want to try to regenerate it? The current file will be deleted.</summary>
         internal static string ConfirmMessageTryRegenerateResource(string fileName, string message) => Get("ConfirmMessage_TryRegenerateResourceFormat", fileName, message);
 
+        /// <summary>The following files already exist:
+        /// {0}
+        /// 
+        /// Do you want to overwrite them?</summary>
+        internal static string ConfirmMessageOverwriteResources(string files) => Get("ConfirmMessage_MessageOverwriteResourcesFormat", files);
+
         /// <summary>{0} is the lowest compatible pixel format, which still supports the selected quantizer.</summary>
         internal static string InfoMessagePixelFormatUnnecessarilyWide(PixelFormat pixelFormat) => Get("InfoMessage_PixelFormatUnnecessarilyWideFormat", pixelFormat);
 
@@ -546,6 +564,9 @@ namespace KGySoft.Drawing.ImagingTools
 
         /// <summary>The ditherer is ignored for pixel format '{0}' if there is no quantizer specified.</summary>
         internal static string InfoMessageDithererIgnored(PixelFormat pixelFormat) => Get("InfoMessage_DithererIgnoredFormat", pixelFormat);
+
+        /// <summary>{0} file(s) have been downloaded.</summary>
+        internal static string InfoMessageDownloadComplete(int count) => Get("InfoMessage_DownloadCompleteFormat", count);
 
         #endregion
 

@@ -35,6 +35,7 @@
   + ViewModelFactory class:
     + New CreateLanguageSettings method
     + New CreateEditResources method
+    + New CreateDownloadResources method
   + IViewModel interface
     + New IsModified property
   * IViewModel<TModel> interface

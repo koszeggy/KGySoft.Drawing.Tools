@@ -70,6 +70,7 @@ namespace KGySoft.Drawing.ImagingTools.View
                 AdjustGammaViewModel adjustGammaViewModel => new AdjustGammaForm(adjustGammaViewModel),
                 LanguageSettingsViewModel languageSettingsViewModel => new LanguageSettingsForm(languageSettingsViewModel),
                 EditResourcesViewModel editResourcesViewModel => new EditResourcesForm(editResourcesViewModel),
+                DownloadResourcesViewModel downloadResourcesViewModel => new DownloadResourcesForm(downloadResourcesViewModel),
                 _ => throw new InvalidOperationException(Res.InternalError($"Unexpected viewModel type: {viewModel.GetType()}"))
             };
         }

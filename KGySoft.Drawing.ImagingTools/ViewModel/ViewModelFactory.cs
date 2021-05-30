@@ -16,10 +16,18 @@
 
 #region Usings
 
+#if NETFRAMEWORK
+using System;
+#endif
+using System.Collections.Generic;
 using System.Drawing;
-
 using System.Drawing.Imaging;
 using System.Globalization;
+
+#if NETFRAMEWORK
+using KGySoft.ComponentModel;
+using KGySoft.CoreLibraries;
+#endif
 using KGySoft.Drawing.ImagingTools.Model;
 
 #endregion
@@ -34,7 +42,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
     {
         #region Constructors
 
-        static ViewModelFactory() =>  Res.EnsureInitialized();
+        static ViewModelFactory()
+        {
+            Res.EnsureInitialized();
+#if NETFRAMEWORK
+            typeof(Version).RegisterTypeConverter<VersionConverter>();
+#endif
+        }
 
         #endregion
 
@@ -232,6 +246,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// </summary>
         /// <returns>An <see cref="IViewModel"/> instance that represents a view model for managing language settings.</returns>
         public static IViewModel CreateEditResources(CultureInfo culture) => new EditResourcesViewModel(culture);
+
+        /// <summary>
+        /// Creates a view model for downloading resources.
+        /// </summary>
+        /// <returns>An <see cref="IViewModel{TResult}"/> instance that represents a view model for managing language settings.</returns>
+        public static IViewModel<ICollection<CultureInfo>> CreateDownloadResources() => new DownloadResourcesViewModel();
 
         #endregion
     }

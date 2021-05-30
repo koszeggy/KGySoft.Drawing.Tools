@@ -93,7 +93,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // VM.UseOSLanguage <-> chbUseOSLanguage.Checked
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.UseOSLanguage), chbUseOSLanguage, nameof(chbUseOSLanguage.Checked));
 
-            // VM.UseOSLanguage <-> chbUseOSLanguage.Checked
+            // VM.ExistingLanguagesOnly <-> chbExistingResourcesOnly.Checked
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.ExistingLanguagesOnly), chbExistingResourcesOnly, nameof(chbExistingResourcesOnly.Checked));
 
             // VM.UseOSLanguage -> !cmbLanguages.Enabled
@@ -122,6 +122,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
             CommandBindings.Add(ViewModel.EditResourcesCommand, ViewModel.EditResourcesCommandState)
                 .AddSource(btnEditResources, nameof(btnEditResources.Click));
+
+            CommandBindings.Add(ViewModel.DownloadResourcesCommand)
+                .AddSource(btnDownloadResources, nameof(btnDownloadResources.Click));
         }
 
         #endregion

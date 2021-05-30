@@ -23,7 +23,6 @@ using System.Diagnostics;
 using System.Globalization;
 
 using KGySoft.ComponentModel;
-using KGySoft.Drawing.ImagingTools.Properties;
 using KGySoft.Resources;
 
 #endregion
@@ -90,8 +89,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal LanguageSettingsViewModel()
         {
             CurrentLanguage = LanguageSettings.DisplayLanguage;
-            AllowResXResources = Settings.Default.AllowResXResources;
-            UseOSLanguage = Settings.Default.UseOSLanguage;
+            AllowResXResources = Configuration.AllowResXResources;
+            UseOSLanguage = Configuration.UseOSLanguage;
             ExistingLanguagesOnly = true; // could be the default value but this way we spare one reset when initializing binding
             ResetLanguages();
             UpdateApplyCommandState();
@@ -219,12 +218,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 OnApplyCommand();
 
             // saving the configuration
-            Settings.Default.AllowResXResources = AllowResXResources;
-            Settings.Default.UseOSLanguage = UseOSLanguage;
-            Settings.Default.DisplayLanguage = CurrentLanguage;
+            Configuration.AllowResXResources = AllowResXResources;
+            Configuration.UseOSLanguage = UseOSLanguage;
+            Configuration.DisplayLanguage = CurrentLanguage;
             try
             {
-                Settings.Default.Save();
+                Configuration.SaveSettings();
             }
             catch (Exception e) when (!e.IsCritical())
             {
@@ -246,11 +245,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnDownloadResourcesCommand()
         {
-            using IViewModel viewModel = ViewModelFactory.CreateDownloadResources();
+            using IViewModel<ICollection<CultureInfo>> viewModel = ViewModelFactory.CreateDownloadResources();
             ShowChildViewCallback?.Invoke(viewModel);
 
-            // If the language was edited, then enabling apply even if it was disabled
-            dirtyCulture = viewModel.IsModified ? CurrentLanguage : null;
+            // If the language was overwritten, then enabling apply even if it was disabled
+            dirtyCulture = viewModel.IsModified && viewModel.GetEditedModel().Contains(CurrentLanguage) ? CurrentLanguage : null;
             availableResXLanguages = null;
             selectableLanguages = null;
             ResetLanguages();
