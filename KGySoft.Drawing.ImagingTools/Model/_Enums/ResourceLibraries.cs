@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: ResourceLibrary.cs
+//  File: ResourceLibraries.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2021 - All Rights Reserved
 //
@@ -14,12 +14,20 @@
 
 #endregion
 
+#region Usings
+
+using System;
+
+#endregion
+
 namespace KGySoft.Drawing.ImagingTools.Model
 {
-    internal enum ResourceLibrary
+    [Flags]
+    internal enum ResourceLibraries
     {
-        CoreLibraries,
-        DrawingLibraries,
-        DrawingTools
+        None,
+        CoreLibraries = 1,
+        DrawingLibraries = 1 << 1,
+        ImagingTools = 1 << 2
     }
 }

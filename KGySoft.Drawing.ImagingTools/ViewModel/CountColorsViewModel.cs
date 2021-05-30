@@ -52,7 +52,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private readonly DrawingProgressManager drawingProgressManager;
         private readonly Bitmap bitmap;
         
-        private volatile CountTask? task;
+        private volatile CountTask? activeTask;
         private int? colorCount;
         private string displayTextId = default!;
         private object[]? displayTextArgs;
@@ -86,7 +86,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         public int? GetEditedModel()
         {
-            task?.WaitForCompletion();
+            activeTask?.WaitForCompletion();
             return colorCount;
         }
 
@@ -96,7 +96,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal void CancelIfRunning()
         {
-            CountTask? t = task;
+            CountTask? t = activeTask;
             if (t == null)
                 return;
 
@@ -126,63 +126,70 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void BeginCountColors()
         {
             IsProcessing = true;
-            task = new CountTask { Bitmap = bitmap };
-            ThreadPool.QueueUserWorkItem(DoCountColors);
+            activeTask = new CountTask { Bitmap = bitmap };
+            ThreadPool.QueueUserWorkItem(DoCountColors, activeTask);
         }
 
         private void DoCountColors(object? state)
         {
             Exception? error = null;
+            var task = (CountTask)state!;
 
-            // We must lock on the image to avoid the possible "bitmap region is already in use" error from the Paint of main view's image viewer,
-            // which also locks on the image to help avoiding this error
-            lock (task!.Bitmap)
+            try
             {
-                IReadableBitmapData? bitmapData = null;
-                try
+                // We must lock on the image to avoid the possible "bitmap region is already in use" error from the Paint of main view's image viewer,
+                // which also locks on the image to help avoiding this error
+                lock (task.Bitmap)
                 {
-                    bitmapData = task.Bitmap.GetReadableBitmapData();
-                    IAsyncResult asyncResult = bitmapData.BeginGetColorCount(new AsyncConfig
+                    IReadableBitmapData? bitmapData = null;
+                    try
                     {
-                        IsCancelRequestedCallback = () => task.IsCanceled,
-                        ThrowIfCanceled = false,
-                        Progress = drawingProgressManager
-                    });
+                        bitmapData = task.Bitmap.GetReadableBitmapData();
+                        IAsyncResult asyncResult = bitmapData.BeginGetColorCount(new AsyncConfig
+                        {
+                            IsCancelRequestedCallback = () => task.IsCanceled,
+                            ThrowIfCanceled = false,
+                            Progress = drawingProgressManager
+                        });
 
-                    // Waiting to be finished or canceled. As we are on a different thread blocking wait is alright
-                    colorCount = asyncResult.EndGetColorCount();
+                        // Waiting to be finished or canceled. As we are on a different thread blocking wait is alright
+                        colorCount = asyncResult.EndGetColorCount();
+                    }
+                    catch (Exception e) when (!e.IsCriticalGdi())
+                    {
+                        error = e;
+                    }
+                    finally
+                    {
+                        bitmapData?.Dispose();
+                        task.SetCompleted();
+                    }
                 }
-                catch (Exception e) when (!e.IsCriticalGdi())
-                {
-                    error = e;
-                }
-                finally
-                {
-                    bitmapData?.Dispose();
-                    task.SetCompleted();
-                }
-            }
 
-            if (task.IsCanceled)
-                colorCount = null;
+                if (task.IsCanceled)
+                    colorCount = null;
 
-            // returning if task was canceled because cancel closes the UI
-            if (colorCount.HasValue)
-                SetModified(true);
-            else
-                return;
-
-            // the execution of this method will be marshaled back to the UI thread
-            void Action()
-            {
-                if (error != null)
-                    SetDisplayText(Res.ErrorMessageId, error.Message);
+                // returning if task was canceled because cancel closes the UI
+                if (colorCount.HasValue)
+                    SetModified(true);
                 else
-                    SetDisplayText(Res.TextColorCountId, colorCount.Value);
-                IsProcessing = false;
-            }
+                    return;
 
-            TryInvokeSync(Action);
+                // applying result (or error)
+                TryInvokeSync(() =>
+                {
+                    if (error != null)
+                        SetDisplayText(Res.ErrorMessageId, error.Message);
+                    else
+                        SetDisplayText(Res.TextColorCountId, colorCount.Value);
+                    IsProcessing = false;
+                });
+            }
+            finally
+            {
+                task.Dispose();
+                activeTask = null;
+            }
         }
 
         private void SetDisplayText(string resourceId, params object[] args)

@@ -38,7 +38,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.colResourceKey = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colOriginalText = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colTranslatedText = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.resourceEntryBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.bindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.gbResourceFile = new System.Windows.Forms.GroupBox();
             this.cmbResourceFiles = new System.Windows.Forms.ComboBox();
             this.splitterEditResources = new System.Windows.Forms.Splitter();
@@ -50,7 +50,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.okCancelApplyButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
             this.gbResourceEntries.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridResources)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.resourceEntryBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.bindingSource)).BeginInit();
             this.gbResourceFile.SuspendLayout();
             this.pnlEditResourceEntry.SuspendLayout();
             this.gbOriginalText.SuspendLayout();
@@ -89,7 +89,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.colResourceKey,
             this.colOriginalText,
             this.colTranslatedText});
-            this.gridResources.DataSource = this.resourceEntryBindingSource;
+            this.gridResources.DataSource = this.bindingSource;
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
             dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
@@ -126,9 +126,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.colTranslatedText.Name = "colTranslatedText";
             this.colTranslatedText.Width = 200;
             // 
-            // resourceEntryBindingSource
+            // bindingSource
             // 
-            this.resourceEntryBindingSource.DataSource = typeof(KGySoft.Drawing.ImagingTools.Model.ResourceEntry);
+            this.bindingSource.DataSource = typeof(KGySoft.Drawing.ImagingTools.Model.ResourceEntry);
             // 
             // gbResourceFile
             // 
@@ -249,7 +249,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.Text = "EditResourcesForm";
             this.gbResourceEntries.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.gridResources)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.resourceEntryBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.bindingSource)).EndInit();
             this.gbResourceFile.ResumeLayout(false);
             this.pnlEditResourceEntry.ResumeLayout(false);
             this.gbOriginalText.ResumeLayout(false);
@@ -271,7 +271,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private System.Windows.Forms.Splitter splitterEditResources;
         private System.Windows.Forms.TextBox txtOriginalText;
         private System.Windows.Forms.TextBox txtTranslatedText;
-        private System.Windows.Forms.BindingSource resourceEntryBindingSource;
+        private System.Windows.Forms.BindingSource bindingSource;
         private System.Windows.Forms.GroupBox gbResourceFile;
         private System.Windows.Forms.ComboBox cmbResourceFiles;
         private System.Windows.Forms.DataGridViewTextBoxColumn colResourceKey;

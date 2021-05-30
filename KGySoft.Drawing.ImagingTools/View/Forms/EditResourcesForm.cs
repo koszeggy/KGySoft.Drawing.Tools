@@ -40,8 +40,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             InitializeComponent();
             if (SystemInformation.HighContrast)
                 gridResources.AlternatingRowsDefaultCellStyle = null;
-            cmbResourceFiles.ValueMember = nameof(KeyValuePair<ResourceLibrary, string>.Key);
-            cmbResourceFiles.DisplayMember = nameof(KeyValuePair<ResourceLibrary, string>.Value);
+            cmbResourceFiles.ValueMember = nameof(KeyValuePair<ResourceLibraries, string>.Key);
+            cmbResourceFiles.DisplayMember = nameof(KeyValuePair<ResourceLibraries, string>.Value);
         }
 
         #endregion
@@ -97,14 +97,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // VM.SelectedLibrary <-> cmbResourceFiles.SelectedValue
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.SelectedLibrary), cmbResourceFiles, nameof(cmbResourceFiles.SelectedValue));
 
-            // VM.SelectedSet -> resourceEntryBindingSource.DataSource
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SelectedSet), nameof(resourceEntryBindingSource.DataSource), resourceEntryBindingSource);
+            // VM.SelectedSet -> bindingSource.DataSource
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SelectedSet), nameof(bindingSource.DataSource), bindingSource);
 
-            // resourceEntryBindingSource.OriginalText -> txtOriginalText.Text
-            txtOriginalText.DataBindings.Add(nameof(txtOriginalText.Text), resourceEntryBindingSource, nameof(ResourceEntry.OriginalText), false, DataSourceUpdateMode.Never);
+            // bindingSource.OriginalText -> txtOriginalText.Text
+            txtOriginalText.DataBindings.Add(nameof(txtOriginalText.Text), bindingSource, nameof(ResourceEntry.OriginalText), false, DataSourceUpdateMode.Never);
 
-            // resourceEntryBindingSource.TranslatedText <-> txtTranslatedText.Text
-            txtTranslatedText.DataBindings.Add(nameof(txtTranslatedText.Text), resourceEntryBindingSource, nameof(ResourceEntry.TranslatedText), false, DataSourceUpdateMode.OnValidation);
+            // bindingSource.TranslatedText <-> txtTranslatedText.Text
+            txtTranslatedText.DataBindings.Add(nameof(txtTranslatedText.Text), bindingSource, nameof(ResourceEntry.TranslatedText), false, DataSourceUpdateMode.OnValidation);
         }
 
         private void InitCommandBindings()
