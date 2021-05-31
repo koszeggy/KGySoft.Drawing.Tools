@@ -498,7 +498,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Failed to download resource file {0}: {1}</summary>
         internal static string ErrorMessageFailedToDownloadResource(string fileName, string message) => Get("ErrorMessage_FailedToDownloadResourceFormat", fileName, message);
 
-#if NETCOREAPP
+#if NET45
         /// <summary>Could not create directory {0}: {1}
         ///
         /// The debugger visualizer may will not work for .NET Core projects.</summary>

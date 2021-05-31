@@ -35,6 +35,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         internal LanguageSettingsForm(LanguageSettingsViewModel viewModel) : base(viewModel)
         {
             InitializeComponent();
+            btnEditResources.Height = cmbLanguages.Height + 2; // helps aligning better for higher DPIs
             AcceptButton = okCancelApplyButtons.OKButton;
             CancelButton = okCancelApplyButtons.CancelButton;
         }

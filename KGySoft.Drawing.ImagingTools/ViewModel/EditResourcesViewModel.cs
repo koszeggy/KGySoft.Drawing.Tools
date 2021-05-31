@@ -89,7 +89,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             // The invariant file name is preferred, unless only the language-specific file exists.
             useInvariant = Equals(culture, Res.DefaultLanguage) && !File.Exists(ToFileNameWithPath(ResourceLibraries.ImagingTools));
             resources = new Dictionary<ResourceLibraries, (IList<ResourceEntry>, bool)>(3, EnumComparer<ResourceLibraries>.Comparer);
-            ResourceFiles = Enum<ResourceLibraries>.GetValues().Select(lib => new KeyValuePair<ResourceLibraries, string>(lib, ToFileName(lib))).ToArray();
+            ResourceFiles = Enum<ResourceLibraries>.GetFlags().Select(lib => new KeyValuePair<ResourceLibraries, string>(lib, ToFileName(lib))).ToArray();
             ApplyResourcesCommandState.Enabled = !Equals(LanguageSettings.DisplayLanguage, culture);
             UpdateTitle();
             SelectedLibrary = ResourceLibraries.ImagingTools;

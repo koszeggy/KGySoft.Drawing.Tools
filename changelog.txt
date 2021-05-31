@@ -15,7 +15,7 @@
 + Now panning a zoomed image is possible also by clicking and dragging with the mouse (besides usual scrolling).
 + Zooming is now possible also with keyboard shortcuts, the Auto Zoom button has now a drop-down part for the
   additional options.
-+ Supporting localization from .resx files with editing and on-the-fly application.
++ Supporting localization from .resx files with editing, downloading and applying without restarting.
   Note: Right-to-left languages are also supported though with some limitations, especially under Linux/Mono.
   On Windows some validation tool tips are not aligned right but otherwise the layout is arranged correctly.
 + Palette visualizer form: OK/Cancel buttons

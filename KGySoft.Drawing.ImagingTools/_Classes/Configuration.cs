@@ -22,9 +22,10 @@ using System.ComponentModel;
 #endif
 using System.Configuration;
 using System.Globalization;
-#if NET35
-using System.Reflection; 
+#if NETFRAMEWORK
+using System.Net; 
 #endif
+using System.Reflection; 
 using System.Runtime.CompilerServices;
 
 #if NET35
@@ -66,8 +67,7 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Constants
 
-        private const string defaultResourceRepositoryLocation = "https://raw.githubusercontent.com/koszeggy/KGySoft.Drawing.Tools/pages/res/";
-        //private const string defaultResourceRepositoryLocation = "https://koszeggy.github.io/KGySoft.Drawing.Tools/res/";
+        private const string defaultResourceRepositoryLocation = "https://koszeggy.github.io/KGySoft.Drawing.Tools/res/"; // same as "https://raw.githubusercontent.com/koszeggy/KGySoft.Drawing.Tools/pages/res/"
 
         #endregion
 
@@ -98,13 +98,21 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Constructors
 
-#if NET35
         static Configuration()
         {
+            // To be able to resolve UserSettingsGroup of with other framework version
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+#if NET35
+            // To prevent serializing CultureInfo by DisplayName instead of Name
             typeof(CultureInfo).RegisterTypeConverter<CultureInfoConverterFixed>();
-        } 
+
+            // To be able to use HTTP requests with TLS 1.2 security protocol (may not work on Windows XP)
+            ServicePointManager.SecurityProtocol |= (SecurityProtocolType)3072;
+#elif NETFRAMEWORK
+            // To be able to use HTTP requests with TLS 1.2 security protocol (may not work on Windows XP)
+            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
 #endif
+        }
 
         #endregion
 
@@ -157,14 +165,17 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Event handlers
 
-#if NET35
         private static Assembly? CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
+#if NETFRAMEWORK
             if (args.Name.StartsWith("System, Version=", StringComparison.Ordinal))
                 return typeof(UserSettingsGroup).Assembly;
+#elif NETCOREAPP
+            if (args.Name?.StartsWith("System.Configuration.ConfigurationManager, Version=", StringComparison.Ordinal) == true)
+                return typeof(UserSettingsGroup).Assembly;
+#endif
             return null;
         } 
-#endif
 
         #endregion
 

@@ -105,7 +105,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.btnDownloadResources.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.btnDownloadResources.Location = new System.Drawing.Point(2, 30);
             this.btnDownloadResources.Margin = new System.Windows.Forms.Padding(2, 2, 3, 3);
-            this.btnDownloadResources.MinimumSize = new System.Drawing.Size(0, 23);
             this.btnDownloadResources.Name = "btnDownloadResources";
             this.btnDownloadResources.Size = new System.Drawing.Size(307, 23);
             this.btnDownloadResources.TabIndex = 2;
@@ -119,7 +118,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.btnEditResources.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.btnEditResources.Location = new System.Drawing.Point(204, 2);
             this.btnEditResources.Margin = new System.Windows.Forms.Padding(3, 2, 3, 3);
-            this.btnEditResources.MinimumSize = new System.Drawing.Size(0, 23);
             this.btnEditResources.Name = "btnEditResources";
             this.btnEditResources.Size = new System.Drawing.Size(105, 23);
             this.btnEditResources.TabIndex = 1;
@@ -128,7 +126,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // 
             // cmbLanguages
             // 
-            this.cmbLanguages.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cmbLanguages.Dock = System.Windows.Forms.DockStyle.Top;
             this.cmbLanguages.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbLanguages.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.cmbLanguages.FormattingEnabled = true;
