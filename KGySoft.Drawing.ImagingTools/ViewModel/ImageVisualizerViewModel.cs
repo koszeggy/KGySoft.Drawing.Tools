@@ -23,6 +23,10 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+#if !NET35
+using System.Runtime.Versioning; 
+#endif
 using System.Text;
 
 using KGySoft.ComponentModel;
@@ -151,6 +155,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommand AdjustBrightnessCommand => Get(() => new SimpleCommand(OnAdjustBrightnessCommand));
         internal ICommand AdjustContrastCommand => Get(() => new SimpleCommand(OnAdjustContrastCommand));
         internal ICommand AdjustGammaCommand => Get(() => new SimpleCommand(OnAdjustGammaCommand));
+        internal ICommand ShowAboutCommand => Get(() => new SimpleCommand(OnShowAboutCommand));
+        internal ICommand VisitWebSiteCommand => Get(() => new SimpleCommand(() => Process.Start("https://kgysoft.net")));
+        internal ICommand VisitGitHubCommand => Get(() => new SimpleCommand(() => Process.Start("https://github.com/koszeggy/KGySoft.Drawing.Tools")));
+        internal ICommand VisitMarketplaceCommand => Get(() => new SimpleCommand(() => Process.Start("https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers")));
+        internal ICommand SubmitResourcesCommand => Get(() => new SimpleCommand(() => Process.Start("https://github.com/koszeggy/KGySoft.Drawing.Tools/issues/new?assignees=&labels=&template=submit-resources.md&title=%5BRes%5D")));
 
         #endregion
 
@@ -1198,6 +1207,19 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             using IViewModel viewModel = ViewModelFactory.CreateLanguageSettings();
             ShowChildViewCallback?.Invoke(viewModel);
+        }
+
+        private void OnShowAboutCommand()
+        {
+            Assembly asm = GetType().Assembly;
+
+#if NET35
+            const string frameworkName = ".NET Framework 3.5"; 
+#else
+            var attr = (TargetFrameworkAttribute)Attribute.GetCustomAttribute(asm, typeof(TargetFrameworkAttribute));
+            string frameworkName = attr.FrameworkDisplayName ?? attr.FrameworkName;
+#endif
+            ShowInfo(Res.InfoMessageAbout(asm.GetName().Version, frameworkName, DateTime.Now.Year));
         }
 
         #endregion

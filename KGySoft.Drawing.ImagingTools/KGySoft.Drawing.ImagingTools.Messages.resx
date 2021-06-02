@@ -497,6 +497,16 @@ Dithering may help to preserve more details.</value>
   <data name="InfoMessage_DownloadCompleteFormat" xml:space="preserve">
     <value>{0} file(s) have been downloaded.</value>
   </data>
+  <data name="InfoMessage_About" xml:space="preserve">
+    <value>About KGy SOFT Imaging Tools
+
+Version: v{0}
+Author: György Kőszeg
+Target Platform: {1}
+
+You are now using the compiled English resources.
+Copyright © {2} KGy SOFT. All rights reserved.</value>
+  </data>
   <data name="Installations_NotAvailable" xml:space="preserve">
     <value>N/A (KGySoft.Drawing.DebuggerVisualizers.dll is missing)</value>
   </data>

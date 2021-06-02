@@ -568,6 +568,17 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>{0} file(s) have been downloaded.</summary>
         internal static string InfoMessageDownloadComplete(int count) => Get("InfoMessage_DownloadCompleteFormat", count);
 
+        /// <summary>About KGy SOFT Imaging Tools
+        /// 
+        /// Version: v{0}
+        /// Author: György Kőszeg
+        /// Target Platform: {1}
+        ///
+        /// You are now using the compiled English resources.
+        /// Copyright © {2} KGy SOFT. All rights reserved.
+        /// </summary>
+        internal static string InfoMessageAbout(Version version, string platform, int year) => Get("InfoMessage_About", version, platform, year);
+
         #endregion
 
         #region Installations

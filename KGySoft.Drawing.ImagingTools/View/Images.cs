@@ -99,7 +99,8 @@ namespace KGySoft.Drawing.ImagingTools.View
         {
             if (icon == null)
                 throw new ArgumentNullException(nameof(icon), PublicResources.ArgumentNull);
-            return icon.ExtractNearestBitmap(referenceSize.Scale(OSUtils.SystemScale), PixelFormat.Format32bppArgb);
+            using (icon)
+                return icon.ExtractNearestBitmap(referenceSize.Scale(OSUtils.SystemScale), PixelFormat.Format32bppArgb);
         }
 
         internal static Icon ToScaledIcon(this Icon icon, bool legacyScaling = true)
