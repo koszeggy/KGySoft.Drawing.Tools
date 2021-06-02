@@ -48,6 +48,7 @@
 - KGySoft.Drawing.DebuggerVisualizers.dll
 =========================================
 - Fixing a possible IndexOutOfRangeException when debugging an animated GIF.
+- Fixing possible incorrect initially displayed size info when debugging a multi-resolution icon or bitmap.
 * Improved performance and reduced memory consumption when serializing and deserializing debugged objects.
 
 * KGySoft.Drawing.DebuggerVisualizers.Package.dll

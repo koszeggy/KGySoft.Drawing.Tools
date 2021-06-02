@@ -67,7 +67,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private int currentFrame = -1;
         private bool isOpenFilterUpToDate;
         private Size currentResolution;
-        private bool deferSettingCompoundStateImage;
+        private bool deferUpdateInfo;
         private string? notificationId;
 
         #endregion
@@ -243,8 +243,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal override void ViewLoaded()
         {
             InitAutoZoom(true);
-            if (deferSettingCompoundStateImage && SetCompoundViewCommandState.GetValueOrDefault<bool>(stateVisible))
-                SetCompoundViewCommandStateImage();
+            if (deferUpdateInfo)
+            {
+                if (SetCompoundViewCommandState.GetValueOrDefault<bool>(stateVisible))
+                    SetCompoundViewCommandStateImage();
+                UpdateIfMultiResImage();
+            }
+
             base.ViewLoaded();
         }
 
@@ -495,7 +500,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void SetCompoundViewCommandStateImage()
         {
             Func<ImageInfoType, Image>? callback = GetCompoundViewIconCallback;
-            deferSettingCompoundStateImage = callback == null;
+            deferUpdateInfo |= callback == null;
             if (callback != null)
                 SetCompoundViewCommandState[stateImage] = callback.Invoke(imageInfo.Type);
         }
@@ -723,7 +728,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (!imageInfo.IsMultiRes || currentFrame != -1)
                 return;
             Size origSize = currentResolution;
-            Size clientSize = GetImagePreviewSizeCallback?.Invoke() ?? default;
+            Func<Size>? callback = GetImagePreviewSizeCallback;
+            deferUpdateInfo |= callback == null;
+            if (callback == null)
+                return;
+            Size clientSize = callback.Invoke();
             int desiredSize = Math.Min(clientSize.Width, clientSize.Height);
             if (desiredSize < 1 && !origSize.IsEmpty)
                 return;
@@ -738,6 +747,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             currentResolution = desiredImage.Size;
             if (PreviewImage != desiredImage.Image)
                 PreviewImage = desiredImage.Image;
+        }
+
+        private void UpdateIfMultiResImage()
+        {
+            if (!imageInfo.IsMultiRes || currentFrame != -1)
+                return;
+            UpdateMultiResImage();
+            UpdateInfo();
         }
 
         private void SaveIcon(string fileName)
@@ -1065,13 +1082,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnSetSmoothZoomingCommand(bool newValue) => SmoothZooming = newValue;
 
-        private void OnViewImagePreviewSizeChangedCommand()
-        {
-            if (!imageInfo.IsMultiRes || currentFrame != -1)
-                return;
-            UpdateMultiResImage();
-            UpdateInfo();
-        }
+        private void OnViewImagePreviewSizeChangedCommand() => UpdateIfMultiResImage();
 
         private void OnOpenFileCommand() => OpenFile();
 
