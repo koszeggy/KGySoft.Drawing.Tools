@@ -811,6 +811,9 @@ Newly generated resources will contain English texts prefixed with "[T]". You ca
   <data name="btnEditResources.Text" xml:space="preserve">
     <value>&amp;Edit Resources...</value>
   </data>
+  <data name="btnDownloadResources.Text" xml:space="preserve">
+    <value>&amp;Download Resources...</value>
+  </data>
   <data name="gbResourceFile.Text" xml:space="preserve">
     <value>Resource File</value>
   </data>
@@ -831,5 +834,47 @@ Newly generated resources will contain English texts prefixed with "[T]". You ca
   </data>
   <data name="gbTranslatedText.Text" xml:space="preserve">
     <value>Translated Text</value>
+  </data>
+  <data name="DownloadResourceForm.Text" xml:space="preserve">
+    <value>Downloading Resources</value>
+  </data>
+  <data name="colSelected.HeaderText" xml:space="preserve">
+    <value>Selected</value>
+  </data>
+  <data name="colLanguage.HeaderText" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="colAuthor.HeaderText" xml:space="preserve">
+    <value>Author</value>
+  </data>
+  <data name="colVersion.HeaderText" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="colImagingToolsVersion.HeaderText" xml:space="preserve">
+    <value>Imaging Tools Version</value>
+  </data>
+  <data name="colDescription.HeaderText" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="btnDownload.Text" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="btnAbout.Text" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="miWebSite.Text" xml:space="preserve">
+    <value>Visit Web Site...</value>
+  </data>
+  <data name="miWebSite.Text" xml:space="preserve">
+    <value>Visit GitHub Project Site...</value>
+  </data>
+  <data name="miMarketplace.Text" xml:space="preserve">
+    <value>Visit VisualStudio Marketplace...</value>
+  </data>
+  <data name="miSubmitResources.Text" xml:space="preserve">
+    <value>Submit Language Resource Files...</value>
+  </data>
+  <data name="miAbout.Text" xml:space="preserve">
+    <value>About...</value>
   </data>
 </root>
