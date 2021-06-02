@@ -48,7 +48,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.gridDownloadableResources.AllowUserToAddRows = false;
             this.gridDownloadableResources.AllowUserToDeleteRows = false;
             this.gridDownloadableResources.AutoGenerateColumns = false;
-            this.gridDownloadableResources.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.gridDownloadableResources.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colSelected,
             this.colLanguage,

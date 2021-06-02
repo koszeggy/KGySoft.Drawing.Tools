@@ -33,7 +33,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         internal DownloadResourcesForm(DownloadResourcesViewModel viewModel) : base(viewModel)
         {
             InitializeComponent();
-            okCancelButtons.OKButton.Name = "btnDownload";
+            okCancelButtons.OKButton.Name = okCancelButtons.OKButton.Text = "btnDownload";
             okCancelButtons.OKButton.DialogResult = DialogResult.None;
             AcceptButton = okCancelButtons.OKButton;
             CancelButton = okCancelButtons.CancelButton;
