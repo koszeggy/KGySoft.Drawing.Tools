@@ -138,7 +138,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
             {
                 if (e.Item is ToolStripButton { Checked: true, Enabled: true } btn)
-                    ClearButtonBackground(e.Graphics, btn.ContentRectangle, ProfessionalColors.ButtonSelectedGradientMiddle);
+                    ClearButtonBackground(e.Graphics, btn.ContentRectangle, ColorTable.ButtonSelectedGradientMiddle);
 
                 base.OnRenderButtonBackground(e);
             }
@@ -160,18 +160,18 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 {
                     rect.Inflate(-1, -1);
                     if (btn.ButtonPressed)
-                        ClearButtonBackground(e.Graphics, rect, ProfessionalColors.ButtonPressedHighlight);
+                        ClearButtonBackground(e.Graphics, rect, ColorTable.ButtonPressedHighlight);
                     else if (btn.Selected)
-                        ClearButtonBackground(e.Graphics, rect, btn.Checked ? ProfessionalColors.ButtonPressedHighlight : ProfessionalColors.ButtonSelectedGradientMiddle);
+                        ClearButtonBackground(e.Graphics, rect, btn.Checked ? ColorTable.ButtonPressedHighlight : ColorTable.ButtonSelectedGradientMiddle);
                     else if (btn.Checked)
-                        ClearButtonBackground(e.Graphics, rect, ProfessionalColors.ButtonSelectedGradientMiddle);
+                        ClearButtonBackground(e.Graphics, rect, ColorTable.ButtonSelectedGradientMiddle);
                     rect.Inflate(1, 1);
                 }
 
                 // drawing border (maybe again, because it can be overridden by background)
                 if (btn.Checked || !btn.DropDownButtonPressed && (btn.ButtonPressed || btn.ButtonSelected))
                 {
-                    using (Pen pen = new Pen(ProfessionalColors.ButtonSelectedBorder))
+                    using (Pen pen = new Pen(ColorTable.ButtonSelectedBorder))
                         e.Graphics.DrawRectangle(pen, rect.X, rect.Y, rect.Width, rect.Height - 1);
                 }
             }
