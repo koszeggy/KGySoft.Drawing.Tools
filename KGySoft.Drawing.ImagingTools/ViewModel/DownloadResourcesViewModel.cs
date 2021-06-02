@@ -206,8 +206,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
             catch (Exception e) when (!e.IsCritical())
             {
-                ShowError(Res.ErrorMessageCouldNotAccessOnlineResources(e.Message));
-                TryInvokeSync(() => CloseViewCallback?.Invoke());
+                TryInvokeSync(() =>
+                {
+                    ShowError(Res.ErrorMessageCouldNotAccessOnlineResources(e.Message));
+                    CloseViewCallback?.Invoke();
+                });
             }
             finally
             {
