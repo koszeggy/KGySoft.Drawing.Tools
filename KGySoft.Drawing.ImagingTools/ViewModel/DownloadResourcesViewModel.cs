@@ -351,11 +351,21 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             var toDownload = new List<DownloadInfo>();
             var existingFiles = new List<string>();
+            Version toolVersion = GetType().Assembly.GetName().Version.Normalize();
+            bool ignoreVersionMismatch = false;
 
             foreach (DownloadableResourceItem item in Items!)
             {
                 if (!item.Selected)
                     continue;
+
+                if (!ignoreVersionMismatch && item.Info.ImagingToolsVersion.Normalize() != toolVersion)
+                {
+                    if (Confirm(Res.ConfirmMessageResourceVersionMismatch, false))
+                        ignoreVersionMismatch = true;
+                    else
+                        return;
+                }
 
                 LocalizationInfo info = item.Info;
                 foreach (ResourceLibraries lib in info.ResourceSets.GetFlags(false))

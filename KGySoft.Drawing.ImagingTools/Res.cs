@@ -205,6 +205,10 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>There are unsaved modifications. Are sure to discard the changes?</summary>
         internal static string ConfirmMessageDiscardChanges => Get("ConfirmMessage_DiscardChanges");
 
+        /// <summary>One or more selected items are for a different Imaging Tools version.
+        /// Are you sure you want to continue?</summary>
+        internal static string ConfirmMessageResourceVersionMismatch => Get("ConfirmMessage_ResourceVersionMismatch");
+
         /// <summary>The palette contains no colors. Click OK to exit.</summary>
         internal static string InfoMessagePaletteEmpty => Get("InfoMessage_PaletteEmpty");
 
