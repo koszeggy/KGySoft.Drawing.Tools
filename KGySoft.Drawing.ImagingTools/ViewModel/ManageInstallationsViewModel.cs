@@ -211,7 +211,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnInstallCommand()
         {
-            if (currentStatus.Installed && !Confirm(Res.ConfirmMessageOverwriteInstallation, InstallationManager.AvailableVersion.Version > currentStatus.Version))
+            if (currentStatus.Installed && !Confirm(Res.ConfirmMessageOverwriteInstallation, currentStatus.Version != null && InstallationManager.AvailableVersion.Version > currentStatus.Version))
                 return;
 #if NETCOREAPP
             if (!Confirm(Res.ConfirmMessageNetCoreVersion, false))
