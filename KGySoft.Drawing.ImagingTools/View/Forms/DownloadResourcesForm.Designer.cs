@@ -19,7 +19,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.components = new System.ComponentModel.Container();
             this.bindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.okCancelButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
-            this.gridDownloadableResources = new System.Windows.Forms.DataGridView();
+            this.gridDownloadableResources = new Controls.AdvancedDataGridView();
             this.colSelected = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.colLanguage = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colAuthor = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -140,7 +140,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         #endregion
 
         private Controls.DownloadProgressStatusStrip progress;
-        private System.Windows.Forms.DataGridView gridDownloadableResources;
+        private Controls.AdvancedDataGridView gridDownloadableResources;
         private System.Windows.Forms.BindingSource bindingSource;
         private UserControls.OkCancelButtons okCancelButtons;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colSelected;
