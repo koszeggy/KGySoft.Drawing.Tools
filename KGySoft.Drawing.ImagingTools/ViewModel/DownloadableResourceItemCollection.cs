@@ -42,14 +42,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             langGroups = new StringKeyedDictionary<List<DownloadableResourceItem>>();
             foreach (LocalizationInfo info in collection)
             {
-                string langKey = info.Language.Name;
                 var item = new DownloadableResourceItem(info);
                 item.PropertyChanged += Item_PropertyChanged;
 
-                if (langGroups.TryGetValue(langKey, out List<DownloadableResourceItem>? group))
+                if (langGroups.TryGetValue(info.CultureName, out List<DownloadableResourceItem>? group))
                     group.Add(item);
                 else
-                    langGroups[langKey] = new List<DownloadableResourceItem>(1) { item };
+                    langGroups[info.CultureName] = new List<DownloadableResourceItem>(1) { item };
 
                 Add(item);
             }

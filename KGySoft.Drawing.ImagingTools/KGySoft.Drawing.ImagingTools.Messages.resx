@@ -198,6 +198,9 @@
   <data name="Text_BlueValueFormat" xml:space="preserve">
     <value>B: {0}</value>
   </data>
+  <data name="Text_UnsupportedCultureFormat" xml:space="preserve">
+    <value>Unsupported Language ({0})</value>
+  </data>
   <data name="Text_ColorCountFormat" xml:space="preserve">
     <value>Color Count: {0:N0}</value>
   </data>
@@ -423,6 +426,11 @@ then colors will be quantized to the 32 bit ARGB color space during the conversi
 Either select at least {1} pixel format or use another quantizer that uses no more colors than '{0}' can represent;
 otherwise, the result might not be optimal even with dithering.</value>
   </data>
+  <data name="WarningMessage_DownloadCompletedWithUnsupportedCulturesFormat" xml:space="preserve">
+    <value>{0} file(s) have been downloaded.
+
+The culture of one or more downloaded localizations is not supported on this platform. Those languages will not appear in the list.</value>
+  </data>
   <data name="WarningMessage_DithererNoAlphaGradient" xml:space="preserve">
     <value>The selected quantizer supports partial transparency, which is not supported by ditherers,
 so partial transparent pixels will be blended with back color.</value>
@@ -498,7 +506,7 @@ Dithering may help to preserve more details.</value>
     <value>The selected pixel format represents a narrower set of colors than the original '{0}'.
 Dithering may help to preserve more details.</value>
   </data>
-  <data name="InfoMessage_DownloadCompleteFormat" xml:space="preserve">
+  <data name="InfoMessage_DownloadCompletedFormat" xml:space="preserve">
     <value>{0} file(s) have been downloaded.</value>
   </data>
   <data name="InfoMessage_About" xml:space="preserve">

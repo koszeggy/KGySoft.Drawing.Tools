@@ -45,6 +45,8 @@
     + New ShowDialog(IView) overload
   + ViewFactory class:
     + New ShowDialog(IViewModel, IView) overload
+  + New LocalizableLibraries enum
+  + New LocalizationInfo class
 
 - KGySoft.Drawing.DebuggerVisualizers.dll
 =========================================

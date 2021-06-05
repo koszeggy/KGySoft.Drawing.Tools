@@ -251,7 +251,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// Creates a view model for downloading resources.
         /// </summary>
         /// <returns>An <see cref="IViewModel{TResult}"/> instance that represents a view model for managing language settings.</returns>
-        public static IViewModel<ICollection<CultureInfo>> CreateDownloadResources() => new DownloadResourcesViewModel();
+        public static IViewModel<ICollection<LocalizationInfo>> CreateDownloadResources() => new DownloadResourcesViewModel();
 
         #endregion
     }

@@ -36,8 +36,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             // Note: Not setting Accept/CancelButton because they would be very annoying during the editing
             InitializeComponent();
-            cmbResourceFiles.ValueMember = nameof(KeyValuePair<ResourceLibraries, string>.Key);
-            cmbResourceFiles.DisplayMember = nameof(KeyValuePair<ResourceLibraries, string>.Value);
+            cmbResourceFiles.ValueMember = nameof(KeyValuePair<LocalizableLibraries, string>.Key);
+            cmbResourceFiles.DisplayMember = nameof(KeyValuePair<LocalizableLibraries, string>.Value);
         }
 
         #endregion

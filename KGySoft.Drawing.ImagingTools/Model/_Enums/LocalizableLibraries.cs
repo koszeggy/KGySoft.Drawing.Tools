@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: ResourceLibraries.cs
+//  File: LocalizableLibraries.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2021 - All Rights Reserved
 //
@@ -22,12 +22,30 @@ using System;
 
 namespace KGySoft.Drawing.ImagingTools.Model
 {
+    /// <summary>
+    /// Represents the known class libraries with localizable resources.
+    /// </summary>
     [Flags]
-    internal enum ResourceLibraries
+    public enum LocalizableLibraries
     {
+        /// <summary>
+        /// Represents none of the localizable libraries.
+        /// </summary>
         None,
+
+        /// <summary>
+        /// Represents the <c>KGySoft.CoreLibraries.dll</c> assembly.
+        /// </summary>
         CoreLibraries = 1,
+
+        /// <summary>
+        /// Represents the <c>KGySoft.Drawing.dll</c> assembly.
+        /// </summary>
         DrawingLibraries = 1 << 1,
+
+        /// <summary>
+        /// Represents the <c>KGySoft.Drawing.ImagingTools.exe</c> assembly.
+        /// </summary>
         ImagingTools = 1 << 2
     }
 }

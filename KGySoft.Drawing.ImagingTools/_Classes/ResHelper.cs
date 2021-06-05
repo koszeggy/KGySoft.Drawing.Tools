@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
@@ -96,19 +97,21 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        internal static string GetBaseName(ResourceLibraries library) => library switch
+        internal static bool TryGetCulture(string name, [MaybeNullWhen(false)] out CultureInfo culture) => CulturesCache.TryGetValue(name, out culture);
+
+        internal static string GetBaseName(LocalizableLibraries library) => library switch
         {
-            ResourceLibraries.CoreLibraries => coreLibrariesBaseName,
-            ResourceLibraries.DrawingLibraries => drawingLibrariesBaseName,
-            ResourceLibraries.ImagingTools => imagingToolsBaseName,
+            LocalizableLibraries.CoreLibraries => coreLibrariesBaseName,
+            LocalizableLibraries.DrawingLibraries => drawingLibrariesBaseName,
+            LocalizableLibraries.ImagingTools => imagingToolsBaseName,
             _ => throw new ArgumentOutOfRangeException(nameof(library), PublicResources.EnumOutOfRange(library))
         };
 
-        internal static Assembly GetAssembly(ResourceLibraries library) => library switch
+        internal static Assembly GetAssembly(LocalizableLibraries library) => library switch
         {
-            ResourceLibraries.CoreLibraries => typeof(LanguageSettings).Assembly,
-            ResourceLibraries.DrawingLibraries => typeof(DrawingModule).Assembly,
-            ResourceLibraries.ImagingTools => typeof(Res).Assembly,
+            LocalizableLibraries.CoreLibraries => typeof(LanguageSettings).Assembly,
+            LocalizableLibraries.DrawingLibraries => typeof(DrawingModule).Assembly,
+            LocalizableLibraries.ImagingTools => typeof(Res).Assembly,
             _ => throw new ArgumentOutOfRangeException(nameof(library), PublicResources.EnumOutOfRange(library))
         };
 

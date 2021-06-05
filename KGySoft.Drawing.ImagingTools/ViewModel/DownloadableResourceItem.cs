@@ -16,6 +16,7 @@
 
 #region Usings
 
+using System.Globalization;
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.ImagingTools.Model;
 
@@ -25,12 +26,21 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
     internal class DownloadableResourceItem : ObservableObjectBase
     {
+        #region Fields
+
+        private string? language;
+
+        #endregion
+
         #region Properties
 
         #region Public Properties
 
         public bool Selected { get => Get<bool>(); set => Set(value); }
-        public string Language => $"{Info.Language.EnglishName} ({Info.Language.NativeName})";
+        public string Language => language ??= ResHelper.TryGetCulture(CultureName, out CultureInfo? culture)
+            ? $"{culture.EnglishName} ({culture.NativeName})"
+            : Res.TextUnsupportedCulture(CultureName);
+
         public string? Author => Info.Author;
         public string ImagingToolsVersion => Info.ImagingToolsVersion.ToString();
         public string? Description => Info.Description;
@@ -41,7 +51,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal LocalizationInfo Info { get; }
 
-        internal string CultureName => Info.Language.Name;
+        internal string CultureName => Info.CultureName;
 
         #endregion
 

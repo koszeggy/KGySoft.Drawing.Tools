@@ -356,6 +356,9 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>B: {0}</summary>
         internal static string TextBlueValue(byte a) => Get("Text_BlueValueFormat", a);
 
+        /// <summary>Unsupported Language ({0})</summary>
+        internal static string TextUnsupportedCulture(string cultureName) => Get("Text_UnsupportedCultureFormat", cultureName);
+
         #endregion
 
         #region Info Texts
@@ -531,6 +534,11 @@ namespace KGySoft.Drawing.ImagingTools
         /// otherwise, the result might not be optimal even with dithering.</summary>
         internal static string WarningMessageQuantizerTooWide(PixelFormat selectedPixelFormat, PixelFormat pixelFormatHint) => Get("WarningMessage_QuantizerTooWideFormat", selectedPixelFormat, pixelFormatHint);
 
+        /// <summary>{0} file(s) have been downloaded.
+        ///
+        /// The culture of one or more downloaded localizations is not supported on this platform. Those languages will not appear in the list.</summary>
+        internal static string WarningMessageDownloadCompletedWithUnsupportedCultures(int count) => Get("WarningMessage_DownloadCompletedWithUnsupportedCulturesFormat", count);
+
         /// <summary>The extension of the provided filename '{0}' does not match to the selected format ({1}).
         /// 
         /// Are you sure you want to save the file with the provided extension?</summary>
@@ -570,7 +578,7 @@ namespace KGySoft.Drawing.ImagingTools
         internal static string InfoMessageDithererIgnored(PixelFormat pixelFormat) => Get("InfoMessage_DithererIgnoredFormat", pixelFormat);
 
         /// <summary>{0} file(s) have been downloaded.</summary>
-        internal static string InfoMessageDownloadComplete(int count) => Get("InfoMessage_DownloadCompleteFormat", count);
+        internal static string InfoMessageDownloadCompleted(int count) => Get("InfoMessage_DownloadCompletedFormat", count);
 
         /// <summary>About KGy SOFT Imaging Tools
         /// 

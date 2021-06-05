@@ -19,7 +19,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -36,7 +35,7 @@ using KGySoft.Serialization.Xml;
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal class DownloadResourcesViewModel : ViewModelBase, IViewModel<ICollection<CultureInfo>>
+    internal class DownloadResourcesViewModel : ViewModelBase, IViewModel<ICollection<LocalizationInfo>>
     {
         #region Nested classes
 
@@ -79,7 +78,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             #region Properties
 
-            internal CultureInfo Culture { get; }
+            internal LocalizationInfo Info { get; }
             internal string FileName { get; }
             internal string RemoteUri => $"{remotePath}/{FileName}";
             internal string LocalPath => Path.Combine(Res.ResourcesDir, FileName);
@@ -88,13 +87,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             #region Constructors
 
-            public DownloadInfo(LocalizationInfo info, ResourceLibraries library)
+            public DownloadInfo(LocalizationInfo info, LocalizableLibraries library)
             {
-                Culture = info.Language;
-                FileName = Equals(info.Language, Res.DefaultLanguage)
+                Info = info;
+                FileName = info.CultureName == Res.DefaultLanguage.Name
                     ? ResHelper.GetBaseName(library) + ".resx"
-                    : $"{ResHelper.GetBaseName(library)}.{info.Language.Name}.resx";
-                remotePath = $"{info.Language.Name}_{info.Author}_{info.ImagingToolsVersion}";
+                    : $"{ResHelper.GetBaseName(library)}.{info.CultureName}.resx";
+                remotePath = $"{info.CultureName}_{info.Author}_{info.ImagingToolsVersion}";
             }
 
             #endregion
@@ -107,7 +106,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Fields
 
         private volatile AsyncTaskBase? activeTask;
-        private volatile HashSet<CultureInfo> downloadedCultures = new HashSet<CultureInfo>();
+        private volatile HashSet<LocalizationInfo> downloadedCultures = new HashSet<LocalizationInfo>();
 
         #endregion
 
@@ -262,7 +261,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
                     // if there was no issue with downloading, then saving the file
                     File.WriteAllBytes(downloadInfo.LocalPath, data);
-                    downloadedCultures.Add(downloadInfo.Culture);
+                    downloadedCultures.Add(downloadInfo.Info);
                     IncrementProgress();
                     downloaded += 1;
                     SetModified(true);
@@ -271,7 +270,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 TryInvokeSync(() =>
                 {
                     IsProcessing = false;
-                    ShowInfo(Res.InfoMessageDownloadComplete(downloaded));
+                    if (downloadedCultures.All(i => ResHelper.TryGetCulture(i.CultureName, out var _)))
+                        ShowInfo(Res.InfoMessageDownloadCompleted(downloaded));
+                    else
+                        ShowWarning(Res.WarningMessageDownloadCompletedWithUnsupportedCultures(downloaded));
                     CloseViewCallback?.Invoke();
                 });
             }
@@ -336,9 +338,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #endregion
 
-        #region Explicitly Implemented Inteface Methods
+        #region Explicitly Implemented Interface Methods
 
-        ICollection<CultureInfo> IViewModel<ICollection<CultureInfo>>.GetEditedModel() => downloadedCultures;
+        ICollection<LocalizationInfo> IViewModel<ICollection<LocalizationInfo>>.GetEditedModel() => downloadedCultures;
 
         #endregion
 
@@ -384,7 +386,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 }
 
                 LocalizationInfo info = item.Info;
-                foreach (ResourceLibraries lib in info.ResourceSets.GetFlags(false))
+                foreach (LocalizableLibraries lib in info.ResourceSets.GetFlags(false))
                 {
                     var file = new DownloadInfo(info, lib);
                     toDownload.Add(file);

@@ -21,8 +21,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
-
+using System.Linq;
 using KGySoft.ComponentModel;
+using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Resources;
 
 #endregion
@@ -264,11 +265,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnDownloadResourcesCommand()
         {
-            using IViewModel<ICollection<CultureInfo>> viewModel = ViewModelFactory.CreateDownloadResources();
+            using IViewModel<ICollection<LocalizationInfo>> viewModel = ViewModelFactory.CreateDownloadResources();
             ShowChildViewCallback?.Invoke(viewModel);
 
             // If the language was overwritten, then enabling apply even if it was disabled
-            dirtyCulture = viewModel.IsModified && viewModel.GetEditedModel().Contains(CurrentLanguage) ? CurrentLanguage : null;
+            dirtyCulture = viewModel.IsModified && viewModel.GetEditedModel().Any(i => i.CultureName == CurrentLanguage.Name) ? CurrentLanguage : null;
             availableResXLanguages = null;
             selectableLanguages = null;
             ResetLanguages();

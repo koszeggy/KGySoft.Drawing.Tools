@@ -60,15 +60,15 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private readonly CultureInfo culture;
         private readonly bool useInvariant;
-        private readonly Dictionary<ResourceLibraries, (IList<ResourceEntry> ResourceSet, bool IsModified)> resources;
+        private readonly Dictionary<LocalizableLibraries, (IList<ResourceEntry> ResourceSet, bool IsModified)> resources;
 
         #endregion
 
         #region Properties
 
-        internal KeyValuePair<ResourceLibraries, string>[] ResourceFiles { get; } // get only because never changes
+        internal KeyValuePair<LocalizableLibraries, string>[] ResourceFiles { get; } // get only because never changes
         internal string TitleCaption { get => Get<string>(); set => Set(value); }
-        internal ResourceLibraries SelectedLibrary { get => Get<ResourceLibraries>(); set => Set(value); }
+        internal LocalizableLibraries SelectedLibrary { get => Get<LocalizableLibraries>(); set => Set(value); }
         internal IList<ResourceEntry> SelectedSet { get => Get<IList<ResourceEntry>>(); set => Set(value); }
 
         internal ICommand ApplyResourcesCommand => Get(() => new SimpleCommand(OnApplyResourcesCommand));
@@ -87,12 +87,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             // The default language is used as the invariant resource set.
             // The invariant file name is preferred, unless only the language-specific file exists.
-            useInvariant = Equals(culture, Res.DefaultLanguage) && !File.Exists(ToFileNameWithPath(ResourceLibraries.ImagingTools));
-            resources = new Dictionary<ResourceLibraries, (IList<ResourceEntry>, bool)>(3, EnumComparer<ResourceLibraries>.Comparer);
-            ResourceFiles = Enum<ResourceLibraries>.GetFlags().Select(lib => new KeyValuePair<ResourceLibraries, string>(lib, ToFileName(lib))).ToArray();
+            useInvariant = Equals(culture, Res.DefaultLanguage) && !File.Exists(ToFileNameWithPath(LocalizableLibraries.ImagingTools));
+            resources = new Dictionary<LocalizableLibraries, (IList<ResourceEntry>, bool)>(3, EnumComparer<LocalizableLibraries>.Comparer);
+            ResourceFiles = Enum<LocalizableLibraries>.GetFlags().Select(lib => new KeyValuePair<LocalizableLibraries, string>(lib, ToFileName(lib))).ToArray();
             ApplyResourcesCommandState.Enabled = !Equals(LanguageSettings.DisplayLanguage, culture);
             UpdateTitle();
-            SelectedLibrary = ResourceLibraries.ImagingTools;
+            SelectedLibrary = LocalizableLibraries.ImagingTools;
         }
 
         #endregion
@@ -109,7 +109,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             switch (e.PropertyName)
             {
                 case nameof(SelectedLibrary):
-                    UpdateSelectedResources((ResourceLibraries)e.NewValue!);
+                    UpdateSelectedResources((LocalizableLibraries)e.NewValue!);
                     break;
             }
         }
@@ -134,13 +134,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void UpdateTitle() => TitleCaption = Res.TitleEditResources($"{culture.EnglishName} ({culture.NativeName})");
 
-        private string ToFileName(ResourceLibraries library) => useInvariant
+        private string ToFileName(LocalizableLibraries library) => useInvariant
             ? ResHelper.GetBaseName(library) + ".resx"
             : $"{ResHelper.GetBaseName(library)}.{culture.Name}.resx";
 
-        private string ToFileNameWithPath(ResourceLibraries library) => Path.Combine(Res.ResourcesDir, ToFileName(library));
+        private string ToFileNameWithPath(LocalizableLibraries library) => Path.Combine(Res.ResourcesDir, ToFileName(library));
 
-        private void UpdateSelectedResources(ResourceLibraries library)
+        private void UpdateSelectedResources(LocalizableLibraries library)
         {
             if (resources.TryGetValue(library, out var value))
             {
@@ -179,7 +179,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             SelectedSet = set;
         }
 
-        private bool TryReadResources(ResourceLibraries library, [MaybeNullWhen(false)]out IList<ResourceEntry> set, [MaybeNullWhen(true)]out Exception error)
+        private bool TryReadResources(LocalizableLibraries library, [MaybeNullWhen(false)]out IList<ResourceEntry> set, [MaybeNullWhen(true)]out Exception error)
         {
             try
             {
@@ -228,7 +228,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
         }
 
-        private bool TrySaveResources(ResourceLibraries library, IList<ResourceEntry> set, [MaybeNullWhen(true)]out Exception error)
+        private bool TrySaveResources(LocalizableLibraries library, IList<ResourceEntry> set, [MaybeNullWhen(true)]out Exception error)
         {
             // Note: We do not use a DynamicResourceManager for saving. This works because we let the actual DRMs drop their content after saving.
             try
