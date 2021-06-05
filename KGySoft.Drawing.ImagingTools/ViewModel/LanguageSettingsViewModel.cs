@@ -33,7 +33,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
     {
         #region Fields
 
-        private CultureInfo[]? neutralLanguages;
+        private List<CultureInfo>? neutralLanguages;
         private HashSet<CultureInfo>? availableResXLanguages;
         private List<CultureInfo>? selectableLanguages;
         private CultureInfo? dirtyCulture;
@@ -62,7 +62,26 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Private Properties
 
-        private CultureInfo[] NeutralLanguages => neutralLanguages ??= CultureInfo.GetCultures(CultureTypes.NeutralCultures);
+        private List<CultureInfo> NeutralLanguages
+        {
+            get
+            {
+                if (neutralLanguages == null)
+                {
+                    CultureInfo[] result = CultureInfo.GetCultures(CultureTypes.NeutralCultures);
+                    neutralLanguages = new List<CultureInfo>(result.Length - 1);
+                    foreach (CultureInfo ci in result)
+                    {
+                        if (Equals(ci, CultureInfo.InvariantCulture))
+                            continue;
+                        neutralLanguages.Add(ci);
+                    }
+                }
+
+                return neutralLanguages;
+            }
+        }
+
         private HashSet<CultureInfo> AvailableLanguages => availableResXLanguages ??= ResHelper.GetAvailableLanguages();
         
         private List<CultureInfo> SelectableLanguages
