@@ -92,7 +92,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 FileName = Equals(info.Language, Res.DefaultLanguage)
                     ? ResHelper.GetBaseName(library) + ".resx"
                     : $"{ResHelper.GetBaseName(library)}.{info.Language.Name}.resx";
-                remotePath = $"{info.Language.Name}_{info.Author}_{info.Version}";
+                remotePath = $"{info.Language.Name}_{info.Author}_{info.ImagingToolsVersion}";
             }
 
             #endregion

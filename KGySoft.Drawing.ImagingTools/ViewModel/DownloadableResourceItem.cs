@@ -32,7 +32,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         public bool Selected { get => Get<bool>(); set => Set(value); }
         public string Language => $"{Info.Language.EnglishName} ({Info.Language.NativeName})";
         public string? Author => Info.Author;
-        public string Version => Info.Version.ToString();
         public string ImagingToolsVersion => Info.ImagingToolsVersion.ToString();
         public string? Description => Info.Description;
 

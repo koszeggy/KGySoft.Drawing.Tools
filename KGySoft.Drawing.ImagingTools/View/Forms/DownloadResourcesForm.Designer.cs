@@ -19,14 +19,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.components = new System.ComponentModel.Container();
             this.bindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.okCancelButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
-            this.gridDownloadableResources = new Controls.AdvancedDataGridView();
+            this.gridDownloadableResources = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedDataGridView();
+            this.progress = new KGySoft.Drawing.ImagingTools.View.Controls.DownloadProgressStatusStrip();
             this.colSelected = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.colLanguage = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colAuthor = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colVersion = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colImagingToolsVersion = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colDescription = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.progress = new KGySoft.Drawing.ImagingTools.View.Controls.DownloadProgressStatusStrip();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridDownloadableResources)).BeginInit();
             this.SuspendLayout();
@@ -52,7 +51,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.colSelected,
             this.colLanguage,
             this.colAuthor,
-            this.colVersion,
             this.colImagingToolsVersion,
             this.colDescription});
             this.gridDownloadableResources.DataSource = this.bindingSource;
@@ -61,6 +59,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.gridDownloadableResources.Name = "gridDownloadableResources";
             this.gridDownloadableResources.Size = new System.Drawing.Size(358, 163);
             this.gridDownloadableResources.TabIndex = 0;
+            // 
+            // progress
+            // 
+            this.progress.BackColor = System.Drawing.Color.Transparent;
+            this.progress.Location = new System.Drawing.Point(3, 201);
+            this.progress.Name = "progress";
+            this.progress.Size = new System.Drawing.Size(358, 22);
+            this.progress.SizingGrip = false;
+            this.progress.TabIndex = 2;
+            this.progress.Text = "drawingProgressStatusStrip1";
             // 
             // colSelected
             // 
@@ -83,14 +91,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.colAuthor.Name = "colAuthor";
             this.colAuthor.ReadOnly = true;
             // 
-            // colVersion
-            // 
-            this.colVersion.DataPropertyName = "Version";
-            this.colVersion.HeaderText = "colVersion";
-            this.colVersion.Name = "colVersion";
-            this.colVersion.ReadOnly = true;
-            this.colVersion.Width = 60;
-            // 
             // colImagingToolsVersion
             // 
             this.colImagingToolsVersion.DataPropertyName = "ImagingToolsVersion";
@@ -106,16 +106,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.colDescription.Name = "colDescription";
             this.colDescription.ReadOnly = true;
             this.colDescription.Width = 120;
-            // 
-            // progress
-            // 
-            this.progress.BackColor = System.Drawing.Color.Transparent;
-            this.progress.Location = new System.Drawing.Point(3, 201);
-            this.progress.Name = "progress";
-            this.progress.Size = new System.Drawing.Size(358, 22);
-            this.progress.SizingGrip = false;
-            this.progress.TabIndex = 2;
-            this.progress.Text = "drawingProgressStatusStrip1";
             // 
             // DownloadResourcesForm
             // 
@@ -146,7 +136,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private System.Windows.Forms.DataGridViewCheckBoxColumn colSelected;
         private System.Windows.Forms.DataGridViewTextBoxColumn colLanguage;
         private System.Windows.Forms.DataGridViewTextBoxColumn colAuthor;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colVersion;
         private System.Windows.Forms.DataGridViewTextBoxColumn colImagingToolsVersion;
         private System.Windows.Forms.DataGridViewTextBoxColumn colDescription;
     }

@@ -851,9 +851,6 @@ Newly generated resources will contain English texts prefixed with "[T]". You ca
   <data name="colAuthor.HeaderText" xml:space="preserve">
     <value>Author</value>
   </data>
-  <data name="colVersion.HeaderText" xml:space="preserve">
-    <value>Version</value>
-  </data>
   <data name="colImagingToolsVersion.HeaderText" xml:space="preserve">
     <value>Imaging Tools Version</value>
   </data>

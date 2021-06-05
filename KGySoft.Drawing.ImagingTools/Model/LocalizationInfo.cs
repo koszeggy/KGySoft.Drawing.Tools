@@ -30,7 +30,6 @@ namespace KGySoft.Drawing.ImagingTools.Model
         public CultureInfo Language { get; set; } = default!;
         public string? Description { get; set; }
         public ResourceLibraries ResourceSets { get; set; } = default!;
-        public Version Version { get; set; } = default!;
         public Version ImagingToolsVersion { get; set; } = default!;
         public string? Author { get; set; }
 
