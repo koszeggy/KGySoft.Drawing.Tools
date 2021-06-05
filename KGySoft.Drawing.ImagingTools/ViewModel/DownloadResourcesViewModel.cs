@@ -18,8 +18,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -57,8 +59,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             #region Fields
 
-            internal List<DownloadInfo> Files;
-            internal bool Owerwrite;
+            internal List<DownloadInfo> Files = default!;
+            internal bool Overwrite;
 
             #endregion
         }
@@ -194,13 +196,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
                 using var reader = XmlReader.Create(new StreamReader(new MemoryStream(data), Encoding.UTF8));
                 reader.ReadStartElement("manifest");
-                var items = new List<LocalizationInfo>();
-                XmlSerializer.DeserializeContent(reader, items);
+                var itemsList = new List<LocalizationInfo>();
+                XmlSerializer.DeserializeContent(reader, itemsList);
 
                 TryInvokeSync(() =>
                 {
-                    Items = new DownloadableResourceItemCollection(items);
-                    DownloadCommandState.Enabled = true;
+                    var items = new DownloadableResourceItemCollection(itemsList);
+                    items.ListChanged += Items_ListChanged;
+                    Items = items;
                     IsProcessing = false;
                 });
             }
@@ -223,7 +226,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             DownloadCommandState.Enabled = false;
             IsProcessing = true;
-            activeTask = new DownloadResourcesTask { Files = toDownload, Owerwrite = overwrite };
+            activeTask = new DownloadResourcesTask { Files = toDownload, Overwrite = overwrite };
             ThreadPool.QueueUserWorkItem(DoDownloadResources, activeTask);
         }
 
@@ -245,7 +248,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     if (task.IsCanceled)
                         return;
 
-                    if (!task.Owerwrite && File.Exists(downloadInfo.LocalPath))
+                    if (!task.Overwrite && File.Exists(downloadInfo.LocalPath))
                     {
                         IncrementProgress(3);
                         continue;
@@ -336,6 +339,19 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Explicitly Implemented Inteface Methods
 
         ICollection<CultureInfo> IViewModel<ICollection<CultureInfo>>.GetEditedModel() => downloadedCultures;
+
+        #endregion
+
+        #region Event Handlers
+
+        private void Items_ListChanged(object sender, ListChangedEventArgs e)
+        {
+            var items = (DownloadableResourceItemCollection)sender;
+            if (e.ListChangedType != ListChangedType.ItemChanged || e.PropertyDescriptor?.Name != nameof(DownloadableResourceItem.Selected))
+                return;
+
+            DownloadCommandState.Enabled = items[e.NewIndex].Selected || items.Any(i => i.Selected);
+        }
 
         #endregion
 
