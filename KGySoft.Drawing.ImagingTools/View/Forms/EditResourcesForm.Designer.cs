@@ -37,6 +37,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.colOriginalText = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colTranslatedText = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.bindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.pnlFilter = new System.Windows.Forms.Panel();
+            this.txtFilter = new System.Windows.Forms.TextBox();
+            this.lblFilter = new System.Windows.Forms.Label();
             this.gbResourceFile = new System.Windows.Forms.GroupBox();
             this.cmbResourceFiles = new System.Windows.Forms.ComboBox();
             this.splitterEditResources = new System.Windows.Forms.Splitter();
@@ -49,6 +52,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.gbResourceEntries.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridResources)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource)).BeginInit();
+            this.pnlFilter.SuspendLayout();
             this.gbResourceFile.SuspendLayout();
             this.pnlEditResourceEntry.SuspendLayout();
             this.gbOriginalText.SuspendLayout();
@@ -58,6 +62,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // gbResourceEntries
             // 
             this.gbResourceEntries.Controls.Add(this.gridResources);
+            this.gbResourceEntries.Controls.Add(this.pnlFilter);
             this.gbResourceEntries.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gbResourceEntries.Location = new System.Drawing.Point(3, 49);
             this.gbResourceEntries.Name = "gbResourceEntries";
@@ -86,9 +91,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.gridResources.DefaultCellStyle = dataGridViewCellStyle1;
             this.gridResources.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.gridResources.Location = new System.Drawing.Point(3, 16);
+            this.gridResources.Location = new System.Drawing.Point(3, 40);
             this.gridResources.Name = "gridResources";
-            this.gridResources.Size = new System.Drawing.Size(572, 98);
+            this.gridResources.Size = new System.Drawing.Size(572, 74);
             this.gridResources.TabIndex = 3;
             // 
             // colResourceKey
@@ -116,6 +121,36 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // bindingSource
             // 
             this.bindingSource.DataSource = typeof(KGySoft.Drawing.ImagingTools.Model.ResourceEntry);
+            // 
+            // pnlFilter
+            // 
+            this.pnlFilter.Controls.Add(this.txtFilter);
+            this.pnlFilter.Controls.Add(this.lblFilter);
+            this.pnlFilter.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlFilter.Location = new System.Drawing.Point(3, 16);
+            this.pnlFilter.Name = "pnlFilter";
+            this.pnlFilter.Padding = new System.Windows.Forms.Padding(0, 2, 0, 2);
+            this.pnlFilter.Size = new System.Drawing.Size(572, 24);
+            this.pnlFilter.TabIndex = 4;
+            // 
+            // txtFilter
+            // 
+            this.txtFilter.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtFilter.Location = new System.Drawing.Point(45, 2);
+            this.txtFilter.Name = "txtFilter";
+            this.txtFilter.Size = new System.Drawing.Size(527, 20);
+            this.txtFilter.TabIndex = 1;
+            // 
+            // lblFilter
+            // 
+            this.lblFilter.AutoSize = true;
+            this.lblFilter.Dock = System.Windows.Forms.DockStyle.Left;
+            this.lblFilter.Location = new System.Drawing.Point(0, 2);
+            this.lblFilter.Name = "lblFilter";
+            this.lblFilter.Padding = new System.Windows.Forms.Padding(3);
+            this.lblFilter.Size = new System.Drawing.Size(45, 19);
+            this.lblFilter.TabIndex = 0;
+            this.lblFilter.Text = "lblFilter";
             // 
             // gbResourceFile
             // 
@@ -237,6 +272,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.gbResourceEntries.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.gridResources)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource)).EndInit();
+            this.pnlFilter.ResumeLayout(false);
+            this.pnlFilter.PerformLayout();
             this.gbResourceFile.ResumeLayout(false);
             this.pnlEditResourceEntry.ResumeLayout(false);
             this.gbOriginalText.ResumeLayout(false);
@@ -264,5 +301,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private System.Windows.Forms.DataGridViewTextBoxColumn colResourceKey;
         private System.Windows.Forms.DataGridViewTextBoxColumn colOriginalText;
         private System.Windows.Forms.DataGridViewTextBoxColumn colTranslatedText;
+        private System.Windows.Forms.Panel pnlFilter;
+        private System.Windows.Forms.TextBox txtFilter;
+        private System.Windows.Forms.Label lblFilter;
     }
 }

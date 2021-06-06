@@ -85,8 +85,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // VM.SelectedLibrary <-> cmbResourceFiles.SelectedValue
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.SelectedLibrary), cmbResourceFiles, nameof(cmbResourceFiles.SelectedValue));
 
-            // VM.SelectedSet -> bindingSource.DataSource
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SelectedSet), nameof(bindingSource.DataSource), bindingSource);
+            // txtFilter.Text -> VM.Filter
+            CommandBindings.AddPropertyBinding(txtFilter, nameof(txtFilter.Text), nameof(ViewModel.Filter), ViewModel);
+
+            // VM.FilteredSet -> bindingSource.DataSource
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.FilteredSet), nameof(bindingSource.DataSource), bindingSource);
 
             // bindingSource.OriginalText -> txtOriginalText.Text
             txtOriginalText.DataBindings.Add(nameof(txtOriginalText.Text), bindingSource, nameof(ResourceEntry.OriginalText), false, DataSourceUpdateMode.Never);
