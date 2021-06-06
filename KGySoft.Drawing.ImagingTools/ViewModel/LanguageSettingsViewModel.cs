@@ -206,12 +206,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     && AvailableLanguages.Contains(Res.DefaultLanguage));
         }
 
-        #endregion
-
-        #region Command Handlers
-
-        private void OnApplyCommand()
+        private void ApplyAndSave()
         {
+            if (!IsModified)
+                return;
+
+            // 1. ) Applying the current language
             dirtyCulture = null;
             CultureInfo currentLanguage = CurrentLanguage;
             LanguageSettings.DynamicResourceManagersSource = AllowResXResources ? ResourceManagerSources.CompiledAndResX : ResourceManagerSources.CompiledOnly;
@@ -222,22 +222,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 LanguageSettings.DisplayLanguage = currentLanguage;
 
             // Note: Ensure is not really needed because main .resx is generated, while others are saved on demand in the editor, too
-            // TODO If used, then add to EditResourcesVM.Save, too, to be consistent ()
-            //ResHelper.EnsureResourcesGenerated();
+            //ResHelper.EnsureResourcesGenerated(); // TODO If used, then add to EditResourcesVM.Save, too, to be consistent
             ResHelper.SavePendingResources();
             availableResXLanguages = null;
             selectableLanguages = null;
-        }
 
-        private void OnSaveConfigCommand()
-        {
-            if (!IsModified)
-                return;
-
-            if (ApplyCommandState.Enabled)
-                OnApplyCommand();
-
-            // saving the configuration
+            // 2.) Saving the configuration
             Configuration.AllowResXResources = AllowResXResources;
             Configuration.UseOSLanguage = UseOSLanguage;
             Configuration.DisplayLanguage = CurrentLanguage;
@@ -249,7 +239,17 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             {
                 ShowError(Res.ErrorMessageFailedToSaveSettings(e.Message));
             }
+
         }
+
+        #endregion
+
+        #region Command Handlers
+
+        // Both Save and Apply do the same thing.
+        // The only difference is that Apply has an Enabled state and the View may bind Save to a button that closes the view.
+        private void OnApplyCommand() => ApplyAndSave();
+        private void OnSaveConfigCommand() => ApplyAndSave();
 
         private void OnEditResourcesCommand()
         {
