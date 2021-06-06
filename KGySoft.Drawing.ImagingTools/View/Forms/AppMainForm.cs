@@ -31,7 +31,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
     {
         #region Fields
 
-        private static readonly string title = Res.TitleAppNameAndVersion(typeof(Res).Assembly.GetName().Version!);
+        private string? title;
 
         #endregion
 
@@ -85,6 +85,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Protected Methods
 
+        protected override void ApplyStringResources()
+        {
+            base.ApplyStringResources();
+            title = Res.TitleAppNameAndVersion(typeof(Res).Assembly.GetName().Version!);
+            if (CommandBindings.Count > 0)
+                Text = ViewModel.TitleCaption;
+        }
+
         protected override void ApplyViewModel()
         {
             InitPropertyBindings();
@@ -126,7 +134,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             string? fileName = ViewModel.FileName;
             string name = fileName == null ? Res.TextUnnamed : Path.GetFileName(fileName);
-            return String.IsNullOrEmpty(value) ? title : $"{title} [{name}{(ViewModel.IsModified ? "*" : String.Empty)}] - {value}";
+            return String.IsNullOrEmpty(value) ? title! : $"{title} [{name}{(ViewModel.IsModified ? "*" : String.Empty)}] - {value}";
         }
 
         #endregion
