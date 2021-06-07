@@ -236,6 +236,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // 
             // txtTranslatedText
             // 
+            this.txtTranslatedText.AcceptsTab = true;
             this.txtTranslatedText.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtTranslatedText.Location = new System.Drawing.Point(3, 16);
             this.txtTranslatedText.Multiline = true;
