@@ -21,7 +21,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.tblButtons = new System.Windows.Forms.TableLayoutPanel();
             this.btnRemove = new System.Windows.Forms.Button();
             this.btnInstall = new System.Windows.Forms.Button();
-            this.pnlStatus = new System.Windows.Forms.Panel();
+            this.pnlStatus = new KGySoft.Drawing.ImagingTools.View.Controls.AutoMirrorPanel();
             this.lblStatusText = new System.Windows.Forms.Label();
             this.lblStatus = new System.Windows.Forms.Label();
             this.tbPath = new System.Windows.Forms.TextBox();
@@ -135,12 +135,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // 
             // lblPath
             // 
-            this.lblPath.AutoSize = true;
             this.lblPath.Dock = System.Windows.Forms.DockStyle.Top;
             this.lblPath.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.lblPath.Location = new System.Drawing.Point(3, 16);
             this.lblPath.Name = "lblPath";
-            this.lblPath.Size = new System.Drawing.Size(39, 13);
+            this.lblPath.Size = new System.Drawing.Size(372, 13);
             this.lblPath.TabIndex = 0;
             this.lblPath.Text = "lblPath";
             // 
@@ -179,12 +178,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // 
             // lblAvailableVersion
             // 
-            this.lblAvailableVersion.AutoSize = true;
-            this.lblAvailableVersion.Dock = System.Windows.Forms.DockStyle.Left;
+            this.lblAvailableVersion.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblAvailableVersion.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.lblAvailableVersion.Location = new System.Drawing.Point(3, 16);
             this.lblAvailableVersion.Name = "lblAvailableVersion";
-            this.lblAvailableVersion.Size = new System.Drawing.Size(95, 13);
+            this.lblAvailableVersion.Size = new System.Drawing.Size(372, 21);
             this.lblAvailableVersion.TabIndex = 0;
             this.lblAvailableVersion.Text = "lblAvailableVersion";
             // 
@@ -209,7 +207,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.pnlStatus.PerformLayout();
             this.gbVisualStudioVersions.ResumeLayout(false);
             this.gbAvailableVersion.ResumeLayout(false);
-            this.gbAvailableVersion.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -219,7 +216,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private System.Windows.Forms.TableLayoutPanel tblButtons;
         private System.Windows.Forms.Button btnRemove;
         private System.Windows.Forms.Button btnInstall;
-        private System.Windows.Forms.Panel pnlStatus;
+        private Controls.AutoMirrorPanel pnlStatus;
         private System.Windows.Forms.Label lblStatusText;
         private System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.TextBox tbPath;

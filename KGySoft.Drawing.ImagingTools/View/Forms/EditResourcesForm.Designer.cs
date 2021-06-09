@@ -37,7 +37,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.colOriginalText = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colTranslatedText = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.bindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.pnlFilter = new System.Windows.Forms.Panel();
+            this.pnlFilter = new Controls.AutoMirrorPanel();
             this.txtFilter = new System.Windows.Forms.TextBox();
             this.lblFilter = new System.Windows.Forms.Label();
             this.gbResourceFile = new System.Windows.Forms.GroupBox();
@@ -302,7 +302,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private System.Windows.Forms.DataGridViewTextBoxColumn colResourceKey;
         private System.Windows.Forms.DataGridViewTextBoxColumn colOriginalText;
         private System.Windows.Forms.DataGridViewTextBoxColumn colTranslatedText;
-        private System.Windows.Forms.Panel pnlFilter;
+        private Controls.AutoMirrorPanel pnlFilter;
         private System.Windows.Forms.TextBox txtFilter;
         private System.Windows.Forms.Label lblFilter;
     }

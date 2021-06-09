@@ -19,7 +19,7 @@
             this.progress = new KGySoft.Drawing.ImagingTools.View.Controls.DrawingProgressStatusStrip();
             this.okCancelButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
             this.previewImage = new KGySoft.Drawing.ImagingTools.View.UserControls.PreviewImageControl();
-            this.pnlSettings = new System.Windows.Forms.Panel();
+            this.pnlSettings = new Controls.AutoMirrorPanel();
             this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.warningProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.infoProvider = new System.Windows.Forms.ErrorProvider(this.components);
@@ -99,7 +99,7 @@
         private Controls.DrawingProgressStatusStrip progress;
         private UserControls.OkCancelButtons okCancelButtons;
         private UserControls.PreviewImageControl previewImage;
-        protected System.Windows.Forms.Panel pnlSettings;
+        protected Controls.AutoMirrorPanel pnlSettings;
         private System.Windows.Forms.ErrorProvider warningProvider;
         private System.Windows.Forms.ErrorProvider infoProvider;
         private System.Windows.Forms.ErrorProvider errorProvider;
