@@ -153,10 +153,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                     btnAntiAlias.PerformClick();
                     return true;
                 case Keys.Shift | Keys.Right:
-                    btnNext.PerformClick();
+                    (RightToLeft == RightToLeft.Yes ? btnPrev : btnNext).PerformClick();
                     return true;
                 case Keys.Shift | Keys.Left:
-                    btnPrev.PerformClick();
+                    (RightToLeft == RightToLeft.Yes ? btnNext : btnPrev).PerformClick();
                     return true;
                 default:
                     return base.ProcessCmdKey(ref msg, keyData);

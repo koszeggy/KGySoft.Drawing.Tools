@@ -337,6 +337,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.btnPrev.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnPrev.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnPrev.Name = "btnPrev";
+            this.btnPrev.RightToLeftAutoMirrorImage = true;
             this.btnPrev.Size = new System.Drawing.Size(23, 22);
             // 
             // btnNext
@@ -344,6 +345,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.btnNext.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnNext.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnNext.Name = "btnNext";
+            this.btnNext.RightToLeftAutoMirrorImage = true;
             this.btnNext.Size = new System.Drawing.Size(23, 22);
             // 
             // toolStripSeparator4
