@@ -17,6 +17,7 @@
 #region Usings
 
 using System.Globalization;
+
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.ImagingTools.Model;
 
@@ -37,6 +38,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Public Properties
 
         public bool Selected { get => Get<bool>(); set => Set(value); }
+
+        // Note: this could be also observable and we could subscribe language change just to adjust unsupported culture
+        // on-the-fly but this will never happen unless using this class from API. Subscribing language change from every item
+        // just for updating the possible unsupported cultures is not worth it.
         public string Language => language ??= ResHelper.TryGetCulture(CultureName, out CultureInfo? culture)
             ? $"{culture.EnglishName} ({culture.NativeName})"
             : Res.TextUnsupportedCulture(CultureName);
@@ -59,7 +64,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Constructors
 
-        internal DownloadableResourceItem(LocalizationInfo info) => this.Info = info;
+        internal DownloadableResourceItem(LocalizationInfo info) => Info = info;
 
         #endregion
     }
