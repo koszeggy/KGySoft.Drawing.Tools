@@ -111,10 +111,15 @@ namespace KGySoft.Drawing.ImagingTools.View
             Size size = referenceSize.Scale(OSUtils.SystemScale);
             Icon result = icon.ExtractNearestIcon(size, PixelFormat.Format32bppArgb);
             int mod;
-            if (!legacyScaling || OSUtils.IsWindows8OrLater || !OSUtils.IsWindows || (mod = result.Width & 0xF) == 0)
+            if (!legacyScaling || !OSUtils.IsWindows || (mod = result.Width & 0xF) == 0)
                 return result;
 
-            // Windows XP-Windows 7 with legacy scaling: we need to make sure that icon size is dividable by 16
+#if !NET35
+            if (OSUtils.IsWindows8OrLater)
+                return result;
+#endif
+
+            // .NET 3.5 or Windows XP-Windows 7 with legacy scaling: we need to make sure that icon size is dividable by 16
             // so it will not be corrupted (eg. ErrorProvider)
             using Bitmap iconImage = icon.ExtractBitmap(result.Size)!;
             result.Dispose();
