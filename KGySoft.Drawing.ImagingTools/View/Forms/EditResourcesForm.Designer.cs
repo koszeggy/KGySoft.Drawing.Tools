@@ -37,7 +37,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.colOriginalText = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colTranslatedText = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.bindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.pnlFilter = new Controls.AutoMirrorPanel();
+            this.pnlFilter = new KGySoft.Drawing.ImagingTools.View.Controls.AutoMirrorPanel();
             this.txtFilter = new System.Windows.Forms.TextBox();
             this.lblFilter = new System.Windows.Forms.Label();
             this.gbResourceFile = new System.Windows.Forms.GroupBox();
@@ -49,6 +49,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.gbTranslatedText = new System.Windows.Forms.GroupBox();
             this.txtTranslatedText = new System.Windows.Forms.TextBox();
             this.okCancelApplyButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
+            this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.gbResourceEntries.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridResources)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource)).BeginInit();
@@ -57,6 +58,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.pnlEditResourceEntry.SuspendLayout();
             this.gbOriginalText.SuspendLayout();
             this.gbTranslatedText.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
             this.SuspendLayout();
             // 
             // gbResourceEntries
@@ -255,6 +257,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.okCancelApplyButtons.Size = new System.Drawing.Size(578, 35);
             this.okCancelApplyButtons.TabIndex = 1;
             // 
+            // errorProvider
+            // 
+            this.errorProvider.ContainerControl = this;
+            // 
             // EditResourcesForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -281,6 +287,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.gbOriginalText.PerformLayout();
             this.gbTranslatedText.ResumeLayout(false);
             this.gbTranslatedText.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -305,5 +312,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private Controls.AutoMirrorPanel pnlFilter;
         private System.Windows.Forms.TextBox txtFilter;
         private System.Windows.Forms.Label lblFilter;
+        private System.Windows.Forms.ErrorProvider errorProvider;
     }
 }
