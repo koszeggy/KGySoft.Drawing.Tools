@@ -123,7 +123,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // View commands
             CommandBindings.Add(OnCurrentItemChangedCommand)
                 .AddSource(bindingSource, nameof(bindingSource.CurrentItemChanged));
-
         }
 
         #endregion

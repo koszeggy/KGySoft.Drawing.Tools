@@ -138,9 +138,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // txtFilter
             // 
             this.txtFilter.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtFilter.Location = new System.Drawing.Point(45, 2);
+            this.txtFilter.Location = new System.Drawing.Point(39, 2);
             this.txtFilter.Name = "txtFilter";
-            this.txtFilter.Size = new System.Drawing.Size(527, 20);
+            this.txtFilter.Size = new System.Drawing.Size(533, 20);
             this.txtFilter.TabIndex = 1;
             // 
             // lblFilter
@@ -149,8 +149,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.lblFilter.Dock = System.Windows.Forms.DockStyle.Left;
             this.lblFilter.Location = new System.Drawing.Point(0, 2);
             this.lblFilter.Name = "lblFilter";
-            this.lblFilter.Padding = new System.Windows.Forms.Padding(3);
-            this.lblFilter.Size = new System.Drawing.Size(45, 19);
+            this.lblFilter.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
+            this.lblFilter.Size = new System.Drawing.Size(39, 20);
             this.lblFilter.TabIndex = 0;
             this.lblFilter.Text = "lblFilter";
             // 

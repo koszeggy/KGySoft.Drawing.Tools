@@ -19,6 +19,7 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 
@@ -127,13 +128,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         protected virtual void OnCheckedChanged(EventArgs e) => (Events[nameof(CheckedChanged)] as EventHandler)?.Invoke(this, e);
 
-        protected override void OnLayout(LayoutEventArgs levent)
-        {
-            base.OnLayout(levent);
-            if (levent.AffectedProperty == nameof(Bounds))
-                ResetCheckBoxLocation();
-        }
-
         protected override void OnRightToLeftChanged(EventArgs e)
         {
             base.OnRightToLeftChanged(e);
@@ -173,11 +167,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             OnCheckedChanged(EventArgs.Empty);
         }
 
-        private void CheckBox_SizeChanged(object sender, EventArgs e)
-        {
-            if (RightToLeft == RightToLeft.Yes)
-                ResetCheckBoxLocation();
-        }
+        private void CheckBox_SizeChanged(object sender, EventArgs e) => ResetCheckBoxLocation();
 
         #endregion
 
