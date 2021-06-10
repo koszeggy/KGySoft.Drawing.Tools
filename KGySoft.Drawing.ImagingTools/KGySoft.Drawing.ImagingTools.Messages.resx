@@ -890,7 +890,7 @@ Tip: use '[T]' to filter untranslated texts.</value>
   <data name="miWebSite.Text" xml:space="preserve">
     <value>Visit Web Site...</value>
   </data>
-  <data name="miWebSite.Text" xml:space="preserve">
+  <data name="miGitHub.Text" xml:space="preserve">
     <value>Visit GitHub Project Site...</value>
   </data>
   <data name="miMarketplace.Text" xml:space="preserve">
