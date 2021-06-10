@@ -27,7 +27,9 @@ using System.Windows.Forms;
 namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
     /// <summary>
-    /// Just providing some default style with a few fixed issues
+    /// Just a DataGridView that
+    /// - provides some default style with a few fixed issues
+    /// - scales the columns automatically
     /// </summary>
     internal class AdvancedDataGridView : DataGridView
     {
@@ -112,6 +114,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             AlternatingRowsDefaultCellStyle = SystemInformation.HighContrast
                 ? null
                 : new DataGridViewCellStyle { BackColor = SystemColors.ControlLight, ForeColor = SystemColors.ControlText };
+        }
+
+        protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
+        {
+            base.ScaleControl(factor, specified);
+            if (factor.Width.Equals(1f))
+                return;
+            foreach (DataGridViewColumn column in Columns)
+                column.Width = (int)(column.Width * factor.Width);
         }
 
         #endregion
