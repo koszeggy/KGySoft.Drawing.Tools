@@ -187,6 +187,12 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>The current installation is being executed, which cannot be removed</summary>
         internal static string ErrorMessageInstallationCannotBeRemoved => Get("ErrorMessage_InstallationCannotBeRemoved");
 
+        /// <summary>Resource format string is invalid.</summary>
+        internal static string ErrorMessageResourceFormatError => Get("ErrorMessage_ResourceFormatError");
+
+        /// <summary>One or more placeholder is missing from the translated resource format string.</summary>
+        internal static string ErrorMessageResourcePlaceholderUnusedIndices => Get("ErrorMessage_ResourcePlaceholderUnusedIndices");
+
         /// <summary>The selected quantizer supports partial transparency, which is not supported by ditherers,
         /// so partial transparent pixels will be blended with back color.</summary>
         internal static string WarningMessageDithererNoAlphaGradient => Get("WarningMessage_DithererNoAlphaGradient");
@@ -504,6 +510,9 @@ namespace KGySoft.Drawing.ImagingTools
 
         /// <summary>Failed to download resource file {0}: {1}</summary>
         internal static string ErrorMessageFailedToDownloadResource(string fileName, string message) => Get("ErrorMessage_FailedToDownloadResourceFormat", fileName, message);
+
+        /// <summary>Index '{0}' is invalid in the translated resource format string.</summary>
+        internal static string ErrorMessageResourcePlaceholderIndexInvalid(int index) => Get("ErrorMessage_ResourcePlaceholderIndexInvalidFormat", index);
 
 #if NET45
         /// <summary>Could not create directory {0}: {1}
