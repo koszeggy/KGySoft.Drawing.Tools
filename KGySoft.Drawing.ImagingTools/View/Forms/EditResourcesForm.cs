@@ -40,6 +40,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             cmbResourceFiles.ValueMember = nameof(KeyValuePair<LocalizableLibraries, string>.Key);
             cmbResourceFiles.DisplayMember = nameof(KeyValuePair<LocalizableLibraries, string>.Value);
             errorProvider.SetIconAlignment(gbTranslatedText, ErrorIconAlignment.MiddleLeft);
+            
+            // For Linux/Mono adding an empty column in the middle so the error provider icon will not appear in a new row
+            if (!OSUtils.IsWindows)
+            {
+                pnlEditResourceEntry.ColumnCount = 3;
+                pnlEditResourceEntry.SetColumn(gbTranslatedText, 2);
+                pnlEditResourceEntry.ColumnStyles.Insert(1, new ColumnStyle(SizeType.AutoSize));
+            }
         }
 
         #endregion
@@ -68,8 +76,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected override void ApplyViewModel()
         {
-            InitCommandBindings();
             InitPropertyBindings();
+            InitCommandBindings();
             base.ApplyViewModel();
         }
 
