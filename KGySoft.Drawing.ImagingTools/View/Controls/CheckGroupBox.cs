@@ -19,7 +19,6 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 
@@ -167,7 +166,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             OnCheckedChanged(EventArgs.Empty);
         }
 
-        private void CheckBox_SizeChanged(object sender, EventArgs e) => ResetCheckBoxLocation();
+        private void CheckBox_SizeChanged(object? sender, EventArgs e) => ResetCheckBoxLocation();
 
         #endregion
 

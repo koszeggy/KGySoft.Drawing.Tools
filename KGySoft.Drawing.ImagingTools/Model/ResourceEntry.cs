@@ -267,7 +267,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
             if (state != State.Text)
                 AddFormatError(result);
             else if (usedPlaceholders != (1 << placeholderCount) - 1)
-                result.AddError(nameof(TranslatedText), Res.ErrorMessageResourcePlaceholderUnusedIndices);
+                result.AddWarning(nameof(TranslatedText), Res.ErrorMessageResourcePlaceholderUnusedIndices);
             return result;
         }
 

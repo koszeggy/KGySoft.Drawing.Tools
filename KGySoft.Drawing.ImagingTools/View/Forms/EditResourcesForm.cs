@@ -17,7 +17,6 @@
 #region Usings
 
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.Model;
@@ -39,7 +38,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             InitializeComponent();
             cmbResourceFiles.ValueMember = nameof(KeyValuePair<LocalizableLibraries, string>.Key);
             cmbResourceFiles.DisplayMember = nameof(KeyValuePair<LocalizableLibraries, string>.Value);
-            errorProvider.SetIconAlignment(gbTranslatedText, ErrorIconAlignment.MiddleLeft);
+            ErrorProvider.SetIconAlignment(gbTranslatedText, ErrorIconAlignment.MiddleLeft);
+            WarningProvider.SetIconAlignment(gbTranslatedText, ErrorIconAlignment.MiddleLeft);
+            ValidationMapping[nameof(ResourceEntry.TranslatedText)] = gbTranslatedText;
             
             // For Linux/Mono adding an empty column in the middle so the error provider icon will not appear in a new row
             if (!OSUtils.IsWindows)
@@ -71,7 +72,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             base.ApplyResources();
             Icon = Properties.Resources.Language;
-            errorProvider.Icon = Icons.SystemError.ToScaledIcon();
         }
 
         protected override void ApplyViewModel()
@@ -107,10 +107,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
             // bindingSource.TranslatedText <-> txtTranslatedText.Text
             txtTranslatedText.DataBindings.Add(nameof(txtTranslatedText.Text), bindingSource, nameof(ResourceEntry.TranslatedText), false, DataSourceUpdateMode.OnValidation);
-
-            // this.RightToLeft -> errorProvider.RightToLeft
-            CommandBindings.AddPropertyBinding(this, nameof(RightToLeft), nameof(ErrorProvider.RightToLeft),
-                rtl => rtl is RightToLeft.Yes, errorProvider);
         }
 
         private void InitCommandBindings()
@@ -129,24 +125,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 .AddSource(okCancelApplyButtons.CancelButton, nameof(okCancelApplyButtons.CancelButton.Click));
 
             // View commands
-            CommandBindings.Add(OnCurrentItemChangedCommand)
-                .AddSource(bindingSource, nameof(bindingSource.CurrentItemChanged));
-        }
-
-        #endregion
-
-        #region Command Handlers
-
-        private void OnCurrentItemChangedCommand()
-        {
-            var current = bindingSource.Current as ResourceEntry;
-            if (current == null)
-            {
-                errorProvider.SetError(gbTranslatedText, null);
-                return;
-            }
-
-            errorProvider.SetError(gbTranslatedText, current.ValidationResults.Errors.FirstOrDefault()?.Message);
+            CommandBindings.Add(ValidationResultsChangedCommand)
+                .AddSource(bindingSource, nameof(bindingSource.CurrentItemChanged))
+                .WithParameter(() => (bindingSource.Current as ResourceEntry)?.ValidationResults);
         }
 
         #endregion

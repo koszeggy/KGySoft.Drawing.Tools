@@ -190,7 +190,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Resource format string is invalid.</summary>
         internal static string ErrorMessageResourceFormatError => Get("ErrorMessage_ResourceFormatError");
 
-        /// <summary>One or more placeholder is missing from the translated resource format string.</summary>
+        /// <summary>One or more placeholders are missing from the translated resource format string.</summary>
         internal static string ErrorMessageResourcePlaceholderUnusedIndices => Get("ErrorMessage_ResourcePlaceholderUnusedIndices");
 
         /// <summary>The selected quantizer supports partial transparency, which is not supported by ditherers,

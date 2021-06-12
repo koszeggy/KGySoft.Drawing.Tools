@@ -103,17 +103,17 @@ namespace KGySoft.Drawing.ImagingTools.View
                 return icon.ExtractNearestBitmap(referenceSize.Scale(scale ?? OSUtils.SystemScale), PixelFormat.Format32bppArgb);
         }
 
-        internal static Icon ToScaledIcon(this Icon icon, bool legacyScaling = true)
+        internal static Icon ToScaledIcon(this Icon icon, PointF? scale = null, bool div16Scaling = true)
         {
             if (icon == null)
                 throw new ArgumentNullException(nameof(icon), PublicResources.ArgumentNull);
 
             using (icon)
             {
-                Size size = referenceSize.Scale(OSUtils.SystemScale);
+                Size size = referenceSize.Scale(scale ?? OSUtils.SystemScale);
                 Icon result = icon.ExtractNearestIcon(size, PixelFormat.Format32bppArgb);
                 int mod;
-                if (!legacyScaling || !OSUtils.IsWindows || (mod = result.Width & 0xF) == 0)
+                if (!div16Scaling || !OSUtils.IsWindows || (mod = result.Width & 0xF) == 0)
                     return result;
 
 #if !NET35

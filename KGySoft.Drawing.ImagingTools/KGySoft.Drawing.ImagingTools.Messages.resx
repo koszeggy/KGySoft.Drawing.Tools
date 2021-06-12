@@ -333,7 +333,7 @@ Brightness: {5:F0}%</value>
     <value>Resource format string is invalid.</value>
   </data>
   <data name="ErrorMessage_ResourcePlaceholderUnusedIndices" xml:space="preserve">
-    <value>One or more placeholder is missing from the translated resource format string.</value>
+    <value>One or more placeholders are missing from the translated resource format string.</value>
   </data>
   <data name="ErrorMessage_FailedToSaveImageFormat" xml:space="preserve">
     <value>Could not save image due to an error: {0}</value>

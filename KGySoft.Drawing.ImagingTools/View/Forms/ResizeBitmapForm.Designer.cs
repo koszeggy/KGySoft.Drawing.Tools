@@ -145,11 +145,12 @@
             // 
             // lblHeightPercent
             // 
-            this.lblHeightPercent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblHeightPercent.AutoSize = true;
+            this.lblHeightPercent.Dock = System.Windows.Forms.DockStyle.Left;
             this.lblHeightPercent.Location = new System.Drawing.Point(62, 0);
             this.lblHeightPercent.Name = "lblHeightPercent";
             this.lblHeightPercent.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
-            this.lblHeightPercent.Size = new System.Drawing.Size(50, 21);
+            this.lblHeightPercent.Size = new System.Drawing.Size(85, 15);
             this.lblHeightPercent.TabIndex = 1;
             this.lblHeightPercent.Text = "lblHeightPercent";
             // 
@@ -229,11 +230,12 @@
             // 
             // lblWidthPercent
             // 
-            this.lblWidthPercent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblWidthPercent.AutoSize = true;
+            this.lblWidthPercent.Dock = System.Windows.Forms.DockStyle.Left;
             this.lblWidthPercent.Location = new System.Drawing.Point(62, 0);
             this.lblWidthPercent.Name = "lblWidthPercent";
             this.lblWidthPercent.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
-            this.lblWidthPercent.Size = new System.Drawing.Size(50, 21);
+            this.lblWidthPercent.Size = new System.Drawing.Size(82, 15);
             this.lblWidthPercent.TabIndex = 1;
             this.lblWidthPercent.Text = "lblWidthPercent";
             // 
@@ -286,6 +288,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(334, 291);
+            this.Location = new System.Drawing.Point(0, 0);
             this.MinimumSize = new System.Drawing.Size(350, 330);
             this.Name = "ResizeBitmapForm";
             this.Text = "ResizeBitmapForm";
