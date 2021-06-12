@@ -25,11 +25,12 @@ using KGySoft.Drawing.ImagingTools.Model;
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal class DownloadableResourceItem : ObservableObjectBase
+    internal class DownloadableResourceItem : ObservableObjectBase, IValidatingObject
     {
         #region Fields
 
         private string? language;
+        private ValidationResultsCollection? validationResults;
 
         #endregion
 
@@ -50,6 +51,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         public string ImagingToolsVersion => Info.ImagingToolsVersion.ToString();
         public string? Description => Info.Description;
 
+        // We could just derive from ValidatingObjectBase but we the validation does not depend on property change we provide a lightweight implementation
+        public bool IsValid => true;
+        public ValidationResultsCollection ValidationResults => validationResults ??= CreateValidationResults();
+
         #endregion
 
         #region Internal Properties
@@ -65,6 +70,22 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Constructors
 
         internal DownloadableResourceItem(LocalizationInfo info) => Info = info;
+
+        #endregion
+
+        #region Methods
+
+        private ValidationResultsCollection CreateValidationResults()
+        {
+            var result = new ValidationResultsCollection();
+
+            if (!InstallationManager.ImagingToolsVersion.NormalizedEquals(Info.ImagingToolsVersion))
+                result.AddInfo(nameof(ImagingToolsVersion), Res.InfoMessageResourceVersionMismatch);
+            if (!ResHelper.TryGetCulture(CultureName, out var _))
+                result.AddWarning(nameof(Language), Res.WarningMessageUnsupportedCulture);
+
+            return result;
+        }
 
         #endregion
     }

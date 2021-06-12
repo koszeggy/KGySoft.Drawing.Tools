@@ -197,6 +197,9 @@ namespace KGySoft.Drawing.ImagingTools
         /// so partial transparent pixels will be blended with back color.</summary>
         internal static string WarningMessageDithererNoAlphaGradient => Get("WarningMessage_DithererNoAlphaGradient");
 
+        /// <summary>This language is not supported on this platform or by the executing framework</summary>
+        internal static string WarningMessageUnsupportedCulture => Get("WarningMessage_UnsupportedCulture");
+
         /// <summary>Are you sure you want to overwrite this installation?</summary>
         internal static string ConfirmMessageOverwriteInstallation => Get("ConfirmMessage_OverwriteInstallation");
 
@@ -231,6 +234,9 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Without selecting a quantizer possible alpha pixels of the source image are blended with black.
         /// By selecting a quantizer you can specify a different back color.</summary>
         internal static string InfoMessageAlphaTurnsBlack => Get("InfoMessage_AlphaTurnsBlack");
+
+        /// <summary>This item is for a different ImagingTools version.</summary>
+        internal static string InfoMessageResourceVersionMismatch => Get("InfoMessage_ResourceVersionMismatch");
 
         #endregion
 
@@ -545,7 +551,7 @@ namespace KGySoft.Drawing.ImagingTools
 
         /// <summary>{0} file(s) have been downloaded.
         ///
-        /// The culture of one or more downloaded localizations is not supported on this platform. Those languages will not appear in the list.</summary>
+        /// The culture of one or more downloaded localizations is not supported on this platform. Those languages will not appear among the selectable languages.</summary>
         internal static string WarningMessageDownloadCompletedWithUnsupportedCultures(int count) => Get("WarningMessage_DownloadCompletedWithUnsupportedCulturesFormat", count);
 
         /// <summary>The extension of the provided filename '{0}' does not match to the selected format ({1}).

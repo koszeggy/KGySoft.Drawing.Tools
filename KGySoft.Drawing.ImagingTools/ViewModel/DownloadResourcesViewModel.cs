@@ -369,15 +369,15 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             var toDownload = new List<DownloadInfo>();
             var existingFiles = new List<string>();
-            Version toolVersion = GetType().Assembly.GetName().Version.Normalize();
             bool ignoreVersionMismatch = false;
+            Version selfVersion = InstallationManager.ImagingToolsVersion;
 
             foreach (DownloadableResourceItem item in Items!)
             {
                 if (!item.Selected)
                     continue;
 
-                if (!ignoreVersionMismatch && item.Info.ImagingToolsVersion.Normalize() != toolVersion)
+                if (!ignoreVersionMismatch && !selfVersion.NormalizedEquals(item.Info.ImagingToolsVersion))
                 {
                     if (Confirm(Res.ConfirmMessageResourceVersionMismatch, false))
                         ignoreVersionMismatch = true;

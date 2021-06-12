@@ -438,11 +438,14 @@ otherwise, the result might not be optimal even with dithering.</value>
   <data name="WarningMessage_DownloadCompletedWithUnsupportedCulturesFormat" xml:space="preserve">
     <value>{0} file(s) have been downloaded.
 
-The culture of one or more downloaded localizations is not supported on this platform. Those languages will not appear in the list.</value>
+The culture of one or more downloaded localizations is not supported on this platform. Those languages will not appear among the selectable languages.</value>
   </data>
   <data name="WarningMessage_DithererNoAlphaGradient" xml:space="preserve">
     <value>The selected quantizer supports partial transparency, which is not supported by ditherers,
 so partial transparent pixels will be blended with back color.</value>
+  </data>
+  <data name="WarningMessage_UnsupportedCulture" xml:space="preserve">
+    <value>This language is not supported on this platform or by the executing framework.</value>
   </data>
   <data name="ConfirmMessage_OverwriteInstallation" xml:space="preserve">
     <value>Are you sure you want to overwrite this installation?</value>
@@ -492,6 +495,9 @@ It is possible that is has no effect.</value>
   <data name="InfoMessage_AlphaTurnsBlack" xml:space="preserve">
     <value>Without selecting a quantizer possible alpha pixels of the source image are blended with black.
 By selecting a quantizer you can specify a different back color.</value>
+  </data>
+  <data name="InfoMessage_ResourceVersionMismatch" xml:space="preserve">
+    <value>This item is for a different ImagingTools version.</value>
   </data>
   <data name="InfoMessage_QuantizerAutoSelectedFormat" xml:space="preserve">
     <value>A quantizer has been auto selected for pixel format '{0}' using default settings.
