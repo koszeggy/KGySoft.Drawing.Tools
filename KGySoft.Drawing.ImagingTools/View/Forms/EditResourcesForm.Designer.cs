@@ -92,6 +92,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.gridResources.DefaultCellStyle = dataGridViewCellStyle1;
             this.gridResources.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gridResources.Location = new System.Drawing.Point(3, 40);
+            this.gridResources.MultiSelect = false;
             this.gridResources.Name = "gridResources";
             this.gridResources.Size = new System.Drawing.Size(572, 74);
             this.gridResources.TabIndex = 3;
@@ -148,7 +149,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.lblFilter.Location = new System.Drawing.Point(0, 2);
             this.lblFilter.Name = "lblFilter";
             this.lblFilter.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
-            this.lblFilter.Size = new System.Drawing.Size(39, 20);
+            this.lblFilter.Size = new System.Drawing.Size(39, 15);
             this.lblFilter.TabIndex = 0;
             this.lblFilter.Text = "lblFilter";
             // 

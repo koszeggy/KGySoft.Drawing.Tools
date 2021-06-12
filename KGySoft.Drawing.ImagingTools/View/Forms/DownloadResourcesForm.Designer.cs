@@ -20,12 +20,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.bindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.okCancelButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
             this.gridDownloadableResources = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedDataGridView();
-            this.progress = new KGySoft.Drawing.ImagingTools.View.Controls.DownloadProgressStatusStrip();
             this.colSelected = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.colLanguage = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colAuthor = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colImagingToolsVersion = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colDescription = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.progress = new KGySoft.Drawing.ImagingTools.View.Controls.DownloadProgressStatusStrip();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridDownloadableResources)).BeginInit();
             this.SuspendLayout();
@@ -56,19 +56,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.gridDownloadableResources.DataSource = this.bindingSource;
             this.gridDownloadableResources.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gridDownloadableResources.Location = new System.Drawing.Point(3, 3);
+            this.gridDownloadableResources.MultiSelect = false;
             this.gridDownloadableResources.Name = "gridDownloadableResources";
             this.gridDownloadableResources.Size = new System.Drawing.Size(358, 163);
             this.gridDownloadableResources.TabIndex = 0;
-            // 
-            // progress
-            // 
-            this.progress.BackColor = System.Drawing.Color.Transparent;
-            this.progress.Location = new System.Drawing.Point(3, 201);
-            this.progress.Name = "progress";
-            this.progress.Size = new System.Drawing.Size(358, 22);
-            this.progress.SizingGrip = false;
-            this.progress.TabIndex = 2;
-            this.progress.Text = "drawingProgressStatusStrip1";
             // 
             // colSelected
             // 
@@ -106,6 +97,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.colDescription.Name = "colDescription";
             this.colDescription.ReadOnly = true;
             this.colDescription.Width = 120;
+            // 
+            // progress
+            // 
+            this.progress.BackColor = System.Drawing.Color.Transparent;
+            this.progress.Location = new System.Drawing.Point(3, 201);
+            this.progress.Name = "progress";
+            this.progress.Size = new System.Drawing.Size(358, 22);
+            this.progress.SizingGrip = false;
+            this.progress.TabIndex = 2;
+            this.progress.Text = "drawingProgressStatusStrip1";
             // 
             // DownloadResourcesForm
             // 
