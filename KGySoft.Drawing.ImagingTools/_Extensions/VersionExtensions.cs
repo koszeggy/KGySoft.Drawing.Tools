@@ -26,10 +26,17 @@ namespace KGySoft.Drawing.ImagingTools
     {
         #region Methods
 
-        internal static Version Normalize(this Version version)
-            => version.Revision >= 0 ? version
-                : version.Build >= 0 ? new Version(version.Major, version.Minor, version.Build, 0)
-                : new Version(version.Major, version.Minor, version.Build, version.Revision);
+        internal static bool NormalizedEquals(this Version? version, Version? other)
+        {
+            if (version is null && other is null)
+                return true;
+            if (version is null || other is null)
+                return false;
+            return version.Major == other.Major
+                && version.Minor == other.Minor
+                && (version.Build == other.Build || version.Build <= 0 && other.Build <= 0)
+                && (version.Revision == other.Revision || version.Revision <= 0 && other.Revision <= 0);
+        }
 
         #endregion
     }

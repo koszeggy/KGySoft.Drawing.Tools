@@ -33,6 +33,8 @@
 - Fixing possible errors when closing forms while an async operation is still in progress.
 * API changes:
   * Members are annotated for using C# 8.0 nullable references
+  + InstallationManager class:
+    + New ImagingToolsVersion property
   + ViewModelFactory class:
     + New CreateLanguageSettings method
     + New CreateEditResources method

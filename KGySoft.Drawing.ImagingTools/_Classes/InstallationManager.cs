@@ -18,8 +18,8 @@
 
 using System;
 using System.IO;
-using System.Linq;
 using System.Security;
+
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
 #if NET45
@@ -56,15 +56,24 @@ namespace KGySoft.Drawing.ImagingTools
 
         #endregion
 
-        #region Methods
-
-        #region Public Methods
+        #region Properties
 
         /// <summary>
         /// Gets the available debugger visualizer version that can be installed with the <see cref="InstallationManager"/> class.
         /// If the debugger visualizer assembly is not deployed with this application, then the <see cref="InstallationInfo.Installed"/> property of the returned instance will be <see langword="false"/>.
         /// </summary>
         public static InstallationInfo AvailableVersion => availableVersion ??= new InstallationInfo(Files.GetExecutingPath());
+
+        /// <summary>
+        /// Gets version of the currently used <c>ImagingTools</c> application.
+        /// </summary>
+        public static Version ImagingToolsVersion { get; } = typeof(Configuration).Assembly.GetName().Version;
+
+        #endregion
+
+        #region Methods
+
+        #region Public Methods
 
         /// <summary>
         /// Gets the installation information of the debugger visualizer for the specified <paramref name="directory"/>.
