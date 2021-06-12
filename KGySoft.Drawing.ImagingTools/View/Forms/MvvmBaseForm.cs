@@ -267,14 +267,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             ApplyStringResources();
         }
 
-        private void OnValidationResultsChangedCommand(ValidationResultsCollection validationResults)
+        private void OnValidationResultsChangedCommand(ValidationResultsCollection? validationResults)
         {
             foreach (KeyValuePair<string, Control> mapping in ValidationMapping)
             {
-                var propertyResults = validationResults[mapping.Key]; // var is IList in .NET 3.5 and IReadOnlyList above
-                ValidationResult? error = propertyResults.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Error);
-                ValidationResult? warning = error == null ? propertyResults.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Warning) : null;
-                ValidationResult? info = error == null && warning == null ? propertyResults.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Information) : null;
+                var propertyResults = validationResults?[mapping.Key]; // var is IList in .NET 3.5 and IReadOnlyList above
+                ValidationResult? error = propertyResults?.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Error);
+                ValidationResult? warning = error == null ? propertyResults?.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Warning) : null;
+                ValidationResult? info = error == null && warning == null ? propertyResults?.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Information) : null;
                 ErrorProvider.SetError(mapping.Value, error?.Message);
                 WarningProvider.SetError(mapping.Value, warning?.Message);
                 InfoProvider.SetError(mapping.Value, info?.Message);
