@@ -18,6 +18,9 @@
 
 using System;
 using System.IO;
+#if !NET35
+using System.Linq;
+#endif
 using System.Security;
 
 using KGySoft.CoreLibraries;

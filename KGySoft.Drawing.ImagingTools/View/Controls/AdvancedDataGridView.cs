@@ -31,6 +31,16 @@ using KGySoft.CoreLibraries;
 
 namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
+    #region Usings
+
+#if NET35
+    using ValidationList = IList<ValidationResult>;
+#else
+    using ValidationList = IReadOnlyList<ValidationResult>;
+#endif
+
+    #endregion
+
     /// <summary>
     /// Just a DataGridView that
     /// - provides some default style with a few fixed issues
@@ -258,7 +268,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         {
             #region Local Methods
 
-            static bool HasMatch(IList<ValidationResult> list, string name)
+            static bool HasMatch(ValidationList list, string name)
             {
                 // not using LINQ and delegates for better performance
                 int len = list.Count;
