@@ -52,7 +52,17 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
     {
         #region Constants
 
+        #region Internal Constants
+        
         internal const string StateSaveExecutedWithError = nameof(StateSaveExecutedWithError);
+
+        #endregion
+
+        #region Private Constants
+
+        private const CompareOptions cultureSpecificCompareOptions = CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace | CompareOptions.IgnoreKanaType | CompareOptions.IgnoreWidth;
+
+        #endregion
 
         #endregion
 
@@ -192,8 +202,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void ApplyFilter(IList<ResourceEntry> set)
         {
-            var oldSet = FilteredSet as SortableBindingList<ResourceEntry>;
-            if (oldSet != null)
+            if (FilteredSet is SortableBindingList<ResourceEntry> oldSet)
                 oldSet.ListChanged -= FilteredSet_ListChanged;
 
             if (set.Count == 0)
@@ -210,13 +219,17 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             else
             {
                 newSet = new SortableBindingList<ResourceEntry>(new List<ResourceEntry>());
-                CompareInfo compareInfo = culture.CompareInfo;
-                CompareOptions options = CompareOptions.IgnoreCase | CompareOptions.IgnoreKanaType | CompareOptions.IgnoreNonSpace | CompareOptions.IgnoreWidth;
+                CompareInfo cultureSpecificInfo = culture.CompareInfo;
+                CompareInfo invariantInfo = CultureInfo.InvariantCulture.CompareInfo;
                 foreach (ResourceEntry entry in set)
                 {
-                    if (compareInfo.IndexOf(entry.Key, filter, options) >= 0
-                        || compareInfo.IndexOf(entry.OriginalText, filter, options) >= 0
-                        || compareInfo.IndexOf(entry.TranslatedText, filter, options) >= 0)
+                    // Using ordinal search for key, invariant for original text (to allow ignoring char width, for example),
+                    // and both ordinal and culture-specific search for the translated text because culture specific fails to match some patterns,
+                    // eg.: "Vissza" is not found with the search term "viss" using the Hungarian culture.
+                    if (entry.Key.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0
+                        || invariantInfo.IndexOf(entry.OriginalText, filter, cultureSpecificCompareOptions) >= 0
+                        || entry.TranslatedText.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0
+                        || cultureSpecificInfo.IndexOf(entry.TranslatedText, filter, cultureSpecificCompareOptions) >= 0)
                     {
                         newSet.Add(entry);
                     }
