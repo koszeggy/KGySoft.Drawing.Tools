@@ -1180,7 +1180,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 for (int i = 0; i < newPalette.Length; i++)
                     palette.Entries[i] = newPalette[i];
 
-                currentImage.Image.Palette = palette; // the preview changes only if we apply the palette
+                // must be in a lock because it can be in use in the UI (where it is also locked)
+                lock (currentImage.Image)
+                    currentImage.Image.Palette = palette; // the preview changes only if we apply the palette
                 currentImage.Palette = palette.Entries; // the actual palette will be taken from here
                 InvalidateImage();
             }
