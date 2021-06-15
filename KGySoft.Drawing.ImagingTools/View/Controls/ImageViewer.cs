@@ -532,25 +532,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (sbVerticalVisible)
                 dest.Y -= sbVertical.Value;
 
-            //// metafile or smoothing is off (smoothed metafile is generated async so it replaces the aliased result after some delay): NN
-            //g.InterpolationMode = isMetafile || !smoothZooming ? InterpolationMode.NearestNeighbor
-            //    // large zoom or small shrunk image: BC because these cases it's not so slow
-            //    : zoom >= 4f || zoom < 1f && imageSize.Width <= sizeThreshold && imageSize.Height <= sizeThreshold ? InterpolationMode.HighQualityBicubic
-            //    // small zoom: BL for large images to prevent heavy lagging; otherwise, BC
-            //    : zoom > 1f ? imageSize.Width > sizeThreshold || imageSize.Height > sizeThreshold ? InterpolationMode.HighQualityBilinear : InterpolationMode.HighQualityBicubic
-            //    // anything else, including large shrunk images: NN (the good quality preview is generated async so it replaces the NN result after some delay)
-            //    : InterpolationMode.NearestNeighbor;
-
-            g.InterpolationMode = isMetafile || !smoothZooming ? InterpolationMode.NearestNeighbor : InterpolationMode.HighQualityBicubic;
-            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
             // This lock ensures that no disposed image is painted. The generator also locks on itself when frees the cached preview.
             lock (displayImageGenerator)
             {
+                (Image toDraw, InterpolationMode interpolationMode) = displayImageGenerator.GetDisplayImage();
+                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                g.InterpolationMode = interpolationMode;
+
                 // Locking on display image so if it is the same as the original image, which is also locked when accessing its bitmap data
                 // the "bitmap region is already locked" can be avoided. Important: this cannot be ensured without locking here internally because
                 // OnPaint can occur any time after invalidating.
-                Image toDraw = displayImageGenerator.GetDisplayImage();
                 bool useLock = image == toDraw;
                 if (useLock)
                     Monitor.Enter(toDraw);

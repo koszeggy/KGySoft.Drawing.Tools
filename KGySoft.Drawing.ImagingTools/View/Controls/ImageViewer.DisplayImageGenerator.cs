@@ -19,12 +19,14 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Threading;
 
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.Drawing.ImagingTools.View.Components;
 using KGySoft.Reflection;
 
 #endregion
@@ -45,7 +47,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             {
                 #region Fields
 
-                internal Bitmap SourceBitmap;
+                internal Bitmap SourceBitmap = default!;
                 internal bool InvalidateOwner;
 
                 #endregion
@@ -85,7 +87,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 : new[] { PixelFormat.Format16bppRgb555, PixelFormat.Format16bppRgb565 };
 
             /// <summary>
-            /// These formats are so slow that if .
+            /// These formats are so slow that it is still faster to generate a 32bpp clone first than display them directly.
             /// </summary>
             private static readonly PixelFormat[] slowFormats = OSUtils.IsWindows
                 ? new[] { PixelFormat.Format48bppRgb, PixelFormat.Format64bppArgb, PixelFormat.Format64bppArgb }
@@ -133,11 +135,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             #region Constructors
 
-            internal DisplayImageGenerator(ImageViewer owner)
-            {
-                this.owner = owner;
-                enabled = true;
-            }
+            internal DisplayImageGenerator(ImageViewer owner) => this.owner = owner;
 
             #endregion
 
@@ -179,7 +177,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             #region Internal Methods
 
-            internal Image? GetDisplayImage()
+            internal (Image, InterpolationMode) GetDisplayImage()
             {
                 #region Local Methods
 
@@ -225,16 +223,35 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 #endregion
 
                 Debug.Assert(owner.image != null);
+                InterpolationMode interpolationMode = InterpolationMode.NearestNeighbor;
 
-                // 1.) There is a size adjusted display image=
+                // 1.) There is a size adjusted display image
                 Image? result = adjustedDisplayImage;
                 if (result != null)
-                    return result;
+                    return (result, interpolationMode);
 
-                // 2.) Checking if there is an already available (fast) default image
+                // 2.) Checking if there is an already available default image. It might have to be resized by painting.
                 result = defaultDisplayImage;
+
+                // Smoothing Bitmap: leaving NearestNeighbor if an adjusted image will be generated; otherwise, using some interpolation to be applied during painting
+                if (!owner.isMetafile && owner.smoothZooming)
+                {
+                    float zoom = owner.zoom;
+                    Size size = owner.imageSize;
+
+                    // Large zoom or shrunk image smaller than generating threshold: using HighQualityBicubic 
+                    if (zoom >= 4f || zoom < 1f && size.Width <= sizeThreshold && size.Height <= sizeThreshold)
+                        interpolationMode = InterpolationMode.HighQualityBicubic;
+                    // Small zoom: HighQualityBilinear for large images to prevent heavy lagging; otherwise, HighQualityBicubic
+                    else if (zoom > 1f)
+                        interpolationMode = size.Width > sizeThreshold || size.Height > sizeThreshold ? InterpolationMode.HighQualityBilinear : InterpolationMode.HighQualityBicubic;
+                    // Shrinking larger images but generating is disabled: applying a fallback interpolation
+                    else if (!enabled && zoom < 1f)
+                        interpolationMode = owner.targetRectangle.Width > sizeThreshold || owner.targetRectangle.Height > sizeThreshold ? InterpolationMode.Bilinear : InterpolationMode.Bicubic;
+                }
+
                 if (result != null)
-                    return result;
+                    return (result, interpolationMode);
 
                 SetOrGenerateDefaultDisplayImage();
 
@@ -250,10 +267,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     Free();
 
                     // So next time we will return sooner, at 2.)
-                    return defaultDisplayImage = owner.image;
+                    return (defaultDisplayImage = owner.image!, interpolationMode);
                 }
 
-                return adjustedDisplayImage ?? defaultDisplayImage ?? owner.image;
+                return (defaultDisplayImage ?? owner.image!, interpolationMode);
             }
 
             /// <summary>
