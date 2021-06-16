@@ -1,1 +1,9 @@
-Invalid initial test content
+﻿<manifest>
+  <item>
+    <CultureName>hu</CultureName>
+    <Description>Complete Hungarian translation for ImagingTools, Core Libraries and Drawing Libraries.</Description>
+    <ResourceSets>ImagingTools,CoreLibraries,DrawingLibraries</ResourceSets>
+    <ImagingToolsVersion>2.4.0</ImagingToolsVersion>
+    <Author>György Kőszeg</Author>
+  </item>
+</manifest>

@@ -1,0 +1,892 @@
+<?xml version="1.0"?>
+<root>
+  <data name="Array_InvalidOffsLen">
+    <value>A kezdő pozíció vagy a hossz a tömb határain kívülre mutat.</value>
+  </data>
+  <data name="ArraySection_Empty">
+    <value>Az ArraySection üres.</value>
+  </data>
+  <data name="ArraySection_InsufficientCapacity">
+    <value>A megadott buffer paraméternek túl kicsi a mérete.</value>
+  </data>
+  <data name="ArraySection_Null">
+    <value>A mögöttes tömb null referenciára mutat.</value>
+  </data>
+  <data name="BinarySerialization_CannotCreateObjectSafeFormat">
+    <value>Biztonságos módban a(z) „{0}” típus deszerializálása nem támogatott. Talán nincs megjelölve a Serializable attribútummal.</value>
+  </data>
+  <data name="BinarySerialization_CannotCreateUninitializedObjectFormat">
+    <value>A jelenlegi AppDomain nem rendelkezik megfelelő jogosultságokkal egy üres „{0}” példány létrehozásához alapértelmezett konstruktor nélkül.</value>
+  </data>
+  <data name="BinarySerialization_CannotDecodeCollectionTypeFormat">
+    <value>A kollekció típusa nem dekódolható: {0}. Sérült szerializációs adatfolyam?</value>
+  </data>
+  <data name="BinarySerialization_CannotDecodeDataTypeFormat">
+    <value>Az adattípus nem dekódolható: {0}. Sérült szerializációs adatfolyam?</value>
+  </data>
+  <data name="BinarySerialization_CannotDeserializeObjectFormat">
+    <value>Önálló objektumként nem deszerializálható: {0}</value>
+  </data>
+  <data name="BinarySerialization_CannotResolveAssemblySafeFormat">
+    <value>Az assembly nem oldható fel biztonságos módban: „{0}”.
+Segíthet az assembly betöltése a deszerializálás előtt, vagy a SafeMode kikapcsolása, ha a szerializációs adatfolyam biztonságos forrásból származik.</value>
+  </data>
+  <data name="BinarySerialization_CannotResolveTypeFormat">
+    <value>A(z) „{0}” típust nem sikerült név alapján feloldani.</value>
+  </data>
+  <data name="BinarySerialization_CannotResolveTypeInAssemblyFormat">
+    <value>A(z) „{0}” típust nem sikerült feloldani a(z) „{1}” assemblyben.</value>
+  </data>
+  <data name="BinarySerialization_CannotResolveTypeInAssemblySafeFormat">
+    <value>A(z) „{0}” típust nem sikerült feloldani a(z) „{1}” assemblyben.
+Segíthet az assembly betöltése a deszerializálás előtt, vagy a SafeMode kikapcsolása, ha a szerializációs adatfolyam biztonságos forrásból származik.</value>
+  </data>
+  <data name="BinarySerialization_CircularIObjectReference">
+    <value>Egy IObjectReference példány deseriazálása nem sikerült, mert feloldhatatlan módon hivatkozik körkörösen önmagára.</value>
+  </data>
+  <data name="BinarySerialization_CircularIObjectReferenceCollectionFormat">
+    <value>Egy IObjectReference példány deszeriazálása nem sikerült, mert feloldhatatlan módon hivatkozik körkörösen önmagára egy „{0}” típusú kollekció elemeként. A ForceRecursiveSerializationOfSupportedTypes opció használata szerializáláskor, vagy a tartalmazó obejktumban a körkörös hivatkozások megszüntetése megoldhatja a problémát.</value>
+  </data>
+  <data name="BinarySerialization_CollectionPlatformNotSupportedFormat">
+    <value>Az adatfolyam egy „{0}” típusú kollekciót tartalmaz, mely nem támogatott ezen a platformon.</value>
+  </data>
+  <data name="BinarySerialization_DataLengthTooSmall">
+    <value>Az adat hossza túl rövid.</value>
+  </data>
+  <data name="BinarySerialization_DeserializeUnexpectedId">
+    <value>Váratlan azonosító deszerializálás közben. Sérült szerializációs adatfolyam?</value>
+  </data>
+  <data name="BinarySerialization_GenericMethodNotFoundFormat">
+    <value>Nem található generikus metódus „{0}” szignatúrával a(z) „{1}” típusban.</value>
+  </data>
+  <data name="BinarySerialization_IEnumerableExpectedFormat">
+    <value>Egy IEnumerable típus helyett „{0}” érkezett deszerializálás közben.</value>
+  </data>
+  <data name="BinarySerialization_InvalidEnumBaseFormat">
+    <value>Érvénytelen enum alaptípus: „{0}”. Sérült szerializációs adatfolyam?</value>
+  </data>
+  <data name="BinarySerialization_InvalidStreamData">
+    <value>Hibás adatfolyam.</value>
+  </data>
+  <data name="BinarySerialization_MissingFieldBaseFormat">
+    <value>A(z) „{0}” típus nem deszerializálható, mert nem található „{1}” nevű mező a(z) „{2}” típusban. Az IgnoreObjectChanges opció használatával elkerülhető ennek a kivételnek a dobása.</value>
+  </data>
+  <data name="BinarySerialization_MissingFieldFormat">
+    <value>A(z) „{0}” típus nem deszerializálható, mert nincs „{1}” nevű mezője. A deszerializációs konstruktor hívásához a típusnak implementálnia kell az ISerializable interfészt. Az IgnoreObjectChanges opció használatával elkerülhető ennek a kivételnek a dobása.</value>
+  </data>
+  <data name="BinarySerialization_MissingFieldSurrogateFormat">
+    <value>A szerializálás óta csökkent a mezők száma a(z) „{0}” típusban, ezért a(z) „{1}” típus nem deszerializálható.</value>
+  </data>
+  <data name="BinarySerialization_MissingISerializableCtorFormat">
+    <value>A(z) „{0}” típus nem rendelkezik speciális konstruktorral, ezért nem deszerializálható ISerializable példányként.</value>
+  </data>
+  <data name="BinarySerialization_NotAnEnumFormat">
+    <value>A(z) „{0}” típus enumként lett szerializálva, de most nem enum típus.</value>
+  </data>
+  <data name="BinarySerialization_NotAValueTypeFormat">
+    <value>A(z) „{0}” típus nyers érték típusként lett szerializálva, de most nem érték típus.</value>
+  </data>
+  <data name="BinarySerialization_NotBinarySerializableFormat">
+    <value>A(z) „{0}” típus IBinarySerializable példányként lett szerializálva, de most nem IBinarySerializable implementáció.</value>
+  </data>
+  <data name="BinarySerialization_NotSupportedFormat">
+    <value>A(z) „{0}” típus szerializálása nem támogatott a következő opciókkal: {1}.
+A RecursiveSerializationAsFallback opció használata megoldhatja a problémát, bár akkor a deszerializálás valószínűleg nem fog működni a SafeMode opcióval.</value>
+  </data>
+  <data name="BinarySerialization_ObjectHierarchyChangedFormat">
+    <value>A(z) „{0}” típus nem deszerializálható, mert a hierarchiája megváltozott a szerializálás óta. Az IgnoreObjectChanges opció használatával elkerülhető ennek a kivételnek a dobása.</value>
+  </data>
+  <data name="BinarySerialization_ObjectHierarchyChangedSurrogateFormat">
+    <value>A(z) „{0}” típus objektumhierarchiája megváltozott a szerializálás óta.</value>
+  </data>
+  <data name="BinarySerialization_ReadOnlyCollectionNotSupportedFormat">
+    <value>A csak olvasható „{0}” típusú kollekció példányosítása nem támogatott. Sérült szerializációs adatfolyam?</value>
+  </data>
+  <data name="BinarySerialization_SurrogateChangedObjectFormat">
+    <value>A szerializációhoz használt surrogate megváltoztatta a létrehozott objektum referenciáját, ami nem teszi lehetővé az önmagára mutató körkörös referenciák feloldását. Az objektum típusa: „{0}”.</value>
+  </data>
+  <data name="BinarySerialization_UnexpectedFieldTypeFormat">
+    <value>A mezők sorrendje valüszínűleg megváltozott a szerializálás óta. A(z) „{0}” típus nem deszerializálható, mert a(z) „{2}.{3}” mező nem veheti fel a(z) „{1}” értéket.</value>
+  </data>
+  <data name="BinarySerialization_UnexpectedSerializationInfoElementFormat">
+    <value>Váratlan elem a szerializációs leíróban: {0}. Az objektumpéldány valószínűleg nem a NameInvariantSurrogateSelector használatával lett szerializálva.</value>
+  </data>
+  <data name="BinarySerialization_ValueTypeExpected">
+    <value>A megadott típusnak érték típusúnak kell lennie.</value>
+  </data>
+  <data name="ByteArrayExtensions_SeparatorInvalidDec">
+    <value>A szeparátor üres vagy érvénytelen karaktereket tartalmaz. A szeparátor nem tartalmazhat számjegyeket.</value>
+  </data>
+  <data name="ByteArrayExtensions_SeparatorInvalidHex">
+    <value>A szeparátor érvénytelen karaktereket tartalmaz. Hexadecimális karakterek nem szerepelhetnek a szeparátorban.</value>
+  </data>
+  <data name="Cache_KeyNotFound">
+    <value>A megadott kulcs nem szerepel a tárban.</value>
+  </data>
+  <data name="Cache_MinSize">
+    <value>A tár minimális mérete 1.</value>
+  </data>
+  <data name="Cache_NullLoaderInvoke">
+    <value>A Cache&lt;TKey, TValue&gt; elem betöltő nélkül lett inicializálva, úgyhogy új elemek hozzáadása kizárólag az Add metódus hívásával, vagy az indexer írásával lehetséges.</value>
+  </data>
+  <data name="Cache_StatisticsFormat">
+    <value>Cache&lt;{0}, {1}&gt; statisztikák:
+Elemszám: {2}
+Kapacitás: {3}
+Írások száma: {4}
+Olvasások száma: {5}
+Találatok száma: {6}
+Törlések száma: {7}
+Törlési arány: {8:P2}</value>
+  </data>
+  <data name="CircularList_CapacityTooSmall">
+    <value>A kapacitás értéke nem lehet kisebb, mint a tárolni kívánt elemek száma.</value>
+  </data>
+  <data name="CircularList_ComparerFail">
+    <value>Sikertelen volt két elem összehasonlítása a listában.</value>
+  </data>
+  <data name="CircularSortedList_InsertByIndexNotSupported">
+    <value>Új elem index alapú beszúrása nem támogatott.</value>
+  </data>
+  <data name="CircularSortedList_InvalidKeyValueTypeFormat">
+    <value>Az elem típusa csak „{0}” vagy DictionaryEntry lehet.</value>
+  </data>
+  <data name="ComponentModel_AddNewDisabled">
+    <value>Nem adható új elem a listához, mert az AllowNew tulajdonság értéke false.</value>
+  </data>
+  <data name="ComponentModel_CannotAddDisposedBinding">
+    <value>Nem adható egy már felszabadított kötés a listához.</value>
+  </data>
+  <data name="ComponentModel_CannotAddNewFastBindingListFormat">
+    <value>Nem adható új elem a listához, mert a(z) „{0}” típus nem példányosítható paraméterek nélkül. Az AddingNew eseményre való feliratkozással, vagy az AddNewCore/OnAddingNew metódusok felülbírálásával testre szabályozható egy hozzáadandó új elem példányosítása.</value>
+  </data>
+  <data name="ComponentModel_CannotAddNewObservableBindingListFormat">
+    <value>Nem adható új elem a listához, mert a(z) „{0}” típus nem példányosítható paraméterek nélkül.</value>
+  </data>
+  <data name="ComponentModel_CannotGetPropertyFormat">
+    <value>A tulajdonság nem olvasható: „{0}”.</value>
+  </data>
+  <data name="ComponentModel_CannotSetPropertyFormat">
+    <value>A tulajdonság nem írható: „{0}”</value>
+  </data>
+  <data name="ComponentModel_DoValidationNull">
+    <value>A DoValidation metódus nullt adott vissza.</value>
+  </data>
+  <data name="ComponentModel_EnabledMustBeBool">
+    <value>Az „Enabled” státusznak csak boolean érték állítható be.</value>
+  </data>
+  <data name="ComponentModel_InvalidCommandSource">
+    <value>Statikus eseményhez a source paraméter legyen Type típusú, különben meg egy objektumpéldány.</value>
+  </data>
+  <data name="ComponentModel_InvalidEventFormat">
+    <value>A(z) „{0}” eseménynek nem nem szokványos delegált típusa vagy elérési módjai vannak.</value>
+  </data>
+  <data name="ComponentModel_InvalidPropertyFormat">
+    <value>A(z) „{1}” típusleíró „{0}” nevű tulajdonsága nem tartozik a(z) „{2}” típushoz.</value>
+  </data>
+  <data name="ComponentModel_MissingEventFormat">
+    <value>Nincs „{0}” nevű esemény a(z) „{1}” komponensben.</value>
+  </data>
+  <data name="ComponentModel_MissingPropertyReference">
+    <value>&lt;Hiányzó tulajdonság érték&gt;</value>
+  </data>
+  <data name="ComponentModel_MissingStateFormat">
+    <value>A tulajdonság adatkötésének állapotleírójában nem található a szükséges bejegyzés: „{0}”.</value>
+  </data>
+  <data name="ComponentModel_NotEditing">
+    <value>Az objektum nincs szerkesztés állapotban.</value>
+  </data>
+  <data name="ComponentModel_ObservableObjectHasNoDefaultCtorFormat">
+    <value>A típusnak nincs paraméter nélküli konstruktora, ezért nem klónozható: „{0}”</value>
+  </data>
+  <data name="ComponentModel_PropertyNotExistsFormat">
+    <value>Nem található „{0}” nevű tulajdonság leíró a(z) „{1}” típushoz.</value>
+  </data>
+  <data name="ComponentModel_PropertyValueNotExistFormat">
+    <value>Nem tartozik érték a(z) „{0}” nevű tulajdonsághoz.</value>
+  </data>
+  <data name="ComponentModel_ReentrancyNotAllowed">
+    <value>Az ObservableBindingList nem változtatható a CollectionChanged és ListChanged események kezelése közben.</value>
+  </data>
+  <data name="ComponentModel_RemoveDisabled">
+    <value>Nem törölhető elem a listából, mert az AllowRemove tulajdonság értéke false.</value>
+  </data>
+  <data name="ComponentModel_ReturnedTypeInvalidFormat">
+    <value>A visszaadott érték nem kompatibilis a(z) „{0}” típussal.</value>
+  </data>
+  <data name="Enum_TypeParameterInvalid">
+    <value>A típusparaméternek System.Enum típusból kell származnia.</value>
+  </data>
+  <data name="Enum_ValueCannotBeParsedAsEnumFormat">
+    <value>A(z) „{0}” érték nem értelmezhető „{1}” felsorolt típusként.</value>
+  </data>
+  <data name="General_ArgumentContainsNull">
+    <value>A megadott paraméter null elemet tartalmaz.</value>
+  </data>
+  <data name="General_ArgumentEmpty">
+    <value>A paraméter nem lehet üres.</value>
+  </data>
+  <data name="General_ArgumentInvalidString">
+    <value>A megadott string érvénytelen értéket tartalmaz.</value>
+  </data>
+  <data name="General_ArgumentMustBeBetweenFormat">
+    <value>A megadott paraméternek {0} és {1} közé kell esnie.</value>
+  </data>
+  <data name="General_ArgumentMustBeGreaterThanFormat">
+    <value>A megadott paraméternek nagyobbnak kell lennie, mint {0}.</value>
+  </data>
+  <data name="General_ArgumentMustBeGreaterThanOrEqualToFormat">
+    <value>A megadott paraméter nem lehet kisebb, mint {0}.</value>
+  </data>
+  <data name="General_ArgumentMustBeLessThanFormat">
+    <value>A megadott paraméternek kisebbnek kell lennie, mint {0}.</value>
+  </data>
+  <data name="General_ArgumentMustBeLessThanOrEqualToFormat">
+    <value>A megadott paraméter nem lehet nagyobb, mint {0}.</value>
+  </data>
+  <data name="General_ArgumentNull">
+    <value>A paraméter nem lehet null.</value>
+  </data>
+  <data name="General_ArgumentOutOfRange">
+    <value>A megadott paraméter az érvényes értéktartományon kívül esik.</value>
+  </data>
+  <data name="General_CollectionEmpty">
+    <value>A kollekció nem tartalmaz elemeket.</value>
+  </data>
+  <data name="General_EnumOutOfRangeFormat">
+    <value>A(z) „{0}” típusú enum példánynak egy névvel definiált értéket kell felvennie.</value>
+  </data>
+  <data name="General_EnumOutOfRangeWithValuesFormat">
+    <value>A(z) „{0}” típusú enum példánynak a következő értékek egyikét kell felvennie: {1}.</value>
+  </data>
+  <data name="General_FlagsEnumOutOfRangeFormat">
+    <value>A(z) „{0}” típusú enum példány a névvel definiált jelzőbitek kombinációit veheti fel.</value>
+  </data>
+  <data name="General_FlagsEnumOutOfRangeWithValuesFormat">
+    <value>A(z) „{0}” típusú enum példány a következő jelzőbitek kombinációiból állhat: {1}.</value>
+  </data>
+  <data name="General_IndexOutOfRange">
+    <value>Az index a tömb határain kívülre esett.</value>
+  </data>
+  <data name="General_InternalErrorFormat">
+    <value>Belső hiba: {0}</value>
+  </data>
+  <data name="General_MaxLengthLessThanMinLength">
+    <value>A maximális hossz nem lehet kisebb, mint a minimális hossz.</value>
+  </data>
+  <data name="General_MaxValueLessThanMinValue">
+    <value>A maximum érték nem lehet kisebb, mint a minimum érték.</value>
+  </data>
+  <data name="General_Millisecond">
+    <value>ms</value>
+  </data>
+  <data name="General_No">
+    <value>Nem</value>
+  </data>
+  <data name="General_NotAnInstanceOfTypeFormat">
+    <value>A megadott paraméternek „{0}” típusúnak kell lennie.</value>
+  </data>
+  <data name="General_NotSupported">
+    <value>Ez a művelet nem támogatott</value>
+  </data>
+  <data name="General_Null">
+    <value>&lt;null&gt;</value>
+  </data>
+  <data name="General_ObjectDisposed">
+    <value>Nem érhető el egy már felszabadított objektum.</value>
+  </data>
+  <data name="General_PropertyMessageFormat">
+    <value>„{0}” tulajdonság: {1}</value>
+  </data>
+  <data name="General_PropertyMustBeBetweenFormat">
+    <value>A(z) „{0}” tulajdonságnak {1} és {2} közé kell esnie.</value>
+  </data>
+  <data name="General_PropertyMustBeGreaterThanFormat">
+    <value>A(z) „{0}” tulajdonságnak nagyobbnak kell lennie, mint {1}.</value>
+  </data>
+  <data name="General_PropertyMustBeGreaterThanOrEqualToFormat">
+    <value>A(z) „{0}” tulajdonság nem lehet kisebb, mint {1}.</value>
+  </data>
+  <data name="General_PropertyMustBeGreaterThanOrEqualToPropertyFormat">
+    <value>A(z) „{0}” tulajdonság nem lehet kisebb, mint a(z) „{1}” tulajdonság.</value>
+  </data>
+  <data name="General_PropertyMustBeGreaterThanPropertyFormat">
+    <value>A(z) „{0}” tulajdonságnak nagyobbnak kell lennie, mint a(z) „{1}” tulajsonság.</value>
+  </data>
+  <data name="General_PropertyMustBeLessThanFormat">
+    <value>A(z) „{0}” tulajdonságnak kisebbnek kell lennie, mint {1}.</value>
+  </data>
+  <data name="General_PropertyMustBeLessThanOrEqualToFormat">
+    <value>A(z) „{0}” tulajdonság nem lehet nagyobb, mint {1}.</value>
+  </data>
+  <data name="General_PropertyNullFormat">
+    <value>A(z) „{0}” tulajdonság nem lehet null.</value>
+  </data>
+  <data name="General_QuoteEnd">
+    <value>”</value>
+  </data>
+  <data name="General_QuoteStart">
+    <value>„</value>
+  </data>
+  <data name="General_Undefined">
+    <value>&lt;nincs megadva&gt;</value>
+  </data>
+  <data name="General_ValueContainsIllegalPathCharactersFormat">
+    <value>A(z) „{0}” érték nem megengedett útvonal karaktereket tartalmaz.</value>
+  </data>
+  <data name="General_Yes">
+    <value>Igen</value>
+  </data>
+  <data name="ICollection_ArrayTypeInvalid">
+    <value>A céltömb típusa nem kompatibilis a kollekcióban szereplő elemek típusával.</value>
+  </data>
+  <data name="ICollection_CopyToDestArrayShort">
+    <value>A céltömb nem elég hosszú az összes elem másolásához, vagy a megadott kezdő pozíció és hossz értéke hibás.</value>
+  </data>
+  <data name="ICollection_CopyToSingleDimArrayOnly">
+    <value>A művelet csak egydimenziós tömbön hajtható végre.</value>
+  </data>
+  <data name="ICollection_NonGenericValueTypeInvalidFormat">
+    <value>A(z) „{0}” érték nem „{1}” típusú, ezért nem használható ebben a generikus kollekcióban.</value>
+  </data>
+  <data name="ICollection_ReadOnlyModifyNotSupported">
+    <value>A kollekció csak olvasható, ezért a módosítása nem lehetséges.</value>
+  </data>
+  <data name="IDictionary_DuplicateKey">
+    <value>Egy azonos kulccsal rendelkező elem már hozzá lett adva.</value>
+  </data>
+  <data name="IDictionary_KeyNotFound">
+    <value>A megadott kulcs nem szerepel a tárban.</value>
+  </data>
+  <data name="IDictionary_NonGenericKeyTypeInvalidFormat">
+    <value>A(z) „{0}” kulcs nem „{1}” típusú, ezért nem használható ebben a generikus kollekcióban.</value>
+  </data>
+  <data name="IEnumerator_CollectionModified">
+    <value>A kollekció módosult, az elemek iterálása nem folytatható.</value>
+  </data>
+  <data name="IEnumerator_EnumerationNotStartedOrFinished">
+    <value>Nincs folyamatban iterálási művelet (még nem kezdődött el, vagy már befejeződött).</value>
+  </data>
+  <data name="IList_InvalidOffsLen">
+    <value>A kezdő pozíció vagy a hossz a lista határain kívülre mutat, vagy az elemszám nagyobb, mint a forrás elemeinek száma az indextől kezdve a lista végéig.</value>
+  </data>
+  <data name="ObjectExtensions_CannotConvertToTypeFormat">
+    <value>A megadott paraméter nem kovertálható „{0}” típusúvá.</value>
+  </data>
+  <data name="PerformanceTest_BestMark" xml:space="preserve">
+    <value>	 &lt;---- Legjobb</value>
+  </data>
+  <data name="PerformanceTest_Byte">
+    <value>byte</value>
+  </data>
+  <data name="PerformanceTest_CallingGcCollectFormat">
+    <value>GC.Collect hívás: {0}</value>
+  </data>
+  <data name="PerformanceTest_CaseAverageTimeFormat">
+    <value>átlag idő: {0:N2} ms</value>
+  </data>
+  <data name="PerformanceTest_CaseDefaultNameFormat">
+    <value>{0}. eset</value>
+  </data>
+  <data name="PerformanceTest_CaseErrorFormat">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="PerformanceTest_CaseIterationsFormat">
+    <value>{0:N0} iteráció {1:N2} ms alatt. {2:N0} ms-hoz igazítva: {3:N2}</value>
+  </data>
+  <data name="PerformanceTest_CaseNameFormat">
+    <value>{0}: </value>
+  </data>
+  <data name="PerformanceTest_CaseOrderFormat">
+    <value>{0}. </value>
+  </data>
+  <data name="PerformanceTest_CaseRepetitionIterationsFormat">
+    <value>{0:N0} iteráció {1:N2} ms alatt. Igazított érték: {2:N2}</value>
+  </data>
+  <data name="PerformanceTest_CaseRepetitionOrderFormat" xml:space="preserve">
+    <value>  {0,-2}. {1}</value>
+  </data>
+  <data name="PerformanceTest_CaseRepetitionTimeFormat">
+    <value>{0,13:N2} ms</value>
+  </data>
+  <data name="PerformanceTest_CpuAffinityFormat">
+    <value>Kényszerített CPU affinitás: {0}</value>
+  </data>
+  <data name="PerformanceTest_DefaultName">
+    <value>Performancia teszt</value>
+  </data>
+  <data name="PerformanceTest_DifferenceFormat" xml:space="preserve">
+    <value> ({0}{1:N2}{2} / {3:P2})</value>
+  </data>
+  <data name="PerformanceTest_DumpedError">
+    <value>Hiba kiírása:</value>
+  </data>
+  <data name="PerformanceTest_DumpedResult">
+    <value>Eredmény kiírása:</value>
+  </data>
+  <data name="PerformanceTest_HeaderFormat">
+    <value>==[{0} eredménye]================================================</value>
+  </data>
+  <data name="PerformanceTest_Item">
+    <value>elem</value>
+  </data>
+  <data name="PerformanceTest_IterationsFormat">
+    <value>Iterációk száma: {0:N0}</value>
+  </data>
+  <data name="PerformanceTest_NoDifference" xml:space="preserve">
+    <value> Nincs különbség</value>
+  </data>
+  <data name="PerformanceTest_NoTestCases">
+    <value>Nem lettek teszt esetek hozzáadva</value>
+  </data>
+  <data name="PerformanceTest_RepeatsFormat">
+    <value>Ismétlések száma: {0}</value>
+  </data>
+  <data name="PerformanceTest_ResultSizeFormat" xml:space="preserve">
+    <value>  Az eredmény mérete: {0:N0} {1}</value>
+  </data>
+  <data name="PerformanceTest_Separator">
+    <value>--------------------------------------------------</value>
+  </data>
+  <data name="PerformanceTest_SortByIterations">
+    <value>teljesített iterációk alapján (a legtöbbel kezdve)</value>
+  </data>
+  <data name="PerformanceTest_SortBySize">
+    <value>méret alapján (a legrövidebbel kezdve)</value>
+  </data>
+  <data name="PerformanceTest_SortByTime">
+    <value>idő alapján (a leggyorsabbal kezdve)</value>
+  </data>
+  <data name="PerformanceTest_SortOfCasesFormat">
+    <value>Az esetek rendezése {0}</value>
+  </data>
+  <data name="PerformanceTest_TestCasesFormat">
+    <value>Esetek száma: {0}</value>
+  </data>
+  <data name="PerformanceTest_TestTimeFormat">
+    <value>Futási idő: {0:N0} ms</value>
+  </data>
+  <data name="PerformanceTest_UnitPossiblePluralFormat">
+    <value>{0}</value>
+  </data>
+  <data name="PerformanceTest_WarmingUpFormat">
+    <value>Bemelegítés: {0}</value>
+  </data>
+  <data name="PerformanceTest_WorstBestDiff" xml:space="preserve">
+    <value>  Legrosszabb-legjobb különbség: </value>
+  </data>
+  <data name="PerformanceTest_WorstBestDiffIterationFormat">
+    <value>{0:N2} ({1:P2})</value>
+  </data>
+  <data name="PerformanceTest_WorstBestDiffTimeFormat">
+    <value>{0:N2} ms ({1:P2})</value>
+  </data>
+  <data name="PerformanceTest_WorstMark" xml:space="preserve">
+    <value>	 &lt;---- Legrosszabb</value>
+  </data>
+  <data name="Profiler_MeasureItemToStringFormat">
+    <value>[{0}]{1}: Átlagos idő: {2}; Teljes idő: {4}; Első hívás: {3}; Hívások száma: {5:N0}</value>
+  </data>
+  <data name="Profiler_Uncategorized">
+    <value>&lt;Nincs kategória&gt;</value>
+  </data>
+  <data name="Reflection_CannotCreateGenericMethod">
+    <value>A generikus metódus létrehozása nem sikerült. Részletek a beágyazott kivételben.</value>
+  </data>
+  <data name="Reflection_CannotGetPropertyTypeDescriptorFormat">
+    <value>A(z) „{1}” típuson nem olvasható ki „{0}” nevű tulajdonság TypeDescriptoron keresztül.</value>
+  </data>
+  <data name="Reflection_CannotGetStaticPropertyTypeDescriptor">
+    <value>Statikus tulajdonság nem olvasható ki TypeDescriptoron keresztül.</value>
+  </data>
+  <data name="Reflection_CannotLoadAssemblyFormat">
+    <value>Az assembly betöltése név alapján sikertelen volt: „{0}”.</value>
+  </data>
+  <data name="Reflection_CannotResolveAssemblyFormat">
+    <value>Az assembly nem oldható fel: „{0}”.</value>
+  </data>
+  <data name="Reflection_CannotResolveTypeArgFormat">
+    <value>Cannot resolve type parameter "{0}" in generic type "{1}".</value>
+  </data>
+  <data name="Reflection_CannotSetConstantFieldFormat">
+    <value>A konstans mező értéke nem állítható be: {0}.{1}</value>
+  </data>
+  <data name="Reflection_CannotSetStaticPropertyTypeDescriptor">
+    <value>Statikus tulajdonság nem állítható be TypeDescriptoron keresztül.</value>
+  </data>
+  <data name="Reflection_CannotTreatPropertySetter">
+    <value>A metódus nem kezelhető tulajdonságot beállító metódusként.</value>
+  </data>
+  <data name="Reflection_CtorNotFoundFormat">
+    <value>A(z) „{0}” típusnak nem található az adott paramétereknek megfelelő konstruktora.</value>
+  </data>
+  <data name="Reflection_DeclaringTypeExpected">
+    <value>A megadott tag DeclaringType tulajdonsága nem lehet null.</value>
+  </data>
+  <data name="Reflection_EmptyIndices">
+    <value>Nincs megadva indexer paraméter.</value>
+  </data>
+  <data name="Reflection_GetFieldTypeDescriptorNotSupported">
+    <value>Mező értéke nem érhető el TypeDescriptoron keresztül.</value>
+  </data>
+  <data name="Reflection_GetIndexerTypeDescriptorNotSupported">
+    <value>Indexer értéke nem olvasható ki TypeDescriptoron keresztül.</value>
+  </data>
+  <data name="Reflection_GetPropertyTypeDescriptorNotSupported">
+    <value>Tulajdonság kiolvasása nem támogatott TypeDescriptoron keresztül ebben a GetProperty metódusban.</value>
+  </data>
+  <data name="Reflection_IndexerNotFoundFormat">
+    <value>A(z) „{0}” típusnak nem található az adott paramétereknek megfelelő indexere.</value>
+  </data>
+  <data name="Reflection_IndexParamsLengthMismatchFormat">
+    <value>A tömb index paramétereinek várt száma: {0}.</value>
+  </data>
+  <data name="Reflection_IndexParamsTypeMismatch">
+    <value>Az index paraméterek nem alakíthatók egész szám típusúvá.</value>
+  </data>
+  <data name="Reflection_InstanceFieldDoesNotExistFormat">
+    <value>Nem található „{0}” nevű példány mező a(z) „{1}” típuson.</value>
+  </data>
+  <data name="Reflection_InstanceIsNull">
+    <value>A példány nem lehet null statikus tag esetén.</value>
+  </data>
+  <data name="Reflection_InstanceMethodNotFoundFormat">
+    <value>A(z) „{0}” típusnak nem található az adott paramétereknek megfelelő „{1}” nevű példány metódusa.</value>
+  </data>
+  <data name="Reflection_InstancePropertyDoesNotExistFormat">
+    <value>A(z) „{1}” típusnak nem található „{0}” nevű példány tulajdonsága.</value>
+  </data>
+  <data name="Reflection_InvalidAssemblyNameFormat">
+    <value>Érvénytelen assembly név: „{0}”.</value>
+  </data>
+  <data name="Reflection_InvalidMethodBase">
+    <value>A paraméter csak MethodInfo vagy ConstructorInfo típusú lehet.</value>
+  </data>
+  <data name="Reflection_InvokeCtorTypeDescriptorNotSupported">
+    <value>Konstruktor meghívása nem támogatott TypeDescriptoron keresztül ebben a CreateInstance metódusban.</value>
+  </data>
+  <data name="Reflection_InvokeMethodTypeDescriptorNotSupported">
+    <value>Metódus meghívása nem támogatott TypeDescriptoron keresztül.</value>
+  </data>
+  <data name="Reflection_NotAMemberFormat">
+    <value>A(z) kifejezés típusából nem adható vissza MemberInfo példány: „{0}”.</value>
+  </data>
+  <data name="Reflection_NotAMethod">
+    <value>A kifejezés nem metódushívás.</value>
+  </data>
+  <data name="Reflection_NotATypeFormat">
+    <value>A(z) „{0}” értéket nem sikerült típusként feloldani.</value>
+  </data>
+  <data name="Reflection_NotSupportedMemberTypeFormat">
+    <value>A tag típus nem támogatott: „{0}”.</value>
+  </data>
+  <data name="Reflection_PointerTypeNotSupportedFormat">
+    <value>A mutató típus nem támogatott: „{0}”.</value>
+  </data>
+  <data name="Reflection_PropertyHasNoGetterFormat">
+    <value>A tulajdonságnak nincs olvasási elérhetősége: {0}.{1}</value>
+  </data>
+  <data name="Reflection_PropertyHasNoSetterFormat">
+    <value>A tulajdonságnak nincs írási elérhetősége: {0}.{1}</value>
+  </data>
+  <data name="Reflection_PropertyNotFoundTypeDescriptorFormat">
+    <value>A(z) „{1}” típuson nem állítható be „{0}” nevű tulajdonság TypeDescriptoron keresztül.</value>
+  </data>
+  <data name="Reflection_ResolveNotAGenericTypeFormat">
+    <value>A(z) „{0}” típus nem generikus, de akként van kezelve a következő kifejezésben: „{1}”.</value>
+  </data>
+  <data name="Reflection_ResolveTypeArgsLengthMismatchFormat">
+    <value>Number of awaited and actual type parameters mismatch in type definition "{0}". Expected number of type arguments: {1}.</value>
+  </data>
+  <data name="Reflection_SecuritySettingsConflict">
+    <value>Ez a művelet nem támogatott, ha a futtató assembly mind az AllowPartiallyTrustedCallers és a SecurityRules attribútumokat használja, utóbbit SecurityRuleSet.Level2 értékkel (ami az alapértelmezett, ha nincs megadva). A következő lehetőségek jelenthetnek megoldást:
+- A SecurityRulesAttribute használata SecurityRuleSet.Level1 értékkel. Ez a javasolt megoldás.
+- A SecurityRulesAttribute használata SkipVerificationInFullTrust = true értékkel. Ugyanakkor SecurityRuleSet.Level2 használata esetén ez nem oldja meg a problémát részlegesen megbízható doménből futtatott kódok esetén.
+- Az AllowPartiallyTrustedCallersAttribute eltávolítása a futtató assemblyből. Ugyanakkor ez esetben részlegesen megbízható assembly-k nem lesznek képesek a futtató assemblyt használni.</value>
+  </data>
+  <data name="Reflection_SetFieldTypeDescriptorNotSupported">
+    <value>Mező értéke nem állítható be TypeDescriptoron keresztül.</value>
+  </data>
+  <data name="Reflection_SetIndexerTypeDescriptorNotSupported">
+    <value>Indexer értéke nem állítható be TypeDescriptoron keresztül.</value>
+  </data>
+  <data name="Reflection_SetPropertyTypeDescriptorNotSupported">
+    <value>Tulajdonság beállítása nem támogatott TypeDescriptoron keresztül ebben a SetProperty metódusban.</value>
+  </data>
+  <data name="Reflection_SetReadOnlyFieldNetStandard20Format">
+    <value>A(z) „{0}” típus „{1}” nevű mezője csak olvasható, aminek az írását a FieldAccessor nem támogatja .NET Standard 2.0 alatt. Ehhez a művelethez a .NET Standard 2.1 vagy bármelyik .NET Core/Framework platformra fordított verzió használata szükséges.</value>
+  </data>
+  <data name="Reflection_SetStructFieldNetStandard20Format">
+    <value>A(z) „{0}” típus érték típusú, ezért a(z) „{1}” mezőjének írását a FieldAccessor nem támogatja .NET Standard 2.0 alatt. Ehhez a művelethez a .NET Standard 2.1 vagy bármelyik .NET Core/Framework platformra fordított verzió használata szükséges.</value>
+  </data>
+  <data name="Reflection_SetStructPropertyNetStandard20Format">
+    <value>A(z) „{0}” típus érték típusú, ezért a(z) „{1}” tulajdonságának írását a FieldAccessor nem támogatja .NET Standard 2.0 alatt. Ehhez a művelethez a .NET Standard 2.1 vagy bármelyik .NET Core/Framework platformra fordított verzió használata szükséges.</value>
+  </data>
+  <data name="Reflection_StaticFieldDoesNotExistFormat">
+    <value>Nem található „{0}” nevű statikus mező a(z) „{1}” típuson.</value>
+  </data>
+  <data name="Reflection_StaticMethodNotFoundFormat">
+    <value>A(z) „{0}” típusnak nem található az adott paramétereknek megfelelő „{1}” nevű statikus metódusa.</value>
+  </data>
+  <data name="Reflection_StaticPropertyDoesNotExistFormat">
+    <value>A(z) „{1}” típusnak nem található „{0}” nevű statikus tulajdonsága.</value>
+  </data>
+  <data name="Reflection_TypeArgsLengthMismatchFormat">
+    <value>A generikus paraméterek várt száma: {0}.</value>
+  </data>
+  <data name="Reflection_TypeOrCtorInfoExpected">
+    <value>A paraméter csak Type vagy ConstructorInfo típusú lehet.</value>
+  </data>
+  <data name="Reflection_TypeParamsAreNull">
+    <value>A meghívandó metódus generikus, de nem voltak generikus paraméterek megadva.</value>
+  </data>
+  <data name="Reflection_TypeSyntaxErrorFormat">
+    <value>Syntax error in generic/array type: "{0}".</value>
+  </data>
+  <data name="Reflection_TypeWithAssemblyName">
+    <value>Ebben a ResolveType metódusban a típus neve nem tartalmazhatja az assembly nevét.</value>
+  </data>
+  <data name="Resources_ConvertFromByteArrayNotSupportedAtFormat">
+    <value>Nem sikerült a byte tömböt „{0}” típussá konvertálni a(z) {1}. sor, {2}. karakterpozíción: {3}</value>
+  </data>
+  <data name="Resources_ConvertFromByteArrayNotSupportedFormat">
+    <value>A(z) „{0}” típus nem támogatja a konvertálást byte tömbből.</value>
+  </data>
+  <data name="Resources_ConvertFromStringNotSupportedAtFormat">
+    <value>Nem sikerült a stringet „{0}” típussá konvertálni a(z) {1}. sor, {2}. karakterpozíción: {3}</value>
+  </data>
+  <data name="Resources_ConvertFromStringNotSupportedFormat">
+    <value>A(z) „{0}” típus nem támogatja a stringből való konvertálást.</value>
+  </data>
+  <data name="Resources_FileRefFileNotFoundFormat">
+    <value>Nem található a ResX fájl referencia: {0}. Helyesen van az alapútvonal megadva?</value>
+  </data>
+  <data name="Resources_HeaderMimeTypeNotSupportedFormat">
+    <value>A(z) „{0}” mime típus nem támogatott a ResX fejlécében a(z) {1}. sor, {2}. karakterpozíción.</value>
+  </data>
+  <data name="Resources_HybridResSourceBinary">
+    <value>Ez a művelet érvénytelen, ha a Source tulajdonság értéke CompiledOnly.</value>
+  </data>
+  <data name="Resources_InvalidDrmPropertyChange">
+    <value>Ez a tulajdonság nem állítható be, ha a UseLanguageSettings értéke true.</value>
+  </data>
+  <data name="Resources_InvalidResXReaderPropertyChange">
+    <value>Ez a tulajsonság csak az iterálás megkezdése előtt változtatható.</value>
+  </data>
+  <data name="Resources_InvalidResXWriterPropertyChange">
+    <value>Ez a tulajdonság csak új sor hozzáadása, vagy bármilyen tartalomgenerálást kiváltó művelet előtt változtatható.</value>
+  </data>
+  <data name="Resources_MimeTypeNotSupportedFormat">
+    <value>A(z) „{0}” mime típus nem támogatott a(z) {1}. sor, {2}. karakterpozíción.</value>
+  </data>
+  <data name="Resources_MissingAttributeFormat">
+    <value>Hiányzó „{0}” attribútum a(z) {1}. sor, {2}. karakterpozíción.</value>
+  </data>
+  <data name="Resources_NeutralResourceFileNotFoundResXFormat">
+    <value>Nem található az erőforrásfájl: {0}</value>
+  </data>
+  <data name="Resources_NeutralResourceNotFoundCompiledFormat">
+    <value>Nem található megfelelő erőforrás a megadott kulturális környezethez vagy a semleges kulturális környezethez. Lehetséges, hogy „{0}” nincs megfelelően beágyazva vagy hozzáfordítva a(z) „{1}” assemblyhez, vagy a szükséges szatellit assemblyk nem tölthetők be, esetleg nincsenek teljesen aláírva.</value>
+  </data>
+  <data name="Resources_NeutralResourceNotFoundHybridFormat">
+    <value>Nem található megfelelő erőforrás a megadott kulturális környezethez vagy a semleges kulturális környezethez. Lehetséges, hogy „{0}” nincs megfelelően beágyazva vagy hozzáfordítva a(z) „{1}” assemblyhez, vagy a szükséges szatellit assemblyk nem tölthetők be, nincsenek teljesen aláírva, vagy nem található az XML erőforrásfájl: „{2}”</value>
+  </data>
+  <data name="Resources_NonStreamResourceWithTypeFormat">
+    <value>A(z) „{0}” nevű erőforrás típusa nem MemoryStream, hanem „{1}” - eléréséhez a SafeMode engedélyezése, vagy a GetObject metódus használata szükséges.</value>
+  </data>
+  <data name="Resources_NonStringResourceWithTypeFormat">
+    <value>A(z) „{0}” nevű erőforrás nem string, hanem „{1}” típusú - eléréséhez a SafeMode engedélyezése, vagy a GetObject metódus használata szükséges.</value>
+  </data>
+  <data name="Resources_NoResXNameFormat">
+    <value>Nincs neve az erőforrásnak a(z) {0}. sor, {1}. karakterpozíción.</value>
+  </data>
+  <data name="Resources_ResXReaderNotSupportedFormat">
+    <value>Nem támogatott ResX reader típus a(z) {1}. sor, {2}. karakterpozíción: „{0}”</value>
+  </data>
+  <data name="Resources_ResXWriterNotSupportedFormat">
+    <value>Nem támogatott ResX writer típus a(z) {1}. sor, {2}. karakterpozíción: „{0}”</value>
+  </data>
+  <data name="Resources_TypeLoadExceptionAtFormat">
+    <value>Nem feloldható típus a(z) {1}. sor, {2}. karakterpozíción: „{0}”</value>
+  </data>
+  <data name="Resources_TypeLoadExceptionFormat">
+    <value>A típus nem oldható fel: „{0}”</value>
+  </data>
+  <data name="Resources_TypeLoadExceptionSafeAtFormat">
+    <value>Nem feloldható típus a(z) {1}. sor, {2}. karakterpozíción: „{0}”
+Segíthet a típust tartalmazó assembly betöltése a deszerializálás előtt, vagy a GetValue metódus használata, ha az erőforrásfájl biztonságos forrásból származik.</value>
+  </data>
+  <data name="Resources_TypeLoadExceptionSafeFormat">
+    <value>A(z) „{0}” típus feloldása nem sikerült biztonságos módban.
+Segíthet a típust tartalmazó assembly betöltése a deszerializálás előtt, vagy a GetValue metódus használata, ha az erőforrásfájl biztonságos forrásból származik.</value>
+  </data>
+  <data name="Resources_UnexpectedElementAtFormat">
+    <value>Váratlan elem a(z) {1}. sor {2}. karakterpozíción: „{0}”.</value>
+  </data>
+  <data name="Resources_WriterSaved">
+    <value>Az erőforrások mentése után további szerkesztés már nem lehetséges.</value>
+  </data>
+  <data name="Serialization_MissingFieldFormat">
+    <value>A(z) „{0}” típus nem deszerializálható, mert nincs „{1}” nevű mezője. Az IgnoreNonExistingFields tulajdonság beállításával elkerülhető ennek a kivételnek a dobása.</value>
+  </data>
+  <data name="Serialization_PointerArrayTypeNotSupportedFormat">
+    <value>A mutató típusú tömb szerializálása nem támogatott: „{0}”.</value>
+  </data>
+  <data name="Serialization_RootTypeExpected">
+    <value>Csak nemgenerikus típusok, vagy generikus típusdefiníciók érvényesek ezen a helyen.</value>
+  </data>
+  <data name="SpanExtensions_CannotParseAsTypeFormat">
+    <value>A megadott string nem értelmezhető „{1}” típusként: „{0}”.</value>
+  </data>
+  <data name="StreamExtensions_StreamCannotRead">
+    <value>A forrás adatfolyam nem olvasható.</value>
+  </data>
+  <data name="StreamExtensions_StreamCannotWrite">
+    <value>A cél adatfolyam nem írható.</value>
+  </data>
+  <data name="StringExtensions_CannotParseAsTypeFormat">
+    <value>A megadott string nem értelmezhető „{1}” típusként: „{0}”.</value>
+  </data>
+  <data name="StringExtensions_SeparatorNullOrEmpty">
+    <value>A szeparátor nem lehet üres vagy null.</value>
+  </data>
+  <data name="StringExtensions_SourceLengthNotEven">
+    <value>A forrásnak páros számű hexadecimális karakterből kell állnia.</value>
+  </data>
+  <data name="StringSegment_Null">
+    <value>A string szegmens értéke null.</value>
+  </data>
+  <data name="XmlSerialization_ArrayDimensionSizeMismatchFormat">
+    <value>A(z) „{0}” tömb nem állítható vissza, mert a(z) {1}. dimenzió hossza nem egyezik.</value>
+  </data>
+  <data name="XmlSerialization_ArrayLowerBoundMismatchFormat">
+    <value>A(z) „{0}” tömb nem állítható vissza, mert a(z) {1}. dimenzió alsó határa nem egyezik.</value>
+  </data>
+  <data name="XmlSerialization_ArrayNoLength">
+    <value>A tömb hossza vagy dimenziói nincsenek megadva.</value>
+  </data>
+  <data name="XmlSerialization_ArrayRankMismatchFormat">
+    <value>A(z) „{0}” tömb nem állítható vissza, mert a rangja nem egyezik. Várt rang: „{1}”.</value>
+  </data>
+  <data name="XmlSerialization_ArraySizeMismatchFormat">
+    <value>A(z) „{0}” tömb nem állítható vissza, mert a hossza nem egyezik. Várt hossz: „{1}”.</value>
+  </data>
+  <data name="XmlSerialization_BinarySerializationFailedFormat">
+    <value>A(z) „{0}” típus bináris szerializálása „{1}” opciókkal sikertelen volt: {2}</value>
+  </data>
+  <data name="XmlSerialization_BinarySerializerSafe">
+    <value>Biztonságos módban nem engedélyezett BinarySerializationFormatter által szerializát tartalom deszerializálása.</value>
+  </data>
+  <data name="XmlSerialization_CannotDeserializeReadOnlyCollectionFormat">
+    <value>A(z) „{0}” kollekció csak olvasható, ezért a tartalma nem állítható vissza.</value>
+  </data>
+  <data name="XmlSerialization_CannotDetermineElementTypeFormat">
+    <value>A(z) „{0}” kollekció elemtípusát nem sikerült meghatározni.</value>
+  </data>
+  <data name="XmlSerialization_CannotResolveTypeFormat">
+    <value>A típus nem oldható fel: „{0}”.</value>
+  </data>
+  <data name="XmlSerialization_CannotResolveTypeSafeFormat">
+    <value>A(z) „{0}” típus feloldása nem sikerült biztonságos módban.
+Biztonságos módban a típust tartalmazó assemblyt előre be kell tölteni, akkor is, ha a típus neve az assembly nevet is tartalmazza.</value>
+  </data>
+  <data name="XmlSerialization_CannotSerializeCollectionFormat">
+    <value>A(z) „{0}” kollekció szerializálása nem sikerült a következő opciókkal: „{1}”. Segíthet egy fallback opció használata, egy típuskonverter alkalmazása vagy a DesignerSerializationVisibilityAttribute megadása Content értékkel a kollekciót tartalmazó tulajdonságon.</value>
+  </data>
+  <data name="XmlSerialization_CannotSerializeUnsupportedCollectionFormat">
+    <value>A(z) „{0}” kollekció szerializálása nem támogatott a következő opciókkal: „{1}”, mert nem implementálja az IList, IDictionary és ICollection&lt;T&gt; interfészek valamelyikét, és nincs olyan inicializáló konstruktora, ami képes tömböt vagy listát fogadni.
+A kollekció rekurzív szerializálása kikényszeríthető a RecursiveSerializationAsFallback és ForcedSerializationOfReadOnlyMembersAndCollections opciók együttes használatával, bár a deszerializálás valószínűleg nem fog működni. A BinarySerializationAsFallback opció használata szintén segíthet.</value>
+  </data>
+  <data name="XmlSerialization_CircularReferenceFormat">
+    <value>Körkörös referencia szerializálás közben. A már szerializálás közbeni hivatkozott objektum: „{0}”. A körkörös referenciák elkerüléséhez használható a DesignerSerializationVisibilityAttribute Hidden értékkel azokon a tagokon, melyek közvetlenül vagy közvetetten saját magukat referenciálják.</value>
+  </data>
+  <data name="XmlSerialization_CrcError">
+    <value>Sérült tömb adat: hibás CRC.</value>
+  </data>
+  <data name="XmlSerialization_CrcHexExpectedFormat">
+    <value>A „crc” attribútum nem hexadecimális értéket tartalmaz: „{0}”.</value>
+  </data>
+  <data name="XmlSerialization_DeserializingTypeNotSupportedFormat">
+    <value>A(z) „{0}” típus deszerializálása nem támogatott.</value>
+  </data>
+  <data name="XmlSerialization_HasNoMemberFormat">
+    <value>A(z) „{0}” típusnak nincs „{1}” nevű publikus mezője vagy tulajdonsága.</value>
+  </data>
+  <data name="XmlSerialization_InconsistentArrayLengthFormat">
+    <value>Eltérő tömb méret. Várt elemszám: {0}; kiolvasott elemszám: {1}.</value>
+  </data>
+  <data name="XmlSerialization_InvalidArrayBoundsFormat">
+    <value>Érvénytelen tömb határok: {0}</value>
+  </data>
+  <data name="XmlSerialization_InvalidArrayLengthFormat">
+    <value>Érvénytelen tömb hossz: {0}</value>
+  </data>
+  <data name="XmlSerialization_InvalidEscapedContentFormat">
+    <value>Érvénytelen escape string tartalom: „{0}”.</value>
+  </data>
+  <data name="XmlSerialization_ItemExpectedFormat">
+    <value>Várt kollekció elem helyett „{0}” érkezett.</value>
+  </data>
+  <data name="XmlSerialization_KeyValueMissingKey">
+    <value>Nem található kulcs a kulcs/érték pár elemben.</value>
+  </data>
+  <data name="XmlSerialization_KeyValueMissingValue">
+    <value>Nem található érték a kulcs/érték pár elemben.</value>
+  </data>
+  <data name="XmlSerialization_MixedArrayFormats">
+    <value>Kevert tömör és nem tömör tömb tartalom érkezett.</value>
+  </data>
+  <data name="XmlSerialization_MultipleKeys">
+    <value>Több kulcs szerepel egy kulcs/érték elemben.</value>
+  </data>
+  <data name="XmlSerialization_MultipleValues">
+    <value>Több érték szerepel egy kulcs/érték elemben.</value>
+  </data>
+  <data name="XmlSerialization_NoContentFormat">
+    <value>A(z) „{0}” típus szerializált tartalma nem található.</value>
+  </data>
+  <data name="XmlSerialization_NoDefaultCtorFormat">
+    <value>A(z) „{0}” típusnak nincs paraméter nélküli konstruktora, ezért csak gyökérelemként (de)szerializálható a SerializeContent és DeserializeContent metódusokkal, vagy akkor, ha a szülő objektum létrehozása után a tartalmazó publikus mező/tulajdonság értéke nem null.</value>
+  </data>
+  <data name="XmlSerialization_NotACollectionFormat">
+    <value>A(z) „{0}”típus nem egy szokványos kollekció, ezért nem adhatók hozzá elemek általános módon.</value>
+  </data>
+  <data name="XmlSerialization_NotAnIXmlSerializableFormat">
+    <value>A(z) „{0}” típus nem implementálja az IXmlSerializable interfészt.</value>
+  </data>
+  <data name="XmlSerialization_PropertyHasNoSetterCantSetNullFormat">
+    <value>A(z) „{1}” típus „{0}” tulajdonságának nem adható null értékül, mert nem írható.</value>
+  </data>
+  <data name="XmlSerialization_PropertyHasNoSetterFormat">
+    <value>A(z) „{1}” típus „{0}” tulajdonsága nem állítható vissza, mert nem írható.</value>
+  </data>
+  <data name="XmlSerialization_PropertyHasNoSetterGetsNullFormat">
+    <value>A(z) „{1}” típus „{0}” tulajdonsága nem állítható vissza, mert nem írható, és az értéke null.</value>
+  </data>
+  <data name="XmlSerialization_PropertyTypeMismatchFormat">
+    <value>A(z) „{0}.{1}” tulajdonság típusa „{3}” a várt „{2}” helyett.</value>
+  </data>
+  <data name="XmlSerialization_RootObjectExpectedFormat">
+    <value>A gyökérelem neve „{0}” a várt „object” helyett.</value>
+  </data>
+  <data name="XmlSerialization_RootTypeMissing">
+    <value>Hiányzik a gyökérelem típusa.</value>
+  </data>
+  <data name="XmlSerialization_SerializingNonPopulatableCollectionNotSupportedFormat">
+    <value>A(z) „{0}” típusú kollekció tartalmának szerializálása nem támogatott, mert nem adhatók hozzá elemek általános interfész implementációkkal.
+Ha a kollekciónak van inicializáló konstruktora, segíthet az XmlSerializer.Serialize metódus használata a SerializeContent metódus helyett.</value>
+  </data>
+  <data name="XmlSerialization_SerializingReadOnlyCollectionNotSupportedFormat">
+    <value>A(z) „{0}” típusú, csak olvasható kollekció tartalmának szerializálása nem támogatott, mert deszerializáláskor nem fog működni az elemek hozzáadása.
+Ha a kollekciónak van inicializáló konstruktora, segíthet az XmlSerializer.Serialize metódus használata a SerializeContent metódus helyett.</value>
+  </data>
+  <data name="XmlSerialization_SerializingTypeNotSupportedFormat">
+    <value>A(z) „{0}” típus szerializálása nem támogatott a következő opciókkal: „{1}”. Segíthet egy fallback opció használata, vagy egy típuskonverter alkalmazása.</value>
+  </data>
+  <data name="XmlSerialization_UnexpectedElementFormat">
+    <value>Váratlan elem: „{0}”.</value>
+  </data>
+  <data name="XmlSerialization_UnexpectedEnd">
+    <value>Az XML adatfolyam váratlanul véget ért.</value>
+  </data>
+</root>
