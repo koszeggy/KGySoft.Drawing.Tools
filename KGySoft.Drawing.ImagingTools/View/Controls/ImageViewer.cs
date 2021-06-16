@@ -412,6 +412,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             {
                 sbHorizontal.Visible = sbVertical.Visible = sbHorizontalVisible = sbVerticalVisible = false;
                 targetRectangle = Rectangle.Empty;
+                Cursor = null;
                 return;
             }
 
