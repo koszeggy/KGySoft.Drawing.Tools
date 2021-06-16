@@ -24,6 +24,9 @@ using System.Windows.Forms;
 
 namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
+    /// <summary>
+    /// A <see cref="StatusStrip"/> with a progress bar that can be updated from any thread.
+    /// </summary>
     internal partial class ProgressStatusStrip<TProgress> : StatusStrip
     {
         #region Fields

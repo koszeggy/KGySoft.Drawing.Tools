@@ -19,6 +19,8 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
+using System.Windows.Forms;
+
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
@@ -83,7 +85,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             CommandBindings = new WinFormsCommandBindingsCollection();
             threadId = Thread.CurrentThread.ManagedThreadId;
-            handleCreated = new ManualResetEventSlim(false);
+            handleCreated = new ManualResetEventSlim();
         }
 
         #endregion
@@ -117,6 +119,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             vmb.ShowWarningCallback = Dialogs.WarningMessage;
             vmb.ShowErrorCallback = Dialogs.ErrorMessage;
             vmb.ConfirmCallback = Dialogs.ConfirmMessage;
+            vmb.CancellableConfirmCallback = (msg, btn) => Dialogs.CancellableConfirmMessage(msg, btn switch { 0 => MessageBoxDefaultButton.Button1, 1 => MessageBoxDefaultButton.Button2, _ => MessageBoxDefaultButton.Button3 });
             vmb.SynchronizedInvokeCallback = InvokeIfRequired;
 
             vmb.ViewLoaded();

@@ -27,7 +27,6 @@ using System.Resources;
 
 using KGySoft.Collections;
 using KGySoft.CoreLibraries;
-using KGySoft.Drawing.ImagingTools.Properties;
 using KGySoft.Reflection;
 using KGySoft.Resources;
 
@@ -146,6 +145,9 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Color Count: {0}</summary>
         internal static string TextColorCountId => "Text_ColorCountFormat";
 
+        /// <summary>Downloading...</summary>
+        internal static string TextDownloading => Get("Text_Downloading");
+
         #endregion
 
         #region Info Texts
@@ -185,9 +187,18 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>The current installation is being executed, which cannot be removed</summary>
         internal static string ErrorMessageInstallationCannotBeRemoved => Get("ErrorMessage_InstallationCannotBeRemoved");
 
+        /// <summary>Resource format string is invalid.</summary>
+        internal static string ErrorMessageResourceFormatError => Get("ErrorMessage_ResourceFormatError");
+
+        /// <summary>One or more placeholders are missing from the translated resource format string.</summary>
+        internal static string ErrorMessageResourcePlaceholderUnusedIndices => Get("ErrorMessage_ResourcePlaceholderUnusedIndices");
+
         /// <summary>The selected quantizer supports partial transparency, which is not supported by ditherers,
         /// so partial transparent pixels will be blended with back color.</summary>
         internal static string WarningMessageDithererNoAlphaGradient => Get("WarningMessage_DithererNoAlphaGradient");
+
+        /// <summary>This language is not supported on this platform or by the executing framework</summary>
+        internal static string WarningMessageUnsupportedCulture => Get("WarningMessage_UnsupportedCulture");
 
         /// <summary>Are you sure you want to overwrite this installation?</summary>
         internal static string ConfirmMessageOverwriteInstallation => Get("ConfirmMessage_OverwriteInstallation");
@@ -195,11 +206,17 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Are you sure you want to remove this installation?</summary>
         internal static string ConfirmMessageRemoveInstallation => Get("ConfirmMessage_RemoveInstallation");
 
+#if NETCOREAPP
         /// <summary>You are about to install the .NET Core version, which might not be supported by Visual Studio as a debugger visualizer. Are you sure?</summary>
-        internal static string ConfirmMessageNetCoreVersion => Get("ConfirmMessage_NetCoreVersion");
+        internal static string ConfirmMessageNetCoreVersion => Get("ConfirmMessage_NetCoreVersion"); 
+#endif
 
         /// <summary>There are unsaved modifications. Are sure to discard the changes?</summary>
         internal static string ConfirmMessageDiscardChanges => Get("ConfirmMessage_DiscardChanges");
+
+        /// <summary>One or more selected items are for a different Imaging Tools version.
+        /// Are you sure you want to continue?</summary>
+        internal static string ConfirmMessageResourceVersionMismatch => Get("ConfirmMessage_ResourceVersionMismatch");
 
         /// <summary>The palette contains no colors. Click OK to exit.</summary>
         internal static string InfoMessagePaletteEmpty => Get("InfoMessage_PaletteEmpty");
@@ -217,6 +234,9 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Without selecting a quantizer possible alpha pixels of the source image are blended with black.
         /// By selecting a quantizer you can specify a different back color.</summary>
         internal static string InfoMessageAlphaTurnsBlack => Get("InfoMessage_AlphaTurnsBlack");
+
+        /// <summary>This item is for a different ImagingTools version.</summary>
+        internal static string InfoMessageResourceVersionMismatch => Get("InfoMessage_ResourceVersionMismatch");
 
         #endregion
 
@@ -248,9 +268,9 @@ namespace KGySoft.Drawing.ImagingTools
                 : CultureInfo.InvariantCulture).GetClosestNeutralCulture();
             DrawingModule.Initialize();
 
-            bool allowResXResources = Settings.Default.AllowResXResources;
+            bool allowResXResources = Configuration.AllowResXResources;
             CultureInfo desiredDisplayLanguage = allowResXResources
-                ? Settings.Default.UseOSLanguage ? OSLanguage : Settings.Default.DisplayLanguage // here, allowing specific languages, too
+                ? Configuration.UseOSLanguage ? OSLanguage : Configuration.DisplayLanguage // here, allowing specific languages, too
                 : DefaultLanguage;
 
             LanguageSettings.DisplayLanguage = Equals(desiredDisplayLanguage, CultureInfo.InvariantCulture) ? DefaultLanguage : desiredDisplayLanguage;
@@ -347,6 +367,9 @@ namespace KGySoft.Drawing.ImagingTools
 
         /// <summary>B: {0}</summary>
         internal static string TextBlueValue(byte a) => Get("Text_BlueValueFormat", a);
+
+        /// <summary>Unsupported Language ({0})</summary>
+        internal static string TextUnsupportedCulture(string cultureName) => Get("Text_UnsupportedCultureFormat", cultureName);
 
         #endregion
 
@@ -488,6 +511,16 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Failed to save resource file {0}: {1}</summary>
         internal static string ErrorMessageFailedToSaveResource(string fileName, string message) => Get("ErrorMessage_FailedToSaveResourceFormat", fileName, message);
 
+        /// <summary>Failed to access online resources: {0}</summary>
+        internal static string ErrorMessageCouldNotAccessOnlineResources(string message) => Get("ErrorMessage_CouldNotAccessOnlineResourcesFormat", message);
+
+        /// <summary>Failed to download resource file {0}: {1}</summary>
+        internal static string ErrorMessageFailedToDownloadResource(string fileName, string message) => Get("ErrorMessage_FailedToDownloadResourceFormat", fileName, message);
+
+        /// <summary>Index '{0}' is invalid in the translated resource format string.</summary>
+        internal static string ErrorMessageResourcePlaceholderIndexInvalid(int index) => Get("ErrorMessage_ResourcePlaceholderIndexInvalidFormat", index);
+
+#if NET45
         /// <summary>Could not create directory {0}: {1}
         ///
         /// The debugger visualizer may will not work for .NET Core projects.</summary>
@@ -501,7 +534,8 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Could not copy file {0}: {1}
         ///
         /// The debugger visualizer may will not work for .NET Core projects.</summary>
-        internal static string WarningMessageCouldNotCopyFileNetCore(string path, string message) => Get("WarningMessage_CouldNotCopyFileNetCoreFormat", path, message);
+        internal static string WarningMessageCouldNotCopyFileNetCore(string path, string message) => Get("WarningMessage_CouldNotCopyFileNetCoreFormat", path, message); 
+#endif
 
         /// <summary>The installation finished with a warning: {0}</summary>
         internal static string WarningMessageInstallationWarning(string warning) => Get("WarningMessage_InstallationWarningFormat", warning);
@@ -515,6 +549,11 @@ namespace KGySoft.Drawing.ImagingTools
         /// otherwise, the result might not be optimal even with dithering.</summary>
         internal static string WarningMessageQuantizerTooWide(PixelFormat selectedPixelFormat, PixelFormat pixelFormatHint) => Get("WarningMessage_QuantizerTooWideFormat", selectedPixelFormat, pixelFormatHint);
 
+        /// <summary>{0} file(s) have been downloaded.
+        ///
+        /// The culture of one or more downloaded localizations is not supported on this platform. Those languages will not appear among the selectable languages.</summary>
+        internal static string WarningMessageDownloadCompletedWithUnsupportedCultures(int count) => Get("WarningMessage_DownloadCompletedWithUnsupportedCulturesFormat", count);
+
         /// <summary>The extension of the provided filename '{0}' does not match to the selected format ({1}).
         /// 
         /// Are you sure you want to save the file with the provided extension?</summary>
@@ -524,6 +563,12 @@ namespace KGySoft.Drawing.ImagingTools
         /// 
         /// Do you want to try to regenerate it? The current file will be deleted.</summary>
         internal static string ConfirmMessageTryRegenerateResource(string fileName, string message) => Get("ConfirmMessage_TryRegenerateResourceFormat", fileName, message);
+
+        /// <summary>The following files already exist:
+        /// {0}
+        /// 
+        /// Do you want to overwrite them?</summary>
+        internal static string ConfirmMessageOverwriteResources(string files) => Get("ConfirmMessage_MessageOverwriteResourcesFormat", files);
 
         /// <summary>{0} is the lowest compatible pixel format, which still supports the selected quantizer.</summary>
         internal static string InfoMessagePixelFormatUnnecessarilyWide(PixelFormat pixelFormat) => Get("InfoMessage_PixelFormatUnnecessarilyWideFormat", pixelFormat);
@@ -546,6 +591,20 @@ namespace KGySoft.Drawing.ImagingTools
 
         /// <summary>The ditherer is ignored for pixel format '{0}' if there is no quantizer specified.</summary>
         internal static string InfoMessageDithererIgnored(PixelFormat pixelFormat) => Get("InfoMessage_DithererIgnoredFormat", pixelFormat);
+
+        /// <summary>{0} file(s) have been downloaded.</summary>
+        internal static string InfoMessageDownloadCompleted(int count) => Get("InfoMessage_DownloadCompletedFormat", count);
+
+        /// <summary>About KGy SOFT Imaging Tools
+        /// 
+        /// Version: v{0}
+        /// Author: György Kőszeg
+        /// Target Platform: {1}
+        ///
+        /// You are now using the compiled English resources.
+        /// Copyright © {2} KGy SOFT. All rights reserved.
+        /// </summary>
+        internal static string InfoMessageAbout(Version version, string platform, int year) => Get("InfoMessage_About", version, platform, year);
 
         #endregion
 

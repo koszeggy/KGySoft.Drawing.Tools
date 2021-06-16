@@ -23,7 +23,6 @@ using System.Drawing;
 using System.Threading;
 
 using KGySoft.ComponentModel;
-using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
 
 #endregion
@@ -61,7 +60,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Events
 
-        internal event EventHandler<EventArgs<ValidationResultsCollection>>? ValidationResultsChanged
+        internal event EventHandler? ValidationResultsChanged
         {
             add => ValidationResultsChangedHandler += value;
             remove => ValidationResultsChangedHandler -= value;
@@ -102,7 +101,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Private Properties
 
         private Exception? GeneratePreviewError { get => Get<Exception?>(); set => Set(value); }
-        private EventHandler<EventArgs<ValidationResultsCollection>>? ValidationResultsChangedHandler { get => Get<EventHandler<EventArgs<ValidationResultsCollection>>?>(); set => Set(value); }
+        private EventHandler? ValidationResultsChangedHandler { get => Get<EventHandler?>(); set => Set(value); }
 
         #endregion
 
@@ -144,7 +143,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 case nameof(ValidationResults):
                     var validationResults = (ValidationResultsCollection)e.NewValue!;
                     IsValid = !validationResults.HasErrors;
-                    ValidationResultsChangedHandler?.Invoke(this, new EventArgs<ValidationResultsCollection>(validationResults));
+                    ValidationResultsChangedHandler?.Invoke(this, EventArgs.Empty);
                     return;
 
                 case nameof(GeneratePreviewError):
@@ -287,7 +286,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     {
                         task.Initialize(originalImage, PreviewImageViewModel.PreviewImage == originalImage);
                     }
-                    catch (Exception e) when (!e.IsCriticalGdi())
+                    catch (Exception e)
                     {
                         task.SetCompleted();
                         TryInvokeSync(() =>
@@ -316,7 +315,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                         // Waiting to be finished or canceled. As we are on a different thread blocking wait is alright
                         result = task.EndGenerate(asyncResult);
                     }
-                    catch (Exception e) when (!e.IsCriticalGdi())
+                    catch (Exception e)
                     {
                         error = e;
                     }

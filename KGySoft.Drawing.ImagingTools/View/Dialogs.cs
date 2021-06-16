@@ -31,8 +31,17 @@ namespace KGySoft.Drawing.ImagingTools.View
         internal static void ErrorMessage(string message) => Show(message, Res.TitleError, MessageBoxButtons.OK, MessageBoxIcon.Error);
         internal static void InfoMessage(string message) => Show(message, Res.TitleInformation, MessageBoxButtons.OK, MessageBoxIcon.Information);
         internal static void WarningMessage(string message) => Show(message, Res.TitleWarning, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        
         internal static bool ConfirmMessage(string message, bool isYesDefault = true)
             => Show(message, Res.TitleConfirmation, MessageBoxButtons.YesNo, MessageBoxIcon.Question, isYesDefault ? MessageBoxDefaultButton.Button1 : MessageBoxDefaultButton.Button2) == DialogResult.Yes;
+
+        internal static bool? CancellableConfirmMessage(string message, MessageBoxDefaultButton defaultButton = MessageBoxDefaultButton.Button1)
+            => Show(message, Res.TitleConfirmation, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, defaultButton) switch
+            {
+                DialogResult.Yes => true,
+                DialogResult.No => false,
+                _ => null
+            };
 
         #endregion
 

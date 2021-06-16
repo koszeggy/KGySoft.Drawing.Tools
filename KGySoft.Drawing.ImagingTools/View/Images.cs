@@ -95,31 +95,40 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         #region Internal Methods
 
-        internal static Bitmap ToScaledBitmap(this Icon icon)
+        internal static Bitmap ToScaledBitmap(this Icon icon, PointF? scale = null)
         {
             if (icon == null)
                 throw new ArgumentNullException(nameof(icon), PublicResources.ArgumentNull);
-            return icon.ExtractNearestBitmap(referenceSize.Scale(OSUtils.SystemScale), PixelFormat.Format32bppArgb);
+            using (icon)
+                return icon.ExtractNearestBitmap(referenceSize.Scale(scale ?? OSUtils.SystemScale), PixelFormat.Format32bppArgb);
         }
 
-        internal static Icon ToScaledIcon(this Icon icon, bool legacyScaling = true)
+        internal static Icon ToScaledIcon(this Icon icon, PointF? scale = null, bool div16Scaling = true)
         {
             if (icon == null)
                 throw new ArgumentNullException(nameof(icon), PublicResources.ArgumentNull);
 
-            Size size = referenceSize.Scale(OSUtils.SystemScale);
-            Icon result = icon.ExtractNearestIcon(size, PixelFormat.Format32bppArgb);
-            int mod;
-            if (!legacyScaling || OSUtils.IsWindows8OrLater || !OSUtils.IsWindows || (mod = result.Width & 0xF) == 0)
-                return result;
+            using (icon)
+            {
+                Size size = referenceSize.Scale(scale ?? OSUtils.SystemScale);
+                Icon result = icon.ExtractNearestIcon(size, PixelFormat.Format32bppArgb);
+                int mod;
+                if (!div16Scaling || !OSUtils.IsWindows || (mod = result.Width & 0xF) == 0)
+                    return result;
 
-            // Windows XP-Windows 7 with legacy scaling: we need to make sure that icon size is dividable by 16
-            // so it will not be corrupted (eg. ErrorProvider)
-            using Bitmap iconImage = icon.ExtractBitmap(result.Size)!;
-            result.Dispose();
+#if !NET35
+                if (OSUtils.IsWindows8OrLater)
+                    return result;
+#endif
 
-            // returning a larger icon without scaling so apparently it will have the same size as the original one
-            return iconImage.ToIcon(size.Width + (16 - mod), ScalingMode.NoScaling);
+                // .NET 3.5 or Windows XP-Windows 7 with legacy scaling: we need to make sure that icon size is dividable by 16
+                // so it will not be corrupted (eg. ErrorProvider)
+                using Bitmap iconImage = icon.ExtractBitmap(result.Size)!;
+                result.Dispose();
+
+                // returning a larger icon without scaling so apparently it will have the same size as the original one
+                return iconImage.ToIcon(size.Width + (16 - mod), ScalingMode.NoScaling);
+            }
         }
 
         #endregion

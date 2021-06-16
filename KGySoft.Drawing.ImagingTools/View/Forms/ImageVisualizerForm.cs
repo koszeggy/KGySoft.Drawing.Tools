@@ -91,25 +91,31 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             base.ApplyResources();
             Icon = Properties.Resources.ImagingTools;
+
             btnAntiAlias.Image = Images.SmoothZoom;
             btnOpen.Image = Images.Open;
             btnSave.Image = Images.Save;
             btnClear.Image = Images.Clear;
-            btnPrev.Image = Images.Prev;
-            btnNext.Image = Images.Next;
-            btnColorSettings.Image = Images.Palette;
-            btnEdit.Image = Images.Edit;
-            miManageInstallations.Image = Images.Settings;
-            miLanguageSettings.Image = Images.Language;
-            btnConfiguration.SetDefaultItem(miManageInstallations);
 
-            miShowPalette.Image = Images.Palette;
+            btnColorSettings.Image = Images.Palette;
             miBackColorDefault.Image = Images.Check;
+            miShowPalette.Image = Images.Palette;
+
+            btnEdit.Image = Images.Edit;
             miRotateLeft.Image = Images.RotateLeft;
             miRotateRight.Image = Images.RotateRight;
             miResizeBitmap.Image = Images.Resize;
             miColorSpace.Image = Images.Quantize;
             miAdjustColors.Image = Images.Colors;
+
+            btnPrev.Image = Images.Prev;
+            btnNext.Image = Images.Next;
+            
+            miManageInstallations.Image = Images.Settings;
+            miLanguageSettings.Image = Images.Language;
+            btnConfiguration.SetDefaultItem(miManageInstallations);
+
+            btnAbout.Image = miAbout.Image = Icons.SystemInformation.ToScaledBitmap();
         }
 
         protected override void ApplyStringResources()
@@ -147,10 +153,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                     btnAntiAlias.PerformClick();
                     return true;
                 case Keys.Shift | Keys.Right:
-                    btnNext.PerformClick();
+                    (RightToLeft == RightToLeft.Yes ? btnPrev : btnNext).PerformClick();
                     return true;
                 case Keys.Shift | Keys.Left:
-                    btnPrev.PerformClick();
+                    (RightToLeft == RightToLeft.Yes ? btnNext : btnPrev).PerformClick();
                     return true;
                 default:
                     return base.ProcessCmdKey(ref msg, keyData);
@@ -253,10 +259,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.Add(ViewModel.SetSmoothZoomingCommand, ViewModel.SetSmoothZoomingCommandState)
                 .WithParameter(() => btnAntiAlias.Checked)
                 .AddSource(btnAntiAlias, nameof(btnAntiAlias.CheckedChanged));
-            CommandBindings.Add(ViewModel.PrevImageCommand, ViewModel.PrevImageCommandState)
-                .AddSource(btnPrev, nameof(btnPrev.Click));
-            CommandBindings.Add(ViewModel.NextImageCommand, ViewModel.NextImageCommandState)
-                .AddSource(btnNext, nameof(btnNext.Click));
 
             // File
             CommandBindings.Add(ViewModel.OpenFileCommand, ViewModel.OpenFileCommandState)
@@ -292,21 +294,39 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.Add(ViewModel.AdjustGammaCommand, ViewModel.EditBitmapCommandState)
                 .AddSource(miGamma, nameof(miGamma.Click));
 
+            // Compound images
+            CommandBindings.Add(ViewModel.SetCompoundViewCommand, ViewModel.SetCompoundViewCommandState)
+                .WithParameter(() => btnCompound.Checked)
+                .AddSource(btnCompound, nameof(btnCompound.CheckedChanged));
+            CommandBindings.Add(ViewModel.PrevImageCommand, ViewModel.PrevImageCommandState)
+                .AddSource(btnPrev, nameof(btnPrev.Click));
+            CommandBindings.Add(ViewModel.NextImageCommand, ViewModel.NextImageCommandState)
+                .AddSource(btnNext, nameof(btnNext.Click));
+            CommandBindings.Add(ViewModel.AdvanceAnimationCommand, ViewModel.AdvanceAnimationCommandState)
+                .AddSource(timerPlayer, nameof(timerPlayer.Tick));
+            CommandBindings.Add(ViewModel.ViewImagePreviewSizeChangedCommand)
+                .AddSource(imageViewer, nameof(imageViewer.SizeChanged))
+                .AddSource(imageViewer, nameof(imageViewer.ZoomChanged));
+
             // Configuration
             CommandBindings.Add(ViewModel.ManageInstallationsCommand)
                 .AddSource(miManageInstallations, nameof(miManageInstallations.Click));
             CommandBindings.Add(ViewModel.SetLanguageCommand)
                 .AddSource(miLanguageSettings, nameof(miLanguageSettings.Click));
 
-            // Compound controls
-            CommandBindings.Add(ViewModel.SetCompoundViewCommand, ViewModel.SetCompoundViewCommandState)
-                .WithParameter(() => btnCompound.Checked)
-                .AddSource(btnCompound, nameof(btnCompound.CheckedChanged));
-            CommandBindings.Add(ViewModel.AdvanceAnimationCommand, ViewModel.AdvanceAnimationCommandState)
-                .AddSource(timerPlayer, nameof(timerPlayer.Tick));
-            CommandBindings.Add(ViewModel.ViewImagePreviewSizeChangedCommand)
-                .AddSource(imageViewer, nameof(imageViewer.SizeChanged))
-                .AddSource(imageViewer, nameof(imageViewer.ZoomChanged));
+            // About
+            CommandBindings.Add(ViewModel.ShowAboutCommand)
+                .AddSource(btnAbout, nameof(btnAbout.ButtonClick));
+            CommandBindings.Add(ViewModel.ShowAboutCommand)
+                .AddSource(miAbout, nameof(miAbout.Click));
+            CommandBindings.Add(ViewModel.VisitWebSiteCommand)
+                .AddSource(miWebSite, nameof(miWebSite.Click));
+            CommandBindings.Add(ViewModel.VisitGitHubCommand)
+                .AddSource(miGitHub, nameof(miGitHub.Click));
+            CommandBindings.Add(ViewModel.VisitMarketplaceCommand)
+                .AddSource(miMarketplace, nameof(miMarketplace.Click));
+            CommandBindings.Add(ViewModel.SubmitResourcesCommand)
+                .AddSource(miSubmitResources, nameof(miSubmitResources.Click));
 
             // View commands
             CommandBindings.Add(OnResizeCommand)

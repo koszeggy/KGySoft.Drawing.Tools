@@ -19,7 +19,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using KGySoft.Drawing.ImagingTools.View.Controls;
+
 using KGySoft.Reflection;
 
 #endregion
@@ -58,6 +58,7 @@ namespace KGySoft.Drawing.ImagingTools.View
         internal static Size ScaleSize(this Control control, Size size) => size.Scale(control.GetScale());
 
         internal static int ScaleWidth(this Control control, int width) => width.Scale(control.GetScale().X);
+        internal static int ScaleHeight(this Control control, int height) => height.Scale(control.GetScale().Y);
 
         /// <summary>
         /// Applies fixed string resources (which do not change unless language is changed) to a control.

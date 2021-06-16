@@ -17,7 +17,9 @@
 #region Usings
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -36,6 +38,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private readonly int threadId;
         private readonly ManualResetEventSlim handleCreated;
 
+        private ErrorProvider? warningProvider;
+        private ErrorProvider? infoProvider;
+        private ErrorProvider? errorProvider;
+        private ICommand? validationResultsChangesCommand;
+
         private bool isClosing;
         private bool isLoaded;
         private bool isRtlChanging;
@@ -49,6 +56,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected TViewModel ViewModel { get; } = default!;
         protected CommandBindingsCollection CommandBindings { get; } = new WinFormsCommandBindingsCollection();
+
+        protected ErrorProvider ErrorProvider => errorProvider ??= CreateProvider(ValidationSeverity.Error);
+        protected ErrorProvider WarningProvider => warningProvider ??= CreateProvider(ValidationSeverity.Warning);
+        protected ErrorProvider InfoProvider => infoProvider ??= CreateProvider(ValidationSeverity.Information);
+
+        protected Dictionary<string, Control> ValidationMapping { get; } = new Dictionary<string, Control>();
+        protected ICommand ValidationResultsChangedCommand => validationResultsChangesCommand ??= new SimpleCommand<ValidationResultsCollection>(OnValidationResultsChangedCommand);
 
         #endregion
 
@@ -68,7 +82,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         protected MvvmBaseForm(TViewModel viewModel)
         {
             threadId = Thread.CurrentThread.ManagedThreadId;
-            handleCreated = new ManualResetEventSlim(false);
+            handleCreated = new ManualResetEventSlim();
             ApplyRightToLeft();
             InitializeComponent();
 
@@ -82,6 +96,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             vm.ShowWarningCallback = Dialogs.WarningMessage;
             vm.ShowErrorCallback = Dialogs.ErrorMessage;
             vm.ConfirmCallback = Dialogs.ConfirmMessage;
+            vm.CancellableConfirmCallback = (msg, btn) => Dialogs.CancellableConfirmMessage(msg, btn switch { 0 => MessageBoxDefaultButton.Button1, 1 => MessageBoxDefaultButton.Button2, _ => MessageBoxDefaultButton.Button3 });
             vm.ShowChildViewCallback = ShowChildView;
             vm.CloseViewCallback = () => BeginInvoke(new Action(Close));
             vm.SynchronizedInvokeCallback = InvokeIfRequired;
@@ -132,6 +147,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected virtual void ApplyViewModel()
         {
+            InitPropertyBindings();
             InitCommandBindings();
             VM.ViewLoaded();
         }
@@ -174,11 +190,33 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Methods
 
+        private void InitPropertyBindings()
+        {
+            if (ValidationMapping.Count != 0)
+            {
+                // this.RightToLeft -> errorProvider/warningProvider/infoProvider.RightToLeft
+                CommandBindings.AddPropertyBinding(this, nameof(RightToLeft), nameof(ErrorProvider.RightToLeft),
+                    rtl => rtl is RightToLeft.Yes, ErrorProvider, WarningProvider, InfoProvider);
+            }
+        }
+
         private void InitCommandBindings()
         {
             CommandBindings.Add(OnDisplayLanguageChangedCommand)
                 .AddSource(typeof(LanguageSettings), nameof(LanguageSettings.DisplayLanguageChanged));
         }
+
+        private ErrorProvider CreateProvider(ValidationSeverity level) => new ErrorProvider(components)
+        {
+            ContainerControl = this,
+            Icon = level switch
+            {
+                ValidationSeverity.Error => Icons.SystemError.ToScaledIcon(this.GetScale()),
+                ValidationSeverity.Warning => Icons.SystemWarning.ToScaledIcon(this.GetScale()),
+                ValidationSeverity.Information => Icons.SystemInformation.ToScaledIcon(this.GetScale()),
+                _ => null
+            }
+        };
 
         private void ShowChildView(IViewModel vm) => ViewFactory.ShowDialog(vm, this);
 
@@ -227,6 +265,20 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             ApplyRightToLeft();
             ApplyStringResources();
+        }
+
+        private void OnValidationResultsChangedCommand(ValidationResultsCollection? validationResults)
+        {
+            foreach (KeyValuePair<string, Control> mapping in ValidationMapping)
+            {
+                var propertyResults = validationResults?[mapping.Key]; // var is IList in .NET 3.5 and IReadOnlyList above
+                ValidationResult? error = propertyResults?.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Error);
+                ValidationResult? warning = error == null ? propertyResults?.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Warning) : null;
+                ValidationResult? info = error == null && warning == null ? propertyResults?.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Information) : null;
+                ErrorProvider.SetError(mapping.Value, error?.Message);
+                WarningProvider.SetError(mapping.Value, warning?.Message);
+                InfoProvider.SetError(mapping.Value, info?.Message);
+            }
         }
 
         #endregion

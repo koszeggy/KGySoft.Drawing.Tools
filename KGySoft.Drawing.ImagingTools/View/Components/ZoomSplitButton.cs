@@ -92,6 +92,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
             items.AddRange(new ToolStripItem[] { AutoZoomMenuItem, IncreaseZoomMenuItem, DecreaseZoomMenuItem, ResetZoomMenuItem });
         }
 
+        protected override void OnParentChanged(ToolStrip? oldParent, ToolStrip? newParent)
+        {
+            base.OnParentChanged(oldParent, newParent);
+
+            // Linux/Mono: without this the new parent's renderer will not be applied to the drop down menu strip
+            if (!OSUtils.IsWindows && newParent != null)
+                AutoZoomMenuItem.Owner.Renderer = newParent.Renderer;
+        }
+
         #endregion
 
         #region Methods

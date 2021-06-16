@@ -22,7 +22,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class Resources {
+    internal class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Resources.ResourceManager ResourceManager {
+        internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("KGySoft.Drawing.ImagingTools.Properties.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Globalization.CultureInfo Culture {
+        internal static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon Animation {
+        internal static System.Drawing.Icon Animation {
             get {
                 object obj = ResourceManager.GetObject("Animation", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -73,7 +73,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon Check {
+        internal static System.Drawing.Icon Check {
             get {
                 object obj = ResourceManager.GetObject("Check", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -83,7 +83,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon Clear {
+        internal static System.Drawing.Icon Clear {
             get {
                 object obj = ResourceManager.GetObject("Clear", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -93,7 +93,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon Colors {
+        internal static System.Drawing.Icon Colors {
             get {
                 object obj = ResourceManager.GetObject("Colors", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -103,7 +103,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon Compare {
+        internal static System.Drawing.Icon Compare {
             get {
                 object obj = ResourceManager.GetObject("Compare", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -113,7 +113,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon Crop {
+        internal static System.Drawing.Icon Crop {
             get {
                 object obj = ResourceManager.GetObject("Crop", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -123,7 +123,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon Edit {
+        internal static System.Drawing.Icon Edit {
             get {
                 object obj = ResourceManager.GetObject("Edit", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -133,7 +133,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon HandGrab {
+        internal static System.Drawing.Icon HandGrab {
             get {
                 object obj = ResourceManager.GetObject("HandGrab", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -143,7 +143,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon HandOpen {
+        internal static System.Drawing.Icon HandOpen {
             get {
                 object obj = ResourceManager.GetObject("HandOpen", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -153,7 +153,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon HighlightVisibleClip {
+        internal static System.Drawing.Icon HighlightVisibleClip {
             get {
                 object obj = ResourceManager.GetObject("HighlightVisibleClip", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -163,7 +163,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon ImagingTools {
+        internal static System.Drawing.Icon ImagingTools {
             get {
                 object obj = ResourceManager.GetObject("ImagingTools", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -173,7 +173,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon Language {
+        internal static System.Drawing.Icon Language {
             get {
                 object obj = ResourceManager.GetObject("Language", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -183,7 +183,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon Magnifier {
+        internal static System.Drawing.Icon Magnifier {
             get {
                 object obj = ResourceManager.GetObject("Magnifier", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -193,7 +193,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon Magnifier1 {
+        internal static System.Drawing.Icon Magnifier1 {
             get {
                 object obj = ResourceManager.GetObject("Magnifier1", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -203,7 +203,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon MagnifierMinus {
+        internal static System.Drawing.Icon MagnifierMinus {
             get {
                 object obj = ResourceManager.GetObject("MagnifierMinus", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -213,7 +213,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon MagnifierPlus {
+        internal static System.Drawing.Icon MagnifierPlus {
             get {
                 object obj = ResourceManager.GetObject("MagnifierPlus", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -223,7 +223,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon MultiPage {
+        internal static System.Drawing.Icon MultiPage {
             get {
                 object obj = ResourceManager.GetObject("MultiPage", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -233,7 +233,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon MultiSize {
+        internal static System.Drawing.Icon MultiSize {
             get {
                 object obj = ResourceManager.GetObject("MultiSize", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -243,7 +243,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon Next {
+        internal static System.Drawing.Icon Next {
             get {
                 object obj = ResourceManager.GetObject("Next", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -253,7 +253,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon Open {
+        internal static System.Drawing.Icon Open {
             get {
                 object obj = ResourceManager.GetObject("Open", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -263,7 +263,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon Palette {
+        internal static System.Drawing.Icon Palette {
             get {
                 object obj = ResourceManager.GetObject("Palette", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -273,7 +273,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon Prev {
+        internal static System.Drawing.Icon Prev {
             get {
                 object obj = ResourceManager.GetObject("Prev", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -283,7 +283,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon Quantize {
+        internal static System.Drawing.Icon Quantize {
             get {
                 object obj = ResourceManager.GetObject("Quantize", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -293,7 +293,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon Resize {
+        internal static System.Drawing.Icon Resize {
             get {
                 object obj = ResourceManager.GetObject("Resize", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -303,7 +303,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon RotateLeft {
+        internal static System.Drawing.Icon RotateLeft {
             get {
                 object obj = ResourceManager.GetObject("RotateLeft", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -313,7 +313,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon RotateRight {
+        internal static System.Drawing.Icon RotateRight {
             get {
                 object obj = ResourceManager.GetObject("RotateRight", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -323,7 +323,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon Save {
+        internal static System.Drawing.Icon Save {
             get {
                 object obj = ResourceManager.GetObject("Save", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -333,7 +333,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon Settings {
+        internal static System.Drawing.Icon Settings {
             get {
                 object obj = ResourceManager.GetObject("Settings", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -343,7 +343,7 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon SmoothZoom {
+        internal static System.Drawing.Icon SmoothZoom {
             get {
                 object obj = ResourceManager.GetObject("SmoothZoom", resourceCulture);
                 return ((System.Drawing.Icon)(obj));

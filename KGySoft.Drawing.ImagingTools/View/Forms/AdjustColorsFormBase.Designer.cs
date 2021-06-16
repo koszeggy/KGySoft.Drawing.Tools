@@ -45,6 +45,7 @@
             // 
             // btnReset
             // 
+            this.btnReset.AutoSize = true;
             this.btnReset.Dock = System.Windows.Forms.DockStyle.Right;
             this.btnReset.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.btnReset.Location = new System.Drawing.Point(196, 25);

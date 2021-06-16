@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
@@ -38,7 +39,7 @@ namespace KGySoft.Drawing.ImagingTools
 
         private const string coreLibrariesBaseName = "KGySoft.CoreLibraries.Messages";
         private const string drawingLibrariesBaseName = "KGySoft.Drawing.Messages";
-        private const string drawingToolsBaseName = "KGySoft.Drawing.ImagingTools.Messages";
+        private const string imagingToolsBaseName = "KGySoft.Drawing.ImagingTools.Messages";
 
         #endregion
 
@@ -75,8 +76,8 @@ namespace KGySoft.Drawing.ImagingTools
                 if (!Directory.Exists(dir))
                     return result;
 
-                int startIndex = dir.Length + drawingToolsBaseName.Length + 2;
-                string[] files = Directory.GetFiles(dir, $"{drawingToolsBaseName}.*.resx", SearchOption.TopDirectoryOnly);
+                int startIndex = dir.Length + imagingToolsBaseName.Length + 2;
+                string[] files = Directory.GetFiles(dir, $"{imagingToolsBaseName}.*.resx", SearchOption.TopDirectoryOnly);
                 foreach (string file in files)
                 {
                     StringSegment resName = file.AsSegment(startIndex, file.Length - startIndex - 5);
@@ -85,7 +86,7 @@ namespace KGySoft.Drawing.ImagingTools
                 }
 
                 // checking the invariant resource as it should act as default language
-                if (!result.Contains(Res.DefaultLanguage) && File.Exists(Path.Combine(dir, $"{drawingToolsBaseName}.resx")))
+                if (!result.Contains(Res.DefaultLanguage) && File.Exists(Path.Combine(dir, $"{imagingToolsBaseName}.resx")))
                     result.Add(Res.DefaultLanguage);
                 return result;
             }
@@ -96,19 +97,21 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        internal static string GetBaseName(ResourceLibrary library) => library switch
+        internal static bool TryGetCulture(string name, [MaybeNullWhen(false)] out CultureInfo culture) => CulturesCache.TryGetValue(name, out culture);
+
+        internal static string GetBaseName(LocalizableLibraries library) => library switch
         {
-            ResourceLibrary.CoreLibraries => coreLibrariesBaseName,
-            ResourceLibrary.DrawingLibraries => drawingLibrariesBaseName,
-            ResourceLibrary.DrawingTools => drawingToolsBaseName,
+            LocalizableLibraries.CoreLibraries => coreLibrariesBaseName,
+            LocalizableLibraries.DrawingLibraries => drawingLibrariesBaseName,
+            LocalizableLibraries.ImagingTools => imagingToolsBaseName,
             _ => throw new ArgumentOutOfRangeException(nameof(library), PublicResources.EnumOutOfRange(library))
         };
 
-        internal static Assembly GetAssembly(ResourceLibrary library) => library switch
+        internal static Assembly GetAssembly(LocalizableLibraries library) => library switch
         {
-            ResourceLibrary.CoreLibraries => typeof(LanguageSettings).Assembly,
-            ResourceLibrary.DrawingLibraries => typeof(DrawingModule).Assembly,
-            ResourceLibrary.DrawingTools => typeof(Res).Assembly,
+            LocalizableLibraries.CoreLibraries => typeof(LanguageSettings).Assembly,
+            LocalizableLibraries.DrawingLibraries => typeof(DrawingModule).Assembly,
+            LocalizableLibraries.ImagingTools => typeof(Res).Assembly,
             _ => throw new ArgumentOutOfRangeException(nameof(library), PublicResources.EnumOutOfRange(library))
         };
 

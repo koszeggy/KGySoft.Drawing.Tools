@@ -16,9 +16,7 @@
 
 #region Usings
 
-using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.Model;
@@ -38,10 +36,19 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             // Note: Not setting Accept/CancelButton because they would be very annoying during the editing
             InitializeComponent();
-            if (SystemInformation.HighContrast)
-                gridResources.AlternatingRowsDefaultCellStyle = null;
-            cmbResourceFiles.ValueMember = nameof(KeyValuePair<ResourceLibrary, string>.Key);
-            cmbResourceFiles.DisplayMember = nameof(KeyValuePair<ResourceLibrary, string>.Value);
+            cmbResourceFiles.ValueMember = nameof(KeyValuePair<LocalizableLibraries, string>.Key);
+            cmbResourceFiles.DisplayMember = nameof(KeyValuePair<LocalizableLibraries, string>.Value);
+            ErrorProvider.SetIconAlignment(gbTranslatedText, ErrorIconAlignment.MiddleLeft);
+            WarningProvider.SetIconAlignment(gbTranslatedText, ErrorIconAlignment.MiddleLeft);
+            ValidationMapping[nameof(ResourceEntry.TranslatedText)] = gbTranslatedText;
+            
+            // For Linux/Mono adding an empty column in the middle so the error provider icon will not appear in a new row
+            if (!OSUtils.IsWindows)
+            {
+                pnlEditResourceEntry.ColumnCount = 3;
+                pnlEditResourceEntry.SetColumn(gbTranslatedText, 2);
+                pnlEditResourceEntry.ColumnStyles.Insert(1, new ColumnStyle(SizeType.AutoSize));
+            }
         }
 
         #endregion
@@ -69,17 +76,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected override void ApplyViewModel()
         {
-            InitCommandBindings();
             InitPropertyBindings();
+            InitCommandBindings();
             base.ApplyViewModel();
-        }
-
-        protected override void OnSystemColorsChanged(EventArgs e)
-        {
-            base.OnSystemColorsChanged(e);
-            gridResources.AlternatingRowsDefaultCellStyle = SystemInformation.HighContrast
-                ? null
-                : new DataGridViewCellStyle { BackColor = SystemColors.ControlLight, ForeColor = SystemColors.ControlText };
         }
 
         #endregion
@@ -97,14 +96,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // VM.SelectedLibrary <-> cmbResourceFiles.SelectedValue
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.SelectedLibrary), cmbResourceFiles, nameof(cmbResourceFiles.SelectedValue));
 
-            // VM.SelectedSet -> resourceEntryBindingSource.DataSource
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SelectedSet), nameof(resourceEntryBindingSource.DataSource), resourceEntryBindingSource);
+            // txtFilter.Text -> VM.Filter
+            CommandBindings.AddPropertyBinding(txtFilter, nameof(txtFilter.Text), nameof(ViewModel.Filter), ViewModel);
 
-            // resourceEntryBindingSource.OriginalText -> txtOriginalText.Text
-            txtOriginalText.DataBindings.Add(nameof(txtOriginalText.Text), resourceEntryBindingSource, nameof(ResourceEntry.OriginalText), false, DataSourceUpdateMode.Never);
+            // VM.FilteredSet -> bindingSource.DataSource
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.FilteredSet), nameof(bindingSource.DataSource), bindingSource);
 
-            // resourceEntryBindingSource.TranslatedText <-> txtTranslatedText.Text
-            txtTranslatedText.DataBindings.Add(nameof(txtTranslatedText.Text), resourceEntryBindingSource, nameof(ResourceEntry.TranslatedText), false, DataSourceUpdateMode.OnValidation);
+            // bindingSource.OriginalText -> txtOriginalText.Text
+            txtOriginalText.DataBindings.Add(nameof(txtOriginalText.Text), bindingSource, nameof(ResourceEntry.OriginalText), false, DataSourceUpdateMode.Never);
+
+            // bindingSource.TranslatedText <-> txtTranslatedText.Text
+            txtTranslatedText.DataBindings.Add(nameof(txtTranslatedText.Text), bindingSource, nameof(ResourceEntry.TranslatedText), false, DataSourceUpdateMode.OnValidation);
         }
 
         private void InitCommandBindings()
@@ -121,6 +123,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // CancelButton.Click -> ViewModel.CancelResourcesCommand
             CommandBindings.Add(ViewModel.CancelEditCommand)
                 .AddSource(okCancelApplyButtons.CancelButton, nameof(okCancelApplyButtons.CancelButton.Click));
+
+            // View commands
+            CommandBindings.Add(ValidationResultsChangedCommand)
+                .AddSource(bindingSource, nameof(bindingSource.CurrentItemChanged))
+                .WithParameter(() => (bindingSource.Current as ResourceEntry)?.ValidationResults);
         }
 
         #endregion

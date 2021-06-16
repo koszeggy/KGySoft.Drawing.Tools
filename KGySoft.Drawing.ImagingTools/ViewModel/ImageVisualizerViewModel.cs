@@ -23,6 +23,10 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+#if !NET35
+using System.Runtime.Versioning; 
+#endif
 using System.Text;
 
 using KGySoft.ComponentModel;
@@ -63,7 +67,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private int currentFrame = -1;
         private bool isOpenFilterUpToDate;
         private Size currentResolution;
-        private bool deferSettingCompoundStateImage;
+        private bool deferUpdateInfo;
         private string? notificationId;
 
         #endregion
@@ -151,6 +155,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommand AdjustBrightnessCommand => Get(() => new SimpleCommand(OnAdjustBrightnessCommand));
         internal ICommand AdjustContrastCommand => Get(() => new SimpleCommand(OnAdjustContrastCommand));
         internal ICommand AdjustGammaCommand => Get(() => new SimpleCommand(OnAdjustGammaCommand));
+        internal ICommand ShowAboutCommand => Get(() => new SimpleCommand(OnShowAboutCommand));
+        internal ICommand VisitWebSiteCommand => Get(() => new SimpleCommand(() => Process.Start("https://kgysoft.net")));
+        internal ICommand VisitGitHubCommand => Get(() => new SimpleCommand(() => Process.Start("https://github.com/koszeggy/KGySoft.Drawing.Tools")));
+        internal ICommand VisitMarketplaceCommand => Get(() => new SimpleCommand(() => Process.Start("https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers")));
+        internal ICommand SubmitResourcesCommand => Get(() => new SimpleCommand(() => Process.Start("https://github.com/koszeggy/KGySoft.Drawing.Tools/issues/new?assignees=&labels=&template=submit-resources.md&title=%5BRes%5D")));
 
         #endregion
 
@@ -234,8 +243,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal override void ViewLoaded()
         {
             InitAutoZoom(true);
-            if (deferSettingCompoundStateImage && SetCompoundViewCommandState.GetValueOrDefault<bool>(stateVisible))
-                SetCompoundViewCommandStateImage();
+            if (deferUpdateInfo)
+            {
+                if (SetCompoundViewCommandState.GetValueOrDefault<bool>(stateVisible))
+                    SetCompoundViewCommandStateImage();
+                UpdateIfMultiResImage();
+            }
+
             base.ViewLoaded();
         }
 
@@ -486,7 +500,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void SetCompoundViewCommandStateImage()
         {
             Func<ImageInfoType, Image>? callback = GetCompoundViewIconCallback;
-            deferSettingCompoundStateImage = callback == null;
+            deferUpdateInfo |= callback == null;
             if (callback != null)
                 SetCompoundViewCommandState[stateImage] = callback.Invoke(imageInfo.Type);
         }
@@ -714,7 +728,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (!imageInfo.IsMultiRes || currentFrame != -1)
                 return;
             Size origSize = currentResolution;
-            Size clientSize = GetImagePreviewSizeCallback?.Invoke() ?? default;
+            Func<Size>? callback = GetImagePreviewSizeCallback;
+            deferUpdateInfo |= callback == null;
+            if (callback == null)
+                return;
+            Size clientSize = callback.Invoke();
             int desiredSize = Math.Min(clientSize.Width, clientSize.Height);
             if (desiredSize < 1 && !origSize.IsEmpty)
                 return;
@@ -729,6 +747,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             currentResolution = desiredImage.Size;
             if (PreviewImage != desiredImage.Image)
                 PreviewImage = desiredImage.Image;
+        }
+
+        private void UpdateIfMultiResImage()
+        {
+            if (!imageInfo.IsMultiRes || currentFrame != -1)
+                return;
+            UpdateMultiResImage();
+            UpdateInfo();
         }
 
         private void SaveIcon(string fileName)
@@ -1056,13 +1082,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnSetSmoothZoomingCommand(bool newValue) => SmoothZooming = newValue;
 
-        private void OnViewImagePreviewSizeChangedCommand()
-        {
-            if (!imageInfo.IsMultiRes || currentFrame != -1)
-                return;
-            UpdateMultiResImage();
-            UpdateInfo();
-        }
+        private void OnViewImagePreviewSizeChangedCommand() => UpdateIfMultiResImage();
 
         private void OnOpenFileCommand() => OpenFile();
 
@@ -1160,7 +1180,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 for (int i = 0; i < newPalette.Length; i++)
                     palette.Entries[i] = newPalette[i];
 
-                currentImage.Image.Palette = palette; // the preview changes only if we apply the palette
+                // must be in a lock because it can be in use in the UI (where it is also locked)
+                lock (currentImage.Image)
+                    currentImage.Image.Palette = palette; // the preview changes only if we apply the palette
                 currentImage.Palette = palette.Entries; // the actual palette will be taken from here
                 InvalidateImage();
             }
@@ -1198,6 +1220,19 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             using IViewModel viewModel = ViewModelFactory.CreateLanguageSettings();
             ShowChildViewCallback?.Invoke(viewModel);
+        }
+
+        private void OnShowAboutCommand()
+        {
+            Assembly asm = GetType().Assembly;
+
+#if NET35
+            const string frameworkName = ".NET Framework 3.5"; 
+#else
+            var attr = (TargetFrameworkAttribute)Attribute.GetCustomAttribute(asm, typeof(TargetFrameworkAttribute));
+            string frameworkName = attr.FrameworkDisplayName ?? attr.FrameworkName;
+#endif
+            ShowInfo(Res.InfoMessageAbout(asm.GetName().Version, frameworkName, DateTime.Now.Year));
         }
 
         #endregion

@@ -198,8 +198,26 @@
   <data name="Text_BlueValueFormat" xml:space="preserve">
     <value>B: {0}</value>
   </data>
+  <data name="tbAlpha.ToolTipText" xml:space="preserve">
+    <value>Alpha color component (transparency)</value>
+  </data>
+  <data name="tbRed.ToolTipText" xml:space="preserve">
+    <value>Red color component</value>
+  </data>
+  <data name="tbGreen.ToolTipText" xml:space="preserve">
+    <value>Green color component</value>
+  </data>
+  <data name="tbBlue.ToolTipText" xml:space="preserve">
+    <value>Blue color component</value>
+  </data>
+  <data name="Text_UnsupportedCultureFormat" xml:space="preserve">
+    <value>Unsupported Language ({0})</value>
+  </data>
   <data name="Text_ColorCountFormat" xml:space="preserve">
     <value>Color Count: {0:N0}</value>
+  </data>
+  <data name="Text_Downloading" xml:space="preserve">
+    <value>Downloading...</value>
   </data>
   <data name="TooltipText_CompoundAnimation" xml:space="preserve">
     <value>Toggles whether the animation is handled as a single image.
@@ -323,6 +341,12 @@ Brightness: {5:F0}%</value>
   <data name="ErrorMessage_InstallationCannotBeRemoved" xml:space="preserve">
     <value>The current installation is being executed, which cannot be removed</value>
   </data>
+  <data name="ErrorMessage_ResourceFormatError" xml:space="preserve">
+    <value>Resource format string is invalid.</value>
+  </data>
+  <data name="ErrorMessage_ResourcePlaceholderUnusedIndices" xml:space="preserve">
+    <value>One or more placeholders are missing from the translated resource format string.</value>
+  </data>
   <data name="ErrorMessage_FailedToSaveImageFormat" xml:space="preserve">
     <value>Could not save image due to an error: {0}</value>
   </data>
@@ -387,6 +411,15 @@ Either select at least '{1}' or reduce the number of colors to {2}.</value>
   <data name="ErrorMessage_FailedToSaveResourceFormat" xml:space="preserve">
     <value>Failed to save resource file {0}: {1}</value>
   </data>
+  <data name="ErrorMessage_CouldNotAccessOnlineResourcesFormat" xml:space="preserve">
+    <value>Failed to access online resources: {0}</value>
+  </data>
+  <data name="ErrorMessage_FailedToDownloadResourceFormat" xml:space="preserve">
+    <value>Failed to download resource file {0}: {1}</value>
+  </data>
+  <data name="ErrorMessage_ResourcePlaceholderIndexInvalidFormat" xml:space="preserve">
+    <value>Index '{0}' is invalid in the translated resource format string.</value>
+  </data>
   <data name="WarningMessage_CouldNotCreateNetCoreDirectoryFormat" xml:space="preserve">
     <value>Could not create directory {0}: {1}
 
@@ -414,9 +447,17 @@ then colors will be quantized to the 32 bit ARGB color space during the conversi
 Either select at least {1} pixel format or use another quantizer that uses no more colors than '{0}' can represent;
 otherwise, the result might not be optimal even with dithering.</value>
   </data>
+  <data name="WarningMessage_DownloadCompletedWithUnsupportedCulturesFormat" xml:space="preserve">
+    <value>{0} file(s) have been downloaded.
+
+The culture of one or more downloaded localizations is not supported on this platform. Those languages will not appear among the selectable languages.</value>
+  </data>
   <data name="WarningMessage_DithererNoAlphaGradient" xml:space="preserve">
     <value>The selected quantizer supports partial transparency, which is not supported by ditherers,
 so partial transparent pixels will be blended with back color.</value>
+  </data>
+  <data name="WarningMessage_UnsupportedCulture" xml:space="preserve">
+    <value>This language is not supported on this platform or by the executing framework.</value>
   </data>
   <data name="ConfirmMessage_OverwriteInstallation" xml:space="preserve">
     <value>Are you sure you want to overwrite this installation?</value>
@@ -431,6 +472,12 @@ Are you sure you want to save the file with the provided extension?</value>
 
 Do you want to try to regenerate it? The current file will be deleted.</value>
   </data>
+  <data name="ConfirmMessage_MessageOverwriteResourcesFormat" xml:space="preserve">
+    <value>The following files already exist:
+{0}
+
+Do you want to overwrite them?</value>
+  </data>
   <data name="ConfirmMessage_RemoveInstallation" xml:space="preserve">
     <value>Are you sure you want to remove this installation?</value>
   </data>
@@ -439,6 +486,10 @@ Do you want to try to regenerate it? The current file will be deleted.</value>
   </data>
   <data name="ConfirmMessage_DiscardChanges" xml:space="preserve">
     <value>There are unsaved modifications. Are sure to discard the changes?</value>
+  </data>
+  <data name="ConfirmMessage_ResourceVersionMismatch" xml:space="preserve">
+    <value>One or more selected items are for a different Imaging Tools version.
+Are you sure you want to continue?</value>
   </data>
   <data name="InfoMessage_PaletteEmpty" xml:space="preserve">
     <value>The palette contains no colors. Click OK to exit.</value>
@@ -456,6 +507,9 @@ It is possible that is has no effect.</value>
   <data name="InfoMessage_AlphaTurnsBlack" xml:space="preserve">
     <value>Without selecting a quantizer possible alpha pixels of the source image are blended with black.
 By selecting a quantizer you can specify a different back color.</value>
+  </data>
+  <data name="InfoMessage_ResourceVersionMismatch" xml:space="preserve">
+    <value>This item is for a different Imaging Tools version.</value>
   </data>
   <data name="InfoMessage_QuantizerAutoSelectedFormat" xml:space="preserve">
     <value>A quantizer has been auto selected for pixel format '{0}' using default settings.
@@ -478,6 +532,19 @@ Dithering may help to preserve more details.</value>
   <data name="InfoMessage_PixelFormatCanBeDitheredFormat" xml:space="preserve">
     <value>The selected pixel format represents a narrower set of colors than the original '{0}'.
 Dithering may help to preserve more details.</value>
+  </data>
+  <data name="InfoMessage_DownloadCompletedFormat" xml:space="preserve">
+    <value>{0} file(s) have been downloaded.</value>
+  </data>
+  <data name="InfoMessage_About" xml:space="preserve">
+    <value>About KGy SOFT Imaging Tools
+
+Version: v{0}
+Author: György Kőszeg
+Target Platform: {1}
+
+You are now using the compiled English resources.
+Copyright © {2} KGy SOFT. All rights reserved.</value>
   </data>
   <data name="Installations_NotAvailable" xml:space="preserve">
     <value>N/A (KGySoft.Drawing.DebuggerVisualizers.dll is missing)</value>
@@ -597,7 +664,7 @@ Dithering may help to preserve more details.</value>
     <value>Open Image</value>
   </data>
   <data name="dlgSave.Title" xml:space="preserve">
-    <value>Save Image As...</value>
+    <value>Save Image As</value>
   </data>
   <data name="miBackColorDefault.Text" xml:space="preserve">
     <value>Default</value>
@@ -783,11 +850,21 @@ Newly generated resources will contain English texts prefixed with "[T]". You ca
   <data name="btnEditResources.Text" xml:space="preserve">
     <value>&amp;Edit Resources...</value>
   </data>
+  <data name="btnDownloadResources.Text" xml:space="preserve">
+    <value>&amp;Download Resources...</value>
+  </data>
   <data name="gbResourceFile.Text" xml:space="preserve">
     <value>Resource File</value>
   </data>
   <data name="gbResourceEntries.Text" xml:space="preserve">
     <value>Resource Entries</value>
+  </data>
+  <data name="lblFilter.Text" xml:space="preserve">
+    <value>Filter:</value>
+  </data>
+  <data name="txtFilter.ToolTipText" xml:space="preserve">
+    <value>Filtering ignores case, accents and character width.
+Tip: use '[T]' to filter untranslated texts.</value>
   </data>
   <data name="colResourceKey.HeaderText" xml:space="preserve">
     <value>Resource Key</value>
@@ -803,5 +880,44 @@ Newly generated resources will contain English texts prefixed with "[T]". You ca
   </data>
   <data name="gbTranslatedText.Text" xml:space="preserve">
     <value>Translated Text</value>
+  </data>
+  <data name="DownloadResourcesForm.Text" xml:space="preserve">
+    <value>Downloading Resources</value>
+  </data>
+  <data name="colSelected.HeaderText" xml:space="preserve">
+    <value>Selected</value>
+  </data>
+  <data name="colLanguage.HeaderText" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="colAuthor.HeaderText" xml:space="preserve">
+    <value>Author</value>
+  </data>
+  <data name="colImagingToolsVersion.HeaderText" xml:space="preserve">
+    <value>Imaging Tools Version</value>
+  </data>
+  <data name="colDescription.HeaderText" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="btnDownload.Text" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="btnAbout.Text" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="miWebSite.Text" xml:space="preserve">
+    <value>Visit Web Site...</value>
+  </data>
+  <data name="miGitHub.Text" xml:space="preserve">
+    <value>Visit GitHub Project Site...</value>
+  </data>
+  <data name="miMarketplace.Text" xml:space="preserve">
+    <value>Visit VisualStudio Marketplace...</value>
+  </data>
+  <data name="miSubmitResources.Text" xml:space="preserve">
+    <value>Submit Language Resource Files...</value>
+  </data>
+  <data name="miAbout.Text" xml:space="preserve">
+    <value>About...</value>
   </data>
 </root>

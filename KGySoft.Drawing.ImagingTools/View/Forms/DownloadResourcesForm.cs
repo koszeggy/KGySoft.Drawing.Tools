@@ -1,9 +1,9 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: TransformBitmapFormBase.cs
+//  File: DownloadResourcesForm.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2020 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2021 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution. If not, then this file is considered as
@@ -24,28 +24,26 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
-    internal partial class TransformBitmapFormBase : MvvmBaseForm<TransformBitmapViewModelBase>
+    internal partial class DownloadResourcesForm : MvvmBaseForm<DownloadResourcesViewModel>
     {
         #region Constructors
 
-        #region Protected Constructors
+        #region Internal Constructors
 
-        protected TransformBitmapFormBase(TransformBitmapViewModelBase viewModel)
-            : base(viewModel)
+        internal DownloadResourcesForm(DownloadResourcesViewModel viewModel) : base(viewModel)
         {
             InitializeComponent();
+            okCancelButtons.OKButton.Name = okCancelButtons.OKButton.Text = @"btnDownload";
+            okCancelButtons.OKButton.DialogResult = DialogResult.None;
             AcceptButton = okCancelButtons.OKButton;
             CancelButton = okCancelButtons.CancelButton;
-
-            ErrorProvider.SetIconAlignment(previewImage.ImageViewer, ErrorIconAlignment.MiddleLeft);
-            ValidationMapping[nameof(viewModel.PreviewImageViewModel.PreviewImage)] = previewImage.ImageViewer;
         }
 
         #endregion
 
         #region Private Constructors
 
-        private TransformBitmapFormBase() : this(null!)
+        private DownloadResourcesForm() : this(null!)
         {
             // this ctor is just for the designer
         }
@@ -58,6 +56,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Protected Methods
 
+        protected override void ApplyResources()
+        {
+            Icon = Properties.Resources.Language;
+            base.ApplyResources();
+        }
+
         protected override void ApplyViewModel()
         {
             InitCommandBindings();
@@ -65,23 +69,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             base.ApplyViewModel();
         }
 
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        {
-            switch (keyData)
-            {
-                case Keys.Alt | Keys.S:
-                    previewImage.SmoothZooming = !previewImage.SmoothZooming;
-                    return true;
-                default:
-                    return base.ProcessCmdKey(ref msg, keyData);
-            }
-        }
-
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            // if user (or system) closes the window without pressing cancel we need to execute the cancel command
-            if (DialogResult != DialogResult.OK && e.CloseReason != CloseReason.None)
-                okCancelButtons.CancelButton.PerformClick();
+            ViewModel.CancelIfRunning();
             base.OnFormClosing(e);
         }
 
@@ -89,6 +79,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             if (disposing)
                 components?.Dispose();
+
             base.Dispose(disposing);
         }
 
@@ -98,28 +89,34 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void InitCommandBindings()
         {
-            // ViewModel commands
-            CommandBindings.Add(ViewModel.ApplyCommand, ViewModel.ApplyCommandState)
+            CommandBindings.Add(ViewModel.DownloadCommand, ViewModel.DownloadCommandState)
                 .AddSource(okCancelButtons.OKButton, nameof(okCancelButtons.OKButton.Click));
             CommandBindings.Add(ViewModel.CancelCommand)
                 .AddSource(okCancelButtons.CancelButton, nameof(okCancelButtons.CancelButton.Click));
-
-            // View commands
-            CommandBindings.Add(ValidationResultsChangedCommand)
-                .AddSource(ViewModel, nameof(ViewModel.ValidationResultsChanged))
-                .WithParameter(() => ViewModel.ValidationResults);
+            CommandBindings.Add(OnDirtyStateChangedCommand)
+                .AddSource(gridDownloadableResources, nameof(gridDownloadableResources.CurrentCellDirtyStateChanged));
         }
 
         private void InitPropertyBindings()
         {
-            // simple initializations rather than bindings because these will not change:
-            previewImage.ViewModel = ViewModel.PreviewImageViewModel;
-
-            // VM.IsGenerating -> progress.ProgressVisible
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsGenerating), nameof(progress.ProgressVisible), progress);
+            // VM.IsProcessing -> progress.ProgressVisible
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsProcessing), nameof(progress.ProgressVisible), progress);
 
             // VM.Progress -> progress.Progress
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Progress), nameof(progress.Progress), progress);
+
+            // VM.Items -> bindingSource.DataSource
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Items), nameof(bindingSource.DataSource), bindingSource);
+        }
+
+        #endregion
+
+        #region Command Handlers
+
+        private void OnDirtyStateChangedCommand()
+        {
+            if (gridDownloadableResources.CurrentCell is DataGridViewCheckBoxCell { EditingCellValueChanged: true })
+                gridDownloadableResources.CommitEdit(DataGridViewDataErrorContexts.Commit);
         }
 
         #endregion

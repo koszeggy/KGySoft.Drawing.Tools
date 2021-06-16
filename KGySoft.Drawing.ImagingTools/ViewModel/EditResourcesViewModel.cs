@@ -52,7 +52,17 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
     {
         #region Constants
 
+        #region Internal Constants
+        
         internal const string StateSaveExecutedWithError = nameof(StateSaveExecutedWithError);
+
+        #endregion
+
+        #region Private Constants
+
+        private const CompareOptions cultureSpecificCompareOptions = CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace | CompareOptions.IgnoreKanaType | CompareOptions.IgnoreWidth;
+
+        #endregion
 
         #endregion
 
@@ -60,16 +70,17 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private readonly CultureInfo culture;
         private readonly bool useInvariant;
-        private readonly Dictionary<ResourceLibrary, (IList<ResourceEntry> ResourceSet, bool IsModified)> resources;
+        private readonly Dictionary<LocalizableLibraries, (IList<ResourceEntry> ResourceSet, bool IsModified)> resources;
 
         #endregion
 
         #region Properties
 
-        internal KeyValuePair<ResourceLibrary, string>[] ResourceFiles { get; } // get only because never changes
+        internal KeyValuePair<LocalizableLibraries, string>[] ResourceFiles { get; } // get only because never changes
         internal string TitleCaption { get => Get<string>(); set => Set(value); }
-        internal ResourceLibrary SelectedLibrary { get => Get<ResourceLibrary>(); set => Set(value); }
-        internal IList<ResourceEntry> SelectedSet { get => Get<IList<ResourceEntry>>(); set => Set(value); }
+        internal LocalizableLibraries SelectedLibrary { get => Get<LocalizableLibraries>(); set => Set(value); }
+        internal string Filter { get => Get<string>(""); set => Set(value); }
+        internal IList<ResourceEntry>? FilteredSet { get => Get<IList<ResourceEntry>?>(); set => Set(value); }
 
         internal ICommand ApplyResourcesCommand => Get(() => new SimpleCommand(OnApplyResourcesCommand));
         internal ICommand SaveResourcesCommand => Get(() => new SimpleCommand(OnSaveResourcesCommand));
@@ -87,12 +98,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             // The default language is used as the invariant resource set.
             // The invariant file name is preferred, unless only the language-specific file exists.
-            useInvariant = Equals(culture, Res.DefaultLanguage) && !File.Exists(ToFileNameWithPath(ResourceLibrary.DrawingTools));
-            resources = new Dictionary<ResourceLibrary, (IList<ResourceEntry>, bool)>(3, EnumComparer<ResourceLibrary>.Comparer);
-            ResourceFiles = Enum<ResourceLibrary>.GetValues().Select(lib => new KeyValuePair<ResourceLibrary, string>(lib, ToFileName(lib))).ToArray();
+            useInvariant = Equals(culture, Res.DefaultLanguage) && !File.Exists(ToFileNameWithPath(LocalizableLibraries.ImagingTools));
+            resources = new Dictionary<LocalizableLibraries, (IList<ResourceEntry>, bool)>(3, EnumComparer<LocalizableLibraries>.Comparer);
+            Set(String.Empty, false, nameof(Filter));
+            ResourceFiles = Enum<LocalizableLibraries>.GetFlags().Select(lib => new KeyValuePair<LocalizableLibraries, string>(lib, ToFileName(lib))).ToArray();
             ApplyResourcesCommandState.Enabled = !Equals(LanguageSettings.DisplayLanguage, culture);
             UpdateTitle();
-            SelectedLibrary = ResourceLibrary.DrawingTools;
+            SelectedLibrary = LocalizableLibraries.ImagingTools;
         }
 
         #endregion
@@ -109,7 +121,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             switch (e.PropertyName)
             {
                 case nameof(SelectedLibrary):
-                    UpdateSelectedResources((ResourceLibrary)e.NewValue!);
+                case nameof(Filter):
+                    ApplySelection();
                     break;
             }
         }
@@ -124,7 +137,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             if (IsDisposed)
                 return;
-            resources.Values.ForEach(v => (v.ResourceSet as IDisposable)?.Dispose());
+
+            if (disposing)
+            {
+                resources.Values.ForEach(v => (v.ResourceSet as IDisposable)?.Dispose());
+                (FilteredSet as IDisposable)?.Dispose();
+            }
+
             base.Dispose(disposing);
         }
 
@@ -134,17 +153,19 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void UpdateTitle() => TitleCaption = Res.TitleEditResources($"{culture.EnglishName} ({culture.NativeName})");
 
-        private string ToFileName(ResourceLibrary library) => useInvariant
+        private string ToFileName(LocalizableLibraries library) => useInvariant
             ? ResHelper.GetBaseName(library) + ".resx"
             : $"{ResHelper.GetBaseName(library)}.{culture.Name}.resx";
 
-        private string ToFileNameWithPath(ResourceLibrary library) => Path.Combine(Res.ResourcesDir, ToFileName(library));
+        private string ToFileNameWithPath(LocalizableLibraries library) => Path.Combine(Res.ResourcesDir, ToFileName(library));
 
-        private void UpdateSelectedResources(ResourceLibrary library)
+        private void ApplySelection()
         {
+            LocalizableLibraries library = SelectedLibrary;
+
             if (resources.TryGetValue(library, out var value))
             {
-                SelectedSet = value.ResourceSet;
+                ApplyFilter(value.ResourceSet);
                 return;
             }
 
@@ -152,7 +173,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             {
                 if (!Confirm(Res.ConfirmMessageTryRegenerateResource(ToFileName(library), error.Message)))
                 {
-                    SelectedSet = Reflector.EmptyArray<ResourceEntry>();
+                    ApplyFilter(Reflector.EmptyArray<ResourceEntry>());
                     return;
                 }
 
@@ -163,23 +184,64 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 catch (Exception e) when (!e.IsCritical())
                 {
                     ShowError(Res.ErrorMessageFailedToRegenerateResource(ToFileName(library), error.Message));
-                    SelectedSet = Reflector.EmptyArray<ResourceEntry>();
+                    ApplyFilter(Reflector.EmptyArray<ResourceEntry>());
                     return;
                 }
 
                 if (!TryReadResources(library, out set, out error))
                 {
                     ShowError(Res.ErrorMessageFailedToRegenerateResource(ToFileName(library), error.Message));
-                    SelectedSet = Reflector.EmptyArray<ResourceEntry>();
+                    ApplyFilter(Reflector.EmptyArray<ResourceEntry>());
                     return;
                 }
             }
 
             resources[library] = (set, false);
-            SelectedSet = set;
+            ApplyFilter(set);
         }
 
-        private bool TryReadResources(ResourceLibrary library, [MaybeNullWhen(false)]out IList<ResourceEntry> set, [MaybeNullWhen(true)]out Exception error)
+        private void ApplyFilter(IList<ResourceEntry> set)
+        {
+            if (FilteredSet is SortableBindingList<ResourceEntry> oldSet)
+                oldSet.ListChanged -= FilteredSet_ListChanged;
+
+            if (set.Count == 0)
+            {
+                FilteredSet = set;
+                return;
+            }
+
+            Debug.Assert(set is SortableBindingList<ResourceEntry>, "Non-empty set is expected to be a SortableBindingList");
+            string filter = Filter;
+            SortableBindingList<ResourceEntry> newSet;
+            if (filter.Length == 0)
+                newSet = (SortableBindingList<ResourceEntry>)set;
+            else
+            {
+                newSet = new SortableBindingList<ResourceEntry>(new List<ResourceEntry>());
+                CompareInfo cultureSpecificInfo = culture.CompareInfo;
+                CompareInfo invariantInfo = CultureInfo.InvariantCulture.CompareInfo;
+                foreach (ResourceEntry entry in set)
+                {
+                    // Using ordinal search for key, invariant for original text (to allow ignoring char width, for example),
+                    // and both ordinal and culture-specific search for the translated text because culture specific fails to match some patterns,
+                    // eg.: "Vissza" is not found with the search term "viss" using the Hungarian culture.
+                    if (entry.Key.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0
+                        || invariantInfo.IndexOf(entry.OriginalText, filter, cultureSpecificCompareOptions) >= 0
+                        || entry.TranslatedText.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0
+                        || cultureSpecificInfo.IndexOf(entry.TranslatedText, filter, cultureSpecificCompareOptions) >= 0)
+                    {
+                        newSet.Add(entry);
+                    }
+                }
+            }
+
+            newSet.ListChanged += FilteredSet_ListChanged;
+            ApplySort(newSet);
+            FilteredSet = newSet;
+        }
+
+        private bool TryReadResources(LocalizableLibraries library, [MaybeNullWhen(false)]out IList<ResourceEntry> set, [MaybeNullWhen(true)]out Exception error)
         {
             try
             {
@@ -199,23 +261,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 // Note: this way we add even possibly missing entries that were added to compiled resources since last creation while removed entries will be skipped
                 var result = new SortableBindingList<ResourceEntry>();
                 foreach (DictionaryEntry entry in compiled)
-                    result.Add(new ResourceEntry((string)entry.Key, 
-                        (string)entry.Value, 
+                    result.Add(new ResourceEntry((string)entry.Key,
+                        (string)entry.Value,
                         resourceManger.GetString((string)entry.Key, culture) ?? LanguageSettings.UntranslatedResourcePrefix + (string)entry.Value));
 
-                result.ListChanged += (_, args) =>
-                {
-                    if (args.ListChangedType != ListChangedType.ItemChanged)
-                        return;
-
-                    ApplyResourcesCommandState.Enabled = true;
-                    if (!resources.TryGetValue(library, out var value) || value.IsModified)
-                        return;
-
-                    resources[library] = (value.ResourceSet, true);
-                    SetModified(true);
-                };
-                result.ApplySort(nameof(ResourceEntry.Key), ListSortDirection.Ascending);
                 error = null;
                 set = result;
                 return true;
@@ -228,7 +277,19 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
         }
 
-        private bool TrySaveResources(ResourceLibrary library, IList<ResourceEntry> set, [MaybeNullWhen(true)]out Exception error)
+        private void ApplySort(SortableBindingList<ResourceEntry> set)
+        {
+            var hint = FilteredSet as IBindingList;
+            ListSortDirection direction = hint?.IsSorted == true ? hint.SortDirection : ListSortDirection.Ascending;
+            PropertyDescriptor? sortProperty = hint?.SortProperty;
+
+            if (sortProperty != null)
+                set.ApplySort(sortProperty, direction);
+            else
+                set.ApplySort(nameof(ResourceEntry.Key), direction);
+        }
+
+        private bool TrySaveResources(LocalizableLibraries library, IList<ResourceEntry> set, [MaybeNullWhen(true)]out Exception error)
         {
             // Note: We do not use a DynamicResourceManager for saving. This works because we let the actual DRMs drop their content after saving.
             try
@@ -237,7 +298,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 foreach (ResourceEntry res in set)
                     resx.SetObject(res.Key, res.TranslatedText);
 
-                resx.Save(ToFileNameWithPath(library));
+                string fileName = ToFileNameWithPath(library);
+                string dirName = Path.GetDirectoryName(fileName)!;
+                if (!Directory.Exists(dirName))
+                    Directory.CreateDirectory(dirName);
+                resx.Save(fileName);
                 error = null;
                 return true;
             }
@@ -273,6 +338,24 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 LanguageSettings.DisplayLanguage = culture;
             SetModified(false);
         }
+
+        #endregion
+
+        #region Event Handlers
+
+        private void FilteredSet_ListChanged(object sender, ListChangedEventArgs e)
+        {
+            if (e.ListChangedType != ListChangedType.ItemChanged)
+                return;
+
+            ApplyResourcesCommandState.Enabled = true;
+            LocalizableLibraries library = SelectedLibrary;
+            if (resources.TryGetValue(library, out var value) && !value.IsModified)
+                resources[library] = (value.ResourceSet, true);
+
+            SetModified(true);
+        }
+
 
         #endregion
 

@@ -21,6 +21,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
+using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.View.Components;
 using KGySoft.Drawing.ImagingTools.WinApi;
 using KGySoft.Reflection;
@@ -53,7 +54,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             #region Static Methods
 
-            private static void ClearButtonBackground(Graphics g, Rectangle rect, Color color)
+            private static void ClearImageBackground(Graphics g, Rectangle rect, Color color)
             {
                 GraphicsState state = g.Save();
                 rect.Inflate(1, 1);
@@ -138,7 +139,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
             {
                 if (e.Item is ToolStripButton { Checked: true, Enabled: true } btn)
-                    ClearButtonBackground(e.Graphics, btn.ContentRectangle, ProfessionalColors.ButtonSelectedGradientMiddle);
+                    ClearImageBackground(e.Graphics, btn.ContentRectangle, ColorTable.ButtonSelectedGradientMiddle);
 
                 base.OnRenderButtonBackground(e);
             }
@@ -160,22 +161,43 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 {
                     rect.Inflate(-1, -1);
                     if (btn.ButtonPressed)
-                        ClearButtonBackground(e.Graphics, rect, ProfessionalColors.ButtonPressedHighlight);
+                        ClearImageBackground(e.Graphics, rect, ColorTable.ButtonPressedHighlight);
                     else if (btn.Selected)
-                        ClearButtonBackground(e.Graphics, rect, btn.Checked ? ProfessionalColors.ButtonPressedHighlight : ProfessionalColors.ButtonSelectedGradientMiddle);
+                        ClearImageBackground(e.Graphics, rect, btn.Checked ? ColorTable.ButtonPressedHighlight : ColorTable.ButtonSelectedGradientMiddle);
                     else if (btn.Checked)
-                        ClearButtonBackground(e.Graphics, rect, ProfessionalColors.ButtonSelectedGradientMiddle);
+                        ClearImageBackground(e.Graphics, rect, ColorTable.ButtonSelectedGradientMiddle);
                     rect.Inflate(1, 1);
                 }
 
                 // drawing border (maybe again, because it can be overridden by background)
                 if (btn.Checked || !btn.DropDownButtonPressed && (btn.ButtonPressed || btn.ButtonSelected))
                 {
-                    using (Pen pen = new Pen(ProfessionalColors.ButtonSelectedBorder))
+                    using (Pen pen = new Pen(ColorTable.ButtonSelectedBorder))
                         e.Graphics.DrawRectangle(pen, rect.X, rect.Y, rect.Width, rect.Height - 1);
                 }
             }
 
+            protected override void OnRenderItemImage(ToolStripItemImageRenderEventArgs e)
+            {
+                // Fixing image scaling in menu items on Linux/Mono
+                if (!OSUtils.IsWindows && e.Item is ToolStripMenuItem mi)
+                {
+                    Rectangle rect = e.ImageRectangle;
+                    rect.Size = e.Item.Owner.ScaleSize(referenceSize);
+                    e = new ToolStripItemImageRenderEventArgs(e.Graphics, e.Item, e.Image, rect);
+
+                    // Windows paints this in base but Linux/Mono does not
+                    if (mi.Checked)
+                    {
+                        ClearImageBackground(e.Graphics, rect, mi.Selected ? ColorTable.ButtonPressedHighlight : ColorTable.ButtonSelectedGradientMiddle);
+                        using (Pen pen = new Pen(ColorTable.ButtonSelectedBorder))
+                            e.Graphics.DrawRectangle(pen, rect.X - 1, rect.Y - 1, rect.Width + 1, rect.Height + 1);
+                    }
+                }
+
+                base.OnRenderItemImage(e);
+            }
+            
             #endregion
 
             #endregion
@@ -208,7 +230,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         {
             ImageScalingSize = Size.Round(this.ScaleSize(referenceSize));
             Renderer = new ScalingToolStripMenuRenderer();
-
             toolTip = Reflector.TryGetProperty(this, nameof(ToolTip), out object? result) ? (ToolTip)result!
                 : Reflector.TryGetField(this, "tooltip_window", out result) ? (ToolTip)result!
                 : null;
@@ -249,6 +270,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 splitBtn.DropDownButtonWidth = this.ScaleWidth(11);
 
             base.OnItemAdded(e);
+        }
+
+        protected override void OnSizeChanged(EventArgs e)
+        {
+            base.OnSizeChanged(e);
+
+            // Preventing double scaling in Linux/Mono
+            if (!OSUtils.IsWindows && Dock.In(DockStyle.Top, DockStyle.Bottom))
+                Height = this.ScaleHeight(25);
         }
 
         protected override void OnDockChanged(EventArgs e)
