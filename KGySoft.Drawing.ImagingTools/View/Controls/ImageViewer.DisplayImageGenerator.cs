@@ -429,14 +429,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         // As we are already on a pool thread the End... call does not block the UI. It's still not the same as CopyTo() due to cancellation support.
                         asyncResult.EndCopyTo();
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         // Despite all of the preconditions the memory could not be allocated or some other error occurred (yes, we catch even OutOfMemoryException here)
                         // NOTE: practically we always can recover from here: we simply don't use a generated clone and the worker thread can be finished
                         task.IsCanceled = true;
                         enabled = false;
-                        if (e.IsCriticalGdi())
-                            throw;
                     }
                     finally
                     {
@@ -524,21 +522,26 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                             using IReadWriteBitmapData dst = result.GetReadWriteBitmapData();
 
                             // not using Task and await we want to be compatible with .NET 3.5
-                            IAsyncResult asyncResult = src.BeginDrawInto(dst, new Rectangle(Point.Empty, doubled.Size), new Rectangle(Point.Empty, result.Size),
-                                asyncConfig: new AsyncConfig { IsCancelRequestedCallback = () => task.IsCanceled, ThrowIfCanceled = false });
+                            IAsyncResult asyncResult = src.BeginDrawInto(dst, 
+                                new Rectangle(Point.Empty, doubled.Size),
+                                new Rectangle(Point.Empty, task.Size),
+                                asyncConfig: new AsyncConfig
+                                {
+                                    IsCancelRequestedCallback = () => task.IsCanceled,
+                                    ThrowIfCanceled = false,
+                                    MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount - 2)
+                                });
 
                             // As we are already on a pool thread this is not a UI blocking call
                             asyncResult.EndDrawInto();
                         }
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         // Despite all of the preconditions the memory could not be allocated or some other error occurred (yes, we catch even OutOfMemoryException here)
                         // NOTE: practically we always can recover from here: we simply don't use a generated preview and the worker thread can be finished
                         task.IsCanceled = true;
                         enabled = false;
-                        if (e.IsCriticalGdi())
-                            throw;
                     }
                     finally
                     {
@@ -564,32 +567,28 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         {
                             using IReadableBitmapData src = ((Bitmap)task.SourceImage).GetReadableBitmapData();
                             using IReadWriteBitmapData dst = result.GetReadWriteBitmapData();
-                            var cfg = new AsyncConfig { IsCancelRequestedCallback = () => task.IsCanceled, ThrowIfCanceled = false, MaxDegreeOfParallelism = Environment.ProcessorCount >> 1 };
 
                             // not using Task and await we want to be compatible with .NET 3.5
+                            IAsyncResult asyncResult = src.BeginDrawInto(dst,
+                                new Rectangle(Point.Empty, task.SourceImage!.Size),
+                                new Rectangle(Point.Empty, task.Size), 
+                                asyncConfig: new AsyncConfig
+                                {
+                                    IsCancelRequestedCallback = () => task.IsCanceled,
+                                    ThrowIfCanceled = false,
+                                    MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount - 2)
+                                });
+
                             // As we are already on a pool thread the End... call does not block the UI.
-                            var srcRect = new Rectangle(Point.Empty, task.SourceImage!.Size);
-                            var dstRect = new Rectangle(Point.Empty, task.Size);
-                            if (srcRect == dstRect)
-                            {
-                                IAsyncResult asyncResult = src.BeginCopyTo(dst, srcRect, Point.Empty, asyncConfig: cfg);
-                                asyncResult.EndCopyTo();
-                            }
-                            else
-                            {
-                                IAsyncResult asyncResult = src.BeginDrawInto(dst, srcRect, dstRect, asyncConfig: cfg);
-                                asyncResult.EndDrawInto();
-                            } 
+                            asyncResult.EndDrawInto();
                         }
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         // Despite all of the preconditions the memory could not be allocated or some other error occurred (yes, we catch even OutOfMemoryException here)
                         // NOTE: practically we always can recover from here: we simply don't use a generated preview and the worker thread can be finished
                         task.IsCanceled = true;
                         enabled = false;
-                        if (e.IsCriticalGdi())
-                            throw;
                     }
                     finally
                     {
