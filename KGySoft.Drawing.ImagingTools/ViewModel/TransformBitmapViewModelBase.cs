@@ -286,7 +286,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     {
                         task.Initialize(originalImage, PreviewImageViewModel.PreviewImage == originalImage);
                     }
-                    catch (Exception e) when (!e.IsCriticalGdi())
+                    catch (Exception e)
                     {
                         task.SetCompleted();
                         TryInvokeSync(() =>
@@ -315,7 +315,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                         // Waiting to be finished or canceled. As we are on a different thread blocking wait is alright
                         result = task.EndGenerate(asyncResult);
                     }
-                    catch (Exception e) when (!e.IsCriticalGdi())
+                    catch (Exception e)
                     {
                         error = e;
                     }

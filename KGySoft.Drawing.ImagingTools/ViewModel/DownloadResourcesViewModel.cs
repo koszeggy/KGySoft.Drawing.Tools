@@ -206,7 +206,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     IsProcessing = false;
                 });
             }
-            catch (Exception e) when (!e.IsCritical())
+            catch (Exception e)
             {
                 TryInvokeSync(() =>
                 {
@@ -277,7 +277,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     CloseViewCallback?.Invoke();
                 });
             }
-            catch (Exception e) when (!e.IsCritical())
+            catch (Exception e)
             {
                 // not clearing the downloadedCultures because those files are removed
                 TryInvokeSync(() =>

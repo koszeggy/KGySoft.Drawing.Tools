@@ -155,7 +155,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                         // Waiting to be finished or canceled. As we are on a different thread blocking wait is alright
                         colorCount = asyncResult.EndGetColorCount();
                     }
-                    catch (Exception e) when (!e.IsCriticalGdi())
+                    catch (Exception e)
                     {
                         error = e;
                     }
