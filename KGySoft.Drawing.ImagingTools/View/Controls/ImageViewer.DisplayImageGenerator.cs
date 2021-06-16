@@ -26,8 +26,13 @@ using System.Threading;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
-using KGySoft.Drawing.ImagingTools.View.Components;
 using KGySoft.Reflection;
+
+#endregion
+
+#region Suppressions
+
+#pragma warning disable CS1690 // Accessing a member on a field of a marshal-by-reference class may cause a runtime exception - false alarm, ImageViewer is never a remote object.
 
 #endregion
 
@@ -55,16 +60,19 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             #endregion
 
-            // TODO
-            //private sealed class GenerateTask : AsyncTaskBase
-            //{
-            //    //#region Fields
+            #region GenerateResizedImageTask class
 
-            //    //internal Image? SourceImage;
-            //    //internal Size Size;
+            private sealed class GenerateResizedImageTask : AsyncTaskBase
+            {
+                #region Fields
 
-            //    //#endregion
-            //}
+                internal Image SourceImage = default!;
+                internal Size Size;
+
+                #endregion
+            }
+
+            #endregion
 
             #endregion
 
@@ -98,7 +106,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             #region Instance Fields
 
             private readonly ImageViewer owner;
-            private readonly object syncRootGenerate = new object();
 
             private volatile bool disposed;
 
@@ -107,29 +114,47 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             /// </summary>
             private bool enabled;
 
-            private AsyncTaskBase? generateDefaultImageTask;
-            private AsyncTaskBase? generateDisplayImageTask;
+            private GenerateDefaultImageTask? generateDefaultImageTask;
+            private GenerateResizedImageTask? generateResizedImageTask;
 
             /// <summary>
-            /// The default image to be displayed when no generated preview is needed or while generation is in progress.
+            /// The default image to be displayed when no resized display image is needed or while its generation is in progress.
             /// Set by <see cref="GenerateDefaultImage"/>. If <see cref="isDefaultImageCloned"/> is true, then contains
             /// - A fast PARGB32 clone of the original image it that is a Bitmap
             /// - A clone of the original image if that is a Metafile so the original image will not be blocked to generate resized images
             /// Otherwise, it is the same reference as the owner.Image.
-            /// If not null, then always contains a compatible, displayable image.
+            /// If <see cref="enabled"/> is false, then may contain the original image even if it cannot be displayed.
             /// </summary>
             private volatile Image? defaultDisplayImage;
-            private bool isDefaultImageCloned;
+            private volatile bool isDefaultImageCloned;
 
-            // TODO
-            //private Image? sourceClone; // Used for creating the resized preview. Just to avoid "image is used elsewhere"
-            //private Size requestedSize;
+            /// <summary>
+            /// If not null, contains the last cached size-adjusted display image.
+            /// It is not disposed immediately when a new size (<see cref="requestedSize"/>) is started to be generated
+            /// so it can be re-used when toggling smooth zooming.
+            /// </summary>
+            private volatile Bitmap? resizedDisplayImage;
 
-            private volatile Image? adjustedDisplayImage; // The actual displayed image. If not null, it is either equals safeDefaultImage or cachedDisplayImage.
-            //private volatile Bitmap? cachedDisplayImage; // The lastly generated display image. Can be unused but is cached until a next preview is generated.
-            //private Size currentCachedDisplayImage; // just to cache cachedDisplayImage.Size, because accessing currentPreview can lead to "object is used elsewhere" error
+            /// <summary>
+            /// Just to cache <see cref="resizedDisplayImage"/>.Size,
+            /// because accessing it on <see cref="resizedDisplayImage"/> without locking can lead to "object is used elsewhere" error.
+            /// </summary>
+            private Size resizedDisplayImageSize;
+
+            /// <summary>
+            /// The currently requested size of the size adjusted image. If it is the same as <see cref="resizedDisplayImageSize"/>,
+            /// then <see cref="resizedDisplayImage"/> can be displayed.
+            /// </summary>
+            private Size requestedSize;
 
             #endregion
+
+            #endregion
+
+            #region Properties
+
+            // This is alright, this class is private.
+            internal object SyncRoot => this;
 
             #endregion
 
@@ -150,13 +175,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 task.IsCanceled = true;
             }
 
-            private static void WaitForPendingGenerate(ref AsyncTaskBase? task)
+            private static void WaitForPendingGenerate(AsyncTaskBase? task)
             {
                 if (task == null)
                     return;
                 task.WaitForCompletion();
                 task.Dispose();
-                task = null;
             }
 
             #endregion
@@ -177,179 +201,89 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             #region Internal Methods
 
-            internal (Image, InterpolationMode) GetDisplayImage()
+            internal void InvalidateImages()
             {
-                #region Local Methods
+                // This cancels all tasks and disposes every generating resources
+                Free();
+                Debug.Assert(generateDefaultImageTask?.IsCanceled != false && generateResizedImageTask?.IsCanceled != false);
 
-                void SetOrGenerateDefaultDisplayImage()
-                {
-                    Debug.Assert(owner.image != null && owner.pixelFormat != default);
-                    if (!enabled)
-                        return;
+                // (Re-)enabling generating images
+                enabled = true;
+            }
 
-                    Image image = owner.image!;
-                    Bitmap? bitmap = image as Bitmap;
+            internal void InvalidateDisplayImage()
+            {
+                // Just canceling possible running generate. Not even clearing the possible already generated image.
+                // A new task will be started if a new paint explicitly requires it, in which case the last image can be re-used if possible.
+                CancelRunningGenerate(generateResizedImageTask);
+            }
 
-                    // Metafile: The default image is the same as the original. If anti-aliased images are required, a clone is created on demand from that task
-                    // Bitmap: generating a new default image for unsupported formats,
-                    bool isGenerateNeeded = bitmap != null && (owner.pixelFormat.In(unsupportedFormats)
-                        // non-PARGB32 images larger than 256x256 - note: leaving even slow formats unconverted below sizeThreshold / 4
-                        || owner.pixelFormat != PixelFormat.Format32bppPArgb && (owner.imageSize.Width > sizeThreshold >> 2 || owner.imageSize.Height > sizeThreshold >> 2)
-                        // Raw icons: converting because icons are handled oddly by GDI+, for example, the first column has half pixel width
-                        || bitmap.RawFormat.Guid == ImageFormat.Icon.Guid);
-
-                    if (!isGenerateNeeded)
-                    {
-                        // A generated default image is set from another thread so handling possible concurrency.
-                        if (defaultDisplayImage == null)
-                            Interlocked.CompareExchange(ref defaultDisplayImage, image, null);
-                        return;
-                    }
-
-                    // We check if there is a generate in progress. If not, then we start a new one (if it has just been finished).
-                    AsyncTaskBase? task = generateDefaultImageTask;
-                    if (task != null)
-                        return;
-
-                    task = new GenerateDefaultImageTask
-                    {
-                        SourceBitmap = bitmap!,
-                        InvalidateOwner = bitmap!.RawFormat.Guid == ImageFormat.Icon.Guid
-                    };
-                    generateDefaultImageTask = task;
-                    ThreadPool.QueueUserWorkItem(GenerateDefaultImage, task);
-                }
-
-                #endregion
-
+            internal (Image?, InterpolationMode) GetDisplayImage()
+            {
                 Debug.Assert(owner.image != null);
                 InterpolationMode interpolationMode = InterpolationMode.NearestNeighbor;
 
-                // 1.) There is a size adjusted display image
-                Image? result = adjustedDisplayImage;
-                if (result != null)
-                    return (result, interpolationMode);
+                // 1.) Returning with a size adjusted display image
+                if (owner.smoothZooming && resizedDisplayImageSize == owner.targetRectangle.Size)
+                    return (resizedDisplayImage, interpolationMode);
 
-                // 2.) Checking if there is an already available default image. It might have to be resized by painting.
-                result = defaultDisplayImage;
+                // 2.) Checking if there is an already available default image. It might have to be resized on painting.
+                Image? result = defaultDisplayImage;
 
-                // Smoothing Bitmap: leaving NearestNeighbor if an adjusted image will be generated; otherwise, using some interpolation to be applied during painting
+                // Smoothing Bitmap: leaving NearestNeighbor if a resized image is expected to be generated;
+                // otherwise, using some interpolation to be applied during painting
                 if (!owner.isMetafile && owner.smoothZooming)
                 {
                     float zoom = owner.zoom;
                     Size size = owner.imageSize;
 
-                    // Large zoom or shrunk image smaller than generating threshold: using HighQualityBicubic 
+                    // >4x zoom or shrunk image that is not greater than generating threshold: using HighQualityBicubic 
                     if (zoom >= 4f || zoom < 1f && size.Width <= sizeThreshold && size.Height <= sizeThreshold)
                         interpolationMode = InterpolationMode.HighQualityBicubic;
-                    // Small zoom: HighQualityBilinear for large images to prevent heavy lagging; otherwise, HighQualityBicubic
+                    // 1-4x zoom: HighQualityBilinear for large images to prevent heavy lagging; otherwise, HighQualityBicubic
                     else if (zoom > 1f)
                         interpolationMode = size.Width > sizeThreshold || size.Height > sizeThreshold ? InterpolationMode.HighQualityBilinear : InterpolationMode.HighQualityBicubic;
-                    // Shrinking larger images but generating is disabled: applying a fallback interpolation
+                    // Shrinking of larger images if generating is disabled: applying a hopefully-not-too-slow fallback interpolation
                     else if (!enabled && zoom < 1f)
                         interpolationMode = owner.targetRectangle.Width > sizeThreshold || owner.targetRectangle.Height > sizeThreshold ? InterpolationMode.Bilinear : InterpolationMode.Bicubic;
                 }
 
+                // 3.) Starting to generate cached images if needed
+                if (enabled)
+                {
+                    if (result == null)
+                        BeginGenerateDefaultDisplayImageIfNeeded();
+
+                    BeginGenerateResizedDisplayImageIfNeeded();
+                }
+
+                // 4.) Returning either a generated display or the original image
                 if (result != null)
+                    // here we already have a default display image we can return with
                     return (result, interpolationMode);
 
-                SetOrGenerateDefaultDisplayImage();
-
-                // Waiting for the task to be finished if pixel format is not supported,
-                // or it is so slow (>= 48bpp) that it is faster to wait for the converted image and paint that one.
-                // Note: Not using async because this project targets also .NET 3.5 and the image is locked anyway
+                // Waiting for the display image to be generated if pixel format is not supported,
+                // or it is so slow (>= 48bpp) that it is faster to wait for the converted image and paint the existing one.
+                // Note: Not using async because this project targets also .NET 3.5 and the image is locked anyway also in paint
                 if (owner.pixelFormat.In(unsupportedFormats) || owner.pixelFormat.In(slowFormats))
                     generateDefaultImageTask?.WaitForCompletion();
 
-                // 3.) Returning possibly generated display image or falling back to the original image
+                // Too low memory: turning off image generation and freeing up resources.
                 if (!enabled)
                 {
                     Free();
 
-                    // So next time we will return sooner, at 2.)
-                    return (defaultDisplayImage = owner.image!, interpolationMode);
+                    // Assigning by original image to defaultDisplayImage so even large >= 48bpp images will be drawn directly.
+                    defaultDisplayImage = owner.image;
                 }
 
-                return (defaultDisplayImage ?? owner.image!, interpolationMode);
+                // Unless a default image has been generated in the meantime we return with the original image, or null, if its pixel format is not supported.
+                result = defaultDisplayImage ?? owner.image;
+                if (ReferenceEquals(result, owner.image) && owner.pixelFormat.In(unsupportedFormats))
+                    result = null;
+
+                return (result, interpolationMode);
             }
-
-            /// <summary>
-            /// Invalidates everything and resets the default image if it is not needed to be generated.
-            /// </summary>
-            internal void InvalidateImages()
-            {
-                // This cancels all tasks and disposes every generating resources
-                Free();
-                Debug.Assert(generateDefaultImageTask == null);
-
-                // (Re-)enabling generating images
-                enabled = true;
-
-                // TODO
-                //Image? image = owner.image;
-                //if (image == null)
-                //    return;
-
-                //Debug.Assert(owner.pixelFormat != default, "PixelFormat must be known if image is not null");
-                //// Metafile: no generating needed, the default image is the same as the original
-                //// (for Metafiles a clone is created on demand is anti-aliased images have to be created to prevent locking on the displayed image)
-                //if (image is not Bitmap bitmap)
-                //{
-                //    defaultImage = image;
-                //    return;
-                //}
-
-                //// Bitmap: generating a new default image for unsupported formats,
-                //bool isGenerateNeeded = owner.pixelFormat.In(unsupportedFormats)
-                //    // non-PARGB32 images larger than 256x256 - note: leaving even slow formats unconverted below sizeThreshold / 4
-                //    || owner.pixelFormat != PixelFormat.Format32bppPArgb && (owner.imageSize.Width > sizeThreshold >> 2 || owner.imageSize.Height > sizeThreshold >> 2)
-                //    // Raw icons: converting because icons are handled oddly by GDI+, for example, the first column has half pixel width
-                //    || bitmap.RawFormat.Guid == ImageFormat.Icon.Guid;
-
-                //// If generate is needed, then leaving defaultImage null and starting a generate when an actual Paint is triggered.
-                //// Starting the task here would just be slower anyway because it locks the image, which wouldn't let the Paint draw the original image until it ends.
-                //if (!isGenerateNeeded)
-                //    defaultImage = image;
-            }
-
-            /// <summary>
-            /// Invalidates the display image and if required, starts to generate a new one
-            /// </summary>
-            internal void InvalidateDisplayImage()
-            {
-                // todo: mainly the old BeginGenerateDisplayImage
-                // TODO: handle possible defaultImage generation
-            }
-
-            // TODO
-            //internal void BeginGenerateDisplayImage()
-            //{
-            //    CancelRunningGenerate();
-            //    if (!enabled)
-            //        return;
-
-            //    // TODO
-            //    //Image? image = owner.image;
-            //    //if (image == null)
-            //    //{
-            //    //    Debug.Assert(cachedDisplayImage == null && displayImage == null);
-            //    //    return;
-            //    //}
-
-            //    //Size size = owner.targetRectangle.Size;
-            //    //bool isGenerateNeeded = owner.isMetafile
-            //    //    ? owner.smoothZooming
-            //    //    : owner.smoothZooming && owner.zoom < 1f && (owner.imageSize.Width > sizeThreshold || owner.imageSize.Height > sizeThreshold);
-
-            //    //if (!isGenerateNeeded || size.Width < 1 || size.Height < 1)
-            //    //{
-            //    //    displayImage = safeDefaultImage;
-            //    //    return;
-            //    //}
-
-            //    //requestedSize = size;
-            //    //ThreadPool.QueueUserWorkItem(DoGenerate!, new GenerateTask { SourceImage = sourceClone, Size = size });
-            //}
 
             #endregion
 
@@ -357,34 +291,112 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             private void Free()
             {
-                // to prevent starting new tasks while freeing resources
+                // disabling to prevent starting new tasks while freeing resources
                 enabled = false;
                 CancelRunningGenerate(generateDefaultImageTask);
-                CancelRunningGenerate(generateDisplayImageTask);
+                CancelRunningGenerate(generateResizedImageTask);
 
-                lock (syncRootGenerate)
+                WaitForPendingGenerate(generateDefaultImageTask);
+                WaitForPendingGenerate(generateResizedImageTask);
+
+                requestedSize = default;
+
+                lock (SyncRoot)
                 {
-                    WaitForPendingGenerate(ref generateDefaultImageTask);
-                    WaitForPendingGenerate(ref generateDisplayImageTask);
+                    if (isDefaultImageCloned)
+                        defaultDisplayImage?.Dispose();
+                    defaultDisplayImage = null;
+                    isDefaultImageCloned = false;
 
-                    // TODO
-                    //requestedSize = default;
-                    //displayImage = null;
-                    //sourceClone?.Dispose();
-                    //sourceClone = null;
+                    resizedDisplayImageSize = default;
+                    resizedDisplayImage?.Dispose();
+                    resizedDisplayImage = null;
+                }
+            }
 
-                    // ImageViewer also locks on the private generator when obtains display image so this ensures that no disposed image is painted.
-                    lock (this)
+            private void BeginGenerateDefaultDisplayImageIfNeeded()
+            {
+                Debug.Assert(owner.image != null && owner.pixelFormat != default);
+
+                // A task is already running or the display image is already generated.
+                if (isDefaultImageCloned || generateDefaultImageTask != null)
+                    return;
+
+                Image image = owner.image!;
+                Bitmap? bitmap = image as Bitmap;
+
+                // Metafile: The default image is the same as the original. If anti-aliased images are required, a clone is created on demand from that task
+                // Bitmap: generating a new default image for unsupported formats,
+                bool isGenerateNeeded = bitmap != null && (owner.pixelFormat.In(unsupportedFormats)
+                    // for non-PARGB32 images larger than 256x256 - note: leaving even slow formats unconverted below sizeThreshold / 4
+                    || owner.pixelFormat != PixelFormat.Format32bppPArgb && (owner.imageSize.Width > sizeThreshold >> 2 || owner.imageSize.Height > sizeThreshold >> 2)
+                    // and for native icons: converting because icons are handled oddly by GDI+, for example, the first column has half pixel width
+                    || bitmap.RawFormat.Guid == ImageFormat.Icon.Guid);
+
+                if (!isGenerateNeeded)
+                {
+                    // A generated default image is set from another thread so handling possible concurrency.
+                    if (defaultDisplayImage == null)
+                        Interlocked.CompareExchange(ref defaultDisplayImage, image, null);
+                    return;
+                }
+
+                var task = new GenerateDefaultImageTask
+                {
+                    SourceBitmap = bitmap!,
+                    InvalidateOwner = bitmap!.RawFormat.Guid == ImageFormat.Icon.Guid
+                };
+                generateDefaultImageTask = task;
+                ThreadPool.QueueUserWorkItem(GenerateDefaultImage, task);
+            }
+
+            private void BeginGenerateResizedDisplayImageIfNeeded()
+            {
+                Debug.Assert(owner.image != null && owner.pixelFormat != default);
+
+                // Metafile: If smoothing edges is enabled
+                // Bitmap: If smoothing resize is enabled, the image is shrunk and image size is larger than 1024x1024
+                bool isGenerateNeeded = owner.smoothZooming && (owner.isMetafile
+                    || owner.zoom < 1f && (owner.imageSize.Width > sizeThreshold || owner.imageSize.Height > sizeThreshold));
+
+                // Not canceling the possible generate task here. It will call an invalidate in the end and we can see whether we use the result.
+                Size size = owner.targetRectangle.Size;
+                if (!isGenerateNeeded || size.Width < 1 || size.Height < 1)
+                {
+                    requestedSize = default;
+                    return;
+                }
+
+                requestedSize = size;
+                GenerateResizedImageTask? task = generateResizedImageTask;
+                if (task != null)
+                {
+                    // If there is already a running generate task
+                    if (!task.IsCanceled)
                     {
-                        if (isDefaultImageCloned)
-                            defaultDisplayImage?.Dispose();
-                        defaultDisplayImage = null;
-                        isDefaultImageCloned = false;
+                        // It is generating the same size: we keep it
+                        if (task.Size == size)
+                            return;
+
+                        // We just initiate cancellation but not awaiting the completion.
+                        task.IsCanceled = true;
                     }
 
-                    // TODO
-                    //FreeCachedPreview();
+                    // We do not await the task (we are in a lock here that is used in the task, too).
+                    // Instead, we invalidate the owner so another paint will be triggered some time later. Hopefully the task will have been finished by that time.
+                    owner.Invalidate();
+                    return;
                 }
+
+                Debug.Assert(generateResizedImageTask == null);
+                task = new GenerateResizedImageTask
+                {
+                    SourceImage = owner.image!,
+                    Size = size
+                };
+
+                generateResizedImageTask = task;
+                ThreadPool.QueueUserWorkItem(GenerateResizedImage, task);
             }
 
             private void GenerateDefaultImage(object state)
@@ -399,12 +411,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     // x4: because we want to convert to 32bpp
                     long managedPressure = size.Width * size.Height * 4;
                     if (!MemoryHelper.CanAllocate(managedPressure) && !task.SourceBitmap.PixelFormat.In(unsupportedFormats))
-                    {
-                        Debug.WriteLine($"Discarding task because there is no {managedPressure:N0} bytes of available managed memory");
                         task.IsCanceled = true;
-                    }
 
-                    Debug.WriteLine($"Generating fast default image on thread #{Thread.CurrentThread.ManagedThreadId}");
                     Bitmap? result = null;
                     try
                     {
@@ -418,21 +426,22 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         // Not using Task and await because we want to be compatible with .NET 3.5, too.
                         IAsyncResult asyncResult = src.BeginCopyTo(dst, asyncConfig: cfg);
 
-                        // As we are already on a pool thread the End... call does not block the UI.
+                        // As we are already on a pool thread the End... call does not block the UI. It's still not the same as CopyTo() due to cancellation support.
                         asyncResult.EndCopyTo();
                     }
-                    catch (Exception e) when (!e.IsCriticalGdi())
+                    catch (Exception e)
                     {
                         // Despite all of the preconditions the memory could not be allocated or some other error occurred (yes, we catch even OutOfMemoryException here)
                         // NOTE: practically we always can recover from here: we simply don't use a generated clone and the worker thread can be finished
                         task.IsCanceled = true;
                         enabled = false;
+                        if (e.IsCriticalGdi())
+                            throw;
                     }
                     finally
                     {
                         if (task.IsCanceled)
                         {
-                            Debug.WriteLine("Canceled default image generate");
                             result?.Dispose();
                             result = null;
                         }
@@ -445,309 +454,249 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
                 var task = (GenerateDefaultImageTask)state;
 
-                // ensuring that only one generate task is running at once
-                lock (syncRootGenerate)
+                try
                 {
-                    // lost race
-                    if (!enabled || task.SourceBitmap != owner.image || disposed)
-                    {
-                        task.Dispose();
+                    // canceled or lost race
+                    if (task.IsCanceled || isDefaultImageCloned || task.SourceBitmap != owner.image || !enabled || disposed)
                         return;
-                    }
 
-                    // from now on the task can be canceled
-                    generateDefaultImageTask = task;
+                    Bitmap? result = null;
 
-                    try
+                    // Locking on the image to avoid the possible "bitmap region is already locked" issue.
+                    // Until the default image is generated, it is locked during the paint, too.
+                    lock (task.SourceBitmap)
                     {
-                        Bitmap? result = null;
-
-                        // unless already replaced, this is the same as the owner.image so locking on it to avoid the possible "bitmap region is already locked" issue.
-                        lock (task.SourceBitmap)
+                        try
                         {
-                            try
-                            {
-                                // Generating the actual result. IsCanceled might be true if the lock above could not be immediately acquired
-                                if (!task.IsCanceled)
-                                    result = DoGenerateDefaultImage(task, ref enabled);
-                            }
-                            finally
-                            {
-                                task.SetCompleted();
-                            }
+                            // Generating the actual result. IsCanceled might be true if the lock above could not be immediately acquired
+                            if (!task.IsCanceled)
+                                result = DoGenerateDefaultImage(task, ref enabled);
                         }
-
-                        if (result == null || task.IsCanceled)
-                            return;
-
-                        defaultDisplayImage = result;
-                        isDefaultImageCloned = true;
-
-                        // only for icons because otherwise the appearance is the same
-                        if (task.InvalidateOwner)
-                            owner.Invalidate();
+                        finally
+                        {
+                            task.SetCompleted();
+                        }
                     }
-                    finally
-                    {
-                        task.Dispose();
-                        generateDefaultImageTask = null;
-                    }
+
+                    if (result == null || task.IsCanceled)
+                        return;
+
+                    defaultDisplayImage = result;
+                    isDefaultImageCloned = true;
+
+                    // only for icons because otherwise the appearance is the same
+                    if (task.InvalidateOwner)
+                        owner.Invalidate();
+                }
+                finally
+                {
+                    task.Dispose();
+                    generateDefaultImageTask = null;
                 }
             }
 
-            // TODO
-            //private bool TrySetPreview(Image? reference, Size size)
-            //{
-            //    if (sourceClone != null && reference != sourceClone)
-            //    {
-            //        Debug.Assert(cachedDisplayImage != displayImage, "If image has been replaced in owner, its display image is not expected to be cached here");
-            //        FreeCachedPreview();
-            //        return false;
-            //    }
+            private void GenerateResizedImage(object state)
+            {
+                #region Local Methods
 
-            //    // we don't free generated preview here maybe it can be re-used later (eg. toggling metafile smooth zooming)
-            //    if (currentCachedDisplayImage != size)
-            //        return false;
+                static Bitmap? GenerateResizedMetafile(GenerateResizedImageTask task, ref bool enabled)
+                {
+                    // For the resizing large managed buffer of source.Height * target.Width of ColorF (16 bytes) is allocated internally. To be safe we count with the doubled sizes.
+                    Size doubledSize = new Size(task.Size.Width << 1, task.Size.Height << 1);
+                    long managedPressure = doubledSize.Width * doubledSize.Height * 16;
+                    if (!MemoryHelper.CanAllocate(managedPressure))
+                        task.IsCanceled = true;
 
-            //    if (displayImage == cachedDisplayImage)
-            //        return true;
+                    if (task.IsCanceled)
+                        return null;
 
-            //    Debug.WriteLine($"Re-using pregenerated preview of size {size.Width}x{size.Height}");
-            //    displayImage = cachedDisplayImage;
-            //    owner.Invalidate();
-            //    return true;
-            //}
+                    // MetafileExtensions.ToBitmap does the same if anti aliasing is requested but this way the process can be canceled
+                    Bitmap? result = null;
+                    Bitmap? doubled = null;
+                    try
+                    {
+                        doubled = new Bitmap(task.SourceImage, task.Size.Width << 1, task.Size.Height << 1);
 
-            //private void FreeCachedPreview()
-            //{
-            //    lock (this) // It is alright, this is a private class. ImageViewer also locks on this instance when obtains display image so this ensures that no disposed image is painted.
-            //    {
-            //        if (displayImage != null && displayImage == cachedDisplayImage)
-            //        {
-            //            displayImage = null;
-            //            owner.Invalidate();
-            //        }
+                        if (!task.IsCanceled)
+                        {
+                            result = new Bitmap(task.Size.Width, task.Size.Height, PixelFormat.Format32bppPArgb);
+                            using IReadableBitmapData src = doubled.GetReadableBitmapData();
+                            using IReadWriteBitmapData dst = result.GetReadWriteBitmapData();
 
-            //        Bitmap? toFree = cachedDisplayImage;
-            //        cachedDisplayImage = null;
-            //        toFree?.Dispose();
-            //        currentCachedDisplayImage = default;
-            //    }
-            //}
+                            // not using Task and await we want to be compatible with .NET 3.5
+                            IAsyncResult asyncResult = src.BeginDrawInto(dst, new Rectangle(Point.Empty, doubled.Size), new Rectangle(Point.Empty, result.Size),
+                                asyncConfig: new AsyncConfig { IsCancelRequestedCallback = () => task.IsCanceled, ThrowIfCanceled = false });
 
-            //private void DoGenerate(object state)
-            //{
-            //    var task = (GenerateTask)state;
+                            // As we are already on a pool thread this is not a UI blocking call
+                            asyncResult.EndDrawInto();
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        // Despite all of the preconditions the memory could not be allocated or some other error occurred (yes, we catch even OutOfMemoryException here)
+                        // NOTE: practically we always can recover from here: we simply don't use a generated preview and the worker thread can be finished
+                        task.IsCanceled = true;
+                        enabled = false;
+                        if (e.IsCriticalGdi())
+                            throw;
+                    }
+                    finally
+                    {
+                        doubled?.Dispose();
+                        if (task.IsCanceled)
+                        {
+                            result?.Dispose();
+                            result = null;
+                        }
+                    }
 
-            //    // this is a fairly large lock ensuring that only one generate task is running at once
-            //    lock (syncRootGenerate)
-            //    {
-            //        // lost race
-            //        if (!enabled || task.SourceImage != sourceClone || task.Size != requestedSize)
-            //        {
-            //            task.Dispose();
-            //            return;
-            //        }
+                    return result;
+                }
 
-            //        // checking if we already have the preview
-            //        if (!task.IsCanceled)
-            //        {
-            //            if (TrySetPreview(task.SourceImage, task.Size))
-            //            {
-            //                task.Dispose();
-            //                return;
-            //            }
+                static Bitmap? GenerateResizedBitmap(GenerateResizedImageTask task, ref bool enabled)
+                {
+                    // BitmapExtensions.Resize does the same but this way the process can be canceled
+                    Bitmap? result = null;
+                    try
+                    {
+                        result = new Bitmap(task.Size.Width, task.Size.Height, PixelFormat.Format32bppPArgb);
+                        lock (task.SourceImage)
+                        {
+                            using IReadableBitmapData src = ((Bitmap)task.SourceImage).GetReadableBitmapData();
+                            using IReadWriteBitmapData dst = result.GetReadWriteBitmapData();
+                            var cfg = new AsyncConfig { IsCancelRequestedCallback = () => task.IsCanceled, ThrowIfCanceled = false, MaxDegreeOfParallelism = Environment.ProcessorCount >> 1 };
 
-            //            // Before creating the preview releasing previous cached result. It is important to free it here, before checking the free memory.
-            //            FreeCachedPreview();
-            //        }
+                            // not using Task and await we want to be compatible with .NET 3.5
+                            // As we are already on a pool thread the End... call does not block the UI.
+                            var srcRect = new Rectangle(Point.Empty, task.SourceImage!.Size);
+                            var dstRect = new Rectangle(Point.Empty, task.Size);
+                            if (srcRect == dstRect)
+                            {
+                                IAsyncResult asyncResult = src.BeginCopyTo(dst, srcRect, Point.Empty, asyncConfig: cfg);
+                                asyncResult.EndCopyTo();
+                            }
+                            else
+                            {
+                                IAsyncResult asyncResult = src.BeginDrawInto(dst, srcRect, dstRect, asyncConfig: cfg);
+                                asyncResult.EndDrawInto();
+                            } 
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        // Despite all of the preconditions the memory could not be allocated or some other error occurred (yes, we catch even OutOfMemoryException here)
+                        // NOTE: practically we always can recover from here: we simply don't use a generated preview and the worker thread can be finished
+                        task.IsCanceled = true;
+                        enabled = false;
+                        if (e.IsCriticalGdi())
+                            throw;
+                    }
+                    finally
+                    {
+                        if (task.IsCanceled)
+                        {
+                            result?.Dispose();
+                            result = null;
+                        }
+                    }
 
-            //        if (task.SourceImage == null)
-            //        {
-            //            Debug.Assert(sourceClone == null && owner.image != null);
-            //            Image image = owner.image!;
+                    return result;
+                }
 
-            //            // As OnPaint can occur any time in the UI thread we lock on it. See also PaintImage.
-            //            lock (image)
-            //            {
-            //                try
-            //                {
-            //                    // A clone must be created to use the image without locking later on and getting an "object is used elsewhere" error from paint.
-            //                    // This is created synchronously so it can be used as a reference in the generating tasks.
-            //                    if (owner.isMetafile)
-            //                        sourceClone = (Metafile)image.Clone();
-            //                    else
-            //                    {
-            //                        PixelFormat pixelFormat = image.PixelFormat;
-            //                        var bmp = (Bitmap)image;
+                #endregion
 
-            //                        // clone is tried to be compact, fast and compatible
-            //                        sourceClone = pixelFormat.In(PixelFormat.Format32bppArgb, PixelFormat.Format32bppPArgb, PixelFormat.Format64bppArgb, PixelFormat.Format64bppPArgb) ? bmp.ConvertPixelFormat(PixelFormat.Format32bppPArgb)
-            //                            : pixelFormat.In(PixelFormat.Format24bppRgb, PixelFormat.Format32bppRgb, PixelFormat.Format48bppRgb) ? bmp.ConvertPixelFormat(PixelFormat.Format24bppRgb)
-            //                            : pixelFormat == PixelFormat.Format16bppGrayScale ? bmp.ConvertPixelFormat(PixelFormat.Format8bppIndexed, PredefinedColorsQuantizer.Grayscale())
-            //                            : pixelFormat.In(convertedFormats) ? bmp.ConvertPixelFormat(PixelFormat.Format32bppPArgb)
-            //                            : bmp.CloneCurrentFrame();
-            //                    }
+                var task = (GenerateResizedImageTask)state;
 
-            //                    task.SourceImage = sourceClone;
-            //                }
-            //                catch (Exception e) when (!e.IsCriticalGdi())
-            //                {
-            //                    // Disabling preview generation if we could not create the clone (eg. on low memory)
-            //                    // It will be re-enabled when owner.Image is reset.
-            //                    enabled = false;
-            //                    sourceClone?.Dispose();
-            //                    sourceClone = null;
-            //                    return;
-            //                }
-            //            }
-            //        }
+                try
+                {
+                    // canceled or lost race
+                    if (task.IsCanceled || task.SourceImage != owner.image || task.Size != requestedSize || !enabled || disposed)
+                        return;
 
-            //        Debug.Assert(activeTask?.IsCanceled != false);
-            //        WaitForPendingGenerate();
-            //        Debug.Assert(activeTask == null);
+                    // returning if we already have the result
+                    if (task.Size == resizedDisplayImageSize)
+                    {
+                        owner.Invalidate();
+                        return;
+                    }
 
-            //        // from now on the task can be canceled
-            //        activeTask = task;
+                    // Before creating the preview releasing previous cached result. It is important to free it here, before checking the free memory.
+                    // The lock ensures that no disposed image is displayed
+                    lock (SyncRoot)
+                    {
+                        resizedDisplayImageSize = default;
+                        resizedDisplayImage?.Dispose();
+                        resizedDisplayImage = null;
+                    }
 
-            //        try
-            //        {
-            //            Bitmap? result = null;
-            //            try
-            //            {
-            //                if (!task.IsCanceled)
-            //                    result = task.SourceImage is Metafile ? GenerateMetafilePreview(task) : GenerateBitmapPreview(task);
-            //            }
-            //            finally
-            //            {
-            //                task.SetCompleted();
-            //            }
+                    // 1.) If there is no cloned display image generating that one first so the UI can use that while the original image will be free to create the resized images from.
+                    if (!isDefaultImageCloned)
+                    {
+                        // The clone is just being generated. Invalidating and returning to come back later.
+                        if (defaultDisplayImage == null || generateDefaultImageTask != null)
+                        {
+                            owner.Invalidate();
+                            return;
+                        }
 
-            //            if (result != null)
-            //            {
-            //                // setting latest cache (even if the task has been canceled since the generating the completed result)
-            //                currentCachedDisplayImage = task.Size;
-            //                cachedDisplayImage = result;
-            //            }
+                        Debug.Assert(ReferenceEquals(owner.image, defaultDisplayImage), "If isDefaultImageCloned is false, then defaultDisplayImage is expected to be the original instance here.");
+                        Debug.Assert(owner.isMetafile || owner.pixelFormat == PixelFormat.Format32bppPArgb, "Clone is expected to be missing for metafiles and 32bpp PARGB bitmaps only.");
+                        Image clone;
 
-            //            if (task.IsCanceled)
-            //                return;
+                        // This may block the UI in OnPaint but once the clone is created OnPaint will use that instead of the original image.
+                        lock (task.SourceImage)
+                        {
+                            try
+                            {
+                                // we do not allow canceling this part because this would be started again and again
+                                clone = owner.image is Bitmap bitmap
+                                    ? bitmap.ConvertPixelFormat(PixelFormat.Format32bppPArgb)
+                                    : (Image)owner.image.Clone();
+                            }
+                            catch (Exception)
+                            {
+                                enabled = false;
+                                return;
+                            }
+                        }
 
-            //            Debug.WriteLine("Applying generated result");
-            //            Debug.Assert(displayImage == null || displayImage == safeDefaultImage || displayImage == owner.image, "Display image is not the same as the original one: dispose is necessary");
+                        defaultDisplayImage = clone;
+                        isDefaultImageCloned = true;
+                    }
 
-            //            // not freeing the display image because it is always the original image here
-            //            displayImage = result;
-            //            owner.Invalidate();
-            //        }
-            //        finally
-            //        {
-            //            task.Dispose();
-            //            activeTask = null;
-            //        }
-            //    }
-            //}
+                    if (task.IsCanceled)
+                        return;
 
-            //private static Bitmap? GenerateMetafilePreview(GenerateTask task)
-            //{
-            //    // For the resizing large managed buffer of source.Height * target.Width of ColorF (16 bytes) is allocated internally. To be safe we count with the doubled sizes.
-            //    Size doubledSize = new Size(task.Size.Width << 1, task.Size.Height << 1);
-            //    long managedPressure = doubledSize.Width * doubledSize.Height * 16;
-            //    if (!MemoryHelper.CanAllocate(managedPressure))
-            //    {
-            //        Debug.WriteLine($"Discarding task because there is no {managedPressure:N0} bytes of available managed memory");
-            //        task.IsCanceled = true;
-            //    }
+                    // 2.) Generating the size-adjusted display image
+                    Bitmap? result = null;
+                    try
+                    {
+                        if (!task.IsCanceled)
+                            result = task.SourceImage is Metafile ? GenerateResizedMetafile(task, ref enabled) : GenerateResizedBitmap(task, ref enabled);
+                    }
+                    finally
+                    {
+                        task.SetCompleted();
+                    }
 
-            //    if (task.IsCanceled)
-            //        return null;
-            //    // MetafileExtensions.ToBitmap does the same if anti aliasing is requested but this way the process can be canceled
-            //    Debug.WriteLine($"Generating anti aliased image {task.Size.Width}x{task.Size.Height} on thread #{Thread.CurrentThread.ManagedThreadId}");
-            //    Bitmap? result = null;
-            //    Bitmap? doubled = null;
-            //    try
-            //    {
-            //        doubled = new Bitmap(task.SourceImage!, task.Size.Width << 1, task.Size.Height << 1);
-            //        if (!task.IsCanceled)
-            //        {
-            //            result = new Bitmap(task.Size.Width, task.Size.Height, PixelFormat.Format32bppPArgb);
-            //            using IReadableBitmapData src = doubled.GetReadableBitmapData();
-            //            using IReadWriteBitmapData dst = result.GetReadWriteBitmapData();
+                    // setting latest cache (even if the task has been canceled as we have a completed result)
+                    if (result != null)
+                    {
+                        resizedDisplayImage = result;
+                        resizedDisplayImageSize = task.Size;
+                    }
 
-            //            // not using Task and await, because this method's signature must match the WaitCallback delegate, and we want to be compatible with .NET 3.5, too
-            //            IAsyncResult asyncResult = src.BeginDrawInto(dst, new Rectangle(Point.Empty, doubled.Size), new Rectangle(Point.Empty, result.Size),
-            //                // ReSharper disable once AccessToModifiedClosure - intended, if IsCanceled is modified we need to return its modified value
-            //                asyncConfig: new AsyncConfig { IsCancelRequestedCallback = () => task.IsCanceled, ThrowIfCanceled = false });
+                    if (task.IsCanceled)
+                        return;
 
-            //            // As we are already on a pool thread this is not a UI blocking call
-            //            // This will throw an exception if resizing failed (resizing also allocates a large amount of memory).
-            //            asyncResult.EndDrawInto();
-            //        }
-            //    }
-            //    catch (Exception e) when (!e.IsCriticalGdi())
-            //    {
-            //        // Despite all of the preconditions the memory could not be allocated or some other error occurred (yes, we catch even OutOfMemoryException here)
-            //        // NOTE: practically we always can recover from here: we simply don't use a generated preview and the worker thread can be finished
-            //        task.IsCanceled = true;
-            //    }
-            //    finally
-            //    {
-            //        doubled?.Dispose();
-            //        if (task.IsCanceled)
-            //        {
-            //            result?.Dispose();
-            //            result = null;
-            //        }
-            //    }
-
-            //    return result;
-            //}
-
-            //private static Bitmap? GenerateBitmapPreview(GenerateTask task)
-            //{
-            //    // BitmapExtensions.Resize does the same but this way the process can be canceled
-            //    Debug.WriteLine($"Generating smoothed image {task.Size.Width}x{task.Size.Height} on thread #{Thread.CurrentThread.ManagedThreadId}");
-
-            //    Bitmap? result = null;
-            //    try
-            //    {
-            //        result = new Bitmap(task.Size.Width, task.Size.Height, PixelFormat.Format32bppPArgb);
-            //        using IReadableBitmapData src = ((Bitmap)task.SourceImage!).GetReadableBitmapData();
-            //        using IReadWriteBitmapData dst = result.GetReadWriteBitmapData();
-            //        var cfg = new AsyncConfig { IsCancelRequestedCallback = () => task.IsCanceled, ThrowIfCanceled = false, MaxDegreeOfParallelism = Environment.ProcessorCount >> 1 };
-
-            //        // Not using Task and await, because this method's signature must match the WaitCallback delegate, and we want to be compatible with .NET 3.5, too.
-            //        // As we are already on a pool thread the End... call does not block the UI.
-            //        var srcRect = new Rectangle(Point.Empty, task.SourceImage!.Size);
-            //        var dstRect = new Rectangle(Point.Empty, task.Size);
-            //        if (srcRect == dstRect)
-            //        {
-            //            IAsyncResult asyncResult = src.BeginCopyTo(dst, srcRect, Point.Empty, asyncConfig: cfg);
-            //            asyncResult.EndCopyTo();
-            //        }
-            //        else
-            //        {
-            //            IAsyncResult asyncResult = src.BeginDrawInto(dst, srcRect, dstRect, asyncConfig: cfg);
-            //            asyncResult.EndDrawInto();
-            //        }
-            //    }
-            //    catch (Exception e) when (!e.IsCriticalGdi())
-            //    {
-            //        // Despite all of the preconditions the memory could not be allocated or some other error occurred (yes, we catch even OutOfMemoryException here)
-            //        // NOTE: practically we always can recover from here: we simply don't use a generated preview and the worker thread can be finished
-            //        task.IsCanceled = true;
-            //    }
-            //    finally
-            //    {
-            //        if (task.IsCanceled)
-            //        {
-            //            result?.Dispose();
-            //            result = null;
-            //        }
-            //    }
-
-            //    return result;
-            //}
+                    owner.Invalidate();
+                }
+                finally
+                {
+                    task.Dispose();
+                    generateResizedImageTask = null;
+                }
+            }
 
             #endregion
 

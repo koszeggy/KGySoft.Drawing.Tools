@@ -400,9 +400,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             if ((flags & InvalidateFlags.Image) != InvalidateFlags.None)
                 displayImageGenerator.InvalidateImages();
-
-            // this relies on the new calculated sizes so must come after adjusting sizes
-            if ((flags & InvalidateFlags.DisplayImage) != InvalidateFlags.None)
+            else if ((flags & InvalidateFlags.DisplayImage) != InvalidateFlags.None)
                 displayImageGenerator.InvalidateDisplayImage();
 
             Invalidate();
@@ -532,15 +530,20 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (sbVerticalVisible)
                 dest.Y -= sbVertical.Value;
 
-            // This lock ensures that no disposed image is painted. The generator also locks on itself when frees the cached preview.
-            lock (displayImageGenerator)
+            // This lock ensures that no disposed image is painted. The generator also locks on it when frees the cached preview.
+            lock (displayImageGenerator.SyncRoot)
             {
-                (Image toDraw, InterpolationMode interpolationMode) = displayImageGenerator.GetDisplayImage();
+                (Image? toDraw, InterpolationMode interpolationMode) = displayImageGenerator.GetDisplayImage();
+
+                // happens if image format is not supported and generating compatible display images is disabled due to low memory
+                if (toDraw == null)
+                    return;
+
                 g.PixelOffsetMode = PixelOffsetMode.HighQuality;
                 g.InterpolationMode = interpolationMode;
 
                 // Locking on display image so if it is the same as the original image, which is also locked when accessing its bitmap data
-                // the "bitmap region is already locked" can be avoided. Important: this cannot be ensured without locking here internally because
+                // so the "bitmap region is already locked" can be avoided. Important: this cannot be ensured without locking here internally because
                 // OnPaint can occur any time after invalidating.
                 bool useLock = image == toDraw;
                 if (useLock)
