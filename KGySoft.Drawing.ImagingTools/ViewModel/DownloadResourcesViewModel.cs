@@ -108,6 +108,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Fields
 
         private volatile AsyncTaskBase? activeTask;
+        private volatile List<LocalizationInfo> availableResources = new List<LocalizationInfo>();
         private volatile HashSet<LocalizationInfo> downloadedCultures = new HashSet<LocalizationInfo>();
 
         #endregion
@@ -197,14 +198,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
                 using var reader = XmlReader.Create(new StreamReader(new MemoryStream(data), Encoding.UTF8));
                 reader.ReadStartElement("manifest");
-                var itemsList = new List<LocalizationInfo>();
+                List<LocalizationInfo> itemsList = availableResources;
                 XmlSerializer.DeserializeContent(reader, itemsList);
 
                 TryInvokeSync(() =>
                 {
-                    var items = new DownloadableResourceItemCollection(itemsList);
-                    items.ListChanged += Items_ListChanged;
-                    Items = items;
+                    ResetItems();
                     IsProcessing = false;
                 });
             }
@@ -221,6 +220,18 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 task.Dispose();
                 activeTask = null;
             }
+        }
+
+        private void ResetItems()
+        {
+            DownloadableResourceItemCollection? oldItems = Items;
+            var items = new DownloadableResourceItemCollection(availableResources);
+            if (oldItems?.IsSorted == true)
+                items.ApplySort(oldItems.SortProperty!, ((IBindingList)oldItems).SortDirection);
+
+            items.ListChanged += Items_ListChanged;
+            Items = items;
+            oldItems?.Dispose();
         }
 
         private void BeginDownloadResources(List<DownloadInfo> toDownload, bool overwrite)
@@ -287,9 +298,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 TryInvokeSync(() =>
                 {
                     IsProcessing = false;
+                    if (downloadedCultures.Count > 0)
+                        ApplyResources();
                     DownloadCommandState.Enabled = true;
+                    ShowError(Res.ErrorMessageFailedToDownloadResource(current, e.Message));
                 });
-                ShowError(Res.ErrorMessageFailedToDownloadResource(current, e.Message));
             }
             finally
             {
@@ -309,6 +322,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             LanguageSettings.DynamicResourceManagersSource = ResourceManagerSources.CompiledAndResX;
             ResHelper.RaiseLanguageChanged();
         }
+
+        protected override void ApplyDisplayLanguage() => ResetItems();
 
         /// <summary>
         /// Returns the downloaded content, or null if task was canceled.
