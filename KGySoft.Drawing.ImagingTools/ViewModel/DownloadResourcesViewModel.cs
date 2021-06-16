@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -29,6 +30,7 @@ using System.Xml;
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.Resources;
 using KGySoft.Serialization.Xml;
 
 #endregion
@@ -270,6 +272,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 TryInvokeSync(() =>
                 {
                     IsProcessing = false;
+                    if (downloadedCultures.Count > 0)
+                        ApplyResources();
                     if (downloadedCultures.All(i => ResHelper.TryGetCulture(i.CultureName, out var _)))
                         ShowInfo(Res.InfoMessageDownloadCompleted(downloaded));
                     else
@@ -292,6 +296,18 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 task.Dispose();
                 activeTask = null;
             }
+        }
+
+        private void ApplyResources()
+        {
+            ResHelper.ReleaseAllResources();
+            CultureInfo current = LanguageSettings.DisplayLanguage;
+            if (downloadedCultures.All(c => c.CultureName != current.Name))
+                return;
+
+            // The current language is among the downloaded ones: applying it
+            LanguageSettings.DynamicResourceManagersSource = ResourceManagerSources.CompiledAndResX;
+            ResHelper.RaiseLanguageChanged();
         }
 
         /// <summary>
