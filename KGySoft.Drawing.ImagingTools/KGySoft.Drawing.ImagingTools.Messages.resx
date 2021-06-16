@@ -198,6 +198,18 @@
   <data name="Text_BlueValueFormat" xml:space="preserve">
     <value>B: {0}</value>
   </data>
+  <data name="tbAlpha.ToolTipText" xml:space="preserve">
+    <value>Alpha color component (transparency)</value>
+  </data>
+  <data name="tbRed.ToolTipText" xml:space="preserve">
+    <value>Red color component</value>
+  </data>
+  <data name="tbGreen.ToolTipText" xml:space="preserve">
+    <value>Green color component</value>
+  </data>
+  <data name="tbBlue.ToolTipText" xml:space="preserve">
+    <value>Blue color component</value>
+  </data>
   <data name="Text_UnsupportedCultureFormat" xml:space="preserve">
     <value>Unsupported Language ({0})</value>
   </data>
@@ -497,7 +509,7 @@ It is possible that is has no effect.</value>
 By selecting a quantizer you can specify a different back color.</value>
   </data>
   <data name="InfoMessage_ResourceVersionMismatch" xml:space="preserve">
-    <value>This item is for a different ImagingTools version.</value>
+    <value>This item is for a different Imaging Tools version.</value>
   </data>
   <data name="InfoMessage_QuantizerAutoSelectedFormat" xml:space="preserve">
     <value>A quantizer has been auto selected for pixel format '{0}' using default settings.
@@ -652,7 +664,7 @@ Copyright © {2} KGy SOFT. All rights reserved.</value>
     <value>Open Image</value>
   </data>
   <data name="dlgSave.Title" xml:space="preserve">
-    <value>Save Image As...</value>
+    <value>Save Image As</value>
   </data>
   <data name="miBackColorDefault.Text" xml:space="preserve">
     <value>Default</value>
