@@ -231,6 +231,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             items.ListChanged += Items_ListChanged;
             Items = items;
+            DownloadCommandState.Enabled = false;
             oldItems?.Dispose();
         }
 
@@ -300,7 +301,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     IsProcessing = false;
                     if (downloadedCultures.Count > 0)
                         ApplyResources();
-                    DownloadCommandState.Enabled = true;
+                    DownloadCommandState.Enabled = Items?.Any(i => i.Selected) == true;
                     ShowError(Res.ErrorMessageFailedToDownloadResource(current, e.Message));
                 });
             }
@@ -309,6 +310,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 task.Dispose();
                 activeTask = null;
             }
+        }
+
+        private void ResetDownloadCommandState()
+        {
+            throw new NotImplementedException();
         }
 
         private void ApplyResources()

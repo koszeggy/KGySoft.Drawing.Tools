@@ -27,6 +27,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
     internal class BaseControl : Control
     {
+        #region Fields
+
+        protected static readonly int MouseWheelScrollDelta = OSUtils.IsMono && OSUtils.IsWindows ? 120 : SystemInformation.MouseWheelScrollDelta;
+
+        #endregion
+
         #region Events
 
         internal event EventHandler<HandledMouseEventArgs> MouseHWheel
@@ -43,6 +49,19 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         {
             switch (m.Msg)
             {
+                case Constants.WM_PAINT:
+                    try
+                    {
+                        base.WndProc(ref m);
+                    }
+                    catch (Exception e) when (!e.IsCritical())
+                    {
+                        // In Mono sometimes an internal GDI+ exception happens here
+                        Invalidate();
+                    }
+
+                    break;
+
                 // Horizontal scroll
                 case Constants.WM_MOUSEHWHEEL:
                     HandledMouseEventArgs args = new HandledMouseEventArgs(MouseButtons.None, 0,

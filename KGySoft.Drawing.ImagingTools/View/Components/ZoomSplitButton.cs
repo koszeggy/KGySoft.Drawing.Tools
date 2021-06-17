@@ -96,8 +96,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
         {
             base.OnParentChanged(oldParent, newParent);
 
-            // Linux/Mono: without this the new parent's renderer will not be applied to the drop down menu strip
-            if (!OSUtils.IsWindows && newParent != null)
+            // Mono: without this the new parent's renderer will not be applied to the drop down menu strip
+            if (OSUtils.IsMono && newParent != null)
                 AutoZoomMenuItem.Owner.Renderer = newParent.Renderer;
         }
 

@@ -260,16 +260,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             switch (keyData)
             {
                 case Keys.Up:
-                    VerticalScroll(SystemInformation.MouseWheelScrollDelta);
+                    VerticalScroll(MouseWheelScrollDelta);
                     return true;
                 case Keys.Down:
-                    VerticalScroll(-SystemInformation.MouseWheelScrollDelta);
+                    VerticalScroll(-MouseWheelScrollDelta);
                     return true;
                 case Keys.Left:
-                    HorizontalScroll(SystemInformation.MouseWheelScrollDelta);
+                    HorizontalScroll(MouseWheelScrollDelta);
                     return true;
                 case Keys.Right:
-                    HorizontalScroll(-SystemInformation.MouseWheelScrollDelta);
+                    HorizontalScroll(-MouseWheelScrollDelta);
                     return true;
                 default:
                     return base.ProcessCmdKey(ref msg, keyData);
@@ -318,7 +318,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 case Keys.Control:
                     if (autoZoom)
                         SetAutoZoom(false, false);
-                    float delta = (float)e.Delta / SystemInformation.MouseWheelScrollDelta / 5;
+                    float delta = (float)e.Delta / MouseWheelScrollDelta / 5;
                     ApplyZoomChange(delta);
                     break;
 
@@ -378,8 +378,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             // When scrolling by mouse, delta is always +-120 so this will be a small change on the scrollbar.
             // But we collect the fractional changes caused by the touchpad scrolling so it will not be lost either.
             int totalDelta = scrollFractionVertical + delta * sbVertical.SmallChange;
-            scrollFractionVertical = totalDelta % SystemInformation.MouseWheelScrollDelta;
-            int newValue = sbVertical.Value - totalDelta / SystemInformation.MouseWheelScrollDelta;
+            scrollFractionVertical = totalDelta % MouseWheelScrollDelta;
+            int newValue = sbVertical.Value - totalDelta / MouseWheelScrollDelta;
             sbVertical.SetValueSafe(newValue);
         }
 
@@ -388,8 +388,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             // When scrolling by mouse, delta is always +-120 so this will be a small change on the scrollbar.
             // But we collect the fractional changes caused by the touchpad scrolling so it will not be lost either.
             int totalDelta = scrollFractionHorizontal + delta * sbVertical.SmallChange;
-            scrollFractionHorizontal = totalDelta % SystemInformation.MouseWheelScrollDelta;
-            int newValue = sbHorizontal.Value - totalDelta / SystemInformation.MouseWheelScrollDelta;
+            scrollFractionHorizontal = totalDelta % MouseWheelScrollDelta;
+            int newValue = sbHorizontal.Value - totalDelta / MouseWheelScrollDelta;
             sbHorizontal.SetValueSafe(newValue);
         }
 

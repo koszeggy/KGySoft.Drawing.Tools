@@ -273,6 +273,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     // original image
                     if (MatchesOriginal(task))
                     {
+                        task.SetCompleted();
                         TryInvokeSync(() =>
                         {
                             SetPreview(originalImage);
@@ -308,7 +309,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                             // ReSharper disable once AccessToDisposedClosure - false alarm, newTask.Dispose() is called only on error
                             IsCancelRequestedCallback = () => task.IsCanceled,
                             ThrowIfCanceled = false,
-                            State = task,
                             Progress = drawingProgressManager
                         });
 

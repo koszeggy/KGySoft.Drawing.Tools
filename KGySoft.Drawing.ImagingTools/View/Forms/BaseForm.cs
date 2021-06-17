@@ -20,6 +20,7 @@ using System;
 #if !NET5_0_OR_GREATER
 using System.Security;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Drawing;
 using System.Reflection;
 
@@ -50,9 +51,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         #region Fields
 
 #if !NET5_0_OR_GREATER
-        private static readonly BitVector32.Section formStateRenderSizeGrip = OSUtils.IsWindows
-            ? (BitVector32.Section)Reflector.GetField(typeof(Form), "FormStateRenderSizeGrip")!
-            : default;
+        private static BitVector32.Section formStateRenderSizeGrip;
+        private static BitVector32 formStateFallback = default;
         private static FieldAccessor? formStateField;
 #endif
 
@@ -61,8 +61,20 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         #region Properties
 
 #if !NET5_0_OR_GREATER
-        private BitVector32 FormState => (BitVector32)(formStateField ??=
-            FieldAccessor.GetAccessor(typeof(Form).GetField("formState", BindingFlags.Instance | BindingFlags.NonPublic)!)).Get(this)!;
+        private BitVector32 FormState
+        {
+            get
+            {
+                Debug.Assert(OSUtils.IsWindows && !OSUtils.IsMono);
+                if (formStateField == null)
+                {
+                    formStateRenderSizeGrip = Reflector.TryGetField(typeof(Form), "FormStateRenderSizeGrip", out object? value) && value is BitVector32.Section section ? section : default;
+                    formStateField = FieldAccessor.GetAccessor(typeof(Form).GetField("formState", BindingFlags.Instance | BindingFlags.NonPublic) ?? typeof(BaseForm).GetField(nameof(formStateFallback), BindingFlags.NonPublic | BindingFlags.Static)!);
+                }
+
+                return (BitVector32)formStateField.Get(this)!;
+            }
+        }
 #endif
 
         #endregion
@@ -92,7 +104,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 #if !NET5_0_OR_GREATER
         protected override void WndProc(ref Message m)
         {
-            if (!OSUtils.IsWindows)
+            if (!OSUtils.IsWindows || OSUtils.IsMono)
             {
                 base.WndProc(ref m);
                 return;

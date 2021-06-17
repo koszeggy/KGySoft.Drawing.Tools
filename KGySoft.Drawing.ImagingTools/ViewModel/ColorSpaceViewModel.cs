@@ -93,13 +93,16 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             internal override void SetCompleted()
             {
-                if (isSourceCloned)
+                if (sourceBitmap != null)
                 {
-                    sourceBitmap?.Dispose();
-                    sourceBitmap = null;
+                    if (isSourceCloned)
+                    {
+                        sourceBitmap.Dispose();
+                        sourceBitmap = null;
+                    }
+                    else
+                        Monitor.Exit(sourceBitmap);
                 }
-                else
-                    Monitor.Exit(sourceBitmap!);
 
                 base.SetCompleted();
             }

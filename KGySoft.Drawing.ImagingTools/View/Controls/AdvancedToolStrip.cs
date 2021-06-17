@@ -152,7 +152,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
                 // overriding background to behave the same way as ToolStripButton
                 Rectangle rect = btn.ButtonBounds;
-                if (!OSUtils.IsWindows)
+                if (OSUtils.IsMono)
                     rect.Location = Point.Empty;
                 else if (e.Item.RightToLeft == RightToLeft.Yes)
                     rect.Offset(-1, 0);
@@ -179,8 +179,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             protected override void OnRenderItemImage(ToolStripItemImageRenderEventArgs e)
             {
-                // Fixing image scaling in menu items on Linux/Mono
-                if (!OSUtils.IsWindows && e.Item is ToolStripMenuItem mi)
+                // Fixing image scaling in menu items on Mono
+                if (OSUtils.IsMono && e.Item is ToolStripMenuItem mi)
                 {
                     Rectangle rect = e.ImageRectangle;
                     rect.Size = e.Item.Owner.ScaleSize(referenceSize);
@@ -276,8 +276,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         {
             base.OnSizeChanged(e);
 
-            // Preventing double scaling in Linux/Mono
-            if (!OSUtils.IsWindows && Dock.In(DockStyle.Top, DockStyle.Bottom))
+            // Preventing double scaling in Mono
+            if (OSUtils.IsMono && Dock.In(DockStyle.Top, DockStyle.Bottom))
                 Height = this.ScaleHeight(25);
         }
 
