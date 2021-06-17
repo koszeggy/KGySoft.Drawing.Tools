@@ -32,8 +32,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
 
         private readonly CommandBindingsCollection commandBindings = new CommandBindingsCollection();
         private readonly DebuggerTestFormViewModel viewModel = new DebuggerTestFormViewModel();
-        private readonly Timer timer;
-        
+        private readonly Timer? timer;
+
         private string? errorMessage;
 
         #endregion
@@ -43,6 +43,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
         public DebuggerTestForm()
         {
             InitializeComponent();
+            gbFile.AutoSize = !OSUtils.IsMono;
             cmbPixelFormat.DataSource = viewModel.PixelFormats;
 
             commandBindings.AddPropertyBinding(chbAsImage, nameof(CheckBox.Checked), nameof(viewModel.AsImage), viewModel);
@@ -84,7 +85,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             viewModel.GetHwndCallback = () => Handle;
             viewModel.GetClipCallback = () => pictureBox.Bounds;
 
-            // Due to some strange issue on Linux the app crashes if we show a MessageBox while changing radio buttons
+            if (OSUtils.IsWindows)
+            {
+                viewModel.ErrorCallback = msg => MessageBox.Show(this, msg, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Due to some strange issue on Linux the app may crash if we show a MessageBox while changing radio buttons
             // so as a workaround we show error messages by using a timer. Another solution would be to show a custom dialog.
             timer = new Timer { Interval = 1 };
             viewModel.ErrorCallback = message =>
@@ -113,7 +120,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
                 components?.Dispose();
                 commandBindings.Dispose();
                 viewModel.Dispose();
-                timer.Dispose();
+                timer?.Dispose();
             }
 
             base.Dispose(disposing);
@@ -137,7 +144,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
 
         private void OnShowErrorCommand()
         {
-            timer.Enabled = false;
+            timer!.Enabled = false;
             if (errorMessage != null)
                 MessageBox.Show(this, errorMessage, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             errorMessage = null;

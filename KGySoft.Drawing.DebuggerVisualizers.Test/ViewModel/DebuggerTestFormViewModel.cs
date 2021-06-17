@@ -135,25 +135,31 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
             //Set up reference Graphic
             Graphics refGraph = Graphics.FromHwnd(IntPtr.Zero);
             IntPtr hdc = refGraph.GetHdc();
-            var result = new Metafile(hdc, new Rectangle(0, 0, 100, 100), MetafileFrameUnit.Pixel, EmfType.EmfOnly, "Test");
-
-            //Draw some silly drawing
-            using (var g = Graphics.FromImage(result))
+            try
             {
-                var r = new Rectangle(0, 0, 100, 100);
-                var leftEye = new Rectangle(20, 20, 20, 30);
-                var rightEye = new Rectangle(60, 20, 20, 30);
-                g.FillEllipse(Brushes.Yellow, r);
-                g.FillEllipse(Brushes.White, leftEye);
-                g.FillEllipse(Brushes.White, rightEye);
-                g.DrawEllipse(Pens.Black, leftEye);
-                g.DrawEllipse(Pens.Black, rightEye);
-                g.DrawBezier(Pens.Red, new Point(10, 50), new Point(10, 100), new Point(90, 100), new Point(90, 50));
-            }
+                var result = new Metafile(hdc, new Rectangle(0, 0, 100, 100), MetafileFrameUnit.Pixel, EmfType.EmfOnly, "Test");
 
-            refGraph.ReleaseHdc(hdc); //cleanup
-            refGraph.Dispose();
-            return result;
+                //Draw some silly drawing
+                using (var g = Graphics.FromImage(result))
+                {
+                    var r = new Rectangle(0, 0, 100, 100);
+                    var leftEye = new Rectangle(20, 20, 20, 30);
+                    var rightEye = new Rectangle(60, 20, 20, 30);
+                    g.FillEllipse(Brushes.Yellow, r);
+                    g.FillEllipse(Brushes.White, leftEye);
+                    g.FillEllipse(Brushes.White, rightEye);
+                    g.DrawEllipse(Pens.Black, leftEye);
+                    g.DrawEllipse(Pens.Black, rightEye);
+                    g.DrawBezier(Pens.Red, new Point(10, 50), new Point(10, 100), new Point(90, 100), new Point(90, 50));
+                }
+
+                return result;
+            }
+            finally
+            {
+                refGraph.ReleaseHdc(hdc);
+                refGraph.Dispose();
+            }
         }
 
         #endregion
@@ -189,6 +195,10 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
 
             if (e.PropertyName == nameof(TestObject))
             {
+                Image? preview = PreviewImage;
+                PreviewImage = null;
+                (preview as IDisposable)?.Dispose();
+
                 object? obj = TestObject;
                 PreviewImage = GetPreviewImage(obj);
                 CanDebug = obj != null;
@@ -223,24 +233,39 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
 
             try
             {
-                // actually the transient steps should be disposed, too... as this is just a test, now we rely on the destructor
                 if (Bitmap)
-                    return Icons.Shield.ExtractBitmap(0)!.ConvertPixelFormat(PixelFormat);
+                {
+                    using Icon icon = Icons.Shield;
+                    using Bitmap bmp = icon.ExtractBitmap(0)!;
+                    return bmp.ConvertPixelFormat(PixelFormat);
+                }
+
                 if (Metafile)
                     return GenerateMetafile();
                 if (HIcon)
                     return AsImage ? SystemIcons.Application.ToMultiResBitmap() : SystemIcons.Application;
+
                 if (ManagedIcon)
-                    return AsImage ? Icons.Application.ToMultiResBitmap() : Icons.Application;
+                {
+                    if (!AsImage)
+                        return Icons.Application;
+                    using Icon icon = Icons.Application;
+                    return icon.ToMultiResBitmap();
+                }
+
                 if (GraphicsBitmap)
                     return GetBitmapGraphics();
                 if (GraphicsHwnd)
                     return GetWindowGraphics();
                 if (BitmapData)
                     return GetBitmapData(PixelFormat);
+                
                 if (Palette)
-                    using (var bmp = new Bitmap(1, 1, PixelFormat))
-                        return bmp.Palette;
+                {
+                    using var bmp = new Bitmap(1, 1, PixelFormat);
+                    return bmp.Palette;
+                }
+
                 if (SingleColor)
                     return Color.Black;
                 if (ImageFromFile)
@@ -326,7 +351,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
         {
             try
             {
-                return Graphics.FromImage(Icons.Shield.ExtractBitmap(0)!.ConvertPixelFormat(PixelFormat));
+                using Icon icon = Icons.Shield;
+                using Bitmap bmp = icon.ExtractBitmap(0)!;
+                return Graphics.FromImage(bmp.ConvertPixelFormat(PixelFormat));
             }
             catch (Exception e) when (e is not StackOverflowException)
             {
@@ -356,7 +383,12 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
 
         private void FreeTestObject()
         {
-            switch (TestObject)
+            object? obj = TestObject;
+            if (obj == null)
+                return;
+
+            TestObject = null;
+            switch (obj)
             {
                 case IDisposable disposable:
                     disposable.Dispose();

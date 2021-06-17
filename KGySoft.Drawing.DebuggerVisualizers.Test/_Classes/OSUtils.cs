@@ -29,12 +29,14 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test
         #region Fields
 
         private static bool? isWindows;
+        private static bool? isMono;
 
         #endregion
 
         #region Properties
 
         internal static bool IsWindows => isWindows ??= Environment.OSVersion.Platform.In(PlatformID.Win32NT, PlatformID.Win32Windows);
+        internal static bool IsMono => isMono ??= Type.GetType("Mono.Runtime") != null;
 
         #endregion
     }
