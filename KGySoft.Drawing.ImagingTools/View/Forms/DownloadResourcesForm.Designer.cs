@@ -104,7 +104,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.progress.Location = new System.Drawing.Point(3, 201);
             this.progress.Name = "progress";
             this.progress.Size = new System.Drawing.Size(358, 22);
-            this.progress.SizingGrip = false;
             this.progress.TabIndex = 2;
             this.progress.Text = "drawingProgressStatusStrip1";
             // 

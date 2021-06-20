@@ -23,7 +23,7 @@ using KGySoft.Drawing.ImagingTools.Model;
 
 namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
-    internal class DownloadProgressStatusStrip : ProgressStatusStrip<(int MaximumValue, int CurrentValue)>
+    internal class DownloadProgressStatusStrip : ProgressFooter<(int MaximumValue, int CurrentValue)>
     {
         #region Properties
 

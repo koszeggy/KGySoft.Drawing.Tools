@@ -22,7 +22,7 @@ using System.Windows.Forms;
 
 namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
-    internal class DrawingProgressStatusStrip : ProgressStatusStrip<DrawingProgress>
+    internal class DrawingProgressStatusStrip : ProgressFooter<DrawingProgress>
     {
         #region Fields
 

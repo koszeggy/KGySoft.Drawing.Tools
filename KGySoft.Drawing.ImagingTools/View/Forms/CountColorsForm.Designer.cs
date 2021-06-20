@@ -59,7 +59,6 @@
             this.progress.Location = new System.Drawing.Point(0, 68);
             this.progress.Name = "progress";
             this.progress.Size = new System.Drawing.Size(274, 22);
-            this.progress.SizingGrip = false;
             this.progress.TabIndex = 2;
             this.progress.Text = "drawingProgressStatusStrip1";
             // 
