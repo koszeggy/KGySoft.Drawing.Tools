@@ -33,8 +33,12 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
 
         internal const int WH_CALLWNDPROCRET = 12;
 
+        internal const int IDOK = 1;
+        internal const int IDCANCEL = 2;
+
         internal const string ClassNameDialogBox = "#32770";
         internal const string ClassNameButton = "Button";
+        internal const string ClassNameStatic = "Static";
 
         // ReSharper restore InconsistentNaming
         #endregion

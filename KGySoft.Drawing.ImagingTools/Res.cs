@@ -84,6 +84,18 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Confirmation</summary>
         internal static string TitleConfirmation => Get("Title_Confirmation");
 
+        /// <summary>Open Image</summary>
+        internal static string TitleOpenFileDialog => Get("Title_OpenFileDialog");
+
+        /// <summary>Save Image As</summary>
+        internal static string TitleSaveFileDialog => Get("Title_SaveFileDialog");
+
+        /// <summary>Color</summary>
+        internal static string TitleColorDialog => Get("Title_ColorDialog");
+
+        /// <summary>Browse For Folder</summary>
+        internal static string TitleFolderDialog => Get("Title_FolderDialog");
+
         #endregion
 
         #region Texts

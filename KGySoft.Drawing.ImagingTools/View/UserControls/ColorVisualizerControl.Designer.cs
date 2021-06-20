@@ -35,7 +35,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.tsMenu = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedToolStrip();
             this.btnSelectColor = new System.Windows.Forms.ToolStripButton();
             this.txtColor = new System.Windows.Forms.TextBox();
-            this.colorDialog = new System.Windows.Forms.ColorDialog();
             this.pnlControls.SuspendLayout();
             this.tblColor.SuspendLayout();
             this.pnlRed.SuspendLayout();
@@ -258,11 +257,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.txtColor.TabIndex = 1;
             this.txtColor.WordWrap = false;
             // 
-            // colorDialog
-            // 
-            this.colorDialog.AnyColor = true;
-            this.colorDialog.FullOpen = true;
-            // 
             // ColorVisualizerControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -310,7 +304,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         private System.Windows.Forms.Panel pnlAlpha;
         private System.Windows.Forms.ToolStripButton btnSelectColor;
         private System.Windows.Forms.TextBox txtColor;
-        private System.Windows.Forms.ColorDialog colorDialog;
         private System.Windows.Forms.TrackBar tbAlpha;
         private System.Windows.Forms.TrackBar tbRed;
         private System.Windows.Forms.TrackBar tbGreen;

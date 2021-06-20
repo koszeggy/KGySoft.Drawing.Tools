@@ -23,7 +23,6 @@ using System.Drawing;
 #endif
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Text;
 #if !NET5_0_OR_GREATER
 using System.Windows.Forms;
 #endif
@@ -184,7 +183,7 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
 
         internal static int GetDialogControlId(IntPtr handle) => NativeMethods.GetDlgCtrlID(handle);
 
-        internal static bool SetWindowText(IntPtr handle, string text) => NativeMethods.SetWindowText(handle, text);
+        internal static void SetControlText(IntPtr handle, string text) => NativeMethods.SetWindowText(handle, text);
 
         #endregion
     }

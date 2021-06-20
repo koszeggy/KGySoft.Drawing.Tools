@@ -121,10 +121,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         protected override void ApplyStringResources()
         {
             base.ApplyStringResources();
-
-            // base cannot handle these because components do not have names and dialogs are not even added to components field
-            dlgOpen.Title = Res.Get($"{nameof(dlgOpen)}.{nameof(dlgOpen.Title)}");
-            dlgSave.Title = Res.Get($"{nameof(dlgSave)}.{nameof(dlgSave.Title)}");
+            dlgOpen.Title = Res.TitleOpenFileDialog;
+            dlgSave.Title = Res.TitleSaveFileDialog;
         }
 
         protected override void ApplyViewModel()
