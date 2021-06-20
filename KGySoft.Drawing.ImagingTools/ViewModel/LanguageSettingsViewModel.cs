@@ -149,7 +149,15 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
         }
 
-        protected override void ApplyDisplayLanguage() => UpdateApplyCommandState();
+        protected override void ApplyDisplayLanguage()
+        {
+            // We are saving configuration when new display language has been applied.
+            // We do this indirectly because we have to save the resources even if the new language is applied from editing resources.
+            // Otherwise, it would be possible to select a language without applying it, then editing the resources and applying the new language there,
+            // in which case the configuration may remain unsaved.
+            SaveConfiguration();
+            UpdateApplyCommandState();
+        }
 
         protected override void Dispose(bool disposing)
         {
@@ -205,10 +213,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (!IsModified)
                 return;
 
-            // 1. ) Applying the current language
+            // Applying the current language
             CultureInfo currentLanguage = CurrentLanguage;
             LanguageSettings.DynamicResourceManagersSource = AllowResXResources ? ResourceManagerSources.CompiledAndResX : ResourceManagerSources.CompiledOnly;
 
+            // This will trigger SaveConfiguration, too
             if (Equals(LanguageSettings.DisplayLanguage, currentLanguage))
                 ResHelper.RaiseLanguageChanged();
             else
@@ -219,8 +228,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             ResHelper.SavePendingResources();
             availableResXLanguages = null;
             selectableLanguages = null;
+        }
 
-            // 2.) Saving the configuration
+        private void SaveConfiguration()
+        {
             Configuration.AllowResXResources = AllowResXResources;
             Configuration.UseOSLanguage = UseOSLanguage;
             Configuration.DisplayLanguage = CurrentLanguage;
