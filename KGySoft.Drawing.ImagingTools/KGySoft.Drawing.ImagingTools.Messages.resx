@@ -123,6 +123,9 @@
   <data name="Title_AppNameAndVersionFormat" xml:space="preserve">
     <value>KGy SOFT Imaging Tools v{0}</value>
   </data>
+  <data name="Title_AppNameWithFileNameFormat" xml:space="preserve">
+    <value>{0} [{1}{2}] – {3}</value>
+  </data>
   <data name="Title_NoImage" xml:space="preserve">
     <value>No Image</value>
   </data>
@@ -172,7 +175,7 @@
     <value>Color: {0}</value>
   </data>
   <data name="Title_EditResourcesFormat" xml:space="preserve">
-    <value>Edit Resources - {0}</value>
+    <value>Edit Resources – {0}</value>
   </data>
   <data name="Text_Files" xml:space="preserve">
     <value>files</value>
@@ -574,19 +577,19 @@ Copyright © {2} KGy SOFT. All rights reserved.</value>
     <value>Debugger version: {0}</value>
   </data>
   <data name="Installation_AvailableWithRuntimeFormat" xml:space="preserve">
-    <value>Debugger version: {0} - Runtime: {1}</value>
+    <value>Debugger version: {0} – Runtime: {1}</value>
   </data>
   <data name="Installation_AvailableWithTargetFrameworkFormat" xml:space="preserve">
-    <value>Debugger version: {0} - Target: {1}</value>
+    <value>Debugger version: {0} – Target: {1}</value>
   </data>
   <data name="Installations_StatusInstalledFormat" xml:space="preserve">
     <value>Installed: {0}</value>
   </data>
   <data name="Installations_StatusInstalledWithRuntimeFormat" xml:space="preserve">
-    <value>Installed: {0} - Runtime: {1}</value>
+    <value>Installed: {0} – Runtime: {1}</value>
   </data>
   <data name="Installations_StatusInstalledWithTargetFrameworkFormat" xml:space="preserve">
-    <value>Installed: {0} - Target: {1}</value>
+    <value>Installed: {0} – Target: {1}</value>
   </data>
   <data name="btnZoom.Text" xml:space="preserve">
     <value>Auto Zoom (Alt+Z) / Zoom Options</value>

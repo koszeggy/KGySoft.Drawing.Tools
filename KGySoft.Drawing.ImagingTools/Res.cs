@@ -343,6 +343,9 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>KGy SOFT Imaging Tools v{0}</summary>
         internal static string TitleAppNameAndVersion(Version version) => Get("Title_AppNameAndVersionFormat", version);
 
+        /// <summary>{0} [{1}{2}] – {3}</summary>
+        internal static string TitleAppNameWithFileName(string title, string fileName, string modifiedMark, string caption) => Get("Title_AppNameWithFileNameFormat", title, fileName, modifiedMark, caption);
+
         /// <summary>Type: {0}</summary>
         internal static string TitleType(string type) => Get("Title_TypeFormat", type);
 
@@ -361,7 +364,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Color: {0}</summary>
         internal static string TitleColor(Color color) => Get("Title_ColorFormat", color.Name);
 
-        /// <summary>Edit Resources - {0}</summary>
+        /// <summary>Edit Resources – {0}</summary>
         internal static string TitleEditResources(string langName) => Get("Title_EditResourcesFormat", langName);
 
         #endregion
@@ -625,19 +628,19 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Debugger version: {0}</summary>
         internal static string InstallationAvailable(Version version) => Get("Installation_AvailableFormat", version);
 
-        /// <summary>Debugger version: {0} - Runtime: {1}</summary>
+        /// <summary>Debugger version: {0} – Runtime: {1}</summary>
         internal static string InstallationsAvailableWithRuntime(Version version, string runtimeVersion) => Get("Installation_AvailableWithRuntimeFormat", version, runtimeVersion);
 
-        /// <summary>Debugger version: {0} - Target: {1}</summary>
+        /// <summary>Debugger version: {0} – Target: {1}</summary>
         internal static string InstallationsAvailableWithTargetFramework(Version version, string targetFramework) => Get("Installation_AvailableWithTargetFrameworkFormat", version, targetFramework);
 
         /// <summary>Installed: {0}</summary>
         internal static string InstallationsStatusInstalled(Version version) => Get("Installations_StatusInstalledFormat", version);
 
-        /// <summary>Installed: {0} - Runtime: {1}</summary>
+        /// <summary>Installed: {0} – Runtime: {1}</summary>
         internal static string InstallationsStatusInstalledWithRuntime(Version version, string runtimeVersion) => Get("Installations_StatusInstalledWithRuntimeFormat", version, runtimeVersion);
 
-        /// <summary>Installed: {0} - Target: {1}</summary>
+        /// <summary>Installed: {0} – Target: {1}</summary>
         internal static string InstallationsStatusInstalledWithTargetFramework(Version version, string targetFramework) => Get("Installations_StatusInstalledWithTargetFrameworkFormat", version, targetFramework);
 
         #endregion

@@ -38,6 +38,7 @@
             // btnApply
             // 
             this.btnApply.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnApply.AutoSize = true;
             this.btnApply.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.btnApply.Location = new System.Drawing.Point(176, 6);
             this.btnApply.Name = "btnApply";
@@ -50,6 +51,7 @@
             // btnCancel
             // 
             this.btnCancel.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnCancel.AutoSize = true;
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.btnCancel.Location = new System.Drawing.Point(95, 6);
@@ -62,6 +64,7 @@
             // btnOK
             // 
             this.btnOK.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnOK.AutoSize = true;
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.btnOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.btnOK.Location = new System.Drawing.Point(14, 6);
@@ -79,6 +82,7 @@
             this.Name = "OkCancelButtons";
             this.Size = new System.Drawing.Size(260, 35);
             this.pnlButtons.ResumeLayout(false);
+            this.pnlButtons.PerformLayout();
             this.ResumeLayout(false);
 
         }

@@ -312,11 +312,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
         }
 
-        private void ResetDownloadCommandState()
-        {
-            throw new NotImplementedException();
-        }
-
         private void ApplyResources()
         {
             ResHelper.ReleaseAllResources();
