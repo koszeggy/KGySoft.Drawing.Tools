@@ -212,7 +212,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
 
             Debug.Assert(set is SortableBindingList<ResourceEntry>, "Non-empty set is expected to be a SortableBindingList");
-            string filter = Filter;
+            string filter = Filter.StripAccents();
             SortableBindingList<ResourceEntry> newSet;
             if (filter.Length == 0)
                 newSet = (SortableBindingList<ResourceEntry>)set;
@@ -226,10 +226,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     // Using ordinal search for key, invariant for original text (to allow ignoring char width, for example),
                     // and both ordinal and culture-specific search for the translated text because culture specific fails to match some patterns,
                     // eg.: "Vissza" is not found with the search term "viss" using the Hungarian culture.
+                    // Stripping is because IgnoreNonSpace fails with some accents, eg. "ö" matches "o" using German culture but does not match with Hungarian.
+                    string strippedTranslated;
                     if (entry.Key.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0
                         || invariantInfo.IndexOf(entry.OriginalText, filter, cultureSpecificCompareOptions) >= 0
-                        || entry.TranslatedText.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0
-                        || cultureSpecificInfo.IndexOf(entry.TranslatedText, filter, cultureSpecificCompareOptions) >= 0)
+                        || (strippedTranslated = entry.TranslatedText.StripAccents()).IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0
+                        || cultureSpecificInfo.IndexOf(strippedTranslated, filter, cultureSpecificCompareOptions) >= 0)
                     {
                         newSet.Add(entry);
                     }
