@@ -255,6 +255,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 // x3: 2 for download (retrieving response + downloading content), 1 for saving the file
                 Progress = (task.Files.Count * 3, 0);
                 int downloaded = 0;
+
+                if (!Directory.Exists(Res.ResourcesDir))
+                    Directory.CreateDirectory(Res.ResourcesDir);
+
                 foreach (DownloadInfo downloadInfo in task.Files)
                 {
                     current = downloadInfo.FileName;
