@@ -120,31 +120,31 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.AddPropertyBinding(ViewModel, nameof(VM.ByPixels), nameof(Enabled), txtWidthPx, txtHeightPx);
 
             // Regular WinForms binding behaves a bit better because it does not clear the currently edited text box on parse error
-            // but it fails to sync the other properties properly on Linux/Mono so using KGy SOFT binding on non-Windows systems.
+            // but it fails to sync the other properties properly on Mono so using KGy SOFT binding in Mono systems.
 
             // VM.WidthRatio <-> txtWidthPercent.Text
-            if (OSUtils.IsWindows)
-                AddWinFormsBinding(nameof(VM.WidthRatio), txtWidthPercent, nameof(txtWidthPercent.Text), FormatPercentage, ParsePercentage);
-            else
+            if (OSUtils.IsMono)
                 CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.WidthRatio), txtWidthPercent, nameof(txtWidthPercent.Text), FormatPercentage!, ParsePercentage!);
+            else
+                AddWinFormsBinding(nameof(VM.WidthRatio), txtWidthPercent, nameof(txtWidthPercent.Text), FormatPercentage, ParsePercentage);
 
             // VM.HeightRatio <-> txtHeightPercent.Text
-            if (OSUtils.IsWindows)
-                AddWinFormsBinding(nameof(VM.HeightRatio), txtHeightPercent, nameof(txtHeightPercent.Text), FormatPercentage, ParsePercentage);
-            else
+            if (OSUtils.IsMono)
                 CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.HeightRatio), txtHeightPercent, nameof(txtHeightPercent.Text), FormatPercentage!, ParsePercentage!);
+            else
+                AddWinFormsBinding(nameof(VM.HeightRatio), txtHeightPercent, nameof(txtHeightPercent.Text), FormatPercentage, ParsePercentage);
 
             // VM.Width <-> txtWidthPx.Text
-            if (OSUtils.IsWindows)
-                AddWinFormsBinding(nameof(VM.Width), txtWidthPx, nameof(txtWidthPx.Text), FormatInteger, ParseInteger);
-            else
+            if (OSUtils.IsMono)
                 CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.Width), txtWidthPx, nameof(txtWidthPx.Text), FormatInteger!, ParseInteger!);
+            else
+                AddWinFormsBinding(nameof(VM.Width), txtWidthPx, nameof(txtWidthPx.Text), FormatInteger, ParseInteger);
 
             // VM.Height <-> txtHeightPx.Text
-            if (OSUtils.IsWindows)
-                AddWinFormsBinding(nameof(VM.Height), txtHeightPx, nameof(txtHeightPx.Text), FormatInteger, ParseInteger);
-            else
+            if (OSUtils.IsMono)
                 CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.Height), txtHeightPx, nameof(txtHeightPx.Text), FormatInteger!, ParseInteger!);
+            else
+                AddWinFormsBinding(nameof(VM.Height), txtHeightPx, nameof(txtHeightPx.Text), FormatInteger, ParseInteger);
         }
 
         private void AddWinFormsBinding(string sourceName, IBindableComponent target, string propertyName, Func<object, object> format, Func<object, object> parse)

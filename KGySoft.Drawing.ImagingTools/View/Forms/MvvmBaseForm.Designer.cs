@@ -22,9 +22,7 @@
             this.ClientSize = new System.Drawing.Size(284, 261);
             this.Name = "MvvmBaseForm";
             this.RightToLeftLayout = true;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.ResumeLayout(false);
-
         }
     }
 }

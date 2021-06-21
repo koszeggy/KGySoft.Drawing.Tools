@@ -39,14 +39,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // 
             // gbInstallation
             // 
-            this.gbInstallation.Controls.Add(this.tblButtons);
             this.gbInstallation.Controls.Add(this.pnlStatus);
+            this.gbInstallation.Controls.Add(this.tblButtons);
             this.gbInstallation.Controls.Add(this.tbPath);
             this.gbInstallation.Controls.Add(this.lblPath);
             this.gbInstallation.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gbInstallation.Location = new System.Drawing.Point(3, 89);
             this.gbInstallation.Name = "gbInstallation";
-            this.gbInstallation.Size = new System.Drawing.Size(378, 105);
+            this.gbInstallation.Size = new System.Drawing.Size(378, 119);
             this.gbInstallation.TabIndex = 2;
             this.gbInstallation.TabStop = false;
             this.gbInstallation.Text = "gbInstallation";
@@ -58,8 +58,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.tblButtons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tblButtons.Controls.Add(this.btnRemove, 1, 0);
             this.tblButtons.Controls.Add(this.btnInstall, 0, 0);
-            this.tblButtons.Dock = System.Windows.Forms.DockStyle.Top;
-            this.tblButtons.Location = new System.Drawing.Point(3, 66);
+            this.tblButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.tblButtons.Location = new System.Drawing.Point(3, 79);
             this.tblButtons.Name = "tblButtons";
             this.tblButtons.RowCount = 1;
             this.tblButtons.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -93,21 +93,21 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // 
             this.pnlStatus.Controls.Add(this.lblStatusText);
             this.pnlStatus.Controls.Add(this.lblStatus);
-            this.pnlStatus.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlStatus.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlStatus.Location = new System.Drawing.Point(3, 49);
             this.pnlStatus.Name = "pnlStatus";
-            this.pnlStatus.Size = new System.Drawing.Size(372, 17);
+            this.pnlStatus.Padding = new System.Windows.Forms.Padding(0, 3, 0, 0);
+            this.pnlStatus.Size = new System.Drawing.Size(372, 30);
             this.pnlStatus.TabIndex = 2;
             // 
             // lblStatusText
             // 
-            this.lblStatusText.AutoSize = true;
-            this.lblStatusText.Dock = System.Windows.Forms.DockStyle.Left;
+            this.lblStatusText.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblStatusText.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.lblStatusText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lblStatusText.Location = new System.Drawing.Point(47, 0);
+            this.lblStatusText.Location = new System.Drawing.Point(47, 3);
             this.lblStatusText.Name = "lblStatusText";
-            this.lblStatusText.Size = new System.Drawing.Size(81, 13);
+            this.lblStatusText.Size = new System.Drawing.Size(325, 27);
             this.lblStatusText.TabIndex = 1;
             this.lblStatusText.Text = "lblStatusText";
             // 
@@ -116,7 +116,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.lblStatus.AutoSize = true;
             this.lblStatus.Dock = System.Windows.Forms.DockStyle.Left;
             this.lblStatus.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.lblStatus.Location = new System.Drawing.Point(0, 0);
+            this.lblStatus.Location = new System.Drawing.Point(0, 3);
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Size = new System.Drawing.Size(47, 13);
             this.lblStatus.TabIndex = 0;
@@ -190,7 +190,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(384, 197);
+            this.ClientSize = new System.Drawing.Size(384, 211);
             this.Controls.Add(this.gbInstallation);
             this.Controls.Add(this.gbVisualStudioVersions);
             this.Controls.Add(this.gbAvailableVersion);

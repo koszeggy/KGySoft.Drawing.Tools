@@ -25,7 +25,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.colAuthor = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colImagingToolsVersion = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colDescription = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.progress = new KGySoft.Drawing.ImagingTools.View.Controls.DownloadProgressStatusStrip();
+            this.progress = new KGySoft.Drawing.ImagingTools.View.Controls.DownloadProgressFooter();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridDownloadableResources)).BeginInit();
             this.SuspendLayout();
@@ -104,7 +104,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.progress.Location = new System.Drawing.Point(3, 201);
             this.progress.Name = "progress";
             this.progress.Size = new System.Drawing.Size(358, 22);
-            this.progress.SizingGrip = false;
             this.progress.TabIndex = 2;
             this.progress.Text = "drawingProgressStatusStrip1";
             // 
@@ -130,7 +129,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #endregion
 
-        private Controls.DownloadProgressStatusStrip progress;
+        private Controls.DownloadProgressFooter progress;
         private Controls.AdvancedDataGridView gridDownloadableResources;
         private System.Windows.Forms.BindingSource bindingSource;
         private UserControls.OkCancelButtons okCancelButtons;

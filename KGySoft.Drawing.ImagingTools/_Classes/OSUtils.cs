@@ -31,12 +31,16 @@ namespace KGySoft.Drawing.ImagingTools
         private static bool? isVistaOrLater;
         private static bool? isWin8OrLater;
         private static bool? isWindows;
+        private static bool? isLinux;
+        private static bool? isMono;
 
         #endregion
 
         #region Properties
 
         internal static bool IsWindows => isWindows ??= Environment.OSVersion.Platform.In(PlatformID.Win32NT, PlatformID.Win32Windows);
+        internal static bool IsLinux => isLinux ??= Environment.OSVersion.Platform.In(PlatformID.Unix, (PlatformID)128);
+        internal static bool IsMono => isMono ??= Type.GetType("Mono.Runtime") != null;
 
         internal static bool IsVistaOrLater
         {

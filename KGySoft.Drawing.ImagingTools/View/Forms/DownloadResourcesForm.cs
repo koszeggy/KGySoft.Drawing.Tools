@@ -93,8 +93,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 .AddSource(okCancelButtons.OKButton, nameof(okCancelButtons.OKButton.Click));
             CommandBindings.Add(ViewModel.CancelCommand)
                 .AddSource(okCancelButtons.CancelButton, nameof(okCancelButtons.CancelButton.Click));
-            CommandBindings.Add(OnDirtyStateChangedCommand)
-                .AddSource(gridDownloadableResources, nameof(gridDownloadableResources.CurrentCellDirtyStateChanged));
+            CommandBindings.Add(OnCellContentClickCommand)
+                .AddSource(gridDownloadableResources, nameof(gridDownloadableResources.CellContentClick));
         }
 
         private void InitPropertyBindings()
@@ -113,7 +113,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Command Handlers
 
-        private void OnDirtyStateChangedCommand()
+        private void OnCellContentClickCommand()
         {
             if (gridDownloadableResources.CurrentCell is DataGridViewCheckBoxCell { EditingCellValueChanged: true })
                 gridDownloadableResources.CommitEdit(DataGridViewDataErrorContexts.Commit);

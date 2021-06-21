@@ -58,6 +58,13 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
             internal static extern bool GlobalMemoryStatusEx(ref MEMORYSTATUSEX lpBuffer);
 
+            /// <summary>
+            /// Retrieves the thread identifier of the calling thread.
+            /// </summary>
+            /// <returns>The return value is the thread identifier of the calling thread.</returns>
+            [DllImport("kernel32.dll")]
+            internal static extern uint GetCurrentThreadId();
+
             #endregion
         }
 
@@ -79,6 +86,8 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             return (long)status.ullTotalPhys;
         }
+
+        internal static uint GetCurrentThreadId() => NativeMethods.GetCurrentThreadId();
 
         #endregion
     }

@@ -123,6 +123,9 @@
   <data name="Title_AppNameAndVersionFormat" xml:space="preserve">
     <value>KGy SOFT Imaging Tools v{0}</value>
   </data>
+  <data name="Title_AppNameWithFileNameFormat" xml:space="preserve">
+    <value>{0} [{1}{2}] – {3}</value>
+  </data>
   <data name="Title_NoImage" xml:space="preserve">
     <value>No Image</value>
   </data>
@@ -137,6 +140,18 @@
   </data>
   <data name="Title_Confirmation" xml:space="preserve">
     <value>Confirmation</value>
+  </data>
+  <data name="Title_OpenFileDialog" xml:space="preserve">
+    <value>Open Image</value>
+  </data>
+  <data name="Title_SaveFileDialog" xml:space="preserve">
+    <value>Save Image As</value>
+  </data>
+  <data name="Title_ColorDialog" xml:space="preserve">
+    <value>Select Color</value>
+  </data>
+  <data name="Title_FolderDialog" xml:space="preserve">
+    <value>Browse For Folder</value>
   </data>
   <data name="Text_Separator" xml:space="preserve">
     <value>; </value>
@@ -160,7 +175,7 @@
     <value>Color: {0}</value>
   </data>
   <data name="Title_EditResourcesFormat" xml:space="preserve">
-    <value>Edit Resources - {0}</value>
+    <value>Edit Resources – {0}</value>
   </data>
   <data name="Text_Files" xml:space="preserve">
     <value>files</value>
@@ -562,19 +577,19 @@ Copyright © {2} KGy SOFT. All rights reserved.</value>
     <value>Debugger version: {0}</value>
   </data>
   <data name="Installation_AvailableWithRuntimeFormat" xml:space="preserve">
-    <value>Debugger version: {0} - Runtime: {1}</value>
+    <value>Debugger version: {0} – Runtime: {1}</value>
   </data>
   <data name="Installation_AvailableWithTargetFrameworkFormat" xml:space="preserve">
-    <value>Debugger version: {0} - Target: {1}</value>
+    <value>Debugger version: {0} – Target: {1}</value>
   </data>
   <data name="Installations_StatusInstalledFormat" xml:space="preserve">
     <value>Installed: {0}</value>
   </data>
   <data name="Installations_StatusInstalledWithRuntimeFormat" xml:space="preserve">
-    <value>Installed: {0} - Runtime: {1}</value>
+    <value>Installed: {0} – Runtime: {1}</value>
   </data>
   <data name="Installations_StatusInstalledWithTargetFrameworkFormat" xml:space="preserve">
-    <value>Installed: {0} - Target: {1}</value>
+    <value>Installed: {0} – Target: {1}</value>
   </data>
   <data name="btnZoom.Text" xml:space="preserve">
     <value>Auto Zoom (Alt+Z) / Zoom Options</value>
@@ -659,12 +674,6 @@ Copyright © {2} KGy SOFT. All rights reserved.</value>
   </data>
   <data name="miBackColor.Text" xml:space="preserve">
     <value>Back Color</value>
-  </data>
-  <data name="dlgOpen.Title" xml:space="preserve">
-    <value>Open Image</value>
-  </data>
-  <data name="dlgSave.Title" xml:space="preserve">
-    <value>Save Image As</value>
   </data>
   <data name="miBackColorDefault.Text" xml:space="preserve">
     <value>Default</value>
@@ -860,7 +869,7 @@ Newly generated resources will contain English texts prefixed with "[T]". You ca
     <value>Resource Entries</value>
   </data>
   <data name="lblFilter.Text" xml:space="preserve">
-    <value>Filter:</value>
+    <value>&amp;Filter:</value>
   </data>
   <data name="txtFilter.ToolTipText" xml:space="preserve">
     <value>Filtering ignores case, accents and character width.
@@ -919,5 +928,59 @@ Tip: use '[T]' to filter untranslated texts.</value>
   </data>
   <data name="miAbout.Text" xml:space="preserve">
     <value>About...</value>
+  </data>
+  <data name="Button.1" xml:space="preserve">
+    <value>&amp;OK</value>
+  </data>
+  <data name="Button.2" xml:space="preserve">
+    <value>&amp;Cancel</value>
+  </data>
+  <data name="Button.6" xml:space="preserve">
+    <value>&amp;Yes</value>
+  </data>
+  <data name="Button.7" xml:space="preserve">
+    <value>&amp;No</value>
+  </data>
+  <data name="Static.ColorDialog.0" xml:space="preserve">
+    <value>&amp;Basic Colors:</value>
+  </data>
+  <data name="Static.ColorDialog.1" xml:space="preserve">
+    <value>Custo&amp;m Colors:</value>
+  </data>
+  <data name="Button.719" xml:space="preserve">
+    <value>&amp;Define Custom Colors >></value>
+  </data>
+  <data name="Static.730" xml:space="preserve">
+    <value>Result</value>
+  </data>
+  <data name="Static.731" xml:space="preserve">
+    <value> color</value>
+  </data>
+  <data name="Static.723" xml:space="preserve">
+    <value>Hu&amp;e:</value>
+  </data>
+  <data name="Static.724" xml:space="preserve">
+    <value>&amp;Sat:</value>
+  </data>
+  <data name="Static.725" xml:space="preserve">
+    <value>&amp;Lum:</value>
+  </data>
+  <data name="Static.726" xml:space="preserve">
+    <value>&amp;Red:</value>
+  </data>
+  <data name="Static.727" xml:space="preserve">
+    <value>&amp;Green:</value>
+  </data>
+  <data name="Static.728" xml:space="preserve">
+    <value>&amp;Blue:</value>
+  </data>
+  <data name="Button.712" xml:space="preserve">
+    <value>&amp;Add to Custom Colors</value>
+  </data>
+  <data name="Static.14146" xml:space="preserve">
+    <value>Select the target folder of the installation.</value>
+  </data>
+  <data name="Button.14150" xml:space="preserve">
+    <value>&amp;Make New Folder</value>
   </data>
 </root>

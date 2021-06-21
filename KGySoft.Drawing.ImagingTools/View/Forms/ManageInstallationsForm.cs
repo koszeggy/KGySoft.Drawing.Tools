@@ -17,7 +17,6 @@
 #region Usings
 
 using System.Collections.Generic;
-using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
@@ -114,11 +113,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 .AddSource(btnRemove, nameof(btnRemove.Click));
         }
 
-        private string? SelectFolder()
-        {
-            using (var dlg = new FolderBrowserDialog { SelectedPath = ViewModel.CurrentPath })
-                return dlg.ShowDialog() != DialogResult.OK ? null : dlg.SelectedPath;
-        }
+        private string? SelectFolder() => Dialogs.SelectFolder(ViewModel.CurrentPath);
 
         #endregion
 

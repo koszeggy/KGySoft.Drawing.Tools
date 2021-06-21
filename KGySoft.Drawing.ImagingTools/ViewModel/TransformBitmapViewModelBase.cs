@@ -193,7 +193,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         protected void BeginGeneratePreview()
         {
-            // sending cancel request to pending generate but the completion is awaited on a pool thread to prevent deadlocks
+            // sending cancel request to pending generate but the completion is awaited on a pool thread to prevent the UI from lagging
             CancelRunningGenerate();
             GeneratePreviewError = null;
 
@@ -205,8 +205,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 return;
             }
 
+            // Not awaiting the canceled task here to prevent the UI from lagging.
             IsGenerating = true;
-            ThreadPool.QueueUserWorkItem(DoGenerate!, CreateGenerateTask());
+            ThreadPool.QueueUserWorkItem(DoGenerate, CreateGenerateTask());
         }
 
         protected abstract GenerateTaskBase CreateGenerateTask();
@@ -249,8 +250,21 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             var task = (GenerateTaskBase)state;
 
-            // this is a fairly large lock ensuring that only one generate task is running at once
-            lock (syncRoot)
+            // This is a fairly large lock ensuring that only one generate task is running at once.
+            // Instead of this sync we could await the canceled task before queuing a new one but then the UI can freeze for some moments.
+            // (It wouldn't cause deadlocks because here every TryInvokeSync is after completing the task.)
+            // But many threads can be queued, which all stop here before acquiring the lock. To prevent spawning too many threads we
+            // don't use a regular lock here but a bit active spinning that can exit without taking the lock if the task gets outdated.
+            while (!Monitor.TryEnter(syncRoot, 1))
+            {
+
+                if (!IsDisposed && MatchesSettings(task))
+                    continue;
+                task.Dispose();
+                return;
+            }
+
+            try
             {
                 // lost race
                 if (IsDisposed || !MatchesSettings(task))
@@ -259,6 +273,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     return;
                 }
 
+                // Awaiting the previous unfinished task. This could be also in BeginGeneratePreview but that may freeze the UI for some time.
                 Debug.Assert(activeTask?.IsCanceled != false);
                 WaitForPendingGenerate();
                 Debug.Assert(activeTask == null);
@@ -273,6 +288,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     // original image
                     if (MatchesOriginal(task))
                     {
+                        task.SetCompleted();
                         TryInvokeSync(() =>
                         {
                             SetPreview(originalImage);
@@ -308,8 +324,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                             // ReSharper disable once AccessToDisposedClosure - false alarm, newTask.Dispose() is called only on error
                             IsCancelRequestedCallback = () => task.IsCanceled,
                             ThrowIfCanceled = false,
-                            State = task,
-                            Progress = drawingProgressManager
+                            Progress = drawingProgressManager,
                         });
 
                         // Waiting to be finished or canceled. As we are on a different thread blocking wait is alright
@@ -343,6 +358,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     task.Dispose();
                     activeTask = null;
                 }
+            }
+            finally
+            {
+                Monitor.Exit(syncRoot);
             }
         }
 

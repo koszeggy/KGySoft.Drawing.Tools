@@ -85,6 +85,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             handleCreated = new ManualResetEventSlim();
             ApplyRightToLeft();
             InitializeComponent();
+            StartPosition = OSUtils.IsMono && OSUtils.IsWindows ? FormStartPosition.WindowsDefaultLocation : FormStartPosition.CenterParent;
+
 
             // occurs in design mode but DesignMode is false for grandchild forms
             if (viewModel == null!)

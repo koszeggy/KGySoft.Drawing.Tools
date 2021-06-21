@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -29,6 +30,7 @@ using System.Xml;
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.Resources;
 using KGySoft.Serialization.Xml;
 
 #endregion
@@ -106,6 +108,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Fields
 
         private volatile AsyncTaskBase? activeTask;
+        private volatile List<LocalizationInfo> availableResources = new List<LocalizationInfo>();
         private volatile HashSet<LocalizationInfo> downloadedCultures = new HashSet<LocalizationInfo>();
 
         #endregion
@@ -195,14 +198,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
                 using var reader = XmlReader.Create(new StreamReader(new MemoryStream(data), Encoding.UTF8));
                 reader.ReadStartElement("manifest");
-                var itemsList = new List<LocalizationInfo>();
+                List<LocalizationInfo> itemsList = availableResources;
                 XmlSerializer.DeserializeContent(reader, itemsList);
 
                 TryInvokeSync(() =>
                 {
-                    var items = new DownloadableResourceItemCollection(itemsList);
-                    items.ListChanged += Items_ListChanged;
-                    Items = items;
+                    ResetItems();
                     IsProcessing = false;
                 });
             }
@@ -219,6 +220,19 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 task.Dispose();
                 activeTask = null;
             }
+        }
+
+        private void ResetItems()
+        {
+            DownloadableResourceItemCollection? oldItems = Items;
+            var items = new DownloadableResourceItemCollection(availableResources);
+            if (oldItems?.IsSorted == true)
+                items.ApplySort(oldItems.SortProperty!, ((IBindingList)oldItems).SortDirection);
+
+            items.ListChanged += Items_ListChanged;
+            Items = items;
+            DownloadCommandState.Enabled = false;
+            oldItems?.Dispose();
         }
 
         private void BeginDownloadResources(List<DownloadInfo> toDownload, bool overwrite)
@@ -270,6 +284,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 TryInvokeSync(() =>
                 {
                     IsProcessing = false;
+                    if (downloadedCultures.Count > 0)
+                        ApplyResources();
                     if (downloadedCultures.All(i => ResHelper.TryGetCulture(i.CultureName, out var _)))
                         ShowInfo(Res.InfoMessageDownloadCompleted(downloaded));
                     else
@@ -283,9 +299,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 TryInvokeSync(() =>
                 {
                     IsProcessing = false;
-                    DownloadCommandState.Enabled = true;
+                    if (downloadedCultures.Count > 0)
+                        ApplyResources();
+                    DownloadCommandState.Enabled = Items?.Any(i => i.Selected) == true;
+                    ShowError(Res.ErrorMessageFailedToDownloadResource(current, e.Message));
                 });
-                ShowError(Res.ErrorMessageFailedToDownloadResource(current, e.Message));
             }
             finally
             {
@@ -293,6 +311,20 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 activeTask = null;
             }
         }
+
+        private void ApplyResources()
+        {
+            ResHelper.ReleaseAllResources();
+            CultureInfo current = LanguageSettings.DisplayLanguage;
+            if (downloadedCultures.All(c => c.CultureName != current.Name))
+                return;
+
+            // The current language is among the downloaded ones: applying it
+            LanguageSettings.DynamicResourceManagersSource = ResourceManagerSources.CompiledAndResX;
+            ResHelper.RaiseLanguageChanged();
+        }
+
+        protected override void ApplyDisplayLanguage() => ResetItems();
 
         /// <summary>
         /// Returns the downloaded content, or null if task was canceled.

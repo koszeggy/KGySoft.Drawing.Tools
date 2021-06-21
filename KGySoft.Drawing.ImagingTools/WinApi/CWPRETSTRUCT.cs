@@ -1,9 +1,9 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: WindowsUtils.cs
+//  File: CWPRETSTRUCT.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2020 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2021 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution. If not, then this file is considered as
@@ -17,26 +17,23 @@
 #region Usings
 
 using System;
-
-using KGySoft.CoreLibraries;
+using System.Runtime.InteropServices;
 
 #endregion
 
-namespace KGySoft.Drawing.DebuggerVisualizers.Test
+namespace KGySoft.Drawing.ImagingTools.WinApi
 {
-    internal static class OSUtils
+    [StructLayout(LayoutKind.Sequential)]
+    // ReSharper disable once InconsistentNaming
+    internal struct CWPRETSTRUCT
     {
         #region Fields
 
-        private static bool? isWindows;
-        private static bool? isMono;
-
-        #endregion
-
-        #region Properties
-
-        internal static bool IsWindows => isWindows ??= Environment.OSVersion.Platform.In(PlatformID.Win32NT, PlatformID.Win32Windows);
-        internal static bool IsMono => isMono ??= Type.GetType("Mono.Runtime") != null;
+        internal IntPtr lResult;
+        internal IntPtr lParam;
+        internal IntPtr wParam;
+        internal uint message;
+        internal IntPtr hwnd;
 
         #endregion
     }

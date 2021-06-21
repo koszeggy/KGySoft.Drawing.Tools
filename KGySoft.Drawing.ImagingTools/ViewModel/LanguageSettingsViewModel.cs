@@ -19,9 +19,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
+
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Resources;
@@ -37,7 +36,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private List<CultureInfo>? neutralLanguages;
         private HashSet<CultureInfo>? availableResXLanguages;
         private List<CultureInfo>? selectableLanguages;
-        private CultureInfo? dirtyCulture;
 
         #endregion
 
@@ -108,6 +106,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal LanguageSettingsViewModel()
         {
+            ResHelper.SavePendingResources(); // generates resource file for possibly non-existing language came from configuration
             CurrentLanguage = LanguageSettings.DisplayLanguage;
             AllowResXResources = Configuration.AllowResXResources;
             UseOSLanguage = Configuration.UseOSLanguage;
@@ -152,7 +151,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         protected override void ApplyDisplayLanguage()
         {
-            Debug.Assert(Equals(LanguageSettings.DisplayLanguage, CurrentLanguage), "Only the selected language should be applied");
+            // We are saving configuration when new display language has been applied.
+            // We do this indirectly because we have to save the resources even if the new language is applied from editing resources.
+            // Otherwise, it would be possible to select a language without applying it, then editing the resources and applying the new language there,
+            // in which case the configuration may remain unsaved.
+            SaveConfiguration();
             UpdateApplyCommandState();
         }
 
@@ -200,7 +203,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             // or when turning on/off .resx resources for the default language matters because it also has a resource file
             CultureInfo selected = CurrentLanguage;
             ApplyCommandState.Enabled = !Equals(selected, LanguageSettings.DisplayLanguage)
-                || selected.Equals(dirtyCulture)
                 || (Equals(selected, Res.DefaultLanguage)
                     && (AllowResXResources ^ LanguageSettings.DynamicResourceManagersSource != ResourceManagerSources.CompiledOnly)
                     && AvailableLanguages.Contains(Res.DefaultLanguage));
@@ -211,11 +213,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (!IsModified)
                 return;
 
-            // 1. ) Applying the current language
-            dirtyCulture = null;
+            // Applying the current language
             CultureInfo currentLanguage = CurrentLanguage;
             LanguageSettings.DynamicResourceManagersSource = AllowResXResources ? ResourceManagerSources.CompiledAndResX : ResourceManagerSources.CompiledOnly;
 
+            // This will trigger SaveConfiguration, too
             if (Equals(LanguageSettings.DisplayLanguage, currentLanguage))
                 ResHelper.RaiseLanguageChanged();
             else
@@ -226,8 +228,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             ResHelper.SavePendingResources();
             availableResXLanguages = null;
             selectableLanguages = null;
+        }
 
-            // 2.) Saving the configuration
+        private void SaveConfiguration()
+        {
             Configuration.AllowResXResources = AllowResXResources;
             Configuration.UseOSLanguage = UseOSLanguage;
             Configuration.DisplayLanguage = CurrentLanguage;
@@ -239,7 +243,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             {
                 ShowError(Res.ErrorMessageFailedToSaveSettings(e.Message));
             }
-
         }
 
         #endregion
@@ -255,25 +258,17 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             using IViewModel viewModel = ViewModelFactory.CreateEditResources(CurrentLanguage);
             ShowChildViewCallback?.Invoke(viewModel);
-
-            // If the language was edited, then enabling apply even if it was disabled
-            dirtyCulture = viewModel.IsModified ? CurrentLanguage : null;
             availableResXLanguages = null;
             selectableLanguages = null;
-            UpdateApplyCommandState();
         }
 
         private void OnDownloadResourcesCommand()
         {
             using IViewModel<ICollection<LocalizationInfo>> viewModel = ViewModelFactory.CreateDownloadResources();
             ShowChildViewCallback?.Invoke(viewModel);
-
-            // If the language was overwritten, then enabling apply even if it was disabled
-            dirtyCulture = viewModel.IsModified && viewModel.GetEditedModel().Any(i => i.CultureName == CurrentLanguage.Name) ? CurrentLanguage : null;
             availableResXLanguages = null;
             selectableLanguages = null;
             ResetLanguages();
-            UpdateApplyCommandState();
         }
 
         #endregion

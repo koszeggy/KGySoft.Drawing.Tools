@@ -86,11 +86,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             // Vista or later: using System FlayStyle so animation is enabled with theming and text is not misplaced with classic themes
             bool visualStylesEnabled = Application.RenderWithVisualStyles;
-            checkBox.FlatStyle = OSUtils.IsVistaOrLater ? FlatStyle.System
+            checkBox.FlatStyle = OSUtils.IsMono ? FlatStyle.Standard
+                : OSUtils.IsVistaOrLater ? FlatStyle.System
                 // Windows XP: Using standard style with themes so CheckBox color can be set correctly, and using System with classic theme for good placement
-                : OSUtils.IsWindows ? visualStylesEnabled ? FlatStyle.Standard : FlatStyle.System
-                // Non-windows (eg. Mono/Linux): Standard for best placement
-                : FlatStyle.Standard;
+                : visualStylesEnabled ? FlatStyle.Standard : FlatStyle.System;
 
             // GroupBox.FlayStyle must be the same as CheckBox; otherwise, System appearance would be transparent
             FlatStyle = checkBox.FlatStyle;

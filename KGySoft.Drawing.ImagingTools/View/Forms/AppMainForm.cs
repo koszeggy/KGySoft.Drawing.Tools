@@ -65,7 +65,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             : base(viewModel)
         {
             InitializeComponent();
-            okCancelButtons.Visible = false;
         }
 
         #endregion
@@ -134,7 +133,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             string? fileName = ViewModel.FileName;
             string name = fileName == null ? Res.TextUnnamed : Path.GetFileName(fileName);
-            return String.IsNullOrEmpty(value) ? title! : $"{title} [{name}{(ViewModel.IsModified ? "*" : String.Empty)}] - {value}";
+            return String.IsNullOrEmpty(value) ? title! : Res.TitleAppNameWithFileName(title!, name, ViewModel.IsModified ? "*" : String.Empty, value!);
         }
 
         #endregion

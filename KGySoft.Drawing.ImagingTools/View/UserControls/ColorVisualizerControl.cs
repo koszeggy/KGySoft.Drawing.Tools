@@ -297,10 +297,10 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             if (readOnly)
                 return;
 
-            colorDialog.Color = color;
-            if (colorDialog.ShowDialog(this) == DialogResult.OK)
+            Color? newColor = Dialogs.PickColor(color);
+            if (newColor.HasValue)
             {
-                Color = colorDialog.Color;
+                Color = newColor.Value;
                 OnColorEdited();
             }
         }

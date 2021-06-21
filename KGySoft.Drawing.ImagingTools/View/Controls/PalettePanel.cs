@@ -344,8 +344,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             // When scrolling by mouse, delta is always +-120 so this will be 1 change on the scrollbar.
             // But we collect the fractional changes caused by the touchpad scrolling so it will not be lost either.
             int totalDelta = scrollFraction + e.Delta;
-            scrollFraction = totalDelta % SystemInformation.MouseWheelScrollDelta;
-            int newValue = sbPalette.Value - totalDelta / SystemInformation.MouseWheelScrollDelta;
+            scrollFraction = totalDelta % MouseWheelScrollDelta;
+            int newValue = sbPalette.Value - totalDelta / MouseWheelScrollDelta;
             if (newValue < 0)
                 newValue = 0;
             else if (newValue > sbPalette.Maximum - sbPalette.LargeChange + 1)

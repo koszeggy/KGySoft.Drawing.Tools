@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: DrawingProgressStatusStrip.cs
+//  File: DownloadProgressFooter.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2020 - All Rights Reserved
 //
@@ -17,16 +17,26 @@
 #region Usings
 
 using System.Windows.Forms;
+using KGySoft.Drawing.ImagingTools.Model;
 
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
-    internal class DrawingProgressStatusStrip : ProgressStatusStrip<DrawingProgress>
+    internal class DownloadProgressFooter : ProgressFooter<(int MaximumValue, int CurrentValue)>
     {
-        #region Fields
+        #region Properties
 
-        private DrawingProgress? displayedProgress;
+        internal override bool ProgressVisible
+        {
+            get => base.ProgressVisible;
+            set
+            {
+                if (value)
+                    ProgressText = Res.TextDownloading;
+                base.ProgressVisible = value;
+            }
+        }
 
         #endregion
 
@@ -34,12 +44,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         protected override void UpdateProgress()
         {
-            DrawingProgress progress = Progress;
-            if (progress == displayedProgress)
-                return;
-
-            if (displayedProgress?.OperationType != progress.OperationType)
-                ProgressText = Res.Get(progress.OperationType);
+            var progress = Progress;
             if (progress.MaximumValue == 0)
                 ProgressStyle = ProgressBarStyle.Marquee;
             else
@@ -48,8 +53,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 Maximum = progress.MaximumValue;
                 Value = progress.CurrentValue;
             }
-
-            displayedProgress = progress;
         }
 
         #endregion

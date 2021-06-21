@@ -43,6 +43,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             InitializeComponent();
 
+            // Mono/Windows: exiting because ToolTips throw an exception if set for an embedded control and
+            // since they don't appear for negative padding there is simply no place for them.
+            if (OSUtils.IsMono && OSUtils.IsWindows)
+                return;
+
             ValidationMapping[nameof(viewModel.PixelFormat)] = gbPixelFormat.CheckBox;
             ValidationMapping[nameof(viewModel.QuantizerSelectorViewModel.Quantizer)] = gbQuantizer.CheckBox;
             ValidationMapping[nameof(viewModel.DithererSelectorViewModel.Ditherer)] = gbDitherer.CheckBox;
