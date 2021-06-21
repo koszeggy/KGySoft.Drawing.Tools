@@ -21,6 +21,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Resources;
@@ -55,6 +56,8 @@ namespace KGySoft.Drawing.ImagingTools
         // ReSharper disable once CollectionNeverUpdated.Local
         private static readonly Cache<Type, PropertyInfo[]?> localizableStringPropertiesCache = new Cache<Type, PropertyInfo[]?>(GetLocalizableStringProperties);
 
+        private static string? resourcesDir;
+
         #endregion
 
         #region Properties
@@ -63,7 +66,19 @@ namespace KGySoft.Drawing.ImagingTools
 
         internal static CultureInfo OSLanguage { get; }
         internal static CultureInfo DefaultLanguage { get; }
-        internal static string ResourcesDir => resourceManager.ResXResourcesDir;
+        internal static string ResourcesDir
+        {
+            get
+            {
+                if (resourcesDir == null)
+                {
+                    string path = resourceManager.ResXResourcesDir;
+                    resourcesDir = Path.IsPathRooted(path) ? Path.GetFullPath(path) : Path.GetFullPath(Path.Combine(Files.GetExecutingPath(), path));
+                }
+
+                return resourcesDir;
+            }
+        }
 
         #endregion
 
