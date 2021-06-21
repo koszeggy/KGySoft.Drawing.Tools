@@ -273,8 +273,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     if (data == null)
                         return;
 
-                    // if there was no issue with downloading, then saving the file
-                    File.WriteAllBytes(downloadInfo.LocalPath, data);
+                    // If there was no issue with downloading, then saving the file.
+                    // Using StreamReader/Writer instead of File.WriteAllBytes so the newlines are adjusted to the current platform
+                    using var reader = new StreamReader(new MemoryStream(data), Encoding.UTF8);
+                    using var writer = File.CreateText(downloadInfo.LocalPath);
+                    while (!reader.EndOfStream)
+                        writer.WriteLine(reader.ReadLine());
+
                     downloadedCultures.Add(downloadInfo.Info);
                     IncrementProgress();
                     downloaded += 1;
