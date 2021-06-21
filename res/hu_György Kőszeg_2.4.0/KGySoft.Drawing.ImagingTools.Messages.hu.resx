@@ -84,6 +84,27 @@
   <data name="btnZoom.Text">
     <value>Auto nagyítás (Alt+Z) / Nagyítási lehetőségek</value>
   </data>
+  <data name="Button.1">
+    <value>&amp;OK</value>
+  </data>
+  <data name="Button.14150">
+    <value>Új &amp;mappa</value>
+  </data>
+  <data name="Button.2">
+    <value>&amp;Mégse</value>
+  </data>
+  <data name="Button.6">
+    <value>&amp;Igen</value>
+  </data>
+  <data name="Button.7">
+    <value>&amp;Nem</value>
+  </data>
+  <data name="Button.712">
+    <value>&amp;Hozzáadás az egyedi színekhez</value>
+  </data>
+  <data name="Button.719">
+    <value>Egyedi színek &amp;definiálása &gt;&gt;</value>
+  </data>
   <data name="chbBlue.Text">
     <value>Kék</value>
   </data>
@@ -170,12 +191,6 @@ Meg lehet próbálni újragenerálni, de akkor az eredeti tartalom törlődni fo
   </data>
   <data name="CountColorsForm.Text">
     <value>Színek száma</value>
-  </data>
-  <data name="dlgOpen.Title">
-    <value>Kép megnyitása</value>
-  </data>
-  <data name="dlgSave.Title">
-    <value>Kép mentése</value>
   </data>
   <data name="DownloadResourcesForm.Text">
     <value>Nyelvi fájlok letöltése</value>
@@ -477,25 +492,25 @@ Felbontás: {5}x{6} DPI</value>
     <value>Debugger verzió: {0}</value>
   </data>
   <data name="Installation_AvailableWithRuntimeFormat">
-    <value>Debugger verzió: {0} - Runtime: {1}</value>
+    <value>Debugger verzió: {0} – Runtime: {1}</value>
   </data>
   <data name="Installation_AvailableWithTargetFrameworkFormat">
-    <value>Debugger verzió: {0} - Platform: {1}</value>
+    <value>Debugger verzió: {0} – Platform: {1}</value>
   </data>
   <data name="Installations_CustomDir">
     <value>&lt;egyedi útvonal...&gt;</value>
   </data>
   <data name="Installations_NotAvailable">
-    <value>- (Hiányzik a KGySoft.Drawing.DebuggerVisualizers.dll fájl)</value>
+    <value>— (Hiányzik a KGySoft.Drawing.DebuggerVisualizers.dll fájl)</value>
   </data>
   <data name="Installations_StatusInstalledFormat">
     <value>Telepítve: {0}</value>
   </data>
   <data name="Installations_StatusInstalledWithRuntimeFormat">
-    <value>Telepítve: {0} - Runtime: {1}</value>
+    <value>Telepítve: {0} – Runtime: {1}</value>
   </data>
   <data name="Installations_StatusInstalledWithTargetFrameworkFormat">
-    <value>Telepítve: {0} - Platform: {1}</value>
+    <value>Telepítve: {0} – Platform: {1}</value>
   </data>
   <data name="Installations_StatusNotInstalled">
     <value>Nincs telepítve</value>
@@ -507,7 +522,7 @@ Felbontás: {5}x{6} DPI</value>
     <value>Nyelvi beállítások</value>
   </data>
   <data name="lblFilter.Text">
-    <value>Szűrő:</value>
+    <value>&amp;Szűrő:</value>
   </data>
   <data name="lblHeight.Text">
     <value>Magasság:</value>
@@ -635,6 +650,39 @@ Felbontás: {5}x{6} DPI</value>
   <data name="ResizeBitmapForm.Text">
     <value>Átméretezés</value>
   </data>
+  <data name="Static.14146">
+    <value>Mappa választása a debugger visualizer telepítéshez.</value>
+  </data>
+  <data name="Static.723">
+    <value>&amp;Árny:</value>
+  </data>
+  <data name="Static.724">
+    <value>&amp;Tel:</value>
+  </data>
+  <data name="Static.725">
+    <value>&amp;Fény:</value>
+  </data>
+  <data name="Static.726">
+    <value>&amp;Piros:</value>
+  </data>
+  <data name="Static.727">
+    <value>&amp;Zöld:</value>
+  </data>
+  <data name="Static.728">
+    <value>&amp;Kék:</value>
+  </data>
+  <data name="Static.730">
+    <value>Cél</value>
+  </data>
+  <data name="Static.731">
+    <value>szín</value>
+  </data>
+  <data name="Static.ColorDialog.0">
+    <value>&amp;Alapszínek:</value>
+  </data>
+  <data name="Static.ColorDialog.1">
+    <value>&amp;Egyedi színek:</value>
+  </data>
   <data name="tbAlpha.ToolTipText">
     <value>Alfa színkomponens (átlátszóság)</value>
   </data>
@@ -704,6 +752,12 @@ Felbontás: {5}x{6} DPI</value>
   <data name="Title_AppNameAndVersionFormat">
     <value>KGy SOFT Imaging Tools v{0}</value>
   </data>
+  <data name="Title_AppNameWithFileNameFormat">
+    <value>{0} [{1}{2}] – {3}</value>
+  </data>
+  <data name="Title_ColorDialog">
+    <value>Szín kiválasztása</value>
+  </data>
   <data name="Title_ColorFormat">
     <value>Szín: {0}</value>
   </data>
@@ -711,10 +765,13 @@ Felbontás: {5}x{6} DPI</value>
     <value>Megerősítés</value>
   </data>
   <data name="Title_EditResourcesFormat">
-    <value>Szövegek szerkesztése - {0}</value>
+    <value>Szövegek szerkesztése – {0}</value>
   </data>
   <data name="Title_Error">
     <value>Hiba</value>
+  </data>
+  <data name="Title_FolderDialog">
+    <value>Mappa kiválasztása</value>
   </data>
   <data name="Title_Information">
     <value>Információ</value>
@@ -722,11 +779,17 @@ Felbontás: {5}x{6} DPI</value>
   <data name="Title_NoImage">
     <value>Nincs kép</value>
   </data>
+  <data name="Title_OpenFileDialog">
+    <value>Kép megnyitása</value>
+  </data>
   <data name="Title_OriginalVisibleClipFormat">
     <value>Eredeti látható levágási tartomány: {{X = {0}, Y = {1}, Méret = {2}x{3}}}</value>
   </data>
   <data name="Title_PaletteCountFormat">
     <value>Palettaszínek száma: {0}</value>
+  </data>
+  <data name="Title_SaveFileDialog">
+    <value>Kép mentése</value>
   </data>
   <data name="Title_SizeFormat">
     <value>Méret: {0}x{1}</value>
