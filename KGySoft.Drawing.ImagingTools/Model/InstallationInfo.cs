@@ -152,7 +152,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
         public string? TargetFramework
         {
             get;
-#if NET40 || NET45
+#if !NET35
             private set; 
 #endif
         }
