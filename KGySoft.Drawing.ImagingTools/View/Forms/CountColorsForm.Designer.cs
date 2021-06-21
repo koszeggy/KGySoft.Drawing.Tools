@@ -18,7 +18,7 @@
             this.lblCountColorsStatus = new System.Windows.Forms.Label();
             this.pnlButton = new System.Windows.Forms.Panel();
             this.btnClose = new System.Windows.Forms.Button();
-            this.progress = new KGySoft.Drawing.ImagingTools.View.Controls.DrawingProgressStatusStrip();
+            this.progress = new KGySoft.Drawing.ImagingTools.View.Controls.DrawingProgressFooter();
             this.pnlButton.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -83,7 +83,7 @@
 
         #endregion
 
-        private Controls.DrawingProgressStatusStrip progress;
+        private Controls.DrawingProgressFooter progress;
         private System.Windows.Forms.Label lblCountColorsStatus;
         private System.Windows.Forms.Panel pnlButton;
         private System.Windows.Forms.Button btnClose;

@@ -103,6 +103,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             }
         }
 
+        protected override Padding DefaultPadding => new Padding(3, 3, 8, 3);
+
         #endregion
 
         #endregion
@@ -112,7 +114,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         protected ProgressFooter()
         {
             Dock = DockStyle.Bottom;
-            Padding = new Padding(3);
             lblProgress = new Label
             {
                 Name = nameof(lblProgress),

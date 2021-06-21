@@ -74,9 +74,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // imageViewer
             // 
             this.imageViewer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.imageViewer.Location = new System.Drawing.Point(0, 49);
+            this.imageViewer.Location = new System.Drawing.Point(3, 49);
             this.imageViewer.Name = "imageViewer";
-            this.imageViewer.Size = new System.Drawing.Size(334, 106);
+            this.imageViewer.Size = new System.Drawing.Size(328, 106);
             this.imageViewer.TabIndex = 1;
             this.imageViewer.TabStop = false;
             // 
@@ -88,21 +88,21 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.lblNotification.Dock = System.Windows.Forms.DockStyle.Top;
             this.lblNotification.ForeColor = System.Drawing.Color.Black;
             this.lblNotification.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.lblNotification.Location = new System.Drawing.Point(0, 25);
+            this.lblNotification.Location = new System.Drawing.Point(3, 25);
             this.lblNotification.Name = "lblNotification";
             this.lblNotification.Padding = new System.Windows.Forms.Padding(3, 3, 20, 3);
-            this.lblNotification.Size = new System.Drawing.Size(334, 24);
+            this.lblNotification.Size = new System.Drawing.Size(328, 24);
             this.lblNotification.TabIndex = 4;
             this.lblNotification.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // splitter
             // 
             this.splitter.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.splitter.Location = new System.Drawing.Point(0, 155);
+            this.splitter.Location = new System.Drawing.Point(3, 155);
             this.splitter.MinExtra = 16;
             this.splitter.MinSize = 50;
             this.splitter.Name = "splitter";
-            this.splitter.Size = new System.Drawing.Size(334, 3);
+            this.splitter.Size = new System.Drawing.Size(328, 3);
             this.splitter.TabIndex = 3;
             this.splitter.TabStop = false;
             // 
@@ -125,9 +125,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.toolStripSeparator4,
             this.btnAbout,
             this.btnConfiguration});
-            this.tsMenu.Location = new System.Drawing.Point(0, 0);
+            this.tsMenu.Location = new System.Drawing.Point(3, 0);
             this.tsMenu.Name = "tsMenu";
-            this.tsMenu.Size = new System.Drawing.Size(334, 25);
+            this.tsMenu.Size = new System.Drawing.Size(328, 25);
             this.tsMenu.TabIndex = 2;
             // 
             // btnZoom
@@ -372,37 +372,37 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // miWebSite
             // 
             this.miWebSite.Name = "miWebSite";
-            this.miWebSite.Size = new System.Drawing.Size(180, 22);
+            this.miWebSite.Size = new System.Drawing.Size(179, 22);
             this.miWebSite.Text = "miWebSite";
             // 
             // miGitHub
             // 
             this.miGitHub.Name = "miGitHub";
-            this.miGitHub.Size = new System.Drawing.Size(180, 22);
+            this.miGitHub.Size = new System.Drawing.Size(179, 22);
             this.miGitHub.Text = "miGitHub";
             // 
             // miMarketplace
             // 
             this.miMarketplace.Name = "miMarketplace";
-            this.miMarketplace.Size = new System.Drawing.Size(180, 22);
+            this.miMarketplace.Size = new System.Drawing.Size(179, 22);
             this.miMarketplace.Text = "miMarketplace";
             // 
             // miSubmitResources
             // 
             this.miSubmitResources.Name = "miSubmitResources";
-            this.miSubmitResources.Size = new System.Drawing.Size(180, 22);
+            this.miSubmitResources.Size = new System.Drawing.Size(179, 22);
             this.miSubmitResources.Text = "miSubmitResources";
             // 
             // miSeparatorAbout
             // 
             this.miSeparatorAbout.Name = "miSeparatorAbout";
-            this.miSeparatorAbout.Size = new System.Drawing.Size(177, 6);
+            this.miSeparatorAbout.Size = new System.Drawing.Size(176, 6);
             // 
             // miAbout
             // 
             this.miAbout.Name = "miAbout";
             this.miAbout.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.miAbout.Size = new System.Drawing.Size(180, 22);
+            this.miAbout.Size = new System.Drawing.Size(179, 22);
             this.miAbout.Text = "miAbout";
             // 
             // btnConfiguration
@@ -431,22 +431,23 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // txtInfo
             // 
             this.txtInfo.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.txtInfo.Location = new System.Drawing.Point(0, 158);
+            this.txtInfo.Location = new System.Drawing.Point(3, 158);
             this.txtInfo.Multiline = true;
             this.txtInfo.Name = "txtInfo";
             this.txtInfo.ReadOnly = true;
             this.txtInfo.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtInfo.Size = new System.Drawing.Size(334, 123);
+            this.txtInfo.Size = new System.Drawing.Size(328, 123);
             this.txtInfo.TabIndex = 0;
             this.txtInfo.TabStop = false;
             this.txtInfo.WordWrap = false;
             // 
             // okCancelButtons
             // 
+            this.okCancelButtons.BackColor = System.Drawing.Color.Transparent;
             this.okCancelButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.okCancelButtons.Location = new System.Drawing.Point(0, 281);
+            this.okCancelButtons.Location = new System.Drawing.Point(3, 281);
             this.okCancelButtons.Name = "okCancelButtons";
-            this.okCancelButtons.Size = new System.Drawing.Size(334, 35);
+            this.okCancelButtons.Size = new System.Drawing.Size(328, 35);
             this.okCancelButtons.TabIndex = 5;
             // 
             // ImageVisualizerForm
@@ -463,6 +464,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.MinimumSize = new System.Drawing.Size(200, 200);
             this.Name = "ImageVisualizerForm";
+            this.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
             this.tsMenu.ResumeLayout(false);
             this.tsMenu.PerformLayout();
             this.ResumeLayout(false);

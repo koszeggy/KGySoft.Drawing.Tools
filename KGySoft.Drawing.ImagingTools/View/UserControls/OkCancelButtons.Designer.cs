@@ -78,6 +78,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.Transparent;
             this.Controls.Add(this.pnlButtons);
             this.Name = "OkCancelButtons";
             this.Size = new System.Drawing.Size(260, 35);
@@ -90,7 +91,7 @@
         #endregion
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.Button btnCancel;
-        protected System.Windows.Forms.FlowLayoutPanel pnlButtons;
+        private System.Windows.Forms.FlowLayoutPanel pnlButtons;
         private System.Windows.Forms.Button btnApply;
     }
 }

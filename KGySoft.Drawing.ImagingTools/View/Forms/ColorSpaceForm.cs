@@ -18,7 +18,7 @@
 
 using System.Linq;
 using System.Windows.Forms;
-using KGySoft.Drawing.ImagingTools.View.Controls;
+
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion

@@ -65,7 +65,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             : base(viewModel)
         {
             InitializeComponent();
-            okCancelButtons.Visible = false;
         }
 
         #endregion
