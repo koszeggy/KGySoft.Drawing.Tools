@@ -355,11 +355,8 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Title Captions
 
-        /// <summary>KGy SOFT Imaging Tools v{0}</summary>
-        internal static string TitleAppNameAndVersion(Version version) => Get("Title_AppNameAndVersionFormat", version);
-
-        /// <summary>{0} [{1}{2}] – {3}</summary>
-        internal static string TitleAppNameWithFileName(string title, string fileName, string modifiedMark, string caption) => Get("Title_AppNameWithFileNameFormat", title, fileName, modifiedMark, caption);
+        /// <summary>KGy SOFT Imaging Tools v{0} [{1}{2}] – {3}</summary>
+        internal static string TitleAppNameWithFileName(Version version, string fileName, string modifiedMark, string caption) => Get("Title_AppNameWithFileNameFormat", version, fileName, modifiedMark, caption);
 
         /// <summary>Type: {0}</summary>
         internal static string TitleType(string type) => Get("Title_TypeFormat", type);
