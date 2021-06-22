@@ -16,6 +16,8 @@
 
 #region Usings
 
+using System;
+using System.Drawing;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
@@ -59,6 +61,20 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Protected Methods
 
+        protected override void OnLoad(EventArgs e)
+        {
+            // Fixing high DPI appearance on Mono
+            PointF scale;
+            if (OSUtils.IsMono && (scale = this.GetScale()) != new PointF(1f, 1f))
+            {
+                pnlCheckBoxes.Height = (int)(25 * scale.Y);
+                btnReset.Width = (int)(64 * scale.X);
+                lblValue.Width = (int)(35 * scale.X);
+            }
+
+            base.OnLoad(e);
+        }
+
         protected override void ApplyResources()
         {
             Icon = Properties.Resources.Colors;
@@ -67,6 +83,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected override void ApplyViewModel()
         {
+            if (OSUtils.IsMono)
+                pnlCheckBoxes.Height = this.ScaleHeight(25);
             InitCommandBindings();
             InitPropertyBindings();
             base.ApplyViewModel();

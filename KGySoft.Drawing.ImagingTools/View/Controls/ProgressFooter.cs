@@ -143,6 +143,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Protected Methods
 
+        protected override void OnSizeChanged(EventArgs e)
+        {
+            base.OnSizeChanged(e);
+
+            // Fixing high DPI appearance on Mono
+            PointF scale;
+            if (OSUtils.IsMono && (scale = this.GetScale()) != new PointF(1f, 1f))
+                Height = (int)(22 * scale.Y);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
