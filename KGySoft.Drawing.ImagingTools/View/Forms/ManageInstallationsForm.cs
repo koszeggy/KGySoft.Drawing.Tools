@@ -16,7 +16,9 @@
 
 #region Usings
 
+using System;
 using System.Collections.Generic;
+using System.Drawing;
 
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
@@ -54,6 +56,21 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         #region Methods
 
         #region Protected Methods
+
+        protected override void OnLoad(EventArgs e)
+        {
+            // Fixing high DPI appearance on Mono
+            PointF scale;
+            if (OSUtils.IsMono && (scale = this.GetScale()) != new PointF(1f, 1f))
+            {
+                pnlButtons.Height = (int)(35 * scale.Y);
+                var referenceButtonSize = new Size(75, 23);
+                btnInstall.Size = referenceButtonSize.Scale(scale);
+                btnRemove.Size = referenceButtonSize.Scale(scale);
+            }
+
+            base.OnLoad(e);
+        }
 
         protected override void ApplyResources()
         {
