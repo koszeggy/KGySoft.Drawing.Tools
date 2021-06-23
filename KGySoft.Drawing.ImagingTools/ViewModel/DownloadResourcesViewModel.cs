@@ -255,6 +255,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 // x3: 2 for download (retrieving response + downloading content), 1 for saving the file
                 Progress = (task.Files.Count * 3, 0);
                 int downloaded = 0;
+
+                if (!Directory.Exists(Res.ResourcesDir))
+                    Directory.CreateDirectory(Res.ResourcesDir);
+
                 foreach (DownloadInfo downloadInfo in task.Files)
                 {
                     current = downloadInfo.FileName;
@@ -273,8 +277,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     if (data == null)
                         return;
 
-                    // if there was no issue with downloading, then saving the file
-                    File.WriteAllBytes(downloadInfo.LocalPath, data);
+                    // If there was no issue with downloading, then saving the file.
+                    // Using StreamReader/Writer instead of File.WriteAllBytes so the newlines are adjusted to the current platform
+                    using var reader = new StreamReader(new MemoryStream(data), Encoding.UTF8);
+                    using var writer = File.CreateText(downloadInfo.LocalPath);
+                    while (!reader.EndOfStream)
+                        writer.WriteLine(reader.ReadLine());
+
                     downloadedCultures.Add(downloadInfo.Info);
                     IncrementProgress();
                     downloaded += 1;

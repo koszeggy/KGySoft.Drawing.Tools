@@ -123,6 +123,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected override void OnLoad(EventArgs e)
         {
+            // Not Using tool window appearance on Linux because looks bad an on high DPI the close is too small
+            if (OSUtils.IsMono && OSUtils.IsLinux && FormBorderStyle == FormBorderStyle.SizableToolWindow)
+            {
+                FormBorderStyle = FormBorderStyle.Sizable;
+                MinimizeBox = false;
+            }
+
             base.OnLoad(e);
 
             // Null VM occurs in design mode but DesignMode is false for grandchild forms
@@ -253,7 +260,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             if (RightToLeft == rtl)
                 return;
 
-            if (IsHandleCreated)
+            if (!OSUtils.IsMono && IsHandleCreated)
                 isRtlChanging = true;
 
             RightToLeft = rtl;

@@ -46,7 +46,6 @@
             // pnlSettings
             // 
             this.pnlSettings.Controls.Add(this.tblNewSize);
-            this.pnlSettings.Location = new System.Drawing.Point(3, 0);
             this.pnlSettings.Padding = new System.Windows.Forms.Padding(5);
             this.pnlSettings.Size = new System.Drawing.Size(328, 143);
             // 
@@ -292,7 +291,6 @@
             this.Location = new System.Drawing.Point(0, 0);
             this.MinimumSize = new System.Drawing.Size(350, 330);
             this.Name = "ResizeBitmapForm";
-            this.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
             this.Text = "ResizeBitmapForm";
             this.pnlSettings.ResumeLayout(false);
             this.tblNewSize.ResumeLayout(false);

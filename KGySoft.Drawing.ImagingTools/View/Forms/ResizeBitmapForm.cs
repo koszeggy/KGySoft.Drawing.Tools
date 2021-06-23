@@ -17,6 +17,7 @@
 #region Usings
 
 using System;
+using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
 
@@ -73,6 +74,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         #region Instance Methods
 
         #region Protected Methods
+
+        protected override void OnLoad(EventArgs e)
+        {
+            // Fixing high DPI appearance on Mono
+            PointF scale;
+            if (OSUtils.IsMono && (scale = this.GetScale()) != new PointF(1f, 1f))
+                tblNewSize.ColumnStyles[0].Width = (int)(100 * scale.X);
+
+            base.OnLoad(e);
+        }
 
         protected override void ApplyResources()
         {

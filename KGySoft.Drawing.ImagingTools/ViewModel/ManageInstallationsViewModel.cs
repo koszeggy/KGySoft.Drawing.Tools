@@ -53,8 +53,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal IList<KeyValuePair<string, string>> Installations { get => Get<IList<KeyValuePair<string, string>>>(); set => Set(value); }
         internal string SelectedInstallation { get => Get(String.Empty); set => Set(value); }
         internal string CurrentPath { get => Get(String.Empty); set => Set(value); }
-        internal string StatusText { get => Get("-"); set => Set(value); }
-        internal string AvailableVersionText { get => Get("-"); set => Set(value); }
+        internal string StatusText { get => Get("–"); set => Set(value); }
+        internal string AvailableVersionText { get => Get("–"); set => Set(value); }
 
         internal Func<string?>? SelectFolderCallback { get => Get<Func<string?>?>(); set => Set(value); }
 

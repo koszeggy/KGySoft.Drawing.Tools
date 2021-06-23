@@ -172,7 +172,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             InitializeComponent();
 
             SetStyle(ControlStyles.Selectable | ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
-            scrollbarSize = new Size(SystemInformation.VerticalScrollBarWidth, SystemInformation.HorizontalScrollBarHeight);
+            scrollbarSize = OSUtils.IsMono ? new Size(16, 16).Scale(this.GetScale()) : new Size(SystemInformation.VerticalScrollBarWidth, SystemInformation.HorizontalScrollBarHeight);
             sbVertical.Width = scrollbarSize.Width;
             sbHorizontal.Height = scrollbarSize.Height;
 

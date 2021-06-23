@@ -294,14 +294,6 @@ namespace KGySoft.Drawing.ImagingTools
                 ? CultureInfo.GetCultureInfo(attr.CultureName)
                 : CultureInfo.InvariantCulture).GetClosestNeutralCulture();
             DrawingModule.Initialize();
-
-            bool allowResXResources = Configuration.AllowResXResources;
-            CultureInfo desiredDisplayLanguage = allowResXResources
-                ? Configuration.UseOSLanguage ? OSLanguage : Configuration.DisplayLanguage // here, allowing specific languages, too
-                : DefaultLanguage;
-
-            LanguageSettings.DisplayLanguage = Equals(desiredDisplayLanguage, CultureInfo.InvariantCulture) ? DefaultLanguage : desiredDisplayLanguage;
-            LanguageSettings.DynamicResourceManagersSource = allowResXResources ? ResourceManagerSources.CompiledAndResX : ResourceManagerSources.CompiledOnly;
         }
 
         #endregion
@@ -355,11 +347,8 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Title Captions
 
-        /// <summary>KGy SOFT Imaging Tools v{0}</summary>
-        internal static string TitleAppNameAndVersion(Version version) => Get("Title_AppNameAndVersionFormat", version);
-
-        /// <summary>{0} [{1}{2}] – {3}</summary>
-        internal static string TitleAppNameWithFileName(string title, string fileName, string modifiedMark, string caption) => Get("Title_AppNameWithFileNameFormat", title, fileName, modifiedMark, caption);
+        /// <summary>KGy SOFT Imaging Tools v{0} [{1}{2}] – {3}</summary>
+        internal static string TitleAppNameWithFileName(Version version, string fileName, string modifiedMark, string caption) => Get("Title_AppNameWithFileNameFormat", version, fileName, modifiedMark, caption);
 
         /// <summary>Type: {0}</summary>
         internal static string TitleType(string type) => Get("Title_TypeFormat", type);
@@ -367,8 +356,8 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Size: {0}x{1}</summary>
         internal static string TitleSize(Size size) => Get("Title_SizeFormat", size.Width, size.Height);
 
-        /// <summary>Palette Count: {0}</summary>
-        internal static string TitlePaletteCount(int count) => Get("Title_PaletteCountFormat", count);
+        /// <summary>Palette Color Count: {0}</summary>
+        internal static string TitlePaletteCount(int count) => Get("Title_ColorCountFormat", count);
 
         /// <summary>Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2}x{3}}}</summary>
         internal static string TitleVisibleClip(Rectangle rect) => Get("Title_VisibleClipFormat", rect.X, rect.Y, rect.Width, rect.Height);
@@ -422,7 +411,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Unknown format: {0}</summary>
         internal static string InfoUnknownFormat(Guid format) => Get("InfoText_UnknownFormat", format);
 
-        /// <summary>Palette count: {0}</summary>
+        /// <summary>Palette color count: {0}</summary>
         internal static string InfoPalette(int count) => Get("InfoText_PaletteFormat", count);
 
         /// <summary>Images: {0}</summary>

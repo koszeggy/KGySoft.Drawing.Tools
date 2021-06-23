@@ -16,6 +16,8 @@
 
 #region Usings
 
+using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.ViewModel;
@@ -54,6 +56,19 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         #region Methods
 
         #region Protected Methods
+
+        protected override void OnLoad(EventArgs e)
+        {
+            // Fixing high DPI appearance on Mono
+            PointF scale;
+            if (OSUtils.IsMono && (scale = this.GetScale()) != new PointF(1f, 1f))
+            {
+                MinimumSize = new Size(255, 335).Scale(scale);
+                MaximumSize = new Size((int)(280 * scale.X), Int16.MaxValue);
+            }
+
+            base.OnLoad(e);
+        }
 
         protected override void ApplyResources()
         {

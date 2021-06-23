@@ -120,11 +120,8 @@
   <data name="General_InternalErrorFormat" xml:space="preserve">
     <value>Internal Error: {0}</value>
   </data>
-  <data name="Title_AppNameAndVersionFormat" xml:space="preserve">
-    <value>KGy SOFT Imaging Tools v{0}</value>
-  </data>
   <data name="Title_AppNameWithFileNameFormat" xml:space="preserve">
-    <value>{0} [{1}{2}] – {3}</value>
+    <value>KGy SOFT Imaging Tools v{0} [{1}{2}] – {3}</value>
   </data>
   <data name="Title_NoImage" xml:space="preserve">
     <value>No Image</value>
@@ -162,8 +159,8 @@
   <data name="Title_SizeFormat" xml:space="preserve">
     <value>Size: {0}x{1}</value>
   </data>
-  <data name="Title_PaletteCountFormat" xml:space="preserve">
-    <value>Palette Count: {0}</value>
+  <data name="Title_ColorCountFormat" xml:space="preserve">
+    <value>Palette Color Count: {0}</value>
   </data>
   <data name="Title_VisibleClipFormat" xml:space="preserve">
     <value>Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2}x{3}}}</value>
@@ -280,7 +277,7 @@ Pixel Format: {3}</value>
     <value>Unknown format: {0}</value>
   </data>
   <data name="InfoText_PaletteFormat" xml:space="preserve">
-    <value>Palette count: {0}</value>
+    <value>Palette color count: {0}</value>
   </data>
   <data name="InfoText_FramesCountFormat" xml:space="preserve">
     <value>Images: {0}</value>

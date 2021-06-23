@@ -29,12 +29,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
     internal partial class AppMainForm : ImageVisualizerForm
     {
-        #region Fields
-
-        private string? title;
-
-        #endregion
-
         #region Properties
 
         #region Public Properties
@@ -84,18 +78,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Protected Methods
 
-        protected override void ApplyStringResources()
-        {
-            base.ApplyStringResources();
-            title = Res.TitleAppNameAndVersion(typeof(Res).Assembly.GetName().Version!);
-            if (CommandBindings.Count > 0)
-                Text = ViewModel.TitleCaption;
-        }
-
         protected override void ApplyViewModel()
         {
             InitPropertyBindings();
             base.ApplyViewModel();
+        }
+
+        protected override void ApplyStringResources()
+        {
+            base.ApplyStringResources();
+            Text = ViewModel.TitleCaption;
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -125,15 +117,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             // Base updates Text when ViewModel.TitleCaption changes.
             // Here adding an update also for FileName and IsModified changes in a compatible way
-            CommandBindings.AddPropertyChangedHandler(() => Text = ViewModel.TitleCaption, ViewModel,
+            CommandBindings.AddPropertyChangedHandler(() => Text = ViewModel.TitleCaption!, ViewModel,
                 nameof(ViewModel.FileName), nameof(ViewModel.IsModified));
         }
 
         private string FormatText(string? value)
         {
+            if (value == null)
+                return String.Empty;
             string? fileName = ViewModel.FileName;
             string name = fileName == null ? Res.TextUnnamed : Path.GetFileName(fileName);
-            return String.IsNullOrEmpty(value) ? title! : Res.TitleAppNameWithFileName(title!, name, ViewModel.IsModified ? "*" : String.Empty, value!);
+            return Res.TitleAppNameWithFileName(InstallationManager.ImagingToolsVersion, name, ViewModel.IsModified ? "*" : String.Empty, value);
         }
 
         #endregion

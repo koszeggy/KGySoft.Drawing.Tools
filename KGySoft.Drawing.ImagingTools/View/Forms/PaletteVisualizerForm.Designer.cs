@@ -80,7 +80,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.Controls.Add(this.gbSelectedColor);
             this.Controls.Add(this.okCancelButtons);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
-            this.MaximumSize = new System.Drawing.Size(280, 32867);
+            this.MaximumSize = new System.Drawing.Size(280, 32767);
             this.MinimumSize = new System.Drawing.Size(255, 335);
             this.Name = "PaletteVisualizerForm";
             this.Padding = new System.Windows.Forms.Padding(3);

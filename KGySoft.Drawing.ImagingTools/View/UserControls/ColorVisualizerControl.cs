@@ -184,14 +184,27 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Static Methods
 
-        private static string GetKnownColor(Color color) => KnownColors.GetValueOrDefault(color.ToArgb(), "-");
-        private static string GetSystemColors(Color color) => SystemColors.GetValueOrDefault(color.ToArgb(), "-");
+        private static string GetKnownColor(Color color) => KnownColors.GetValueOrDefault(color.ToArgb(), "–");
+        private static string GetSystemColors(Color color) => SystemColors.GetValueOrDefault(color.ToArgb(), "–");
 
         #endregion
 
         #region Instance Methods
 
         #region Protected Methods
+
+        protected override void OnLoad(EventArgs e)
+        {
+            // Fixing high DPI appearance on Mono
+            PointF scale;
+            if (OSUtils.IsMono && (scale = this.GetScale()) != new PointF(1f, 1f))
+            {
+                tblColor.ColumnStyles[0].Width = (int)(50 * scale.X);
+                tblColor.ColumnStyles[1].Width = (int)(80 * scale.X);
+            }
+
+            base.OnLoad(e);
+        }
 
         protected override void Dispose(bool disposing)
         {

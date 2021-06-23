@@ -18,12 +18,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private void InitializeComponent()
         {
             this.gbInstallation = new System.Windows.Forms.GroupBox();
-            this.tblButtons = new System.Windows.Forms.TableLayoutPanel();
-            this.btnRemove = new System.Windows.Forms.Button();
-            this.btnInstall = new System.Windows.Forms.Button();
             this.pnlStatus = new KGySoft.Drawing.ImagingTools.View.Controls.AutoMirrorPanel();
             this.lblStatusText = new System.Windows.Forms.Label();
             this.lblStatus = new System.Windows.Forms.Label();
+            this.pnlButtons = new System.Windows.Forms.FlowLayoutPanel();
+            this.btnRemove = new System.Windows.Forms.Button();
+            this.btnInstall = new System.Windows.Forms.Button();
             this.tbPath = new System.Windows.Forms.TextBox();
             this.lblPath = new System.Windows.Forms.Label();
             this.gbVisualStudioVersions = new System.Windows.Forms.GroupBox();
@@ -31,8 +31,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.gbAvailableVersion = new System.Windows.Forms.GroupBox();
             this.lblAvailableVersion = new System.Windows.Forms.Label();
             this.gbInstallation.SuspendLayout();
-            this.tblButtons.SuspendLayout();
             this.pnlStatus.SuspendLayout();
+            this.pnlButtons.SuspendLayout();
             this.gbVisualStudioVersions.SuspendLayout();
             this.gbAvailableVersion.SuspendLayout();
             this.SuspendLayout();
@@ -40,7 +40,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // gbInstallation
             // 
             this.gbInstallation.Controls.Add(this.pnlStatus);
-            this.gbInstallation.Controls.Add(this.tblButtons);
+            this.gbInstallation.Controls.Add(this.pnlButtons);
             this.gbInstallation.Controls.Add(this.tbPath);
             this.gbInstallation.Controls.Add(this.lblPath);
             this.gbInstallation.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -51,44 +51,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.gbInstallation.TabStop = false;
             this.gbInstallation.Text = "gbInstallation";
             // 
-            // tblButtons
-            // 
-            this.tblButtons.ColumnCount = 2;
-            this.tblButtons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tblButtons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tblButtons.Controls.Add(this.btnRemove, 1, 0);
-            this.tblButtons.Controls.Add(this.btnInstall, 0, 0);
-            this.tblButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.tblButtons.Location = new System.Drawing.Point(3, 79);
-            this.tblButtons.Name = "tblButtons";
-            this.tblButtons.RowCount = 1;
-            this.tblButtons.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tblButtons.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 37F));
-            this.tblButtons.Size = new System.Drawing.Size(372, 37);
-            this.tblButtons.TabIndex = 3;
-            // 
-            // btnRemove
-            // 
-            this.btnRemove.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.btnRemove.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnRemove.Location = new System.Drawing.Point(241, 7);
-            this.btnRemove.Name = "btnRemove";
-            this.btnRemove.Size = new System.Drawing.Size(75, 23);
-            this.btnRemove.TabIndex = 1;
-            this.btnRemove.Text = "btnRemove";
-            this.btnRemove.UseVisualStyleBackColor = true;
-            // 
-            // btnInstall
-            // 
-            this.btnInstall.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.btnInstall.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnInstall.Location = new System.Drawing.Point(55, 7);
-            this.btnInstall.Name = "btnInstall";
-            this.btnInstall.Size = new System.Drawing.Size(75, 23);
-            this.btnInstall.TabIndex = 0;
-            this.btnInstall.Text = "btnInstall";
-            this.btnInstall.UseVisualStyleBackColor = true;
-            // 
             // pnlStatus
             // 
             this.pnlStatus.Controls.Add(this.lblStatusText);
@@ -97,7 +59,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.pnlStatus.Location = new System.Drawing.Point(3, 49);
             this.pnlStatus.Name = "pnlStatus";
             this.pnlStatus.Padding = new System.Windows.Forms.Padding(0, 3, 0, 0);
-            this.pnlStatus.Size = new System.Drawing.Size(372, 30);
+            this.pnlStatus.Size = new System.Drawing.Size(372, 32);
             this.pnlStatus.TabIndex = 2;
             // 
             // lblStatusText
@@ -107,7 +69,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.lblStatusText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.lblStatusText.Location = new System.Drawing.Point(47, 3);
             this.lblStatusText.Name = "lblStatusText";
-            this.lblStatusText.Size = new System.Drawing.Size(325, 27);
+            this.lblStatusText.Size = new System.Drawing.Size(325, 29);
             this.lblStatusText.TabIndex = 1;
             this.lblStatusText.Text = "lblStatusText";
             // 
@@ -121,6 +83,42 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.lblStatus.Size = new System.Drawing.Size(47, 13);
             this.lblStatus.TabIndex = 0;
             this.lblStatus.Text = "lblStatus";
+            // 
+            // pnlButtons
+            // 
+            this.pnlButtons.Controls.Add(this.btnRemove);
+            this.pnlButtons.Controls.Add(this.btnInstall);
+            this.pnlButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlButtons.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.pnlButtons.Location = new System.Drawing.Point(3, 81);
+            this.pnlButtons.Name = "pnlButtons";
+            this.pnlButtons.Padding = new System.Windows.Forms.Padding(3);
+            this.pnlButtons.Size = new System.Drawing.Size(372, 35);
+            this.pnlButtons.TabIndex = 3;
+            // 
+            // btnRemove
+            // 
+            this.btnRemove.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnRemove.AutoSize = true;
+            this.btnRemove.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btnRemove.Location = new System.Drawing.Point(287, 6);
+            this.btnRemove.Name = "btnRemove";
+            this.btnRemove.Size = new System.Drawing.Size(76, 23);
+            this.btnRemove.TabIndex = 1;
+            this.btnRemove.Text = "btnRemove";
+            this.btnRemove.UseVisualStyleBackColor = true;
+            // 
+            // btnInstall
+            // 
+            this.btnInstall.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnInstall.AutoSize = true;
+            this.btnInstall.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btnInstall.Location = new System.Drawing.Point(206, 6);
+            this.btnInstall.Name = "btnInstall";
+            this.btnInstall.Size = new System.Drawing.Size(75, 23);
+            this.btnInstall.TabIndex = 0;
+            this.btnInstall.Text = "btnInstall";
+            this.btnInstall.UseVisualStyleBackColor = true;
             // 
             // tbPath
             // 
@@ -202,9 +200,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.Text = "ManageInstallationsForm";
             this.gbInstallation.ResumeLayout(false);
             this.gbInstallation.PerformLayout();
-            this.tblButtons.ResumeLayout(false);
             this.pnlStatus.ResumeLayout(false);
             this.pnlStatus.PerformLayout();
+            this.pnlButtons.ResumeLayout(false);
+            this.pnlButtons.PerformLayout();
             this.gbVisualStudioVersions.ResumeLayout(false);
             this.gbAvailableVersion.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -213,7 +212,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #endregion
         private System.Windows.Forms.GroupBox gbInstallation;
-        private System.Windows.Forms.TableLayoutPanel tblButtons;
+        private System.Windows.Forms.FlowLayoutPanel pnlButtons;
         private System.Windows.Forms.Button btnRemove;
         private System.Windows.Forms.Button btnInstall;
         private Controls.AutoMirrorPanel pnlStatus;

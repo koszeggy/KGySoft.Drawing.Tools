@@ -167,7 +167,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             DoubleBuffered = true;
             SetStyle(ControlStyles.Selectable, true);
-            scrollbarWidth = SystemInformation.VerticalScrollBarWidth;
+            scrollbarWidth = OSUtils.IsMono ? this.ScaleWidth(16) : SystemInformation.VerticalScrollBarWidth;
             sbPalette.Width = scrollbarWidth;
         }
 
