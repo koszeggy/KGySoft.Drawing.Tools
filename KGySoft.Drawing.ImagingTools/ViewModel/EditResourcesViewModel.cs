@@ -88,6 +88,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal ICommandState ApplyResourcesCommandState => Get(() => new CommandState());
 
+        internal Action? SaveConfigurationCallback { get; set; }
+
         #endregion
 
         #region Constructors
@@ -144,6 +146,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 (FilteredSet as IDisposable)?.Dispose();
             }
 
+            SaveConfigurationCallback = null;
             base.Dispose(disposing);
         }
 
@@ -333,6 +336,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void ApplyResources()
         {
+            // As a first step, we save the configuration explicitly.
+            // Otherwise, it would be possible to select a language without applying it, then editing the resources and applying the new language here,
+            // in which case the configuration may remain unsaved.
+            SaveConfigurationCallback?.Invoke();
             LanguageSettings.DynamicResourceManagersSource = ResourceManagerSources.CompiledAndResX;
             if (Equals(LanguageSettings.DisplayLanguage, culture))
                 ResHelper.RaiseLanguageChanged();

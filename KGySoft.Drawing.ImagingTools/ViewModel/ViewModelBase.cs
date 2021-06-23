@@ -18,6 +18,7 @@
 
 using System;
 using System.Globalization;
+using System.Threading;
 
 using KGySoft.ComponentModel;
 using KGySoft.Resources;
@@ -48,8 +49,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         protected ViewModelBase()
         {
-            LanguageSettings.DisplayLanguageChanged += LanguageSettings_DisplayLanguageChanged;
-
             // Applying the configuration settings in each VM might seem to be an overkill when executed as a regular application but by using the factories from a
             // consumer code any VM can be created in any order, in any thread. The VS extension creates the default VM always in a new thread, for example.
             bool allowResXResources = Configuration.AllowResXResources;
@@ -59,6 +58,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             LanguageSettings.DisplayLanguage = Equals(desiredDisplayLanguage, CultureInfo.InvariantCulture) ? Res.DefaultLanguage : desiredDisplayLanguage;
             LanguageSettings.DynamicResourceManagersSource = allowResXResources ? ResourceManagerSources.CompiledAndResX : ResourceManagerSources.CompiledOnly;
+
+            LanguageSettings.DisplayLanguageChangedGlobal += LanguageSettings_DisplayLanguageChangedGlobal;
         }
 
         #endregion
@@ -102,7 +103,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (IsDisposed)
                 return;
 
-            LanguageSettings.DisplayLanguageChanged -= LanguageSettings_DisplayLanguageChanged;
+            LanguageSettings.DisplayLanguageChangedGlobal -= LanguageSettings_DisplayLanguageChangedGlobal;
             base.Dispose(disposing);
         }
 
@@ -116,7 +117,29 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Event Handlers
 
-        private void LanguageSettings_DisplayLanguageChanged(object sender, EventArgs e) => ApplyDisplayLanguage();
+        private void LanguageSettings_DisplayLanguageChangedGlobal(object sender, EventArgs e)
+        {
+            // As we get notification from any thread we read the current thread settings from the configuration
+            bool allowResXResources = Configuration.AllowResXResources;
+            CultureInfo desiredDisplayLanguage = allowResXResources
+                ? Configuration.UseOSLanguage ? Res.OSLanguage : Configuration.DisplayLanguage
+                : Res.DefaultLanguage;
+            if (Equals(desiredDisplayLanguage, CultureInfo.InvariantCulture))
+                desiredDisplayLanguage = Res.DefaultLanguage;
+
+            // The event was raised from another thread
+            if (!Equals(LanguageSettings.DisplayLanguage, desiredDisplayLanguage))
+            {
+                LanguageSettings.DisplayLanguage = desiredDisplayLanguage;
+
+                // we exit here because the line above end up calling this handler again from current thread
+                return;
+            }
+
+            // Trying to apply the new language in the thread of the corresponding view
+            if (!TryInvokeSync(ApplyDisplayLanguage))
+                ApplyDisplayLanguage();
+        }
 
         #endregion
 
