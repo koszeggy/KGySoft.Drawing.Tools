@@ -749,11 +749,8 @@ Felbontás: {5}x{6} DPI</value>
   <data name="Text_UnsupportedCultureFormat">
     <value>Nem támogatott nyelv ({0})</value>
   </data>
-  <data name="Title_AppNameAndVersionFormat">
-    <value>KGy SOFT Imaging Tools v{0}</value>
-  </data>
   <data name="Title_AppNameWithFileNameFormat">
-    <value>{0} [{1}{2}] – {3}</value>
+    <value>KGy SOFT Imaging Tools v{0} [{1}{2}] – {3}</value>
   </data>
   <data name="Title_ColorDialog">
     <value>Szín kiválasztása</value>
@@ -785,7 +782,7 @@ Felbontás: {5}x{6} DPI</value>
   <data name="Title_OriginalVisibleClipFormat">
     <value>Eredeti látható levágási tartomány: {{X = {0}, Y = {1}, Méret = {2}x{3}}}</value>
   </data>
-  <data name="Title_PaletteCountFormat">
+  <data name="Title_ColorCountFormat">
     <value>Palettaszínek száma: {0}</value>
   </data>
   <data name="Title_SaveFileDialog">
