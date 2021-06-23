@@ -1,14 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#region Copyright
+
+///////////////////////////////////////////////////////////////////////////////
+//  File: StringExtensions.cs
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright (C) KGy SOFT, 2005-2021 - All Rights Reserved
+//
+//  You should have received a copy of the LICENSE file at the top-level
+//  directory of this distribution. If not, then this file is considered as
+//  an illegal copy.
+//
+//  Unauthorized copying of this file, via any medium is strictly prohibited.
+///////////////////////////////////////////////////////////////////////////////
+
+#endregion
+
+#region Usings
+
 using System.Globalization;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+
+#endregion
 
 namespace KGySoft.Drawing.ImagingTools
 {
     internal static class StringExtensions
     {
+        #region Methods
+
         /// <summary>
         /// Removes accents from strings for better chances to match a filter pattern when searching.
         /// </summary>
@@ -28,5 +46,7 @@ namespace KGySoft.Drawing.ImagingTools
             // If it had to be displayed, then a recombining normalization would also be necessary.
             return stripped.ToString();
         }
+
+        #endregion
     }
 }
