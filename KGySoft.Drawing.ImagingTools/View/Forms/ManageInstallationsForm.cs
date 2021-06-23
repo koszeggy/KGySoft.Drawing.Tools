@@ -104,8 +104,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void InitPropertyBindings()
         {
-            // will not change so not as an actual binding
-            cmbInstallations.DataSource = ViewModel.Installations;
+            // VM.Installations -> cmbInstallations.DataSource
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Installations), nameof(cmbInstallations.DataSource), cmbInstallations);
 
             // VM.SelectedInstallation <-> cmbInstallations.SelectedValue
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.SelectedInstallation), cmbInstallations, nameof(cmbInstallations.SelectedValue));

@@ -60,8 +60,8 @@
 
 * KGySoft.Drawing.DebuggerVisualizers.Package.dll
 =================================================
-* When ImagingTools is executed from Visual Studio Tools menu a new thread is created so the possible lagging of
-  Visual Studio does not affect the performance of ImagingTools anymore.
+* ImagingTools and Manage Installations installations in Visual Studio Tools menu are executed on a new thread
+  so the possible lagging of Visual Studio does not affect the performance anymore.
 
 
 ~~~~~~~~~
