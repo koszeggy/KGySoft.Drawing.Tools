@@ -107,7 +107,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal LanguageSettingsViewModel()
         {
             ResHelper.SavePendingResources(); // generates resource file for possibly non-existing language came from configuration
-            CurrentLanguage = LanguageSettings.DisplayLanguage;
+            CurrentLanguage = Res.DisplayLanguage;
             AllowResXResources = Configuration.AllowResXResources;
             UseOSLanguage = Configuration.UseOSLanguage;
             ExistingLanguagesOnly = true; // could be the default value but this way we spare one reset when initializing binding
@@ -149,15 +149,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
         }
 
-        protected override void ApplyDisplayLanguage()
-        {
-            // We are saving configuration when new display language has been applied.
-            // We do this indirectly because we have to save the resources even if the new language is applied from editing resources.
-            // Otherwise, it would be possible to select a language without applying it, then editing the resources and applying the new language there,
-            // in which case the configuration may remain unsaved.
-            SaveConfiguration();
-            UpdateApplyCommandState();
-        }
+        protected override void ApplyDisplayLanguage() => UpdateApplyCommandState();
 
         protected override void Dispose(bool disposing)
         {
@@ -202,7 +194,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             // Apply is enabled if current language is different than display language,
             // or when turning on/off .resx resources for the default language matters because it also has a resource file
             CultureInfo selected = CurrentLanguage;
-            ApplyCommandState.Enabled = !Equals(selected, LanguageSettings.DisplayLanguage)
+            ApplyCommandState.Enabled = !Equals(selected, Res.DisplayLanguage)
                 || (Equals(selected, Res.DefaultLanguage)
                     && (AllowResXResources ^ LanguageSettings.DynamicResourceManagersSource != ResourceManagerSources.CompiledOnly)
                     && AvailableLanguages.Contains(Res.DefaultLanguage));
@@ -213,15 +205,16 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (!IsModified)
                 return;
 
+            SaveConfiguration();
+
             // Applying the current language
             CultureInfo currentLanguage = CurrentLanguage;
             LanguageSettings.DynamicResourceManagersSource = AllowResXResources ? ResourceManagerSources.CompiledAndResX : ResourceManagerSources.CompiledOnly;
 
-            // This will trigger SaveConfiguration, too
-            if (Equals(LanguageSettings.DisplayLanguage, currentLanguage))
-                ResHelper.RaiseLanguageChanged();
+            if (Equals(Res.DisplayLanguage, currentLanguage))
+                Res.OnDisplayLanguageChanged();
             else
-                LanguageSettings.DisplayLanguage = currentLanguage;
+                Res.DisplayLanguage = currentLanguage;
 
             // Note: Ensure is not really needed because main .resx is generated, while others are saved on demand in the editor, too
             //ResHelper.EnsureResourcesGenerated(); // TODO If used, then add to EditResourcesVM.Save, too, to be consistent
@@ -257,6 +250,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void OnEditResourcesCommand()
         {
             using IViewModel viewModel = ViewModelFactory.CreateEditResources(CurrentLanguage);
+            if (viewModel is EditResourcesViewModel vm)
+                vm.SaveConfigurationCallback = SaveConfiguration;
             ShowChildViewCallback?.Invoke(viewModel);
             availableResXLanguages = null;
             selectableLanguages = null;

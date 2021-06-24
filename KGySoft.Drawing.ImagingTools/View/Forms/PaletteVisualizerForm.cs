@@ -91,6 +91,19 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             base.OnFormClosing(e);
         }
 
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            switch (keyData)
+            {
+                case Keys.Escape when ViewModel.ReadOnly: // if not ReadOnly, use the Cancel button
+                    DialogResult = DialogResult.Cancel;
+                    return true;
+
+                default:
+                    return base.ProcessCmdKey(ref msg, keyData);
+            }
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -104,6 +117,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void InitPropertyBindings()
         {
+            // !VM.ReadOnly -> okCancelButtons.Visible
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.ReadOnly), nameof(okCancelButtons.Visible), ro => ro is false, okCancelButtons);
+
             // VM.Palette -> pnlPalette.Palette
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Palette), nameof(pnlPalette.Palette), pnlPalette);
 

@@ -17,10 +17,8 @@
 #region Usings
 
 using System;
-using System.Globalization;
 
 using KGySoft.ComponentModel;
-using KGySoft.Resources;
 
 #endregion
 
@@ -46,20 +44,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Constructors
 
-        protected ViewModelBase()
-        {
-            LanguageSettings.DisplayLanguageChanged += LanguageSettings_DisplayLanguageChanged;
-
-            // Applying the configuration settings in each VM might seem to be an overkill when executed as a regular application but by using the factories from a
-            // consumer code any VM can be created in any order, in any thread. The VS extension creates the default VM always in a new thread, for example.
-            bool allowResXResources = Configuration.AllowResXResources;
-            CultureInfo desiredDisplayLanguage = allowResXResources
-                ? Configuration.UseOSLanguage ? Res.OSLanguage : Configuration.DisplayLanguage // here, allowing specific languages, too
-                : Res.DefaultLanguage;
-
-            LanguageSettings.DisplayLanguage = Equals(desiredDisplayLanguage, CultureInfo.InvariantCulture) ? Res.DefaultLanguage : desiredDisplayLanguage;
-            LanguageSettings.DynamicResourceManagersSource = allowResXResources ? ResourceManagerSources.CompiledAndResX : ResourceManagerSources.CompiledOnly;
-        }
+        protected ViewModelBase() => Res.DisplayLanguageChanged += Res_DisplayLanguageChanged;
 
         #endregion
 
@@ -102,7 +87,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (IsDisposed)
                 return;
 
-            LanguageSettings.DisplayLanguageChanged -= LanguageSettings_DisplayLanguageChanged;
+            Res.DisplayLanguageChanged -= Res_DisplayLanguageChanged;
             base.Dispose(disposing);
         }
 
@@ -116,7 +101,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Event Handlers
 
-        private void LanguageSettings_DisplayLanguageChanged(object sender, EventArgs e) => ApplyDisplayLanguage();
+        private void Res_DisplayLanguageChanged(object sender, EventArgs e)
+        {
+            // Trying to apply the new language in the thread of the corresponding view
+            if (!TryInvokeSync(ApplyDisplayLanguage))
+                ApplyDisplayLanguage();
+        }
 
         #endregion
 

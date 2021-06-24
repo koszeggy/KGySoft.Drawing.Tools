@@ -156,6 +156,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 case Keys.Shift | Keys.Left:
                     (RightToLeft == RightToLeft.Yes ? btnNext : btnPrev).PerformClick();
                     return true;
+                case Keys.Escape when ViewModel.ReadOnly: // if not ReadOnly, use the Cancel button if available
+                    DialogResult = DialogResult.Cancel;
+                    return true;
+
                 default:
                     return base.ProcessCmdKey(ref msg, keyData);
             }
@@ -194,6 +198,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void InitPropertyBindings()
         {
+            // !VM.ReadOnly -> okCancelButtons.Visible
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.ReadOnly), nameof(okCancelButtons.Visible), ro => ro is false, okCancelButtons);
+
             // VM.Notification -> lblNotification.Text
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Notification), nameof(Label.Text), lblNotification);
 

@@ -324,13 +324,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void ApplyResources()
         {
             ResHelper.ReleaseAllResources();
-            CultureInfo current = LanguageSettings.DisplayLanguage;
+            CultureInfo current = Res.DisplayLanguage;
             if (downloadedCultures.All(c => c.CultureName != current.Name))
                 return;
 
             // The current language is among the downloaded ones: applying it
             LanguageSettings.DynamicResourceManagersSource = ResourceManagerSources.CompiledAndResX;
-            ResHelper.RaiseLanguageChanged();
+            Res.OnDisplayLanguageChanged();
         }
 
         protected override void ApplyDisplayLanguage() => ResetItems();

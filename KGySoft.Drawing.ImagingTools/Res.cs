@@ -25,6 +25,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Resources;
+using System.Threading;
 
 using KGySoft.Collections;
 using KGySoft.CoreLibraries;
@@ -57,6 +58,23 @@ namespace KGySoft.Drawing.ImagingTools
         private static readonly Cache<Type, PropertyInfo[]?> localizableStringPropertiesCache = new Cache<Type, PropertyInfo[]?>(GetLocalizableStringProperties);
 
         private static string? resourcesDir;
+        private static CultureInfo displayLanguage;
+        private static EventHandler? displayLanguageChanged;
+
+        #endregion
+
+        #region Events
+
+        /// <summary>
+        /// Occurs when <see cref="DisplayLanguage"/> property changed.
+        /// Similar to <see cref="LanguageSettings.DisplayLanguageChangedGlobal"/>, which is not quite reliable when executing as a debugger visualizer because
+        /// Visual Studio resets the <see cref="Thread.CurrentUICulture"/> on every keystroke and other events.
+        /// </summary>
+        internal static event EventHandler DisplayLanguageChanged
+        {
+            add => value.AddSafe(ref displayLanguageChanged);
+            remove => value.RemoveSafe(ref displayLanguageChanged);
+        }
 
         #endregion
 
@@ -77,6 +95,32 @@ namespace KGySoft.Drawing.ImagingTools
                 }
 
                 return resourcesDir;
+            }
+        }
+
+        /// <summary>
+        /// Represents the current display language. Similar to <see cref="Thread.CurrentUICulture"/> and <see cref="LanguageSettings.DisplayLanguage"/>
+        /// but this property is not thread-bounded and can be used reliably even when running as a debugger visualizer where Visual Studio always resets
+        /// the <see cref="Thread.CurrentUICulture"/> property on every keystroke.
+        /// </summary>
+        internal static CultureInfo DisplayLanguage
+        {
+            get
+            {
+                CultureInfo result = displayLanguage;
+                Thread.CurrentThread.CurrentUICulture = result;
+                return result;
+            }
+            set
+            {
+                // Always setting also the current thread because when running from debugger visualizer VS may change it independently from the this code base.
+                // It is also needed for DynamicResourceManager instances of the different KGy SOFT libraries to save content automatically on language change.
+                LanguageSettings.DisplayLanguage = value;
+                if (Equals(displayLanguage, value))
+                    return;
+
+                displayLanguage = value;
+                OnDisplayLanguageChanged();
             }
         }
 
@@ -294,6 +338,16 @@ namespace KGySoft.Drawing.ImagingTools
                 ? CultureInfo.GetCultureInfo(attr.CultureName)
                 : CultureInfo.InvariantCulture).GetClosestNeutralCulture();
             DrawingModule.Initialize();
+
+            bool allowResXResources = Configuration.AllowResXResources;
+            displayLanguage = allowResXResources
+                ? Configuration.UseOSLanguage ? OSLanguage : Configuration.DisplayLanguage // here, allowing specific languages, too
+                : DefaultLanguage;
+
+            if (Equals(displayLanguage, CultureInfo.InvariantCulture))
+                displayLanguage = DefaultLanguage;
+            DisplayLanguage = displayLanguage;
+            LanguageSettings.DynamicResourceManagersSource = allowResXResources ? ResourceManagerSources.CompiledAndResX : ResourceManagerSources.CompiledOnly;
         }
 
         #endregion
@@ -311,7 +365,9 @@ namespace KGySoft.Drawing.ImagingTools
         {
         }
 
-        internal static string? GetStringOrNull(string id) => resourceManager.GetString(id, LanguageSettings.DisplayLanguage);
+        internal static void OnDisplayLanguageChanged() => displayLanguageChanged?.Invoke(null, EventArgs.Empty);
+
+        internal static string? GetStringOrNull(string id) => resourceManager.GetString(id, DisplayLanguage);
 
         internal static string Get(string id) => GetStringOrNull(id) ?? String.Format(CultureInfo.InvariantCulture, unavailableResource, id);
 

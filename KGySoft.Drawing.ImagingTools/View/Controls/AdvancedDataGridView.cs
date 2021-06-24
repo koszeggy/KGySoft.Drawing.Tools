@@ -33,7 +33,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
     #region Usings
 
-#if NET35
+#if NET35 || NET40
     using ValidationList = IList<ValidationResult>;
 #else
     using ValidationList = IReadOnlyList<ValidationResult>;

@@ -105,7 +105,8 @@ namespace KGySoft.Drawing.ImagingTools
 #if NET35
             // To prevent serializing CultureInfo by DisplayName instead of Name
             typeof(CultureInfo).RegisterTypeConverter<CultureInfoConverterFixed>();
-
+#endif
+#if NET35 || NET40
             // To be able to use HTTP requests with TLS 1.2 security protocol (may not work on Windows XP)
             ServicePointManager.SecurityProtocol |= (SecurityProtocolType)3072;
 #elif NETFRAMEWORK

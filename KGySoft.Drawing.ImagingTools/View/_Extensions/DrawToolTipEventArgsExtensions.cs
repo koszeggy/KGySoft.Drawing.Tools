@@ -35,7 +35,7 @@ namespace KGySoft.Drawing.ImagingTools.View
             e.DrawBorder();
 
             var flags = TextFormatFlags.HidePrefix | TextFormatFlags.VerticalCenter | TextFormatFlags.LeftAndRightPadding;
-            if (LanguageSettings.DisplayLanguage.TextInfo.IsRightToLeft)
+            if (Res.DisplayLanguage.TextInfo.IsRightToLeft)
                 flags |= TextFormatFlags.RightToLeft | TextFormatFlags.Right;
             
             e.DrawText(flags);

@@ -35,7 +35,6 @@
             this.ClientSize = new System.Drawing.Size(484, 311);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable;
             this.Name = "AppMainForm";
-            this.Padding = new System.Windows.Forms.Padding(0);
             this.ResumeLayout(false);
             this.PerformLayout();
 

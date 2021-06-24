@@ -149,7 +149,7 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         private static DialogResult ShowMessageBox(string message, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton defaultButton = MessageBoxDefaultButton.Button1)
         {
-            MessageBoxOptions options = LanguageSettings.DisplayLanguage.TextInfo.IsRightToLeft ? MessageBoxOptions.RightAlign | MessageBoxOptions.RtlReading : default;
+            MessageBoxOptions options = Res.DisplayLanguage.TextInfo.IsRightToLeft ? MessageBoxOptions.RightAlign | MessageBoxOptions.RtlReading : default;
             IntPtr windowHook = IntPtr.Zero;
 
             // On Windows hooking messages to be able to localize the buttons

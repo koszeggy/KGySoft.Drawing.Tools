@@ -43,7 +43,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private ErrorProvider? errorProvider;
         private ICommand? validationResultsChangesCommand;
 
-        private bool isClosing;
         private bool isLoaded;
         private bool isRtlChanging;
         private Point location;
@@ -179,8 +178,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                     location = Location;
             }
 
-            if (!e.Cancel)
-                isClosing = true;
             base.OnFormClosing(e);
         }
 
@@ -212,7 +209,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private void InitCommandBindings()
         {
             CommandBindings.Add(OnDisplayLanguageChangedCommand)
-                .AddSource(typeof(LanguageSettings), nameof(LanguageSettings.DisplayLanguageChanged));
+                .AddSource(typeof(Res), nameof(Res.DisplayLanguageChanged));
         }
 
         private ErrorProvider CreateProvider(ValidationSeverity level) => new ErrorProvider(components)
@@ -231,7 +228,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void InvokeIfRequired(Action action)
         {
-            if (isClosing || Disposing || IsDisposed)
+            if (Disposing || IsDisposed)
                 return;
 
             try
@@ -256,7 +253,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void ApplyRightToLeft()
         {
-            RightToLeft rtl = LanguageSettings.DisplayLanguage.TextInfo.IsRightToLeft ? RightToLeft.Yes : RightToLeft.No;
+            RightToLeft rtl = Res.DisplayLanguage.TextInfo.IsRightToLeft ? RightToLeft.Yes : RightToLeft.No;
             if (RightToLeft == rtl)
                 return;
 
@@ -270,11 +267,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Command Handlers
 
-        private void OnDisplayLanguageChangedCommand()
+        private void OnDisplayLanguageChangedCommand() => InvokeIfRequired(() =>
         {
             ApplyRightToLeft();
             ApplyStringResources();
-        }
+        });
 
         private void OnValidationResultsChangedCommand(ValidationResultsCollection? validationResults)
         {
@@ -293,6 +290,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         #endregion
 
         #region Explicit Interface Implementations
+
+        void IDisposable.Dispose()
+        {
+            isRtlChanging = false;
+            InvokeIfRequired(Dispose);
+        }
 
         void IView.ShowDialog(IntPtr ownerHandle)
         {

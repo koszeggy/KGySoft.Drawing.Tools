@@ -99,7 +99,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         protected override void ApplyDisplayLanguage()
         {
             InitAvailableVersion();
-            var currentPath = CurrentPath;
+            string currentPath = CurrentPath;
             InitInstallations();
             CurrentPath = currentPath;
             UpdateStatus(currentPath);
