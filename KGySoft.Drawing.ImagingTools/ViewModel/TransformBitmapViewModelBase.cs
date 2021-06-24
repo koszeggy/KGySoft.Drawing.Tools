@@ -207,7 +207,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             // Not awaiting the canceled task here to prevent the UI from lagging.
             IsGenerating = true;
-            ThreadPool.QueueUserWorkItem(DoGenerate, CreateGenerateTask());
+            ThreadPool.QueueUserWorkItem(DoGenerate!, CreateGenerateTask());
         }
 
         protected abstract GenerateTaskBase CreateGenerateTask();

@@ -64,6 +64,7 @@
     <Compile Include="_Attributes\PackageRegistrationAsyncAttribute.cs" />
     <Compile Include="_Attributes\ProvideAutoLoadAsyncAttribute.cs" />
     <Compile Include="_Classes\ShellDialogs.cs" />
+    <Compile Include="_Classes\ViewHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\KGySoft.snk">

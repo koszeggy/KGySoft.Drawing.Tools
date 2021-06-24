@@ -101,7 +101,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Event Handlers
 
-        private void Res_DisplayLanguageChanged(object sender, EventArgs e)
+        private void Res_DisplayLanguageChanged(object? sender, EventArgs e)
         {
             // Trying to apply the new language in the thread of the corresponding view
             if (!TryInvokeSync(ApplyDisplayLanguage))

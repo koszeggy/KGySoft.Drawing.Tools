@@ -166,7 +166,7 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Event handlers
 
-        private static Assembly? CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        private static Assembly? CurrentDomain_AssemblyResolve(object? sender, ResolveEventArgs args)
         {
 #if NETFRAMEWORK
             if (args.Name.StartsWith("System, Version=", StringComparison.Ordinal))

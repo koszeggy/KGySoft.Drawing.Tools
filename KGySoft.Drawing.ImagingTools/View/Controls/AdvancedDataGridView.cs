@@ -29,6 +29,15 @@ using KGySoft.CoreLibraries;
 
 #endregion
 
+#region Suppressions
+
+#if NETCOREAPP3_0
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type. - Columns items are never null
+#pragma warning disable CS8602 // Dereference of a possibly null reference. - Columns items are never null
+#endif
+
+#endregion
+
 namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
     #region Usings

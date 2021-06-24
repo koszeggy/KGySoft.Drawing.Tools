@@ -70,7 +70,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// Similar to <see cref="LanguageSettings.DisplayLanguageChangedGlobal"/>, which is not quite reliable when executing as a debugger visualizer because
         /// Visual Studio resets the <see cref="Thread.CurrentUICulture"/> on every keystroke and other events.
         /// </summary>
-        internal static event EventHandler DisplayLanguageChanged
+        internal static event EventHandler? DisplayLanguageChanged
         {
             add => value.AddSafe(ref displayLanguageChanged);
             remove => value.RemoveSafe(ref displayLanguageChanged);

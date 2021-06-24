@@ -26,6 +26,15 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
 
+#region Suppressions
+
+#if NETCOREAPP3_0
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type. - DropDownItems items are never null
+#pragma warning disable CS8602 // Dereference of a possibly null reference. - DropDownItems items are never null
+#endif
+
+#endregion
+
 namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
     internal partial class ImageVisualizerForm : MvvmBaseForm<ImageVisualizerViewModel>

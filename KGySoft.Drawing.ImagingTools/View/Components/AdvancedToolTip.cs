@@ -76,7 +76,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
 
         #region Event Handlers
 
-        private void Res_DisplayLanguageChanged(object sender, EventArgs e) => ResetOwnerDraw();
+        private void Res_DisplayLanguageChanged(object? sender, EventArgs e) => ResetOwnerDraw();
 
         #endregion
 

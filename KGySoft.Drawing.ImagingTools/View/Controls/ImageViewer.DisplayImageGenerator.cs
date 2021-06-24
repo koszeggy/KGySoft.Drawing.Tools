@@ -347,7 +347,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     InvalidateOwner = bitmap!.RawFormat.Guid == ImageFormat.Icon.Guid
                 };
                 generateDefaultImageTask = task;
-                ThreadPool.QueueUserWorkItem(GenerateDefaultImage, task);
+                ThreadPool.QueueUserWorkItem(GenerateDefaultImage!, task);
             }
 
             private void BeginGenerateResizedDisplayImageIfNeeded()
@@ -396,7 +396,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 };
 
                 generateResizedImageTask = task;
-                ThreadPool.QueueUserWorkItem(GenerateResizedImage, task);
+                ThreadPool.QueueUserWorkItem(GenerateResizedImage!, task);
             }
 
             private void GenerateDefaultImage(object state)

@@ -45,6 +45,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Instance Fields
 
+        private readonly int scrollbarWidth;
+
         private IList<Color>? palette;
         private int selectedColorIndex = -1;
         private int firstVisibleColor;
@@ -52,7 +54,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         private int counter;
         private PointF scale = new PointF(1f, 1f);
         private int scrollFraction;
-        private int scrollbarWidth;
         private bool isRightToLeft;
 
         #endregion

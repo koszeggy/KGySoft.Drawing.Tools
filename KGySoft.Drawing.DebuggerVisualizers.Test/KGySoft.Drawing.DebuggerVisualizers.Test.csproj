@@ -17,6 +17,9 @@
     <OutputType>WinExe</OutputType>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Nullable>enable</Nullable>
+
+    <!--Suppression NETSDK1138: The target framework 'netcoreapp3.0' is out of support - the versions of this test project should match the versions of the tested libraries -->
+    <NoWarn>$(NoWarn);NETSDK1138</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

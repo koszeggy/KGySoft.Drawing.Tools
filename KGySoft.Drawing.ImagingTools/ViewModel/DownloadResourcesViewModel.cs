@@ -107,9 +107,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Fields
 
+        private readonly List<LocalizationInfo> availableResources = new List<LocalizationInfo>();
+        private readonly HashSet<LocalizationInfo> downloadedCultures = new HashSet<LocalizationInfo>();
+
         private volatile AsyncTaskBase? activeTask;
-        private volatile List<LocalizationInfo> availableResources = new List<LocalizationInfo>();
-        private volatile HashSet<LocalizationInfo> downloadedCultures = new HashSet<LocalizationInfo>();
 
         #endregion
 
@@ -180,7 +181,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             IsProcessing = true;
             activeTask = new DownloadTask { Uri = new Uri(Configuration.BaseUri, "manifest.xml") };
-            ThreadPool.QueueUserWorkItem(DoDownloadManifest, activeTask);
+            ThreadPool.QueueUserWorkItem(DoDownloadManifest!, activeTask);
         }
 
         private void DoDownloadManifest(object state)
@@ -240,7 +241,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             DownloadCommandState.Enabled = false;
             IsProcessing = true;
             activeTask = new DownloadResourcesTask { Files = toDownload, Overwrite = overwrite };
-            ThreadPool.QueueUserWorkItem(DoDownloadResources, activeTask);
+            ThreadPool.QueueUserWorkItem(DoDownloadResources!, activeTask);
         }
 
         private void DoDownloadResources(object state)

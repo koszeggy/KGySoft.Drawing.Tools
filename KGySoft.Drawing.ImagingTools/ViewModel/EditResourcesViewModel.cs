@@ -46,6 +46,14 @@ using ResXResourceSet = KGySoft.Resources.ResXResourceSet;
 
 #endregion
 
+#region Suppressions
+
+#if NETCOREAPP3_0
+#pragma warning disable CS8605 // Unboxing a possibly null value. - false alarm for iterating through a non-generic dictionary
+#endif
+
+#endregion
+
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
     internal class EditResourcesViewModel : ViewModelBase
@@ -203,6 +211,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             ApplyFilter(set);
         }
 
+#if NETCOREAPP3_0_OR_GREATER
+        [SuppressMessage("Usage", "CA2249:Consider using 'string.Contains' instead of 'string.IndexOf'",
+            Justification = "Cannot use Contains because it is not available on all targeted platforms")] 
+#endif
         private void ApplyFilter(IList<ResourceEntry> set)
         {
             if (FilteredSet is SortableBindingList<ResourceEntry> oldSet)
@@ -267,8 +279,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 var result = new SortableBindingList<ResourceEntry>();
                 foreach (DictionaryEntry entry in compiled)
                     result.Add(new ResourceEntry((string)entry.Key,
-                        (string)entry.Value,
-                        resourceManger.GetString((string)entry.Key, culture) ?? LanguageSettings.UntranslatedResourcePrefix + (string)entry.Value));
+                        (string)entry.Value!,
+                        resourceManger.GetString((string)entry.Key, culture) ?? LanguageSettings.UntranslatedResourcePrefix + (string)entry.Value!));
 
                 error = null;
                 set = result;

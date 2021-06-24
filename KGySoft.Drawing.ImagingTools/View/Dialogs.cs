@@ -174,7 +174,7 @@ namespace KGySoft.Drawing.ImagingTools.View
         {
             if (nCode >= 0)
             {
-                var msg = (CWPRETSTRUCT)Marshal.PtrToStructure(lParam, typeof(CWPRETSTRUCT));
+                var msg = (CWPRETSTRUCT)Marshal.PtrToStructure(lParam, typeof(CWPRETSTRUCT))!;
                 if (msg.message == Constants.WM_INITDIALOG)
                 {
                     string name = User32.GetClassName(msg.hwnd);
