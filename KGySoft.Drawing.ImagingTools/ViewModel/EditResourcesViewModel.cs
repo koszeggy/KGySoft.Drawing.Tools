@@ -16,9 +16,6 @@
 
 #region Usings
 
-using System.Diagnostics;
-using System.Linq;
-using KGySoft.Resources;
 
 #region Used Namespaces
 
@@ -26,15 +23,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Resources;
 
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Reflection;
+using KGySoft.Resources;
 
 #endregion
 
@@ -104,7 +104,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             resources = new Dictionary<LocalizableLibraries, (IList<ResourceEntry>, bool)>(3, EnumComparer<LocalizableLibraries>.Comparer);
             Set(String.Empty, false, nameof(Filter));
             ResourceFiles = Enum<LocalizableLibraries>.GetFlags().Select(lib => new KeyValuePair<LocalizableLibraries, string>(lib, ToFileName(lib))).ToArray();
-            ApplyResourcesCommandState.Enabled = !Equals(LanguageSettings.DisplayLanguage, culture);
+            ApplyResourcesCommandState.Enabled = !Equals(Res.DisplayLanguage, culture);
             UpdateTitle();
             SelectedLibrary = LocalizableLibraries.ImagingTools;
         }
@@ -341,10 +341,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             // in which case the configuration may remain unsaved.
             SaveConfigurationCallback?.Invoke();
             LanguageSettings.DynamicResourceManagersSource = ResourceManagerSources.CompiledAndResX;
-            if (Equals(LanguageSettings.DisplayLanguage, culture))
-                ResHelper.RaiseLanguageChanged();
+            if (Equals(Res.DisplayLanguage, culture))
+                Res.OnDisplayLanguageChanged();
             else
-                LanguageSettings.DisplayLanguage = culture;
+                Res.DisplayLanguage = culture;
             SetModified(false);
         }
 
@@ -372,7 +372,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnApplyResourcesCommand(ICommandState state)
         {
-            Debug.Assert(IsModified || !Equals(culture, LanguageSettings.DisplayLanguage));
+            Debug.Assert(IsModified || !Equals(culture, Res.DisplayLanguage));
             ResHelper.ReleaseAllResources();
             bool success = TrySaveResources();
             if (success)
@@ -388,7 +388,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 success = TrySaveResources();
                 if (success)
                 {
-                    if (Equals(LanguageSettings.DisplayLanguage, culture))
+                    if (Equals(Res.DisplayLanguage, culture))
                         ApplyResources();
                 }
             }

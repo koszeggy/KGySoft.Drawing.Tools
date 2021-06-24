@@ -122,7 +122,7 @@ namespace KGySoft.Drawing.ImagingTools
         internal static void EnsureResourcesGenerated()
         {
             foreach (DynamicResourceManager resourceManager in KnownResourceManagers)
-                resourceManager.GetExpandoResourceSet(LanguageSettings.DisplayLanguage, ResourceSetRetrieval.CreateIfNotExists, true);
+                resourceManager.GetExpandoResourceSet(Res.DisplayLanguage, ResourceSetRetrieval.CreateIfNotExists, true);
         }
 
         /// <summary>
@@ -144,11 +144,6 @@ namespace KGySoft.Drawing.ImagingTools
             foreach (DynamicResourceManager resourceManager in KnownResourceManagers)
                 resourceManager.ReleaseAllResources();
         }
-
-        /// <summary>
-        /// TODO: Remove when LanguageSettings.RaiseLanguageChanged will be available.
-        /// </summary>
-        internal static void RaiseLanguageChanged() => Reflector.InvokeMethod(typeof(LanguageSettings), "OnDisplayLanguageChanged", EventArgs.Empty);
 
         #endregion
     }

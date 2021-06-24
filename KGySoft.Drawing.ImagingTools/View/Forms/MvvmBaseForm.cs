@@ -208,8 +208,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void InitCommandBindings()
         {
-            CommandBindings.Add(OnDisplayLanguageChangedGlobalCommand)
-                .AddSource(typeof(LanguageSettings), nameof(LanguageSettings.DisplayLanguageChangedGlobal));
+            CommandBindings.Add(OnDisplayLanguageChangedCommand)
+                .AddSource(typeof(Res), nameof(Res.DisplayLanguageChanged));
         }
 
         private ErrorProvider CreateProvider(ValidationSeverity level) => new ErrorProvider(components)
@@ -253,7 +253,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void ApplyRightToLeft()
         {
-            RightToLeft rtl = LanguageSettings.DisplayLanguage.TextInfo.IsRightToLeft ? RightToLeft.Yes : RightToLeft.No;
+            RightToLeft rtl = Res.DisplayLanguage.TextInfo.IsRightToLeft ? RightToLeft.Yes : RightToLeft.No;
             if (RightToLeft == rtl)
                 return;
 
@@ -267,7 +267,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Command Handlers
 
-        private void OnDisplayLanguageChangedGlobalCommand() => InvokeIfRequired(() =>
+        private void OnDisplayLanguageChangedCommand() => InvokeIfRequired(() =>
         {
             ApplyRightToLeft();
             ApplyStringResources();
@@ -291,7 +291,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Explicit Interface Implementations
 
-        void IDisposable.Dispose() => InvokeIfRequired(Dispose);
+        void IDisposable.Dispose()
+        {
+            isRtlChanging = false;
+            InvokeIfRequired(Dispose);
+        }
 
         void IView.ShowDialog(IntPtr ownerHandle)
         {

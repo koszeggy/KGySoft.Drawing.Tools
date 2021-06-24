@@ -107,7 +107,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal LanguageSettingsViewModel()
         {
             ResHelper.SavePendingResources(); // generates resource file for possibly non-existing language came from configuration
-            CurrentLanguage = LanguageSettings.DisplayLanguage;
+            CurrentLanguage = Res.DisplayLanguage;
             AllowResXResources = Configuration.AllowResXResources;
             UseOSLanguage = Configuration.UseOSLanguage;
             ExistingLanguagesOnly = true; // could be the default value but this way we spare one reset when initializing binding
@@ -194,7 +194,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             // Apply is enabled if current language is different than display language,
             // or when turning on/off .resx resources for the default language matters because it also has a resource file
             CultureInfo selected = CurrentLanguage;
-            ApplyCommandState.Enabled = !Equals(selected, LanguageSettings.DisplayLanguage)
+            ApplyCommandState.Enabled = !Equals(selected, Res.DisplayLanguage)
                 || (Equals(selected, Res.DefaultLanguage)
                     && (AllowResXResources ^ LanguageSettings.DynamicResourceManagersSource != ResourceManagerSources.CompiledOnly)
                     && AvailableLanguages.Contains(Res.DefaultLanguage));
@@ -211,10 +211,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             CultureInfo currentLanguage = CurrentLanguage;
             LanguageSettings.DynamicResourceManagersSource = AllowResXResources ? ResourceManagerSources.CompiledAndResX : ResourceManagerSources.CompiledOnly;
 
-            if (Equals(LanguageSettings.DisplayLanguage, currentLanguage))
-                ResHelper.RaiseLanguageChanged();
+            if (Equals(Res.DisplayLanguage, currentLanguage))
+                Res.OnDisplayLanguageChanged();
             else
-                LanguageSettings.DisplayLanguage = currentLanguage;
+                Res.DisplayLanguage = currentLanguage;
 
             // Note: Ensure is not really needed because main .resx is generated, while others are saved on demand in the editor, too
             //ResHelper.EnsureResourcesGenerated(); // TODO If used, then add to EditResourcesVM.Save, too, to be consistent

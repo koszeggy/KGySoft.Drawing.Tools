@@ -62,7 +62,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private QuantizerThresholdEditorControl()
         {
-            RightToLeft = LanguageSettings.DisplayLanguage.TextInfo.IsRightToLeft ? RightToLeft.Yes : RightToLeft.No;
+            RightToLeft = Res.DisplayLanguage.TextInfo.IsRightToLeft ? RightToLeft.Yes : RightToLeft.No;
             InitializeComponent();
         }
 

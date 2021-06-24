@@ -53,7 +53,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
             if (disposing)
             {
                 Draw -= AdvancedToolTip_Draw;
-                LanguageSettings.DisplayLanguageChanged -= LanguageSettings_DisplayLanguageChanged;
+                Res.DisplayLanguageChanged -= Res_DisplayLanguageChanged;
             }
 
             base.Dispose(disposing);
@@ -65,18 +65,18 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
 
         private void Initialize()
         {
-            LanguageSettings.DisplayLanguageChanged += LanguageSettings_DisplayLanguageChanged;
+            Res.DisplayLanguageChanged += Res_DisplayLanguageChanged;
             Draw += AdvancedToolTip_Draw;
             ResetOwnerDraw();
         }
 
-        private void ResetOwnerDraw() => OwnerDraw = LanguageSettings.DisplayLanguage.TextInfo.IsRightToLeft;
+        private void ResetOwnerDraw() => OwnerDraw = Res.DisplayLanguage.TextInfo.IsRightToLeft;
 
         #endregion
 
         #region Event Handlers
 
-        private void LanguageSettings_DisplayLanguageChanged(object sender, EventArgs e) => ResetOwnerDraw();
+        private void Res_DisplayLanguageChanged(object sender, EventArgs e) => ResetOwnerDraw();
 
         #endregion
 

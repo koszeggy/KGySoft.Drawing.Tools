@@ -70,7 +70,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>
         /// Gets version of the currently used <c>ImagingTools</c> application.
         /// </summary>
-        public static Version ImagingToolsVersion { get; } = typeof(Configuration).Assembly.GetName().Version;
+        public static Version ImagingToolsVersion { get; } = typeof(InstallationManager).Assembly.GetName().Version;
 
         #endregion
 
