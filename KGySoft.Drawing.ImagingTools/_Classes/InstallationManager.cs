@@ -129,7 +129,12 @@ namespace KGySoft.Drawing.ImagingTools
 
             Uninstall(directory, out error);
             if (error != null)
+            {
+                // VS issue workaround, see the comment in Uninstall
+                if (error == Res.ErrorMessageInstallationCannotBeRemoved)
+                    error = Res.ErrorMessageInstallationCannotBeOverwritten;
                 return;
+            }
 
             foreach (string file in files)
             {
@@ -208,7 +213,8 @@ namespace KGySoft.Drawing.ImagingTools
             if (!Directory.Exists(directory))
                 return;
 
-            if (directory == Files.GetExecutingPath())
+            string executingPath = Files.GetExecutingPath();
+            if (directory == executingPath)
             {
                 error = Res.ErrorMessageInstallationCannotBeRemoved;
                 return;
@@ -226,7 +232,13 @@ namespace KGySoft.Drawing.ImagingTools
                 }
                 catch (Exception e) when (!e.IsCritical())
                 {
-                    error = Res.ErrorMessageCouldNotDeleteFile(file, e.Message);
+                    // VS issue workaround: if the package is installed and we try to remove the executed version during debugging, then the executing path will be
+                    // the package installation path in uppercase, instead of the target directory (the path is the directory if the package is not installed though).
+                    // However, the same path is in lowercase if we start the removing from the VS Tools menu instead of debugging...
+                    if (executingPath == executingPath.ToUpperInvariant() && e is UnauthorizedAccessException)
+                        error = Res.ErrorMessageInstallationCannotBeRemoved;
+                    else
+                        error = Res.ErrorMessageCouldNotDeleteFile(file, e.Message);
                     return;
                 }
             }
