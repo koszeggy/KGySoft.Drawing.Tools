@@ -480,7 +480,7 @@ Felbontás: {5}x{6} DPI</value>
     <value>Függőleges nagyítás: {0}</value>
   </data>
   <data name="InfoText_VisibleClipFormat">
-    <value>Látható levágási artomány: {{X = {0}, Y = {1}, Méret = {2}x{3} pixels}}</value>
+    <value>Látható levágási artomány: {{X = {0}, Y = {1}, Méret = {2}x{3} pixel}}</value>
   </data>
   <data name="InfoText_WorldTransformation">
     <value>Világtranszformáció: </value>
@@ -795,7 +795,7 @@ Felbontás: {5}x{6} DPI</value>
     <value>Típus: {0}</value>
   </data>
   <data name="Title_VisibleClipFormat">
-    <value>Látható levágási tartomány: {{X = {0}, Y = {1}, Size = {2}x{3}}}</value>
+    <value>Látható levágási tartomány: {{X = {0}, Y = {1}, Méret = {2}x{3}}}</value>
   </data>
   <data name="Title_Warning">
     <value>Figyelmeztetés</value>
