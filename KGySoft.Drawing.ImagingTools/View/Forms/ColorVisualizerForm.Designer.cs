@@ -27,13 +27,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.ucColorVisualizer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ucColorVisualizer.Location = new System.Drawing.Point(0, 0);
             this.ucColorVisualizer.Name = "ucColorVisualizer";
-            this.ucColorVisualizer.Size = new System.Drawing.Size(244, 201);
+            this.ucColorVisualizer.Size = new System.Drawing.Size(244, 186);
             this.ucColorVisualizer.TabIndex = 1;
             // 
             // okCancelButtons
             // 
+            this.okCancelButtons.BackColor = System.Drawing.Color.Transparent;
             this.okCancelButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.okCancelButtons.Location = new System.Drawing.Point(0, 201);
+            this.okCancelButtons.Location = new System.Drawing.Point(0, 186);
             this.okCancelButtons.Name = "okCancelButtons";
             this.okCancelButtons.Size = new System.Drawing.Size(244, 35);
             this.okCancelButtons.TabIndex = 2;
@@ -42,7 +43,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(244, 241);
+            this.ClientSize = new System.Drawing.Size(244, 221);
             this.Controls.Add(this.ucColorVisualizer);
             this.Controls.Add(this.okCancelButtons);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
