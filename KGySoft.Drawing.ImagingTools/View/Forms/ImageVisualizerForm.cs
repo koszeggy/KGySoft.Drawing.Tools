@@ -198,8 +198,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void InitPropertyBindings()
         {
-            // !VM.ReadOnly -> okCancelButtons.Visible
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.ReadOnly), nameof(okCancelButtons.Visible), ro => ro is false, okCancelButtons);
+            // not as binding because will not change and we don't need the buttons for main form
+            if (ViewModel.ReadOnly)
+                okCancelButtons.Visible = false;
 
             // VM.Notification -> lblNotification.Text
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Notification), nameof(Label.Text), lblNotification);
