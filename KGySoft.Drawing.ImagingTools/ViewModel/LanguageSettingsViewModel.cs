@@ -106,7 +106,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal LanguageSettingsViewModel()
         {
-            ResHelper.SavePendingResources(); // generates resource file for possibly non-existing language came from configuration
             CurrentLanguage = Res.DisplayLanguage;
             AllowResXResources = Configuration.AllowResXResources;
             UseOSLanguage = Configuration.UseOSLanguage;

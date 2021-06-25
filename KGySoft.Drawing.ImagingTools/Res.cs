@@ -344,7 +344,7 @@ namespace KGySoft.Drawing.ImagingTools
                 ? Configuration.UseOSLanguage ? OSLanguage : Configuration.DisplayLanguage // here, allowing specific languages, too
                 : DefaultLanguage;
 
-            if (Equals(displayLanguage, CultureInfo.InvariantCulture))
+            if (Equals(displayLanguage, CultureInfo.InvariantCulture) || (!Equals(displayLanguage, DefaultLanguage) && !ResHelper.GetAvailableLanguages().Contains(displayLanguage)))
                 displayLanguage = DefaultLanguage;
             DisplayLanguage = displayLanguage;
             LanguageSettings.DynamicResourceManagersSource = allowResXResources ? ResourceManagerSources.CompiledAndResX : ResourceManagerSources.CompiledOnly;
