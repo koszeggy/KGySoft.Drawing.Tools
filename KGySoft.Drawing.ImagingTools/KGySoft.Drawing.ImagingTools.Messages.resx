@@ -938,10 +938,10 @@ Tip: use '[T]' to filter untranslated texts.</value>
   <data name="Button.7" xml:space="preserve">
     <value>&amp;No</value>
   </data>
-  <data name="Static.ColorDialog.0" xml:space="preserve">
+  <data name="ColorDialog.Static.-1" xml:space="preserve">
     <value>&amp;Basic Colors:</value>
   </data>
-  <data name="Static.ColorDialog.1" xml:space="preserve">
+  <data name="ColorDialog.Static.-2" xml:space="preserve">
     <value>Custo&amp;m Colors:</value>
   </data>
   <data name="Button.719" xml:space="preserve">
@@ -979,5 +979,11 @@ Tip: use '[T]' to filter untranslated texts.</value>
   </data>
   <data name="Button.14150" xml:space="preserve">
     <value>&amp;Make New Folder</value>
+  </data>
+  <data name="Static.1090" xml:space="preserve">
+    <value>Folder:</value>
+  </data>
+  <data name="FolderDialog.Button.1" xml:space="preserve">
+    <value>Select Folder</value>
   </data>
 </root>
