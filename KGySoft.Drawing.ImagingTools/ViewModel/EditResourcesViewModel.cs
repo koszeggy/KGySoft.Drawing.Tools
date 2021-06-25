@@ -366,7 +366,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void FilteredSet_ListChanged(object sender, ListChangedEventArgs e)
         {
-            if (e.ListChangedType != ListChangedType.ItemChanged)
+            if (!IsViewLoaded || e.ListChangedType != ListChangedType.ItemChanged || e.PropertyDescriptor?.Name != nameof(ResourceEntry.TranslatedText))
                 return;
 
             ApplyResourcesCommandState.Enabled = true;
