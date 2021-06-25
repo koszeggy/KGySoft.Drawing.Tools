@@ -31,6 +31,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
     {
         #region Properties
 
+        #region Internal Properties
+        
         internal Action<string>? ShowErrorCallback { get => Get<Action<string>?>(); set => Set(value); }
         internal Action<string>? ShowWarningCallback { get => Get<Action<string>?>(); set => Set(value); }
         internal Action<string>? ShowInfoCallback { get => Get<Action<string>?>(); set => Set(value); }
@@ -39,6 +41,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal Action<IViewModel>? ShowChildViewCallback { get => Get<Action<IViewModel>?>(); set => Set(value); }
         internal Action? CloseViewCallback { get => Get<Action?>(); set => Set(value); }
         internal Action<Action>? SynchronizedInvokeCallback { private get => Get<Action<Action>?>(); set => Set(value); }
+
+        #endregion
+
+        #region Protected Properties
+
+        protected bool IsViewLoaded { get; private set; }
+
+        #endregion
 
         #endregion
 
@@ -95,7 +105,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Internal Methods
 
-        internal virtual void ViewLoaded() => SetModified(false);
+        internal virtual void ViewLoaded()
+        {
+            IsViewLoaded = true;
+            SetModified(false);
+        }
 
         #endregion
 

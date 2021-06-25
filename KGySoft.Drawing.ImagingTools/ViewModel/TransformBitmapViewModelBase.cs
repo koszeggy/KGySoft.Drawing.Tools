@@ -52,7 +52,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private readonly object syncRoot = new object();
 
         private volatile GenerateTaskBase? activeTask;
-        private bool initializing = true;
         private bool keepResult;
         private DrawingProgressManager? drawingProgressManager;
 
@@ -127,7 +126,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             // could be in constructor but we only need it when there is a view
             drawingProgressManager = new DrawingProgressManager(TrySetProgress);
-            initializing = false;
             base.ViewLoaded();
         }
 
@@ -158,7 +156,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     return;
 
                 default:
-                    if (initializing || !AffectsPreview(e.PropertyName!))
+                    if (!IsViewLoaded || !AffectsPreview(e.PropertyName!))
                         return;
                     Validate();
                     ResetCommandState.Enabled = AreSettingsChanged;
@@ -169,7 +167,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         protected void Validate()
         {
-            if (initializing)
+            if (!IsViewLoaded)
                 return;
             ValidationResults = DoValidation();
         }
