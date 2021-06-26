@@ -430,7 +430,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // 
             // txtInfo
             // 
+            this.txtInfo.BackColor = System.Drawing.SystemColors.Control;
             this.txtInfo.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.txtInfo.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtInfo.Location = new System.Drawing.Point(0, 158);
             this.txtInfo.Multiline = true;
             this.txtInfo.Name = "txtInfo";

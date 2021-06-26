@@ -247,7 +247,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             // txtColor
             // 
+            this.txtColor.BackColor = System.Drawing.SystemColors.Control;
             this.txtColor.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtColor.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtColor.Location = new System.Drawing.Point(0, 83);
             this.txtColor.Multiline = true;
             this.txtColor.Name = "txtColor";

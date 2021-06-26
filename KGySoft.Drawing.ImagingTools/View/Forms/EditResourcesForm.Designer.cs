@@ -214,7 +214,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // 
             // txtOriginalText
             // 
+            this.txtOriginalText.BackColor = System.Drawing.SystemColors.Control;
             this.txtOriginalText.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtOriginalText.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtOriginalText.Location = new System.Drawing.Point(3, 16);
             this.txtOriginalText.Multiline = true;
             this.txtOriginalText.Name = "txtOriginalText";
@@ -250,6 +252,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // okCancelApplyButtons
             // 
             this.okCancelApplyButtons.ApplyButtonVisible = true;
+            this.okCancelApplyButtons.BackColor = System.Drawing.Color.Transparent;
             this.okCancelApplyButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.okCancelApplyButtons.Location = new System.Drawing.Point(3, 273);
             this.okCancelApplyButtons.Name = "okCancelApplyButtons";
