@@ -86,7 +86,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            if (e.CloseReason == CloseReason.UserClosing || DialogResult == DialogResult.Cancel)
+            if (DialogResult != DialogResult.OK)
                 ViewModel.SetModified(false);
             base.OnFormClosing(e);
         }
