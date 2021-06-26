@@ -71,7 +71,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             {
                 Graphics g = e.Graphics;
                 Rectangle dropDownRect = e.Item is ScalingToolStripDropDownButton scalingButton ? scalingButton.ArrowRectangle : e.ArrowRectangle;
-                using (Brush brush = new SolidBrush(e.Item.Enabled ? e.ArrowColor : SystemColors.ControlDark))
+                Color color = !e.Item.Enabled ? SystemColors.ControlDark
+                    : SystemInformation.HighContrast && e.Item.Selected && !e.Item.Pressed ? SystemColors.HighlightText
+                    : e.ArrowColor;
+                using (Brush brush = new SolidBrush(color))
                 {
                     Point middle = new Point(dropDownRect.Left + dropDownRect.Width / 2, dropDownRect.Top + dropDownRect.Height / 2);
 
@@ -159,23 +162,38 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
                 if (btn.Enabled && (btn.Checked || !btn.DropDownButtonPressed))
                 {
-                    rect.Inflate(-1, -1);
-                    if (btn.ButtonPressed)
-                        ClearImageBackground(e.Graphics, rect, ColorTable.ButtonPressedHighlight);
-                    else if (btn.Selected)
-                        ClearImageBackground(e.Graphics, rect, btn.Checked ? ColorTable.ButtonPressedHighlight : ColorTable.ButtonSelectedGradientMiddle);
-                    else if (btn.Checked)
-                        ClearImageBackground(e.Graphics, rect, ColorTable.ButtonSelectedGradientMiddle);
-                    rect.Inflate(1, 1);
+                    if (OSUtils.IsMono)
+                        rect.Inflate(-1, -1);
+                    Color color = SystemInformation.HighContrast ? btn.Selected || btn.Checked ? SystemColors.Highlight : Color.Empty
+                        : btn.ButtonPressed ? ColorTable.ButtonPressedHighlight
+                        : btn.Selected ? btn.Checked ? ColorTable.ButtonPressedHighlight : ColorTable.ButtonSelectedGradientMiddle
+                        : btn.Checked ? ColorTable.ButtonSelectedGradientMiddle
+                        : Color.Empty;
+                    if (color != Color.Empty)
+                        ClearImageBackground(e.Graphics, rect, color);
+                    if (OSUtils.IsMono)
+                        rect.Inflate(1, 1);
                 }
 
-                // drawing border (maybe again, because it can be overridden by background)
-                if (btn.Checked || !btn.DropDownButtonPressed && (btn.ButtonPressed || btn.ButtonSelected))
+                // drawing border (maybe again, because it can be overdrawn by the background)
+                bool drawBorder = btn.Checked || (!btn.DropDownButtonPressed && SystemInformation.HighContrast
+                    ? btn.ButtonSelected && !btn.ButtonPressed // in high contrast mode no border is drawn when pressing the unchecked button
+                    : btn.ButtonPressed || btn.ButtonSelected);
+
+                if (drawBorder)
                 {
-                    using (Pen pen = new Pen(ColorTable.ButtonSelectedBorder))
+                    using (Pen pen = new Pen(SystemInformation.HighContrast ? SystemColors.ControlLight : ColorTable.ButtonSelectedBorder))
                         e.Graphics.DrawRectangle(pen, rect.X, rect.Y, rect.Width, rect.Height - 1);
                 }
+
+#if NETFRAMEWORK
+                // In high contrast mode the base does not call our overridden OnRenderArrow so both the size and the color might be incorrect
+                // Though it is not called in .NET Core either, the base paints the arrow correctly in .NET Core.
+                if (SystemInformation.HighContrast)
+                    OnRenderArrow(new ToolStripArrowRenderEventArgs(e.Graphics, btn, btn.DropDownButtonBounds, SystemColors.ControlText, ArrowDirection.Down));
+#endif
             }
+
 
             protected override void OnRenderItemImage(ToolStripItemImageRenderEventArgs e)
             {
@@ -193,6 +211,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         using (Pen pen = new Pen(ColorTable.ButtonSelectedBorder))
                             e.Graphics.DrawRectangle(pen, rect.X - 1, rect.Y - 1, rect.Width + 1, rect.Height + 1);
                     }
+                }
+                // In high contrast mode shifting the pressed button by 1 pixel just like in case of other buttons
+                else if (SystemInformation.HighContrast && e.Item is ToolStripSplitButton { ButtonPressed: true })
+                {
+                    e = new ToolStripItemImageRenderEventArgs(e.Graphics, e.Item, e.Image,
+                        new Rectangle(e.ImageRectangle.X + 1, e.ImageRectangle.Y, e.ImageRectangle.Width, e.ImageRectangle.Height));
                 }
 
                 base.OnRenderItemImage(e);
