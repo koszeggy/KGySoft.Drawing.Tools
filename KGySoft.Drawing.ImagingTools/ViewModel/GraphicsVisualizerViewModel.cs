@@ -66,12 +66,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 UpdateImageAndCommands();
         }
 
-        internal override void ViewLoaded()
-        {
-            UpdateGraphicImage();
-            base.ViewLoaded();
-        }
-
         protected override void UpdateInfo()
         {
             GraphicsInfo? graphicsInfo = GraphicsInfo;
@@ -143,8 +137,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void UpdateGraphicImage()
         {
-            if (!IsViewLoaded)
-                return;
             GraphicsInfo? graphicsInfo = GraphicsInfo;
             Bitmap? backingImage = graphicsInfo?.GraphicsImage;
             if (backingImage == null)
