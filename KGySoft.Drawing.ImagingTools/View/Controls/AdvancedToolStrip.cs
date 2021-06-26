@@ -141,7 +141,19 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
             {
-                if (e.Item is ToolStripButton { Checked: true, Enabled: true } btn)
+                var btn = (ToolStripButton)e.Item;
+
+#if NETFRAMEWORK
+                // In .NET Framework fixing the appearance in high contrast mode: not drawing the border if the button is selected and checked (this is the .NET Core behavior)
+                if (SystemInformation.HighContrast && btn.Enabled && (btn.Pressed || btn.Selected && btn.Checked))
+                {
+                    ClearImageBackground(e.Graphics, btn.ContentRectangle, SystemColors.Highlight);
+                    return;
+                }
+#endif
+
+                // if button is checked we draw a middle gradient background (if the button is pressed or selected, this can be overdrawn by base)
+                if (!SystemInformation.HighContrast && btn.Checked && btn.Enabled)
                     ClearImageBackground(e.Graphics, btn.ContentRectangle, ColorTable.ButtonSelectedGradientMiddle);
 
                 base.OnRenderButtonBackground(e);
@@ -176,9 +188,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 }
 
                 // drawing border (maybe again, because it can be overdrawn by the background)
-                bool drawBorder = btn.Checked || (!btn.DropDownButtonPressed && SystemInformation.HighContrast
-                    ? btn.ButtonSelected && !btn.ButtonPressed // in high contrast mode no border is drawn when pressing the unchecked button
-                    : btn.ButtonPressed || btn.ButtonSelected);
+                bool drawBorder = !btn.DropDownButtonPressed && (SystemInformation.HighContrast
+                    ? !btn.ButtonPressed && (btn.Checked ^ btn.ButtonSelected) // this is how simple button is also rendered in high contrast mode (starting with .NET Core)
+                    : btn.Checked || btn.ButtonPressed || btn.ButtonSelected);
 
                 if (drawBorder)
                 {
