@@ -194,8 +194,24 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
                 if (drawBorder)
                 {
-                    using (Pen pen = new Pen(SystemInformation.HighContrast ? SystemColors.ControlLight : ColorTable.ButtonSelectedBorder))
-                        e.Graphics.DrawRectangle(pen, rect.X, rect.Y, rect.Width, rect.Height - 1);
+                    if (SystemInformation.HighContrast)
+                    {
+                        rect.Width += 1;
+                        e.Graphics.DrawRectangle(SystemPens.ControlLight, rect.X, rect.Y, rect.Width, rect.Height - 1);
+                    }
+                    else
+                    {
+                        using (Pen pen = new Pen(ColorTable.ButtonSelectedBorder))
+                            e.Graphics.DrawRectangle(pen, rect.X, rect.Y, rect.Width, rect.Height - 1);
+                    }
+                }
+
+                if (SystemInformation.HighContrast && !btn.DropDownButtonPressed && btn.Selected)
+                {
+                    rect = btn.DropDownButtonBounds;
+                    rect.Width -= 1;
+                    rect.Height -= 1;
+                    e.Graphics.DrawRectangle(SystemPens.ControlLight, rect);
                 }
 
 #if NETFRAMEWORK
