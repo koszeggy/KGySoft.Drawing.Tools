@@ -373,7 +373,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             if (imageViewer.Height >= minHeight)
                 return;
             int buttonsHeight = okCancelButtons.Visible ? okCancelButtons.Height : 0;
-            txtInfo.Height = ClientSize.Height - Padding.Vertical - tsMenu.Height - splitter.Height - buttonsHeight - minHeight;
+            int notificationHeight = lblNotification.Visible ? lblNotification.Height : 0;
+            txtInfo.Height = ClientSize.Height - Padding.Vertical - tsMenu.Height - splitter.Height - buttonsHeight - notificationHeight - minHeight;
             PerformLayout();
         }
 
