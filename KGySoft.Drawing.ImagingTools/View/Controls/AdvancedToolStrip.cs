@@ -33,16 +33,30 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
     /// <summary>
     /// A <see cref="ToolStrip"/> with some additional features:
     /// - It can scale its content regardless of .NET version and app.config settings.
-    /// - Custom renderer for checked state and scaled arrows.
+    /// - Custom renderer for corrected checked button appearance, scaled and correctly colored arrows, fixed high contrast appearance and more.
     /// - Tool tip supports right-to-left
     /// - Clicking works even if the owner form was not active
     /// </summary>
     internal class AdvancedToolStrip : ToolStrip
     {
-        #region ScalingToolStripMenuRenderer class
+        #region AdvancedToolStripRenderer class
 
-        private class ScalingToolStripMenuRenderer : ToolStripProfessionalRenderer
+        private class AdvancedToolStripRenderer : ToolStripProfessionalRenderer
         {
+            #region ButtonStyle enum
+
+            [Flags]
+            private enum ButtonStyle : byte
+            {
+                None,
+                Selected = 1,
+                Pressed = 1 << 1,
+                Checked = 1 << 2,
+                Dropped = 1 << 3
+            }
+
+            #endregion
+
             #region Fields
 
             private static readonly Size referenceOffset = new Size(2, 2);
@@ -54,7 +68,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             #region Static Methods
 
-            private static void ClearImageBackground(Graphics g, Rectangle rect, Color color)
+            private static void ClearButtonBackground(Graphics g, Rectangle rect, Color color)
             {
                 GraphicsState state = g.Save();
                 rect.Inflate(1, 1);
@@ -63,56 +77,149 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 g.Restore(state);
             }
 
+            private static void FillBackground(Graphics g, Rectangle rect, Color color1, Color color2)
+            {
+                if (color1.ToArgb() == color2.ToArgb())
+                    g.FillRectangle(color1.GetBrush(), rect);
+                else
+                {
+                    using var brush = new LinearGradientBrush(rect, color1, color2, LinearGradientMode.Vertical);
+                    g.FillRectangle(brush, rect);
+                }
+            }
+
+            private static void DrawArrow(Graphics g, Color color, Rectangle bounds, ArrowDirection direction)
+            {
+                Point middle = new Point(bounds.Left + bounds.Width / 2, bounds.Top + bounds.Height / 2);
+
+                Point[] arrow;
+                Size offset = g.ScaleSize(referenceOffset);
+                Size offsetDouble = g.ScaleSize(referenceOffsetDouble);
+
+                switch (direction)
+                {
+                    case ArrowDirection.Up:
+                        arrow = new Point[]
+                        {
+                            new Point(middle.X - offset.Width, middle.Y + 1),
+                            new Point(middle.X + offset.Width + 1, middle.Y + 1),
+                            new Point(middle.X, middle.Y - offset.Height)
+                        };
+                        break;
+                    case ArrowDirection.Left:
+                        arrow = new Point[]
+                        {
+                            new Point(middle.X + offset.Width, middle.Y - offsetDouble.Height),
+                            new Point(middle.X + offset.Width, middle.Y + offsetDouble.Height),
+                            new Point(middle.X - offset.Width, middle.Y)
+                        };
+                        break;
+                    case ArrowDirection.Right:
+                        arrow = new Point[]
+                        {
+                            new Point(middle.X - offset.Width, middle.Y - offsetDouble.Height),
+                            new Point(middle.X - offset.Width, middle.Y + offsetDouble.Height),
+                            new Point(middle.X + offset.Width, middle.Y)
+                        };
+                        break;
+                    default:
+                        arrow = new Point[]
+                        {
+                            new Point(middle.X - offset.Width, middle.Y - 1),
+                            new Point(middle.X + offset.Width + 1, middle.Y - 1),
+                            new Point(middle.X, middle.Y + offset.Height)
+                        };
+                        break;
+                }
+
+                g.FillPolygon(color.GetBrush(), arrow);
+            }
+
+            private static void DrawThemedButtonBackground(Graphics g, ProfessionalColorTable colorTable, Rectangle bounds, ButtonStyle style)
+            {
+                #region Local Methods
+                
+                static void RenderWithVisualStyles(Graphics g, ProfessionalColorTable colorTable, Rectangle bounds, ButtonStyle style)
+                {
+                    Color backgroundStart;
+                    Color backgroundEnd;
+                    Color border;
+                    if ((style & ButtonStyle.Pressed) != 0 || (style & ButtonStyle.Selected) != 0 && (style & ButtonStyle.Checked) != 0)
+                    {
+                        backgroundStart = colorTable.ButtonPressedGradientBegin;
+                        backgroundEnd = colorTable.ButtonPressedGradientEnd;
+                        border = colorTable.ButtonPressedBorder;
+                    }
+                    else if ((style & ButtonStyle.Selected) != 0)
+                    {
+                        backgroundStart = colorTable.ButtonSelectedGradientBegin;
+                        backgroundEnd = colorTable.ButtonSelectedGradientEnd;
+                        border = colorTable.ButtonSelectedBorder;
+                    }
+                    else if ((style & ButtonStyle.Checked) != 0)
+                    {
+                        backgroundStart = colorTable.ButtonCheckedGradientBegin is { IsEmpty: false } c1 ? c1 : colorTable.ButtonCheckedHighlight;
+                        backgroundEnd = colorTable.ButtonCheckedGradientEnd is { IsEmpty: false } c2 ? c2 : colorTable.ButtonCheckedHighlight;
+                        border = colorTable.ButtonCheckedHighlightBorder;
+                    }
+                    else
+                        return;
+
+                    FillBackground(g, bounds, backgroundStart, backgroundEnd);
+                    g.DrawRectangle(border.GetPen(), bounds.X, bounds.Y, bounds.Width - 1, bounds.Height - 1);
+                }
+
+                static void RenderBasicTheme(Graphics g, ProfessionalColorTable colorTable, Rectangle bounds, ButtonStyle style)
+                {
+                    Color backColor = (style & ButtonStyle.Pressed) != 0 || (style & ButtonStyle.Selected) != 0 && (style & ButtonStyle.Checked) != 0 ? colorTable.ButtonPressedHighlight
+                        : (style & ButtonStyle.Selected) != 0 ? colorTable.ButtonSelectedHighlight
+                        : (style & ButtonStyle.Checked) != 0 ? colorTable.ButtonCheckedHighlight
+                        : Color.Empty;
+                    g.FillRectangle(backColor.GetBrush(), bounds);
+                    g.DrawRectangle(colorTable.ButtonSelectedBorder.GetPen(), bounds.X, bounds.Y, bounds.Width - 1, bounds.Height - 1);
+                }
+
+                #endregion
+
+                if (style == ButtonStyle.None)
+                    return;
+                if ((style & ButtonStyle.Dropped) != 0)
+                {
+                    FillBackground(g, bounds, colorTable.MenuItemPressedGradientBegin, colorTable.MenuItemPressedGradientEnd);
+                    g.DrawRectangle(colorTable.MenuBorder.GetPen(), bounds.X, bounds.Y, bounds.Width - 1, bounds.Height - 1);
+                    return;
+                }
+
+                if (Application.RenderWithVisualStyles)
+                    RenderWithVisualStyles(g, colorTable, bounds, style);
+                else
+                    RenderBasicTheme(g, colorTable, bounds, style);
+            }
+
+            private static void DrawHighContrastButtonBackground(Graphics g, Rectangle bounds, ButtonStyle style)
+            {
+                if ((style & ButtonStyle.Dropped) == 0 && (style & (ButtonStyle.Selected | ButtonStyle.Checked | ButtonStyle.Pressed)) != 0)
+                    g.FillRectangle(SystemBrushes.Highlight, bounds);
+
+                Color borderColor = (style & ButtonStyle.Dropped) != 0 ? SystemColors.ButtonHighlight
+                    : (style & ButtonStyle.Pressed) == 0 && (style & (ButtonStyle.Checked | ButtonStyle.Selected)) is ButtonStyle.Checked or ButtonStyle.Selected ? SystemColors.ControlLight
+                    : Color.Empty;
+
+                if (!borderColor.IsEmpty)
+                    g.DrawRectangle(borderColor.GetPen(), bounds.X, bounds.Y, bounds.Width - 1, bounds.Height - 1);
+            }
+
             #endregion
 
             #region Instance Methods
 
             protected override void OnRenderArrow(ToolStripArrowRenderEventArgs e)
             {
-                Graphics g = e.Graphics;
                 Rectangle dropDownRect = e.Item is ScalingToolStripDropDownButton scalingButton ? scalingButton.ArrowRectangle : e.ArrowRectangle;
                 Color color = !e.Item.Enabled ? SystemColors.ControlDark
                     : SystemInformation.HighContrast && e.Item.Selected && !e.Item.Pressed ? SystemColors.HighlightText
                     : e.ArrowColor;
-                using (Brush brush = new SolidBrush(color))
-                {
-                    Point middle = new Point(dropDownRect.Left + dropDownRect.Width / 2, dropDownRect.Top + dropDownRect.Height / 2);
-
-                    Point[] arrow;
-
-                    var offset = g.ScaleSize(referenceOffset);
-                    var offsetDouble = g.ScaleSize(referenceOffsetDouble);
-
-                    switch (e.Direction)
-                    {
-                        case ArrowDirection.Up:
-                            arrow = new Point[] {
-                                new Point(middle.X - offset.Width, middle.Y + 1),
-                                new Point(middle.X + offset.Width + 1, middle.Y + 1),
-                                new Point(middle.X, middle.Y - offset.Height)};
-                            break;
-                        case ArrowDirection.Left:
-                            arrow = new Point[] {
-                                new Point(middle.X + offset.Width, middle.Y - offsetDouble.Height),
-                                new Point(middle.X + offset.Width, middle.Y + offsetDouble.Height),
-                                new Point(middle.X - offset.Width, middle.Y)};
-                            break;
-                        case ArrowDirection.Right:
-                            arrow = new Point[] {
-                                new Point(middle.X - offset.Width, middle.Y - offsetDouble.Height),
-                                new Point(middle.X - offset.Width, middle.Y + offsetDouble.Height),
-                                new Point(middle.X + offset.Width, middle.Y)};
-                            break;
-                        default:
-                            arrow = new Point[] {
-                                new Point(middle.X - offset.Width, middle.Y - 1),
-                                new Point(middle.X + offset.Width + 1, middle.Y - 1),
-                                new Point(middle.X, middle.Y + offset.Height) };
-                            break;
-                    }
-
-                    g.FillPolygon(brush, arrow);
-                }
+                DrawArrow(e.Graphics, color, dropDownRect, e.Direction);
             }
 
             protected override void OnRenderItemCheck(ToolStripItemImageRenderEventArgs e)
@@ -139,87 +246,127 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     image.Dispose();
             }
 
+            /// <summary>
+            /// Changes to original:
+            /// - Background image is omitted
+            /// - Not selected checked background uses fallback color if current theme has transparent checked background
+            /// - [HighContrast]: Not drawing border if button is pressed and checked (this is how the .NET Core version also works)
+            /// </summary>
             protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
             {
-                var btn = (ToolStripButton)e.Item;
+                ToolStripButton button = (ToolStripButton)e.Item;
+                Rectangle bounds = new Rectangle(Point.Empty, button.Size);
+                ButtonStyle style = (button.Pressed ? ButtonStyle.Pressed : 0)
+                    | (button.Checked ? ButtonStyle.Checked : 0)
+                    | (button.Selected ? ButtonStyle.Selected : 0);
 
-#if NETFRAMEWORK
-                // In .NET Framework fixing the appearance in high contrast mode: not drawing the border if the button is selected and checked (this is the .NET Core behavior)
-                if (SystemInformation.HighContrast && btn.Enabled && (btn.Pressed || btn.Selected && btn.Checked))
-                {
-                    ClearImageBackground(e.Graphics, btn.ContentRectangle, SystemColors.Highlight);
-                    return;
-                }
-#endif
+                if (SystemInformation.HighContrast)
+                    DrawHighContrastButtonBackground(e.Graphics, bounds, style);
+                else if (button.Enabled && style != ButtonStyle.None)
+                    DrawThemedButtonBackground(e.Graphics, ColorTable, bounds, style);
+                else if (button.Owner != null && button.BackColor != button.Owner.BackColor)
+                    e.Graphics.FillRectangle(button.BackColor.GetBrush(), bounds);
+            }
 
-                // if button is checked we draw a middle gradient background (if the button is pressed or selected, this can be overdrawn by base)
-                if (!SystemInformation.HighContrast && btn.Checked && btn.Enabled)
-                    ClearImageBackground(e.Graphics, btn.ContentRectangle, ColorTable.ButtonSelectedGradientMiddle);
-
-                base.OnRenderButtonBackground(e);
+            protected override void OnRenderDropDownButtonBackground(ToolStripItemRenderEventArgs e)
+            {
+                base.OnRenderDropDownButtonBackground(e);
             }
 
             protected override void OnRenderSplitButtonBackground(ToolStripItemRenderEventArgs e)
             {
-                base.OnRenderSplitButtonBackground(e);
-                if (e.Item is not AdvancedToolStripSplitButton btn)
+                #region Local Methods
+
+                // Changes to original:
+                // - Background image is omitted
+                // - Separator width is ignored
+                // - Supporting AdvancedToolStripSplitButton checked state (rendering the same way as OnRenderButtonBackground does it)
+                static void DrawThemed(ToolStripItemRenderEventArgs e, ProfessionalColorTable colorTable, ButtonStyle style)
+                {
+                    AdvancedToolStripSplitButton button = (AdvancedToolStripSplitButton)e.Item;
+                    Rectangle bounds = new Rectangle(Point.Empty, button.Size);
+
+                    // common part
+                    ButtonStyle commonStyle = style & (ButtonStyle.Dropped | ButtonStyle.Selected);
+                    if (commonStyle != ButtonStyle.None)
+                        DrawThemedButtonBackground(e.Graphics, colorTable, bounds, commonStyle);
+                    else if (button.Owner != null && button.BackColor != button.Owner.BackColor)
+                        e.Graphics.FillRectangle(button.BackColor.GetBrush(), bounds);
+
+                    // button part
+                    if ((style & ButtonStyle.Pressed) != 0
+                        || (style & ButtonStyle.Checked) != 0
+                        || (style & ButtonStyle.Selected) != 0 && (style & ButtonStyle.Dropped) == 0)
+                    {
+                        style &= ~ButtonStyle.Dropped;
+                        bounds = button.ButtonBounds;
+                        bounds.Width += 1;
+                        if (button.RightToLeft == RightToLeft.Yes)
+                            bounds.X -= 1;
+
+                        DrawThemedButtonBackground(e.Graphics, colorTable, bounds, style);
+                    }
+
+                    // arrow
+                    DrawArrow(e.Graphics, button.Enabled ? SystemColors.ControlText : SystemColors.ControlDark, button.DropDownButtonBounds, ArrowDirection.Down);
+                }
+
+                // Changes to original:
+                // - Fixed arrow color
+                // - Fixed border color when button is not dropped
+                // - Supporting AdvancedToolStripSplitButton checked state (rendering the same way as OnRenderButtonBackground does it)
+                static void DrawHighContrast(ToolStripItemRenderEventArgs e, ButtonStyle style)
+                {
+                    AdvancedToolStripSplitButton button = (AdvancedToolStripSplitButton)e.Item;
+                    Rectangle bounds = new Rectangle(Point.Empty, button.Size);
+                    Rectangle dropBounds = button.DropDownButtonBounds;
+
+                    // common part
+                    ButtonStyle commonStyle = style & (ButtonStyle.Dropped | ButtonStyle.Selected);
+                    if (commonStyle != ButtonStyle.None)
+                        DrawHighContrastButtonBackground(e.Graphics, bounds, commonStyle);
+
+                    // button part
+                    if ((style & ButtonStyle.Pressed) != 0
+                        || (style & ButtonStyle.Checked) != 0
+                        || (style & ButtonStyle.Selected) != 0 && (style & ButtonStyle.Dropped) == 0)
+                    {
+                        bounds = button.ButtonBounds;
+                        bounds.Width += 2;
+                        if (button.RightToLeft == RightToLeft.Yes)
+                            bounds.X -= 2;
+
+                        DrawHighContrastButtonBackground(e.Graphics, bounds, style & ~ButtonStyle.Dropped);
+                    }
+
+                    // drop down border
+                    Color arrowColor = SystemColors.ControlText;
+                    if ((style & ButtonStyle.Dropped) == 0 && (style & ButtonStyle.Selected) != 0)
+                    {
+                        e.Graphics.DrawRectangle(SystemPens.ControlLight, dropBounds.X, dropBounds.Y, dropBounds.Width - 1, dropBounds.Height - 1);
+                        arrowColor = SystemColors.HighlightText;
+                    }
+
+                    DrawArrow(e.Graphics, arrowColor, button.DropDownButtonBounds, ArrowDirection.Down);
+                }
+
+                #endregion
+
+                if (e.Item is not AdvancedToolStripSplitButton button)
+                {
+                    base.OnRenderSplitButtonBackground(e);
                     return;
-
-                // overriding background to behave the same way as ToolStripButton
-                Rectangle rect = btn.ButtonBounds;
-                if (OSUtils.IsMono)
-                    rect.Location = Point.Empty;
-                else if (e.Item.RightToLeft == RightToLeft.Yes)
-                    rect.Offset(-1, 0);
-
-                if (btn.Enabled && (btn.Checked || !btn.DropDownButtonPressed))
-                {
-                    if (OSUtils.IsMono)
-                        rect.Inflate(-1, -1);
-                    Color color = SystemInformation.HighContrast ? btn.Selected || btn.Checked ? SystemColors.Highlight : Color.Empty
-                        : btn.ButtonPressed ? ColorTable.ButtonPressedHighlight
-                        : btn.Selected ? btn.Checked ? ColorTable.ButtonPressedHighlight : ColorTable.ButtonSelectedGradientMiddle
-                        : btn.Checked ? ColorTable.ButtonSelectedGradientMiddle
-                        : Color.Empty;
-                    if (color != Color.Empty)
-                        ClearImageBackground(e.Graphics, rect, color);
-                    if (OSUtils.IsMono)
-                        rect.Inflate(1, 1);
                 }
 
-                // drawing border (maybe again, because it can be overdrawn by the background)
-                bool drawBorder = !btn.DropDownButtonPressed && (SystemInformation.HighContrast
-                    ? !btn.ButtonPressed && (btn.Checked ^ btn.ButtonSelected) // this is how simple button is also rendered in high contrast mode (starting with .NET Core)
-                    : btn.Checked || btn.ButtonPressed || btn.ButtonSelected);
+                ButtonStyle style = (button.DropDownButtonPressed ? ButtonStyle.Dropped : 0)
+                    | (button.ButtonPressed ? ButtonStyle.Pressed : 0)
+                    | (button.Checked ? ButtonStyle.Checked : 0)
+                    | (button.Selected ? ButtonStyle.Selected : 0);
 
-                if (drawBorder)
-                {
-                    if (SystemInformation.HighContrast)
-                    {
-                        rect.Width += 1;
-                        e.Graphics.DrawRectangle(SystemPens.ControlLight, rect.X, rect.Y, rect.Width, rect.Height - 1);
-                    }
-                    else
-                    {
-                        using (Pen pen = new Pen(ColorTable.ButtonSelectedBorder))
-                            e.Graphics.DrawRectangle(pen, rect.X, rect.Y, rect.Width, rect.Height - 1);
-                    }
-                }
-
-                if (SystemInformation.HighContrast && !btn.DropDownButtonPressed && btn.Selected)
-                {
-                    rect = btn.DropDownButtonBounds;
-                    rect.Width -= 1;
-                    rect.Height -= 1;
-                    e.Graphics.DrawRectangle(SystemPens.ControlLight, rect);
-                }
-
-#if NETFRAMEWORK
-                // In high contrast mode the base does not call our overridden OnRenderArrow so both the size and the color might be incorrect
-                // Though it is not called in .NET Core either, the base paints the arrow correctly in .NET Core.
                 if (SystemInformation.HighContrast)
-                    OnRenderArrow(new ToolStripArrowRenderEventArgs(e.Graphics, btn, btn.DropDownButtonBounds, SystemColors.ControlText, ArrowDirection.Down));
-#endif
+                    DrawHighContrast(e, style);
+                else
+                    DrawThemed(e, ColorTable, style);
             }
 
 
@@ -235,7 +382,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     // Windows paints this in base but Linux/Mono does not
                     if (mi.Checked)
                     {
-                        ClearImageBackground(e.Graphics, rect, mi.Selected ? ColorTable.ButtonPressedHighlight : ColorTable.ButtonSelectedGradientMiddle);
+                        ClearButtonBackground(e.Graphics, rect, mi.Selected ? ColorTable.ButtonPressedHighlight : ColorTable.ButtonSelectedGradientMiddle);
                         using (Pen pen = new Pen(ColorTable.ButtonSelectedBorder))
                             e.Graphics.DrawRectangle(pen, rect.X - 1, rect.Y - 1, rect.Width + 1, rect.Height + 1);
                     }
@@ -249,7 +396,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
                 base.OnRenderItemImage(e);
             }
-            
+
             #endregion
 
             #endregion
@@ -260,7 +407,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         #region Fields
 
         #region Static Fields
-        
+
         private static readonly Size referenceSize = new Size(16, 16);
 
         #endregion
@@ -281,7 +428,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         public AdvancedToolStrip()
         {
             ImageScalingSize = Size.Round(this.ScaleSize(referenceSize));
-            Renderer = new ScalingToolStripMenuRenderer();
+            Renderer = new AdvancedToolStripRenderer();
             toolTip = Reflector.TryGetProperty(this, nameof(ToolTip), out object? result) ? (ToolTip)result!
                 : Reflector.TryGetField(this, "tooltip_window", out result) ? (ToolTip)result!
                 : null;
