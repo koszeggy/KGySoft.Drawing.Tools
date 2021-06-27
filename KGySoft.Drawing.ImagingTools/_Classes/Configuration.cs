@@ -107,8 +107,14 @@ namespace KGySoft.Drawing.ImagingTools
             typeof(CultureInfo).RegisterTypeConverter<CultureInfoConverterFixed>();
 #endif
 #if NET35 || NET40
-            // To be able to use HTTP requests with TLS 1.2 security protocol (may not work on Windows XP)
-            ServicePointManager.SecurityProtocol |= (SecurityProtocolType)3072;
+            try
+            {
+                // To be able to use HTTP requests with TLS 1.2 security protocol (may not work on Windows XP)
+                ServicePointManager.SecurityProtocol |= (SecurityProtocolType)3072;
+            }
+            catch (NotSupportedException)
+            {
+            }
 #elif NETFRAMEWORK
             // To be able to use HTTP requests with TLS 1.2 security protocol (may not work on Windows XP)
             ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
