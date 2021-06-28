@@ -272,6 +272,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 // Changes to original:
                 // - Background image is omitted
                 // - Separator width is ignored
+                // - The separator placement matches with high contrast mode. On 100% DPI this means 1 pixel shift so the image area is perfectly rectangular
                 // - Supporting AdvancedToolStripSplitButton checked state (rendering the same way as OnRenderButtonBackground does it)
                 static void DrawThemed(ToolStripItemRenderEventArgs e, ProfessionalColorTable colorTable, ButtonStyle style)
                 {
@@ -290,18 +291,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         || (style & ButtonStyle.Checked) != 0
                         || (style & ButtonStyle.Selected) != 0 && (style & ButtonStyle.Dropped) == 0)
                     {
-                        style &= ~ButtonStyle.Dropped;
                         bounds = button.ButtonBounds;
                         if (OSUtils.IsMono)
                             bounds.Location = Point.Empty;
-                        else
-                        {
-                            bounds.Width += 1;
-                            if (button.RightToLeft == RightToLeft.Yes)
-                                bounds.X -= 1;
-                        }
+                        bounds.Width += 2;
+                        if (button.RightToLeft == RightToLeft.Yes)
+                            bounds.X -= 2;
 
-                        DrawThemedButtonBackground(e.Graphics, colorTable, bounds, style);
+                        DrawThemedButtonBackground(e.Graphics, colorTable, bounds, style & ~ButtonStyle.Dropped);
                     }
 
                     // arrow
@@ -348,6 +345,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         arrowColor = SystemColors.HighlightText;
                     }
 
+                    // arrow
                     DrawArrow(e.Graphics, arrowColor, button.DropDownButtonBounds, ArrowDirection.Down);
                 }
 
@@ -401,6 +399,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 else if (e.Item is ScalingToolStripDropDownButton btn)
                     btn.AdjustImageRectangle(ref bounds);
 #endif
+
+                // On ToolStripSplitButtons the image originally is not quite centered
+                if (e.Item is ToolStripSplitButton)
+                    bounds.X += e.Item.RightToLeft == RightToLeft.Yes ? -1 : 1;
 
                 Image image = e.Item.Enabled ? e.Image : disabledImagesCache[e.Image];
                 if (e.Item.ImageScaling == ToolStripItemImageScaling.None)
