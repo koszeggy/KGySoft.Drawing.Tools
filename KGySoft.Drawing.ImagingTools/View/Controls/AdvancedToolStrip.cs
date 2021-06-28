@@ -210,9 +210,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             /// Changes to original:
             /// - Fixed color
             /// - Fixed scaling
+            /// - [Mono]: Ignoring ToolStripSplitButton because it is painted along the button just like in the MS world.
             /// </summary>
             protected override void OnRenderArrow(ToolStripArrowRenderEventArgs e)
             {
+                if (e.Item is ToolStripSplitButton)
+                    return;
                 Rectangle dropDownRect = e.Item is ScalingToolStripDropDownButton scalingButton ? scalingButton.ArrowRectangle : e.ArrowRectangle;
                 Color color = !e.Item.Enabled ? SystemColors.ControlDark
                     : SystemInformation.HighContrast && e.Item.Selected && !e.Item.Pressed ? SystemColors.HighlightText
@@ -301,9 +304,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         DrawThemedButtonBackground(e.Graphics, colorTable, bounds, style);
                     }
 
-                    // arrow: on Mono the OnRenderArrow is called normally, on Windows we have to draw it explicitly
-                    if (!OSUtils.IsMono)
-                        DrawArrow(e.Graphics, button.Enabled ? SystemColors.ControlText : SystemColors.ControlDark, button.DropDownButtonBounds, ArrowDirection.Down);
+                    // arrow
+                    bounds = button.DropDownButtonBounds;
+                    if (OSUtils.IsMono)
+                        bounds.X -= button.ButtonBounds.Left;
+
+                    DrawArrow(e.Graphics, button.Enabled ? SystemColors.ControlText : SystemColors.ControlDark, bounds, ArrowDirection.Down);
                 }
 
                 // Changes to original:
