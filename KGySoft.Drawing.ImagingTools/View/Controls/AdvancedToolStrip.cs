@@ -391,8 +391,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 // In high contrast mode shifting the pressed buttons by 1 pixel, including ToolStripSplitButton
                 else if (SystemInformation.HighContrast && e.Item is ToolStripButton { Pressed: true } or ToolStripSplitButton { ButtonPressed: true })
                     bounds.X += 1;
+#if NETFRAMEWORK
+                else if (e.Item is ScalingToolStripDropDownButton btn)
+                    btn.AdjustImageRectangle(ref bounds);
+#endif
 
-                e.Graphics.DrawImage(e.Item.Enabled ? e.Image : disabledImagesCache[e.Image], bounds);
+                Image image = e.Item.Enabled ? e.Image : disabledImagesCache[e.Image];
+                if (e.Item.ImageScaling == ToolStripItemImageScaling.None)
+                    e.Graphics.DrawImage(image, bounds, new Rectangle(Point.Empty, bounds.Size), GraphicsUnit.Pixel);
+                else
+                    e.Graphics.DrawImage(image, bounds);
             }
 
             #endregion
