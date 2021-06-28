@@ -289,15 +289,21 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     {
                         style &= ~ButtonStyle.Dropped;
                         bounds = button.ButtonBounds;
-                        bounds.Width += 1;
-                        if (button.RightToLeft == RightToLeft.Yes)
-                            bounds.X -= 1;
+                        if (OSUtils.IsMono)
+                            bounds.Location = Point.Empty;
+                        else
+                        {
+                            bounds.Width += 1;
+                            if (button.RightToLeft == RightToLeft.Yes)
+                                bounds.X -= 1;
+                        }
 
                         DrawThemedButtonBackground(e.Graphics, colorTable, bounds, style);
                     }
 
-                    // arrow
-                    DrawArrow(e.Graphics, button.Enabled ? SystemColors.ControlText : SystemColors.ControlDark, button.DropDownButtonBounds, ArrowDirection.Down);
+                    // arrow: on Mono the OnRenderArrow is called normally, on Windows we have to draw it explicitly
+                    if (!OSUtils.IsMono)
+                        DrawArrow(e.Graphics, button.Enabled ? SystemColors.ControlText : SystemColors.ControlDark, button.DropDownButtonBounds, ArrowDirection.Down);
                 }
 
                 // Changes to original:
@@ -341,12 +347,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
                 #endregion
 
-                if (e.Item is not ToolStripSplitButton button)
-                {
-                    base.OnRenderSplitButtonBackground(e);
-                    return;
-                }
-
+                var button = (ToolStripSplitButton)e.Item;
                 ButtonStyle style = (button.DropDownButtonPressed ? ButtonStyle.Dropped : 0)
                     | (button.ButtonPressed ? ButtonStyle.Pressed : 0)
                     | (button.Selected ? ButtonStyle.Selected : 0)
@@ -367,7 +368,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             protected override void OnRenderItemCheck(ToolStripItemImageRenderEventArgs e)
             {
                 int size = e.Item.Height;
-                Rectangle bounds = new Rectangle(e.Item.RightToLeft == RightToLeft.Yes ? e.Item.Width - size - 1 : 2, 0, size, size); // e.ImageRectangle;
+                Rectangle bounds = new Rectangle(e.Item.RightToLeft == RightToLeft.Yes ? e.Item.Width - size - 1 : OSUtils.IsMono ? 1 : 2, 0, size, size);
                 if (SystemInformation.HighContrast)
                     DrawHighContrastButtonBackground(e.Graphics, bounds, ButtonStyle.Selected);
                 else
@@ -378,24 +379,18 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             /// Changes to original:
             /// - Unlike Windows' base implementation, not drawing the checked menu item background again, which is already done by OnRenderItemCheck
             /// - [Mono]: Scaling menu item images
-            /// - [HighContrast]: Shifting also clicked ToolStripSplitButton images just like in case of buttons
+            /// - [HighContrast]: Shifting also clicked ToolStripSplitButton images just like for buttons
             /// </summary>
             protected override void OnRenderItemImage(ToolStripItemImageRenderEventArgs e)
             {
                 Rectangle bounds = e.ImageRectangle;
-                switch (e.Item)
-                {
-                    // Fixing image scaling in menu items on Mono
-                    case ToolStripMenuItem when OSUtils.IsMono:
-                        bounds.Size = e.Item.Owner.ScaleSize(referenceSize);
-                        break;
 
-                    // In high contrast mode shifting the pressed buttons by 1 pixel, including ToolStripSplitButton
-                    case ToolStripButton { Pressed: true }:
-                    case ToolStripSplitButton { ButtonPressed: true }:
-                        bounds.X += 1;
-                        break;
-                }
+                // Fixing image scaling in menu items on Mono
+                if (OSUtils.IsMono && e.Item is ToolStripMenuItem)
+                    bounds.Size = e.Item.Owner.ScaleSize(referenceSize);
+                // In high contrast mode shifting the pressed buttons by 1 pixel, including ToolStripSplitButton
+                else if (SystemInformation.HighContrast && e.Item is ToolStripButton { Pressed: true } or ToolStripSplitButton { ButtonPressed: true })
+                    bounds.X += 1;
 
                 e.Graphics.DrawImage(e.Item.Enabled ? e.Image : disabledImagesCache[e.Image], bounds);
             }
