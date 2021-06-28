@@ -268,9 +268,24 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     e.Graphics.FillRectangle(button.BackColor.GetBrush(), bounds);
             }
 
+            /// <summary>
+            /// Changes to original:
+            /// - [HighContrast]: Dropped border color matches the menu border color
+            /// </summary>
             protected override void OnRenderDropDownButtonBackground(ToolStripItemRenderEventArgs e)
             {
-                base.OnRenderDropDownButtonBackground(e);
+                ToolStripDropDownButton button = (ToolStripDropDownButton)e.Item;
+                Rectangle bounds = new Rectangle(Point.Empty, button.Size);
+                ButtonStyle style = (button.Pressed && button.HasDropDownItems ? ButtonStyle.Dropped : 0)
+                    | (button.Pressed ? ButtonStyle.Pressed : 0)
+                    | (button.Selected ? ButtonStyle.Selected : 0);
+
+                if (SystemInformation.HighContrast)
+                    DrawHighContrastButtonBackground(e.Graphics, bounds, style);
+                else if (button.Enabled && style != ButtonStyle.None)
+                    DrawThemedButtonBackground(e.Graphics, ColorTable, bounds, style);
+                else if (button.Owner != null && button.BackColor != button.Owner.BackColor)
+                    e.Graphics.FillRectangle(button.BackColor.GetBrush(), bounds);
             }
 
             protected override void OnRenderSplitButtonBackground(ToolStripItemRenderEventArgs e)
