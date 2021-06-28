@@ -21,6 +21,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
+using KGySoft.Collections;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.View.Components;
 using KGySoft.Drawing.ImagingTools.WinApi;
@@ -61,21 +62,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             private static readonly Size referenceOffset = new Size(2, 2);
             private static readonly Size referenceOffsetDouble = new Size(4, 4);
+            private static readonly Cache<Image, Image> disabledImagesCache = new(CreateDisabledImage, 16) { DisposeDroppedValues = true };
 
             #endregion
 
             #region Methods
 
             #region Static Methods
-
-            private static void ClearButtonBackground(Graphics g, Rectangle rect, Color color)
-            {
-                GraphicsState state = g.Save();
-                rect.Inflate(1, 1);
-                g.SetClip(rect);
-                g.Clear(color);
-                g.Restore(state);
-            }
 
             private static void FillBackground(Graphics g, Rectangle rect, Color color1, Color color2)
             {
@@ -213,6 +206,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             #region Instance Methods
 
+            /// <summary>
+            /// Changes to original:
+            /// - Fixed color
+            /// - Fixed scaling
+            /// </summary>
             protected override void OnRenderArrow(ToolStripArrowRenderEventArgs e)
             {
                 Rectangle dropDownRect = e.Item is ScalingToolStripDropDownButton scalingButton ? scalingButton.ArrowRectangle : e.ArrowRectangle;
@@ -220,30 +218,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     : SystemInformation.HighContrast && e.Item.Selected && !e.Item.Pressed ? SystemColors.HighlightText
                     : e.ArrowColor;
                 DrawArrow(e.Graphics, color, dropDownRect, e.Direction);
-            }
-
-            protected override void OnRenderItemCheck(ToolStripItemImageRenderEventArgs e)
-            {
-                Rectangle imageRect = e.ImageRectangle;
-                Image image = e.Image;
-                if (imageRect == Rectangle.Empty || image == null)
-                    return;
-
-                bool disposeImage = false;
-                if (!e.Item.Enabled)
-                {
-                    image = CreateDisabledImage(image);
-                    disposeImage = true;
-                }
-
-                // Draw the checkmark background (providing no image)
-                base.OnRenderItemCheck(new ToolStripItemImageRenderEventArgs(e.Graphics, e.Item, null, e.ImageRectangle));
-
-                // Draw the checkmark image scaled to the image rectangle
-                e.Graphics.DrawImage(image, imageRect, new Rectangle(Point.Empty, image.Size), GraphicsUnit.Pixel);
-
-                if (disposeImage)
-                    image.Dispose();
             }
 
             /// <summary>
@@ -384,32 +358,46 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     DrawThemed(e, ColorTable, style);
             }
 
+            /// <summary>
+            /// Changes to original:
+            /// - Not drawing the default (possibly unscaled) check image
+            /// - Drawing the check background also in high contrast mode
+            /// - When VisualStyles are enabled, using slightly different colors than the original
+            /// </summary>
+            protected override void OnRenderItemCheck(ToolStripItemImageRenderEventArgs e)
+            {
+                int size = e.Item.Height;
+                Rectangle bounds = new Rectangle(e.Item.RightToLeft == RightToLeft.Yes ? e.Item.Width - size - 1 : 2, 0, size, size); // e.ImageRectangle;
+                if (SystemInformation.HighContrast)
+                    DrawHighContrastButtonBackground(e.Graphics, bounds, ButtonStyle.Selected);
+                else
+                    DrawThemedButtonBackground(e.Graphics, ColorTable, bounds, e.Item.Selected ? ButtonStyle.Pressed : ButtonStyle.Selected);
+            }
 
+            /// <summary>
+            /// Changes to original:
+            /// - Unlike Windows' base implementation, not drawing the checked menu item background again, which is already done by OnRenderItemCheck
+            /// - [Mono]: Scaling menu item images
+            /// - [HighContrast]: Shifting also clicked ToolStripSplitButton images just like in case of buttons
+            /// </summary>
             protected override void OnRenderItemImage(ToolStripItemImageRenderEventArgs e)
             {
-                // Fixing image scaling in menu items on Mono
-                if (OSUtils.IsMono && e.Item is ToolStripMenuItem mi)
+                Rectangle bounds = e.ImageRectangle;
+                switch (e.Item)
                 {
-                    Rectangle rect = e.ImageRectangle;
-                    rect.Size = e.Item.Owner.ScaleSize(referenceSize);
-                    e = new ToolStripItemImageRenderEventArgs(e.Graphics, e.Item, e.Image, rect);
+                    // Fixing image scaling in menu items on Mono
+                    case ToolStripMenuItem when OSUtils.IsMono:
+                        bounds.Size = e.Item.Owner.ScaleSize(referenceSize);
+                        break;
 
-                    // Windows paints this in base but Linux/Mono does not
-                    if (mi.Checked)
-                    {
-                        ClearButtonBackground(e.Graphics, rect, mi.Selected ? ColorTable.ButtonPressedHighlight : ColorTable.ButtonSelectedGradientMiddle);
-                        using (Pen pen = new Pen(ColorTable.ButtonSelectedBorder))
-                            e.Graphics.DrawRectangle(pen, rect.X - 1, rect.Y - 1, rect.Width + 1, rect.Height + 1);
-                    }
-                }
-                // In high contrast mode shifting the pressed button by 1 pixel just like in case of other buttons
-                else if (SystemInformation.HighContrast && e.Item is ToolStripSplitButton { ButtonPressed: true })
-                {
-                    e = new ToolStripItemImageRenderEventArgs(e.Graphics, e.Item, e.Image,
-                        new Rectangle(e.ImageRectangle.X + 1, e.ImageRectangle.Y, e.ImageRectangle.Width, e.ImageRectangle.Height));
+                    // In high contrast mode shifting the pressed buttons by 1 pixel, including ToolStripSplitButton
+                    case ToolStripButton { Pressed: true }:
+                    case ToolStripSplitButton { ButtonPressed: true }:
+                        bounds.X += 1;
+                        break;
                 }
 
-                base.OnRenderItemImage(e);
+                e.Graphics.DrawImage(e.Item.Enabled ? e.Image : disabledImagesCache[e.Image], bounds);
             }
 
             #endregion
