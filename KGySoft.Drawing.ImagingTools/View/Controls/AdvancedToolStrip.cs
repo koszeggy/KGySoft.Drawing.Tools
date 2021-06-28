@@ -298,7 +298,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 // - Supporting AdvancedToolStripSplitButton checked state (rendering the same way as OnRenderButtonBackground does it)
                 static void DrawThemed(ToolStripItemRenderEventArgs e, ProfessionalColorTable colorTable, ButtonStyle style)
                 {
-                    AdvancedToolStripSplitButton button = (AdvancedToolStripSplitButton)e.Item;
+                    var button = (ToolStripSplitButton)e.Item;
                     Rectangle bounds = new Rectangle(Point.Empty, button.Size);
 
                     // common part
@@ -332,7 +332,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 // - Supporting AdvancedToolStripSplitButton checked state (rendering the same way as OnRenderButtonBackground does it)
                 static void DrawHighContrast(ToolStripItemRenderEventArgs e, ButtonStyle style)
                 {
-                    AdvancedToolStripSplitButton button = (AdvancedToolStripSplitButton)e.Item;
+                    var button = (ToolStripSplitButton)e.Item;
                     Rectangle bounds = new Rectangle(Point.Empty, button.Size);
                     Rectangle dropBounds = button.DropDownButtonBounds;
 
@@ -367,7 +367,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
                 #endregion
 
-                if (e.Item is not AdvancedToolStripSplitButton button)
+                if (e.Item is not ToolStripSplitButton button)
                 {
                     base.OnRenderSplitButtonBackground(e);
                     return;
@@ -375,8 +375,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
                 ButtonStyle style = (button.DropDownButtonPressed ? ButtonStyle.Dropped : 0)
                     | (button.ButtonPressed ? ButtonStyle.Pressed : 0)
-                    | (button.Checked ? ButtonStyle.Checked : 0)
-                    | (button.Selected ? ButtonStyle.Selected : 0);
+                    | (button.Selected ? ButtonStyle.Selected : 0)
+                    | (button is AdvancedToolStripSplitButton { Checked: true } ? ButtonStyle.Checked : 0);
 
                 if (SystemInformation.HighContrast)
                     DrawHighContrast(e, style);
