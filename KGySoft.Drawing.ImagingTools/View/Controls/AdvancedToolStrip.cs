@@ -94,9 +94,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     case ArrowDirection.Up:
                         arrow = new Point[]
                         {
-                            new Point(middle.X - offset.Width, middle.Y + 1),
+                            new Point(middle.X - offset.Width - 1, middle.Y + 1),
                             new Point(middle.X + offset.Width + 1, middle.Y + 1),
-                            new Point(middle.X, middle.Y - offset.Height)
+                            new Point(middle.X, middle.Y - offset.Height - 1)
                         };
                         break;
                     case ArrowDirection.Left:
@@ -119,7 +119,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         arrow = new Point[]
                         {
                             new Point(middle.X - offset.Width, middle.Y - 1),
-                            new Point(middle.X + offset.Width + 1, middle.Y - 1),
+                            new Point(middle.X + offset.Width + (OSUtils.IsMono && OSUtils.IsLinux ? 2 : 1), middle.Y - 1),
                             new Point(middle.X, middle.Y + offset.Height)
                         };
                         break;
