@@ -211,18 +211,21 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             /// - Fixed color
             /// - Fixed scaling
             /// - [Mono]: Ignoring ToolStripSplitButton because it is painted along the button just like in the MS world.
+            /// - [Mono]: Fixing menu item arrow position in high DPI mode
             /// </summary>
             protected override void OnRenderArrow(ToolStripArrowRenderEventArgs e)
             {
                 if (e.Item is ToolStripSplitButton)
                     return;
-                Rectangle dropDownRect = e.Item is ScalingToolStripDropDownButton scalingButton ? scalingButton.ArrowRectangle : e.ArrowRectangle;
+                Rectangle bounds = e.Item is ScalingToolStripDropDownButton scalingButton ? scalingButton.ArrowRectangle
+                    : OSUtils.IsMono && e.Item is ToolStripMenuItem mi ? new Rectangle(e.ArrowRectangle.Left, 0, e.ArrowRectangle.Width, mi.Height)
+                    : e.ArrowRectangle;
                 Color color = !e.Item.Enabled ? SystemColors.ControlDark
                     : SystemInformation.HighContrast ? e.Item.Selected && !e.Item.Pressed ? SystemColors.HighlightText : e.ArrowColor
                     : e.Item is ToolStripDropDownItem ? SystemColors.ControlText
                     : e.ArrowColor;
-
-                DrawArrow(e.Graphics, color, dropDownRect, e.Direction);
+                
+                DrawArrow(e.Graphics, color, bounds, e.Direction);
             }
 
             /// <summary>
