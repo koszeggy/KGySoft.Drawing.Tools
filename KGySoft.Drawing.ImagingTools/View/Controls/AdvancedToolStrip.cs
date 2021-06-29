@@ -62,7 +62,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             private static readonly Size referenceOffset = new Size(2, 2);
             private static readonly Size referenceOffsetDouble = new Size(4, 4);
-            private static readonly Cache<Image, Image> disabledImagesCache = new(CreateDisabledImage, 16) { DisposeDroppedValues = true };
+            private static readonly Cache<Image, Image> disabledImagesCache = new(CreateDisabledImage, 8) { DisposeDroppedValues = true };
 
             #endregion
 

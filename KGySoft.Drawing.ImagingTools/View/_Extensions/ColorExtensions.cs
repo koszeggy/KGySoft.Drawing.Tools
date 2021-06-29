@@ -44,19 +44,13 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         #region Methods
 
-        internal static Pen GetPen(this Color color)
-        {
-            if (color.IsSystemColor)
-                return SystemPens.FromSystemColor(color);
-            return penCache[color.ToArgb()];
-        }
+        internal static Pen GetPen(this Color color) => color.IsSystemColor
+            ? SystemPens.FromSystemColor(color)
+            : penCache[color.ToArgb()];
 
-        internal static Brush GetBrush(this Color color)
-        {
-            if (color.IsSystemColor)
-                return SystemBrushes.FromSystemColor(color);
-            return brushCache[color.ToArgb()];
-        }
+        internal static Brush GetBrush(this Color color) => color.IsSystemColor
+            ? SystemBrushes.FromSystemColor(color)
+            : brushCache[color.ToArgb()];
 
         #endregion
     }
