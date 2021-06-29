@@ -218,9 +218,32 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     return;
                 Rectangle dropDownRect = e.Item is ScalingToolStripDropDownButton scalingButton ? scalingButton.ArrowRectangle : e.ArrowRectangle;
                 Color color = !e.Item.Enabled ? SystemColors.ControlDark
-                    : SystemInformation.HighContrast && e.Item.Selected && !e.Item.Pressed ? SystemColors.HighlightText
+                    : SystemInformation.HighContrast ? e.Item.Selected && !e.Item.Pressed ? SystemColors.HighlightText : e.ArrowColor
+                    : e.Item is ToolStripDropDownItem ? SystemColors.ControlText
                     : e.ArrowColor;
+
                 DrawArrow(e.Graphics, color, dropDownRect, e.Direction);
+            }
+
+            /// <summary>
+            /// Changes to original:
+            /// - [HighContrast]: Not drawing the highlighted background if the menu item is disabled (this is already fixed in Core)
+            /// - [HighContrast]: Fixed bounds of highlight rectangle (it was good in .NET Framework but is wrong in Core)
+            /// </summary>
+            protected override void OnRenderMenuItemBackground(ToolStripItemRenderEventArgs e)
+            {
+                if (!SystemInformation.HighContrast || e.Item is not ToolStripMenuItem item)
+                {
+                    base.OnRenderMenuItemBackground(e);
+                    return;
+                }
+
+                // Selected/pressed menu point in high contrast mode: drawing the background only if enabled
+                var bounds = new Rectangle(2, 0, item.Width - 3, item.Height);
+                if (item.Pressed || item.Selected && item.Enabled)
+                    e.Graphics.FillRectangle(SystemBrushes.Highlight, bounds);
+                else if (item.Selected && !item.Enabled)
+                    e.Graphics.DrawRectangle(SystemPens.Highlight, bounds.X, bounds.Y, bounds.Width - 1, bounds.Height - 1);
             }
 
             /// <summary>
@@ -387,6 +410,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             /// </summary>
             protected override void OnRenderItemImage(ToolStripItemImageRenderEventArgs e)
             {
+                if (e.Image == null)
+                    return;
                 Rectangle bounds = e.ImageRectangle;
 
                 // Fixing image scaling in menu items on Mono
