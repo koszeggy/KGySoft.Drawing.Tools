@@ -18,9 +18,11 @@
 + Supporting localization from .resx files with editing, downloading and applying without restarting.
   Note: Right-to-left languages are also supported though with some limitations, especially under Linux/Mono.
   On Windows some validation tool tips are not aligned right but otherwise the layout is arranged correctly.
-+ Palette visualizer form: OK/Cancel buttons
-+ Color visualizer form: OK/Cancel buttons
-+ Image visualizer form: OK/Cancel buttons
+* Image visualizer form:
+  + OK/Cancel buttons in debug mode, non-read-only context
+  - Fixing several appearance tool strip appearance issues, including high DPI and high contrast modes
++ Palette visualizer form: OK/Cancel buttons in non-read-only context
++ Color visualizer form: OK/Cancel buttons in non-read-only context
 * Manual zooming is enabled even if Auto Zoom is on; this turns off Auto Zoom automatically.
 * ImageViewer control:
   * Turning on/off smoothing of zoomed images affects also shrunk images (previously affected enlarged images only).
