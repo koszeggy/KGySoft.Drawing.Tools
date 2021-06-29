@@ -19,6 +19,8 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Text;
 using System.Windows.Forms;
 
@@ -43,7 +45,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private bool readOnly;
         private Color color;
-        private TextureBrush? alphaBrush;
+        private Bitmap? alphaPattern;
+        private ImageAttributes? attrTiles;
         private string? specialInfo;
 
         #endregion
@@ -211,10 +214,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             if (disposing && (components != null))
             {
                 components.Dispose();
-                alphaBrush?.Dispose();
+                alphaPattern?.Dispose();
+                attrTiles?.Dispose();
             }
 
-            alphaBrush = null;
+            alphaPattern = null;
+            attrTiles = null;
             pnlAlpha.Paint -= pnlColor_Paint;
             pnlColor.Paint -= pnlColor_Paint;
             btnSelectColor.Click -= btnEdit_Click;
@@ -265,7 +270,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             txtColor.Text = sb.ToString();
         }
 
-        private void CreateAlphaBrush()
+        private void CreateAlphaPattern()
         {
             Size size = new Size(10, 10).Scale(this.GetScale());
             var bmpPattern = new Bitmap(size.Width, size.Height);
@@ -278,7 +283,10 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 g.FillRectangle(Brushes.Silver, smallRect);
             }
 
-            alphaBrush = new TextureBrush(bmpPattern);
+            // Using a TextureBrush would be simpler but that is not supported on Mono
+            attrTiles = new ImageAttributes();
+            attrTiles.SetWrapMode(WrapMode.Tile);
+            alphaPattern = bmpPattern;
         }
 
         private void OnColorEdited() => Events.GetHandler<EventHandler>(nameof(ColorEdited))?.Invoke(this, EventArgs.Empty);
@@ -294,10 +302,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // painting checked background
             if (color.A != 255)
             {
-                if (alphaBrush == null)
-                    CreateAlphaBrush();
+                if (alphaPattern == null)
+                    CreateAlphaPattern();
 
-                e.Graphics.FillRectangle(alphaBrush!, e.ClipRectangle);
+                Size size = pnlColor.Size;
+                e.Graphics.DrawImage(alphaPattern, new Rectangle(Point.Empty, size), 0, 0 , size.Width, size.Height, GraphicsUnit.Pixel, attrTiles);
             }
 
             Color backColor = sender == pnlAlpha ? Color.FromArgb(color.A, Color.White) : color;
