@@ -68,12 +68,14 @@ namespace KGySoft.Drawing.ImagingTools
         #region Constants
 
         private const string defaultResourceRepositoryLocation = "https://koszeggy.github.io/KGySoft.Drawing.Tools/res/"; // same as "https://raw.githubusercontent.com/koszeggy/KGySoft.Drawing.Tools/pages/res/"
+        private const string fallbackResourceRepositoryLocation = "http://koszeggy.github.io/KGySoft.Drawing.Tools/res/";
 
         #endregion
 
         #region Fields
 
         private static Uri? baseUri;
+        private static bool allowHttps;
 
         #endregion
 
@@ -90,7 +92,8 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Private Properties
         
-        private static string ResourceRepositoryLocation => GetFromAppConfig() ?? defaultResourceRepositoryLocation;
+        private static string ResourceRepositoryLocation => GetFromAppConfig()
+            ?? (allowHttps ? defaultResourceRepositoryLocation : fallbackResourceRepositoryLocation);
 
         #endregion
 
@@ -100,24 +103,33 @@ namespace KGySoft.Drawing.ImagingTools
 
         static Configuration()
         {
+            allowHttps = !(OSUtils.IsMono && OSUtils.IsWindows);
+
             // To be able to resolve UserSettingsGroup of with other framework version
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 #if NET35
             // To prevent serializing CultureInfo by DisplayName instead of Name
             typeof(CultureInfo).RegisterTypeConverter<CultureInfoConverterFixed>();
 #endif
-#if NET35 || NET40
+
+#if NETFRAMEWORK
+            if (!allowHttps)
+                return;
+
             try
             {
                 // To be able to use HTTP requests with TLS 1.2 security protocol (may not work on Windows XP)
-                ServicePointManager.SecurityProtocol |= (SecurityProtocolType)3072;
+                ServicePointManager.SecurityProtocol |=
+#if NET35 || NET40
+                    (SecurityProtocolType)3072;
+#else
+                    SecurityProtocolType.Tls12;
+#endif
             }
             catch (NotSupportedException)
             {
+                allowHttps = false;
             }
-#elif NETFRAMEWORK
-            // To be able to use HTTP requests with TLS 1.2 security protocol (may not work on Windows XP)
-            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
 #endif
         }
 
