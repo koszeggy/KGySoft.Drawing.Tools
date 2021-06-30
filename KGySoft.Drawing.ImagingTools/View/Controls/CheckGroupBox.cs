@@ -135,6 +135,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         protected virtual void OnCheckedChanged(EventArgs e) => (Events[nameof(CheckedChanged)] as EventHandler)?.Invoke(this, e);
 
+        protected override void OnSizeChanged(EventArgs e)
+        {
+            base.OnSizeChanged(e);
+            if (RightToLeft == RightToLeft.Yes)
+                ResetCheckBoxLocation();
+        }
+
         protected override void OnRightToLeftChanged(EventArgs e)
         {
             base.OnRightToLeftChanged(e);
