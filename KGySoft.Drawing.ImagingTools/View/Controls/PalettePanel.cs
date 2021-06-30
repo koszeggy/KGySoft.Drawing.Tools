@@ -190,7 +190,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            scale = e.Graphics.GetScale();
+            PointF currentScale = e.Graphics.GetScale();
+            if (currentScale != scale)
+            {
+                scale = currentScale;
+                ResetLayout();
+            }
+
             base.OnPaint(e);
             if (ColorCount == 0)
                 return;
