@@ -44,8 +44,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             Size result = base.GetPreferredSize(proposedSize);
 #if NET35
             // The scaling is different in .NET 3.5 so instead if subtracting a constant padding difference
-            // we need to add some based on scaling, but only in high contrast mode
-            if (SystemInformation.HighContrast)
+            // we need to add some based on scaling, but only when visual styles are not applied
+            if (!Application.RenderWithVisualStyles)
                 result.Width += this.ScaleWidth(2);
 #else
             result.Width -= 3;
