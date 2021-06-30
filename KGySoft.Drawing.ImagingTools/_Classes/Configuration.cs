@@ -74,8 +74,9 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Fields
 
+        private static readonly bool allowHttps;
+
         private static Uri? baseUri;
-        private static bool allowHttps;
 
         #endregion
 
@@ -190,7 +191,7 @@ namespace KGySoft.Drawing.ImagingTools
             if (args.Name.StartsWith("System, Version=", StringComparison.Ordinal))
                 return typeof(UserSettingsGroup).Assembly;
 #elif NETCOREAPP
-            if (args.Name?.StartsWith("System.Configuration.ConfigurationManager, Version=", StringComparison.Ordinal) == true)
+            if (args.Name.StartsWith("System.Configuration.ConfigurationManager, Version=", StringComparison.Ordinal))
                 return typeof(UserSettingsGroup).Assembly;
 #endif
             return null;

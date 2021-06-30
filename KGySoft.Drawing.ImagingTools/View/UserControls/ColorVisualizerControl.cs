@@ -306,7 +306,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                     CreateAlphaPattern();
 
                 Size size = pnlColor.Size;
-                e.Graphics.DrawImage(alphaPattern, new Rectangle(Point.Empty, size), 0, 0 , size.Width, size.Height, GraphicsUnit.Pixel, attrTiles);
+                e.Graphics.DrawImage(alphaPattern!, new Rectangle(Point.Empty, size), 0, 0 , size.Width, size.Height, GraphicsUnit.Pixel, attrTiles);
             }
 
             Color backColor = sender == pnlAlpha ? Color.FromArgb(color.A, Color.White) : color;
