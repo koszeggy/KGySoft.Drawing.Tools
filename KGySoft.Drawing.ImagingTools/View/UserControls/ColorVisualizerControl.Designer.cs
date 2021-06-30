@@ -108,7 +108,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             // tbRed
             // 
-            this.tbRed.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tbRed.AutoSize = false;
+            this.tbRed.Dock = System.Windows.Forms.DockStyle.Top;
             this.tbRed.LargeChange = 64;
             this.tbRed.Location = new System.Drawing.Point(0, 0);
             this.tbRed.Maximum = 255;
@@ -141,7 +142,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             // tbGreen
             // 
-            this.tbGreen.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tbGreen.AutoSize = false;
+            this.tbGreen.Dock = System.Windows.Forms.DockStyle.Top;
             this.tbGreen.LargeChange = 64;
             this.tbGreen.Location = new System.Drawing.Point(0, 0);
             this.tbGreen.Maximum = 255;
@@ -174,7 +176,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             // tbBlue
             // 
-            this.tbBlue.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tbBlue.AutoSize = false;
+            this.tbBlue.Dock = System.Windows.Forms.DockStyle.Top;
             this.tbBlue.LargeChange = 64;
             this.tbBlue.Location = new System.Drawing.Point(0, 0);
             this.tbBlue.Maximum = 255;
@@ -218,7 +221,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             // tbAlpha
             // 
-            this.tbAlpha.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tbAlpha.AutoSize = false;
+            this.tbAlpha.Dock = System.Windows.Forms.DockStyle.Top;
             this.tbAlpha.LargeChange = 64;
             this.tbAlpha.Location = new System.Drawing.Point(0, 0);
             this.tbAlpha.Maximum = 255;
@@ -272,16 +276,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.tblColor.ResumeLayout(false);
             this.tblColor.PerformLayout();
             this.pnlRed.ResumeLayout(false);
-            this.pnlRed.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbRed)).EndInit();
             this.pnlGreen.ResumeLayout(false);
-            this.pnlGreen.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbGreen)).EndInit();
             this.pnlBlue.ResumeLayout(false);
-            this.pnlBlue.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbBlue)).EndInit();
             this.pnlAlpha.ResumeLayout(false);
-            this.pnlAlpha.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbAlpha)).EndInit();
             this.tsMenu.ResumeLayout(false);
             this.tsMenu.PerformLayout();
