@@ -192,7 +192,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 if (task.IsCanceled)
                     return;
 
-                Progress = (2, 0);
                 byte[]? data = Download(task);
                 if (data == null)
                     return;
@@ -419,7 +418,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 if (!item.Selected)
                     continue;
 
-                if (!ignoreVersionMismatch && !selfVersion.NormalizedEquals(item.Info.ImagingToolsVersion))
+                if (!ignoreVersionMismatch && !selfVersion.NormalizedEquals(item.Info.Version))
                 {
                     if (Confirm(Res.ConfirmMessageResourceVersionMismatch, false))
                         ignoreVersionMismatch = true;
