@@ -249,6 +249,24 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     e.Graphics.DrawRectangle(SystemPens.Highlight, bounds.X, bounds.Y, bounds.Width - 1, bounds.Height - 1);
             }
 
+#if NET35
+            /// <summary>
+            /// Changes to original:
+            /// - [HighContrast]: Fixing text color on highlighted menu items
+            /// </summary>
+            protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e)
+            {
+                if (SystemInformation.HighContrast && e.Item is ToolStripMenuItem mi)
+                {
+                    e.TextColor = !mi.Enabled ? SystemColors.GrayText
+                        : mi.Selected || mi.Pressed ? SystemColors.HighlightText
+                        : SystemColors.ControlText;
+                }
+
+                base.OnRenderItemText(e);
+            }
+#endif
+
             /// <summary>
             /// Changes to original:
             /// - Background image is omitted
