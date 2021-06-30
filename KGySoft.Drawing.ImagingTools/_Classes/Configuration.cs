@@ -68,7 +68,7 @@ namespace KGySoft.Drawing.ImagingTools
         #region Constants
 
         private const string defaultResourceRepositoryLocation = "https://koszeggy.github.io/KGySoft.Drawing.Tools/res/"; // same as "https://raw.githubusercontent.com/koszeggy/KGySoft.Drawing.Tools/pages/res/"
-        private const string fallbackResourceRepositoryLocation = "http://koszeggy.github.io/KGySoft.Drawing.Tools/res/";
+        private const string fallbackResourceRepositoryLocation = "http://kgysoft.net/res/"; // "http://koszeggy.github.io/KGySoft.Drawing.Tools/res/" does not work on Win7/.NET 3.5
 
         #endregion
 
@@ -105,6 +105,9 @@ namespace KGySoft.Drawing.ImagingTools
         static Configuration()
         {
             allowHttps = !(OSUtils.IsMono && OSUtils.IsWindows);
+#if NET35
+            allowHttps &= OSUtils.IsWindows8OrLater;
+#endif
 
             // To be able to resolve UserSettingsGroup of with other framework version
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
@@ -114,9 +117,6 @@ namespace KGySoft.Drawing.ImagingTools
 #endif
 
 #if NETFRAMEWORK
-            if (!allowHttps)
-                return;
-
             try
             {
                 // To be able to use HTTP requests with TLS 1.2 security protocol (may not work on Windows XP)
