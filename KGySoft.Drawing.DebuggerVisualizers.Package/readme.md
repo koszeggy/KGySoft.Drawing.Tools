@@ -20,7 +20,7 @@ Several modifications are allowed on non-read-only images such as rotating, resi
 
 ## Installing Debugger Visualizers
 
-* For Visual Studio 2013 and above you can use this VSIX package (tested with versions up to Visual Studio 2019). It will install the .NET 4.5 version.
+* For Visual Studio 2013 and above you can use this VSIX package (tested with Visual Studio versions up to 2019). It will install the .NET 4.5 version, which works also for .NET Core projects.
 * For older Visual Studio versions and/or frameworks follow the [installation steps](https://github.com/koszeggy/KGySoft.Drawing.Tools#installing-debugger-visualizers) at the project site.
 
 ## Release Notes
@@ -30,7 +30,7 @@ See the [change log](https://github.com/koszeggy/KGySoft.Drawing.Tools/blob/mast
 ## FAQ
 
 **Q:** Can I use the debugger visualizers for other Visual Studio versions?
-<br/>**A:** The VSIX installer supports Visual Studio 2013 and newer versions (tested until 2019). However, you can install the debugger visualizers manually for any version starting with Visual Studio 2008. See the [installation steps](https://github.com/koszeggy/KGySoft.Drawing.Tools#installing-debugger-visualizers) at the project site.
+<br/>**A:** The VSIX installer supports Visual Studio 2013 and newer versions (tested with versions up to 2019). However, you can install the debugger visualizers manually for any version starting with Visual Studio 2008. See the [installation steps](https://github.com/koszeggy/KGySoft.Drawing.Tools#installing-debugger-visualizers) at the project site.
 
 **Q:** Is Visual Studio Code supported?
 <br/>**A:** As it has a completely different API, it is not supported yet.
