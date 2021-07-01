@@ -32,11 +32,14 @@ KGy SOFT Imaging Tools supports localization from .resx files. New language reso
 
 > _Tip:_ As a developer, you can use [KGy SOFT Core Libraries](https://github.com/koszeggy/KGySoft.CoreLibraries#dynamic-resource-management) if you want something similar in your application.
 
-The edited resources are saved in .resx files in the `Resources` subfolder of the application. Resources can be downloaded from within the application.
+The edited resources are saved in .resx files in the `Resources` subfolder of the application. Resources can be downloaded from within the application as well.
 
 ![Editing resources in KGy SOFT Imaging Tools](https://user-images.githubusercontent.com/27336165/124143008-0a1e4f80-da8b-11eb-8f85-572507b66154.png)
 
 > _Note:_ If you create a localization for your language feel free to [submit a new issue](https://github.com/koszeggy/KGySoft.Drawing.Tools/issues/new?assignees=&labels=&template=submit-resources.md&title=%5BRes%5D) and I will make it available for everyone. Don't forget to mention your name in the translated About menu.
+
+#### Help, my reasources are gone!
+
 
 
 ## Debugger Visualizers
@@ -116,6 +119,11 @@ If Visual Studio cannot load the visualizer or you have other debugger visualize
 | Unable to load the custom visualizer (The UI-side visualizer type must derive from 'DialogDebuggerVisualizer').<br/>![Unable to load the custom visualizer (The UI-side visualizer type must derive from 'DialogDebuggerVisualizer').](https://kgysoft.net/images/DebuggerVisualizerTrShUnableToLoadMustDeriveFrom.png) | The `Microsoft.VisualStudio.DebuggerVisualizers.dll` has been copied to the debugger visualizers installation folder. Recent Visual Studio versions can handle if a debugger visualizer references an unmatching version of this assembly but only if this assembly is not deployed along with the visualizers. |
 | Could not load file or assembly 'KGySoft.Drawing.DebuggerVisualizers.dll'.<br/>![Could not load file or assembly 'KGySoft.Drawing.DebuggerVisualizers.dll'.](https://kgysoft.net/images/DebuggerVisualizerTrShCouldNotLoadVisualizer.png) or one of its dependencies. | Visual Studio 2008 supports the .NET 3.5 version only. A similar error may occur even if some files are missing. Just [install](#installing-debugger-visualizers) a correct version again. |
 | Value does not fall within the expected range.<br/>![Value does not fall within the expected range.](https://kgysoft.net/images/DebuggerVisualizerTrShValueUnexpectedRange.png) | Windows XP does not support the .NET 4.5 version. |
+| I edited the language resource files but I cannot find them (or they appear to be gone) | The _Visual Studio/Tools/KGy SOFT Drawing Debugger Visualizers_ and clicking the magnifier icon executes the Imaging Tools from different locations. If you edit the language resources at one place they will not be automatically applied at the other place. Therefore, the saved resources might be at different possible locations:
+* If you execute a manually deployed version the resources will be in a `Resources` subfolder in the folder you executed the Imaging Tools from
+* During debugging the tool is executed from the debugger visualizers folder: `Documents\Visual Studio <version>\Visualizers`
+* If you launch the tool from the Visual Studio Tools menu, then it is located under `ProgramData\Microsoft\VisualStudio\Packages\...` |
+
 
 ## Download
 You can download the sources and the binaries as .zip archives [here](https://github.com/koszeggy/KGySoft.Drawing.Tools/releases).

@@ -42,8 +42,8 @@ See the [change log](https://github.com/koszeggy/KGySoft.Drawing.Tools/blob/mast
 <br/>**A:** No, these visualizers are for `System.Drawing` types. But the built-in Dependency Object visualizer is able to display image sources anyway.
 
 **Q:** Where do I find the edited/downloaded resource files? Even my previously edited/downloaded resources have been disappeared.
-<br/>**A:** The __Visual Studio/Tools/KGy SOFT Drawing Debugger Visualizers__ and clicking the magnifier icon executes the Imaging Tools from different locations. If you edit the language resources at one place they will not be automatically applied at the other place. Therefore, the saved resources might be at different possible locations:
-* If you execute a manually deployed version the resources will be in a `Resources` subfolder in the folder you executed the ImagingTools from
+<br/>**A:** The _Visual Studio/Tools/KGy SOFT Drawing Debugger Visualizers_ and clicking the magnifier icon executes the Imaging Tools from different locations. If you edit the language resources at one place they will not be automatically applied at the other place. Therefore, the saved resources might be at different possible locations:
+* If you execute a manually deployed version the resources will be in a `Resources` subfolder in the folder you executed Imaging Tools from
 * During debugging the tool is executed from the debugger visualizers folder: `Documents\Visual Studio <version>\Visualizers`
 * If you launch the tool from the Visual Studio Tools menu, then it is located under `ProgramData\Microsoft\VisualStudio\Packages\...`
 
