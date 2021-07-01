@@ -136,30 +136,25 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 {
                     Color backgroundStart;
                     Color backgroundEnd;
-                    Color border;
                     if ((style & ButtonStyle.Pressed) != 0 || (style & ButtonStyle.Selected) != 0 && (style & ButtonStyle.Checked) != 0)
                     {
                         backgroundStart = colorTable.ButtonPressedGradientBegin;
                         backgroundEnd = colorTable.ButtonPressedGradientEnd;
-                        border = colorTable.ButtonPressedBorder;
                     }
                     else if ((style & ButtonStyle.Selected) != 0)
                     {
                         backgroundStart = colorTable.ButtonSelectedGradientBegin;
                         backgroundEnd = colorTable.ButtonSelectedGradientEnd;
-                        border = colorTable.ButtonSelectedBorder;
                     }
                     else if ((style & ButtonStyle.Checked) != 0)
                     {
                         backgroundStart = colorTable.ButtonCheckedGradientBegin is { IsEmpty: false } c1 ? c1 : colorTable.ButtonCheckedHighlight;
                         backgroundEnd = colorTable.ButtonCheckedGradientEnd is { IsEmpty: false } c2 ? c2 : colorTable.ButtonCheckedHighlight;
-                        border = colorTable.ButtonCheckedHighlightBorder;
                     }
                     else
                         return;
 
                     FillBackground(g, bounds, backgroundStart, backgroundEnd);
-                    g.DrawRectangle(border.GetPen(), bounds.X, bounds.Y, bounds.Width - 1, bounds.Height - 1);
                 }
 
                 static void RenderBasicTheme(Graphics g, ProfessionalColorTable colorTable, Rectangle bounds, ButtonStyle style)
@@ -169,7 +164,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         : (style & ButtonStyle.Checked) != 0 ? colorTable.ButtonCheckedHighlight
                         : Color.Empty;
                     g.FillRectangle(backColor.GetBrush(), bounds);
-                    g.DrawRectangle(colorTable.ButtonSelectedBorder.GetPen(), bounds.X, bounds.Y, bounds.Width - 1, bounds.Height - 1);
                 }
 
                 #endregion
@@ -187,6 +181,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     RenderWithVisualStyles(g, colorTable, bounds, style);
                 else
                     RenderBasicTheme(g, colorTable, bounds, style);
+                g.DrawRectangle(colorTable.ButtonSelectedBorder.GetPen(), bounds.X, bounds.Y, bounds.Width - 1, bounds.Height - 1);
             }
 
             private static void DrawHighContrastButtonBackground(Graphics g, Rectangle bounds, ButtonStyle style)
