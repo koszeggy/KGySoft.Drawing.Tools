@@ -9,6 +9,7 @@ KGy SOFT Drawing Tools repository contains [Debugger Visualizers](#debugger-visu
 
 ## Table of Contents
 1. [KGy SOFT Imaging Tools](#kgy-soft-imaging-tools)
+   - [Localization](#localization)
 2. [Debugger Visualizers](#debugger-visualizers)
    - [Installing Debugger Visualizers](#installing-debugger-visualizers)
    - [Troubleshooting](#troubleshooting) 
@@ -24,6 +25,19 @@ KGy SOFT Drawing Tools repository contains [Debugger Visualizers](#debugger-visu
 The Imaging Tools application makes possible to load images and icons from file, manipulate and save them into various formats. Several modifications are possible such as rotating, resizing, changing pixel format with quantizing and dithering, adjusting brightness, contrast and gamma, or even editing the palette entries of indexed bitmaps.
 
 ![Changing Pixel Format with Quantizing and Dithering](https://kgysoft.net/images/Quantizing.png)
+
+### Localization
+
+KGy SOFT Imaging Tools supports localization from .resx files. New language resources can be generated for any languages, and you can edit the texts within the application. The changes can be applied on-the-fly, without exiting the application. If you switch to a right-to-left language, then the layout is also immediately applied (at least on Windows).
+
+> _Tip:_ As a developer, you can use [KGy SOFT Core Libraries](https://github.com/koszeggy/KGySoft.CoreLibraries#dynamic-resource-management) if you want something similar in your application.
+
+The edited resources are saved in .resx files in the `Resources` subfolder of the application. Resources can be downloaded from within the application.
+
+![Editing resources in KGy SOFT Imaging Tools](https://user-images.githubusercontent.com/27336165/124143008-0a1e4f80-da8b-11eb-8f85-572507b66154.png)
+
+> _Note:_ If you create a localization for your language feel free to [submit a new issue](https://github.com/koszeggy/KGySoft.Drawing.Tools/issues/new?assignees=&labels=&template=submit-resources.md&title=%5BRes%5D) and I will make it available for everyone. Don't forget to mention your name in the translated About menu.
+
 
 ## Debugger Visualizers
 
