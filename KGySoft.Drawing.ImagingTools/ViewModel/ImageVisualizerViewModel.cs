@@ -1231,7 +1231,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             const string frameworkName = ".NET Framework 3.5"; 
 #else
             TargetFrameworkAttribute attr = (TargetFrameworkAttribute)Attribute.GetCustomAttribute(asm, typeof(TargetFrameworkAttribute))!;
-            string frameworkName = attr.FrameworkDisplayName ?? attr.FrameworkName;
+            string frameworkName = attr.FrameworkDisplayName is { Length: > 0 } name ? name : attr.FrameworkName;
 #endif
             ShowInfo(Res.InfoMessageAbout(asm.GetName().Version!, frameworkName, DateTime.Now.Year));
         }
