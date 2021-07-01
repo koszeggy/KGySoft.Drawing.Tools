@@ -1,4 +1,4 @@
-## KGy SOFT Drawing Debugger Visualizers
+## KGy SOFT Drawing Debugger Visualizers for Visual Studio 2008-2019
 
 This package provides debugger visualizers for several `System.Drawing` types such as `Image`, `Bitmap`, `Metafile`, `Icon`, `BitmapData`, `Graphics`, `ColorPalette`, `Color`. It supports multi-page, multi-resolution and animated images as well as saving them in various formats. 
 
@@ -42,7 +42,7 @@ See the [change log](https://github.com/koszeggy/KGySoft.Drawing.Tools/blob/mast
 <br/>**A:** No, these visualizers are for `System.Drawing` types. But the built-in Dependency Object visualizer is able to display image sources anyway.
 
 **Q:** Where do I find the edited/downloaded resource files? Even my previously edited/downloaded resources have been disappeared.
-<br/>**A:** The language resources belong to the executed ImagingTools instance where they can be found in a `Resources` subfolder. The saved resources might be at different possible locations:
+<br/>**A:** The __Visual Studio/Tools/KGy SOFT Drawing Debugger Visualizers__ and clicking the magnifier icon executes the Imaging Tools from different locations. If you edit the language resources at one place they will not be automatically applied at the other place. Therefore, the saved resources might be at different possible locations:
 * If you execute a manually deployed version the resources will be in a `Resources` subfolder in the folder you executed the ImagingTools from
 * During debugging the tool is executed from the debugger visualizers folder: `Documents\Visual Studio <version>\Visualizers`
 * If you launch the tool from the Visual Studio Tools menu, then it is located under `ProgramData\Microsoft\VisualStudio\Packages\...`
