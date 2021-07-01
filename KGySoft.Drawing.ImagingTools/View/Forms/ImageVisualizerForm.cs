@@ -124,6 +124,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             miLanguageSettings.Image = Images.Language;
             btnConfiguration.SetDefaultItem(miManageInstallations);
 
+            miEasterEgg.Image = Images.ImagingTools;
             btnAbout.Image = miAbout.Image = Icons.SystemInformation.ToScaledBitmap();
         }
 
@@ -342,12 +343,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 .AddSource(miMarketplace, nameof(miMarketplace.Click));
             CommandBindings.Add(ViewModel.SubmitResourcesCommand)
                 .AddSource(miSubmitResources, nameof(miSubmitResources.Click));
+            CommandBindings.Add(ViewModel.ShowEasterEggCommand)
+                .AddSource(miEasterEgg, nameof(miEasterEgg.Click));
 
             // View commands
             CommandBindings.Add(OnResizeCommand)
                 .AddSource(this, nameof(Resize));
             CommandBindings.Add(OnPreviewImageResizedCommand)
                 .AddSource(imageViewer, nameof(imageViewer.SizeChanged));
+            CommandBindings.Add(() => miEasterEgg.Visible |= ModifierKeys == (Keys.Shift | Keys.Control))
+                .AddSource(miAbout, nameof(miAbout.MouseDown));
         }
 
         private Rectangle GetScreenRectangle() => Screen.FromHandle(Handle).WorkingArea;

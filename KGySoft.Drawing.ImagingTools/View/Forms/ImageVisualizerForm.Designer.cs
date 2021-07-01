@@ -63,6 +63,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.miSubmitResources = new System.Windows.Forms.ToolStripMenuItem();
             this.miSeparatorAbout = new System.Windows.Forms.ToolStripSeparator();
             this.miAbout = new System.Windows.Forms.ToolStripMenuItem();
+            this.miEasterEgg = new System.Windows.Forms.ToolStripMenuItem();
             this.btnConfiguration = new KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripSplitButton();
             this.miManageInstallations = new System.Windows.Forms.ToolStripMenuItem();
             this.miLanguageSettings = new System.Windows.Forms.ToolStripMenuItem();
@@ -363,7 +364,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.miMarketplace,
             this.miSubmitResources,
             this.miSeparatorAbout,
-            this.miAbout});
+            this.miAbout,
+            this.miEasterEgg});
             this.btnAbout.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnAbout.Name = "btnAbout";
             this.btnAbout.Size = new System.Drawing.Size(16, 22);
@@ -372,38 +374,44 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // miWebSite
             // 
             this.miWebSite.Name = "miWebSite";
-            this.miWebSite.Size = new System.Drawing.Size(179, 22);
+            this.miWebSite.Size = new System.Drawing.Size(180, 22);
             this.miWebSite.Text = "miWebSite";
             // 
             // miGitHub
             // 
             this.miGitHub.Name = "miGitHub";
-            this.miGitHub.Size = new System.Drawing.Size(179, 22);
+            this.miGitHub.Size = new System.Drawing.Size(180, 22);
             this.miGitHub.Text = "miGitHub";
             // 
             // miMarketplace
             // 
             this.miMarketplace.Name = "miMarketplace";
-            this.miMarketplace.Size = new System.Drawing.Size(179, 22);
+            this.miMarketplace.Size = new System.Drawing.Size(180, 22);
             this.miMarketplace.Text = "miMarketplace";
             // 
             // miSubmitResources
             // 
             this.miSubmitResources.Name = "miSubmitResources";
-            this.miSubmitResources.Size = new System.Drawing.Size(179, 22);
+            this.miSubmitResources.Size = new System.Drawing.Size(180, 22);
             this.miSubmitResources.Text = "miSubmitResources";
             // 
             // miSeparatorAbout
             // 
             this.miSeparatorAbout.Name = "miSeparatorAbout";
-            this.miSeparatorAbout.Size = new System.Drawing.Size(176, 6);
+            this.miSeparatorAbout.Size = new System.Drawing.Size(177, 6);
             // 
             // miAbout
             // 
             this.miAbout.Name = "miAbout";
             this.miAbout.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.miAbout.Size = new System.Drawing.Size(179, 22);
+            this.miAbout.Size = new System.Drawing.Size(180, 22);
             this.miAbout.Text = "miAbout";
+            // 
+            // miEasterEgg
+            // 
+            this.miEasterEgg.Name = "miEasterEgg";
+            this.miEasterEgg.Size = new System.Drawing.Size(180, 22);
+            this.miEasterEgg.Visible = false;
             // 
             // btnConfiguration
             // 
@@ -523,5 +531,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private ToolStripMenuItem miSubmitResources;
         private ToolStripSeparator miSeparatorAbout;
         private ToolStripMenuItem miAbout;
+        private ToolStripMenuItem miEasterEgg;
     }
 }

@@ -309,6 +309,13 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>This item is for a different ImagingTools version.</summary>
         internal static string InfoMessageResourceVersionMismatch => Get("InfoMessage_ResourceVersionMismatch");
 
+        /// <summary>Just a regular ToolStrip menu, eh?
+        ///
+        /// Now imagine every combination of target platforms (from .NET Framework 3.5 to .NET 5), operating systems (from Windows XP to Linux/Mono), different DPI settings, enabled/disabled visual styles and high contrast mode, right-to-left layout...
+        ///
+        /// Harmonizing visual elements for all possible environments is never a trivial task, but OMG, the ToolStrip wasn't a cakewalk. Would you believe that each and every combination had at least one rendering issue? My custom-zoomable ImageViewer control with the asynchronously generated resized interpolated images on multiple cores was an easy-peasy compared to that...</summary>
+        internal static string InfoMessageEasterEgg => Get("InfoMessage_EasterEgg");
+
         #endregion
 
         #region Installations

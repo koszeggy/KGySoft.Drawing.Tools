@@ -160,6 +160,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommand VisitGitHubCommand => Get(() => new SimpleCommand(() => Process.Start("https://github.com/koszeggy/KGySoft.Drawing.Tools")));
         internal ICommand VisitMarketplaceCommand => Get(() => new SimpleCommand(() => Process.Start("https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers")));
         internal ICommand SubmitResourcesCommand => Get(() => new SimpleCommand(() => Process.Start("https://github.com/koszeggy/KGySoft.Drawing.Tools/issues/new?assignees=&labels=&template=submit-resources.md&title=%5BRes%5D")));
+        internal ICommand ShowEasterEggCommand => Get(() => new SimpleCommand(() => ShowInfo(Res.InfoMessageEasterEgg)));
 
         #endregion
 
