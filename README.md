@@ -12,7 +12,7 @@ KGy SOFT Drawing Tools repository contains [Debugger Visualizers](#debugger-visu
    - [Localization](#localization)
 2. [Debugger Visualizers](#debugger-visualizers)
    - [Installing Debugger Visualizers](#installing-debugger-visualizers)
-   - [Troubleshooting](#troubleshooting) 
+   - [Troubleshooting](#troubleshooting)
 3. [Download](#download)
 4. [Release Notes](#release-notes)
 5. [Debugger Visualizers Test Tool](#debugger-visualizers-test-tool)
@@ -40,7 +40,7 @@ The edited resources are saved in .resx files in the `Resources` subfolder of th
 
 #### Help, my reasources are gone!
 
-
+If you use Imaging Tools as debugger visualizers, then it can be executed from various locations. See the bottom of the [Troubleshooting](#troubleshooting) section below.
 
 ## Debugger Visualizers
 
