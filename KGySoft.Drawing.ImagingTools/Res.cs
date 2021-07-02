@@ -21,8 +21,11 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Resources;
+using System.Threading;
 
 using KGySoft.Collections;
 using KGySoft.CoreLibraries;
@@ -50,12 +53,78 @@ namespace KGySoft.Drawing.ImagingTools
             UseLanguageSettings = true,
         };
 
+        // Note: No need to use ThreadSafeCacheFactory here because used only from the UI thread when applying resources
         // ReSharper disable once CollectionNeverUpdated.Local
-        private static readonly Cache<Type, PropertyInfo[]> localizablePropertiesCache = new Cache<Type, PropertyInfo[]>(GetLocalizableProperties);
+        private static readonly Cache<Type, PropertyInfo[]?> localizableStringPropertiesCache = new Cache<Type, PropertyInfo[]?>(GetLocalizableStringProperties);
+
+        private static string? resourcesDir;
+        private static CultureInfo displayLanguage;
+        private static EventHandler? displayLanguageChanged;
+
+        #endregion
+
+        #region Events
+
+        /// <summary>
+        /// Occurs when <see cref="DisplayLanguage"/> property changed.
+        /// Similar to <see cref="LanguageSettings.DisplayLanguageChangedGlobal"/>, which is not quite reliable when executing as a debugger visualizer because
+        /// Visual Studio resets the <see cref="Thread.CurrentUICulture"/> on every keystroke and other events.
+        /// </summary>
+        internal static event EventHandler? DisplayLanguageChanged
+        {
+            add => value.AddSafe(ref displayLanguageChanged);
+            remove => value.RemoveSafe(ref displayLanguageChanged);
+        }
 
         #endregion
 
         #region Properties
+
+        #region General
+
+        internal static CultureInfo OSLanguage { get; }
+        internal static CultureInfo DefaultLanguage { get; }
+        internal static string ResourcesDir
+        {
+            get
+            {
+                if (resourcesDir == null)
+                {
+                    string path = resourceManager.ResXResourcesDir;
+                    resourcesDir = Path.IsPathRooted(path) ? Path.GetFullPath(path) : Path.GetFullPath(Path.Combine(Files.GetExecutingPath(), path));
+                }
+
+                return resourcesDir;
+            }
+        }
+
+        /// <summary>
+        /// Represents the current display language. Similar to <see cref="Thread.CurrentUICulture"/> and <see cref="LanguageSettings.DisplayLanguage"/>
+        /// but this property is not thread-bounded and can be used reliably even when running as a debugger visualizer where Visual Studio always resets
+        /// the <see cref="Thread.CurrentUICulture"/> property on every keystroke.
+        /// </summary>
+        internal static CultureInfo DisplayLanguage
+        {
+            get
+            {
+                CultureInfo result = displayLanguage;
+                Thread.CurrentThread.CurrentUICulture = result;
+                return result;
+            }
+            set
+            {
+                // Always setting also the current thread because when running from debugger visualizer VS may change it independently from the this code base.
+                // It is also needed for DynamicResourceManager instances of the different KGy SOFT libraries to save content automatically on language change.
+                LanguageSettings.DisplayLanguage = value;
+                if (Equals(displayLanguage, value))
+                    return;
+
+                displayLanguage = value;
+                OnDisplayLanguageChanged();
+            }
+        }
+
+        #endregion
 
         #region Title Captions
 
@@ -73,6 +142,18 @@ namespace KGySoft.Drawing.ImagingTools
 
         /// <summary>Confirmation</summary>
         internal static string TitleConfirmation => Get("Title_Confirmation");
+
+        /// <summary>Open Image</summary>
+        internal static string TitleOpenFileDialog => Get("Title_OpenFileDialog");
+
+        /// <summary>Save Image As</summary>
+        internal static string TitleSaveFileDialog => Get("Title_SaveFileDialog");
+
+        /// <summary>Color</summary>
+        internal static string TitleColorDialog => Get("Title_ColorDialog");
+
+        /// <summary>Browse For Folder</summary>
+        internal static string TitleFolderDialog => Get("Title_FolderDialog");
 
         #endregion
 
@@ -120,21 +201,23 @@ namespace KGySoft.Drawing.ImagingTools
         /// • When not checked, saving saves always the selected page only.</summary>
         internal static string TooltipTextCompoundMultiPage => Get("TooltipText_CompoundMultiPage");
 
-        /// <summary>Toggles whether the metafile is displayed with anti aliasing enabled.</summary>
+        /// <summary>Smoothing Edges (Alt+S)</summary>
         internal static string TooltipTextSmoothMetafile => Get("TooltipText_SmoothMetafile");
 
-        /// <summary>Toggles whether an enlarged image is rendered with smoothing interpolation.
-        /// A shrunk image is always displayed with smoothing.</summary>
+        /// <summary>Smooth Zooming (Alt+S)</summary>
         internal static string TooltipTextSmoothBitmap => Get("TooltipText_SmoothBitmap");
 
         /// <summary>Auto</summary>
         internal static string TextAuto => Get("Text_Auto");
 
         /// <summary>Counting colors...</summary>
-        internal static string TextCountingColors => Get("Text_CountingColors");
+        internal static string TextCountingColorsId => "Text_CountingColors";
 
-        /// <summary>Operation has been canceled.</summary>
-        internal static string TextOperationCanceled => Get("Text_OperationCanceled");
+        /// <summary>Color Count: {0}</summary>
+        internal static string TextColorCountId => "Text_ColorCountFormat";
+
+        /// <summary>Downloading...</summary>
+        internal static string TextDownloading => Get("Text_Downloading");
 
         #endregion
 
@@ -151,17 +234,20 @@ namespace KGySoft.Drawing.ImagingTools
         #region Notifications
 
         /// <summary>The loaded metafile has been converted to Bitmap. To load it as a Metafile, choose the Image Debugger Visualizer instead.</summary>
-        internal static string NotificationMetafileAsBitmap => Get("Notification_MetafileAsBitmap");
+        internal static string NotificationMetafileAsBitmapId => "Notification_MetafileAsBitmap";
 
         /// <summary>The loaded image has been converted to Icon</summary>
-        internal static string NotificationImageAsIcon => Get("Notification_ImageAsIcon");
+        internal static string NotificationImageAsIconId => "Notification_ImageAsIcon";
 
         /// <summary>The palette of an indexed BitmapData cannot be reconstructed, therefore a default palette is used. You can change palette colors in the menu.</summary>
-        internal static string NotificationPaletteCannotBeRestored => Get("Notification_PaletteCannotBeRestored");
+        internal static string NotificationPaletteCannotBeRestoredId => "Notification_PaletteCannotBeRestored";
 
         #endregion
 
         #region Messages
+
+        /// <summary>Error: {0}</summary>
+        internal static string ErrorMessageId => "ErrorMessageFormat";
 
         /// <summary>Saving modifications as animated GIF is not supported</summary>
         internal static string ErrorMessageAnimGifNotSupported => Get("ErrorMessage_AnimGifNotSupported");
@@ -172,9 +258,18 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>The current installation is being executed, which cannot be removed</summary>
         internal static string ErrorMessageInstallationCannotBeRemoved => Get("ErrorMessage_InstallationCannotBeRemoved");
 
+        /// <summary>Resource format string is invalid.</summary>
+        internal static string ErrorMessageResourceFormatError => Get("ErrorMessage_ResourceFormatError");
+
+        /// <summary>One or more placeholders are missing from the translated resource format string.</summary>
+        internal static string ErrorMessageResourcePlaceholderUnusedIndices => Get("ErrorMessage_ResourcePlaceholderUnusedIndices");
+
         /// <summary>The selected quantizer supports partial transparency, which is not supported by ditherers,
         /// so partial transparent pixels will be blended with back color.</summary>
         internal static string WarningMessageDithererNoAlphaGradient => Get("WarningMessage_DithererNoAlphaGradient");
+
+        /// <summary>This language is not supported on this platform or by the executing framework</summary>
+        internal static string WarningMessageUnsupportedCulture => Get("WarningMessage_UnsupportedCulture");
 
         /// <summary>Are you sure you want to overwrite this installation?</summary>
         internal static string ConfirmMessageOverwriteInstallation => Get("ConfirmMessage_OverwriteInstallation");
@@ -182,11 +277,17 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Are you sure you want to remove this installation?</summary>
         internal static string ConfirmMessageRemoveInstallation => Get("ConfirmMessage_RemoveInstallation");
 
+#if NETCOREAPP
         /// <summary>You are about to install the .NET Core version, which might not be supported by Visual Studio as a debugger visualizer. Are you sure?</summary>
-        internal static string ConfirmMessageNetCoreVersion => Get("ConfirmMessage_NetCoreVersion");
+        internal static string ConfirmMessageNetCoreVersion => Get("ConfirmMessage_NetCoreVersion"); 
+#endif
 
         /// <summary>There are unsaved modifications. Are sure to discard the changes?</summary>
         internal static string ConfirmMessageDiscardChanges => Get("ConfirmMessage_DiscardChanges");
+
+        /// <summary>One or more selected items are for a different Imaging Tools version.
+        /// Are you sure you want to continue?</summary>
+        internal static string ConfirmMessageResourceVersionMismatch => Get("ConfirmMessage_ResourceVersionMismatch");
 
         /// <summary>The palette contains no colors. Click OK to exit.</summary>
         internal static string InfoMessagePaletteEmpty => Get("InfoMessage_PaletteEmpty");
@@ -204,6 +305,16 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Without selecting a quantizer possible alpha pixels of the source image are blended with black.
         /// By selecting a quantizer you can specify a different back color.</summary>
         internal static string InfoMessageAlphaTurnsBlack => Get("InfoMessage_AlphaTurnsBlack");
+
+        /// <summary>This item is for a different ImagingTools version.</summary>
+        internal static string InfoMessageResourceVersionMismatch => Get("InfoMessage_ResourceVersionMismatch");
+
+        /// <summary>Just a regular ToolStrip menu, eh?
+        ///
+        /// Now imagine every combination of target platforms (from .NET Framework 3.5 to .NET 5), operating systems (from Windows XP to Linux/Mono), different DPI settings, enabled/disabled visual styles and high contrast mode, right-to-left layout...
+        ///
+        /// Harmonizing visual elements for all possible environments is never a trivial task, but OMG, the ToolStrip wasn't a cakewalk. Would you believe that each and every combination had at least one rendering issue? My custom-zoomable ImageViewer control with the asynchronously generated resized interpolated images on multiple cores was an easy-peasy compared to that...</summary>
+        internal static string InfoMessageEasterEgg => Get("InfoMessage_EasterEgg");
 
         #endregion
 
@@ -225,27 +336,67 @@ namespace KGySoft.Drawing.ImagingTools
 
         #endregion
 
+        #region Constructors
+
+        static Res()
+        {
+            OSLanguage = LanguageSettings.DisplayLanguage.GetClosestNeutralCulture();
+            DefaultLanguage = (Attribute.GetCustomAttribute(typeof(Res).Assembly, typeof(NeutralResourcesLanguageAttribute)) is NeutralResourcesLanguageAttribute attr
+                ? CultureInfo.GetCultureInfo(attr.CultureName)
+                : CultureInfo.InvariantCulture).GetClosestNeutralCulture();
+            DrawingModule.Initialize();
+
+            bool allowResXResources = Configuration.AllowResXResources;
+            displayLanguage = allowResXResources
+                ? Configuration.UseOSLanguage ? OSLanguage : Configuration.DisplayLanguage // here, allowing specific languages, too
+                : DefaultLanguage;
+
+            if (Equals(displayLanguage, CultureInfo.InvariantCulture) || (!Equals(displayLanguage, DefaultLanguage) && !ResHelper.GetAvailableLanguages().Contains(displayLanguage)))
+                displayLanguage = DefaultLanguage;
+            DisplayLanguage = displayLanguage;
+            LanguageSettings.DynamicResourceManagersSource = allowResXResources ? ResourceManagerSources.CompiledAndResX : ResourceManagerSources.CompiledOnly;
+        }
+
+        #endregion
+
         #region Methods
 
         #region Internal Methods
 
         #region General
 
-        internal static string Get(string id) => resourceManager.GetString(id, LanguageSettings.DisplayLanguage) ?? String.Format(CultureInfo.InvariantCulture, unavailableResource, id);
+        /// <summary>
+        /// Just an empty method to be able to trigger the static constructor without running any code other than field initializations.
+        /// </summary>
+        internal static void EnsureInitialized()
+        {
+        }
+
+        internal static void OnDisplayLanguageChanged() => displayLanguageChanged?.Invoke(null, EventArgs.Empty);
+
+        internal static string? GetStringOrNull(string id) => resourceManager.GetString(id, DisplayLanguage);
+
+        internal static string Get(string id) => GetStringOrNull(id) ?? String.Format(CultureInfo.InvariantCulture, unavailableResource, id);
+
+        internal static string Get(string id, params object?[]? args)
+        {
+            string format = Get(id);
+            return args == null ? format : SafeFormat(format, args);
+        }
 
         internal static string Get<TEnum>(TEnum value) where TEnum : struct, Enum => Get($"{value.GetType().Name}.{Enum<TEnum>.ToString(value)}");
 
-        internal static void ApplyResources(object target, string name)
+        internal static void ApplyStringResources(object target, string name)
         {
             // Unlike ComponentResourceManager we don't go by ResourceSet because that would kill resource fallback traversal
             // so we go by localizable properties
-            PropertyInfo[] properties = localizablePropertiesCache[target.GetType()];
+            PropertyInfo[]? properties = localizableStringPropertiesCache[target.GetType()];
             if (properties == null)
                 return;
 
             foreach (PropertyInfo property in properties)
             {
-                string value = resourceManager.GetString(name + "." + property.Name, LanguageSettings.DisplayLanguage);
+                string? value = GetStringOrNull(name + "." + property.Name);
                 if (value == null)
                     continue;
                 Reflector.SetProperty(target, property, value);
@@ -253,15 +404,14 @@ namespace KGySoft.Drawing.ImagingTools
         }
 
         /// <summary>Internal Error: {0}</summary>
-        /// <remarks>Use this method to avoid CA1303 for using string literals in internal errors that never supposed to occur.</remarks>
         internal static string InternalError(string msg) => Get("General_InternalErrorFormat", msg);
 
         #endregion
 
         #region Title Captions
 
-        /// <summary>KGy SOFT Imaging Tools v{0}</summary>
-        internal static string TitleAppNameAndVersion(Version version) => Get("Title_AppNameAndVersionFormat", version);
+        /// <summary>KGy SOFT Imaging Tools v{0} [{1}{2}] – {3}</summary>
+        internal static string TitleAppNameWithFileName(Version version, string fileName, string modifiedMark, string caption) => Get("Title_AppNameWithFileNameFormat", version, fileName, modifiedMark, caption);
 
         /// <summary>Type: {0}</summary>
         internal static string TitleType(string type) => Get("Title_TypeFormat", type);
@@ -269,8 +419,8 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Size: {0}x{1}</summary>
         internal static string TitleSize(Size size) => Get("Title_SizeFormat", size.Width, size.Height);
 
-        /// <summary>Palette Count: {0}</summary>
-        internal static string TitlePaletteCount(int count) => Get("Title_PaletteCountFormat", count);
+        /// <summary>Palette Color Count: {0}</summary>
+        internal static string TitlePaletteCount(int count) => Get("Title_ColorCountFormat", count);
 
         /// <summary>Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2}x{3}}}</summary>
         internal static string TitleVisibleClip(Rectangle rect) => Get("Title_VisibleClipFormat", rect.X, rect.Y, rect.Width, rect.Height);
@@ -280,6 +430,9 @@ namespace KGySoft.Drawing.ImagingTools
 
         /// <summary>Color: {0}</summary>
         internal static string TitleColor(Color color) => Get("Title_ColorFormat", color.Name);
+
+        /// <summary>Edit Resources – {0}</summary>
+        internal static string TitleEditResources(string langName) => Get("Title_EditResourcesFormat", langName);
 
         #endregion
 
@@ -297,8 +450,8 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>B: {0}</summary>
         internal static string TextBlueValue(byte a) => Get("Text_BlueValueFormat", a);
 
-        /// <summary>Color Count: {0}</summary>
-        internal static string TextColorCount(int a) => Get("Text_ColorCountFormat", a);
+        /// <summary>Unsupported Language ({0})</summary>
+        internal static string TextUnsupportedCulture(string cultureName) => Get("Text_UnsupportedCultureFormat", cultureName);
 
         #endregion
 
@@ -321,7 +474,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Unknown format: {0}</summary>
         internal static string InfoUnknownFormat(Guid format) => Get("InfoText_UnknownFormat", format);
 
-        /// <summary>Palette count: {0}</summary>
+        /// <summary>Palette color count: {0}</summary>
         internal static string InfoPalette(int count) => Get("InfoText_PaletteFormat", count);
 
         /// <summary>Images: {0}</summary>
@@ -372,9 +525,6 @@ namespace KGySoft.Drawing.ImagingTools
         #endregion
 
         #region Messages
-
-        /// <summary>Error: {0}</summary>
-        internal static string ErrorMessage(string error) => Get("ErrorMessageFormat", error);
 
         /// <summary>Could not load file due to an error: {0}</summary>
         internal static string ErrorMessageFailedToLoadFile(string error) => Get("ErrorMessage_FailedToLoadFileFormat", error);
@@ -429,11 +579,30 @@ namespace KGySoft.Drawing.ImagingTools
         internal static string ErrorMessageFailedToGeneratePreview(string message) => Get("ErrorMessage_FailedToGeneratePreviewFormat", message);
 
         /// <summary>Value must be between {0} and {1}</summary>
-        internal static string ErrorMessageValueMustBeBetween<T>(T low, T high) => Get("ErrorMessage_ValueMustBeBetweenFormat", low, high);
+        internal static string ErrorMessageValueMustBeBetween<T>(T low, T high) where T : struct => Get("ErrorMessage_ValueMustBeBetweenFormat", low, high);
 
         /// <summary>Value must be greater than {0}</summary>
-        internal static string ErrorMessageValueMustBeGreaterThan<T>(T value) => Get("ErrorMessage_ValueMustBeGreaterThanFormat", value);
+        internal static string ErrorMessageValueMustBeGreaterThan<T>(T value) where T : struct => Get("ErrorMessage_ValueMustBeGreaterThanFormat", value);
 
+        /// <summary>Failed to save settings: {0}</summary>
+        internal static string ErrorMessageFailedToSaveSettings(string message) => Get("ErrorMessage_FailedToSaveSettingsFormat", message);
+
+        /// <summary>Failed to regenerate resource file {0}: {1}</summary>
+        internal static string ErrorMessageFailedToRegenerateResource(string fileName, string message) => Get("ErrorMessage_FailedToRegenerateResourceFormat", fileName, message);
+
+        /// <summary>Failed to save resource file {0}: {1}</summary>
+        internal static string ErrorMessageFailedToSaveResource(string fileName, string message) => Get("ErrorMessage_FailedToSaveResourceFormat", fileName, message);
+
+        /// <summary>Failed to access online resources: {0}</summary>
+        internal static string ErrorMessageCouldNotAccessOnlineResources(string message) => Get("ErrorMessage_CouldNotAccessOnlineResourcesFormat", message);
+
+        /// <summary>Failed to download resource file {0}: {1}</summary>
+        internal static string ErrorMessageFailedToDownloadResource(string fileName, string message) => Get("ErrorMessage_FailedToDownloadResourceFormat", fileName, message);
+
+        /// <summary>Index '{0}' is invalid in the translated resource format string.</summary>
+        internal static string ErrorMessageResourcePlaceholderIndexInvalid(int index) => Get("ErrorMessage_ResourcePlaceholderIndexInvalidFormat", index);
+
+#if NET45
         /// <summary>Could not create directory {0}: {1}
         ///
         /// The debugger visualizer may will not work for .NET Core projects.</summary>
@@ -447,7 +616,8 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Could not copy file {0}: {1}
         ///
         /// The debugger visualizer may will not work for .NET Core projects.</summary>
-        internal static string WarningMessageCouldNotCopyFileNetCore(string path, string message) => Get("WarningMessage_CouldNotCopyFileNetCoreFormat", path, message);
+        internal static string WarningMessageCouldNotCopyFileNetCore(string path, string message) => Get("WarningMessage_CouldNotCopyFileNetCoreFormat", path, message); 
+#endif
 
         /// <summary>The installation finished with a warning: {0}</summary>
         internal static string WarningMessageInstallationWarning(string warning) => Get("WarningMessage_InstallationWarningFormat", warning);
@@ -461,10 +631,26 @@ namespace KGySoft.Drawing.ImagingTools
         /// otherwise, the result might not be optimal even with dithering.</summary>
         internal static string WarningMessageQuantizerTooWide(PixelFormat selectedPixelFormat, PixelFormat pixelFormatHint) => Get("WarningMessage_QuantizerTooWideFormat", selectedPixelFormat, pixelFormatHint);
 
+        /// <summary>{0} file(s) have been downloaded.
+        ///
+        /// The culture of one or more downloaded localizations is not supported on this platform. Those languages will not appear among the selectable languages.</summary>
+        internal static string WarningMessageDownloadCompletedWithUnsupportedCultures(int count) => Get("WarningMessage_DownloadCompletedWithUnsupportedCulturesFormat", count);
+
         /// <summary>The extension of the provided filename '{0}' does not match to the selected format ({1}).
         /// 
         /// Are you sure you want to save the file with the provided extension?</summary>
         internal static string ConfirmMessageSaveFileExtension(string fileName, string format) => Get("ConfirmMessage_SaveFileExtensionFormat", fileName, format);
+
+        /// <summary>Failed to read resource file {0}: {1}
+        /// 
+        /// Do you want to try to regenerate it? The current file will be deleted.</summary>
+        internal static string ConfirmMessageTryRegenerateResource(string fileName, string message) => Get("ConfirmMessage_TryRegenerateResourceFormat", fileName, message);
+
+        /// <summary>The following files already exist:
+        /// {0}
+        /// 
+        /// Do you want to overwrite them?</summary>
+        internal static string ConfirmMessageOverwriteResources(string files) => Get("ConfirmMessage_MessageOverwriteResourcesFormat", files);
 
         /// <summary>{0} is the lowest compatible pixel format, which still supports the selected quantizer.</summary>
         internal static string InfoMessagePixelFormatUnnecessarilyWide(PixelFormat pixelFormat) => Get("InfoMessage_PixelFormatUnnecessarilyWideFormat", pixelFormat);
@@ -488,6 +674,20 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>The ditherer is ignored for pixel format '{0}' if there is no quantizer specified.</summary>
         internal static string InfoMessageDithererIgnored(PixelFormat pixelFormat) => Get("InfoMessage_DithererIgnoredFormat", pixelFormat);
 
+        /// <summary>{0} file(s) have been downloaded.</summary>
+        internal static string InfoMessageDownloadCompleted(int count) => Get("InfoMessage_DownloadCompletedFormat", count);
+
+        /// <summary>About KGy SOFT Imaging Tools
+        /// 
+        /// Version: v{0}
+        /// Author: György Kőszeg
+        /// Target Platform: {1}
+        ///
+        /// You are now using the compiled English resources.
+        /// Copyright © {2} KGy SOFT. All rights reserved.
+        /// </summary>
+        internal static string InfoMessageAbout(Version version, string platform, int year) => Get("InfoMessage_About", version, platform, year);
+
         #endregion
 
         #region Installations
@@ -495,19 +695,19 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Debugger version: {0}</summary>
         internal static string InstallationAvailable(Version version) => Get("Installation_AvailableFormat", version);
 
-        /// <summary>Debugger version: {0} - Runtime: {1}</summary>
+        /// <summary>Debugger version: {0} – Runtime: {1}</summary>
         internal static string InstallationsAvailableWithRuntime(Version version, string runtimeVersion) => Get("Installation_AvailableWithRuntimeFormat", version, runtimeVersion);
 
-        /// <summary>Debugger version: {0} - Target: {1}</summary>
+        /// <summary>Debugger version: {0} – Target: {1}</summary>
         internal static string InstallationsAvailableWithTargetFramework(Version version, string targetFramework) => Get("Installation_AvailableWithTargetFrameworkFormat", version, targetFramework);
 
         /// <summary>Installed: {0}</summary>
         internal static string InstallationsStatusInstalled(Version version) => Get("Installations_StatusInstalledFormat", version);
 
-        /// <summary>Installed: {0} - Runtime: {1}</summary>
+        /// <summary>Installed: {0} – Runtime: {1}</summary>
         internal static string InstallationsStatusInstalledWithRuntime(Version version, string runtimeVersion) => Get("Installations_StatusInstalledWithRuntimeFormat", version, runtimeVersion);
 
-        /// <summary>Installed: {0} - Target: {1}</summary>
+        /// <summary>Installed: {0} – Target: {1}</summary>
         internal static string InstallationsStatusInstalledWithTargetFramework(Version version, string targetFramework) => Get("Installations_StatusInstalledWithTargetFrameworkFormat", version, targetFramework);
 
         #endregion
@@ -516,13 +716,7 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Private Methods
 
-        private static string Get(string id, params object[] args)
-        {
-            string format = Get(id);
-            return args == null ? format : SafeFormat(format, args);
-        }
-
-        private static string SafeFormat(string format, object[] args)
+        private static string SafeFormat(string format, object?[] args)
         {
             try
             {
@@ -531,10 +725,7 @@ namespace KGySoft.Drawing.ImagingTools
                 {
                     string nullRef = PublicResources.Null;
                     for (; i < args.Length; i++)
-                    {
-                        if (args[i] == null)
-                            args[i] = nullRef;
-                    }
+                        args[i] ??= nullRef;
                 }
 
                 return String.Format(LanguageSettings.FormattingLanguage, format, args);
@@ -545,13 +736,24 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static PropertyInfo[] GetLocalizableProperties(Type type)
+        private static PropertyInfo[]? GetLocalizableStringProperties(Type type)
         {
             // Getting string properties only. The resource manager in this class works in safe mode anyway.
             var result = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(p => p.PropertyType == typeof(string)
-                            && Attribute.GetCustomAttribute(p, typeof(LocalizableAttribute)) is LocalizableAttribute la && la.IsLocalizable).ToArray();
+                    && Attribute.GetCustomAttribute(p, typeof(LocalizableAttribute)) is LocalizableAttribute la && la.IsLocalizable).ToArray();
             return result.Length == 0 ? null : result;
+        }
+
+        private static CultureInfo GetClosestNeutralCulture(this CultureInfo culture)
+        {
+            if (CultureInfo.InvariantCulture.Equals(culture))
+                return CultureInfo.GetCultureInfo("en");
+
+            while (!culture.IsNeutralCulture)
+                culture = culture.Parent;
+
+            return culture;
         }
 
         #endregion

@@ -32,7 +32,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Internal Properties
 
-        internal BitmapDataInfo BitmapDataInfo { get => Get<BitmapDataInfo>(); set => Set(value); }
+        internal BitmapDataInfo? BitmapDataInfo { get => Get<BitmapDataInfo?>(); init => Set(value); }
 
         #endregion
 
@@ -60,17 +60,17 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             base.OnPropertyChanged(e);
             if (e.PropertyName == nameof(BitmapDataInfo))
             {
-                var bitmapDataInfo = (BitmapDataInfo)e.NewValue;
+                var bitmapDataInfo = (BitmapDataInfo?)e.NewValue;
                 Image = bitmapDataInfo?.BackingImage;
                 if ((bitmapDataInfo?.BitmapData?.PixelFormat ?? PixelFormat.Format32bppArgb).ToBitsPerPixel() <= 8)
-                    Notification = Res.NotificationPaletteCannotBeRestored;
+                    SetNotification(Res.NotificationPaletteCannotBeRestoredId);
             }
         }
 
         protected override void UpdateInfo()
         {
-            BitmapDataInfo bitmapDataInfo = BitmapDataInfo;
-            BitmapData bitmapData = bitmapDataInfo?.BitmapData;
+            BitmapDataInfo? bitmapDataInfo = BitmapDataInfo;
+            BitmapData? bitmapData = bitmapDataInfo?.BitmapData;
 
             if (bitmapDataInfo?.BackingImage == null || bitmapData == null)
             {

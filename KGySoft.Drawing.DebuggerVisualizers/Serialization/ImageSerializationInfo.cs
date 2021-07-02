@@ -18,7 +18,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -34,7 +33,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
     {
         #region Properties
 
-        internal ImageInfo ImageInfo { get; private set; }
+        internal ImageInfo ImageInfo { get; private set; } = default!;
 
         #endregion
 
@@ -42,16 +41,14 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 
         internal ImageSerializationInfo(Image image)
         {
-            ImageInfo = new ImageInfo((Image)image?.Clone());
+            ImageInfo = new ImageInfo(image);
         }
 
         internal ImageSerializationInfo(Icon icon)
         {
-            ImageInfo = new ImageInfo((Icon)icon?.Clone());
+            ImageInfo = new ImageInfo(icon);
         }
 
-        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
-            Justification = "The stream must not be disposed and the leaveOpen parameter is not available in every targeted platform")]
         internal ImageSerializationInfo(Stream stream)
         {
             ReadFrom(new BinaryReader(stream));
@@ -98,7 +95,15 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 
         #region Public Methods
 
-        public void Dispose() => ImageInfo?.Dispose();
+        public void Dispose()
+        {
+            // image was not cloned so disposing only possibly created frames
+            if (!ImageInfo.HasFrames)
+                return;
+
+            foreach (ImageFrameInfo frame in ImageInfo.Frames!)
+                frame.Dispose();
+        }
 
         #endregion
 
@@ -120,9 +125,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
             if (saveAsSingleImage)
             {
                 if (ImageInfo.Type == ImageInfoType.Icon)
-                    SerializationHelper.WriteIcon(bw, ImageInfo.GetCreateIcon());
+                    SerializationHelper.WriteIcon(bw, ImageInfo.GetCreateIcon()!);
                 else
-                    SerializationHelper.WriteImage(bw, ImageInfo.GetCreateImage());
+                    SerializationHelper.WriteImage(bw, ImageInfo.GetCreateImage()!);
             }
 
             // Meta is saved even for pages so we will have a general size, etc.
@@ -131,11 +136,11 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
             // 4. Frames (if any)
             if (ImageInfo.HasFrames)
             {
-                bw.Write(ImageInfo.Frames.Length);
+                bw.Write(ImageInfo.Frames!.Length);
                 foreach (ImageFrameInfo frame in ImageInfo.Frames)
                 {
                     if (!saveAsSingleImage)
-                        SerializationHelper.WriteImage(bw, frame.Image);
+                        SerializationHelper.WriteImage(bw, frame.Image!);
                     WriteMeta(bw, frame);
                     if (ImageInfo.Type == ImageInfoType.Animation)
                         bw.Write(frame.Duration);
@@ -169,14 +174,14 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 
             ReadMeta(br, ImageInfo);
 
-            if (imageType == ImageInfoType.SingleImage || imageType == ImageInfoType.Icon && ImageInfo.Icon.GetImagesCount() <= 1)
+            if (imageType == ImageInfoType.SingleImage || imageType == ImageInfoType.Icon && ImageInfo.Icon!.GetImagesCount() <= 1)
                 return;
 
             // 4. Frames (if any)
             int len = br.ReadInt32();
             var frames = new ImageFrameInfo[len];
-            Bitmap[] frameImages = savedAsSingleImage
-                ? imageType == ImageInfoType.Icon ? ImageInfo.Icon.ExtractBitmaps() : ((Bitmap)ImageInfo.Image).ExtractBitmaps()
+            Bitmap?[] frameImages = savedAsSingleImage
+                ? imageType == ImageInfoType.Icon ? ImageInfo.Icon!.ExtractBitmaps() : ((Bitmap)ImageInfo.Image!).ExtractBitmaps()
                 : new Bitmap[len];
             Debug.Assert(frameImages.Length == frames.Length);
             for (int i = 0; i < len; i++)

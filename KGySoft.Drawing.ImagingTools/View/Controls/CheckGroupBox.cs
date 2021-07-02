@@ -26,9 +26,18 @@ using KGySoft.CoreLibraries;
 
 #endregion
 
+#region Suppressions
+
+#if NETCOREAPP3_0
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type. - Controls items are never null
+#pragma warning disable CS8604 // Possible null reference argument. - Controls items are never null
+#endif
+
+#endregion
+
 namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
-    internal partial class CheckGroupBox : GroupBox
+    internal partial class CheckGroupBox : GroupBox, ICustomLocalizable
     {
         #region Events
 
@@ -76,27 +85,24 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Constructors
 
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Whitespace")]
         [SuppressMessage("ReSharper", "LocalizableElement", Justification = "Whitespace")]
+        [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "ReSharper issue")]
         public CheckGroupBox()
         {
             InitializeComponent();
             Controls.Add(checkBox);
+            checkBox.SizeChanged += CheckBox_SizeChanged;
 
-            // Left should be 10 at 100% but only 8 at 175%, etc.
-            checkBox.Left = Math.Max(1, 13 - (int)(this.GetScale().X * Padding.Left));
-
-            // Vista or later: using System FlayStyle so animation is enabled with theming and while text is not misplaced with classic themes
+            // Vista or later: using System FlayStyle so animation is enabled with theming and text is not misplaced with classic themes
             bool visualStylesEnabled = Application.RenderWithVisualStyles;
-            checkBox.FlatStyle = OSUtils.IsVistaOrLater ? FlatStyle.System
+            checkBox.FlatStyle = OSUtils.IsMono ? FlatStyle.Standard
+                : OSUtils.IsVistaOrLater ? FlatStyle.System
                 // Windows XP: Using standard style with themes so CheckBox color can be set correctly, and using System with classic theme for good placement
-                : OSUtils.IsWindows ? visualStylesEnabled ? FlatStyle.Standard : FlatStyle.System
-                // Non-windows (eg. Mono/Linux): Standard for best placement
-                : FlatStyle.Standard;
+                : visualStylesEnabled ? FlatStyle.Standard : FlatStyle.System;
 
             // GroupBox.FlayStyle must be the same as CheckBox; otherwise, System appearance would be transparent
             FlatStyle = checkBox.FlatStyle;
-            checkBox.CheckedChanged += this.CheckBox_CheckedChanged;
+            checkBox.CheckedChanged += CheckBox_CheckedChanged;
 
             // making sure there is enough space before the CheckBox at every DPI
             base.Text = "   ";
@@ -123,9 +129,23 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 return;
 
             // when not in design mode, adding custom controls to a panel so we can toggle its Enabled with preserving their original state
-            if (contentPanel.Parent == null)
-                contentPanel.Parent = this;
+            contentPanel.Parent ??= this;
             e.Control.Parent = contentPanel;
+        }
+
+        protected virtual void OnCheckedChanged(EventArgs e) => (Events[nameof(CheckedChanged)] as EventHandler)?.Invoke(this, e);
+
+        protected override void OnSizeChanged(EventArgs e)
+        {
+            base.OnSizeChanged(e);
+            if (RightToLeft == RightToLeft.Yes)
+                ResetCheckBoxLocation();
+        }
+
+        protected override void OnRightToLeftChanged(EventArgs e)
+        {
+            base.OnRightToLeftChanged(e);
+            ResetCheckBoxLocation();
         }
 
         protected override void Dispose(bool disposing)
@@ -137,6 +157,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             }
 
             checkBox.CheckedChanged -= CheckBox_CheckedChanged;
+            checkBox.SizeChanged -= CheckBox_SizeChanged;
             base.Dispose(disposing);
         }
 
@@ -144,17 +165,47 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Private Methods
 
-        private void OnCheckedChanged(EventArgs e) => (Events[nameof(CheckedChanged)] as EventHandler)?.Invoke(this, e);
+        private void ResetCheckBoxLocation()
+            => checkBox.Left = RightToLeft == RightToLeft.No
+                ? (int)(10 * this.GetScale().X)
+                : Width - checkBox.Width - (int)(10 * this.GetScale().X);
 
         #endregion
 
         #region Event handlers
 
-        private void CheckBox_CheckedChanged(object sender, EventArgs e)
+        private void CheckBox_CheckedChanged(object? sender, EventArgs e)
         {
             // Toggling the Enabled state of the content. This method preserves the original Enabled state of the controls.
             contentPanel.Enabled = checkBox.Checked;
             OnCheckedChanged(EventArgs.Empty);
+        }
+
+        private void CheckBox_SizeChanged(object? sender, EventArgs e) => ResetCheckBoxLocation();
+
+        #endregion
+
+        #region Explicitly Implemented Interface Methods
+
+        void ICustomLocalizable.ApplyStringResources(ToolTip? toolTip)
+        {
+            string? name = Name;
+            if (String.IsNullOrEmpty(name))
+                return;
+
+            // Self properties
+            Res.ApplyStringResources(this, name);
+
+            // tool tip: forwarding to the check box
+            if (toolTip != null)
+            {
+                string? value = Res.GetStringOrNull(name + "." + ControlExtensions.ToolTipPropertyName);
+                toolTip.SetToolTip(checkBox, value);
+            }
+
+            // children: only contentPanel controls so checkBox is skipped (otherwise, could be overwritten by checkbox.Name)
+            foreach (Control child in contentPanel.Controls)
+                child.ApplyStringResources(toolTip);
         }
 
         #endregion

@@ -20,6 +20,8 @@ using System;
 
 #endregion
 
+#nullable enable
+
 namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
     internal static class Ids
@@ -30,7 +32,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         internal const string ResourceTitle = "110";
         internal const string ResourceDetails = "112";
         internal const int IconResourceId = 400;
-        internal const string Version = "2.3.0"; // Note: in .vsixmanifest it should be adjusted manually
+        internal const string Version = "2.4.0"; // Note: in .vsixmanifest it should be adjusted manually
         internal const int ExecuteImagingToolsCommandId = 0x0100;
         internal const int ManageDebuggerVisualizerInstallationsCommandId = 0x0101;
 

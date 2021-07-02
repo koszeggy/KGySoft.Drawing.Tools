@@ -57,7 +57,12 @@ namespace KGySoft.Drawing.ImagingTools.Model
             },
             ["pixelFormat"] = new CustomPropertyDescriptor("pixelFormat", typeof(PixelFormat))
             {
-                AllowedValues = Enum<PixelFormat>.GetValues().Where(pf => pf.IsValidFormat()).OrderBy(pf => pf & PixelFormat.Max).Select(pf => (object)pf).ToArray(),
+                AllowedValues = Enum<PixelFormat>.GetValues()
+                    .Where(pf => pf.IsValidFormat())
+                    // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
+                    .OrderBy(pf => pf & PixelFormat.Max)
+                    .Select(pf => (object)pf)
+                    .ToArray(),
             },
             ["directMapping"] = new CustomPropertyDescriptor("directMapping", typeof(bool)) { DefaultValue = false },
             ["maxColors"] = new CustomPropertyDescriptor("maxColors", typeof(int))
@@ -65,7 +70,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
                 DefaultValue = 256,
                 AdjustValue = value =>
                 {
-                    if (!(value is int i))
+                    if (value is not int i)
                         return 0;
 
                     return i < 0 ? 0
@@ -87,17 +92,17 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #region Constructors
 
-        internal QuantizerDescriptor(Type type, string methodName) : this(type.GetMethod(methodName))
+        internal QuantizerDescriptor(Type type, string methodName) : this(type.GetMethod(methodName)!)
         {
         }
 
         internal QuantizerDescriptor(MethodInfo method)
         {
-            this.Method = method;
+            Method = method;
             ParameterInfo[] methodParams = method.GetParameters();
             Parameters = new CustomPropertyDescriptor[methodParams.Length];
             for (int i = 0; i < Parameters.Length; i++)
-                Parameters[i] = parametersMapping.GetValueOrDefault(methodParams[i].Name) ?? throw new InvalidOperationException(Res.InternalError($"Unexpected parameter: {methodParams[i].Name}"));
+                Parameters[i] = parametersMapping.GetValueOrDefault(methodParams[i].Name!) ?? throw new InvalidOperationException(Res.InternalError($"Unexpected parameter: {methodParams[i].Name}"));
         }
 
         #endregion
@@ -106,15 +111,15 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #region Public Methods
         
-        public override string ToString() => $"{Method.DeclaringType.Name}.{Method.Name}";
+        public override string ToString() => $"{Method.DeclaringType!.Name}.{Method.Name}";
 
         #endregion
 
         #region Internal Methods
 
-        internal object[] EvaluateParameters(CustomPropertiesObject values)
+        internal object?[] EvaluateParameters(CustomPropertiesObject values)
         {
-            var result = new object[Parameters.Length];
+            var result = new object?[Parameters.Length];
             for (int i = 0; i < result.Length; i++)
                 result[i] = Parameters[i].GetValue(values);
             return result;

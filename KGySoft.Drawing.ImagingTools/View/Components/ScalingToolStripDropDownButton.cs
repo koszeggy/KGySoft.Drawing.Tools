@@ -21,7 +21,7 @@ using System.Windows.Forms;
 
 #endregion
 
-namespace KGySoft.Drawing.ImagingTools.View.Controls
+namespace KGySoft.Drawing.ImagingTools.View.Components
 {
     /// <summary>
     /// A <see cref="ToolStripDropDownButton"/> that can scale its arrow regardless of .NET version and app.config settings.
@@ -64,7 +64,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             {
                 if (arrowPadding != Padding.Empty)
                     return arrowPadding;
-                var scaled = Size.Round(Owner.ScaleSize(arrowPaddingUnscaled));
+                Size scaled = Size.Round(Owner.ScaleSize(arrowPaddingUnscaled));
                 return arrowPadding = new Padding(scaled.Width, scaled.Height, scaled.Width, scaled.Height);
             }
         }
@@ -73,8 +73,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         {
             get
             {
-                var padding = ArrowPadding;
-                var size = ArrowSize;
+                Padding padding = ArrowPadding;
+                Size size = ArrowSize;
                 var bounds = new Rectangle(Point.Empty, Size);
                 if (TextDirection == ToolStripTextDirection.Horizontal)
                 {
@@ -93,6 +93,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Methods
 
+        #region Public Methods
+        
         public override Size GetPreferredSize(Size constrainingSize)
         {
             var showArrow = ShowDropDownArrow;
@@ -107,6 +109,22 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 preferredSize.Height += ArrowSize.Height + ArrowPadding.Vertical;
             return preferredSize;
         }
+
+        #endregion
+
+        #region Internal Methods
+
+#if NETFRAMEWORK
+        internal void AdjustImageRectangle(ref Rectangle imageBounds)
+        {
+            if (RightToLeft == RightToLeft.Yes)
+                imageBounds.X = Width - 2 - imageBounds.Width;
+            else
+                imageBounds.X = 2;
+        }
+#endif
+
+        #endregion
 
         #endregion
     }

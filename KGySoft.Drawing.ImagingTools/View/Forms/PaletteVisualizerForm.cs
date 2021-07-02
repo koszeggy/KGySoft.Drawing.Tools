@@ -16,6 +16,10 @@
 
 #region Usings
 
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
@@ -32,13 +36,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             : base(viewModel)
         {
             InitializeComponent();
+            AcceptButton = okCancelButtons.OKButton;
+            CancelButton = okCancelButtons.CancelButton;
         }
 
         #endregion
 
         #region Private Constructors
 
-        private PaletteVisualizerForm() : this(null)
+        private PaletteVisualizerForm() : this(null!)
         {
             // this ctor is just for the designer
         }
@@ -50,6 +56,19 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         #region Methods
 
         #region Protected Methods
+
+        protected override void OnLoad(EventArgs e)
+        {
+            // Fixing high DPI appearance on Mono
+            PointF scale;
+            if (OSUtils.IsMono && (scale = this.GetScale()) != new PointF(1f, 1f))
+            {
+                MinimumSize = new Size(255, 335).Scale(scale);
+                MaximumSize = new Size((int)(280 * scale.X), Int16.MaxValue);
+            }
+
+            base.OnLoad(e);
+        }
 
         protected override void ApplyResources()
         {
@@ -65,6 +84,26 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             base.ApplyViewModel();
         }
 
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (DialogResult != DialogResult.OK)
+                ViewModel.SetModified(false);
+            base.OnFormClosing(e);
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            switch (keyData)
+            {
+                case Keys.Escape when ViewModel.ReadOnly: // if not ReadOnly, use the Cancel button
+                    DialogResult = DialogResult.Cancel;
+                    return true;
+
+                default:
+                    return base.ProcessCmdKey(ref msg, keyData);
+            }
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -78,17 +117,23 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void InitPropertyBindings()
         {
+            // !VM.ReadOnly -> okCancelButtons.Visible
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.ReadOnly), nameof(okCancelButtons.Visible), ro => ro is false, okCancelButtons);
+
             // VM.Palette -> pnlPalette.Palette
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Palette), nameof(pnlPalette.Palette), pnlPalette);
 
             // VM.Count -> Text (formatted)
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Count), nameof(Text), c => Res.TitlePaletteCount((int)c), this);
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Count), nameof(Text), c => Res.TitlePaletteCount((int)c!), this);
 
             // VM.ReadOnly -> ucColorVisualizer.ReadOnly
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.ReadOnly), nameof(ucColorVisualizer.ReadOnly), ucColorVisualizer);
 
             // pnlPalette.SelectedColor -> ucColorVisualizer.Color
             CommandBindings.AddPropertyBinding(pnlPalette, nameof(pnlPalette.SelectedColor), nameof(ucColorVisualizer.Color), ucColorVisualizer);
+
+            // VM.IsModified -> OKButton.Enabled
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsModified), nameof(okCancelButtons.OKButton.Enabled), okCancelButtons.OKButton);
         }
 
         private void InitCommandBindings()
@@ -97,6 +142,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 .AddSource(ucColorVisualizer, nameof(ucColorVisualizer.ColorEdited));
             CommandBindings.Add(OnSelectedColorChangedCommand)
                 .AddSource(pnlPalette, nameof(pnlPalette.SelectedColorChanged));
+            CommandBindings.Add(OnCancelCommand)
+                .AddSource(okCancelButtons.CancelButton, nameof(okCancelButtons.CancelButton.Click));
         }
 
         private void UpdateInfo() => ucColorVisualizer.SpecialInfo = Res.InfoSelectedIndex(pnlPalette.SelectedColorIndex);
@@ -117,6 +164,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         }
 
         private void OnSelectedColorChangedCommand() => UpdateInfo();
+
+        private void OnCancelCommand() => ViewModel.SetModified(false);
 
         #endregion
 

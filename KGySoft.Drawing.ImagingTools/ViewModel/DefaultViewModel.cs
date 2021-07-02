@@ -16,8 +16,8 @@
 
 #region Usings
 
-using System;
 using System.IO;
+
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
 
@@ -31,8 +31,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Internal Properties
         
-        internal string[] CommandLineArguments { get => Get<string[]>(); set => Set(value); }
-        internal string FileName { get => Get<string>(); set => Set(value); }
+        internal string[]? CommandLineArguments { get => Get<string[]?>(); init => Set(value); }
+        internal string? FileName { get => Get<string?>(); set => Set(value); }
 
         #endregion
 
@@ -44,21 +44,25 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #endregion
 
+        #region Constructors
+
+        internal DefaultViewModel() => SmoothZooming = true;
+
+        #endregion
+
         #region Methods
 
         #region Internal Methods
 
         internal override void ViewLoaded()
         {
-            string[] args = CommandLineArguments;
-            if (!args.IsNullOrEmpty())
-                ProcessArgs(CommandLineArguments);
-            else
+            string[]? args = CommandLineArguments;
+            if (args.IsNullOrEmpty() || !ProcessArgs(args!))
                 UpdateInfo();
             base.ViewLoaded();
         }
 
-        internal bool ConfirmIfModified() => !IsModified || Confirm(Res.ConfirmMessageDiscardChanges);
+        internal bool ConfirmIfModified() => !IsModified || Confirm(Res.ConfirmMessageDiscardChanges, false);
 
         #endregion
 
@@ -125,15 +129,18 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Private Methods
 
-        private void ProcessArgs(string[] args)
+        private bool ProcessArgs(string[] args)
         {
-            if (args.IsNullOrEmpty())
-                return;
+            if (args.Length == 0)
+                return false;
             string file = args[0];
             if (!File.Exists(file))
+            {
                 ShowError(Res.ErrorMessageFileDoesNotExist(file));
-            else
-                OpenFile(file);
+                return false;
+            }
+
+            return OpenFile(file);
         }
 
         #endregion

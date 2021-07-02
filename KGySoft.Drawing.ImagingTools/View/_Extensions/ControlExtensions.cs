@@ -24,10 +24,26 @@ using KGySoft.Reflection;
 
 #endregion
 
+#region Suppressions
+
+#if NETCOREAPP3_0
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type. - Controls/Columns/DropDownItems never have null elements
+#pragma warning disable CS8602 // Dereference of a possibly null reference. - Controls/Columns/DropDownItems never have null elements
+#pragma warning disable CS8604 // Possible null reference argument. - Controls/Columns/DropDownItems never have null elements
+#endif
+
+#endregion
+
 namespace KGySoft.Drawing.ImagingTools.View
 {
     internal static class ControlExtensions
     {
+        #region Constants
+
+        internal const string ToolTipPropertyName = "ToolTipText";
+
+        #endregion
+
         #region Methods
 
         /// <summary>
@@ -51,17 +67,28 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         internal static Size ScaleSize(this Control control, Size size) => size.Scale(control.GetScale());
 
+        internal static int ScaleWidth(this Control control, int width) => width.Scale(control.GetScale().X);
+        internal static int ScaleHeight(this Control control, int height) => height.Scale(control.GetScale().Y);
+
         /// <summary>
         /// Applies fixed string resources (which do not change unless language is changed) to a control.
         /// </summary>
-        internal static void ApplyStaticStringResources(this Control control)
+        internal static void ApplyStringResources(this Control control, ToolTip? toolTip = null)
         {
+            #region Local Methods
+
+            static void ApplyToolTip(Control control, string name, ToolTip toolTip)
+            {
+                string? value = Res.GetStringOrNull(name + "." + ToolTipPropertyName);
+                toolTip.SetToolTip(control, value);
+            }
+
             static void ApplyToolStripResources(ToolStripItemCollection items)
             {
                 foreach (ToolStripItem item in items)
                 {
                     // to self
-                    Res.ApplyResources(item, item.Name);
+                    Res.ApplyStringResources(item, item.Name);
 
                     // to children
                     if (item is ToolStripDropDownItem dropDownItem)
@@ -69,34 +96,64 @@ namespace KGySoft.Drawing.ImagingTools.View
                 }
             }
 
+            #endregion
+
             string name = control.Name;
             if (String.IsNullOrEmpty(name))
                 name = control.GetType().Name;
 
+            // custom localization
+            if (control is ICustomLocalizable customLocalizable)
+            {
+                customLocalizable.ApplyStringResources(toolTip);
+                return;
+            }
+
             // to self
-            Res.ApplyResources(control, name);
+            Res.ApplyStringResources(control, name);
+
+            // applying tool tip
+            if (toolTip != null)
+                ApplyToolTip(control, name, toolTip);
 
             // to children
-            foreach (Control child in control.Controls) child.ApplyStaticStringResources();
-
-            // to non-control sub-components
             switch (control)
             {
                 case ToolStrip toolStrip:
                     ApplyToolStripResources(toolStrip.Items);
+                    break;
+
+                case DataGridView dataGridView:
+                    foreach (DataGridViewColumn item in dataGridView.Columns)
+                        Res.ApplyStringResources(item, item.Name);
+                    break;
+
+                default:
+                    foreach (Control child in control.Controls)
+                        child.ApplyStringResources(toolTip);
                     break;
             }
         }
 
         internal static void FixAppearance(this ToolStrip toolStrip)
         {
-            static void FixItems(ToolStripItemCollection items, Color replacementColor)
+            static void FixItems(ToolStripItemCollection items, Color? replacementColor)
             {
                 foreach (ToolStripItem item in items)
                 {
-                    // to self
-                    if ((item is ToolStripMenuItem || item is ToolStripLabel || item is ToolStripSeparator || item is ToolStripProgressBar) && item.BackColor.ToArgb() == replacementColor.ToArgb())
-                        item.BackColor = replacementColor;
+                    // fixing closing menu due to the appearing tool tip (only on Mono/Windows)
+                    if (OSUtils.IsWindows && item is ToolStripDropDownButton or ToolStripSplitButton)
+                    {
+                        item.AutoToolTip = false;
+                        item.ToolTipText = null;
+                    }
+
+                    // fixing menu color
+                    if (replacementColor.HasValue)
+                    {
+                        if ((item is ToolStripMenuItem || item is ToolStripLabel || item is ToolStripSeparator || item is ToolStripProgressBar) && item.BackColor.ToArgb() == replacementColor.Value.ToArgb())
+                            item.BackColor = replacementColor.Value;
+                    }
 
                     // to children
                     if (item is ToolStripDropDownItem dropDownItem)
@@ -104,12 +161,14 @@ namespace KGySoft.Drawing.ImagingTools.View
                 }
             }
 
-            if (OSUtils.IsWindows || SystemInformation.HighContrast)
+            if (!OSUtils.IsMono)
                 return;
 
-            // fixing "dark on dark" menu issue on Linux
-            Color replacementColor = Color.FromArgb(ProfessionalColors.MenuStripGradientBegin.ToArgb());
-            toolStrip.BackColor = replacementColor;
+            // fixing "dark on dark" menu issue on Mono/Linux
+            Color? replacementColor = OSUtils.IsLinux && !SystemInformation.HighContrast ? Color.FromArgb(ProfessionalColors.MenuStripGradientBegin.ToArgb()) : null;
+            if (replacementColor.HasValue)
+                toolStrip.BackColor = replacementColor.Value;
+
             FixItems(toolStrip.Items, replacementColor);
         }
 

@@ -17,8 +17,8 @@
 #region Usings
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.Imaging;
@@ -35,14 +35,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             #region Fields
 
-            private Bitmap result;
+            private Bitmap? result;
 
             #endregion
 
             #region Properties
 
             #region Internal Properties
-            
+
             internal float Value { get; }
             internal ColorChannels ColorChannels { get; }
 
@@ -50,7 +50,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             #region Protected Properties
 
-            protected IReadWriteBitmapData BitmapData { get; private set; }
+            protected IReadWriteBitmapData? BitmapData { get; private set; }
 
             #endregion
 
@@ -70,8 +70,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             #region Internal Methods
 
-            [SuppressMessage("Reliability", "CA2002:Do not lock on objects with weak identity",
-                Justification = "False alarm, source is never a remote object")]
             internal override void Initialize(Bitmap source, bool isInUse)
             {
                 lock (source)
@@ -79,11 +77,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 BitmapData = result.GetReadWriteBitmapData();
             }
 
-            internal override Bitmap EndGenerate(IAsyncResult asyncResult)
+            internal override Bitmap? EndGenerate(IAsyncResult asyncResult)
             {
                 // If there was no exception returning result and clearing the field to prevent disposing.
                 // The caller will take care of disposing if the operation was canceled and the result is discarded.
-                Bitmap bmp = result;
+                Bitmap? bmp = result;
                 result = null;
                 return bmp;
             }
@@ -94,7 +92,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 BitmapData = null;
                 base.SetCompleted();
             }
-            
+
             #endregion
 
             #region Protected Methods
@@ -122,9 +120,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Properties
 
         #region Internal Properties
-        
+
         internal ColorChannels ColorChannels { get => Get(ColorChannels.Rgb); set => Set(value); }
-        internal float Value { get => Get<float>(DefaultValue); set => Set(value); }
+        internal float Value { get => Get(DefaultValue); set => Set(value); }
         internal virtual float MinValue => -1f;
         internal virtual float MaxValue => 1f;
 

@@ -19,7 +19,6 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Text;
 
 #endregion
 
@@ -36,12 +35,12 @@ namespace KGySoft.Drawing.ImagingTools.Model
         /// <summary>
         /// Gets or sets a <see cref="Bitmap"/> that represents the content of the corresponding <see cref="Graphics"/>.
         /// </summary>
-        public Bitmap GraphicsImage { get; set; }
+        public Bitmap? GraphicsImage { get; set; }
 
         /// <summary>
         /// Gets or sets the transformation of the corresponding <see cref="Graphics"/>.
         /// </summary>
-        public Matrix Transform { get; set; }
+        public Matrix? Transform { get; set; }
 
         /// <summary>
         /// Gets or sets the original visible clip bounds in pixels, without applying any transformation.

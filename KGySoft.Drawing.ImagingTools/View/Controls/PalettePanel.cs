@@ -45,13 +45,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Instance Fields
 
-        private IList<Color> palette;
+        private readonly int scrollbarWidth;
+
+        private IList<Color>? palette;
         private int selectedColorIndex = -1;
         private int firstVisibleColor;
         private int visibleRowCount;
         private int counter;
         private PointF scale = new PointF(1f, 1f);
         private int scrollFraction;
+        private bool isRightToLeft;
 
         #endregion
 
@@ -59,7 +62,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Events
 
-        internal event EventHandler SelectedColorChanged
+        internal event EventHandler? SelectedColorChanged
         {
             add => Events.AddHandler(nameof(SelectedColorChanged), value);
             remove => Events.RemoveHandler(nameof(SelectedColorChanged), value);
@@ -71,7 +74,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Internal Properties
 
-        internal IList<Color> Palette
+        internal IList<Color>? Palette
         {
             set
             {
@@ -80,7 +83,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     timerSelection.Enabled = false;
                 if (value != null)
                     SelectedColorIndex = 0;
-                Invalidate();
+                ResetLayout();
             }
         }
 
@@ -111,6 +114,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 timerSelection.Enabled = true;
                 if (invalidateAll)
                 {
+                    ResetLayout();
                     sbPalette.Value = firstVisibleColor >> 4;
                     Invalidate();
                 }
@@ -155,7 +159,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Constructors
 
-        internal PalettePanel()
+        public PalettePanel()
         {
             InitializeComponent();
 
@@ -164,7 +168,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             DoubleBuffered = true;
             SetStyle(ControlStyles.Selectable, true);
-            sbPalette.Width = SystemInformation.VerticalScrollBarWidth;
+            scrollbarWidth = OSUtils.IsMono ? this.ScaleWidth(16) : SystemInformation.VerticalScrollBarWidth;
+            sbPalette.Width = scrollbarWidth;
         }
 
         #endregion
@@ -185,16 +190,19 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            scale = e.Graphics.GetScale();
-            if (CheckPaletteLayout())
-                return;
+            PointF currentScale = e.Graphics.GetScale();
+            if (currentScale != scale)
+            {
+                scale = currentScale;
+                ResetLayout();
+            }
 
             base.OnPaint(e);
             if (ColorCount == 0)
                 return;
 
             e.Graphics.PixelOffsetMode = PixelOffsetMode.Half;
-            int upper = Math.Min(palette.Count, firstVisibleColor + (visibleRowCount << 4));
+            int upper = Math.Min(palette!.Count, firstVisibleColor + (visibleRowCount << 4));
 
             // iterating through visible colors
             for (int i = firstVisibleColor; i < upper; i++)
@@ -264,14 +272,23 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (e.Button != MouseButtons.Left || ColorCount == 0)
                 return;
 
+            Point location = e.Location;
+            if (isRightToLeft)
+            {
+                location.X -= scrollbarWidth;
+                location.X = (int)MathF.Round(((13 << 4) + 2) * scale.X) - location.X;
+            }
+            
+            // same as before (using the raw location because GetColorRect translates it)
             if (GetColorRect(selectedColorIndex).Contains(e.Location))
                 return;
 
-            if (!Rectangle.Round(new RectangleF(2 * scale.X, 2 * scale.Y, (13 << 4) * scale.X, 13 * visibleRowCount * scale.Y)).Contains(e.Location))
+            // out of range
+            if (!Rectangle.Round(new RectangleF(2 * scale.X, 2 * scale.Y, (13 << 4) * scale.X, 13 * visibleRowCount * scale.Y)).Contains(location))
                 return;
 
-            int x = ((int)(e.X / scale.X) - 2) / 13;
-            int y = ((int)(e.Y / scale.Y) - 2) / 13;
+            int x = ((int)(location.X / scale.X) - 2) / 13;
+            int y = ((int)(location.Y / scale.Y) - 2) / 13;
             int index = firstVisibleColor + (y << 4) + x;
 
             if (index >= ColorCount)
@@ -292,10 +309,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             switch (e.KeyData)
             {
                 case Keys.Right:
-                    newIndex = Math.Min(selectedColorIndex + 1, ColorCount - 1);
-                    break;
                 case Keys.Left:
-                    newIndex = Math.Max(selectedColorIndex - 1, 0);
+                    if (e.KeyData == Keys.Right ^ isRightToLeft)
+                        newIndex = Math.Min(selectedColorIndex + 1, ColorCount - 1);
+                    else
+                        newIndex = Math.Max(selectedColorIndex - 1, 0);
                     break;
                 case Keys.Down:
                     newIndex = Math.Min(selectedColorIndex + 16, ColorCount - 1);
@@ -333,8 +351,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             // When scrolling by mouse, delta is always +-120 so this will be 1 change on the scrollbar.
             // But we collect the fractional changes caused by the touchpad scrolling so it will not be lost either.
             int totalDelta = scrollFraction + e.Delta;
-            scrollFraction = totalDelta % SystemInformation.MouseWheelScrollDelta;
-            int newValue = sbPalette.Value - totalDelta / SystemInformation.MouseWheelScrollDelta;
+            scrollFraction = totalDelta % MouseWheelScrollDelta;
+            int newValue = sbPalette.Value - totalDelta / MouseWheelScrollDelta;
             if (newValue < 0)
                 newValue = 0;
             else if (newValue > sbPalette.Maximum - sbPalette.LargeChange + 1)
@@ -343,37 +361,50 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             sbPalette.Value = newValue;
         }
 
+        protected override void OnSizeChanged(EventArgs e)
+        {
+            base.OnSizeChanged(e);
+            ResetLayout();
+        }
+
+        protected override void OnRightToLeftChanged(EventArgs e)
+        {
+            base.OnRightToLeftChanged(e);
+            isRightToLeft = RightToLeft == RightToLeft.Yes;
+            sbPalette.Dock = isRightToLeft ? DockStyle.Left : DockStyle.Right;
+            Invalidate();
+        }
+
         #endregion
 
         #region Private Methods
 
-        /// <summary>
-        /// Checks the scrollbar and returns <see langword="true"/> on layout change (which means invalidated graphics)
-        /// </summary>
-        private bool CheckPaletteLayout()
+        private void ResetLayout()
         {
             if (ColorCount == 0)
             {
                 sbPalette.Visible = false;
                 visibleRowCount = 0;
-                return false;
+                return;
             }
+
+            Invalidate();
 
             // calculating visible rows
             int maxRows = ((int)(Height / scale.Y) - 5) / 13;
             if (maxRows == visibleRowCount)
-                return false;
+                return;
 
-            Invalidate();
             visibleRowCount = maxRows;
-            int colorRows = (int)Math.Ceiling((double)palette.Count / 16);
+            int colorRows = (int)Math.Ceiling((double)palette!.Count / 16);
             if (visibleRowCount >= colorRows)
             {
                 // scrollbar is not needed
                 firstVisibleColor = 0;
                 sbPalette.Visible = false;
                 timerSelection.Enabled = true;
-                return true;
+                visibleRowCount = colorRows;
+                return;
             }
 
             // scrollbar is needed
@@ -382,18 +413,25 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (firstVisibleColor + (visibleRowCount << 4) >= palette.Count + 16)
                 firstVisibleColor = palette.Count - (visibleRowCount << 4);
             sbPalette.Value = firstVisibleColor >> 4;
+
             sbPalette.Visible = true;
             timerSelection.Enabled = IsSelectedColorVisible();
-            return true;
         }
 
         private Rectangle GetColorRect(int index)
         {
-            float left = (2 + (index % 16) * 13) * scale.X;
+            float left = index % 16;
+            if (isRightToLeft)
+                left = 15 - left; 
+            left = (2 + left * 13) * scale.X;
+            if (isRightToLeft)
+                left += scrollbarWidth;
+
+            //float left = (2 + (index % 16) * 13) * scale.X;
             float top = (2 + ((index - firstVisibleColor) >> 4) * 13) * scale.Y;
-            // ReSharper disable CompareOfFloatsByEqualityOperator - intended
+
+            // ReSharper disable once CompareOfFloatsByEqualityOperator - intended
             return new Rectangle(left % 1 == 0 ? (int)left : (int)left + 1, top % 1 == 0 ? (int)top : (int)top + 1, (int)(13 * scale.X), (int)(13 * scale.Y));
-            // ReSharper restore CompareOfFloatsByEqualityOperator
         }
 
         private bool IsSelectedColorVisible()
@@ -408,14 +446,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         //ReSharper disable InconsistentNaming
 #pragma warning disable IDE1006 // Naming Styles
 
-        private void sbPalette_ValueChanged(object sender, EventArgs e)
+        private void sbPalette_ValueChanged(object? sender, EventArgs e)
         {
             firstVisibleColor = sbPalette.Value << 4;
             timerSelection.Enabled = IsSelectedColorVisible();
-            Invalidate();
+            ResetLayout();
         }
 
-        private void timerSelection_Tick(object sender, EventArgs e)
+        private void timerSelection_Tick(object? sender, EventArgs e)
         {
             if (!IsSelectedColorVisible())
             {

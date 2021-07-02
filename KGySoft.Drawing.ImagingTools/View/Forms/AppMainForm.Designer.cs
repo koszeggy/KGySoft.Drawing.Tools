@@ -19,8 +19,14 @@
             // 
             // txtInfo
             // 
-            this.txtInfo.Location = new System.Drawing.Point(0, 188);
+            this.txtInfo.Location = new System.Drawing.Point(0, 153);
             this.txtInfo.Size = new System.Drawing.Size(484, 123);
+            // 
+            // okCancelButtons
+            // 
+            this.okCancelButtons.Location = new System.Drawing.Point(0, 276);
+            this.okCancelButtons.Size = new System.Drawing.Size(484, 35);
+            this.okCancelButtons.Visible = false;
             // 
             // AppMainForm
             // 

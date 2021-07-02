@@ -16,8 +16,9 @@
 
 #region Usings
 
+using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
+using System.Drawing;
 
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
@@ -35,15 +36,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             : base(viewModel)
         {
             InitializeComponent();
-            cbInstallations.ValueMember = nameof(KeyValuePair<string, string>.Key);
-            cbInstallations.DisplayMember = nameof(KeyValuePair<string, string>.Value);
+            cmbInstallations.ValueMember = nameof(KeyValuePair<string, string>.Key);
+            cmbInstallations.DisplayMember = nameof(KeyValuePair<string, string>.Value);
         }
 
         #endregion
 
         #region Private Constructors
 
-        private ManageInstallationsForm() : this(null)
+        private ManageInstallationsForm() : this(null!)
         {
             // this ctor is just for the designer
         }
@@ -55,6 +56,21 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         #region Methods
 
         #region Protected Methods
+
+        protected override void OnLoad(EventArgs e)
+        {
+            // Fixing high DPI appearance on Mono
+            PointF scale;
+            if (OSUtils.IsMono && (scale = this.GetScale()) != new PointF(1f, 1f))
+            {
+                pnlButtons.Height = (int)(35 * scale.Y);
+                var referenceButtonSize = new Size(75, 23);
+                btnInstall.Size = referenceButtonSize.Scale(scale);
+                btnRemove.Size = referenceButtonSize.Scale(scale);
+            }
+
+            base.OnLoad(e);
+        }
 
         protected override void ApplyResources()
         {
@@ -88,11 +104,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void InitPropertyBindings()
         {
-            // will not change so not as an actual binding
-            cbInstallations.DataSource = ViewModel.Installations;
+            // VM.Installations -> cmbInstallations.DataSource
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Installations), nameof(cmbInstallations.DataSource), cmbInstallations);
 
-            // VM.SelectedInstallation <-> cbInstallations.SelectedValue
-            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.SelectedInstallation), cbInstallations, nameof(cbInstallations.SelectedValue));
+            // VM.SelectedInstallation <-> cmbInstallations.SelectedValue
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.SelectedInstallation), cmbInstallations, nameof(cmbInstallations.SelectedValue));
 
             // VM.CurrentPath <-> tbPath.Text
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.CurrentPath), tbPath, nameof(tbPath.Text));
@@ -114,11 +130,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 .AddSource(btnRemove, nameof(btnRemove.Click));
         }
 
-        private string SelectFolder()
-        {
-            using (var dlg = new FolderBrowserDialog { SelectedPath = ViewModel.CurrentPath })
-                return dlg.ShowDialog() != DialogResult.OK ? null : dlg.SelectedPath;
-        }
+        private string? SelectFolder() => Dialogs.SelectFolder(ViewModel.CurrentPath);
 
         #endregion
 

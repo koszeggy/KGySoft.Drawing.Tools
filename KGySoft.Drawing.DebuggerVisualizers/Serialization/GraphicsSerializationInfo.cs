@@ -17,7 +17,6 @@
 #region Usings
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
@@ -33,7 +32,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
     {
         #region Properties
 
-        internal GraphicsInfo GraphicsInfo { get; private set; }
+        internal GraphicsInfo GraphicsInfo { get; private set; } = default!;
 
         #endregion
 
@@ -44,8 +43,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
             GraphicsInfo = new GraphicsInfo(graphics);
         }
 
-        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
-            Justification = "False alarm, the stream must not be disposed and the leaveOpen parameter is not available on every targeted platform")]
         internal GraphicsSerializationInfo(Stream stream)
         {
             ReadFrom(new BinaryReader(stream));
@@ -57,7 +54,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 
         #region Public Methods
 
-        public void Dispose() => GraphicsInfo?.Dispose();
+        public void Dispose() => GraphicsInfo.Dispose();
 
         #endregion
 
@@ -66,10 +63,10 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
         internal void Write(BinaryWriter bw)
         {
             // 1. Bitmap
-            SerializationHelper.WriteImage(bw, GraphicsInfo.GraphicsImage);
+            SerializationHelper.WriteImage(bw, GraphicsInfo.GraphicsImage!);
 
             // 2. Transformation matrix
-            BinarySerializer.SerializeByWriter(bw, GraphicsInfo.Transform.Elements);
+            BinarySerializer.SerializeByWriter(bw, GraphicsInfo.Transform!.Elements);
 
             // 3. Meta
             bw.Write(GraphicsInfo.OriginalVisibleClipBounds.X);
@@ -97,7 +94,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
             result.GraphicsImage = (Bitmap)SerializationHelper.ReadImage(br);
 
             // 2. Transformation matrix
-            var elements = (float[])BinarySerializer.DeserializeByReader(br);
+            var elements = (float[])BinarySerializer.DeserializeByReader(br)!;
             result.Transform = new Matrix(elements[0], elements[1], elements[2], elements[3], elements[4], elements[5]);
 
             // 3. Meta

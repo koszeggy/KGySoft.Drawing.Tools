@@ -19,19 +19,17 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Threading;
 
 using KGySoft.ComponentModel;
-using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
 
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal abstract class TransformBitmapViewModelBase : ViewModelBase, IViewModel<Bitmap>, IValidatingObject
+    internal abstract class TransformBitmapViewModelBase : ViewModelBase, IViewModel<Bitmap?>, IValidatingObject
     {
         #region Nested Classes
 
@@ -41,7 +39,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             internal abstract void Initialize(Bitmap source, bool isInUse);
             internal abstract IAsyncResult BeginGenerate(AsyncConfig asyncConfig);
-            internal abstract Bitmap EndGenerate(IAsyncResult asyncResult);
+            internal abstract Bitmap? EndGenerate(IAsyncResult asyncResult);
 
             #endregion
         }
@@ -53,16 +51,15 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private readonly Bitmap originalImage;
         private readonly object syncRoot = new object();
 
-        private volatile GenerateTaskBase activeTask;
-        private bool initializing = true;
+        private volatile GenerateTaskBase? activeTask;
         private bool keepResult;
-        private DrawingProgressManager drawingProgressManager;
+        private DrawingProgressManager? drawingProgressManager;
 
         #endregion
 
         #region Events
 
-        internal event EventHandler<EventArgs<ValidationResultsCollection>> ValidationResultsChanged
+        internal event EventHandler? ValidationResultsChanged
         {
             add => ValidationResultsChangedHandler += value;
             remove => ValidationResultsChangedHandler -= value;
@@ -102,8 +99,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Private Properties
 
-        private Exception GeneratePreviewError { get => Get<Exception>(); set => Set(value); }
-        private EventHandler<EventArgs<ValidationResultsCollection>> ValidationResultsChangedHandler { get => Get<EventHandler<EventArgs<ValidationResultsCollection>>>(); set => Set(value); }
+        private Exception? GeneratePreviewError { get => Get<Exception?>(); set => Set(value); }
+        private EventHandler? ValidationResultsChangedHandler { get => Get<EventHandler?>(); set => Set(value); }
 
         #endregion
 
@@ -115,7 +112,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             originalImage = image ?? throw new ArgumentNullException(nameof(image), PublicResources.ArgumentNull);
             PreviewImageViewModel previewImage = PreviewImageViewModel;
-            previewImage.PropertyChanged += PreviewImage_PropertyChanged;
+            previewImage.PropertyChanged += PreviewImage_PropertyChanged!;
             previewImage.PreviewImage = previewImage.OriginalImage = image;
         }
 
@@ -128,8 +125,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal override void ViewLoaded()
         {
             // could be in constructor but we only need it when there is a view
-            drawingProgressManager = new DrawingProgressManager(p => Progress = p);
-            initializing = false;
+            drawingProgressManager = new DrawingProgressManager(TrySetProgress);
             base.ViewLoaded();
         }
 
@@ -143,9 +139,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             switch (e.PropertyName)
             {
                 case nameof(ValidationResults):
-                    var validationResults = (ValidationResultsCollection)e.NewValue;
+                    var validationResults = (ValidationResultsCollection)e.NewValue!;
                     IsValid = !validationResults.HasErrors;
-                    ValidationResultsChangedHandler?.Invoke(this, new EventArgs<ValidationResultsCollection>(validationResults));
+                    ValidationResultsChangedHandler?.Invoke(this, EventArgs.Empty);
                     return;
 
                 case nameof(GeneratePreviewError):
@@ -160,7 +156,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     return;
 
                 default:
-                    if (initializing || !AffectsPreview(e.PropertyName))
+                    if (!IsViewLoaded || !AffectsPreview(e.PropertyName!))
                         return;
                     Validate();
                     ResetCommandState.Enabled = AreSettingsChanged;
@@ -171,14 +167,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         protected void Validate()
         {
-            if (initializing)
+            if (!IsViewLoaded)
                 return;
             ValidationResults = DoValidation();
         }
 
         protected virtual ValidationResultsCollection DoValidation()
         {
-            Exception error = GeneratePreviewError;
+            Exception? error = GeneratePreviewError;
             var result = new ValidationResultsCollection();
 
             // errors
@@ -195,7 +191,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         protected void BeginGeneratePreview()
         {
-            // sending cancel request to pending generate but the completion is awaited on a pool thread to prevent deadlocks
+            // sending cancel request to pending generate but the completion is awaited on a pool thread to prevent the UI from lagging
             CancelRunningGenerate();
             GeneratePreviewError = null;
 
@@ -207,8 +203,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 return;
             }
 
+            // Not awaiting the canceled task here to prevent the UI from lagging.
             IsGenerating = true;
-            ThreadPool.QueueUserWorkItem(DoGenerate, CreateGenerateTask());
+            ThreadPool.QueueUserWorkItem(DoGenerate!, CreateGenerateTask());
         }
 
         protected abstract GenerateTaskBase CreateGenerateTask();
@@ -216,15 +213,23 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         protected abstract bool MatchesOriginal(GenerateTaskBase task);
         protected virtual void ResetParameters() { }
 
+        protected override void ApplyDisplayLanguage() => Validate();
+
         protected override void Dispose(bool disposing)
         {
             if (IsDisposed)
                 return;
             if (disposing)
             {
-                activeTask?.Dispose();
-                Image preview = PreviewImageViewModel.PreviewImage;
-                PreviewImageViewModel?.Dispose();
+                if (activeTask != null)
+                {
+                    CancelRunningGenerate();
+                    WaitForPendingGenerate();
+                }
+
+                Debug.Assert(activeTask == null);
+                Image? preview = PreviewImageViewModel.PreviewImage;
+                PreviewImageViewModel.Dispose();
 
                 if (!ReferenceEquals(originalImage, preview) && !keepResult)
                     preview?.Dispose();
@@ -239,27 +244,40 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Private Methods
 
-        [SuppressMessage("Reliability", "CA2002:Do not lock on objects with weak identity", Justification = "False alarm, originalImage is not a remote object")]
         private void DoGenerate(object state)
         {
             var task = (GenerateTaskBase)state;
 
-            // this is a fairly large lock ensuring that only one generate task is running at once
-            lock (syncRoot)
+            // This is a fairly large lock ensuring that only one generate task is running at once.
+            // Instead of this sync we could await the canceled task before queuing a new one but then the UI can freeze for some moments.
+            // (It wouldn't cause deadlocks because here every TryInvokeSync is after completing the task.)
+            // But many threads can be queued, which all stop here before acquiring the lock. To prevent spawning too many threads we
+            // don't use a regular lock here but a bit active spinning that can exit without taking the lock if the task gets outdated.
+            while (!Monitor.TryEnter(syncRoot, 1))
+            {
+
+                if (!IsDisposed && MatchesSettings(task))
+                    continue;
+                task.Dispose();
+                return;
+            }
+
+            try
             {
                 // lost race
-                if (!MatchesSettings(task))
+                if (IsDisposed || !MatchesSettings(task))
                 {
                     task.Dispose();
                     return;
                 }
 
+                // Awaiting the previous unfinished task. This could be also in BeginGeneratePreview but that may freeze the UI for some time.
                 Debug.Assert(activeTask?.IsCanceled != false);
                 WaitForPendingGenerate();
                 Debug.Assert(activeTask == null);
 
                 // resetting possible previous progress
-                drawingProgressManager.Report(default);
+                drawingProgressManager?.Report(default);
 
                 // from now on the task can be canceled
                 activeTask = task;
@@ -268,7 +286,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     // original image
                     if (MatchesOriginal(task))
                     {
-                        SynchronizedInvokeCallback?.Invoke(() =>
+                        task.SetCompleted();
+                        TryInvokeSync(() =>
                         {
                             SetPreview(originalImage);
                             IsGenerating = false;
@@ -281,10 +300,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     {
                         task.Initialize(originalImage, PreviewImageViewModel.PreviewImage == originalImage);
                     }
-                    catch (Exception e) when (!e.IsCriticalGdi())
+                    catch (Exception e)
                     {
                         task.SetCompleted();
-                        SynchronizedInvokeCallback?.Invoke(() =>
+                        TryInvokeSync(() =>
                         {
                             GeneratePreviewError = e;
                             SetPreview(null);
@@ -293,8 +312,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                         return;
                     }
 
-                    Exception error = null;
-                    Bitmap result = null;
+                    Exception? error = null;
+                    Bitmap? result = null;
                     try
                     {
                         // starting generate: using Begin.../End... methods instead of await ...Async so it is compatible even with .NET 3.5
@@ -303,14 +322,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                             // ReSharper disable once AccessToDisposedClosure - false alarm, newTask.Dispose() is called only on error
                             IsCancelRequestedCallback = () => task.IsCanceled,
                             ThrowIfCanceled = false,
-                            State = task,
-                            Progress = drawingProgressManager
+                            Progress = drawingProgressManager,
                         });
 
                         // Waiting to be finished or canceled. As we are on a different thread blocking wait is alright
                         result = task.EndGenerate(asyncResult);
                     }
-                    catch (Exception e) when (!e.IsCriticalGdi())
+                    catch (Exception e)
                     {
                         error = e;
                     }
@@ -326,7 +344,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     }
 
                     // applying result (or error)
-                    SynchronizedInvokeCallback?.Invoke(() =>
+                    TryInvokeSync(() =>
                     {
                         GeneratePreviewError = error;
                         SetPreview(result);
@@ -339,11 +357,29 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     activeTask = null;
                 }
             }
+            finally
+            {
+                Monitor.Exit(syncRoot);
+            }
+        }
+
+        private void TrySetProgress(DrawingProgress progress)
+        {
+            if (IsDisposed)
+                return;
+            try
+            {
+                Progress = progress;
+            }
+            catch (ObjectDisposedException)
+            {
+                // lost race - just ignoring it
+            }
         }
 
         private void CancelRunningGenerate()
         {
-            GenerateTaskBase runningTask = activeTask;
+            GenerateTaskBase? runningTask = activeTask;
             if (runningTask == null)
                 return;
             runningTask.IsCanceled = true;
@@ -352,7 +388,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void WaitForPendingGenerate()
         {
             // In a non-UI thread it should be in a lock
-            GenerateTaskBase runningTask = activeTask;
+            GenerateTaskBase? runningTask = activeTask;
             if (runningTask == null)
                 return;
             runningTask.WaitForCompletion();
@@ -360,10 +396,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             activeTask = null;
         }
 
-        private void SetPreview(Bitmap image)
+        private void SetPreview(Bitmap? image)
         {
             PreviewImageViewModel preview = PreviewImageViewModel;
-            Image toDispose = preview.PreviewImage;
+            Image? toDispose = preview.PreviewImage;
             preview.PreviewImage = image;
             if (toDispose != null && toDispose != originalImage)
                 toDispose.Dispose();
@@ -380,7 +416,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             // preview image has been changed: updating IsModified accordingly
             if (e.PropertyName == nameof(vm.PreviewImage))
             {
-                Image image = vm.PreviewImage;
+                Image? image = vm.PreviewImage;
                 SetModified(image != null && originalImage != image);
             }
         }
@@ -411,7 +447,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Explicitly Implemented Interface Methods
 
-        Bitmap IViewModel<Bitmap>.GetEditedModel() => PreviewImageViewModel.PreviewImage as Bitmap;
+        Bitmap? IViewModel<Bitmap?>.GetEditedModel() => PreviewImageViewModel.PreviewImage as Bitmap;
 
         #endregion
 

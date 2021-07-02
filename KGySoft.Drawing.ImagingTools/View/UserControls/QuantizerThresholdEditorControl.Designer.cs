@@ -28,6 +28,7 @@
             this.trackBar.Location = new System.Drawing.Point(35, 0);
             this.trackBar.Maximum = 255;
             this.trackBar.Name = "trackBar";
+            this.trackBar.RightToLeftLayout = true;
             this.trackBar.Size = new System.Drawing.Size(147, 27);
             this.trackBar.TabIndex = 0;
             this.trackBar.TickFrequency = 16;
@@ -37,7 +38,7 @@
             this.okCancelButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.okCancelButtons.Location = new System.Drawing.Point(0, 27);
             this.okCancelButtons.Name = "okCancelButtons";
-            this.okCancelButtons.Size = new System.Drawing.Size(182, 40);
+            this.okCancelButtons.Size = new System.Drawing.Size(182, 35);
             this.okCancelButtons.TabIndex = 1;
             // 
             // lblValue

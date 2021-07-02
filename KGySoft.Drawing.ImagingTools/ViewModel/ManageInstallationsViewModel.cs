@@ -22,7 +22,9 @@ using System.IO;
 using System.Linq;
 
 using KGySoft.ComponentModel;
-using KGySoft.CoreLibraries;
+#if NETFRAMEWORK
+using KGySoft.CoreLibraries; 
+#endif
 using KGySoft.Drawing.ImagingTools.Model;
 
 #endregion
@@ -41,7 +43,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Fields
 
-        private InstallationInfo currentStatus;
+        private InstallationInfo currentStatus = default!;
         private bool isSelectingPath;
 
         #endregion
@@ -49,12 +51,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Properties
 
         internal IList<KeyValuePair<string, string>> Installations { get => Get<IList<KeyValuePair<string, string>>>(); set => Set(value); }
-        internal string SelectedInstallation { get => Get<string>(); set => Set(value); }
-        internal string CurrentPath { get => Get<string>(); set => Set(value); }
-        internal string StatusText { get => Get("-"); set => Set(value); }
-        internal string AvailableVersionText { get => Get("-"); set => Set(value); }
+        internal string SelectedInstallation { get => Get(String.Empty); set => Set(value); }
+        internal string CurrentPath { get => Get(String.Empty); set => Set(value); }
+        internal string StatusText { get => Get("–"); set => Set(value); }
+        internal string AvailableVersionText { get => Get("–"); set => Set(value); }
 
-        internal Func<string> SelectFolderCallback { get => Get<Func<string>>(); set => Set(value); }
+        internal Func<string?>? SelectFolderCallback { get => Get<Func<string?>?>(); set => Set(value); }
 
         internal ICommandState SelectFolderCommandState => Get(() => new CommandState());
         internal ICommandState InstallCommandState => Get(() => new CommandState());
@@ -68,7 +70,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Constructors
 
-        internal ManageInstallationsViewModel(string hintPath)
+        internal ManageInstallationsViewModel(string? hintPath)
         {
             InitAvailableVersion();
             InitInstallations();
@@ -86,12 +88,21 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             base.OnPropertyChanged(e);
             if (e.PropertyName == nameof(SelectedInstallation))
             {
-                UpdatePath((string)e.NewValue);
+                UpdatePath((string)e.NewValue!);
                 return;
             }
 
             if (e.PropertyName == nameof(CurrentPath))
-                UpdateStatus((string)e.NewValue);
+                UpdateStatus((string)e.NewValue!);
+        }
+
+        protected override void ApplyDisplayLanguage()
+        {
+            InitAvailableVersion();
+            string currentPath = CurrentPath;
+            InitInstallations();
+            CurrentPath = currentPath;
+            UpdateStatus(currentPath);
         }
 
         #endregion
@@ -113,11 +124,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             InstallCommandState.Enabled = available;
         }
 
-        private void TrySelectPath(string hintPath)
+        private void TrySelectPath(string? hintPath)
         {
             if (hintPath?.Contains(visualStudioName, StringComparison.Ordinal) == true)
             {
-                string preferredPath = Path.GetFileName(hintPath) == visualizersDir ? Path.GetDirectoryName(hintPath) : hintPath;
+                string preferredPath = Path.GetFileName(hintPath) == visualizersDir ? Path.GetDirectoryName(hintPath)! : hintPath;
                 SelectInstallation(preferredPath);
                 return;
             }
@@ -177,6 +188,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 StatusText = currentStatus.TargetFramework != null ? Res.InstallationsStatusInstalledWithTargetFramework(currentStatus.Version, currentStatus.TargetFramework)
                     : currentStatus.RuntimeVersion != null ? Res.InstallationsStatusInstalledWithRuntime(currentStatus.Version, currentStatus.RuntimeVersion)
                     : Res.InstallationsStatusInstalled(currentStatus.Version);
+            RemoveCommandState.Enabled = currentStatus.Installed;
         }
 
         private void SelectFolder()
@@ -199,14 +211,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnInstallCommand()
         {
-            if (currentStatus.Installed && !Confirm(Res.ConfirmMessageOverwriteInstallation))
+            if (currentStatus.Installed && !Confirm(Res.ConfirmMessageOverwriteInstallation, currentStatus.Version != null && InstallationManager.AvailableVersion.Version > currentStatus.Version))
                 return;
 #if NETCOREAPP
-            if (!Confirm(Res.ConfirmMessageNetCoreVersion))
+            if (!Confirm(Res.ConfirmMessageNetCoreVersion, false))
                 return;
 #endif
 
-            InstallationManager.Install(currentStatus.Path, out string error, out string warning);
+            InstallationManager.Install(currentStatus.Path, out string? error, out string? warning);
             if (error != null)
                 ShowError(Res.ErrorMessageInstallationFailed(error));
             else if (warning != null)
@@ -216,9 +228,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnRemoveCommand()
         {
-            if (!Confirm(Res.ConfirmMessageRemoveInstallation))
+            if (!Confirm(Res.ConfirmMessageRemoveInstallation, false))
                 return;
-            InstallationManager.Uninstall(currentStatus.Path, out string error);
+            InstallationManager.Uninstall(currentStatus.Path, out string? error);
             if (error != null)
                 ShowError(Res.ErrorMessageRemoveInstallationFailed(error));
             UpdateStatus(currentStatus.Path);

@@ -43,9 +43,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             #region Methods
 
             internal override IAsyncResult BeginGenerate(AsyncConfig asyncConfig)
-                => BitmapData.BeginAdjustGamma(Value, channels: ColorChannels, asyncConfig: asyncConfig);
+                => BitmapData!.BeginAdjustGamma(Value, channels: ColorChannels, asyncConfig: asyncConfig);
 
-            internal override Bitmap EndGenerate(IAsyncResult asyncResult)
+            internal override Bitmap? EndGenerate(IAsyncResult asyncResult)
             {
                 asyncResult.EndAdjustGamma();
                 return base.EndGenerate(asyncResult);

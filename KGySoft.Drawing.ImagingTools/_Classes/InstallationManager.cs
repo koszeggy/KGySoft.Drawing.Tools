@@ -18,11 +18,16 @@
 
 using System;
 using System.IO;
+#if !NET35
 using System.Linq;
+#endif
+using System.Security;
 
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
+#if NET45
 using KGySoft.Drawing.ImagingTools.WinApi;
+#endif
 
 #endregion
 
@@ -50,19 +55,28 @@ namespace KGySoft.Drawing.ImagingTools
             debuggerVisualizerFileName
         };
 
-        private static InstallationInfo availableVersion;
+        private static InstallationInfo? availableVersion;
 
         #endregion
 
-        #region Methods
-
-        #region Public Methods
+        #region Properties
 
         /// <summary>
         /// Gets the available debugger visualizer version that can be installed with the <see cref="InstallationManager"/> class.
         /// If the debugger visualizer assembly is not deployed with this application, then the <see cref="InstallationInfo.Installed"/> property of the returned instance will be <see langword="false"/>.
         /// </summary>
         public static InstallationInfo AvailableVersion => availableVersion ??= new InstallationInfo(Files.GetExecutingPath());
+
+        /// <summary>
+        /// Gets version of the currently used <c>ImagingTools</c> application.
+        /// </summary>
+        public static Version ImagingToolsVersion { get; } = typeof(InstallationManager).Assembly.GetName().Version!;
+
+        #endregion
+
+        #region Methods
+
+        #region Public Methods
 
         /// <summary>
         /// Gets the installation information of the debugger visualizer for the specified <paramref name="directory"/>.
@@ -77,7 +91,8 @@ namespace KGySoft.Drawing.ImagingTools
         /// <param name="directory">The directory where the debugger visualizers have to be installed.</param>
         /// <param name="error">If the installation fails, then this parameter returns the error message; otherwise, this parameter returns <see langword="null"/>.</param>
         /// <param name="warning">If the installation succeeds with warnings, then this parameter returns the warning message; otherwise, this parameter returns <see langword="null"/>.</param>
-        public static void Install(string directory, out string error, out string warning)
+        [SecuritySafeCritical]
+        public static void Install(string directory, out string? error, out string? warning)
         {
             if (directory == null)
                 throw new ArgumentNullException(nameof(directory), PublicResources.ArgumentNull);
@@ -114,7 +129,12 @@ namespace KGySoft.Drawing.ImagingTools
 
             Uninstall(directory, out error);
             if (error != null)
+            {
+                // VS issue workaround, see the comment in Uninstall
+                if (error == Res.ErrorMessageInstallationCannotBeRemoved)
+                    error = Res.ErrorMessageInstallationCannotBeOverwritten;
                 return;
+            }
 
             foreach (string file in files)
             {
@@ -187,13 +207,14 @@ namespace KGySoft.Drawing.ImagingTools
         /// </summary>
         /// <param name="directory">The directory where the debugger visualizers have to be removed from.</param>
         /// <param name="error">If the removal fails, then this parameter returns the error message; otherwise, this parameter returns <see langword="null"/>.</param>
-        public static void Uninstall(string directory, out string error)
+        public static void Uninstall(string directory, out string? error)
         {
             error = null;
             if (!Directory.Exists(directory))
                 return;
 
-            if (directory == Files.GetExecutingPath())
+            string executingPath = Files.GetExecutingPath();
+            if (directory == executingPath)
             {
                 error = Res.ErrorMessageInstallationCannotBeRemoved;
                 return;
@@ -211,7 +232,13 @@ namespace KGySoft.Drawing.ImagingTools
                 }
                 catch (Exception e) when (!e.IsCritical())
                 {
-                    error = Res.ErrorMessageCouldNotDeleteFile(file, e.Message);
+                    // VS issue workaround: if the package is installed and we try to remove the executed version during debugging, then the executing path will be
+                    // the package installation path in uppercase, instead of the target directory (the path is the directory if the package is not installed though).
+                    // However, the same path is in lowercase if we start the removing from the VS Tools menu instead of debugging...
+                    if (executingPath == executingPath.ToUpperInvariant() && e is UnauthorizedAccessException)
+                        error = Res.ErrorMessageInstallationCannotBeRemoved;
+                    else
+                        error = Res.ErrorMessageCouldNotDeleteFile(file, e.Message);
                     return;
                 }
             }

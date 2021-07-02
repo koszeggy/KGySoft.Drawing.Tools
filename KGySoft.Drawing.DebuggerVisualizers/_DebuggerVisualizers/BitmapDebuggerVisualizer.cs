@@ -17,8 +17,8 @@
 #region Usings
 
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
-using KGySoft.Drawing.DebuggerVisualizers.Model;
 using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 using KGySoft.Drawing.ImagingTools.Model;
 
@@ -41,12 +41,14 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <param name="objectProvider">The object provider.</param>
         protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
         {
-            using (ImageInfo imageInfo = SerializationHelper.DeserializeImageInfo(objectProvider.GetData()))
-            {
-                ImageReference replacementObject = DebuggerHelper.DebugBitmap(imageInfo, objectProvider.IsObjectReplaceable);
-                if (objectProvider.IsObjectReplaceable && replacementObject != null)
-                    objectProvider.ReplaceObject(replacementObject);
-            }
+            using ImageInfo imageInfo = SerializationHelper.DeserializeImageInfo(objectProvider.GetData());
+            ImageInfo? replacementObject = DebuggerHelper.DebugBitmap(imageInfo, objectProvider.IsObjectReplaceable);
+            if (replacementObject == null)
+                return;
+
+            using var ms = new MemoryStream();
+            SerializationHelper.SerializeReplacementImageInfo(replacementObject, ms);
+            objectProvider.ReplaceData(ms);
         }
 
         #endregion

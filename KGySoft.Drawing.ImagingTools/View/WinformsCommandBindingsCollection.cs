@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: WinformsCommandBindingsCollection.cs
+//  File: WinFormsCommandBindingsCollection.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2020 - All Rights Reserved
 //
@@ -30,11 +30,11 @@ namespace KGySoft.Drawing.ImagingTools.View
     /// By using this collection the <see cref="ICommandState"/> properties (eg. <see cref="ICommandState.Enabled"/> but also any other added property)
     /// of the added bindings will be synced with the command sources.
     /// </summary>
-    internal class WinformsCommandBindingsCollection : CommandBindingsCollection
+    internal class WinFormsCommandBindingsCollection : CommandBindingsCollection
     {
         #region Methods
 
-        public override ICommandBinding Add(ICommand command, IDictionary<string, object> initialState = null, bool disposeCommand = false)
+        public override ICommandBinding Add(ICommand command, IDictionary<string, object?>? initialState = null, bool disposeCommand = false)
             => base.Add(command, initialState, disposeCommand)
                 .AddStateUpdater(PropertyCommandStateUpdater.Updater);
 

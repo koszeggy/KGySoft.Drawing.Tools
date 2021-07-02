@@ -17,10 +17,15 @@
 #region Usings
 
 using System;
+#if !NET5_0_OR_GREATER
+using System.Security;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Drawing;
 using System.Reflection;
-using System.Runtime.InteropServices;
+
+using KGySoft.Drawing.ImagingTools.WinApi;
+#endif
 using System.Windows.Forms;
 
 using KGySoft.Reflection;
@@ -34,36 +39,43 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
     /// </summary>
     internal class BaseForm : Form
     {
-        #region NativeMethods class
-
-        private static class NativeMethods
-        {
-            #region Methods
-
-            [DllImport("user32.dll")]
-            internal static extern bool ScreenToClient(IntPtr hWnd, ref Point lpPoint);
-
-            #endregion
-        }
-
-        #endregion
-
         #region Constants
 
+#if !NET5_0_OR_GREATER
+        // ReSharper disable once InconsistentNaming
         private const int WM_NCHITTEST = 0x0084;
+#endif
 
         #endregion
 
         #region Fields
 
-        private static readonly BitVector32.Section formStateRenderSizeGrip = OSUtils.IsWindows ? (BitVector32.Section)Reflector.GetField(typeof(Form), "FormStateRenderSizeGrip") : default;
-        private static FieldAccessor formStateField;
+#if !NET5_0_OR_GREATER
+        private static BitVector32.Section formStateRenderSizeGrip;
+        private static BitVector32 formStateFallback = default;
+        private static FieldAccessor? formStateField;
+#endif
 
         #endregion
 
         #region Properties
 
-        private BitVector32 FormState => (BitVector32)(formStateField ??= FieldAccessor.GetAccessor(typeof(Form).GetField("formState", BindingFlags.Instance | BindingFlags.NonPublic))).Get(this);
+#if !NET5_0_OR_GREATER
+        private BitVector32 FormState
+        {
+            get
+            {
+                Debug.Assert(OSUtils.IsWindows && !OSUtils.IsMono);
+                if (formStateField == null)
+                {
+                    formStateRenderSizeGrip = Reflector.TryGetField(typeof(Form), "FormStateRenderSizeGrip", out object? value) && value is BitVector32.Section section ? section : default;
+                    formStateField = FieldAccessor.GetAccessor(typeof(Form).GetField("formState", BindingFlags.Instance | BindingFlags.NonPublic) ?? typeof(BaseForm).GetField(nameof(formStateFallback), BindingFlags.NonPublic | BindingFlags.Static)!);
+                }
+
+                return (BitVector32)formStateField.Get(this)!;
+            }
+        }
+#endif
 
         #endregion
 
@@ -71,14 +83,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         static BaseForm()
         {
-            Type dpiHelper = Reflector.ResolveType(typeof(Form).Assembly, "System.Windows.Forms.DpiHelper");
+#if NETFRAMEWORK
+            Type? dpiHelper = Reflector.ResolveType(typeof(Form).Assembly, "System.Windows.Forms.DpiHelper");
             if (dpiHelper == null)
                 return;
 
             // Turning off WinForms auto resize logic to prevent interferences.
             // Occurs when executed as visualizer debugger and devenv.exe.config contains some random DpiAwareness
             Reflector.TrySetField(dpiHelper, "isInitialized", true);
-            Reflector.TrySetField(dpiHelper, "enableHighDpi", false);
+            Reflector.TrySetField(dpiHelper, "enableHighDpi", false); 
+#endif
         }
 
         #endregion
@@ -87,9 +101,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Protected Methods
 
+#if !NET5_0_OR_GREATER
         protected override void WndProc(ref Message m)
         {
-            if (!OSUtils.IsWindows)
+            if (!OSUtils.IsWindows || OSUtils.IsMono)
             {
                 base.WndProc(ref m);
                 return;
@@ -105,6 +120,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                     break;
             }
         }
+#endif
 
         protected override void Dispose(bool disposing)
         {
@@ -117,17 +133,19 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Methods
 
+#if !NET5_0_OR_GREATER
         /// <summary>
         /// Bugfix: When size grip is visible, and form is above and left of the primary monitor, form cannot be dragged anymore due to forced diagonal resizing.
-        /// Note: will be fixed in .NET Core (see also https://github.com/dotnet/winforms/issues/1504)
+        /// Note: Needed only below .NET 5.0 because I fixed this directly in WinForms repository: https://github.com/dotnet/winforms/pull/2032/commits
         /// </summary>
+        [SecuritySafeCritical]
         private void WmNCHitTest(ref Message m)
         {
             if (FormState[formStateRenderSizeGrip] != 0)
             {
                 // Here is the bug in original code: LParam contains two shorts. Without the cast negative values are positive ints
                 Point pt = new Point(m.LParam.GetSignedLoWord(), m.LParam.GetSignedHiWord());
-                NativeMethods.ScreenToClient(Handle, ref pt);
+                User32.ScreenToClient(this, ref pt);
                 Size clientSize = ClientSize;
                 if (pt.X >= clientSize.Width - 16 && pt.Y >= clientSize.Height - 16 && clientSize.Height >= 16)
                 {
@@ -144,6 +162,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                     m.Result = (IntPtr)18;
             }
         }
+#endif
 
         #endregion
 

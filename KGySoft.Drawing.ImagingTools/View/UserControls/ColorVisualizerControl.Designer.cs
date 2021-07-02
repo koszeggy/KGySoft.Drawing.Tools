@@ -32,10 +32,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.lblAlpha = new System.Windows.Forms.Label();
             this.pnlAlpha = new System.Windows.Forms.Panel();
             this.tbAlpha = new System.Windows.Forms.TrackBar();
-            this.tsMenu = new ScalingToolStrip();
+            this.tsMenu = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedToolStrip();
             this.btnSelectColor = new System.Windows.Forms.ToolStripButton();
             this.txtColor = new System.Windows.Forms.TextBox();
-            this.colorDialog = new System.Windows.Forms.ColorDialog();
             this.pnlControls.SuspendLayout();
             this.tblColor.SuspendLayout();
             this.pnlRed.SuspendLayout();
@@ -109,11 +108,13 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             // tbRed
             // 
-            this.tbRed.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tbRed.AutoSize = false;
+            this.tbRed.Dock = System.Windows.Forms.DockStyle.Top;
             this.tbRed.LargeChange = 64;
             this.tbRed.Location = new System.Drawing.Point(0, 0);
             this.tbRed.Maximum = 255;
             this.tbRed.Name = "tbRed";
+            this.tbRed.RightToLeftLayout = true;
             this.tbRed.Size = new System.Drawing.Size(78, 18);
             this.tbRed.TabIndex = 0;
             this.tbRed.TickFrequency = 64;
@@ -141,11 +142,13 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             // tbGreen
             // 
-            this.tbGreen.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tbGreen.AutoSize = false;
+            this.tbGreen.Dock = System.Windows.Forms.DockStyle.Top;
             this.tbGreen.LargeChange = 64;
             this.tbGreen.Location = new System.Drawing.Point(0, 0);
             this.tbGreen.Maximum = 255;
             this.tbGreen.Name = "tbGreen";
+            this.tbGreen.RightToLeftLayout = true;
             this.tbGreen.Size = new System.Drawing.Size(78, 18);
             this.tbGreen.TabIndex = 0;
             this.tbGreen.TickFrequency = 64;
@@ -173,11 +176,13 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             // tbBlue
             // 
-            this.tbBlue.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tbBlue.AutoSize = false;
+            this.tbBlue.Dock = System.Windows.Forms.DockStyle.Top;
             this.tbBlue.LargeChange = 64;
             this.tbBlue.Location = new System.Drawing.Point(0, 0);
             this.tbBlue.Maximum = 255;
             this.tbBlue.Name = "tbBlue";
+            this.tbBlue.RightToLeftLayout = true;
             this.tbBlue.Size = new System.Drawing.Size(78, 18);
             this.tbBlue.TabIndex = 0;
             this.tbBlue.TickFrequency = 64;
@@ -216,11 +221,13 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             // tbAlpha
             // 
-            this.tbAlpha.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tbAlpha.AutoSize = false;
+            this.tbAlpha.Dock = System.Windows.Forms.DockStyle.Top;
             this.tbAlpha.LargeChange = 64;
             this.tbAlpha.Location = new System.Drawing.Point(0, 0);
             this.tbAlpha.Maximum = 255;
             this.tbAlpha.Name = "tbAlpha";
+            this.tbAlpha.RightToLeftLayout = true;
             this.tbAlpha.Size = new System.Drawing.Size(78, 18);
             this.tbAlpha.TabIndex = 0;
             this.tbAlpha.TickFrequency = 64;
@@ -244,7 +251,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             // txtColor
             // 
+            this.txtColor.BackColor = System.Drawing.SystemColors.Control;
             this.txtColor.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtColor.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtColor.Location = new System.Drawing.Point(0, 83);
             this.txtColor.Multiline = true;
             this.txtColor.Name = "txtColor";
@@ -254,34 +263,25 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.txtColor.TabIndex = 1;
             this.txtColor.WordWrap = false;
             // 
-            // colorDialog
-            // 
-            this.colorDialog.AnyColor = true;
-            this.colorDialog.FullOpen = true;
-            // 
-            // ucColorVisualizer
+            // ColorVisualizerControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.txtColor);
             this.Controls.Add(this.pnlControls);
-            this.Name = "ucColorVisualizer";
+            this.Name = "ColorVisualizerControl";
             this.Size = new System.Drawing.Size(247, 188);
             this.pnlControls.ResumeLayout(false);
             this.pnlControls.PerformLayout();
             this.tblColor.ResumeLayout(false);
             this.tblColor.PerformLayout();
             this.pnlRed.ResumeLayout(false);
-            this.pnlRed.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbRed)).EndInit();
             this.pnlGreen.ResumeLayout(false);
-            this.pnlGreen.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbGreen)).EndInit();
             this.pnlBlue.ResumeLayout(false);
-            this.pnlBlue.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbBlue)).EndInit();
             this.pnlAlpha.ResumeLayout(false);
-            this.pnlAlpha.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbAlpha)).EndInit();
             this.tsMenu.ResumeLayout(false);
             this.tsMenu.PerformLayout();
@@ -293,7 +293,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         #endregion
 
         private System.Windows.Forms.Panel pnlControls;
-        private ScalingToolStrip tsMenu;
+        private AdvancedToolStrip tsMenu;
         private System.Windows.Forms.TableLayoutPanel tblColor;
         private System.Windows.Forms.Label lblRed;
         private System.Windows.Forms.Panel pnlRed;
@@ -306,7 +306,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         private System.Windows.Forms.Panel pnlAlpha;
         private System.Windows.Forms.ToolStripButton btnSelectColor;
         private System.Windows.Forms.TextBox txtColor;
-        private System.Windows.Forms.ColorDialog colorDialog;
         private System.Windows.Forms.TrackBar tbAlpha;
         private System.Windows.Forms.TrackBar tbRed;
         private System.Windows.Forms.TrackBar tbGreen;

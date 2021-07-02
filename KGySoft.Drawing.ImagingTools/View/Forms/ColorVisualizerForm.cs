@@ -17,6 +17,8 @@
 #region Usings
 
 using System.Drawing;
+using System.Windows.Forms;
+
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
@@ -33,13 +35,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             : base(viewModel)
         {
             InitializeComponent();
+            AcceptButton = okCancelButtons.OKButton;
+            CancelButton = okCancelButtons.CancelButton;
         }
 
         #endregion
 
         #region Private Constructors
 
-        private ColorVisualizerForm() : this(null)
+        private ColorVisualizerForm() : this(null!)
         {
             // this ctor is just for the designer
         }
@@ -65,6 +69,26 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             base.ApplyViewModel();
         }
 
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (DialogResult != DialogResult.OK)
+                ViewModel.SetModified(false);
+            base.OnFormClosing(e);
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            switch (keyData)
+            {
+                case Keys.Escape when ViewModel.ReadOnly: // if not ReadOnly, use the Cancel button
+                    DialogResult = DialogResult.Cancel;
+                    return true;
+
+                default:
+                    return base.ProcessCmdKey(ref msg, keyData);
+            }
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -79,18 +103,26 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void InitPropertyBindings()
         {
+            // !VM.ReadOnly -> okCancelButtons.Visible
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.ReadOnly), nameof(okCancelButtons.Visible), ro => ro is false, okCancelButtons);
+
             // VM.ReadOnly -> ucColorVisualizer.ReadOnly
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.ReadOnly), nameof(ucColorVisualizer.ReadOnly), ucColorVisualizer);
 
             // VM.Color -> ucColorVisualizer.Color, Text
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Color), nameof(ucColorVisualizer.Color), ucColorVisualizer);
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Color), nameof(Text), c => Res.TitleColor((Color)c), this);
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Color), nameof(Text), c => Res.TitleColor((Color)c!), this);
+
+            // VM.IsModified -> OKButton.Enabled
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsModified), nameof(okCancelButtons.OKButton.Enabled), okCancelButtons.OKButton);
         }
 
         private void InitCommandBindings()
         {
             CommandBindings.Add(OnColorEditedCommand)
                 .AddSource(ucColorVisualizer, nameof(ucColorVisualizer.ColorEdited));
+            CommandBindings.Add(OnCancelCommand)
+                .AddSource(okCancelButtons.CancelButton, nameof(okCancelButtons.CancelButton.Click));
         }
 
         #endregion
@@ -103,6 +135,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 return;
             ViewModel.Color = ucColorVisualizer.Color;
         }
+
+        private void OnCancelCommand() => ViewModel.SetModified(false);
 
         #endregion
 

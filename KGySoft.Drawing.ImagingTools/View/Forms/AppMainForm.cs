@@ -17,10 +17,10 @@
 #region Usings
 
 using System;
-using System.Drawing;
-using System.Drawing.Imaging;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Windows.Forms;
+
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
@@ -29,16 +29,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
     internal partial class AppMainForm : ImageVisualizerForm
     {
-        #region Fields
-
-        private static readonly string title = Res.TitleAppNameAndVersion(typeof(Res).Assembly.GetName().Version);
-
-        #endregion
-
         #region Properties
 
         #region Public Properties
 
+        [AllowNull]
         public override string Text
         {
             // base has VM.TitleCaption -> Text binding so this solution makes possible to enrich it in a compatible way
@@ -70,7 +65,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Constructors
 
-        private AppMainForm() : this(null)
+        private AppMainForm() : this(null!)
         {
             // this ctor is just for the designer
         }
@@ -89,10 +84,21 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             base.ApplyViewModel();
         }
 
+        protected override void ApplyStringResources()
+        {
+            base.ApplyStringResources();
+            Text = ViewModel.TitleCaption;
+        }
+
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             if (e.CloseReason == CloseReason.UserClosing && ViewModel.IsModified)
+            {
                 e.Cancel = !ViewModel.ConfirmIfModified();
+                if (e.Cancel)
+                    DialogResult = DialogResult.None;
+            }
+
             base.OnFormClosing(e);
         }
 
@@ -111,15 +117,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             // Base updates Text when ViewModel.TitleCaption changes.
             // Here adding an update also for FileName and IsModified changes in a compatible way
-            CommandBindings.AddPropertyChangedHandler(() => Text = ViewModel.TitleCaption, ViewModel,
+            CommandBindings.AddPropertyChangedHandler(() => Text = ViewModel.TitleCaption!, ViewModel,
                 nameof(ViewModel.FileName), nameof(ViewModel.IsModified));
         }
 
-        private string FormatText(string value)
+        private string FormatText(string? value)
         {
-            string fileName = ViewModel.FileName;
+            if (value == null)
+                return String.Empty;
+            string? fileName = ViewModel.FileName;
             string name = fileName == null ? Res.TextUnnamed : Path.GetFileName(fileName);
-            return String.IsNullOrEmpty(value) ? title : $"{title} [{name}{(ViewModel.IsModified ? "*" : String.Empty)}] - {value}";
+            return Res.TitleAppNameWithFileName(InstallationManager.ImagingToolsVersion, name, ViewModel.IsModified ? "*" : String.Empty, value);
         }
 
         #endregion

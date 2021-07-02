@@ -16,8 +16,8 @@
 
 #region Usings
 
-using System.Globalization;
-
+using System;
+using System.Drawing;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
@@ -48,7 +48,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Constructors
 
-        private AdjustColorsFormBase() : this(null)
+        private AdjustColorsFormBase() : this(null!)
         {
             // this ctor is just for the designer
         }
@@ -61,6 +61,20 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Protected Methods
 
+        protected override void OnLoad(EventArgs e)
+        {
+            // Fixing high DPI appearance on Mono
+            PointF scale;
+            if (OSUtils.IsMono && (scale = this.GetScale()) != new PointF(1f, 1f))
+            {
+                pnlCheckBoxes.Height = (int)(25 * scale.Y);
+                btnReset.Width = (int)(64 * scale.X);
+                lblValue.Width = (int)(35 * scale.X);
+            }
+
+            base.OnLoad(e);
+        }
+
         protected override void ApplyResources()
         {
             Icon = Properties.Resources.Colors;
@@ -69,6 +83,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected override void ApplyViewModel()
         {
+            if (OSUtils.IsMono)
+                pnlCheckBoxes.Height = this.ScaleHeight(25);
             InitCommandBindings();
             InitPropertyBindings();
             base.ApplyViewModel();
@@ -101,26 +117,26 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
             // VM.ColorChannels <-> chbRed.Checked
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.ColorChannels), chbRed, nameof(chbRed.Checked),
-                channels => ((ColorChannels)channels).HasFlag<ColorChannels>(ColorChannels.R),
+                channels => ((ColorChannels)channels!).HasFlag<ColorChannels>(ColorChannels.R),
                 flag => flag is true ? VM.ColorChannels | ColorChannels.R : VM.ColorChannels & ~ColorChannels.R);
 
             // VM.ColorChannels <-> chbGreen.Checked
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.ColorChannels), chbGreen, nameof(chbGreen.Checked),
-                channels => ((ColorChannels)channels).HasFlag<ColorChannels>(ColorChannels.G),
+                channels => ((ColorChannels)channels!).HasFlag<ColorChannels>(ColorChannels.G),
                 flag => flag is true ? VM.ColorChannels | ColorChannels.G : VM.ColorChannels & ~ColorChannels.G);
 
             // VM.ColorChannels <-> chbBlue.Checked
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.ColorChannels), chbBlue, nameof(chbBlue.Checked),
-                channels => ((ColorChannels)channels).HasFlag<ColorChannels>(ColorChannels.B),
+                channels => ((ColorChannels)channels!).HasFlag<ColorChannels>(ColorChannels.B),
                 flag => flag is true ? VM.ColorChannels | ColorChannels.B : VM.ColorChannels & ~ColorChannels.B);
 
             // VM.Value <-> trackBar.Value
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.Value), trackBar, nameof(trackBar.Value),
-                value => (int)((float)value * 100),
-                value => (int)value / 100f);
+                value => (int)((float)value! * 100),
+                value => (int)value! / 100f);
 
             // VM.Value -> lblValue.Text
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(VM.Value), nameof(lblValue.Text), v => ((float)v).ToString("F2", CultureInfo.CurrentCulture), lblValue);
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(VM.Value), nameof(lblValue.Text), v => ((float)v!).ToString("F2", LanguageSettings.FormattingLanguage), lblValue);
         }
 
         #endregion

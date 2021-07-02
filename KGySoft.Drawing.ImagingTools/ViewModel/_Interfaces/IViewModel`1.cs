@@ -24,19 +24,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
     /// <seealso cref="IViewModel" />
     public interface IViewModel<out TModel> : IViewModel
     {
-        #region Properties
-
-        /// <summary>
-        /// Gets whether the model instance that belongs this view model instance is modified.
-        /// </summary>
-        bool IsModified { get; }
-
-        #endregion
-
         #region Methods
 
         /// <summary>
-        /// If <see cref="IsModified"/> returns <see langword="true"/>, then this method returns the edited model.
+        /// If <see cref="IViewModel.IsModified"/> returns <see langword="true"/>, then this method returns the edited model.
         /// </summary>
         /// <returns>The edited model.</returns>
         TModel GetEditedModel();

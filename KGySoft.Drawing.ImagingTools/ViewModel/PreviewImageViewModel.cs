@@ -28,13 +28,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
     {
         #region Properties
 
-        internal Image OriginalImage { get => Get<Image>(); set => Set(value); }
-        internal Image PreviewImage { get => Get<Image>(); set => Set(value); }
-        internal Image DisplayImage { get => Get<Image>(); set => Set(value); }
+        internal Image? OriginalImage { get => Get<Image?>(); set => Set(value); }
+        internal Image? PreviewImage { get => Get<Image?>(); set => Set(value); }
+        internal Image? DisplayImage { get => Get<Image?>(); set => Set(value); }
         internal bool AutoZoom { get => Get(true); set => Set(value); }
         internal bool SmoothZooming { get => Get(true); set => Set(value); }
         internal bool ShowOriginal { get => Get<bool>(); set => Set(value); }
-        internal bool ZoomEnabled { get => Get<bool>(); set => Set(value); }
         internal bool ShowOriginalEnabled { get => Get(true); set => Set(value); }
 
         #endregion
@@ -55,9 +54,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 case nameof(OriginalImage):
                     if (ShowOriginal)
                         DisplayImage = PreviewImage;
-                    return;
-                case nameof(DisplayImage):
-                    ZoomEnabled = e.NewValue != null;
                     return;
                 case nameof(ShowOriginal):
                     DisplayImage = e.NewValue is true ? OriginalImage : PreviewImage;

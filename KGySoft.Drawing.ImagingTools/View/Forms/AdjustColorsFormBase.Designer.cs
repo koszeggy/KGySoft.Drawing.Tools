@@ -39,11 +39,13 @@
             this.trackBar.Dock = System.Windows.Forms.DockStyle.Fill;
             this.trackBar.Location = new System.Drawing.Point(35, 25);
             this.trackBar.Name = "trackBar";
+            this.trackBar.RightToLeftLayout = true;
             this.trackBar.Size = new System.Drawing.Size(161, 31);
             this.trackBar.TabIndex = 2;
             // 
             // btnReset
             // 
+            this.btnReset.AutoSize = true;
             this.btnReset.Dock = System.Windows.Forms.DockStyle.Right;
             this.btnReset.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.btnReset.Location = new System.Drawing.Point(196, 25);

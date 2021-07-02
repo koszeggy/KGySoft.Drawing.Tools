@@ -1,4 +1,5 @@
 ﻿using System.Windows.Forms;
+using KGySoft.Drawing.ImagingTools.View.Components;
 using KGySoft.Drawing.ImagingTools.View.Controls;
 
 namespace KGySoft.Drawing.ImagingTools.View.Forms
@@ -22,26 +23,25 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.dlgOpen = new System.Windows.Forms.OpenFileDialog();
             this.dlgSave = new System.Windows.Forms.SaveFileDialog();
             this.timerPlayer = new System.Windows.Forms.Timer(this.components);
-            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.imageViewer = new KGySoft.Drawing.ImagingTools.View.Controls.ImageViewer();
             this.lblNotification = new KGySoft.Drawing.ImagingTools.View.Controls.NotificationLabel();
             this.splitter = new System.Windows.Forms.Splitter();
-            this.tsMenu = new KGySoft.Drawing.ImagingTools.View.Controls.ScalingToolStrip();
-            this.btnAutoZoom = new System.Windows.Forms.ToolStripButton();
+            this.tsMenu = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedToolStrip();
+            this.btnZoom = new KGySoft.Drawing.ImagingTools.View.Components.ZoomSplitButton();
             this.btnAntiAlias = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.btnOpen = new System.Windows.Forms.ToolStripButton();
             this.btnSave = new System.Windows.Forms.ToolStripButton();
             this.btnClear = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.btnColorSettings = new KGySoft.Drawing.ImagingTools.View.Controls.ScalingToolStripDropDownButton();
+            this.btnColorSettings = new KGySoft.Drawing.ImagingTools.View.Components.ScalingToolStripDropDownButton();
             this.miBackColor = new System.Windows.Forms.ToolStripMenuItem();
             this.miBackColorDefault = new System.Windows.Forms.ToolStripMenuItem();
             this.miBackColorWhite = new System.Windows.Forms.ToolStripMenuItem();
             this.miBackColorBlack = new System.Windows.Forms.ToolStripMenuItem();
             this.miShowPalette = new System.Windows.Forms.ToolStripMenuItem();
             this.miCountColors = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnEdit = new KGySoft.Drawing.ImagingTools.View.Controls.ScalingToolStripDropDownButton();
+            this.btnEdit = new KGySoft.Drawing.ImagingTools.View.Components.ScalingToolStripDropDownButton();
             this.miRotateLeft = new System.Windows.Forms.ToolStripMenuItem();
             this.miRotateRight = new System.Windows.Forms.ToolStripMenuItem();
             this.miResizeBitmap = new System.Windows.Forms.ToolStripMenuItem();
@@ -55,8 +55,20 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.btnCompound = new System.Windows.Forms.ToolStripButton();
             this.btnPrev = new System.Windows.Forms.ToolStripButton();
             this.btnNext = new System.Windows.Forms.ToolStripButton();
-            this.btnConfiguration = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.btnAbout = new System.Windows.Forms.ToolStripSplitButton();
+            this.miWebSite = new System.Windows.Forms.ToolStripMenuItem();
+            this.miGitHub = new System.Windows.Forms.ToolStripMenuItem();
+            this.miMarketplace = new System.Windows.Forms.ToolStripMenuItem();
+            this.miSubmitResources = new System.Windows.Forms.ToolStripMenuItem();
+            this.miSeparatorAbout = new System.Windows.Forms.ToolStripSeparator();
+            this.miAbout = new System.Windows.Forms.ToolStripMenuItem();
+            this.miEasterEgg = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnConfiguration = new KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripSplitButton();
+            this.miManageInstallations = new System.Windows.Forms.ToolStripMenuItem();
+            this.miLanguageSettings = new System.Windows.Forms.ToolStripMenuItem();
             this.txtInfo = new System.Windows.Forms.TextBox();
+            this.okCancelButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
             this.tsMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -65,7 +77,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.imageViewer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.imageViewer.Location = new System.Drawing.Point(0, 49);
             this.imageViewer.Name = "imageViewer";
-            this.imageViewer.Size = new System.Drawing.Size(334, 141);
+            this.imageViewer.Size = new System.Drawing.Size(364, 106);
             this.imageViewer.TabIndex = 1;
             this.imageViewer.TabStop = false;
             // 
@@ -80,24 +92,25 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.lblNotification.Location = new System.Drawing.Point(0, 25);
             this.lblNotification.Name = "lblNotification";
             this.lblNotification.Padding = new System.Windows.Forms.Padding(3, 3, 20, 3);
-            this.lblNotification.Size = new System.Drawing.Size(334, 24);
+            this.lblNotification.Size = new System.Drawing.Size(364, 24);
             this.lblNotification.TabIndex = 4;
             this.lblNotification.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // splitter
             // 
             this.splitter.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.splitter.Location = new System.Drawing.Point(0, 190);
+            this.splitter.Location = new System.Drawing.Point(0, 155);
             this.splitter.MinExtra = 16;
+            this.splitter.MinSize = 50;
             this.splitter.Name = "splitter";
-            this.splitter.Size = new System.Drawing.Size(334, 3);
+            this.splitter.Size = new System.Drawing.Size(364, 3);
             this.splitter.TabIndex = 3;
             this.splitter.TabStop = false;
             // 
             // tsMenu
             // 
             this.tsMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.btnAutoZoom,
+            this.btnZoom,
             this.btnAntiAlias,
             this.toolStripSeparator1,
             this.btnOpen,
@@ -110,19 +123,21 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.btnCompound,
             this.btnPrev,
             this.btnNext,
+            this.toolStripSeparator4,
+            this.btnAbout,
             this.btnConfiguration});
             this.tsMenu.Location = new System.Drawing.Point(0, 0);
             this.tsMenu.Name = "tsMenu";
-            this.tsMenu.Size = new System.Drawing.Size(334, 25);
+            this.tsMenu.Size = new System.Drawing.Size(364, 25);
             this.tsMenu.TabIndex = 2;
             // 
-            // btnAutoZoom
+            // btnZoom
             // 
-            this.btnAutoZoom.CheckOnClick = true;
-            this.btnAutoZoom.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnAutoZoom.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnAutoZoom.Name = "btnAutoZoom";
-            this.btnAutoZoom.Size = new System.Drawing.Size(23, 22);
+            this.btnZoom.CheckOnClick = true;
+            this.btnZoom.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnZoom.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnZoom.Name = "btnZoom";
+            this.btnZoom.Size = new System.Drawing.Size(32, 22);
             // 
             // btnAntiAlias
             // 
@@ -323,6 +338,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.btnPrev.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnPrev.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnPrev.Name = "btnPrev";
+            this.btnPrev.RightToLeftAutoMirrorImage = true;
             this.btnPrev.Size = new System.Drawing.Size(23, 22);
             // 
             // btnNext
@@ -330,38 +346,131 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.btnNext.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnNext.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnNext.Name = "btnNext";
+            this.btnNext.RightToLeftAutoMirrorImage = true;
             this.btnNext.Size = new System.Drawing.Size(23, 22);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
+            // 
+            // btnAbout
+            // 
+            this.btnAbout.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.btnAbout.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnAbout.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miWebSite,
+            this.miGitHub,
+            this.miMarketplace,
+            this.miSubmitResources,
+            this.miSeparatorAbout,
+            this.miAbout,
+            this.miEasterEgg});
+            this.btnAbout.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnAbout.Name = "btnAbout";
+            this.btnAbout.Size = new System.Drawing.Size(16, 22);
+            this.btnAbout.Text = "btnAbout";
+            // 
+            // miWebSite
+            // 
+            this.miWebSite.Name = "miWebSite";
+            this.miWebSite.Size = new System.Drawing.Size(180, 22);
+            this.miWebSite.Text = "miWebSite";
+            // 
+            // miGitHub
+            // 
+            this.miGitHub.Name = "miGitHub";
+            this.miGitHub.Size = new System.Drawing.Size(180, 22);
+            this.miGitHub.Text = "miGitHub";
+            // 
+            // miMarketplace
+            // 
+            this.miMarketplace.Name = "miMarketplace";
+            this.miMarketplace.Size = new System.Drawing.Size(180, 22);
+            this.miMarketplace.Text = "miMarketplace";
+            // 
+            // miSubmitResources
+            // 
+            this.miSubmitResources.Name = "miSubmitResources";
+            this.miSubmitResources.Size = new System.Drawing.Size(180, 22);
+            this.miSubmitResources.Text = "miSubmitResources";
+            // 
+            // miSeparatorAbout
+            // 
+            this.miSeparatorAbout.Name = "miSeparatorAbout";
+            this.miSeparatorAbout.Size = new System.Drawing.Size(177, 6);
+            // 
+            // miAbout
+            // 
+            this.miAbout.Name = "miAbout";
+            this.miAbout.ShortcutKeys = System.Windows.Forms.Keys.F1;
+            this.miAbout.Size = new System.Drawing.Size(180, 22);
+            this.miAbout.Text = "miAbout";
+            // 
+            // miEasterEgg
+            // 
+            this.miEasterEgg.Name = "miEasterEgg";
+            this.miEasterEgg.Size = new System.Drawing.Size(180, 22);
+            this.miEasterEgg.Visible = false;
             // 
             // btnConfiguration
             // 
+            this.btnConfiguration.AutoChangeDefaultItem = true;
             this.btnConfiguration.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnConfiguration.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miManageInstallations,
+            this.miLanguageSettings});
             this.btnConfiguration.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnConfiguration.Name = "btnConfiguration";
-            this.btnConfiguration.Size = new System.Drawing.Size(23, 22);
+            this.btnConfiguration.Size = new System.Drawing.Size(16, 22);
+            // 
+            // miManageInstallations
+            // 
+            this.miManageInstallations.Name = "miManageInstallations";
+            this.miManageInstallations.Size = new System.Drawing.Size(194, 22);
+            this.miManageInstallations.Text = "miManageInstallations";
+            // 
+            // miLanguageSettings
+            // 
+            this.miLanguageSettings.Name = "miLanguageSettings";
+            this.miLanguageSettings.Size = new System.Drawing.Size(194, 22);
+            this.miLanguageSettings.Text = "miLanguageSettings";
             // 
             // txtInfo
             // 
+            this.txtInfo.BackColor = System.Drawing.SystemColors.Control;
             this.txtInfo.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.txtInfo.Location = new System.Drawing.Point(0, 193);
+            this.txtInfo.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.txtInfo.Location = new System.Drawing.Point(0, 158);
             this.txtInfo.Multiline = true;
             this.txtInfo.Name = "txtInfo";
             this.txtInfo.ReadOnly = true;
             this.txtInfo.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtInfo.Size = new System.Drawing.Size(334, 123);
+            this.txtInfo.Size = new System.Drawing.Size(364, 123);
             this.txtInfo.TabIndex = 0;
             this.txtInfo.TabStop = false;
             this.txtInfo.WordWrap = false;
+            // 
+            // okCancelButtons
+            // 
+            this.okCancelButtons.BackColor = System.Drawing.Color.Transparent;
+            this.okCancelButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.okCancelButtons.Location = new System.Drawing.Point(0, 281);
+            this.okCancelButtons.Name = "okCancelButtons";
+            this.okCancelButtons.Size = new System.Drawing.Size(364, 35);
+            this.okCancelButtons.TabIndex = 5;
             // 
             // ImageVisualizerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(334, 316);
+            this.ClientSize = new System.Drawing.Size(364, 316);
             this.Controls.Add(this.imageViewer);
             this.Controls.Add(this.lblNotification);
             this.Controls.Add(this.splitter);
             this.Controls.Add(this.tsMenu);
             this.Controls.Add(this.txtInfo);
+            this.Controls.Add(this.okCancelButtons);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.MinimumSize = new System.Drawing.Size(200, 200);
             this.Name = "ImageVisualizerForm";
@@ -375,7 +484,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         #endregion
 
         private KGySoft.Drawing.ImagingTools.View.Controls.ImageViewer imageViewer;
-        private System.Windows.Forms.ToolStripButton btnAutoZoom;
+        private ZoomSplitButton btnZoom;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton btnSave;
         private System.Windows.Forms.ToolStripButton btnOpen;
@@ -388,18 +497,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private System.Windows.Forms.SaveFileDialog dlgSave;
         private System.Windows.Forms.Splitter splitter;
         private System.Windows.Forms.Timer timerPlayer;
-        private KGySoft.Drawing.ImagingTools.View.Controls.ScalingToolStripDropDownButton btnColorSettings;
+        private ScalingToolStripDropDownButton btnColorSettings;
         private System.Windows.Forms.ToolStripMenuItem miBackColor;
         private System.Windows.Forms.ToolStripMenuItem miBackColorDefault;
         private System.Windows.Forms.ToolStripMenuItem miBackColorWhite;
         private System.Windows.Forms.ToolStripMenuItem miBackColorBlack;
         private System.Windows.Forms.ToolStripMenuItem miShowPalette;
-        protected KGySoft.Drawing.ImagingTools.View.Controls.ScalingToolStrip tsMenu;
+        protected KGySoft.Drawing.ImagingTools.View.Controls.AdvancedToolStrip tsMenu;
         protected System.Windows.Forms.TextBox txtInfo;
         private KGySoft.Drawing.ImagingTools.View.Controls.NotificationLabel lblNotification;
-        private ToolTip toolTip;
         private ToolStripSeparator toolStripSeparator2;
-        protected ToolStripButton btnConfiguration;
+        protected AdvancedToolStripSplitButton btnConfiguration;
         private ToolStripButton btnAntiAlias;
         private ToolStripMenuItem miCountColors;
         private ScalingToolStripDropDownButton btnEdit;
@@ -412,5 +520,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private ToolStripMenuItem miBrightness;
         private ToolStripMenuItem miContrast;
         private ToolStripMenuItem miGamma;
+        private ToolStripSeparator toolStripSeparator4;
+        private ToolStripMenuItem miManageInstallations;
+        private ToolStripMenuItem miLanguageSettings;
+        protected UserControls.OkCancelButtons okCancelButtons;
+        private ToolStripSplitButton btnAbout;
+        private ToolStripMenuItem miWebSite;
+        private ToolStripMenuItem miGitHub;
+        private ToolStripMenuItem miMarketplace;
+        private ToolStripMenuItem miSubmitResources;
+        private ToolStripSeparator miSeparatorAbout;
+        private ToolStripMenuItem miAbout;
+        private ToolStripMenuItem miEasterEgg;
     }
 }

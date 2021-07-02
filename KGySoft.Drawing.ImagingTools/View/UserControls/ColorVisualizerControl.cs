@@ -18,8 +18,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Text;
 using System.Windows.Forms;
 
@@ -35,8 +36,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Static Fields
 
-        private static Dictionary<int, string> knownColors;
-        private static Dictionary<int, string> systemColors;
+        private static Dictionary<int, string>? knownColors;
+        private static Dictionary<int, string>? systemColors;
 
         #endregion
 
@@ -44,8 +45,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private bool readOnly;
         private Color color;
-        private TextureBrush alphaBrush;
-        private string specialInfo;
+        private Bitmap? alphaPattern;
+        private ImageAttributes? attrTiles;
+        private string? specialInfo;
 
         #endregion
 
@@ -141,7 +143,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             }
         }
 
-        internal string SpecialInfo
+        internal string? SpecialInfo
         {
             get => specialInfo;
             set
@@ -185,21 +187,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Static Methods
 
-        private static string GetKnownColor(Color color)
-        {
-            if (KnownColors.TryGetValue(color.ToArgb(), out string name))
-                return name;
-
-            return "-";
-        }
-
-        private static string GetSystemColors(Color color)
-        {
-            if (SystemColors.TryGetValue(color.ToArgb(), out string name))
-                return name;
-
-            return "-";
-        }
+        private static string GetKnownColor(Color color) => KnownColors.GetValueOrDefault(color.ToArgb(), "–")!;
+        private static string GetSystemColors(Color color) => SystemColors.GetValueOrDefault(color.ToArgb(), "–")!;
 
         #endregion
 
@@ -207,15 +196,30 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Protected Methods
 
+        protected override void OnLoad(EventArgs e)
+        {
+            // Fixing high DPI appearance on Mono
+            PointF scale;
+            if (OSUtils.IsMono && (scale = this.GetScale()) != new PointF(1f, 1f))
+            {
+                tblColor.ColumnStyles[0].Width = (int)(50 * scale.X);
+                tblColor.ColumnStyles[1].Width = (int)(80 * scale.X);
+            }
+
+            base.OnLoad(e);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
             {
                 components.Dispose();
-                alphaBrush?.Dispose();
+                alphaPattern?.Dispose();
+                attrTiles?.Dispose();
             }
 
-            alphaBrush = null;
+            alphaPattern = null;
+            attrTiles = null;
             pnlAlpha.Paint -= pnlColor_Paint;
             pnlColor.Paint -= pnlColor_Paint;
             btnSelectColor.Click -= btnEdit_Click;
@@ -259,28 +263,30 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private void UpdateInfo()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             if (!String.IsNullOrEmpty(SpecialInfo))
                 sb.AppendLine(SpecialInfo);
             sb.Append(Res.InfoColor(color.ToArgb(), GetKnownColor(color), GetSystemColors(color), color.GetHue(), color.GetSaturation() * 100f, color.GetBrightness() * 100f));
             txtColor.Text = sb.ToString();
         }
 
-        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "False alarm, bmpPattern is passed to a brush")]
-        private void CreateAlphaBrush()
+        private void CreateAlphaPattern()
         {
             Size size = new Size(10, 10).Scale(this.GetScale());
             var bmpPattern = new Bitmap(size.Width, size.Height);
             using (Graphics g = Graphics.FromImage(bmpPattern))
             {
                 g.Clear(Color.White);
-                Rectangle smallRect = new Rectangle(Point.Empty, new Size(bmpPattern.Width >> 1, bmpPattern.Height >> 1));
+                var smallRect = new Rectangle(Point.Empty, new Size(bmpPattern.Width >> 1, bmpPattern.Height >> 1));
                 g.FillRectangle(Brushes.Silver, smallRect);
                 smallRect.Offset(smallRect.Width, smallRect.Height);
                 g.FillRectangle(Brushes.Silver, smallRect);
             }
 
-            alphaBrush = new TextureBrush(bmpPattern);
+            // Using a TextureBrush would be simpler but that is not supported on Mono
+            attrTiles = new ImageAttributes();
+            attrTiles.SetWrapMode(WrapMode.Tile);
+            alphaPattern = bmpPattern;
         }
 
         private void OnColorEdited() => Events.GetHandler<EventHandler>(nameof(ColorEdited))?.Invoke(this, EventArgs.Empty);
@@ -296,10 +302,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // painting checked background
             if (color.A != 255)
             {
-                if (alphaBrush == null)
-                    CreateAlphaBrush();
+                if (alphaPattern == null)
+                    CreateAlphaPattern();
 
-                e.Graphics.FillRectangle(alphaBrush, e.ClipRectangle);
+                Size size = pnlColor.Size;
+                e.Graphics.DrawImage(alphaPattern!, new Rectangle(Point.Empty, size), 0, 0 , size.Width, size.Height, GraphicsUnit.Pixel, attrTiles);
             }
 
             Color backColor = sender == pnlAlpha ? Color.FromArgb(color.A, Color.White) : color;
@@ -307,44 +314,44 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 e.Graphics.FillRectangle(b, e.ClipRectangle);
         }
 
-        private void btnEdit_Click(object sender, EventArgs e)
+        private void btnEdit_Click(object? sender, EventArgs e)
         {
             if (readOnly)
                 return;
 
-            colorDialog.Color = color;
-            if (colorDialog.ShowDialog(this) == DialogResult.OK)
+            Color? newColor = Dialogs.PickColor(color);
+            if (newColor.HasValue)
             {
-                Color = colorDialog.Color;
+                Color = newColor.Value;
                 OnColorEdited();
             }
         }
 
-        private void tbAlpha_Scroll(object sender, EventArgs e)
+        private void tbAlpha_Scroll(object? sender, EventArgs e)
         {
             Color = Color.FromArgb(tbAlpha.Value, color.R, color.G, color.B);
             OnColorEdited();
         }
 
-        private void tbRed_Scroll(object sender, EventArgs e)
+        private void tbRed_Scroll(object? sender, EventArgs e)
         {
             Color = Color.FromArgb(color.A, tbRed.Value, color.G, color.B);
             OnColorEdited();
         }
 
-        private void tbGreen_Scroll(object sender, EventArgs e)
+        private void tbGreen_Scroll(object? sender, EventArgs e)
         {
             Color = Color.FromArgb(color.A, color.R, tbGreen.Value, color.B);
             OnColorEdited();
         }
 
-        private void tbBlue_Scroll(object sender, EventArgs e)
+        private void tbBlue_Scroll(object? sender, EventArgs e)
         {
             Color = Color.FromArgb(color.A, color.R, color.G, tbBlue.Value);
             OnColorEdited();
         }
 
-        void ucColorVisualizer_SystemColorsChanged(object sender, EventArgs e)
+        void ucColorVisualizer_SystemColorsChanged(object? sender, EventArgs e)
         {
             systemColors = null;
             UpdateInfo();

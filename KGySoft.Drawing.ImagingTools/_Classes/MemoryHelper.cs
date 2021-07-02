@@ -17,8 +17,8 @@
 #region Usings
 
 using System;
-
 #if NETFRAMEWORK
+using System.Security;
 using KGySoft.Drawing.ImagingTools.WinApi; 
 #endif
 
@@ -48,6 +48,7 @@ namespace KGySoft.Drawing.ImagingTools
         private static long MaxMemoryForGC
 #if NETFRAMEWORK
         {
+            [SecuritySafeCritical]
             get
             {
                 if (maxMemoryForGC == null)

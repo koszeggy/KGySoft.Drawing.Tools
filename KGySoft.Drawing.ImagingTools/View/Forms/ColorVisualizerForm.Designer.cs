@@ -18,7 +18,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         /// </summary>
         private void InitializeComponent()
         {
-            this.ucColorVisualizer = new ColorVisualizerControl();
+            this.ucColorVisualizer = new KGySoft.Drawing.ImagingTools.View.UserControls.ColorVisualizerControl();
+            this.okCancelButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
             this.SuspendLayout();
             // 
             // ucColorVisualizer
@@ -26,15 +27,25 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.ucColorVisualizer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ucColorVisualizer.Location = new System.Drawing.Point(0, 0);
             this.ucColorVisualizer.Name = "ucColorVisualizer";
-            this.ucColorVisualizer.Size = new System.Drawing.Size(244, 200);
+            this.ucColorVisualizer.Size = new System.Drawing.Size(244, 186);
             this.ucColorVisualizer.TabIndex = 1;
+            // 
+            // okCancelButtons
+            // 
+            this.okCancelButtons.BackColor = System.Drawing.Color.Transparent;
+            this.okCancelButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.okCancelButtons.Location = new System.Drawing.Point(0, 186);
+            this.okCancelButtons.Name = "okCancelButtons";
+            this.okCancelButtons.Size = new System.Drawing.Size(244, 35);
+            this.okCancelButtons.TabIndex = 2;
             // 
             // ColorVisualizerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(244, 200);
+            this.ClientSize = new System.Drawing.Size(244, 221);
             this.Controls.Add(this.ucColorVisualizer);
+            this.Controls.Add(this.okCancelButtons);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.MinimumSize = new System.Drawing.Size(260, 234);
             this.Name = "ColorVisualizerForm";
@@ -45,5 +56,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         #endregion
 
         private ColorVisualizerControl ucColorVisualizer;
+        private OkCancelButtons okCancelButtons;
     }
 }

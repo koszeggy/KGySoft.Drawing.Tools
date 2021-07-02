@@ -31,6 +31,8 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 #endregion
 
+#nullable enable
+
 namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
     #region Usings
@@ -62,7 +64,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         /// </summary>
         public IVsTask Initialize(IAsyncServiceProvider pServiceProvider, IProfferAsyncService pProfferService, IAsyncProgressCallback pProgressCallback)
         {
-            return ThreadHelper.JoinableTaskFactory.RunAsync<object>(async () =>
+            return ThreadHelper.JoinableTaskFactory.RunAsync<object?>(async () =>
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 var shellService = await GetServiceAsync<IVsShell>(pServiceProvider, typeof(SVsShell));
@@ -83,8 +85,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         {
             base.Initialize();
 
-#pragma warning disable VSTHRD108, VSTHRD010 // Invoke single-threaded types on Main thread: Initialize is on Main thread (see also the assert and IAsyncLoadablePackageInitialize.Initialize)
-
             // returning if async initialization is supported
             Debug.Assert(ThreadHelper.CheckAccess());
             if (GetService(typeof(SAsyncServiceProvider)) is IAsyncServiceProvider)
@@ -92,7 +92,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
             var uiShellService = GetService(typeof(SVsShell)) as IVsShell;
             var menuCommandService = GetService(typeof(IMenuCommandService)) as IMenuCommandService;
-#pragma warning restore VSTHRD010, VSTHRD010 // Invoke single-threaded types on Main thread
 
             DoInitialize(uiShellService, menuCommandService);
         }
@@ -102,16 +101,17 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             base.Dispose(disposing);
             if (!disposing)
                 return;
-            DestroyCommands();
+            ExecuteImagingToolsCommand.DestroyCommand();
+            ManageDebuggerVisualizerInstallationsCommand.DestroyCommand();
         }
 
         #endregion
 
         #region Private Methods
 
-        private async Task<T> GetServiceAsync<T>(IAsyncServiceProvider asyncServiceProvider, Type serviceType) where T : class
+        private async Task<T?> GetServiceAsync<T>(IAsyncServiceProvider asyncServiceProvider, Type serviceType) where T : class
         {
-            T result = null;
+            T? result = null;
             await ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
             {
                 Guid serviceTypeGuid = serviceType.GUID;
@@ -123,7 +123,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             return result;
         }
 
-        private void DoInitialize(IVsShell shellService, IMenuCommandService menuCommandService)
+        private void DoInitialize(IVsShell? shellService, IMenuCommandService? menuCommandService)
         {
             if (initialized)
                 return;
@@ -133,7 +133,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             InitCommands(shellService, menuCommandService);
         }
 
-        private void InstallIfNeeded(IVsShell shellService)
+        private void InstallIfNeeded(IVsShell? shellService)
         {
             if (shellService == null)
             {
@@ -150,27 +150,25 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             if (installedVersion.Installed && (installedVersion.Version == null || installedVersion.Version >= availableVersion.Version))
                 return;
 
-            InstallationManager.Install(targetPath, out string error, out string warning);
+            InstallationManager.Install(targetPath, out string? error, out string? warning);
             if (error != null)
                 ShellDialogs.Error(this, Res.ErrorMessageFailedToInstall(targetPath, error));
             else if (warning != null)
                 ShellDialogs.Warning(this, Res.WarningMessageInstallationFinishedWithWarning(targetPath, warning));
             else if (installedVersion.Installed && installedVersion.Version != null)
-                ShellDialogs.Info(this, Res.InfoMessageUpgradeFinished(installedVersion.Version, availableVersion.Version, targetPath));
+                ShellDialogs.Info(this, Res.InfoMessageUpgradeFinished(installedVersion.Version, availableVersion.Version!, targetPath));
             else
-                ShellDialogs.Info(this, Res.InfoMessageInstallationFinished(availableVersion.Version, targetPath));
+                ShellDialogs.Info(this, Res.InfoMessageInstallationFinished(availableVersion.Version!, targetPath));
         }
 
-        private void InitCommands(IVsShell shellService, IMenuCommandService menuCommandService)
+        private void InitCommands(IVsShell? shellService, IMenuCommandService? menuCommandService)
         {
+            // no menu point will be added
+            if (menuCommandService == null)
+                return;
+
             menuCommandService.AddCommand(ExecuteImagingToolsCommand.GetCreateCommand(this));
             menuCommandService.AddCommand(ManageDebuggerVisualizerInstallationsCommand.GetCreateCommand(this, shellService));
-        }
-
-        private void DestroyCommands()
-        {
-            ExecuteImagingToolsCommand.DestroyCommand();
-            ManageDebuggerVisualizerInstallationsCommand.DestroyCommand();
         }
 
         #endregion

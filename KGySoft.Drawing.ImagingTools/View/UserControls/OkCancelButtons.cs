@@ -16,31 +16,74 @@
 
 #region Usings
 
+using System;
+using System.ComponentModel;
+using System.Drawing;
 using System.Windows.Forms;
 
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    internal partial class OkCancelButtons : BaseUserControl
+    internal sealed partial class OkCancelButtons : BaseUserControl
     {
+        #region Fields
+
+        private bool isApplyVisible;
+
+        #endregion
+
         #region Properties
+
+        #region Public Properties
+
+        [DefaultValue(false)]
+        public bool ApplyButtonVisible
+        {
+            get => isApplyVisible;
+            set
+            {
+                if (isApplyVisible == value)
+                    return;
+                ApplyButton.Visible = isApplyVisible = value;
+            }
+        }
+
+        #endregion
+
+        #region Internal Properties
 
         internal Button OKButton => btnOK;
         internal Button CancelButton => btnCancel;
+        internal Button ApplyButton => btnApply;
+
+        #endregion
 
         #endregion
 
         #region Constructors
 
-        public OkCancelButtons()
-        {
-            InitializeComponent();
-        }
+        public OkCancelButtons() => InitializeComponent();
 
         #endregion
 
         #region Methods
+
+        protected override void OnLoad(EventArgs e)
+        {
+            // Fixing high DPI appearance on Mono
+            PointF scale;
+            if (OSUtils.IsMono && (scale = this.GetScale()) != new PointF(1f, 1f))
+            {
+                Height = (int)(35 * scale.Y);
+                var referenceButtonSize = new Size(75, 23);
+                OKButton.Size = referenceButtonSize.Scale(scale);
+                CancelButton.Size = referenceButtonSize.Scale(scale);
+                ApplyButton.Size = referenceButtonSize.Scale(scale);
+            }
+
+            base.OnLoad(e);
+        }
 
         protected override void Dispose(bool disposing)
         {

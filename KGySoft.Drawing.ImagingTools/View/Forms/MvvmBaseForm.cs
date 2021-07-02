@@ -17,6 +17,11 @@
 #region Usings
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
+using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
@@ -26,12 +31,22 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
-    internal class MvvmBaseForm<TViewModel> : BaseForm, IView
+    internal partial class MvvmBaseForm<TViewModel> : BaseForm, IView
         where TViewModel : IDisposable // BUG: Actually should be ViewModelBase but WinForms designer with derived forms dies from that
     {
         #region Fields
 
-        private bool isClosing;
+        private readonly int threadId;
+        private readonly ManualResetEventSlim handleCreated;
+
+        private ErrorProvider? warningProvider;
+        private ErrorProvider? infoProvider;
+        private ErrorProvider? errorProvider;
+        private ICommand? validationResultsChangesCommand;
+
+        private bool isLoaded;
+        private bool isRtlChanging;
+        private Point location;
 
         #endregion
 
@@ -39,8 +54,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Protected Properties
 
-        protected TViewModel ViewModel { get; }
-        protected CommandBindingsCollection CommandBindings { get; }
+        protected TViewModel ViewModel { get; } = default!;
+        protected CommandBindingsCollection CommandBindings { get; } = new WinFormsCommandBindingsCollection();
+
+        protected ErrorProvider ErrorProvider => errorProvider ??= CreateProvider(ValidationSeverity.Error);
+        protected ErrorProvider WarningProvider => warningProvider ??= CreateProvider(ValidationSeverity.Warning);
+        protected ErrorProvider InfoProvider => infoProvider ??= CreateProvider(ValidationSeverity.Information);
+
+        protected Dictionary<string, Control> ValidationMapping { get; } = new Dictionary<string, Control>();
+        protected ICommand ValidationResultsChangedCommand => validationResultsChangesCommand ??= new SimpleCommand<ValidationResultsCollection>(OnValidationResultsChangedCommand);
 
         #endregion
 
@@ -59,28 +81,34 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected MvvmBaseForm(TViewModel viewModel)
         {
-            // occurs in design mode but DesignMode is false for grandchild forms
-            if (viewModel == null)
-                return;
-            ViewModel = viewModel;
+            threadId = Thread.CurrentThread.ManagedThreadId;
+            handleCreated = new ManualResetEventSlim();
+            ApplyRightToLeft();
+            InitializeComponent();
+            StartPosition = OSUtils.IsMono && OSUtils.IsWindows ? FormStartPosition.WindowsDefaultLocation : FormStartPosition.CenterParent;
 
+
+            // occurs in design mode but DesignMode is false for grandchild forms
+            if (viewModel == null!)
+                return;
+
+            ViewModel = viewModel;
             ViewModelBase vm = VM;
             vm.ShowInfoCallback = Dialogs.InfoMessage;
             vm.ShowWarningCallback = Dialogs.WarningMessage;
             vm.ShowErrorCallback = Dialogs.ErrorMessage;
             vm.ConfirmCallback = Dialogs.ConfirmMessage;
+            vm.CancellableConfirmCallback = (msg, btn) => Dialogs.CancellableConfirmMessage(msg, btn switch { 0 => MessageBoxDefaultButton.Button1, 1 => MessageBoxDefaultButton.Button2, _ => MessageBoxDefaultButton.Button3 });
             vm.ShowChildViewCallback = ShowChildView;
             vm.CloseViewCallback = () => BeginInvoke(new Action(Close));
             vm.SynchronizedInvokeCallback = InvokeIfRequired;
-
-            CommandBindings = new WinformsCommandBindingsCollection();
         }
 
         #endregion
 
         #region Private Constructors
 
-        private MvvmBaseForm()
+        private MvvmBaseForm() : this(default!)
         {
             // this ctor is just for the designer
         }
@@ -95,28 +123,72 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected override void OnLoad(EventArgs e)
         {
+            // Not Using tool window appearance on Linux because looks bad an on high DPI the close is too small
+            if (OSUtils.IsMono && OSUtils.IsLinux && FormBorderStyle == FormBorderStyle.SizableToolWindow)
+            {
+                FormBorderStyle = FormBorderStyle.Sizable;
+                MinimizeBox = false;
+            }
+
             base.OnLoad(e);
-            if (ViewModel == null)
+
+            // Null VM occurs in design mode but DesignMode is false for grandchild forms
+            // Loaded can be true if handle was recreated
+            if (isLoaded || ViewModel == null!)
+            {
+                if (!isRtlChanging)
+                    return;
+
+                // dialog has been reopened after changing RTL
+                isRtlChanging = false;
+                Location = location;
                 return;
+            }
+
+            isLoaded = true;
             ApplyResources();
             ApplyViewModel();
         }
 
-        protected virtual void ApplyResources() => this.ApplyStaticStringResources();
+        protected virtual void ApplyResources() => ApplyStringResources();
 
-        protected virtual void ApplyViewModel() => VM.ViewLoaded();
+        protected virtual void ApplyStringResources() => this.ApplyStringResources(toolTip);
+
+        protected virtual void ApplyViewModel()
+        {
+            InitPropertyBindings();
+            InitCommandBindings();
+            VM.ViewLoaded();
+        }
+
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            handleCreated.Set();
+        }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            if (!e.Cancel)
-                isClosing = true;
+            // Changing RightToLeft causes the dialog close. We let it happen because the parent may also change,
+            // and if we cancel the closing here, then a dialog may turn a non-modal form. Reopen as a dialog is handled in IView.ShowDialog
+            if (isRtlChanging)
+            {
+                if (DialogResult == DialogResult.OK)
+                    isRtlChanging = false;
+                else
+                    location = Location;
+            }
+
             base.OnFormClosing(e);
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-                CommandBindings?.Dispose();
+            {
+                components?.Dispose();
+                CommandBindings.Dispose();
+            }
 
             base.Dispose(disposing);
         }
@@ -125,18 +197,54 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Methods
 
-        private void ShowChildView(IViewModel vm) => ViewFactory.ShowDialog(vm, Handle);
+        private void InitPropertyBindings()
+        {
+            if (ValidationMapping.Count != 0)
+            {
+                // this.RightToLeft -> errorProvider/warningProvider/infoProvider.RightToLeft
+                CommandBindings.AddPropertyBinding(this, nameof(RightToLeft), nameof(ErrorProvider.RightToLeft),
+                    rtl => rtl is RightToLeft.Yes, ErrorProvider, WarningProvider, InfoProvider);
+            }
+        }
+
+        private void InitCommandBindings()
+        {
+            CommandBindings.Add(OnDisplayLanguageChangedCommand)
+                .AddSource(typeof(Res), nameof(Res.DisplayLanguageChanged));
+        }
+
+        private ErrorProvider CreateProvider(ValidationSeverity level) => new ErrorProvider(components)
+        {
+            ContainerControl = this,
+            Icon = level switch
+            {
+                ValidationSeverity.Error => Icons.SystemError.ToScaledIcon(this.GetScale()),
+                ValidationSeverity.Warning => Icons.SystemWarning.ToScaledIcon(this.GetScale()),
+                ValidationSeverity.Information => Icons.SystemInformation.ToScaledIcon(this.GetScale()),
+                _ => null
+            }
+        };
+
+        private void ShowChildView(IViewModel vm) => ViewFactory.ShowDialog(vm, this);
 
         private void InvokeIfRequired(Action action)
         {
-            if (isClosing || Disposing || IsDisposed)
+            if (Disposing || IsDisposed)
                 return;
+
             try
             {
-                if (InvokeRequired)
-                    Invoke(action);
-                else
+                // no invoke is required (not using InvokeRequired because that may return false if handle is not created yet)
+                if (threadId == Thread.CurrentThread.ManagedThreadId)
+                {
                     action.Invoke();
+                    return;
+                }
+
+                if (!handleCreated.IsSet)
+                    handleCreated.Wait();
+
+                Invoke(action);
             }
             catch (ObjectDisposedException)
             {
@@ -144,13 +252,71 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             }
         }
 
+        private void ApplyRightToLeft()
+        {
+            RightToLeft rtl = Res.DisplayLanguage.TextInfo.IsRightToLeft ? RightToLeft.Yes : RightToLeft.No;
+            if (RightToLeft == rtl)
+                return;
+
+            if (!OSUtils.IsMono && IsHandleCreated)
+                isRtlChanging = true;
+
+            RightToLeft = rtl;
+        }
+
+        #endregion
+
+        #region Command Handlers
+
+        private void OnDisplayLanguageChangedCommand() => InvokeIfRequired(() =>
+        {
+            ApplyRightToLeft();
+            ApplyStringResources();
+        });
+
+        private void OnValidationResultsChangedCommand(ValidationResultsCollection? validationResults)
+        {
+            foreach (KeyValuePair<string, Control> mapping in ValidationMapping)
+            {
+                var propertyResults = validationResults?[mapping.Key]; // var is IList in .NET 3.5 and IReadOnlyList above
+                ValidationResult? error = propertyResults?.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Error);
+                ValidationResult? warning = error == null ? propertyResults?.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Warning) : null;
+                ValidationResult? info = error == null && warning == null ? propertyResults?.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Information) : null;
+                ErrorProvider.SetError(mapping.Value, error?.Message);
+                WarningProvider.SetError(mapping.Value, warning?.Message);
+                InfoProvider.SetError(mapping.Value, info?.Message);
+            }
+        }
+
         #endregion
 
         #region Explicit Interface Implementations
 
-        void IView.ShowDialog(IntPtr ownerHandle) => ShowDialog(ownerHandle == IntPtr.Zero ? null : new OwnerWindowHandle(ownerHandle));
+        [SuppressMessage("CodeQuality", "IDE0002:Name can be simplified",
+            Justification = "Without the base qualifier executing in Mono causes StackOverflowException. See https://github.com/mono/mono/issues/21129")]
+        void IDisposable.Dispose()
+        {
+            isRtlChanging = false;
+            InvokeIfRequired(base.Dispose);
+        }
 
-        void IView.Show()
+        void IView.ShowDialog(IntPtr ownerHandle)
+        {
+            do
+            {
+                ShowDialog(ownerHandle == IntPtr.Zero ? null : new OwnerWindowHandle(ownerHandle));
+            } while (isRtlChanging);
+        }
+
+        void IView.ShowDialog(IView? owner)
+        {
+            do
+            {
+                ShowDialog(owner is IWin32Window window ? window : null);
+            } while (isRtlChanging);
+        }
+
+        void IView.Show() => InvokeIfRequired(() =>
         {
             if (!Visible)
             {
@@ -162,7 +328,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 WindowState = FormWindowState.Normal;
             Activate();
             BringToFront();
-        }
+        });
 
         #endregion
 

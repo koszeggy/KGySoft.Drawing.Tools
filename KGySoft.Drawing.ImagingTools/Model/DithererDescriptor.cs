@@ -18,14 +18,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Linq;
 using System.Reflection;
 
+#if NETFRAMEWORK
 using KGySoft.CoreLibraries;
+#endif
 using KGySoft.Drawing.Imaging;
-using KGySoft.Reflection;
 
 #endregion
 
@@ -67,7 +65,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #region Constructors
 
-        internal DithererDescriptor(Type type, string propertyName) : this(type.GetProperty(propertyName))
+        internal DithererDescriptor(Type type, string propertyName) : this(type.GetProperty(propertyName)!)
         {
         }
 
@@ -83,11 +81,11 @@ namespace KGySoft.Drawing.ImagingTools.Model
                     break;
                 case PropertyInfo property:
                     if (property.DeclaringType == typeof(OrderedDitherer))
-                        AddMethodChain(chain, parameters, typeof(OrderedDitherer).GetMethod(nameof(OrderedDitherer.ConfigureStrength)));
+                        AddMethodChain(chain, parameters, typeof(OrderedDitherer).GetMethod(nameof(OrderedDitherer.ConfigureStrength))!);
                     else if (property.DeclaringType == typeof(ErrorDiffusionDitherer))
                     {
-                        AddMethodChain(chain, parameters, typeof(ErrorDiffusionDitherer).GetMethod(nameof(ErrorDiffusionDitherer.ConfigureProcessingDirection)));
-                        AddMethodChain(chain, parameters, typeof(ErrorDiffusionDitherer).GetMethod(nameof(ErrorDiffusionDitherer.ConfigureErrorDiffusionMode)));
+                        AddMethodChain(chain, parameters, typeof(ErrorDiffusionDitherer).GetMethod(nameof(ErrorDiffusionDitherer.ConfigureProcessingDirection))!);
+                        AddMethodChain(chain, parameters, typeof(ErrorDiffusionDitherer).GetMethod(nameof(ErrorDiffusionDitherer.ConfigureErrorDiffusionMode))!);
                     }
 
                     break;
@@ -108,7 +106,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
         private static void AddParameters(List<CustomPropertyDescriptor> descriptors, ParameterInfo[] reflectedParameters)
         {
             foreach (ParameterInfo pi in reflectedParameters)
-                descriptors.Add(parametersMapping.GetValueOrDefault(pi.Name) ?? throw new InvalidOperationException(Res.InternalError($"Unexpected parameter: {pi.Name}")));
+                descriptors.Add(parametersMapping.GetValueOrDefault(pi.Name!) ?? throw new InvalidOperationException(Res.InternalError($"Unexpected parameter: {pi.Name}")));
         }
 
         private static void AddMethodChain(List<MemberInfo> chain, List<CustomPropertyDescriptor> parameters, MethodInfo method)
@@ -124,20 +122,20 @@ namespace KGySoft.Drawing.ImagingTools.Model
         #region Public Methods
 
         public override string ToString() => InvokeChain[0] is ConstructorInfo ctor
-            ? ctor.DeclaringType.Name
-            : $"{InvokeChain[0].DeclaringType.Name}.{InvokeChain[0].Name}";
+            ? ctor.DeclaringType!.Name
+            : $"{InvokeChain[0].DeclaringType!.Name}.{InvokeChain[0].Name}";
 
         #endregion
 
         #region Internal Methods
 
-        internal object[] EvaluateParameters(ParameterInfo[] parameters, CustomPropertiesObject values)
+        internal object?[] EvaluateParameters(ParameterInfo[] parameters, CustomPropertiesObject values)
         {
-            var result = new object[parameters.Length];
+            var result = new object?[parameters.Length];
             for (int i = 0; i < result.Length; i++)
             {
-                string paramName = parameters[i].Name;
-                result[i] = Parameters.Find(d => d.Name == paramName).GetValue(values);
+                string paramName = parameters[i].Name!;
+                result[i] = Parameters.Find(d => d.Name == paramName)!.GetValue(values);
             }
 
             return result;

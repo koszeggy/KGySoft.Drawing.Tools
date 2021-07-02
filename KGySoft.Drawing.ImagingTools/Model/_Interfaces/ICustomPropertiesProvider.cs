@@ -26,8 +26,8 @@ namespace KGySoft.Drawing.ImagingTools.Model
     {
         #region Methods
 
-        object GetValue(string propertyName, object defaultValue);
-        void SetValue(string propertyName, object value);
+        object? GetValue(string propertyName, object? defaultValue);
+        void SetValue(string propertyName, object? value);
         void ResetValue(string propertyName);
 
         #endregion

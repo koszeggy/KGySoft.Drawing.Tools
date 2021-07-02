@@ -27,9 +27,12 @@ namespace KGySoft.Drawing.ImagingTools
         #region Methods
 
         internal static bool CanBeDithered(this PixelFormat dstFormat) => dstFormat.ToBitsPerPixel() <= 16 && dstFormat != PixelFormat.Format16bppGrayScale;
+
+        // ReSharper disable BitwiseOperatorOnEnumWithoutFlags
         internal static bool HasAlpha(this PixelFormat pixelFormat) => (pixelFormat & PixelFormat.Alpha) == PixelFormat.Alpha;
         internal static bool IsIndexed(this PixelFormat pixelFormat) => (pixelFormat & PixelFormat.Indexed) == PixelFormat.Indexed;
         internal static bool IsWide(this PixelFormat pixelFormat) => (pixelFormat & PixelFormat.Extended) == PixelFormat.Extended;
+        // ReSharper restore BitwiseOperatorOnEnumWithoutFlags
 
         #endregion
     }

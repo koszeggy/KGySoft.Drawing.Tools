@@ -38,7 +38,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Constructors
 
-        private AdjustGammaForm() : this(null)
+        private AdjustGammaForm() : this(null!)
         {
             // this ctor is just for the designer
         }

@@ -17,7 +17,6 @@
 #region Usings
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -32,14 +31,12 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
     {
         #region Properties
 
-        internal BitmapDataInfo BitmapDataInfo { get; private set; }
+        internal BitmapDataInfo BitmapDataInfo { get; private set; } = default!;
 
         #endregion
 
         #region Constructors
 
-        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
-            Justification = "False alarm, the stream must not be disposed and the leaveOpen parameter is not available on every targeted platform")]
         internal BitmapDataSerializationInfo(Stream stream)
         {
             ReadFrom(new BinaryReader(stream));
@@ -56,7 +53,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 
         #region Public Methods
 
-        public void Dispose() => BitmapDataInfo?.Dispose();
+        public void Dispose() => BitmapDataInfo.Dispose();
 
         #endregion
 
@@ -65,10 +62,10 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
         internal void Write(BinaryWriter bw)
         {
             // 1. Bitmap
-            SerializationHelper.WriteImage(bw, BitmapDataInfo.BackingImage);
+            SerializationHelper.WriteImage(bw, BitmapDataInfo.BackingImage!);
 
             // 2. Data
-            BitmapData data = BitmapDataInfo.BitmapData;
+            BitmapData data = BitmapDataInfo.BitmapData!;
             bw.Write(data.Width);
             bw.Write(data.Height);
             bw.Write(data.Stride);

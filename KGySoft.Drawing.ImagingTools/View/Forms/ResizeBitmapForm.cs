@@ -17,7 +17,9 @@
 #region Usings
 
 using System;
+using System.Drawing;
 using System.Globalization;
+using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
@@ -41,16 +43,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             : base(viewModel)
         {
             InitializeComponent();
-
-            ValidationMapping[nameof(viewModel.Width)] = lblWidth;
-            ValidationMapping[nameof(viewModel.Height)] = lblHeight;
+            ValidationMapping[nameof(viewModel.Width)] = lblWidthPercent;
+            ValidationMapping[nameof(viewModel.Height)] = lblHeightPercent;
         }
 
         #endregion
 
         #region Private Constructors
 
-        private ResizeBitmapForm() : this(null)
+        private ResizeBitmapForm() : this(null!)
         {
             // this ctor is just for the designer
         }
@@ -63,16 +64,26 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Static Methods
 
-        private static object FormatPercentage(object value) => ((float)value * 100f).ToString("F0", CultureInfo.CurrentCulture);
-        private static object ParsePercentage(object value) => Single.TryParse((string)value, NumberStyles.Number, CultureInfo.CurrentCulture, out float result) ? result / 100f : 0f;
-        private static object FormatInteger(object value) => ((int)value).ToString("F0", CultureInfo.CurrentCulture);
-        private static object ParseInteger(object value) => Int32.TryParse((string)value, NumberStyles.Integer, CultureInfo.CurrentCulture, out int result) ? result : 0;
+        private static object FormatPercentage(object value) => value is 0f ? String.Empty : ((float)value * 100f).ToString("F0", LanguageSettings.FormattingLanguage);
+        private static object ParsePercentage(object value) => Single.TryParse((string)value, NumberStyles.Number, LanguageSettings.FormattingLanguage, out float result) ? result / 100f : 0f;
+        private static object FormatInteger(object value) => value is 0 ? String.Empty : ((int)value).ToString("F0", LanguageSettings.FormattingLanguage);
+        private static object ParseInteger(object value) => Int32.TryParse((string)value, NumberStyles.Integer, LanguageSettings.FormattingLanguage, out int result) ? result : 0;
 
         #endregion
 
         #region Instance Methods
 
         #region Protected Methods
+
+        protected override void OnLoad(EventArgs e)
+        {
+            // Fixing high DPI appearance on Mono
+            PointF scale;
+            if (OSUtils.IsMono && (scale = this.GetScale()) != new PointF(1f, 1f))
+                tblNewSize.ColumnStyles[0].Width = (int)(100 * scale.X);
+
+            base.OnLoad(e);
+        }
 
         protected override void ApplyResources()
         {
@@ -119,21 +130,40 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.ByPixels), rbByPixels, nameof(rbByPixels.Checked));
             CommandBindings.AddPropertyBinding(ViewModel, nameof(VM.ByPixels), nameof(Enabled), txtWidthPx, txtHeightPx);
 
+            // Regular WinForms binding behaves a bit better because it does not clear the currently edited text box on parse error
+            // but it fails to sync the other properties properly on Mono so using KGy SOFT binding in Mono systems.
+
             // VM.WidthRatio <-> txtWidthPercent.Text
-            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.WidthRatio), txtWidthPercent, nameof(txtWidthPercent.Text),
-                FormatPercentage, ParsePercentage);
+            if (OSUtils.IsMono)
+                CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.WidthRatio), txtWidthPercent, nameof(txtWidthPercent.Text), FormatPercentage!, ParsePercentage!);
+            else
+                AddWinFormsBinding(nameof(VM.WidthRatio), txtWidthPercent, nameof(txtWidthPercent.Text), FormatPercentage, ParsePercentage);
 
             // VM.HeightRatio <-> txtHeightPercent.Text
-            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.HeightRatio), txtHeightPercent, nameof(txtHeightPercent.Text),
-                FormatPercentage, ParsePercentage);
+            if (OSUtils.IsMono)
+                CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.HeightRatio), txtHeightPercent, nameof(txtHeightPercent.Text), FormatPercentage!, ParsePercentage!);
+            else
+                AddWinFormsBinding(nameof(VM.HeightRatio), txtHeightPercent, nameof(txtHeightPercent.Text), FormatPercentage, ParsePercentage);
 
             // VM.Width <-> txtWidthPx.Text
-            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.Width), txtWidthPx, nameof(txtWidthPx.Text),
-                FormatInteger, ParseInteger);
+            if (OSUtils.IsMono)
+                CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.Width), txtWidthPx, nameof(txtWidthPx.Text), FormatInteger!, ParseInteger!);
+            else
+                AddWinFormsBinding(nameof(VM.Width), txtWidthPx, nameof(txtWidthPx.Text), FormatInteger, ParseInteger);
 
             // VM.Height <-> txtHeightPx.Text
-            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.Height), txtHeightPx, nameof(txtHeightPx.Text),
-                FormatInteger, ParseInteger);
+            if (OSUtils.IsMono)
+                CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.Height), txtHeightPx, nameof(txtHeightPx.Text), FormatInteger!, ParseInteger!);
+            else
+                AddWinFormsBinding(nameof(VM.Height), txtHeightPx, nameof(txtHeightPx.Text), FormatInteger, ParseInteger);
+        }
+
+        private void AddWinFormsBinding(string sourceName, IBindableComponent target, string propertyName, Func<object, object> format, Func<object, object> parse)
+        {
+            var binding = new Binding(propertyName, ViewModel, sourceName, true, DataSourceUpdateMode.OnPropertyChanged);
+            binding.Format += (_, e) => e.Value = format.Invoke(e.Value);
+            binding.Parse += (_, e) => e.Value = parse.Invoke(e.Value);
+            target.DataBindings.Add(binding);
         }
 
         #endregion

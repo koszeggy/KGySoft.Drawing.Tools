@@ -26,8 +26,8 @@ namespace KGySoft.Drawing.ImagingTools.Model
     {
         #region Properties
 
-        internal static Type QuantizerThresholdEditor { get; set; }
-        internal static Type DithererStrengthEditor { get; set; }
+        internal static Type? QuantizerThresholdEditor { get; set; }
+        internal static Type? DithererStrengthEditor { get; set; }
 
         #endregion
     }

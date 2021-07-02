@@ -18,7 +18,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing.Imaging;
-using KGySoft.Drawing.DebuggerVisualizers.Model;
+using System.IO;
 using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;
@@ -40,9 +40,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <param name="objectProvider">The object provider.</param>
         protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
         {
-            ColorPalette newPalette = DebuggerHelper.DebugPalette(SerializationHelper.DeserializeColorPalette(objectProvider.GetData()), objectProvider.IsObjectReplaceable);
-            if (objectProvider.IsObjectReplaceable && newPalette != null)
-                objectProvider.ReplaceObject(new ColorPaletteReference(newPalette));
+            ColorPalette? newPalette = DebuggerHelper.DebugPalette(SerializationHelper.DeserializeColorPalette(objectProvider.GetData()), objectProvider.IsObjectReplaceable);
+            if (!objectProvider.IsObjectReplaceable || newPalette == null)
+                return;
+
+            using var ms = new MemoryStream();
+            SerializationHelper.SerializeColorPalette(newPalette, ms);
+            objectProvider.ReplaceData(ms);
         }
 
         #endregion

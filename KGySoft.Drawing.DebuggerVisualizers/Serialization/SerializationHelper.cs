@@ -17,7 +17,6 @@
 #region Usings
 
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -37,56 +36,48 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
     {
         #region Internal Methods
 
-        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
-            Justification = "False alarm, the stream must not be disposed and the leaveOpen parameter is not available on every targeted platform")]
         internal static void SerializeImageInfo(Image image, Stream outgoingData)
         {
             using (var imageInfo = new ImageSerializationInfo(image))
                 imageInfo.Write(new BinaryWriter(outgoingData));
         }
 
-        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
-            Justification = "False alarm, the stream must not be disposed and the leaveOpen parameter is not available on every targeted platform")]
         internal static void SerializeIconInfo(Icon icon, Stream outgoingData)
         {
             using (var iconInfo = new ImageSerializationInfo(icon))
                 iconInfo.Write(new BinaryWriter(outgoingData));
         }
 
-        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
-            Justification = "False alarm, the stream must not be disposed and the leaveOpen parameter is not available on every targeted platform")]
+        internal static void SerializeReplacementImageInfo(ImageInfo imageInfo, Stream outgoingData)
+        {
+            using (var replacementInfo = new ImageReplacementSerializationInfo(imageInfo))
+                replacementInfo.Write(new BinaryWriter(outgoingData));
+        }
+
         internal static void SerializeGraphicsInfo(Graphics g, Stream outgoingData)
         {
             using (var graphicsInfo = new GraphicsSerializationInfo(g))
                 graphicsInfo.Write(new BinaryWriter(outgoingData));
         }
 
-        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
-            Justification = "False alarm, the stream must not be disposed and the leaveOpen parameter is not available on every targeted platform")]
         internal static void SerializeBitmapDataInfo(BitmapData bitmapData, Stream outgoingData)
         {
             using (var bitmapDataInfo = new BitmapDataSerializationInfo(bitmapData))
                 bitmapDataInfo.Write(new BinaryWriter(outgoingData));
         }
 
-        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
-            Justification = "False alarm, the stream must not be disposed and the leaveOpen parameter is not available on every targeted platform")]
         internal static void SerializeColor(Color color, Stream outgoingData) => new ColorSerializationInfo(color).Write(new BinaryWriter(outgoingData));
 
-        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
-            Justification = "False alarm, the stream must not be disposed and the leaveOpen parameter is not available on every targeted platform")]
         internal static void SerializeColorPalette(ColorPalette palette, Stream outgoingData) => new ColorPaletteSerializationInfo(palette).Write(new BinaryWriter(outgoingData));
 
-        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
-            Justification = "False alarm, disposing would dispose the return value")]
         internal static ImageInfo DeserializeImageInfo(Stream stream) => new ImageSerializationInfo(stream).ImageInfo;
 
-        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
-            Justification = "False alarm, disposing would dispose the return value")]
+        internal static Image? DeserializeReplacementImage(Stream stream) => (Image?)new ImageReplacementSerializationInfo(stream).GetReplacementObject();
+
+        internal static Icon? DeserializeReplacementIcon(Stream stream) => (Icon?)new ImageReplacementSerializationInfo(stream).GetReplacementObject();
+
         internal static BitmapDataInfo DeserializeBitmapDataInfo(Stream stream) => new BitmapDataSerializationInfo(stream).BitmapDataInfo;
 
-        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
-            Justification = "False alarm, disposing would dispose the return value")]
         internal static GraphicsInfo DeserializeGraphicsInfo(Stream stream) => new GraphicsSerializationInfo(stream).GraphicsInfo;
 
         internal static Color DeserializeColor(Stream stream) => new ColorSerializationInfo(stream).Color;
@@ -95,14 +86,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 
         internal static void WriteImage(BinaryWriter bw, Image image)
         {
-            Debug.Assert(image != null, "Image should not be null here");
             int bpp;
 
             // writing a decoder compatible stream if image is a metafile...
             bool asImage = image is Metafile
                 // ... or is a TIFF with 48/64 BPP because saving as TIFF can preserve pixel format only if the raw format is also TIFF...
                 || (bpp = image.GetBitsPerPixel()) > 32 && image.RawFormat.Guid == ImageFormat.Tiff.Guid
-                // ... or is an animated GIF, which always have 32 BPP pixel format
+                // ... or is an animated GIF, which always has 32 BPP pixel format
                 || bpp == 32 && image.RawFormat.Guid == ImageFormat.Gif.Guid
                 // ... or image is an icon - actually needed only for Windows XP to prevent error from LockBits when sizes are not recognized
                 || image.RawFormat.Guid == ImageFormat.Icon.Guid;
@@ -117,10 +107,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
             WriteRawBitmap((Bitmap)image, bw);
         }
 
+        internal static Image ReadImage(BinaryReader br) => br.ReadBoolean()
+            ? Image.FromStream(new MemoryStream(br.ReadBytes(br.ReadInt32())))
+            : ReadRawBitmap(br);
+
         internal static void WriteIcon(BinaryWriter bw, Icon icon)
         {
-            Debug.Assert(icon != null, "Icon should not be null here");
-            using (MemoryStream ms = new MemoryStream())
+            using (var ms = new MemoryStream())
             {
                 icon.SaveAsIcon(ms);
                 bw.Write((int)ms.Length);
@@ -128,13 +121,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
             }
         }
 
-        [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope",
-            Justification = "False alarm, the stream is passed to an image so must not be disposed")]
-        internal static Image ReadImage(BinaryReader br) => br.ReadBoolean()
-            ? Image.FromStream(new MemoryStream(br.ReadBytes(br.ReadInt32())))
-            : ReadRawBitmap(br);
-
-        internal static Icon ReadIcon(BinaryReader br) => new Icon(new MemoryStream(br.ReadBytes(br.ReadInt32())));
+        internal static Icon? ReadIcon(BinaryReader br) => Icons.FromStream(new MemoryStream(br.ReadBytes(br.ReadInt32())));
 
         #endregion
 
@@ -144,7 +131,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
         {
             // we must use an inner stream because image.Save (at least TIFF encoder) may overwrite
             // the stream content before the original start position
-            using (MemoryStream ms = new MemoryStream())
+            using (var ms = new MemoryStream())
             {
                 if (image is Metafile metafile)
                     metafile.Save(ms);
@@ -196,7 +183,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
         {
             var size = new Size(br.ReadInt32(), br.ReadInt32());
             var pixelFormat = (PixelFormat)br.ReadInt32();
-            Color[] palette = null;
+            Color[]? palette = null;
             if (pixelFormat.ToBitsPerPixel() <= 8)
             {
                 palette = new Color[br.ReadInt32()];

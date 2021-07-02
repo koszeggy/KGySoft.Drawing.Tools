@@ -105,7 +105,6 @@
             this.ClientSize = new System.Drawing.Size(384, 421);
             this.MinimumSize = new System.Drawing.Size(400, 460);
             this.Name = "ColorSpaceForm";
-            this.Padding = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.Text = "ColorSpaceForm";
             this.pnlSettings.ResumeLayout(false);
             this.gbDitherer.ResumeLayout(false);

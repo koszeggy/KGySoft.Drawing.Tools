@@ -58,7 +58,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
         // Base allows to set reflected properties only. We could check propertyDescriptors here but ctor needs to set any property
         // and validation is performed by CustomPropertyDescriptor
         protected override bool CanGetProperty(string propertyName) => true;
-        protected override bool CanSetProperty(string propertyName, object value) => true;
+        protected override bool CanSetProperty(string propertyName, object? value) => true;
 
         #endregion
 
@@ -66,21 +66,21 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         AttributeCollection ICustomTypeDescriptor.GetAttributes() => TypeDescriptor.GetAttributes(this, true);
         string ICustomTypeDescriptor.GetClassName() => TypeDescriptor.GetClassName(this, true);
-        string ICustomTypeDescriptor.GetComponentName() => TypeDescriptor.GetComponentName(this, true);
+        string? ICustomTypeDescriptor.GetComponentName() => TypeDescriptor.GetComponentName(this, true);
         TypeConverter ICustomTypeDescriptor.GetConverter() => TypeDescriptor.GetConverter(this, true);
-        EventDescriptor ICustomTypeDescriptor.GetDefaultEvent() => TypeDescriptor.GetDefaultEvent(this, true);
-        PropertyDescriptor ICustomTypeDescriptor.GetDefaultProperty() => TypeDescriptor.GetDefaultProperty(this, true);
-        object ICustomTypeDescriptor.GetEditor(Type editorBaseType) => TypeDescriptor.GetEditor(this, editorBaseType, true);
+        EventDescriptor? ICustomTypeDescriptor.GetDefaultEvent() => TypeDescriptor.GetDefaultEvent(this, true);
+        PropertyDescriptor? ICustomTypeDescriptor.GetDefaultProperty() => TypeDescriptor.GetDefaultProperty(this, true);
+        object? ICustomTypeDescriptor.GetEditor(Type editorBaseType) => TypeDescriptor.GetEditor(this, editorBaseType, true);
         EventDescriptorCollection ICustomTypeDescriptor.GetEvents() => TypeDescriptor.GetEvents(this, true);
         EventDescriptorCollection ICustomTypeDescriptor.GetEvents(Attribute[] attributes) => TypeDescriptor.GetEvents(this, attributes, true);
         object ICustomTypeDescriptor.GetPropertyOwner(PropertyDescriptor pd) => this;
         PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties() => propertyDescriptors;
-        PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties(Attribute[] attributes)
+        PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties(Attribute[]? attributes)
             => new PropertyDescriptorCollection(propertyDescriptors.Cast<PropertyDescriptor>().Where(p => attributes == null || attributes.Any(a => p.Attributes.Contains(a))).ToArray());
 
         void ICustomPropertiesProvider.ResetValue(string propertyName) => ResetProperty(propertyName);
-        void ICustomPropertiesProvider.SetValue(string propertyName, object value) => Set(value, true, propertyName);
-        object ICustomPropertiesProvider.GetValue(string propertyName, object defaultValue) => Get(defaultValue, propertyName);
+        void ICustomPropertiesProvider.SetValue(string propertyName, object? value) => Set(value, true, propertyName);
+        object? ICustomPropertiesProvider.GetValue(string propertyName, object? defaultValue) => Get(defaultValue, propertyName);
 
         #endregion
 

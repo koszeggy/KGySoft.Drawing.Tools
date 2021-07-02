@@ -15,23 +15,23 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.lblResult = new System.Windows.Forms.Label();
+            this.lblCountColorsStatus = new System.Windows.Forms.Label();
             this.pnlButton = new System.Windows.Forms.Panel();
             this.btnClose = new System.Windows.Forms.Button();
-            this.progress = new KGySoft.Drawing.ImagingTools.View.Controls.DrawingProgressStatusStrip();
+            this.progress = new KGySoft.Drawing.ImagingTools.View.Controls.DrawingProgressFooter();
             this.pnlButton.SuspendLayout();
             this.SuspendLayout();
             // 
-            // lblResult
+            // lblCountColorsStatus
             // 
-            this.lblResult.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblResult.Location = new System.Drawing.Point(0, 0);
-            this.lblResult.Name = "lblResult";
-            this.lblResult.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
-            this.lblResult.Size = new System.Drawing.Size(274, 39);
-            this.lblResult.TabIndex = 0;
-            this.lblResult.Text = "lblResult";
-            this.lblResult.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblCountColorsStatus.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblCountColorsStatus.Location = new System.Drawing.Point(0, 0);
+            this.lblCountColorsStatus.Name = "lblCountColorsStatus";
+            this.lblCountColorsStatus.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            this.lblCountColorsStatus.Size = new System.Drawing.Size(274, 39);
+            this.lblCountColorsStatus.TabIndex = 0;
+            this.lblCountColorsStatus.Text = "lblCountColorsStatus";
+            this.lblCountColorsStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // pnlButton
             // 
@@ -59,7 +59,6 @@
             this.progress.Location = new System.Drawing.Point(0, 68);
             this.progress.Name = "progress";
             this.progress.Size = new System.Drawing.Size(274, 22);
-            this.progress.SizingGrip = false;
             this.progress.TabIndex = 2;
             this.progress.Text = "drawingProgressStatusStrip1";
             // 
@@ -68,7 +67,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(274, 90);
-            this.Controls.Add(this.lblResult);
+            this.Controls.Add(this.lblCountColorsStatus);
             this.Controls.Add(this.pnlButton);
             this.Controls.Add(this.progress);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -84,8 +83,8 @@
 
         #endregion
 
-        private Controls.DrawingProgressStatusStrip progress;
-        private System.Windows.Forms.Label lblResult;
+        private Controls.DrawingProgressFooter progress;
+        private System.Windows.Forms.Label lblCountColorsStatus;
         private System.Windows.Forms.Panel pnlButton;
         private System.Windows.Forms.Button btnClose;
     }

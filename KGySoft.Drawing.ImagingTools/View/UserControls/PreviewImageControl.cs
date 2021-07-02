@@ -17,9 +17,9 @@
 #region Usings
 
 using System;
-using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+
 using KGySoft.Drawing.ImagingTools.View.Controls;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
@@ -31,16 +31,34 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
     {
         #region Properties
 
-        internal Image Image
+        internal Image? Image
         {
-            get => ViewModel.PreviewImage;
-            set => ViewModel.PreviewImage = value;
+            get => ViewModel?.PreviewImage;
+            set
+            {
+                if (ViewModel is PreviewImageViewModel vm)
+                    vm.PreviewImage = value;
+            }
         }
 
         internal bool AutoZoom
         {
-            get => ViewModel.AutoZoom;
-            set => ViewModel.AutoZoom = value;
+            get => ViewModel?.AutoZoom ?? false;
+            set
+            {
+                if (ViewModel is PreviewImageViewModel vm)
+                    vm.AutoZoom = value;
+            }
+        }
+
+        internal bool SmoothZooming
+        {
+            get => ViewModel?.SmoothZooming ?? false;
+            set
+            {
+                if (ViewModel is PreviewImageViewModel vm)
+                    vm.SmoothZooming = value;
+            }
         }
 
         internal ImageViewer ImageViewer => ivPreview;
@@ -60,6 +78,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Protected Methods
 
+        protected override void OnLoad(EventArgs e)
+        {
+            tsMenu.FixAppearance();
+            base.OnLoad(e);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -70,7 +94,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         protected override void ApplyResources()
         {
-            btnAutoZoom.Image = Images.Magnifier;
             btnAntiAlias.Image = Images.SmoothZoom;
             btnShowOriginal.Image = Images.Compare;
             base.ApplyResources();
@@ -89,30 +112,33 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private void InitCommandBindings()
         {
-            CommandBindings.Add(() => ViewModel.ShowOriginal = true)
+            CommandBindings.Add(ivPreview.IncreaseZoom)
+                .AddSource(btnZoom.IncreaseZoomMenuItem, nameof(btnZoom.IncreaseZoomMenuItem.Click));
+            CommandBindings.Add(ivPreview.DecreaseZoom)
+                .AddSource(btnZoom.DecreaseZoomMenuItem, nameof(btnZoom.DecreaseZoomMenuItem.Click));
+            CommandBindings.Add(ivPreview.ResetZoom)
+                .AddSource(btnZoom.ResetZoomMenuItem, nameof(btnZoom.ResetZoomMenuItem.Click));
+            CommandBindings.Add(() => ViewModel!.ShowOriginal = true)
                 .AddSource(btnShowOriginal, nameof(btnShowOriginal.MouseDown));
-            CommandBindings.Add(() => ViewModel.ShowOriginal = false)
+            CommandBindings.Add(() => ViewModel!.ShowOriginal = false)
                 .AddSource(btnShowOriginal, nameof(btnShowOriginal.MouseUp));
         }
 
         private void InitPropertyBindings()
         {
             // VM.DisplayImage -> ivPreview.Image
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.DisplayImage), nameof(ivPreview.Image), ivPreview);
-
-            // VM.ZoomEnabled -> btnAutoZoom/btnAntiAlias.Enabled
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.ZoomEnabled), nameof(ToolStripItem.Enabled), btnAutoZoom, btnAntiAlias);
+            CommandBindings.AddPropertyBinding(ViewModel!, nameof(ViewModel.DisplayImage), nameof(ivPreview.Image), ivPreview);
 
             // VM.ShowOriginalEnabled -> btnShowOriginal.Enabled
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.ShowOriginalEnabled), nameof(ToolStripItem.Enabled), btnShowOriginal);
+            CommandBindings.AddPropertyBinding(ViewModel!, nameof(ViewModel.ShowOriginalEnabled), nameof(ToolStripItem.Enabled), btnShowOriginal);
 
-            // btnAutoZoom.Checked <-> VM.AutoZoom -> ivPreview.AutoZoom
-            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.AutoZoom), btnAutoZoom, nameof(btnAutoZoom.Checked));
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.AutoZoom), nameof(ivPreview.AutoZoom), ivPreview);
+            // btnAutoZoom.Checked <-> VM.AutoZoom <-> ivPreview.AutoZoom
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel!, nameof(ViewModel.AutoZoom), btnZoom, nameof(btnZoom.Checked));
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel!, nameof(ViewModel.AutoZoom), ivPreview, nameof(ivPreview.AutoZoom));
 
             // btnAntiAlias.Checked <-> VM.SmoothZooming -> ivPreview.SmoothZooming
-            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.SmoothZooming), btnAntiAlias, nameof(btnAntiAlias.Checked));
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SmoothZooming), nameof(ivPreview.SmoothZooming), ivPreview);
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel!, nameof(ViewModel.SmoothZooming), btnAntiAlias, nameof(btnAntiAlias.Checked));
+            CommandBindings.AddPropertyBinding(ViewModel!, nameof(ViewModel.SmoothZooming), nameof(ivPreview.SmoothZooming), ivPreview);
         }
 
         #endregion

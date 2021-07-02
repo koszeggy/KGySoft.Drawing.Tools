@@ -17,7 +17,6 @@
 #region Usings
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
@@ -33,8 +32,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
 
         private readonly CommandBindingsCollection commandBindings = new CommandBindingsCollection();
         private readonly DebuggerTestFormViewModel viewModel = new DebuggerTestFormViewModel();
-        private readonly Timer timer;
-        private string errorMessage;
+        private readonly Timer? timer;
+
+        private string? errorMessage;
 
         #endregion
 
@@ -43,6 +43,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
         public DebuggerTestForm()
         {
             InitializeComponent();
+            gbFile.AutoSize = !OSUtils.IsMono;
             cmbPixelFormat.DataSource = viewModel.PixelFormats;
 
             commandBindings.AddPropertyBinding(chbAsImage, nameof(CheckBox.Checked), nameof(viewModel.AsImage), viewModel);
@@ -60,7 +61,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             commandBindings.AddPropertyBinding(rbColor, nameof(RadioButton.Checked), nameof(viewModel.SingleColor), viewModel);
             commandBindings.AddPropertyBinding(rbFromFile, nameof(RadioButton.Checked), nameof(viewModel.ImageFromFile), viewModel);
 
-            commandBindings.AddPropertyBinding(tbFile, nameof(tbFile.Text), nameof(viewModel.FileName), viewModel);
+            commandBindings.AddPropertyBinding(txtFile, nameof(txtFile.Text), nameof(viewModel.FileName), viewModel);
             commandBindings.AddPropertyBinding(rbAsImage, nameof(RadioButton.Checked), nameof(viewModel.FileAsImage), viewModel);
             commandBindings.AddPropertyBinding(rbAsBitmap, nameof(RadioButton.Checked), nameof(viewModel.FileAsBitmap), viewModel);
             commandBindings.AddPropertyBinding(rbAsMetafile, nameof(RadioButton.Checked), nameof(viewModel.FileAsMetafile), viewModel);
@@ -76,15 +77,21 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
             commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.PreviewImage), nameof(pictureBox.Image), pictureBox);
 
             commandBindings.Add<EventArgs>(OnSelectFileCommand)
-                .AddSource(tbFile, nameof(tbFile.Click))
-                .AddSource(tbFile, nameof(tbFile.DoubleClick));
+                .AddSource(txtFile, nameof(txtFile.Click))
+                .AddSource(txtFile, nameof(txtFile.DoubleClick));
             commandBindings.Add(viewModel.DirectViewCommand).AddSource(btnViewDirect, nameof(btnViewDirect.Click));
             commandBindings.Add(viewModel.DebugCommand).AddSource(btnViewByDebugger, nameof(btnViewByDebugger.Click));
 
             viewModel.GetHwndCallback = () => Handle;
             viewModel.GetClipCallback = () => pictureBox.Bounds;
 
-            // Due to some strange issue on Linux the app crashes if we show a MessageBox while changing radio buttons
+            if (OSUtils.IsWindows)
+            {
+                viewModel.ErrorCallback = msg => MessageBox.Show(this, msg, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Due to some strange issue on Linux the app may crash if we show a MessageBox while changing radio buttons
             // so as a workaround we show error messages by using a timer. Another solution would be to show a custom dialog.
             timer = new Timer { Interval = 1 };
             viewModel.ErrorCallback = message =>
@@ -126,19 +133,18 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.View
         private void OnSelectFileCommand(ICommandSource<EventArgs> source)
         {
             // simple click opens the file dialog only if text was empty
-            if (tbFile.Text.Length != 0 && source.TriggeringEvent == nameof(tbFile.Click))
+            if (txtFile.Text.Length != 0 && source.TriggeringEvent == nameof(txtFile.Click))
                 return;
-            using (OpenFileDialog ofd = new OpenFileDialog { FileName = tbFile.Text })
+            using (var ofd = new OpenFileDialog { FileName = txtFile.Text })
             {
                 if (ofd.ShowDialog() == DialogResult.OK)
-                    tbFile.Text = ofd.FileName;
+                    txtFile.Text = ofd.FileName;
             }
         }
 
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "This is just a test app")]
         private void OnShowErrorCommand()
         {
-            timer.Enabled = false;
+            timer!.Enabled = false;
             if (errorMessage != null)
                 MessageBox.Show(this, errorMessage, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             errorMessage = null;

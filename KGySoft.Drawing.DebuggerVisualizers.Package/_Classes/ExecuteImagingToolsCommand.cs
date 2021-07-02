@@ -26,16 +26,17 @@ using Microsoft.VisualStudio.Shell;
 
 #endregion
 
+#nullable enable
+
 namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
     internal static class ExecuteImagingToolsCommand
     {
         #region Fields
 
-        private static MenuCommand commandInstance;
-        private static IServiceProvider serviceProvider;
-        private static IViewModel imagingToolsViewModel;
-        private static IView imagingToolsView;
+        private static MenuCommand? commandInstance;
+        private static IServiceProvider? serviceProvider;
+        private static volatile IView? imagingToolsView;
 
         #endregion
 
@@ -58,8 +59,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         {
             imagingToolsView?.Dispose();
             imagingToolsView = null;
-            imagingToolsViewModel?.Dispose();
-            imagingToolsViewModel = null;
         }
 
         #endregion
@@ -71,20 +70,15 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             try
             {
                 if (imagingToolsView == null || imagingToolsView.IsDisposed)
-                {
-                    imagingToolsViewModel?.Dispose();
-                    imagingToolsViewModel = ViewModelFactory.CreateDefault();
-                    imagingToolsView = ViewFactory.CreateView(imagingToolsViewModel);
-                }
-
-                imagingToolsView.Show();
+                    imagingToolsView = ViewHelper.CreateViewInNewThread(ViewModelFactory.CreateDefault);
+                else
+                    imagingToolsView.Show();
             }
             catch (Exception ex)
             {
                 imagingToolsView?.Dispose();
-                imagingToolsViewModel?.Dispose();
                 imagingToolsView = null;
-                ShellDialogs.Error(serviceProvider, Res.ErrorMessageUnexpectedError(ex.Message));
+                ShellDialogs.Error(serviceProvider!, Res.ErrorMessageUnexpectedError(ex.Message));
             }
         }
 

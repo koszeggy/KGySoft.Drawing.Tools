@@ -17,6 +17,9 @@
 #region Usings
 
 using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading;
+using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.ImagingTools.ViewModel;
@@ -25,12 +28,15 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    internal partial class MvvmBaseUserControl<TViewModel> : BaseUserControl
+    internal class MvvmBaseUserControl<TViewModel> : BaseUserControl
         where TViewModel : IDisposable // BUG: Actually should be ViewModelBase but WinForms designer with derived types dies from that
     {
         #region Fields
 
-        private TViewModel vm;
+        private readonly int threadId;
+        private readonly ManualResetEventSlim handleCreated;
+
+        private TViewModel? vm;
         private bool isLoaded;
 
         #endregion
@@ -39,6 +45,10 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Internal Properties
 
+        /// <summary>
+        /// Gets or sets the view model. Can be null before initializing. Not null if called from <see cref="ApplyViewModel"/>.
+        /// </summary>
+        [MaybeNull]
         internal TViewModel ViewModel
         {
             get => vm;
@@ -63,7 +73,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         #region Private Properties
 
         // this would not be needed if where TViewModel : ViewModelBase didn't conflict with WinForms designer
-        private ViewModelBase VM => (ViewModelBase)(object)ViewModel;
+        private ViewModelBase? VM => (ViewModelBase?)(object?)ViewModel;
 
         #endregion
 
@@ -73,7 +83,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         protected MvvmBaseUserControl()
         {
-            CommandBindings = new WinformsCommandBindingsCollection();
+            CommandBindings = new WinFormsCommandBindingsCollection();
+            threadId = Thread.CurrentThread.ManagedThreadId;
+            handleCreated = new ManualResetEventSlim();
         }
 
         #endregion
@@ -102,20 +114,27 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         protected virtual void ApplyViewModel()
         {
-            ViewModelBase vm = VM;
-            vm.ShowInfoCallback = Dialogs.InfoMessage;
-            vm.ShowWarningCallback = Dialogs.WarningMessage;
-            vm.ShowErrorCallback = Dialogs.ErrorMessage;
-            vm.ConfirmCallback = Dialogs.ConfirmMessage;
-            vm.SynchronizedInvokeCallback = InvokeIfRequired;
+            ViewModelBase vmb = VM!;
+            vmb.ShowInfoCallback = Dialogs.InfoMessage;
+            vmb.ShowWarningCallback = Dialogs.WarningMessage;
+            vmb.ShowErrorCallback = Dialogs.ErrorMessage;
+            vmb.ConfirmCallback = Dialogs.ConfirmMessage;
+            vmb.CancellableConfirmCallback = (msg, btn) => Dialogs.CancellableConfirmMessage(msg, btn switch { 0 => MessageBoxDefaultButton.Button1, 1 => MessageBoxDefaultButton.Button2, _ => MessageBoxDefaultButton.Button3 });
+            vmb.SynchronizedInvokeCallback = InvokeIfRequired;
 
-            VM.ViewLoaded();
+            vmb.ViewLoaded();
+        }
+
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            handleCreated.Set();
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-                CommandBindings?.Dispose();
+                CommandBindings.Dispose();
 
             base.Dispose(disposing);
         }
@@ -126,10 +145,26 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private void InvokeIfRequired(Action action)
         {
-            if (InvokeRequired)
+            if (Disposing || IsDisposed)
+                return;
+
+            try
+            {
+                // no invoke is required (not using InvokeRequired because that may return false if handle is not created yet)
+                if (threadId == Thread.CurrentThread.ManagedThreadId)
+                {
+                    action.Invoke();
+                    return;
+                }
+
+                if (!handleCreated.IsSet)
+                    handleCreated.Wait();
                 Invoke(action);
-            else
-                action.Invoke();
+            }
+            catch (ObjectDisposedException)
+            {
+                // it can happen that actual Invoke is started to execute only after querying isClosing and when Disposing and IsDisposed both return false
+            }
         }
 
         #endregion

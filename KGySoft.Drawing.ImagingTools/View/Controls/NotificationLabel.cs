@@ -18,7 +18,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
@@ -55,7 +54,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new Image Image
+        public new Image? Image
         {
             get => base.Image;
             set
@@ -98,8 +97,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Public Methods
 
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters",
-            Justification = "Font measuring must not rely on a variable resource text")]
         public override Size GetPreferredSize(Size proposedSize)
         {
             // Workaround: Immediately after calculating preferred size (eg. Dock == Top), another request arrives with empty proposedSize, which ruins the constrained result.
@@ -115,8 +112,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             {
                 lastProposedSize = proposedSize;
             }
-
-            //TextFormatFlags formatFlags = this.GetFormatFlags();
 
             Size padding = GetBordersAndPadding();
             Size proposedTextSize = proposedSize - padding;

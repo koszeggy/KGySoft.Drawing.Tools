@@ -17,7 +17,6 @@
 #region Usings
 
 using System;
-using System.Globalization;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
@@ -29,7 +28,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
     {
         #region Fields
 
-        private readonly IWindowsFormsEditorService editorService;
+        private readonly IWindowsFormsEditorService? editorService;
         private readonly float originalValue;
 
         #endregion
@@ -52,7 +51,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             trackBar.ValueChanged += TrackBar_ValueChanged;
             okCancelButtons.CancelButton.Click += CancelButton_Click;
             okCancelButtons.OKButton.Click += OKButton_Click;
-            okCancelButtons.ApplyStaticStringResources();
+            okCancelButtons.ApplyStringResources();
 
             originalValue = value;
             trackBar.Value = value >= 0f && value <= 1f ? (int)(value * 100) : 0;
@@ -65,6 +64,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private DithererStrengthEditorControl()
         {
+            RightToLeft = Res.DisplayLanguage.TextInfo.IsRightToLeft ? RightToLeft.Yes : RightToLeft.No;
             InitializeComponent();
         }
 
@@ -98,27 +98,27 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Private Methods
 
-        private void UpdateLabel() => lblValue.Text = Value <= 0f ? Res.TextAuto : Value.ToString("F2", CultureInfo.CurrentCulture);
+        private void UpdateLabel() => lblValue.Text = Value <= 0f ? Res.TextAuto : Value.ToString("F2", LanguageSettings.FormattingLanguage);
 
         #endregion
 
         #region Event handlers
 
-        private void TrackBar_ValueChanged(object sender, EventArgs e)
+        private void TrackBar_ValueChanged(object? sender, EventArgs e)
         {
             Value = trackBar.Value / 100f;
             UpdateLabel();
         }
 
-        private void OKButton_Click(object sender, EventArgs e)
+        private void OKButton_Click(object? sender, EventArgs e)
         {
-            editorService.CloseDropDown();
+            editorService?.CloseDropDown();
         }
 
-        private void CancelButton_Click(object sender, EventArgs e)
+        private void CancelButton_Click(object? sender, EventArgs e)
         {
             Value = originalValue;
-            editorService.CloseDropDown();
+            editorService?.CloseDropDown();
         }
 
         #endregion

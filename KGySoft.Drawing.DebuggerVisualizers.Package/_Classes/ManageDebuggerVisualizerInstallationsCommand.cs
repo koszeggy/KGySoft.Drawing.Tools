@@ -27,17 +27,18 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 #endregion
 
+#nullable enable
+
 namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
     internal static class ManageDebuggerVisualizerInstallationsCommand
     {
         #region Fields
 
-        private static MenuCommand commandInstance;
-        private static IServiceProvider serviceProvider;
-        private static IVsShell shellService;
-        private static IViewModel manageInstallationsViewModel;
-        private static IView manageInstallationsView;
+        private static MenuCommand? commandInstance;
+        private static IServiceProvider serviceProvider = default!;
+        private static IVsShell? shellService;
+        private static IView? manageInstallationsView;
 
         #endregion
 
@@ -45,13 +46,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
         #region Internal Methods
 
-        internal static MenuCommand GetCreateCommand(IServiceProvider package, IVsShell vsShell)
+        internal static MenuCommand GetCreateCommand(IServiceProvider package, IVsShell? vsShell)
         {
             if (commandInstance == null)
             {
                 serviceProvider = package;
                 shellService = vsShell;
-                commandInstance = new OleMenuCommand(OnExecuteImagingToolsCommand, new CommandID(Ids.CommandSet, Ids.ManageDebuggerVisualizerInstallationsCommandId));
+                commandInstance = new OleMenuCommand(OnExecuteManageDebuggerVisualizerInstallationsCommand, new CommandID(Ids.CommandSet, Ids.ManageDebuggerVisualizerInstallationsCommandId));
             }
 
             return commandInstance;
@@ -61,34 +62,28 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         {
             manageInstallationsView?.Dispose();
             manageInstallationsView = null;
-            manageInstallationsViewModel?.Dispose();
-            manageInstallationsViewModel = null;
         }
 
         #endregion
 
         #region Event handlers
 
-        private static void OnExecuteImagingToolsCommand(object sender, EventArgs e)
+        private static void OnExecuteManageDebuggerVisualizerInstallationsCommand(object sender, EventArgs e)
         {
             try
             {
                 if (manageInstallationsView == null || manageInstallationsView.IsDisposed)
                 {
-                    manageInstallationsViewModel?.Dispose();
-#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread - invoked in UI thread. And ThreadHelper.ThrowIfNotOnUIThread() just emits another warning.
-                    shellService.GetProperty((int)__VSSPROPID2.VSSPROPID_VisualStudioDir, out object documentsDirObj);
-#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
-                    manageInstallationsViewModel = ViewModelFactory.CreateManageInstallations(documentsDirObj?.ToString());
-                    manageInstallationsView = ViewFactory.CreateView(manageInstallationsViewModel);
+                    object? documentsDirObj = null;
+                    shellService?.GetProperty((int)__VSSPROPID2.VSSPROPID_VisualStudioDir, out documentsDirObj);
+                    manageInstallationsView = ViewHelper.CreateViewInNewThread(() => ViewModelFactory.CreateManageInstallations(documentsDirObj?.ToString()));
                 }
-
-                manageInstallationsView.Show();
+                else
+                    manageInstallationsView.Show();
             }
             catch (Exception ex)
             {
                 manageInstallationsView?.Dispose();
-                manageInstallationsViewModel?.Dispose();
                 manageInstallationsView = null;
                 ShellDialogs.Error(serviceProvider, Res.ErrorMessageUnexpectedError(ex.Message));
             }

@@ -16,12 +16,9 @@
 
 #region Usings
 
-using System.Collections.Generic;
-using System.Linq;
+using System;
 using System.Windows.Forms;
 
-using KGySoft.ComponentModel;
-using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
@@ -30,15 +27,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
     internal partial class TransformBitmapFormBase : MvvmBaseForm<TransformBitmapViewModelBase>
     {
-        #region Properties
-
-        protected Dictionary<string, Control> ValidationMapping { get; }
-        protected ErrorProvider ErrorProvider => errorProvider;
-        protected ErrorProvider WarningProvider => warningProvider;
-        protected ErrorProvider InfoProvider => infoProvider;
-
-        #endregion
-
         #region Constructors
 
         #region Protected Constructors
@@ -50,18 +38,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             AcceptButton = okCancelButtons.OKButton;
             CancelButton = okCancelButtons.CancelButton;
 
-            errorProvider.SetIconAlignment(previewImage.ImageViewer, ErrorIconAlignment.MiddleLeft);
-            ValidationMapping = new Dictionary<string, Control>
-            {
-                [nameof(viewModel.PreviewImageViewModel.PreviewImage)] = previewImage.ImageViewer,
-            };
+            ErrorProvider.SetIconAlignment(previewImage.ImageViewer, ErrorIconAlignment.MiddleLeft);
+            ValidationMapping[nameof(viewModel.PreviewImageViewModel.PreviewImage)] = previewImage.ImageViewer;
         }
 
         #endregion
 
         #region Private Constructors
 
-        private TransformBitmapFormBase() : this(null)
+        private TransformBitmapFormBase() : this(null!)
         {
             // this ctor is just for the designer
         }
@@ -74,14 +59,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Protected Methods
 
-        protected override void ApplyResources()
-        {
-            base.ApplyResources();
-            errorProvider.Icon = Icons.SystemError.ToScaledIcon();
-            warningProvider.Icon = Icons.SystemWarning.ToScaledIcon();
-            infoProvider.Icon = Icons.SystemInformation.ToScaledIcon();
-        }
-
         protected override void ApplyViewModel()
         {
             InitCommandBindings();
@@ -93,8 +70,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             switch (keyData)
             {
-                case Keys.Alt | Keys.Z:
-                    previewImage.AutoZoom = !previewImage.AutoZoom;
+                case Keys.Alt | Keys.S:
+                    previewImage.SmoothZooming = !previewImage.SmoothZooming;
                     return true;
                 default:
                     return base.ProcessCmdKey(ref msg, keyData);
@@ -129,8 +106,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 .AddSource(okCancelButtons.CancelButton, nameof(okCancelButtons.CancelButton.Click));
 
             // View commands
-            CommandBindings.Add<EventArgs<ValidationResultsCollection>>(OnValidationResultsChangedCommand)
-                .AddSource(ViewModel, nameof(ViewModel.ValidationResultsChanged));
+            CommandBindings.Add(ValidationResultsChangedCommand)
+                .AddSource(ViewModel, nameof(ViewModel.ValidationResultsChanged))
+                .WithParameter(() => ViewModel.ValidationResults);
         }
 
         private void InitPropertyBindings()
@@ -143,24 +121,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
             // VM.Progress -> progress.Progress
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Progress), nameof(progress.Progress), progress);
-        }
-
-        #endregion
-
-        #region Command handlers
-
-        private void OnValidationResultsChangedCommand(ICommandSource<EventArgs<ValidationResultsCollection>> src)
-        {
-            foreach (KeyValuePair<string, Control> mapping in ValidationMapping)
-            {
-                var validationResults = src.EventArgs.EventData[mapping.Key];
-                ValidationResult error = validationResults.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Error);
-                ValidationResult warning = error == null ? validationResults.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Warning) : null;
-                ValidationResult info = error == null && warning == null ? validationResults.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Information) : null;
-                errorProvider.SetError(mapping.Value, error?.Message);
-                warningProvider.SetError(mapping.Value, warning?.Message);
-                infoProvider.SetError(mapping.Value, info?.Message);
-            }
         }
 
         #endregion

@@ -17,7 +17,6 @@
 #region Usings
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Threading;
 
@@ -39,7 +38,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             #region Fields
 
-            internal Bitmap Bitmap;
+            internal Bitmap Bitmap = default!;
 
             #endregion
         }
@@ -51,18 +50,20 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Fields
 
         private readonly DrawingProgressManager drawingProgressManager;
+        private readonly Bitmap bitmap;
         
-        private volatile CountTask task;
+        private volatile CountTask? activeTask;
         private int? colorCount;
+        private string displayTextId = default!;
+        private object[]? displayTextArgs;
 
         #endregion
 
         #region Properties
 
-        internal object ProgressSyncRoot => drawingProgressManager;
         internal bool IsProcessing { get => Get<bool>(); set => Set(value); }
         internal DrawingProgress Progress { get => Get<DrawingProgress>(); set => Set(value); }
-        internal string DisplayText { get => Get(() => Res.TextCountingColors); set => Set(value); }
+        internal string DisplayText { get => Get<string>(); set => Set(value); }
 
         internal ICommand CancelCommand => Get(() => new SimpleCommand(OnCancelCommand));
 
@@ -72,14 +73,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal CountColorsViewModel(Bitmap bitmap)
         {
-            if (bitmap == null)
-                throw new ArgumentNullException(nameof(bitmap), PublicResources.ArgumentNull);
-            drawingProgressManager = new DrawingProgressManager(p =>
-            {
-                lock (ProgressSyncRoot)
-                    Progress = p;
-            });
-            BeginCountColors(bitmap);
+            this.bitmap = bitmap ?? throw new ArgumentNullException(nameof(bitmap), PublicResources.ArgumentNull);
+            SetDisplayText(Res.TextCountingColorsId);
+            drawingProgressManager = new DrawingProgressManager(p => Progress = p);
         }
 
         #endregion
@@ -90,7 +86,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         public int? GetEditedModel()
         {
-            task.WaitForCompletion();
+            activeTask?.WaitForCompletion();
             return colorCount;
         }
 
@@ -100,9 +96,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal void CancelIfRunning()
         {
-            task.IsCanceled = true;
+            CountTask? t = activeTask;
+            if (t == null)
+                return;
+
+            t.IsCanceled = true;
             SetModified(false);
-            task.WaitForCompletion();
+            t.WaitForCompletion();
         }
 
         #endregion
@@ -111,67 +111,95 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         protected override bool AffectsModifiedState(string propertyName) => false;
 
+        internal override void ViewLoaded()
+        {
+            base.ViewLoaded();
+            BeginCountColors();
+        }
+
+        protected override void ApplyDisplayLanguage() => UpdateDisplayText();
+
         #endregion
 
         #region Private Methods
 
-        private void BeginCountColors(Bitmap bitmap)
+        private void BeginCountColors()
         {
             IsProcessing = true;
-            task = new CountTask { Bitmap = bitmap };
-            ThreadPool.QueueUserWorkItem(DoCountColors);
+            activeTask = new CountTask { Bitmap = bitmap };
+            ThreadPool.QueueUserWorkItem(DoCountColors, activeTask);
         }
 
-        [SuppressMessage("Reliability", "CA2002:Do not lock on objects with weak identity", Justification = "False alarm, task.Bitmap is not a remote object")]
-        private void DoCountColors(object state)
+        private void DoCountColors(object? state)
         {
-            Exception error = null;
+            Exception? error = null;
+            var task = (CountTask)state!;
 
-            // We must lock on the image to avoid the possible "bitmap region is already in use" error from the Paint of main view's image viewer,
-            // which also locks on the image to help avoiding this error
-            lock (task.Bitmap)
+            try
             {
-                IReadableBitmapData bitmapData = null;
-                try
+                // We must lock on the image to avoid the possible "bitmap region is already in use" error from the Paint of main view's image viewer,
+                // which also locks on the image to help avoiding this error
+                lock (task.Bitmap)
                 {
-                    bitmapData = task.Bitmap.GetReadableBitmapData();
-                    IAsyncResult asyncResult = bitmapData.BeginGetColorCount(new AsyncConfig
+                    IReadableBitmapData? bitmapData = null;
+                    try
                     {
-                        IsCancelRequestedCallback = () => task.IsCanceled,
-                        ThrowIfCanceled = false,
-                        Progress = drawingProgressManager
-                    });
+                        bitmapData = task.Bitmap.GetReadableBitmapData();
+                        IAsyncResult asyncResult = bitmapData.BeginGetColorCount(new AsyncConfig
+                        {
+                            IsCancelRequestedCallback = () => task.IsCanceled,
+                            ThrowIfCanceled = false,
+                            Progress = drawingProgressManager
+                        });
 
-                    // Waiting to be finished or canceled. As we are on a different thread blocking wait is alright
-                    colorCount = asyncResult.EndGetColorCount();
+                        // Waiting to be finished or canceled. As we are on a different thread blocking wait is alright
+                        colorCount = asyncResult.EndGetColorCount();
+                    }
+                    catch (Exception e)
+                    {
+                        error = e;
+                    }
+                    finally
+                    {
+                        bitmapData?.Dispose();
+                        task.SetCompleted();
+                    }
                 }
-                catch (Exception e) when (!e.IsCriticalGdi())
+
+                if (task.IsCanceled)
+                    colorCount = null;
+
+                // returning if task was canceled because cancel closes the UI
+                if (colorCount.HasValue)
+                    SetModified(true);
+                else
+                    return;
+
+                // applying result (or error)
+                TryInvokeSync(() =>
                 {
-                    error = e;
-                }
-                finally
-                {
-                    bitmapData?.Dispose();
-                    task.SetCompleted();
-                }
+                    if (error != null)
+                        SetDisplayText(Res.ErrorMessageId, error.Message);
+                    else
+                        SetDisplayText(Res.TextColorCountId, colorCount.Value);
+                    IsProcessing = false;
+                });
             }
-
-            if (task.IsCanceled)
-                colorCount = null;
-
-            SetModified(colorCount.HasValue);
-
-            // the execution of this method will be marshaled back to the UI thread
-            void Action()
+            finally
             {
-                DisplayText = error != null ? Res.ErrorMessage(error.Message)
-                    : colorCount == null ? Res.TextOperationCanceled
-                    : Res.TextColorCount(colorCount.Value);
-                IsProcessing = false;
+                task.Dispose();
+                activeTask = null;
             }
-
-            SynchronizedInvokeCallback?.Invoke(Action);
         }
+
+        private void SetDisplayText(string resourceId, params object[] args)
+        {
+            displayTextId = resourceId;
+            displayTextArgs = args;
+            UpdateDisplayText();
+        }
+
+        private void UpdateDisplayText() => DisplayText = Res.Get(displayTextId, displayTextArgs);
 
         #endregion
 

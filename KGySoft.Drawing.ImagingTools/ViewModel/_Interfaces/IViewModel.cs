@@ -28,5 +28,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
     /// </summary>
     public interface IViewModel : IDisposable
     {
+        #region Properties
+
+        /// <summary>
+        /// Gets whether the model instance that belongs this view model instance is modified.
+        /// </summary>
+        bool IsModified { get; }
+
+        #endregion
     }
 }

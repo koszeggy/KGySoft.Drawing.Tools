@@ -11,16 +11,18 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             this.sbVertical = new System.Windows.Forms.VScrollBar();
             this.SuspendLayout();
             // 
-            // hScrollBar
+            // sbHorizontal
             // 
+            this.sbHorizontal.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.sbHorizontal.Location = new System.Drawing.Point(0, 0);
             this.sbHorizontal.Name = "sbHorizontal";
             this.sbHorizontal.Size = new System.Drawing.Size(80, 17);
             this.sbHorizontal.TabIndex = 0;
             this.sbHorizontal.Visible = false;
             // 
-            // vScrollBar
+            // sbVertical
             // 
+            this.sbVertical.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.sbVertical.Location = new System.Drawing.Point(0, 0);
             this.sbVertical.Name = "sbVertical";
             this.sbVertical.Size = new System.Drawing.Size(17, 80);
@@ -32,6 +34,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             this.Controls.Add(this.sbHorizontal);
             this.Controls.Add(this.sbVertical);
             this.ResumeLayout(false);
+
         }
 
         private HScrollBar sbHorizontal;
