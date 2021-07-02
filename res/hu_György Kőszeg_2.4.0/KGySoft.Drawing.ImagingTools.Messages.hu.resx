@@ -142,6 +142,12 @@ Az újonnan generált nyelvi fájlok „[T]” prefixszel ellátott angol nyelv�
   <data name="colLanguage.HeaderText">
     <value>Nyelv</value>
   </data>
+  <data name="ColorDialog.Static.-1">
+    <value>&amp;Alapszínek:</value>
+  </data>
+  <data name="ColorDialog.Static.-2">
+    <value>&amp;Egyedi színek:</value>
+  </data>
   <data name="colOriginalText.HeaderText">
     <value>Eredeti szöveg</value>
   </data>
@@ -310,6 +316,9 @@ Vagy legalább a „{1}” formátum kiválasztása, vagy a színek számának {
   <data name="ErrorMessageFormat">
     <value>Hiba: {0}</value>
   </data>
+  <data name="FolderDialog.Button.1">
+    <value>Kiválaszt</value>
+  </data>
   <data name="gbAllowResxResources.Text">
     <value>Nyelvi fájlok engedélyezése</value>
   </data>
@@ -384,6 +393,13 @@ de gyakorlatilag nincs hatása, mert a forráskép nem támogatja az átlátszó
   </data>
   <data name="InfoMessage_DownloadCompletedFormat">
     <value>{0} fájl letöltése befejőzött.</value>
+  </data>
+  <data name="InfoMessage_EasterEgg">
+    <value>Csak egy sima ToolStrip menü, igaz?
+
+Akkor most képzeljük el a lehetséges platfomokat .NET Framework 3.5-től .NET 5-ig, az operációs rendszereket Windows XP-től Linux/Monóig, a különböző DPI beállításokat, témaválasztásokat, kontrasztos megjelenítést, jobbról-balra kiosztást és ezek minden kombinációját...
+
+A vizuális elemek harmonizációja az összes lehetséges platformra sosem egyszerű feladat, de atyaég, a ToolStrip nem volt egy sétagalopp. Hihetetlen, de minden egyes kombinációval volt legalább egy megjelenítési probléma. A tetszőlegesen nagyítható ImageViewer komponensem az aszinkron, több magon generált simítva átméretezett képeivel ehhez képest gyerekjáték volt...</value>
   </data>
   <data name="InfoMessage_PaletteAutoSelectedFormat">
     <value>Egy {0} színű alapértelmezett rendszerpaletta alkalmazva a kiválasztott „{1}” pixelformátumhoz.
@@ -593,6 +609,9 @@ Felbontás: {5}x{6} DPI</value>
   <data name="miDecreaseZoom.Text">
     <value>Kicsinyítés</value>
   </data>
+  <data name="miEasterEgg.Text">
+    <value>Atyaég, ez kemény volt...</value>
+  </data>
   <data name="miGamma.Text">
     <value>Gamma...</value>
   </data>
@@ -650,6 +669,9 @@ Felbontás: {5}x{6} DPI</value>
   <data name="ResizeBitmapForm.Text">
     <value>Átméretezés</value>
   </data>
+  <data name="Static.1090">
+    <value>Mappa:</value>
+  </data>
   <data name="Static.14146">
     <value>Mappa választása a debugger visualizer telepítéshez.</value>
   </data>
@@ -676,12 +698,6 @@ Felbontás: {5}x{6} DPI</value>
   </data>
   <data name="Static.731">
     <value>szín</value>
-  </data>
-  <data name="ColorDialog.Static.-1">
-    <value>&amp;Alapszínek:</value>
-  </data>
-  <data name="ColorDialog.Static.-2">
-    <value>&amp;Egyedi színek:</value>
   </data>
   <data name="tbAlpha.ToolTipText">
     <value>Alfa színkomponens (átlátszóság)</value>
@@ -752,6 +768,9 @@ Felbontás: {5}x{6} DPI</value>
   <data name="Title_AppNameWithFileNameFormat">
     <value>KGy SOFT Imaging Tools v{0} [{1}{2}] – {3}</value>
   </data>
+  <data name="Title_ColorCountFormat">
+    <value>Palettaszínek száma: {0}</value>
+  </data>
   <data name="Title_ColorDialog">
     <value>Szín kiválasztása</value>
   </data>
@@ -781,9 +800,6 @@ Felbontás: {5}x{6} DPI</value>
   </data>
   <data name="Title_OriginalVisibleClipFormat">
     <value>Eredeti látható levágási tartomány: {{X = {0}, Y = {1}, Méret = {2}x{3}}}</value>
-  </data>
-  <data name="Title_ColorCountFormat">
-    <value>Palettaszínek száma: {0}</value>
   </data>
   <data name="Title_SaveFileDialog">
     <value>Kép mentése</value>
@@ -863,11 +879,5 @@ kvantáló kiválasztása szükséges, különben lehet, hogy az eredmény még 
   <data name="WarningMessage_WideConversionLossFormat">
     <value>Egy széles pixelformátumú („{0}”) kép egy másik széles formátumba történő konvertálása közben
 a színek a 32 bites ARGB tartományba kvantálódnak, még akkor is, ha a konverzióhoz nincs kvantáló használva.</value>
-  </data>
-  <data name="Static.1090" xml:space="preserve">
-    <value>Mappa:</value>
-  </data>
-  <data name="FolderDialog.Button.1" xml:space="preserve">
-    <value>Kiválaszt</value>
   </data>
 </root>
