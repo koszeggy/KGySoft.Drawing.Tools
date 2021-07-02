@@ -44,6 +44,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #endregion
 
+        #region Constructors
+
+        internal DefaultViewModel() => SmoothZooming = true;
+
+        #endregion
+
         #region Methods
 
         #region Internal Methods
@@ -51,10 +57,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal override void ViewLoaded()
         {
             string[]? args = CommandLineArguments;
-            if (args.IsNullOrEmpty())
+            if (args.IsNullOrEmpty() || !ProcessArgs(args!))
                 UpdateInfo();
-            else
-                ProcessArgs(args!);
             base.ViewLoaded();
         }
 
@@ -125,15 +129,18 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Private Methods
 
-        private void ProcessArgs(string[] args)
+        private bool ProcessArgs(string[] args)
         {
             if (args.Length == 0)
-                return;
+                return false;
             string file = args[0];
             if (!File.Exists(file))
+            {
                 ShowError(Res.ErrorMessageFileDoesNotExist(file));
-            else
-                OpenFile(file);
+                return false;
+            }
+
+            return OpenFile(file);
         }
 
         #endregion

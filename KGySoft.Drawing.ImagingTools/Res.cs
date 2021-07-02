@@ -70,7 +70,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// Similar to <see cref="LanguageSettings.DisplayLanguageChangedGlobal"/>, which is not quite reliable when executing as a debugger visualizer because
         /// Visual Studio resets the <see cref="Thread.CurrentUICulture"/> on every keystroke and other events.
         /// </summary>
-        internal static event EventHandler DisplayLanguageChanged
+        internal static event EventHandler? DisplayLanguageChanged
         {
             add => value.AddSafe(ref displayLanguageChanged);
             remove => value.RemoveSafe(ref displayLanguageChanged);
@@ -309,6 +309,13 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>This item is for a different ImagingTools version.</summary>
         internal static string InfoMessageResourceVersionMismatch => Get("InfoMessage_ResourceVersionMismatch");
 
+        /// <summary>Just a regular ToolStrip menu, eh?
+        ///
+        /// Now imagine every combination of target platforms (from .NET Framework 3.5 to .NET 5), operating systems (from Windows XP to Linux/Mono), different DPI settings, enabled/disabled visual styles and high contrast mode, right-to-left layout...
+        ///
+        /// Harmonizing visual elements for all possible environments is never a trivial task, but OMG, the ToolStrip wasn't a cakewalk. Would you believe that each and every combination had at least one rendering issue? My custom-zoomable ImageViewer control with the asynchronously generated resized interpolated images on multiple cores was an easy-peasy compared to that...</summary>
+        internal static string InfoMessageEasterEgg => Get("InfoMessage_EasterEgg");
+
         #endregion
 
         #region Installations
@@ -344,7 +351,7 @@ namespace KGySoft.Drawing.ImagingTools
                 ? Configuration.UseOSLanguage ? OSLanguage : Configuration.DisplayLanguage // here, allowing specific languages, too
                 : DefaultLanguage;
 
-            if (Equals(displayLanguage, CultureInfo.InvariantCulture))
+            if (Equals(displayLanguage, CultureInfo.InvariantCulture) || (!Equals(displayLanguage, DefaultLanguage) && !ResHelper.GetAvailableLanguages().Contains(displayLanguage)))
                 displayLanguage = DefaultLanguage;
             DisplayLanguage = displayLanguage;
             LanguageSettings.DynamicResourceManagersSource = allowResXResources ? ResourceManagerSources.CompiledAndResX : ResourceManagerSources.CompiledOnly;

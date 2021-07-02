@@ -26,6 +26,15 @@ using KGySoft.CoreLibraries;
 
 #endregion
 
+#region Suppressions
+
+#if NETCOREAPP3_0
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type. - Controls items are never null
+#pragma warning disable CS8604 // Possible null reference argument. - Controls items are never null
+#endif
+
+#endregion
+
 namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
     internal partial class CheckGroupBox : GroupBox, ICustomLocalizable
@@ -125,6 +134,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         }
 
         protected virtual void OnCheckedChanged(EventArgs e) => (Events[nameof(CheckedChanged)] as EventHandler)?.Invoke(this, e);
+
+        protected override void OnSizeChanged(EventArgs e)
+        {
+            base.OnSizeChanged(e);
+            if (RightToLeft == RightToLeft.Yes)
+                ResetCheckBoxLocation();
+        }
 
         protected override void OnRightToLeftChanged(EventArgs e)
         {

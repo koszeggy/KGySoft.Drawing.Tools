@@ -26,6 +26,15 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
 
+#region Suppressions
+
+#if NETCOREAPP3_0
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type. - DropDownItems items are never null
+#pragma warning disable CS8602 // Dereference of a possibly null reference. - DropDownItems items are never null
+#endif
+
+#endregion
+
 namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
     internal partial class ImageVisualizerForm : MvvmBaseForm<ImageVisualizerViewModel>
@@ -115,6 +124,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             miLanguageSettings.Image = Images.Language;
             btnConfiguration.SetDefaultItem(miManageInstallations);
 
+            miEasterEgg.Image = Images.ImagingTools;
             btnAbout.Image = miAbout.Image = Icons.SystemInformation.ToScaledBitmap();
         }
 
@@ -198,8 +208,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void InitPropertyBindings()
         {
-            // !VM.ReadOnly -> okCancelButtons.Visible
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.ReadOnly), nameof(okCancelButtons.Visible), ro => ro is false, okCancelButtons);
+            // not as binding because will not change and we don't need the buttons for main form
+            if (ViewModel.ReadOnly)
+                okCancelButtons.Visible = false;
 
             // VM.Notification -> lblNotification.Text
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Notification), nameof(Label.Text), lblNotification);
@@ -332,12 +343,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 .AddSource(miMarketplace, nameof(miMarketplace.Click));
             CommandBindings.Add(ViewModel.SubmitResourcesCommand)
                 .AddSource(miSubmitResources, nameof(miSubmitResources.Click));
+            CommandBindings.Add(ViewModel.ShowEasterEggCommand)
+                .AddSource(miEasterEgg, nameof(miEasterEgg.Click));
 
             // View commands
             CommandBindings.Add(OnResizeCommand)
                 .AddSource(this, nameof(Resize));
             CommandBindings.Add(OnPreviewImageResizedCommand)
                 .AddSource(imageViewer, nameof(imageViewer.SizeChanged));
+            CommandBindings.Add(() => miEasterEgg.Visible |= ModifierKeys == (Keys.Shift | Keys.Control))
+                .AddSource(miAbout, nameof(miAbout.MouseDown));
         }
 
         private Rectangle GetScreenRectangle() => Screen.FromHandle(Handle).WorkingArea;
@@ -363,7 +378,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             if (imageViewer.Height >= minHeight)
                 return;
             int buttonsHeight = okCancelButtons.Visible ? okCancelButtons.Height : 0;
-            txtInfo.Height = ClientSize.Height - Padding.Vertical - tsMenu.Height - splitter.Height - buttonsHeight - minHeight;
+            int notificationHeight = lblNotification.Visible ? lblNotification.Height : 0;
+            txtInfo.Height = ClientSize.Height - Padding.Vertical - tsMenu.Height - splitter.Height - buttonsHeight - notificationHeight - minHeight;
             PerformLayout();
         }
 

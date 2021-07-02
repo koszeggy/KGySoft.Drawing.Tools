@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using System.Threading;
@@ -291,10 +292,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Explicit Interface Implementations
 
+        [SuppressMessage("CodeQuality", "IDE0002:Name can be simplified",
+            Justification = "Without the base qualifier executing in Mono causes StackOverflowException. See https://github.com/mono/mono/issues/21129")]
         void IDisposable.Dispose()
         {
             isRtlChanging = false;
-            InvokeIfRequired(Dispose);
+            InvokeIfRequired(base.Dispose);
         }
 
         void IView.ShowDialog(IntPtr ownerHandle)

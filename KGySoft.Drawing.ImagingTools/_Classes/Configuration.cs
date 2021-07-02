@@ -68,10 +68,13 @@ namespace KGySoft.Drawing.ImagingTools
         #region Constants
 
         private const string defaultResourceRepositoryLocation = "https://koszeggy.github.io/KGySoft.Drawing.Tools/res/"; // same as "https://raw.githubusercontent.com/koszeggy/KGySoft.Drawing.Tools/pages/res/"
+        private const string fallbackResourceRepositoryLocation = "http://kgysoft.net/res/"; // "http://koszeggy.github.io/KGySoft.Drawing.Tools/res/" does not work on Win7/.NET 3.5
 
         #endregion
 
         #region Fields
+
+        private static readonly bool allowHttps;
 
         private static Uri? baseUri;
 
@@ -90,7 +93,8 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Private Properties
         
-        private static string ResourceRepositoryLocation => GetFromAppConfig() ?? defaultResourceRepositoryLocation;
+        private static string ResourceRepositoryLocation => GetFromAppConfig()
+            ?? (allowHttps ? defaultResourceRepositoryLocation : fallbackResourceRepositoryLocation);
 
         #endregion
 
@@ -100,18 +104,33 @@ namespace KGySoft.Drawing.ImagingTools
 
         static Configuration()
         {
+            allowHttps = !(OSUtils.IsMono && OSUtils.IsWindows);
+#if NET35
+            allowHttps &= OSUtils.IsWindows8OrLater;
+#endif
+
             // To be able to resolve UserSettingsGroup of with other framework version
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 #if NET35
             // To prevent serializing CultureInfo by DisplayName instead of Name
             typeof(CultureInfo).RegisterTypeConverter<CultureInfoConverterFixed>();
 #endif
+
+#if NETFRAMEWORK
+            try
+            {
+                // To be able to use HTTP requests with TLS 1.2 security protocol (may not work on Windows XP)
+                ServicePointManager.SecurityProtocol |=
 #if NET35 || NET40
-            // To be able to use HTTP requests with TLS 1.2 security protocol (may not work on Windows XP)
-            ServicePointManager.SecurityProtocol |= (SecurityProtocolType)3072;
-#elif NETFRAMEWORK
-            // To be able to use HTTP requests with TLS 1.2 security protocol (may not work on Windows XP)
-            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
+                    (SecurityProtocolType)3072;
+#else
+                    SecurityProtocolType.Tls12;
+#endif
+            }
+            catch (NotSupportedException)
+            {
+                allowHttps = false;
+            }
 #endif
         }
 
@@ -166,13 +185,13 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Event handlers
 
-        private static Assembly? CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        private static Assembly? CurrentDomain_AssemblyResolve(object? sender, ResolveEventArgs args)
         {
 #if NETFRAMEWORK
             if (args.Name.StartsWith("System, Version=", StringComparison.Ordinal))
                 return typeof(UserSettingsGroup).Assembly;
 #elif NETCOREAPP
-            if (args.Name?.StartsWith("System.Configuration.ConfigurationManager, Version=", StringComparison.Ordinal) == true)
+            if (args.Name.StartsWith("System.Configuration.ConfigurationManager, Version=", StringComparison.Ordinal))
                 return typeof(UserSettingsGroup).Assembly;
 #endif
             return null;

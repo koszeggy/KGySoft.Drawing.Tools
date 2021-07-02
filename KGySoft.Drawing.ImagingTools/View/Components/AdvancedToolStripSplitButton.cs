@@ -92,8 +92,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
         {
             if (Owner.Orientation == Orientation.Horizontal)
                 return base.GetPreferredSize(constrainingSize);
-            Size result = base.GetPreferredSize(constrainingSize);
 
+            // with vertical orientation the image is too small
+            Size result = base.GetPreferredSize(constrainingSize);
             return new Size(result.Width + Owner.ScaleWidth(2), result.Height);
         }
 

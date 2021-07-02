@@ -31,7 +31,15 @@ namespace KGySoft.Drawing.ImagingTools.Model
     [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "ReSharper issue")]
     public class LocalizationInfo
     {
+        #region Fields
+
+        private Version? version;
+
+        #endregion
+
         #region Properties
+
+        #region Public Properties
 
         /// <summary>
         /// Gets or sets the culture name of the localization that matches the <see cref="CultureInfo.Name"/> property of the represented culture.
@@ -46,7 +54,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
         /// <summary>
         /// Gets or sets the version number of the <c>KGySoft.Drawing.ImagingTools.exe</c> assembly this localization belongs to.
         /// </summary>
-        public Version ImagingToolsVersion { get; set; } = default!;
+        public string ImagingToolsVersion { get; set; } = default!;
 
         /// <summary>
         /// Gets or sets the author of the localization.
@@ -57,6 +65,34 @@ namespace KGySoft.Drawing.ImagingTools.Model
         /// Gets or sets the class libraries whose resources are covered by this localization.
         /// </summary>
         public LocalizableLibraries ResourceSets { get; set; } = default!;
+
+        #endregion
+
+        #region Internal Properties
+
+        // Note: Not a public property because XML deserialization may fail in very special circumstances
+        // (eg. executing as debugger visualizer in Windows 7 with VS2015).
+        internal Version Version
+        {
+            get
+            {
+                if (version is null)
+                {
+                    try
+                    {
+                        version = new Version(ImagingToolsVersion);
+                    }
+                    catch (Exception e) when (!e.IsCritical())
+                    {
+                        version = new Version();
+                    }
+                }
+
+                return version;
+            }
+        }
+
+        #endregion
 
         #endregion
     }

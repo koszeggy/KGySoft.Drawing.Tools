@@ -31,6 +31,7 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         private static readonly Size referenceSize = new Size(16, 16);
 
+        private static Bitmap? imagingTools;
         private static Bitmap? check;
         private static Bitmap? crop;
         private static Bitmap? highlightVisibleClip;
@@ -62,6 +63,7 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         #region Properties
 
+        internal static Bitmap ImagingTools => imagingTools ??= GetResource(nameof(ImagingTools));
         internal static Bitmap Check => check ??= GetResource(nameof(Check));
         internal static Bitmap Crop => crop ??= GetResource(nameof(Crop));
         internal static Bitmap HighlightVisibleClip => highlightVisibleClip ??= GetResource(nameof(HighlightVisibleClip));

@@ -168,7 +168,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         #region Event handlers
 #pragma warning disable IDE1006 // Naming Styles
 
-        private void lblProgress_TextChanged(object sender, EventArgs e) => lblProgress.Width = lblProgress.PreferredWidth;
+        private void lblProgress_TextChanged(object? sender, EventArgs e) => lblProgress.Width = lblProgress.PreferredWidth;
 
         private void timer_Tick(object? sender, EventArgs e) => UpdateProgress();
 

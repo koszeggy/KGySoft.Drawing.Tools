@@ -6,6 +6,15 @@ using System.Windows.Forms;
 
 #endregion
 
+#region Suppressions
+
+#if NETCOREAPP3_0
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type. - Controls items are never null
+#pragma warning disable CS8602 // Dereference of a possibly null reference. - Controls items are never null
+#endif
+
+#endregion
+
 namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
     /// <summary>

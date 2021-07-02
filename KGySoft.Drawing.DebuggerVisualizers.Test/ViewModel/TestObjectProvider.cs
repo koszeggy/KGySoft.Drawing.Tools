@@ -86,7 +86,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
 
         public void ReplaceObject(object newObject)
         {
-            Object = newObject.DeepClone();
+            Object = newObject.DeepClone(null);
             ObjectReplaced = true;
         }
 

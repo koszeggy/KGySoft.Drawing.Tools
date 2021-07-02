@@ -51,7 +51,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         public string Key { get; }
         public string OriginalText { get; }
-        public string TranslatedText { get => Get<string>(); set => Set(value); }
+        public string TranslatedText { get => Get<string>(); init => Set(value); }
 
         #endregion
 

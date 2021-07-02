@@ -15,12 +15,16 @@
 + Now panning a zoomed image is possible also by clicking and dragging with the mouse (besides usual scrolling).
 + Zooming is now possible also with keyboard shortcuts, the Auto Zoom button has now a drop-down part for the
   additional options.
-+ Supporting localization from .resx files with editing, downloading and applying without restarting.
-  Note: Right-to-left languages are also supported though with some limitations, especially under Linux/Mono.
++ Supporting localization from .resx files with editing, downloading and applying changes on-the-fly.
+  Note: Right-to-left languages are also supported though with some limitations, especially under Mono.
   On Windows some validation tool tips are not aligned right but otherwise the layout is arranged correctly.
-+ Palette visualizer form: OK/Cancel buttons
-+ Color visualizer form: OK/Cancel buttons
-+ Image visualizer form: OK/Cancel buttons
+* Image visualizer form:
+  + OK/Cancel buttons in debug mode when image is editable
+  - Fixing several tool strip appearance issues, including high DPI and high contrast modes
+* Palette visualizer form:
+  + OK/Cancel buttons when palette is editable
+  - Fixing the alpha pattern on Mono
++ Color visualizer form: OK/Cancel buttons then the color is editable
 * Manual zooming is enabled even if Auto Zoom is on; this turns off Auto Zoom automatically.
 * ImageViewer control:
   * Turning on/off smoothing of zoomed images affects also shrunk images (previously affected enlarged images only).
@@ -33,6 +37,7 @@
 - Manage Installations:
   - Remove was always enabled even it there was no installed version
 - Fixing possible errors when closing forms while an async operation is still in progress.
+
 * API changes:
   * Members are annotated for using C# 8.0 nullable references
   + InstallationManager class:
@@ -60,7 +65,7 @@
 
 * KGySoft.Drawing.DebuggerVisualizers.Package.dll
 =================================================
-* ImagingTools and Manage Installations installations in Visual Studio Tools menu are executed on a new thread
+* ImagingTools and Manage Installations executed from the Visual Studio Tools menu are executed on a new thread
   so the possible lagging of Visual Studio does not affect the performance anymore.
 
 

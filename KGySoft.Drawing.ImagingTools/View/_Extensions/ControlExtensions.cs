@@ -24,6 +24,16 @@ using KGySoft.Reflection;
 
 #endregion
 
+#region Suppressions
+
+#if NETCOREAPP3_0
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type. - Controls/Columns/DropDownItems never have null elements
+#pragma warning disable CS8602 // Dereference of a possibly null reference. - Controls/Columns/DropDownItems never have null elements
+#pragma warning disable CS8604 // Possible null reference argument. - Controls/Columns/DropDownItems never have null elements
+#endif
+
+#endregion
+
 namespace KGySoft.Drawing.ImagingTools.View
 {
     internal static class ControlExtensions

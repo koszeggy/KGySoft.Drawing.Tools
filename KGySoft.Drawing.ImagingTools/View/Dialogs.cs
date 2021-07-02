@@ -35,8 +35,8 @@ namespace KGySoft.Drawing.ImagingTools.View
         
         private enum DialogType
         {
-            MessageBoxSingleButton,
-            MessageBoxMoreButtons,
+            SingleButtonMessageBox,
+            MultiButtonMessageBox,
             ColorDialog,
             FolderDialog
         }
@@ -158,7 +158,7 @@ namespace KGySoft.Drawing.ImagingTools.View
                 windowHook = User32.HookCallWndRetProc(callWndRetProc);
                 dialogContext = new DialogContext
                 {
-                    DialogType = buttons == MessageBoxButtons.OK ? DialogType.MessageBoxSingleButton : DialogType.MessageBoxMoreButtons
+                    DialogType = buttons == MessageBoxButtons.OK ? DialogType.SingleButtonMessageBox : DialogType.MultiButtonMessageBox
                 };
             }
 
@@ -174,7 +174,7 @@ namespace KGySoft.Drawing.ImagingTools.View
         {
             if (nCode >= 0)
             {
-                var msg = (CWPRETSTRUCT)Marshal.PtrToStructure(lParam, typeof(CWPRETSTRUCT));
+                var msg = (CWPRETSTRUCT)Marshal.PtrToStructure(lParam, typeof(CWPRETSTRUCT))!;
                 if (msg.message == Constants.WM_INITDIALOG)
                 {
                     string name = User32.GetClassName(msg.hwnd);
@@ -199,23 +199,22 @@ namespace KGySoft.Drawing.ImagingTools.View
         {
             string className = User32.GetClassName(hWnd);
             int id = User32.GetDialogControlId(hWnd);
+            if (id == 0)
+                return true;
 
             // Controls with id 65535 may duplicate on some dialogs. Usually these contain custom message but on color dialog
-            // these are also constant labels so we assign an incremental id for these.
+            // these are also constant labels so we assign incremental negative ids for them.
             if (id == UInt16.MaxValue && className == Constants.ClassNameStatic)
             {
                 if (!dialogContext.AllowCustomStaticLocalization)
                     return true;
-                className = $"{className}.{dialogContext.DialogType}";
-                id = dialogContext.CustomStaticId;
-                dialogContext.CustomStaticId += 1;
+                id = --dialogContext.CustomStaticId;
             }
             // If there is a single OK button in a MessageBox it has the same id as a Cancel button.
-            else if (dialogContext.DialogType == DialogType.MessageBoxSingleButton && id == Constants.IDCANCEL && className == Constants.ClassNameButton)
+            else if (dialogContext.DialogType == DialogType.SingleButtonMessageBox && id == Constants.IDCANCEL && className == Constants.ClassNameButton)
                 id = Constants.IDOK;
 
-            // Now the resource id is either "className.id" or "className.DialogType.id"
-            string? text = Res.GetStringOrNull($"{className}.{id}");
+            string? text = Res.GetStringOrNull($"{dialogContext.DialogType}.{className}.{id}") ?? Res.GetStringOrNull($"{className}.{id}");
             if (text != null)
                 User32.SetControlText(hWnd, text);
             return true;

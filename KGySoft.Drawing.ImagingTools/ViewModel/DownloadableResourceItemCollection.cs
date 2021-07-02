@@ -43,7 +43,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             foreach (LocalizationInfo info in collection)
             {
                 var item = new DownloadableResourceItem(info);
-                item.PropertyChanged += Item_PropertyChanged;
+                item.PropertyChanged += Item_PropertyChanged!;
 
                 if (langGroups.TryGetValue(info.CultureName, out List<DownloadableResourceItem>? group))
                     group.Add(item);

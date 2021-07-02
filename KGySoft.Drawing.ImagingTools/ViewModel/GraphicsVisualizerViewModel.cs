@@ -31,12 +31,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
     internal class GraphicsVisualizerViewModel : ImageVisualizerViewModel
     {
-        #region Fields
-
-        private bool viewInitialized;
-
-        #endregion
-
         #region Properties
 
         internal GraphicsInfo? GraphicsInfo { get => Get<GraphicsInfo?>(); init => Set(value); }
@@ -70,13 +64,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             base.OnPropertyChanged(e);
             if (e.PropertyName.In(nameof(GraphicsInfo), nameof(GraphicsInfo)))
                 UpdateImageAndCommands();
-        }
-
-        internal override void ViewLoaded()
-        {
-            viewInitialized = true;
-            UpdateGraphicImage();
-            base.ViewLoaded();
         }
 
         protected override void UpdateInfo()
@@ -150,8 +137,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void UpdateGraphicImage()
         {
-            if (!viewInitialized)
-                return;
             GraphicsInfo? graphicsInfo = GraphicsInfo;
             Bitmap? backingImage = graphicsInfo?.GraphicsImage;
             if (backingImage == null)

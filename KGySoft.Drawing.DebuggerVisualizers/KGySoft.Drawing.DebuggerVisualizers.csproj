@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net35;net40;net45;netcoreapp3.0;net5.0-windows</TargetFrameworks>
+    <TargetFrameworks>net35;net40;net45;net5.0-windows</TargetFrameworks>
     <!--<TargetFrameworks>net45</TargetFrameworks>-->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>KGySoft.Drawing.DebuggerVisualizers</RootNamespace>
@@ -15,6 +15,9 @@
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Authors>György Kőszeg</Authors>
     <Nullable>enable</Nullable>
+
+    <!--Suppression NETSDK1138: The target framework 'netcoreapp3.0' is out of support - this is not an application but a library so targeting the lowest possible versions is intended -->
+    <NoWarn>$(NoWarn);NETSDK1138</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

@@ -79,7 +79,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             var result = new ValidationResultsCollection();
 
-            if (!InstallationManager.ImagingToolsVersion.NormalizedEquals(Info.ImagingToolsVersion))
+            if (!InstallationManager.ImagingToolsVersion.NormalizedEquals(Info.Version))
                 result.AddInfo(nameof(ImagingToolsVersion), Res.InfoMessageResourceVersionMismatch);
             if (!ResHelper.TryGetCulture(CultureName, out var _))
                 result.AddWarning(nameof(Language), Res.WarningMessageUnsupportedCulture);

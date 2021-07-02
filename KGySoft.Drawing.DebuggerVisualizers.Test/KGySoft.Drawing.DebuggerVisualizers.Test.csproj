@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <TargetFrameworks>net35;net40;net45;netcoreapp3.0;net5.0-windows</TargetFrameworks>
+    <TargetFrameworks>net35;net40;net45;net5.0-windows</TargetFrameworks>
     <!--<TargetFrameworks>net45</TargetFrameworks>-->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>KGySoft.Drawing.DebuggerVisualizers.Test</RootNamespace>
@@ -17,6 +17,9 @@
     <OutputType>WinExe</OutputType>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Nullable>enable</Nullable>
+
+    <!--Suppression NETSDK1138: The target framework 'netcoreapp3.0' is out of support - the versions of this test project should match the versions of the tested libraries -->
+    <NoWarn>$(NoWarn);NETSDK1138</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

@@ -558,6 +558,13 @@ Target Platform: {1}
 You are now using the compiled English resources.
 Copyright © {2} KGy SOFT. All rights reserved.</value>
   </data>
+  <data name="InfoMessage_EasterEgg" xml:space="preserve">
+    <value>Just a regular ToolStrip menu, eh?
+
+Now imagine every combination of target platforms (from .NET Framework 3.5 to .NET 5), operating systems (from Windows XP to Linux/Mono), different DPI settings, enabled/disabled visual styles and high contrast mode, right-to-left layout...
+
+Harmonizing visual elements for all possible environments is never a trivial task, but OMG, the ToolStrip wasn't a cakewalk. Would you believe that each and every combination had at least one rendering issue? My custom-zoomable ImageViewer control with the asynchronously generated resized interpolated images on multiple cores was an easy-peasy compared to that...</value>
+  </data>
   <data name="Installations_NotAvailable" xml:space="preserve">
     <value>N/A (KGySoft.Drawing.DebuggerVisualizers.dll is missing)</value>
   </data>
@@ -926,6 +933,9 @@ Tip: use '[T]' to filter untranslated texts.</value>
   <data name="miAbout.Text" xml:space="preserve">
     <value>About...</value>
   </data>
+  <data name="miEasterEgg.Text" xml:space="preserve">
+    <value>Oh boy, this was tough...</value>
+  </data>
   <data name="Button.1" xml:space="preserve">
     <value>&amp;OK</value>
   </data>
@@ -938,10 +948,10 @@ Tip: use '[T]' to filter untranslated texts.</value>
   <data name="Button.7" xml:space="preserve">
     <value>&amp;No</value>
   </data>
-  <data name="Static.ColorDialog.0" xml:space="preserve">
+  <data name="ColorDialog.Static.-1" xml:space="preserve">
     <value>&amp;Basic Colors:</value>
   </data>
-  <data name="Static.ColorDialog.1" xml:space="preserve">
+  <data name="ColorDialog.Static.-2" xml:space="preserve">
     <value>Custo&amp;m Colors:</value>
   </data>
   <data name="Button.719" xml:space="preserve">
@@ -979,5 +989,11 @@ Tip: use '[T]' to filter untranslated texts.</value>
   </data>
   <data name="Button.14150" xml:space="preserve">
     <value>&amp;Make New Folder</value>
+  </data>
+  <data name="Static.1090" xml:space="preserve">
+    <value>Folder:</value>
+  </data>
+  <data name="FolderDialog.Button.1" xml:space="preserve">
+    <value>Select Folder</value>
   </data>
 </root>

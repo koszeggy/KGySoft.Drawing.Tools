@@ -160,6 +160,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommand VisitGitHubCommand => Get(() => new SimpleCommand(() => Process.Start("https://github.com/koszeggy/KGySoft.Drawing.Tools")));
         internal ICommand VisitMarketplaceCommand => Get(() => new SimpleCommand(() => Process.Start("https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers")));
         internal ICommand SubmitResourcesCommand => Get(() => new SimpleCommand(() => Process.Start("https://github.com/koszeggy/KGySoft.Drawing.Tools/issues/new?assignees=&labels=&template=submit-resources.md&title=%5BRes%5D")));
+        internal ICommand ShowEasterEggCommand => Get(() => new SimpleCommand(() => ShowInfo(Res.InfoMessageEasterEgg)));
 
         #endregion
 
@@ -1229,10 +1230,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 #if NET35
             const string frameworkName = ".NET Framework 3.5"; 
 #else
-            var attr = (TargetFrameworkAttribute)Attribute.GetCustomAttribute(asm, typeof(TargetFrameworkAttribute));
-            string frameworkName = attr.FrameworkDisplayName ?? attr.FrameworkName;
+            TargetFrameworkAttribute attr = (TargetFrameworkAttribute)Attribute.GetCustomAttribute(asm, typeof(TargetFrameworkAttribute))!;
+            string frameworkName = attr.FrameworkDisplayName is { Length: > 0 } name ? name : attr.FrameworkName;
 #endif
-            ShowInfo(Res.InfoMessageAbout(asm.GetName().Version, frameworkName, DateTime.Now.Year));
+            ShowInfo(Res.InfoMessageAbout(asm.GetName().Version!, frameworkName, DateTime.Now.Year));
         }
 
         #endregion

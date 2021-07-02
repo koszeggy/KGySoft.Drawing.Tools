@@ -81,6 +81,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             base.ApplyViewModel();
         }
 
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (gridResources.IsCurrentCellInEditMode)
+            {
+                gridResources.CancelEdit();
+                gridResources.EndEdit();
+            }
+
+            base.OnFormClosing(e);
+        }
+
         #endregion
 
         #region Private Methods
