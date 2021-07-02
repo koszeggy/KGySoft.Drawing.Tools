@@ -2,13 +2,14 @@
 
 # KGy SOFT Drawing Tools
 
-KGy SOFT Drawing Tools repository contains [Debugger Visualizers](#debugger-visualizers) for several `System.Drawing` types such as `Bitmap`, `Metafile`, `Icon`, `BitmapData`, `Graphics`, etc. (see also below). The visualizers use [KGy SOFT Imaging Tools](#kgy-soft-imaging-tools) to display these types visually, which can be executed as a standalone application as well. Along with the [Debugger Visualizers Test Tool](#debugger-visualizers-test-tool) it can be considered also as a demonstration of the features of the [KGy SOFT Drawing Libraries](https://kgysoft.net/drawing).
+The KGy SOFT Drawing Tools repository contains a couple of applications and some [Debugger Visualizers](#debugger-visualizers) for several `System.Drawing` types such as `Bitmap`, `Metafile`, `Icon`, `BitmapData`, `Graphics`, etc. (see also below). The visualizers use [KGy SOFT Imaging Tools](#kgy-soft-imaging-tools) to display these types visually, which can be executed as a standalone application as well. Along with the [Debugger Visualizers Test Tool](#debugger-visualizers-test-tool) it can be considered also as a demonstration of the features of the [KGy SOFT Drawing Libraries](https://kgysoft.net/drawing).
 
 [![Website](https://img.shields.io/website/https/kgysoft.net/corelibraries.svg)](https://kgysoft.net/drawing)
 [![Drawing Libraries Repo](https://img.shields.io/github/repo-size/koszeggy/KGySoft.Drawing.svg?label=Drawing%20Libraries)](https://github.com/koszeggy/KGySoft.Drawing)
 
 ## Table of Contents
 1. [KGy SOFT Imaging Tools](#kgy-soft-imaging-tools)
+   - [Compatibility](#compatibility)
    - [Localization](#localization)
 2. [Debugger Visualizers](#debugger-visualizers)
    - [Installing Debugger Visualizers](#installing-debugger-visualizers)
@@ -20,11 +21,28 @@ KGy SOFT Drawing Tools repository contains [Debugger Visualizers](#debugger-visu
 
 
 ## KGy SOFT Imaging Tools
-![KGySoft.Drawing.ImagingTools](https://kgysoft.net/images/ImagingTools.png)
+<p align="center">
+  <img alt="KGySoft Imaging Tools on Windows 10" src="https://user-images.githubusercontent.com/27336165/124250655-5e760d80-db25-11eb-824f-195e5e1dbcbe.png"/>
+  <br/><em>KGy SOFT Imaging Tools on Windows 10</em>
+</p>
 
 The Imaging Tools application makes possible to load images and icons from file, manipulate and save them into various formats. Several modifications are possible such as rotating, resizing, changing pixel format with quantizing and dithering, adjusting brightness, contrast and gamma, or even editing the palette entries of indexed bitmaps.
 
-![Changing Pixel Format with Quantizing and Dithering](https://kgysoft.net/images/Quantizing.png)
+<p align="center">
+  <img alt="Changing Pixel Format with Quantizing and Dithering" src="https://user-images.githubusercontent.com/27336165/124250977-b3198880-db25-11eb-9f72-6fa51d54a9da.png"/>
+  <br/><em>Changing Pixel Format with Quantizing and Dithering</em>
+</p>
+
+> _Tip:_ As a developer, you can access all of these image manipulaion functions by using [KGy SOFT Drawing Libraries](https://github.com/koszeggy/KGySoft.Drawing). It supports not just `System.Drawing` types but also completely managed and technology agnostic bitmap data manipulation as well.
+
+### Compatibility
+
+KGy SOFT Imaging Tools supports a wide range of platforms. Windows is supported starting with Windows XP but by using [Mono](https://www.mono-project.com/download/stable/) you can execute it also on Linux. See the [downloads](#download) for details.
+
+<p align="center">
+  <img alt="KGySoft Imaging Tools on Ubuntu Linux, using dark theme" src="https://user-images.githubusercontent.com/27336165/124265526-157a8500-db36-11eb-8d3a-84e66259ce03.png"/>
+  <br/><em>KGySoft Imaging Tools on Ubuntu Linux, using dark theme</em>
+</p>
 
 ### Localization
 
@@ -34,7 +52,10 @@ KGy SOFT Imaging Tools supports localization from .resx files. New language reso
 
 The edited resources are saved in .resx files in the `Resources` subfolder of the application. Resources can be downloaded from within the application as well.
 
-![Editing resources in KGy SOFT Imaging Tools](https://user-images.githubusercontent.com/27336165/124143008-0a1e4f80-da8b-11eb-8f85-572507b66154.png)
+<p align="center">
+  <img alt="Editing resources in KGy SOFT Imaging Tools" src="https://user-images.githubusercontent.com/27336165/124143008-0a1e4f80-da8b-11eb-8f85-572507b66154.png"/>
+  <br/><em>Editing resources in KGy SOFT Imaging Tools</em>
+</p>
 
 > _Note:_ If you create a localization for your language feel free to [submit a new issue](https://github.com/koszeggy/KGySoft.Drawing.Tools/issues/new?assignees=&labels=&template=submit-resources.md&title=%5BRes%5D) and I will make it available for everyone. Don't forget to mention your name in the translated About menu.
 
@@ -46,11 +67,17 @@ If you use Imaging Tools as debugger visualizers, then it can be executed from v
 
 Imaging Tools is packed with several debugger visualizers for Visual Studio (compatible with all versions starting with Visual Studio 2008, and supports even .NET Core 2.1 and newer platform targets). When a type is debugged in Visual Studio and there is a debugger visualizer installed for that type, then a magnifier icon appears that you can click to open the visualizer.
 
-![Debugger Visualizer Usage](https://kgysoft.net/images/DebuggerVisualizerUsage.png)
+<p align="center">
+  <img alt="Debugger Visualizer Usage" src="https://user-images.githubusercontent.com/27336165/124266849-c7ff1780-db37-11eb-9df8-f2149430da16.png"/>
+  <br/><em>Debugger Visualizer Usage</em>
+</p>
 
 Either click the magnifier icon or choose a debugger visualizer from the drop down list (if more visualizers are applicable).
 
-![Debugging Graphics](https://kgysoft.net/images/DebugGraphics.png)
+<p align="center">
+  <img alt="Debugging a Graphics instance" src="https://user-images.githubusercontent.com/27336165/124266974-f54bc580-db37-11eb-98e1-207c48590afa.png"/>
+  <br/><em>Debugging a Graphics instance</em>
+</p>
 
 The `KGySoft.Drawing.DebuggerVisualizers` assembly provides debugger visualizers for the following types:
 - `System.Drawing.Image`: If executed for a non read-only variable or member of type `Image`, then the actual value can be replaced by any `Bitmap` or `Metafile`.
@@ -62,7 +89,10 @@ The `KGySoft.Drawing.DebuggerVisualizers` assembly provides debugger visualizers
 - `System.Drawing.Imaging.ColorPalette`: In a non read-only context the colors can be edited.
 - `System.Drawing.Color`: In a non read-only context the color can be replaced.
 
-![Debugging Palette](https://kgysoft.net/images/DebugPalette.png)
+<p align="center">
+  <img alt="Debugging a Palette instance" src="https://user-images.githubusercontent.com/27336165/124268121-66d84380-db39-11eb-97f5-6ff569b01daa.png"/>
+  <br/><em>Debugging a Palette instance</em>
+</p>
 
 ### Installing Debugger Visualizers
 
