@@ -113,17 +113,26 @@ You can perform the install also from Visual Studio by the _Tools/Extensions and
   - `net5.0-windows` contains the .NET 5.0 binaries of the Imaging Tools application. Debugger visualizers are not included because it would not be recognized by Visual Studio anyway. As a standalone application, this is the recommended version on Windows 7-11.
 3. Execute `KGySoft.Drawing.ImagingTools.exe` from one of the folders listed above. Click the _Manage Debugger Visualizer Installations..._ button (the gear icon) on the toolbar.
 
-![Select Install](https://kgysoft.net/images/InstallSelectMenu.png)
+<p align="center">
+  <img alt="Installing Debugger Visualizers from Imaging Tools" src="https://user-images.githubusercontent.com/27336165/124270600-b53b1180-db3c-11eb-92d2-fcbdcbc76ca8.png"/>
+  <br/><em>Installing Debugger Visualizers from Imaging Tools</em>
+</p>
 
 > _Note:_ Starting with version 2.1.0 the debugger visualizers can be used also for .NET Core projects from Visual Studio 2019, even though no .NET Core binaries are used.
 
 4. In the drop down list you will see the identified Visual Studio versions in your Documents folder. You can select either one of them or the _&lt;Custom Path...&gt;_ menu item to install the visualizer debuggers into a custom folder.
 
-![Select Visual Studio version](https://kgysoft.net/images/InstallSelectVSVersion.png)
+<p align="center">
+  <img alt="Selecting Visual Studio Version" src="https://user-images.githubusercontent.com/27336165/124272120-9dfd2380-db3e-11eb-896d-c244fdbd85bc.png"/>
+  <br/><em>Selecting Visual Studio Version</em>
+</p>
 
 5. Click on the _Install_ button. On success the status will display the installed version.
 
-![Installation Complete](https://kgysoft.net/images/InstallComplete.png)
+<p align="center">
+  <img alt="Installation Complete" src="https://user-images.githubusercontent.com/27336165/124272596-3c898480-db3f-11eb-92f9-b219ff7491f3.png"/>
+  <br/><em>Installation Complete</em>
+</p>
 
 ### Troubleshooting
 
@@ -161,7 +170,10 @@ You can download the sources and the binaries as .7z archives [here](https://git
 
 A simple test application is also available in the download binaries. Though it was created mainly for testing purposes it also demonstrates the debugger visualizer and some `KGySoft.Drawing` features.
 
-![Debugger Visualizer Test App](https://kgysoft.net/images/DebuggerVisualizerTest.png)
+<p align="center">
+  <img alt="Debugger Visualizer Test Tool" src="https://user-images.githubusercontent.com/27336165/124276069-a6a42880-db43-11eb-9c47-fe7c45cd7161.png"/>
+  <br/><em>Debugger Visualizer Test Tool</em>
+</p>
 
 > _Note:_ The Debugger Visualizers Test Tool directly references a specific version of the `Microsoft.VisualStudio.DebuggerVisualizers` assembly, therefore Visual Studio will not able to display visualizers when debugging this project unless you use the very same version (Visual Studio 2013).
 
