@@ -105,12 +105,11 @@ You can perform the install also from Visual Studio by the _Tools/Extensions and
 #### Manual Install
 
 1. [Download](#download) the binaries and extract the .7z archive to any folder.
-2. Open the folder with the extracted content. You will find three folders there:
-  - `net35` contains the .NET 3.5 version. Compatible with all Visual Studio versions starting with Visual Studio 2008 (tested with versions 2008-2019). Cannot be used to debug .NET Core applications. As a standalone application, this version supports all Windows versions starting with Windows XP and it can be executed also on Linux (with Mono).
-  - `net40` contains the .NET 4.0 version. You cannot use this one for Visual Studio 2008. Cannot be used to debug .NET Core applications. As a standalone application, this version supports all Windows versions starting with Windows XP, and it can be executed also on Linux (with Mono).
-  - `net45` contains the .NET 4.5 version. You cannot use this one for Windows XP and Visual Studio 2008/2010. With some limitations supports also .NET Core projects (in case of issues see the [Troubleshooting](#Troubleshooting) section). Using Mono, it can be executed also on Linux as a standalone application.
-  - `netcoreapp3.0` contains the .NET Core 3.0 binaries of the Imaging Tools application. Debugger visualizers are not included because it would not be recognized by Visual Studio anyway.
-  - `net5.0-windows` contains the .NET 5.0 binaries of the Imaging Tools application. Debugger visualizers are not included because it would not be recognized by Visual Studio anyway. As a standalone application, this is the recommended version on Windows 7-11.
+2. Open the folder with the extracted content. You will find four folders there:
+  - `net35` contains the .NET Framework 3.5 version. Compatible with all Visual Studio versions starting with Visual Studio 2008 (tested with versions 2008-2019). Cannot be used to debug .NET Core applications. 
+  - `net40` contains the .NET Framework 4.0 version. You cannot use this one for Visual Studio 2008. Cannot be used to debug .NET Core applications.
+  - `net45` contains the .NET Framework 4.5 version. You cannot use this one for Windows XP and Visual Studio 2008/2010. With some limitations supports also .NET Core/.NET projects (in case of issues see the [Troubleshooting](#Troubleshooting) section).
+  - `net5.0-windows` contains the .NET 5.0 binaries of the Imaging Tools application. Debugger visualizers are not included because it would not be recognized by Visual Studio anyway.
 3. Execute `KGySoft.Drawing.ImagingTools.exe` from one of the folders listed above. Click the _Manage Debugger Visualizer Installations..._ button (the gear icon) on the toolbar.
 
 <p align="center">
@@ -164,11 +163,17 @@ If Visual Studio cannot load the visualizer or you have other debugger visualize
 | I edited the language resource files but I cannot find them (or they appear to be gone) | The _Visual Studio/Tools/KGy SOFT Drawing Debugger Visualizers_ and clicking the magnifier icon executes the Imaging Tools from different locations. If you edit the language resources at one place they will not be automatically applied at the other place. Therefore, the saved resources might be at different possible locations:<br/>• If you execute a manually deployed version the resources will be in a `Resources` subfolder in the folder you executed the Imaging Tools from.<br/>• During debugging the tool is executed from the debugger visualizers folder: `Documents\Visual Studio <version>\Visualizers`<br/>• If you launch the tool from the Visual Studio Tools menu, then it is located under `ProgramData\Microsoft\VisualStudio\Packages\...` |
 
 ## Download
-You can download the sources and the binaries as .7z archives [here](https://github.com/koszeggy/KGySoft.Drawing.Tools/releases).
+You can download the sources and the binaries as .7z/.zip archives at the [releases](https://github.com/koszeggy/KGySoft.Drawing.Tools/releases) page.
+
+To support the widest possible range of platforms the binaries archive contains multiple builds in different folders.
+* `net35`: This contains the .NET Framework 3.5 build and though it works on every platforms Imaging Tools supports, it is not really recommended to use as a standalone application. If you use Imaging Tools as [debugger visualizers](#installing-debugger-visualizers), then it is the only version you can use for Visual Studio 2008. For newer Visual Studio versions use it only if you want to debug a .NET Framework 2.0-3.5 application.
+* `net40`: This is the .NET Framework 4.0 build. As a standalone application, it's basically recommended only for Windows XP.
+* `net45`: This is the .NET Framework 4.5 build, which is the recommended version to use as a debugger visualizer for .NET Framework 4.x and .NET Core projects (including .NET 5 and newer platforms). As a standalone application, this is also the recommended version for Linux (though 3.5/4.0 also support it).
+* `net5.0-windows`: This folder contains the .NET 5.0 build. As a standalone application this is the recommended version for Windows 7 and above. On the other hand, this one cannot be used as a debugger visualizer (even for .NET Core projects) and does not support Linux either.
 
 ## Debugger Visualizers Test Tool
 
-A simple test application is also available in the download binaries. Though it was created mainly for testing purposes it also demonstrates the debugger visualizer and some `KGySoft.Drawing` features.
+A simple test application is also available in the download binaries. Though it was created mainly for testing purposes it also demonstrates how to use the public API of the Imaging Tools application and the DebuggerVisualizers from a consumer library or application.
 
 <p align="center">
   <img alt="Debugger Visualizer Test Tool" src="https://user-images.githubusercontent.com/27336165/124276069-a6a42880-db43-11eb-9c47-fe7c45cd7161.png"/>
