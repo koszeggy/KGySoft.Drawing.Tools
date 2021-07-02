@@ -677,10 +677,10 @@ Felbontás: {5}x{6} DPI</value>
   <data name="Static.731">
     <value>szín</value>
   </data>
-  <data name="Static.ColorDialog.0">
+  <data name="ColorDialog.Static.-1">
     <value>&amp;Alapszínek:</value>
   </data>
-  <data name="Static.ColorDialog.1">
+  <data name="ColorDialog.Static.-2">
     <value>&amp;Egyedi színek:</value>
   </data>
   <data name="tbAlpha.ToolTipText">
@@ -717,7 +717,7 @@ Felbontás: {5}x{6} DPI</value>
     <value>Letöltés...</value>
   </data>
   <data name="Text_FileFormat">
-    <value>Fájlformátum</value>
+    <value>fájlformátum</value>
   </data>
   <data name="Text_Files">
     <value>fájl</value>
@@ -863,5 +863,11 @@ kvantáló kiválasztása szükséges, különben lehet, hogy az eredmény még 
   <data name="WarningMessage_WideConversionLossFormat">
     <value>Egy széles pixelformátumú („{0}”) kép egy másik széles formátumba történő konvertálása közben
 a színek a 32 bites ARGB tartományba kvantálódnak, még akkor is, ha a konverzióhoz nincs kvantáló használva.</value>
+  </data>
+  <data name="Static.1090" xml:space="preserve">
+    <value>Mappa:</value>
+  </data>
+  <data name="FolderDialog.Button.1" xml:space="preserve">
+    <value>Kiválaszt</value>
   </data>
 </root>
