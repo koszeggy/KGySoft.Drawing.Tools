@@ -40,8 +40,8 @@ The Imaging Tools application makes possible to load images and icons from file,
 KGy SOFT Imaging Tools supports a wide range of platforms. Windows is supported starting with Windows XP but by using [Mono](https://www.mono-project.com/download/stable/) you can execute it also on Linux. See the [downloads](#download) for details.
 
 <p align="center">
-  <img alt="KGySoft Imaging Tools on Ubuntu Linux, using dark theme" src="https://user-images.githubusercontent.com/27336165/124265526-157a8500-db36-11eb-8d3a-84e66259ce03.png"/>
-  <br/><em>KGySoft Imaging Tools on Ubuntu Linux, using dark theme</em>
+  <img alt="KGy SOFT Imaging Tools on Ubuntu Linux, using dark theme" src="https://user-images.githubusercontent.com/27336165/124265526-157a8500-db36-11eb-8d3a-84e66259ce03.png"/>
+  <br/><em>KGy SOFT Imaging Tools on Ubuntu Linux, using dark theme</em>
 </p>
 
 ### Localization
