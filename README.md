@@ -176,7 +176,7 @@ To support the widest possible range of platforms the binaries archive contains 
 A simple test application is also available in the download binaries. Though it was created mainly for testing purposes it also demonstrates how to use the public API of the Imaging Tools application and the DebuggerVisualizers from a consumer library or application.
 
 <p align="center">
-  <img alt="Debugger Visualizer Test Tool" src="https://user-images.githubusercontent.com/27336165/124276069-a6a42880-db43-11eb-9c47-fe7c45cd7161.png"/>
+  <img alt="Debugger Visualizer Test Tool" src="https://user-images.githubusercontent.com/27336165/125045273-1a42ba00-e09d-11eb-8484-02b10dbafd8e.png"/>
   <br/><em>Debugger Visualizer Test Tool</em>
 </p>
 
