@@ -100,11 +100,13 @@
       <EmbedInteropTypes>False</EmbedInteropTypes>
       <Private>False</Private>
     </Reference>
-    <Reference Include="KGySoft.CoreLibraries, Version=5.6.1.0, Culture=neutral, PublicKeyToken=b45eba277439ddfe, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\KGySoft.CoreLibraries.5.6.1\lib\net45\KGySoft.CoreLibraries.dll</HintPath>
+    <Reference Include="KGySoft.CoreLibraries, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b45eba277439ddfe, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\KGySoft.CoreLibraries.6.0.0-rc.1\lib\net45\KGySoft.CoreLibraries.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="KGySoft.Drawing, Version=5.3.1.0, Culture=neutral, PublicKeyToken=b45eba277439ddfe, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\KGySoft.Drawing.5.3.1\lib\net45\KGySoft.Drawing.dll</HintPath>
+    <Reference Include="KGySoft.Drawing, Version=5.3.2.0, Culture=neutral, PublicKeyToken=b45eba277439ddfe, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\KGySoft.Drawing.5.3.2-rc.1\lib\net45\KGySoft.Drawing.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.GraphModel, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\VSSDK.GraphModel.11.0.4\lib\net45\Microsoft.VisualStudio.GraphModel.dll</HintPath>
