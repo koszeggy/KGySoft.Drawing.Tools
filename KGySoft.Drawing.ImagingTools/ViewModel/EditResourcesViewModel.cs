@@ -384,7 +384,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void OnApplyResourcesCommand(ICommandState state)
         {
             Debug.Assert(IsModified || !Equals(culture, Res.DisplayLanguage));
-            ResHelper.ReleaseAllResources();
+            LanguageSettings.ReleaseAllResources();
             bool success = TrySaveResources();
             if (success)
                 ApplyResources();
@@ -395,7 +395,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             bool success = true;
             if (IsModified)
             {
-                ResHelper.ReleaseAllResources();
+                LanguageSettings.ReleaseAllResources();
                 success = TrySaveResources();
                 if (success)
                 {

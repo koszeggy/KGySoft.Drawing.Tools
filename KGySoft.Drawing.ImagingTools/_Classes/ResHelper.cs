@@ -25,8 +25,6 @@ using System.Reflection;
 using KGySoft.Collections;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
-using KGySoft.Reflection;
-using KGySoft.Resources;
 
 #endregion
 
@@ -45,7 +43,6 @@ namespace KGySoft.Drawing.ImagingTools
         #region Fields
 
         private static StringKeyedDictionary<CultureInfo>? culturesCache;
-        private static DynamicResourceManager[]? knownResourceManagers;
 
         #endregion
 
@@ -53,14 +50,6 @@ namespace KGySoft.Drawing.ImagingTools
 
         private static StringKeyedDictionary<CultureInfo> CulturesCache
             => culturesCache ??= CultureInfo.GetCultures(CultureTypes.AllCultures).ToStringKeyedDictionary(ci => ci.Name);
-
-        private static DynamicResourceManager[] KnownResourceManagers
-            => knownResourceManagers ??= new[]
-        {
-            (DynamicResourceManager)Reflector.GetField(Reflector.ResolveType(typeof(LanguageSettings).Assembly, "KGySoft.Res")!, "resourceManager")!,
-            (DynamicResourceManager)Reflector.GetField(Reflector.ResolveType(typeof(DrawingModule).Assembly, "KGySoft.Res")!, "resourceManager")!,
-            (DynamicResourceManager)Reflector.GetField(typeof(Res), "resourceManager")!
-        };
 
         #endregion
 
@@ -113,36 +102,6 @@ namespace KGySoft.Drawing.ImagingTools
             LocalizableLibraries.ImagingTools => typeof(Res).Assembly,
             _ => throw new ArgumentOutOfRangeException(nameof(library), PublicResources.EnumOutOfRange(library))
         };
-
-        /// <summary>
-        /// Generates possible missing resources for the current language in memory so next Save will persist them.
-        /// TODO: Remove when LanguageSettings.EnsureResourcesGenerated will be available.
-        /// </summary>
-        internal static void EnsureResourcesGenerated()
-        {
-            foreach (DynamicResourceManager resourceManager in KnownResourceManagers)
-                resourceManager.GetExpandoResourceSet(Res.DisplayLanguage, ResourceSetRetrieval.CreateIfNotExists, true);
-        }
-
-        /// <summary>
-        /// Saves the pending resources of centralized DRMs.
-        /// TODO: Remove when LanguageSettings.SavePendingResources will be available.
-        /// </summary>
-        internal static void SavePendingResources()
-        {
-            foreach (DynamicResourceManager resourceManager in KnownResourceManagers)
-                resourceManager.SaveAllResources();
-        }
-
-        /// <summary>
-        /// Releases all resource sets without saving of centralized DRMs.
-        /// TODO: Remove when LanguageSettings.ReleaseAllResources will be available.
-        /// </summary>
-        internal static void ReleaseAllResources()
-        {
-            foreach (DynamicResourceManager resourceManager in KnownResourceManagers)
-                resourceManager.ReleaseAllResources();
-        }
 
         #endregion
     }

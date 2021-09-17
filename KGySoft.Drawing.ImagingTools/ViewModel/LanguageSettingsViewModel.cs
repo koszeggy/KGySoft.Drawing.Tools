@@ -215,8 +215,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 Res.DisplayLanguage = currentLanguage;
 
             // Note: Ensure is not really needed because main .resx is generated, while others are saved on demand in the editor, too
-            //ResHelper.EnsureResourcesGenerated(); // TODO If used, then add to EditResourcesVM.Save, too, to be consistent
-            ResHelper.SavePendingResources();
+            LanguageSettings.SavePendingResources();
             availableResXLanguages = null;
             selectableLanguages = null;
         }

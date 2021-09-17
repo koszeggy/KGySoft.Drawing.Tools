@@ -322,7 +322,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void ApplyResources()
         {
-            ResHelper.ReleaseAllResources();
+            LanguageSettings.ReleaseAllResources();
             CultureInfo current = Res.DisplayLanguage;
             if (downloadedCultures.All(c => c.CultureName != current.Name))
                 return;
