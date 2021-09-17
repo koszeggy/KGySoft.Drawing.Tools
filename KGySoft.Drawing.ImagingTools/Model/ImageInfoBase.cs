@@ -131,14 +131,6 @@ namespace KGySoft.Drawing.ImagingTools.Model
         #region Protected Methods
 
         /// <summary>
-        /// Performs the validation on this instance and returns the validation results.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="ValidationResultsCollection" /> instance containing the validation results.
-        /// </returns>
-        protected override ValidationResultsCollection DoValidation() => new ValidationResultsCollection();
-
-        /// <summary>
         /// Releases the resources held by this instance.
         /// </summary>
         /// <param name="disposing"><see langword="true" /> to release both managed and unmanaged resources; <see langword="false" /> to release only unmanaged resources.</param>

@@ -179,9 +179,9 @@ namespace KGySoft.Drawing.ImagingTools.Model
         protected override ValidationResultsCollection DoValidation()
         {
             if (Type == ImageInfoType.None)
-                return new ValidationResultsCollection();
+                return ValidationResultsCollection.Empty;
 
-            ValidationResultsCollection result = base.DoValidation();
+            var result = new ValidationResultsCollection();
             ImageFrameInfo[]? frames = Frames;
             if (Type.In(ImageInfoType.Pages, ImageInfoType.Animation, ImageInfoType.MultiRes))
             {

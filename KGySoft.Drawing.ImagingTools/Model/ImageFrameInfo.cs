@@ -68,13 +68,9 @@ namespace KGySoft.Drawing.ImagingTools.Model
         #region Methods
 
         /// <inheritdoc/>
-        protected override ValidationResultsCollection DoValidation()
-        {
-            ValidationResultsCollection result = base.DoValidation();
-            if (Image == null)
-                result.AddError(nameof(Image), PublicResources.ArgumentNull);
-            return result;
-        }
+        protected override ValidationResultsCollection DoValidation() => Image == null
+            ? new ValidationResultsCollection { new(nameof(Image), PublicResources.PropertyNull(nameof(Image))) }
+            : ValidationResultsCollection.Empty;
 
         #endregion
     }

@@ -89,11 +89,11 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
             #endregion
 
-            var result = new ValidationResultsCollection();
             EnsurePlaceholderCount();
             if (placeholderCount == 0)
-                return result;
+                return ValidationResultsCollection.Empty;
 
+            var result = new ValidationResultsCollection();
             Debug.Assert(placeholderCount < 32, "No resource is expected to contain more than 32 placeholders in KGy SOFT Libraries");
             int usedPlaceholders = 0;
             string value = TranslatedText;
