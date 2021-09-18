@@ -155,10 +155,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommand AdjustContrastCommand => Get(() => new SimpleCommand(OnAdjustContrastCommand));
         internal ICommand AdjustGammaCommand => Get(() => new SimpleCommand(OnAdjustGammaCommand));
         internal ICommand ShowAboutCommand => Get(() => new SimpleCommand(OnShowAboutCommand));
-        internal ICommand VisitWebSiteCommand => Get(() => new SimpleCommand(() => Process.Start("https://kgysoft.net")));
-        internal ICommand VisitGitHubCommand => Get(() => new SimpleCommand(() => Process.Start("https://github.com/koszeggy/KGySoft.Drawing.Tools")));
-        internal ICommand VisitMarketplaceCommand => Get(() => new SimpleCommand(() => Process.Start("https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers")));
-        internal ICommand SubmitResourcesCommand => Get(() => new SimpleCommand(() => Process.Start("https://github.com/koszeggy/KGySoft.Drawing.Tools/issues/new?assignees=&labels=&template=submit-resources.md&title=%5BRes%5D")));
+        internal ICommand VisitWebSiteCommand => Get(() => new SimpleCommand(() => OpenUrl("https://kgysoft.net")));
+        internal ICommand VisitGitHubCommand => Get(() => new SimpleCommand(() => OpenUrl("https://github.com/koszeggy/KGySoft.Drawing.Tools")));
+        internal ICommand VisitMarketplaceCommand => Get(() => new SimpleCommand(() => OpenUrl("https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers")));
+        internal ICommand SubmitResourcesCommand => Get(() => new SimpleCommand(() => OpenUrl("https://github.com/koszeggy/KGySoft.Drawing.Tools/issues/new?assignees=&labels=&template=submit-resources.md&title=%5BRes%5D")));
         internal ICommand ShowEasterEggCommand => Get(() => new SimpleCommand(() => ShowInfo(Res.InfoMessageEasterEgg)));
 
         #endregion
@@ -233,6 +233,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             image = bitmapData.ToBitmap();
             return true;
         }
+
+        private static void OpenUrl(string url) => Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
 
         #endregion
 
