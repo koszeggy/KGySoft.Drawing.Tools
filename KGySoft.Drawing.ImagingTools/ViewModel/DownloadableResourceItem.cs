@@ -24,6 +24,7 @@ using KGySoft.Drawing.ImagingTools.Model;
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
+    // We could just derive from ValidatingObjectBase but the validation does not depend on property change so we provide a lightweight implementation
     internal class DownloadableResourceItem : ObservableObjectBase, IValidatingObject
     {
         #region Fields
@@ -50,7 +51,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         public string ImagingToolsVersion => Info.ImagingToolsVersion.ToString();
         public string? Description => Info.Description;
 
-        // We could just derive from ValidatingObjectBase but we the validation does not depend on property change we provide a lightweight implementation
         public bool IsValid => true;
         public ValidationResultsCollection ValidationResults => validationResults ??= CreateValidationResults();
 

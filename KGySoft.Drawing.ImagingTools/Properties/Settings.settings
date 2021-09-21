@@ -11,5 +11,8 @@
     <Setting Name="DisplayLanguage" Type="System.Globalization.CultureInfo" Scope="User">
       <Value Profile="(Default)">(Default)</Value>
     </Setting>
+    <Setting Name="ResXResourcesCustomPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

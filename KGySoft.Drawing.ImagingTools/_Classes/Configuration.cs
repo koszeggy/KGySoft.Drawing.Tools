@@ -86,6 +86,7 @@ namespace KGySoft.Drawing.ImagingTools
         internal static bool AllowResXResources { get => GetFromSettings<bool>(); set => SetInSettings(value); }
         internal static bool UseOSLanguage { get => GetFromSettings<bool>(); set => SetInSettings(value); }
         internal static CultureInfo DisplayLanguage { get => GetFromSettings<CultureInfo>() ?? Res.DefaultLanguage; set => SetInSettings(value); }
+        internal static string? ResXResourcesCustomPath { get => GetFromSettings<string?>(); set => SetInSettings(value); }
         internal static Uri BaseUri => baseUri ??= new Uri(ResourceRepositoryLocation);
 
         #endregion
@@ -157,7 +158,7 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static void SetInSettings(object value, [CallerMemberName]string propertyName = null!)
+        private static void SetInSettings(object? value, [CallerMemberName]string propertyName = null!)
         {
             try
             {

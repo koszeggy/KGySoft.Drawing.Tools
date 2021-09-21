@@ -6,12 +6,18 @@
 ===============================================================================
 
 ~~~~~~~~~
-- v2.4.1:
+* v2.4.1:
 ~~~~~~~~~
 
-- KGySoft.Drawing.ImagingTools.exe
+* KGySoft.Drawing.ImagingTools.exe
 ==================================
-- .NET 5 build only: Opening URLs from the help menu didn't work.
+* Language Settings
+  + An absolute path can be set for the resources.
+- .NET 5 build: Opening URLs from the help menu didn't work due to a breaking change introduced in .NET Core 3.1.
+
+* API changes:
+  * ViewModelFactory class: CreateEditResources has an optional hasPendingChanges parameter that allows applying
+    changes without any editing.
 
 
 ~~~~~~~~~

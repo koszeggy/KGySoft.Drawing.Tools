@@ -17,6 +17,8 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Globalization;
@@ -39,8 +41,18 @@ namespace KGySoft.Drawing.ImagingTools
     {
         #region Constants
 
+        #region Private Constants
+        
         private const string unavailableResource = "Resource ID not found: {0}";
         private const string invalidResource = "Resource text is not valid for {0} arguments: {1}";
+
+        #endregion
+
+        #region Internal Constants
+
+        internal const string DefaultResourcesPath = "Resources";
+
+        #endregion
 
         #endregion
 
@@ -83,18 +95,25 @@ namespace KGySoft.Drawing.ImagingTools
 
         internal static CultureInfo OSLanguage { get; }
         internal static CultureInfo DefaultLanguage { get; }
+
+        /// <summary>
+        /// Gets or sets the resources directory for searching the available .resx files.
+        /// To apply it also in resource managers call the <see cref="ApplyResourcesDir"/> immediately after setting this property.
+        /// </summary>
+        [AllowNull]
         internal static string ResourcesDir
         {
             get
             {
-                if (resourcesDir == null)
+                if (String.IsNullOrEmpty(resourcesDir))
                 {
-                    string path = resourceManager.ResXResourcesDir;
+                    string path = DefaultResourcesPath;
                     resourcesDir = Path.IsPathRooted(path) ? Path.GetFullPath(path) : Path.GetFullPath(Path.Combine(Files.GetExecutingPath(), path));
                 }
 
-                return resourcesDir;
+                return resourcesDir!;
             }
+            set => resourcesDir = value;
         }
 
         /// <summary>
@@ -263,12 +282,24 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>One or more placeholders are missing from the translated resource format string.</summary>
         internal static string ErrorMessageResourcePlaceholderUnusedIndices => Get("ErrorMessage_ResourcePlaceholderUnusedIndices");
 
+        /// <summary>The specified path cannot be empty.</summary>
+        internal static string ErrorMessagePathIsEmpty => Get("ErrorMessage_PathIsEmpty");
+
+        /// <summary>The specified path contains illegal characters.</summary>
+        internal static string ErrorMessageInvalidPath => Get("ErrorMessage_InvalidPath");
+
+        /// <summary>The specified path is a file but should be a directory.</summary>
+        internal static string ErrorMessageFileNotExpected => Get("ErrorMessage_FileNotExpected");
+
         /// <summary>The selected quantizer supports partial transparency, which is not supported by ditherers,
         /// so partial transparent pixels will be blended with back color.</summary>
         internal static string WarningMessageDithererNoAlphaGradient => Get("WarningMessage_DithererNoAlphaGradient");
 
         /// <summary>This language is not supported on this platform or by the executing framework</summary>
         internal static string WarningMessageUnsupportedCulture => Get("WarningMessage_UnsupportedCulture");
+
+        /// <summary>The specified path is not an existing directory. It will be attempted to be created.</summary>
+        internal static string WarningMessageDirectoryNotExists => Get("WarningMessage_DirectoryNotExists");
 
         /// <summary>Are you sure you want to overwrite this installation?</summary>
         internal static string ConfirmMessageOverwriteInstallation => Get("ConfirmMessage_OverwriteInstallation");
@@ -353,6 +384,23 @@ namespace KGySoft.Drawing.ImagingTools
             if (Equals(displayLanguage, CultureInfo.InvariantCulture) || (!Equals(displayLanguage, DefaultLanguage) && !ResHelper.GetAvailableLanguages().Contains(displayLanguage)))
                 displayLanguage = DefaultLanguage;
             DisplayLanguage = displayLanguage;
+
+            string? desiredResXPath = Configuration.ResXResourcesCustomPath;
+            if (PathHelper.HasInvalidChars(desiredResXPath))
+                desiredResXPath = null;
+            if (!String.IsNullOrEmpty(desiredResXPath))
+            {
+                try
+                {
+                    ResourcesDir = Path.GetFullPath(Path.IsPathRooted(desiredResXPath) ? desiredResXPath! : Path.Combine(Files.GetExecutingPath(), desiredResXPath!));
+                    ApplyResourcesDir();
+                }
+                catch (Exception e) when (!e.IsCritical())
+                {
+                    ResourcesDir = null;
+                }
+            }
+             
             LanguageSettings.DynamicResourceManagersSource = allowResXResources ? ResourceManagerSources.CompiledAndResX : ResourceManagerSources.CompiledOnly;
         }
 
@@ -369,6 +417,24 @@ namespace KGySoft.Drawing.ImagingTools
         /// </summary>
         internal static void EnsureInitialized()
         {
+        }
+
+        internal static void ApplyResourcesDir()
+        {
+            Debug.Assert(!PathHelper.HasInvalidChars(resourcesDir));
+            LanguageSettings.ReleaseAllResources();
+
+            // Using the default path
+            if (String.IsNullOrEmpty(resourcesDir))
+            {
+                // Simple nullification does not restore the original path so resetting it explicitly first
+                LanguageSettings.DynamicResourceManagersResXResourcesDir = DefaultResourcesPath;
+                LanguageSettings.DynamicResourceManagersResXResourcesDir = null;
+                return;
+            }
+
+            Debug.Assert(Path.IsPathRooted(resourcesDir));
+            LanguageSettings.DynamicResourceManagersResXResourcesDir = resourcesDir;
         }
 
         internal static void OnDisplayLanguageChanged() => displayLanguageChanged?.Invoke(null, EventArgs.Empty);
