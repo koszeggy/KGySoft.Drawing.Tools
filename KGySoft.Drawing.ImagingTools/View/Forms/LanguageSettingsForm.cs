@@ -39,7 +39,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             btnEditResources.Height = cmbLanguages.Height + 2; // helps aligning better for higher DPIs
             AcceptButton = okCancelApplyButtons.OKButton;
             CancelButton = okCancelApplyButtons.CancelButton;
+
+            // Mono/Windows: exiting because ToolTips throw an exception if set for an embedded control and
+            // since they don't appear for negative padding there is simply no place for them.
+            if (OSUtils.IsMono && OSUtils.IsWindows)
+                return;
+
             ValidationMapping[nameof(viewModel.ResourceCustomPath)] = gbResxResourcesPath.CheckBox;
+            ErrorProvider.SetIconAlignment(gbResxResourcesPath.CheckBox, ErrorIconAlignment.TopRight);
         }
 
         #endregion
