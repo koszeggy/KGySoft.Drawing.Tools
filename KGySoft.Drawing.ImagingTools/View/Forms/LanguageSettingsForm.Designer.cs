@@ -38,7 +38,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.btnEditResources = new System.Windows.Forms.Button();
             this.cmbLanguages = new System.Windows.Forms.ComboBox();
             this.gbResxResourcesPath = new KGySoft.Drawing.ImagingTools.View.Controls.CheckGroupBox();
-            this.txtResxResourcesPath = new System.Windows.Forms.TextBox();
+            this.txtResxResourcesPath = new Controls.AdvancedTextBox();
             this.chbExistingResourcesOnly = new System.Windows.Forms.CheckBox();
             this.chbUseOSLanguage = new System.Windows.Forms.CheckBox();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
@@ -223,6 +223,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private System.Windows.Forms.ComboBox cmbLanguages;
         private System.Windows.Forms.Button btnDownloadResources;
         private Controls.CheckGroupBox gbResxResourcesPath;
-        private System.Windows.Forms.TextBox txtResxResourcesPath;
+        private Controls.AdvancedTextBox txtResxResourcesPath;
     }
 }

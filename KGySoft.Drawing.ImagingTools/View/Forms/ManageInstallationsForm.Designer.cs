@@ -24,7 +24,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.pnlButtons = new System.Windows.Forms.FlowLayoutPanel();
             this.btnRemove = new System.Windows.Forms.Button();
             this.btnInstall = new System.Windows.Forms.Button();
-            this.tbPath = new System.Windows.Forms.TextBox();
+            this.tbPath = new Controls.AdvancedTextBox();
             this.lblPath = new System.Windows.Forms.Label();
             this.gbVisualStudioVersions = new System.Windows.Forms.GroupBox();
             this.cmbInstallations = new System.Windows.Forms.ComboBox();
@@ -218,7 +218,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private Controls.AutoMirrorPanel pnlStatus;
         private System.Windows.Forms.Label lblStatusText;
         private System.Windows.Forms.Label lblStatus;
-        private System.Windows.Forms.TextBox tbPath;
+        private Controls.AdvancedTextBox tbPath;
         private System.Windows.Forms.Label lblPath;
         private GroupBox gbVisualStudioVersions;
         private ComboBox cmbInstallations;
