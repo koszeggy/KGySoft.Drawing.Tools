@@ -152,7 +152,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 .AddSource(okCancelApplyButtons.CancelButton, nameof(okCancelApplyButtons.CancelButton.Click));
 
             CommandBindings.Add(ViewModel.SaveConfigCommand)
-                .AddSource(okCancelApplyButtons.OKButton, nameof(okCancelApplyButtons.OKButton.Click));
+                .AddSource(okCancelApplyButtons.OKButton, nameof(okCancelApplyButtons.OKButton.Click))
+                .Executed += (_, args) => DialogResult = args.State[LanguageSettingsViewModel.StateSaveExecutedWithError] is true ? DialogResult.None : DialogResult.OK;
 
             CommandBindings.Add(ViewModel.ApplyCommand, ViewModel.ApplyCommandState)
                 .AddSource(okCancelApplyButtons.ApplyButton, nameof(okCancelApplyButtons.ApplyButton.Click));

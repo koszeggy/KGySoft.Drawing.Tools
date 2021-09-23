@@ -441,6 +441,9 @@ Either select at least '{1}' or reduce the number of colors to {2}.</value>
   <data name="ErrorMessage_ResourcePlaceholderIndexInvalidFormat" xml:space="preserve">
     <value>Index '{0}' is invalid in the translated resource format string.</value>
   </data>
+  <data name="ErrorMessage_CannotApplyLanguageSettingsFormat" xml:space="preserve">
+    <value>Language settings cannot be applied: {0}</value>
+  </data>
   <data name="WarningMessage_CouldNotCreateNetCoreDirectoryFormat" xml:space="preserve">
     <value>Could not create directory {0}: {1}
 

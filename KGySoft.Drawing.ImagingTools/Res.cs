@@ -667,6 +667,9 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Index '{0}' is invalid in the translated resource format string.</summary>
         internal static string ErrorMessageResourcePlaceholderIndexInvalid(int index) => Get("ErrorMessage_ResourcePlaceholderIndexInvalidFormat", index);
 
+        /// <summary>Language settings cannot be applied: {0}</summary>
+        internal static string ErrorMessageCannotApplyLanguageSettings(string message) => Get("ErrorMessage_CannotApplyLanguageSettingsFormat", message);
+
 #if NET45
         /// <summary>Could not create directory {0}: {1}
         ///
