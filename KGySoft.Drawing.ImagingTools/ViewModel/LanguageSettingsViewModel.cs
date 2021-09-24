@@ -80,12 +80,15 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal CultureInfo CurrentLanguage { get => Get<CultureInfo>(); set => Set(value); }
         internal IList<CultureInfo> Languages { get => Get<IList<CultureInfo>>(); set => Set(value); }
 
+        internal Func<string?>? SelectFolderCallback { get => Get<Func<string?>?>(); set => Set(value); }
+
         internal ICommand CancelCommand => Get(() => new SimpleCommand(OnCancelCommand));
         internal ICommand ApplyCommand => Get(() => new SimpleCommand(OnApplyCommand));
         internal ICommand SaveConfigCommand => Get(() => new SimpleCommand(OnSaveConfigCommand));
         internal ICommand EditResourcesCommand => Get(() => new SimpleCommand(OnEditResourcesCommand));
         internal ICommand DownloadResourcesCommand => Get(() => new SimpleCommand(OnDownloadResourcesCommand));
 
+        internal ICommand SelectFolderCommand => Get(() => new SimpleCommand(OnSelectFolderCommand));
         internal ICommandState ApplyCommandState => Get(() => new CommandState());
         internal ICommandState EditResourcesCommandState => Get(() => new CommandState());
 
@@ -247,6 +250,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     ResourceCustomPath = path;
                     UpdateApplyCommandState();
                     SetResPath(e.NewValue is true ? path : String.Empty);
+                    if (e.NewValue is true)
+                        SelectFolder();
                     break;
 
                 case nameof(ResourceCustomPath):
@@ -441,6 +446,15 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
         }
 
+        private void SelectFolder()
+        {
+            string? path = SelectFolderCallback?.Invoke();
+            if (path == null)
+                return;
+            ResourceCustomPath = path;
+            FinalizePath();
+        }
+
         #endregion
 
         #region Command Handlers
@@ -476,6 +490,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             selectableLanguages = null;
             ResetLanguages();
         }
+
+        private void OnSelectFolderCommand() => SelectFolder();
 
         #endregion
 

@@ -1006,7 +1006,7 @@ Tip: use '[T]' to filter untranslated texts.</value>
     <value>&amp;Add to Custom Colors</value>
   </data>
   <data name="Static.14146" xml:space="preserve">
-    <value>Select the target folder of the installation.</value>
+    <value>Select the target folder.</value>
   </data>
   <data name="Button.14150" xml:space="preserve">
     <value>&amp;Make New Folder</value>

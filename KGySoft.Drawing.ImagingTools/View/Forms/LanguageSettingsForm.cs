@@ -107,6 +107,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected override void ApplyViewModel()
         {
+            InitViewModelDependencies();
             InitCommandBindings();
             InitPropertyBindings();
             base.ApplyViewModel();
@@ -115,6 +116,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         #endregion
 
         #region Private Methods
+
+        private void InitViewModelDependencies() => ViewModel.SelectFolderCallback = () => Dialogs.SelectFolder(ViewModel.ResourceCustomPath);
 
         private void InitPropertyBindings()
         {
@@ -166,6 +169,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
             CommandBindings.Add(ViewModel.FinalizePath)
                 .AddSource(txtResxResourcesPath, nameof(txtResxResourcesPath.Validating));
+
+            CommandBindings.Add(ViewModel.SelectFolderCommand)
+                .AddSource(txtResxResourcesPath, nameof(txtResxResourcesPath.DoubleClick));
 
             // View commands
             CommandBindings.Add<ListControlConvertEventArgs>(OnFormatCultureCommand)
