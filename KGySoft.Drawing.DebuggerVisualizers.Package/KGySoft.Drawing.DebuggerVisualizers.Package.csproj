@@ -18,7 +18,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>KGySoft.Drawing.DebuggerVisualizers.Package</RootNamespace>
     <AssemblyName>KGySoft.Drawing.DebuggerVisualizers.Package</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <GeneratePkgDefFile>true</GeneratePkgDefFile>
     <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
     <IncludeDebugSymbolsInVSIXContainer>true</IncludeDebugSymbolsInVSIXContainer>
@@ -30,6 +30,7 @@
     <StartArguments>/rootsuffix Exp</StartArguments>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -92,17 +93,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
-    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Transactions" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="UIAutomationTypes" />
-    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -134,14 +126,14 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="KGySoft.CoreLibraries">
+      <Version>6.0.0-rc.2</Version>
+    </PackageReference>
     <PackageReference Include="KGySoft.Drawing">
       <Version>5.3.2-rc.1</Version>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime">
-      <Version>14.3.26929</Version>
-    </PackageReference>
-    <PackageReference Include="VSSDK.Shell.12">
-      <Version>12.0.4</Version>
+    <PackageReference Include="Microsoft.VisualStudio.SDK">
+      <Version>17.0.0-previews-4-31709-430</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
