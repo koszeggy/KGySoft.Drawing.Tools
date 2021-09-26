@@ -37,7 +37,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
     #region Usings
 
     using Resources = Properties.Resources;
-    using IAsyncServiceProvider = Microsoft.VisualStudio.Shell.Interop.COMAsyncServiceProvider.IAsyncServiceProvider;
+    using IAsyncServiceProvider = Microsoft.VisualStudio.Shell.Interop.IAsyncServiceProvider;
+    //using IAsyncServiceProvider = Microsoft.VisualStudio.Shell.Interop.COMAsyncServiceProvider.IAsyncServiceProvider;
 
     #endregion
 

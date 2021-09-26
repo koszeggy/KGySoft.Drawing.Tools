@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <Extern href="stdidcmd.h"/>
+  <Extern href="vsshlids.h"/>
+
+  <!--
+  Tools
+  +-Group(TopMenuGroup)
+    +-Menu(SubMenu)
+      +-Group(SubMenuGroup)
+        +-Button(ExecuteImagingToolsCommand)
+        | +-Icon(ImagingTools.ico)
+        +-Button(ManageDebuggerVisualizerInstallationsCommand)
+          +-Icon(Settings.ico)
+  -->
+  <Commands package="guidPackage">
+
+    <Groups>
+      <Group guid="guidMenuCommandSet" id="TopMenuGroup" priority="0x0600">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>
+      </Group>
+      <Group guid="guidMenuCommandSet" id="SubMenuGroup" priority="0x0000">
+        <Parent guid="guidMenuCommandSet" id="SubMenu"/>
+      </Group>
+    </Groups>
+
+    <Menus>
+      <Menu guid="guidMenuCommandSet" id="SubMenu" priority="0x0100" type="Menu">
+        <Parent guid="guidMenuCommandSet" id="TopMenuGroup"/>
+        <Strings>
+          <ButtonText>KGy SOFT Drawing DebuggerVisualizers</ButtonText>
+        </Strings>
+      </Menu>
+    </Menus>
+
+    <Buttons>
+      <Button guid="guidMenuCommandSet" id="ExecuteImagingToolsCommand" priority="0x0100" type="Button">
+        <Parent guid="guidMenuCommandSet" id="SubMenuGroup" />
+        <Icon guid="iconImagingTools" id="1" />
+        <Strings>
+          <ButtonText>Execute Imaging Tools...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidMenuCommandSet" id="ManageDebuggerVisualizerInstallationsCommand" priority="0x0100" type="Button">
+        <Parent guid="guidMenuCommandSet" id="SubMenuGroup" />
+        <Icon guid="iconManageInstallations" id="1" />
+        <Strings>
+          <ButtonText>Manage Installations...</ButtonText>
+        </Strings>
+      </Button>
+    </Buttons>
+
+    <Bitmaps>
+      <Bitmap guid="iconImagingTools" href="Resources\ImagingTools.ico"/>
+      <Bitmap guid="iconManageInstallations" href="Resources\Settings.ico"/>
+    </Bitmaps>
+
+  </Commands>
+
+  <Symbols>
+
+    <GuidSymbol name="guidPackage" value="{fd42f5a8-4449-4c07-8b60-b6bd58b67118}" />
+
+    <GuidSymbol name="guidMenuCommandSet" value="{63728687-1b7c-4508-9efd-bd8c81f87b71}">
+      <IDSymbol name="TopMenuGroup" value="0x1020" />
+      <IDSymbol name="SubMenu" value="0x1100"/>
+      <IDSymbol name="SubMenuGroup" value="0x1150"/>
+      <IDSymbol name="ExecuteImagingToolsCommand" value="0x0100" />
+      <IDSymbol name="ManageDebuggerVisualizerInstallationsCommand" value="0x0101" />
+    </GuidSymbol>
+
+    <GuidSymbol name="iconImagingTools" value="{f0fab329-5c9c-4862-910c-34cf25345af4}" />
+    <GuidSymbol name="iconManageInstallations" value="{e9c641f3-a3a8-436b-bc18-4f2e2a29fd7c}" />
+
+  </Symbols>
+
+</CommandTable>
