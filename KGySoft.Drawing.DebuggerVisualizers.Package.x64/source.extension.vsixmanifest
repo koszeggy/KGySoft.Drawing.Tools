@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+  <Metadata>
+    <Identity Id="fd42f5a8-4449-4c07-8b60-b6bd58b67118" Version="2.4.99" Language="en-US" Publisher="KGy SOFT" />
+    <DisplayName>KGy SOFT Drawing DebuggerVisualizers</DisplayName>
+    <Description xml:space="preserve">Debugger Visualizers for System.Drawing types such as Image (Bitmap and Metafile), Icon, Graphics, BitmapData, ColorPalette and Color.</Description>
+    <MoreInfo>https://github.com/koszeggy/KGySoft.Drawing.Tools</MoreInfo>
+    <License>LICENSE</License>
+    <ReleaseNotes>https://github.com/koszeggy/KGySoft.Drawing.Tools/blob/master/changelog.txt</ReleaseNotes>
+    <Icon>Resources\ImageDebuggerVisualizers.ico</Icon>
+    <PreviewImage>Resources\Preview.png</PreviewImage>
+  </Metadata>
+  <Installation>
+    <InstallationTarget Id="Microsoft.VisualStudio.IntegratedShell" Version="[17.0,18.0)" >
+      <ProductArchitecture>amd64</ProductArchitecture>
+    </InstallationTarget>
+  </Installation>
+  <Dependencies>
+    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
+  </Dependencies>
+  <Assets>
+    <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+  </Assets>
+  <Prerequisites>
+    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[12.0,)" DisplayName="Visual Studio core editor" />
+  </Prerequisites>
+</PackageManifest>

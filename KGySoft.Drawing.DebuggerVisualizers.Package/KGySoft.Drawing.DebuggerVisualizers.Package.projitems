@@ -22,7 +22,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)_Classes\ShellDialogs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)_Classes\ViewHelper.cs" />
     <None Include="$(MSBuildThisFileDirectory)readme.md" />
-    <None Include="$(MSBuildThisFileDirectory)source.extension.vsixmanifest" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Properties\Resources.resx">
       <MergeWithCTO>true</MergeWithCTO>
       <SubType>Designer</SubType>

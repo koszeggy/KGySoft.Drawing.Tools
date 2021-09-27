@@ -36,9 +36,10 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
     #region Usings
 
+#if VS2022_OR_GREATER
+    using IAsyncServiceProvider = Microsoft.VisualStudio.Shell.Interop.COMAsyncServiceProvider.IAsyncServiceProvider;
+#endif
     using Resources = Properties.Resources;
-    using IAsyncServiceProvider = Microsoft.VisualStudio.Shell.Interop.IAsyncServiceProvider;
-    //using IAsyncServiceProvider = Microsoft.VisualStudio.Shell.Interop.COMAsyncServiceProvider.IAsyncServiceProvider;
 
     #endregion
 
