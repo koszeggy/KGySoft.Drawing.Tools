@@ -425,10 +425,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void SaveConfiguration()
         {
-            Configuration.AllowResXResources = AllowResXResources;
-            Configuration.UseOSLanguage = UseOSLanguage;
-            Configuration.DisplayLanguage = CurrentLanguage;
-            string path = UseCustomResourcePath ? ResourceCustomPath : String.Empty;
+            bool allowResX = AllowResXResources;
+            Configuration.AllowResXResources = allowResX;
+            Configuration.UseOSLanguage = allowResX ? UseOSLanguage : false;
+            Configuration.DisplayLanguage = allowResX ? CurrentLanguage : Res.DefaultLanguage;
+            string path = allowResX && UseCustomResourcePath ? ResourceCustomPath : String.Empty;
             if (path != lastSavedResourcesPath)
             {
                 Configuration.ResXResourcesCustomPath = Res.ResourcesDir = path;
