@@ -40,8 +40,8 @@ The Imaging Tools application makes possible to load images and icons from file,
 KGy SOFT Imaging Tools supports a wide range of platforms. Windows is supported starting with Windows XP but by using [Mono](https://www.mono-project.com/download/stable/) you can execute it also on Linux. See the [downloads](#download) for details.
 
 <p align="center">
-  <img alt="KGySoft Imaging Tools on Ubuntu Linux, using dark theme" src="https://user-images.githubusercontent.com/27336165/124265526-157a8500-db36-11eb-8d3a-84e66259ce03.png"/>
-  <br/><em>KGySoft Imaging Tools on Ubuntu Linux, using dark theme</em>
+  <img alt="KGy SOFT Imaging Tools on Ubuntu Linux, using dark theme" src="https://user-images.githubusercontent.com/27336165/124265526-157a8500-db36-11eb-8d3a-84e66259ce03.png"/>
+  <br/><em>KGy SOFT Imaging Tools on Ubuntu Linux, using dark theme</em>
 </p>
 
 ### Localization
@@ -176,7 +176,7 @@ To support the widest possible range of platforms the binaries archive contains 
 A simple test application is also available in the download binaries. Though it was created mainly for testing purposes it also demonstrates how to use the public API of the Imaging Tools application and the DebuggerVisualizers from a consumer library or application.
 
 <p align="center">
-  <img alt="Debugger Visualizer Test Tool" src="https://user-images.githubusercontent.com/27336165/124276069-a6a42880-db43-11eb-9c47-fe7c45cd7161.png"/>
+  <img alt="Debugger Visualizer Test Tool" src="https://user-images.githubusercontent.com/27336165/125045273-1a42ba00-e09d-11eb-8484-02b10dbafd8e.png"/>
   <br/><em>Debugger Visualizer Test Tool</em>
 </p>
 
