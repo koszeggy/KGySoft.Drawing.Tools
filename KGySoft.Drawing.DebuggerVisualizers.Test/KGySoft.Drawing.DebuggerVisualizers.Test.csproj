@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <!--<TargetFrameworks>net35;net40;net45;net5.0-windows</TargetFrameworks>-->
-    <TargetFrameworks>net45;net5.0-windows</TargetFrameworks>
+    <TargetFrameworks>net35;net40;net45;net5.0-windows</TargetFrameworks>
+    <!--<TargetFrameworks>net5.0-windows</TargetFrameworks>-->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>KGySoft.Drawing.DebuggerVisualizers.Test</RootNamespace>
     <SignAssembly>true</SignAssembly>
@@ -23,14 +23,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="KGySoft.CoreLibraries" Version="6.0.0-rc.1" />
-    <PackageReference Include="KGySoft.Drawing" Version="5.3.2-rc.1" />
+    <PackageReference Include="KGySoft.CoreLibraries" Version="6.0.0-rc.2" />
+    <PackageReference Include="KGySoft.Drawing" Version="6.0.0-rc.1" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="VSSDK.DebuggerVisualizers" Version="12.0.4">
-      <NoWarn>NU1701</NoWarn>
     </PackageReference>
   </ItemGroup>
 
@@ -42,5 +39,20 @@
   <ItemGroup Condition="'$(TargetFramework)'=='net35' OR '$(TargetFramework)'=='net40' OR '$(TargetFramework)'=='net45'">
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
+
+  <!-- Note: Package reference to Microsoft.VisualStudio.DebuggerVisualizers does not work here because it is not copied and contains no implementation anyway.
+       And VSSDK.DebuggerVisualizers cannot be used anymore for VS2022 if VSIX is also installed because it causes InvalidCastException -->
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers">
+      <HintPath>..\_ref\Microsoft.VisualStudio.DebuggerVisualizers.dll</HintPath>
+      <CopyLocal>True</CopyLocal>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Despite of the CopyLocal above, it is copied only if KGySoft.Drawing.DebuggerVisualizers references the actual library, which is
+       the case only when targeting .NET 5 or above -->
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy ..\_ref\Microsoft.VisualStudio.DebuggerVisualizers.dll bin\$(ConfigurationName)\$(TargetFramework)\ /Y"/>
+  </Target>
 
 </Project>

@@ -44,6 +44,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test.ViewModel
         #region Public Properties
 
         public bool IsObjectReplaceable { get; set; }
+        public bool IsBinaryFormatterSupported => false;
 
         #endregion
 

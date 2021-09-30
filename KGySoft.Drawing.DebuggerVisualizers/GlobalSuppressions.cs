@@ -8,3 +8,4 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Style", "IDE0063:Use simple 'using' statement", Justification = "Decided individually")]
 [assembly: SuppressMessage("Style", "IDE0017:Simplify object initialization", Justification = "Decided individually")]
 [assembly: SuppressMessage("Style", "IDE0090:Use 'new(...)'", Justification = "Decided individually")]
+[assembly: SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "False alarm, in this project System.Drawing types CAN be used on non-Windows platforms")]

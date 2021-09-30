@@ -1,4 +1,5 @@
-﻿#region Copyright
+﻿#if !VS2022_OR_GREATER
+#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ProvideAutoLoadAsyncAttribute.cs
@@ -16,6 +17,7 @@
 #region Usings
 
 using System;
+
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 
@@ -57,3 +59,4 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         #endregion
     }
 }
+#endif

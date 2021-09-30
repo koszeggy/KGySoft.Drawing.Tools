@@ -1,4 +1,5 @@
-﻿#region Copyright
+﻿#if !VS2022_OR_GREATER
+#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
 //  File: PackageRegistrationAsyncAttribute.cs
@@ -82,3 +83,4 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         #endregion
     }
 }
+#endif

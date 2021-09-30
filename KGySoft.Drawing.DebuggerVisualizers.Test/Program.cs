@@ -31,6 +31,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test
         [STAThread]
         static void Main()
         {
+            DrawingModule.Initialize();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new DebuggerTestForm());

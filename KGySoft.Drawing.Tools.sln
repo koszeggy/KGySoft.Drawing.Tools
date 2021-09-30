@@ -16,17 +16,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KGySoft.Drawing.DebuggerVisualizers.Test", "KGySoft.Drawing.DebuggerVisualizers.Test\KGySoft.Drawing.DebuggerVisualizers.Test.csproj", "{A7629EA9-0A40-4B26-98CA-5EF60BED4657}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "KGySoft.Drawing.DebuggerVisualizers.Package", "KGySoft.Drawing.DebuggerVisualizers.Package\KGySoft.Drawing.DebuggerVisualizers.Package.shproj", "{5FB996A6-1344-4297-BBF5-6CED26D5A699}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VSIX", "VSIX", "{21E5CF27-6EA7-4333-9D70-558054B58C22}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KGySoft.Drawing.DebuggerVisualizers.Package.x86", "KGySoft.Drawing.DebuggerVisualizers.Package.x86\KGySoft.Drawing.DebuggerVisualizers.Package.x86.csproj", "{6C5B3A51-884F-456B-8E36-071813D2D5EC}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "KGySoft.Drawing.DebuggerVisualizers.Package", "VSIX\KGySoft.Drawing.DebuggerVisualizers.Package\KGySoft.Drawing.DebuggerVisualizers.Package.shproj", "{5FB996A6-1344-4297-BBF5-6CED26D5A699}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KGySoft.Drawing.DebuggerVisualizers.Package.x64", "KGySoft.Drawing.DebuggerVisualizers.Package.x64\KGySoft.Drawing.DebuggerVisualizers.Package.x64.csproj", "{B8A718CB-1F21-4E26-98CF-34CB27D2CD25}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KGySoft.Drawing.DebuggerVisualizers.Package.x86", "VSIX\KGySoft.Drawing.DebuggerVisualizers.Package.x86\KGySoft.Drawing.DebuggerVisualizers.Package.x86.csproj", "{6C5B3A51-884F-456B-8E36-071813D2D5EC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KGySoft.Drawing.DebuggerVisualizers.Package.x64", "VSIX\KGySoft.Drawing.DebuggerVisualizers.Package.x64\KGySoft.Drawing.DebuggerVisualizers.Package.x64.csproj", "{B8A718CB-1F21-4E26-98CF-34CB27D2CD25}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		KGySoft.Drawing.DebuggerVisualizers.Package\KGySoft.Drawing.DebuggerVisualizers.Package.projitems*{5fb996a6-1344-4297-bbf5-6ced26d5a699}*SharedItemsImports = 13
-		KGySoft.Drawing.DebuggerVisualizers.Package\KGySoft.Drawing.DebuggerVisualizers.Package.projitems*{6c5b3a51-884f-456b-8e36-071813d2d5ec}*SharedItemsImports = 4
-		KGySoft.Drawing.DebuggerVisualizers.Package\KGySoft.Drawing.DebuggerVisualizers.Package.projitems*{b8a718cb-1f21-4e26-98cf-34cb27d2cd25}*SharedItemsImports = 4
+		VSIX\KGySoft.Drawing.DebuggerVisualizers.Package\KGySoft.Drawing.DebuggerVisualizers.Package.projitems*{5fb996a6-1344-4297-bbf5-6ced26d5a699}*SharedItemsImports = 13
+		VSIX\KGySoft.Drawing.DebuggerVisualizers.Package\KGySoft.Drawing.DebuggerVisualizers.Package.projitems*{6c5b3a51-884f-456b-8e36-071813d2d5ec}*SharedItemsImports = 4
+		VSIX\KGySoft.Drawing.DebuggerVisualizers.Package\KGySoft.Drawing.DebuggerVisualizers.Package.projitems*{b8a718cb-1f21-4e26-98cf-34cb27d2cd25}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,6 +80,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5FB996A6-1344-4297-BBF5-6CED26D5A699} = {21E5CF27-6EA7-4333-9D70-558054B58C22}
+		{6C5B3A51-884F-456B-8E36-071813D2D5EC} = {21E5CF27-6EA7-4333-9D70-558054B58C22}
+		{B8A718CB-1F21-4E26-98CF-34CB27D2CD25} = {21E5CF27-6EA7-4333-9D70-558054B58C22}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1C6D13FB-5E94-4260-96B6-74BDDFA8F815}

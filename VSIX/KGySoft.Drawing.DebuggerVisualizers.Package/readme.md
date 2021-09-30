@@ -1,4 +1,8 @@
-## KGy SOFT Drawing Debugger Visualizers for Visual Studio 2008-2019
+## KGy SOFT Drawing Debugger Visualizers
+
+**VS 2022**: See the [64-bit installer](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64)
+**VS 2013-2019**: See the [32-bit installer](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers)
+**VS 2008-2022**: See [manual installation](https://github.com/koszeggy/KGySoft.Drawing.Tools#installing-debugger-visualizers)
 
 This package provides debugger visualizers for several `System.Drawing` types such as `Image`, `Bitmap`, `Metafile`, `Icon`, `BitmapData`, `Graphics`, `ColorPalette`, `Color`. It supports multi-page, multi-resolution and animated images as well as saving them in various formats. 
 

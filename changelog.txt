@@ -19,10 +19,9 @@
   * ViewModelFactory class: CreateEditResources has an optional hasPendingChanges parameter that allows applying
     changes without any editing.
 
-+ KGySoft.Drawing.DebuggerVisualizers.Package.dll
-=================================================
-+ Two separate builds have been introduced, one for x86 platforms (up to Visual Studion 2019) and a 64-but build
-  for Visual Studio 2022
++ KGySoft.Drawing.DebuggerVisualizers.Package.x64.dll
+=====================================================
++ This is a new installer for the 64-bit Visual Studio 2022
 
 
 ~~~~~~~~~

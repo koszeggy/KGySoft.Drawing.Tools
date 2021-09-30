@@ -59,7 +59,7 @@
 
   <Symbols>
 
-    <GuidSymbol name="guidPackage" value="{fd42f5a8-4449-4c07-8b60-b6bd58b67118}" />
+    <GuidSymbol name="guidPackage" value="{9029031a-4b33-48a7-ae94-138c537ee202}" />
 
     <GuidSymbol name="guidMenuCommandSet" value="{63728687-1b7c-4508-9efd-bd8c81f87b71}">
       <IDSymbol name="TopMenuGroup" value="0x1020" />
