@@ -160,7 +160,17 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             ExistingLanguagesOnly = true; // could be the default value but this way we spare one reset when initializing binding
             lastSavedResourcesPath = Configuration.ResXResourcesCustomPath ?? String.Empty;
             UseCustomResourcePath = lastSavedResourcesPath.Length != 0;
-            ResourceCustomPath = lastSavedResourcesPath.Length != 0 ? Path.GetFullPath(Files.GetRelativePath(lastSavedResourcesPath, Files.GetExecutingPath())) : Res.DefaultResourcesPath;
+            try
+            {
+                ResourceCustomPath = lastSavedResourcesPath.Length != 0
+                    ? Path.GetFullPath(Path.IsPathRooted(lastSavedResourcesPath) ? lastSavedResourcesPath : Path.Combine(Files.GetExecutingPath(), lastSavedResourcesPath))
+                    : Res.DefaultResourcesPath;
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                ResourceCustomPath = Res.DefaultResourcesPath;
+            }
+
             initializing = false;
             ResetLanguages();
             UpdateApplyCommandState();
