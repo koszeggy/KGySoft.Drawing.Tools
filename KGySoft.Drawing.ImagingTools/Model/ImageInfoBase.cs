@@ -3,13 +3,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ImageInfoBase.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2020 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2021 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
-//  directory of this distribution. If not, then this file is considered as
-//  an illegal copy.
+//  directory of this distribution.
 //
-//  Unauthorized copying of this file, via any medium is strictly prohibited.
+//  Please refer to the LICENSE file if you want to use this source code.
 ///////////////////////////////////////////////////////////////////////////////
 
 #endregion
@@ -130,14 +129,6 @@ namespace KGySoft.Drawing.ImagingTools.Model
         #region Methods
 
         #region Protected Methods
-
-        /// <summary>
-        /// Performs the validation on this instance and returns the validation results.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="ValidationResultsCollection" /> instance containing the validation results.
-        /// </returns>
-        protected override ValidationResultsCollection DoValidation() => new ValidationResultsCollection();
 
         /// <summary>
         /// Releases the resources held by this instance.

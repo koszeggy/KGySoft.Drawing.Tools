@@ -3,13 +3,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: DebuggerVisualizersPackage.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2019 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2021 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
-//  directory of this distribution. If not, then this file is considered as
-//  an illegal copy.
+//  directory of this distribution.
 //
-//  Unauthorized copying of this file, via any medium is strictly prohibited.
+//  Please refer to the LICENSE file if you want to use this source code.
 ///////////////////////////////////////////////////////////////////////////////
 
 #endregion
@@ -18,7 +17,9 @@
 
 using System;
 using System.ComponentModel.Design;
+#if !VS2022_OR_GREATER
 using System.Diagnostics;
+#endif
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -26,6 +27,9 @@ using System.Threading.Tasks;
 using KGySoft.Drawing.ImagingTools;
 using KGySoft.Drawing.ImagingTools.Model;
 
+#if VS2022_OR_GREATER
+using Microsoft.VisualStudio; 
+#endif
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -45,9 +49,19 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
     [ProvideBindingPath]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [InstalledProductRegistration("#" + Ids.ResourceTitle, "#" + Ids.ResourceDetails, Ids.Version, IconResourceID = Ids.IconResourceId)]
+#if VS2022_OR_GREATER
+    [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
+    [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string, PackageAutoLoadFlags.BackgroundLoad)]
+#else
     [PackageRegistrationAsync]
     [ProvideAutoLoadAsync]
-    public sealed class DebuggerVisualizersPackage : Microsoft.VisualStudio.Shell.Package, IAsyncLoadablePackageInitialize
+#endif
+    public sealed class DebuggerVisualizersPackage :
+#if VS2022_OR_GREATER
+        AsyncPackage
+#else
+        Microsoft.VisualStudio.Shell.Package, IAsyncLoadablePackageInitialize // VS2023-2019
+#endif
     {
         #region Fields
 
@@ -59,8 +73,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
         #region Public Methods
 
+#if !VS2022_OR_GREATER
         /// <summary>
-        /// The async initialization in VS2015 and above.
+        /// The async initialization in VS2015-2019
         /// </summary>
         public IVsTask Initialize(IAsyncServiceProvider pServiceProvider, IProfferAsyncService pProfferService, IAsyncProgressCallback pProgressCallback)
         {
@@ -73,13 +88,15 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
                 return null;
             }).AsVsTask();
         }
+#endif
 
         #endregion
 
         #region Protected Methods
 
+#if !VS2022_OR_GREATER
         /// <summary>
-        /// The legacy initialization for VS2013.
+        /// The legacy initialization for VS2013. For versions 2015-2019 an explicit IAsyncLoadablePackageInitialize implementation is used.
         /// </summary>
         protected override void Initialize()
         {
@@ -95,6 +112,18 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
             DoInitialize(uiShellService, menuCommandService);
         }
+#else
+        /// <summary>
+        /// Initialization in VS2022 and above.
+        /// </summary>
+        protected override async Task InitializeAsync(System.Threading.CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
+        {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            var shellService = await GetServiceAsync(typeof(SVsShell)) as IVsShell;
+            var menuCommandService = await GetServiceAsync(typeof(IMenuCommandService)) as IMenuCommandService;
+            DoInitialize(shellService, menuCommandService);
+        }
+#endif
 
         protected override void Dispose(bool disposing)
         {
@@ -109,6 +138,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
         #region Private Methods
 
+#if !VS2022_OR_GREATER
         private async Task<T?> GetServiceAsync<T>(IAsyncServiceProvider asyncServiceProvider, Type serviceType) where T : class
         {
             T? result = null;
@@ -122,6 +152,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
             return result;
         }
+#endif
 
         private void DoInitialize(IVsShell? shellService, IMenuCommandService? menuCommandService)
         {

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net35;net40;net45;net5.0-windows</TargetFrameworks>
-    <!--<TargetFrameworks>net45</TargetFrameworks>-->
+    <!--<TargetFrameworks>net5.0-windows</TargetFrameworks>-->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>KGySoft.Drawing.DebuggerVisualizers</RootNamespace>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
@@ -20,18 +20,31 @@
     <NoWarn>$(NoWarn);NETSDK1138</NoWarn>
   </PropertyGroup>
 
+  <!-- Common NuGet references -->
   <ItemGroup>
-    <PackageReference Include="KGySoft.CoreLibraries" Version="5.6.1" />
-    <PackageReference Include="KGySoft.Drawing" Version="5.3.1" />
+    <PackageReference Include="KGySoft.CoreLibraries" Version="6.0.0-rc.2" />
+    <PackageReference Include="KGySoft.Drawing" Version="6.0.0-rc.1" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="VSSDK.DebuggerVisualizers" Version="12.0.4">
-      <NoWarn>NU1701</NoWarn>
-    </PackageReference>
   </ItemGroup>
 
+  <!-- .NET Framework only references -->
+  <ItemGroup Condition="'$(TargetFramework)'=='net35' OR '$(TargetFramework)'=='net40' OR '$(TargetFramework)'=='net45'">
+    <!--Note: VSSDK.DebuggerVisualizers does not work in VS2022 anymore if VSIX is also installed, because it causes
+        "Unable to cast object [...] to type DialogDebuggerVisualizer"-->
+    <PackageReference Include="Microsoft.VisualStudio.DebuggerVisualizers" Version="17.0.1061105" />
+  </ItemGroup>
+
+  <!-- .NET only references (note: doesn't really make sense but allows testing from KGySoft.Drawing.DebuggerVisualizers.Test) -->
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers">
+      <HintPath>..\_ref\Microsoft.VisualStudio.DebuggerVisualizers.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Project references -->
   <ItemGroup>
     <ProjectReference Include="..\KGySoft.Drawing.ImagingTools\KGySoft.Drawing.ImagingTools.csproj" />
   </ItemGroup>

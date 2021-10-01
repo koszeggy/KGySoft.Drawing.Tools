@@ -1,22 +1,53 @@
-﻿using System.Collections.Generic;
+﻿#region Copyright
+
+///////////////////////////////////////////////////////////////////////////////
+//  File: Cursors.cs
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright (C) KGy SOFT, 2005-2021 - All Rights Reserved
+//
+//  You should have received a copy of the LICENSE file at the top-level
+//  directory of this distribution.
+//
+//  Please refer to the LICENSE file if you want to use this source code.
+///////////////////////////////////////////////////////////////////////////////
+
+#endregion
+
+#region Usings
+
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
+
 using KGySoft.Collections;
+
+#endregion
 
 namespace KGySoft.Drawing.ImagingTools.View
 {
     internal static class Cursors
     {
+        #region Nested classes
+
         private class CursorInfo
         {
-            private readonly Icon icon;
+            #region Fields
 
+            private readonly Icon icon;
             private readonly Dictionary<int, (CursorHandle Handle, Cursor Cursor)> createdCursors = new();
 
+            #endregion
+
+            #region Constructors
+
             internal CursorInfo(Icon icon) => this.icon = icon;
+
+            #endregion
+
+            #region Methods
 
             internal Cursor GetCreateCursor(Size desiredSize)
             {
@@ -30,17 +61,29 @@ namespace KGySoft.Drawing.ImagingTools.View
                 createdCursors[desiredSize.Width] = (handle, result);
                 return result;
             }
+
+            #endregion
         }
 
-        private static readonly Size referenceSize = new Size(16, 16);
+        #endregion
 
+        #region Fields
+
+        private static readonly Size referenceSize = new Size(16, 16);
         private static readonly StringKeyedDictionary<CursorInfo> cursors = new StringKeyedDictionary<CursorInfo>();
 
+        #endregion
+
+        #region Properties
 
         internal static Cursor HandOpen => GetCreateCursor() ?? System.Windows.Forms.Cursors.Hand;
         internal static Cursor HandGrab => GetCreateCursor() ?? System.Windows.Forms.Cursors.NoMove2D;
 
-        private static Cursor? GetCreateCursor([CallerMemberName]string resourceName = null!)
+        #endregion
+
+        #region Methods
+
+        private static Cursor? GetCreateCursor([CallerMemberName] string resourceName = null!)
         {
             if (!OSUtils.IsWindows)
                 return null;
@@ -48,5 +91,7 @@ namespace KGySoft.Drawing.ImagingTools.View
                 cursors[resourceName] = info = new CursorInfo((Icon)Properties.Resources.ResourceManager.GetObject(resourceName, CultureInfo.InvariantCulture)!);
             return info.GetCreateCursor(referenceSize.Scale(OSUtils.SystemScale));
         }
+
+        #endregion
     }
 }

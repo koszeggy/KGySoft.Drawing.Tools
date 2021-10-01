@@ -3,13 +3,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: MvvmBaseForm.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2020 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2021 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
-//  directory of this distribution. If not, then this file is considered as
-//  an illegal copy.
+//  directory of this distribution.
 //
-//  Unauthorized copying of this file, via any medium is strictly prohibited.
+//  Please refer to the LICENSE file if you want to use this source code.
 ///////////////////////////////////////////////////////////////////////////////
 
 #endregion
@@ -278,10 +277,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             foreach (KeyValuePair<string, Control> mapping in ValidationMapping)
             {
-                var propertyResults = validationResults?[mapping.Key]; // var is IList in .NET 3.5 and IReadOnlyList above
-                ValidationResult? error = propertyResults?.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Error);
-                ValidationResult? warning = error == null ? propertyResults?.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Warning) : null;
-                ValidationResult? info = error == null && warning == null ? propertyResults?.FirstOrDefault(vr => vr.Severity == ValidationSeverity.Information) : null;
+                ValidationResultsCollection? propertyResults = validationResults?[mapping.Key];
+                ValidationResult? error = propertyResults?.Errors.FirstOrDefault();
+                ValidationResult? warning = error == null ? propertyResults?.Warnings.FirstOrDefault() : null;
+                ValidationResult? info = error == null && warning == null ? propertyResults?.Infos.FirstOrDefault() : null;
                 ErrorProvider.SetError(mapping.Value, error?.Message);
                 WarningProvider.SetError(mapping.Value, warning?.Message);
                 InfoProvider.SetError(mapping.Value, info?.Message);

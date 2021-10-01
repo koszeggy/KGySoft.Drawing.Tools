@@ -6,10 +6,9 @@
 //  Copyright (C) KGy SOFT, 2005-2021 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
-//  directory of this distribution. If not, then this file is considered as
-//  an illegal copy.
+//  directory of this distribution.
 //
-//  Unauthorized copying of this file, via any medium is strictly prohibited.
+//  Please refer to the LICENSE file if you want to use this source code.
 ///////////////////////////////////////////////////////////////////////////////
 
 #endregion
@@ -87,6 +86,7 @@ namespace KGySoft.Drawing.ImagingTools
         internal static bool AllowResXResources { get => GetFromSettings<bool>(); set => SetInSettings(value); }
         internal static bool UseOSLanguage { get => GetFromSettings<bool>(); set => SetInSettings(value); }
         internal static CultureInfo DisplayLanguage { get => GetFromSettings<CultureInfo>() ?? Res.DefaultLanguage; set => SetInSettings(value); }
+        internal static string? ResXResourcesCustomPath { get => GetFromSettings<string?>(); set => SetInSettings(value); }
         internal static Uri BaseUri => baseUri ??= new Uri(ResourceRepositoryLocation);
 
         #endregion
@@ -158,7 +158,7 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static void SetInSettings(object value, [CallerMemberName]string propertyName = null!)
+        private static void SetInSettings(object? value, [CallerMemberName]string propertyName = null!)
         {
             try
             {

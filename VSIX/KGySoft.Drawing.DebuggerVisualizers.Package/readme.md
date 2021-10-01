@@ -1,4 +1,10 @@
-## KGy SOFT Drawing Debugger Visualizers for Visual Studio 2008-2019
+## KGy SOFT Drawing Debugger Visualizers
+
+**VS 2022**: See the [64-bit installer](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64)
+
+**VS 2013-2019**: See the [32-bit installer](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers)
+
+**VS 2008-2022**: See [manual installation](https://github.com/koszeggy/KGySoft.Drawing.Tools#installing-debugger-visualizers)
 
 This package provides debugger visualizers for several `System.Drawing` types such as `Image`, `Bitmap`, `Metafile`, `Icon`, `BitmapData`, `Graphics`, `ColorPalette`, `Color`. It supports multi-page, multi-resolution and animated images as well as saving them in various formats. 
 
@@ -20,7 +26,7 @@ Several modifications are allowed on non-read-only images such as rotating, resi
 
 ## Installing Debugger Visualizers
 
-* For Visual Studio 2013 and above you can use this VSIX package (tested with Visual Studio versions up to 2019). It will install the .NET 4.5 version, which works also for .NET Core projects.
+* For Visual Studio 2013 and above you can use this VSIX package (the [32-bit version](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers) for VS2013-2019 or the [64-bit version](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) for VS2022). It will install the .NET Framework 4.5 build, which works also for .NET Core projects.
 * For older Visual Studio versions and/or frameworks follow the [installation steps](https://github.com/koszeggy/KGySoft.Drawing.Tools#installing-debugger-visualizers) at the project site.
 
 ## Release Notes
@@ -30,7 +36,7 @@ See the [change log](https://github.com/koszeggy/KGySoft.Drawing.Tools/blob/mast
 ## FAQ
 
 **Q:** Can I use the debugger visualizers for other Visual Studio versions?
-<br/>**A:** The VSIX installer supports Visual Studio 2013 and newer versions (tested with versions up to 2019). However, you can install the debugger visualizers manually for any version starting with Visual Studio 2008. See the [installation steps](https://github.com/koszeggy/KGySoft.Drawing.Tools#installing-debugger-visualizers) at the project site.
+<br/>**A:** The VSIX installer has two versions. You can use the [32-bit version](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers) for VS2013-2019 and the [64-bit version](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) for VS2022. However, you can install the debugger visualizers manually for any version starting with Visual Studio 2008. See the [installation steps](https://github.com/koszeggy/KGySoft.Drawing.Tools#installing-debugger-visualizers) at the project site.
 
 **Q:** Is Visual Studio Code supported?
 <br/>**A:** As it has a completely different API, it is not supported yet.
@@ -51,7 +57,7 @@ See the [change log](https://github.com/koszeggy/KGySoft.Drawing.Tools/blob/mast
 <br/>**A:** When the extension is active it copies the visualizers into the `Documents\Visual Studio <version>\Visualizers` folder if it is not there. Unlike an MSI installer the VSIX packages do not support uninstall actions so this copied content will not be removed automatically. However, the extension creates also a _KGy SOFT  Drawing Debugger Visualizers/Manage Installations..._ menu item under the Tools menu where you can remove the installation from the Documents folder. So the proper way of a complete uninstall:
 1. Click _Tools/Drawing Debugger Visualizers/Manage Installations..._
 2. Select the current Visual Studio version and click "Remove"
-3. Now uninstall the extension from the _Tools/Extensions and Updates..._ (2019: _Extensions/Manage Extensions_) menu. Without this last step the debugger visualizers will be automatically reinstalled when you restart Visual Studio.
+3. Now uninstall the extension from the _Tools/Extensions and Updates..._ (2019 and above: _Extensions/Manage Extensions_) menu. Without this last step the debugger visualizers will be automatically reinstalled when you restart Visual Studio.
 
 ## More Info:
 

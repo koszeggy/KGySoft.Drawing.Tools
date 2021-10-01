@@ -19,4 +19,4 @@ using KGySoft.Drawing.DebuggerVisualizers.Package;
 
 [assembly: AssemblyVersion(Ids.Version)]
 [assembly: AssemblyFileVersion(Ids.Version)]
-[assembly: AssemblyInformationalVersion(Ids.Version)]
+[assembly: AssemblyInformationalVersion(Ids.PackageVersion)]

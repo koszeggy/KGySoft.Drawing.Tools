@@ -3,13 +3,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: Ids.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2019 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2021 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
-//  directory of this distribution. If not, then this file is considered as
-//  an illegal copy.
+//  directory of this distribution.
 //
-//  Unauthorized copying of this file, via any medium is strictly prohibited.
+//  Please refer to the LICENSE file if you want to use this source code.
 ///////////////////////////////////////////////////////////////////////////////
 
 #endregion
@@ -28,11 +27,17 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
     {
         #region Constants
 
-        internal const string PackageGuidString = "fd42f5a8-4449-4c07-8b60-b6bd58b67118";
+        internal const string PackageGuidString =
+#if VS2022_OR_GREATER
+            "9029031a-4b33-48a7-ae94-138c537ee202";
+#else
+            "fd42f5a8-4449-4c07-8b60-b6bd58b67118";
+#endif
         internal const string ResourceTitle = "110";
         internal const string ResourceDetails = "112";
         internal const int IconResourceId = 400;
-        internal const string Version = "2.4.0"; // Note: in .vsixmanifest it should be adjusted manually
+        internal const string Version = "2.5.0"; // Note: in .vsixmanifest it should be adjusted manually
+        internal const string PackageVersion = "2.5.0-rc.1"; // It can also be an informational version
         internal const int ExecuteImagingToolsCommandId = 0x0100;
         internal const int ManageDebuggerVisualizerInstallationsCommandId = 0x0101;
 

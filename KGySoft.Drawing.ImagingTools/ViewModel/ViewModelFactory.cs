@@ -3,13 +3,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ViewModelFactory.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2020 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2021 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
-//  directory of this distribution. If not, then this file is considered as
-//  an illegal copy.
+//  directory of this distribution.
 //
-//  Unauthorized copying of this file, via any medium is strictly prohibited.
+//  Please refer to the LICENSE file if you want to use this source code.
 ///////////////////////////////////////////////////////////////////////////////
 
 #endregion
@@ -244,8 +243,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// <summary>
         /// Creates a view model for managing language settings.
         /// </summary>
+        /// <param name="culture">The language of the resources to edit.</param>
+        /// <param name="hasPendingChanges"><see langword="true"/>, if there are pending changes that can be applied immediately; otherwise, <see langword="false"/>. This parameter is optional.
+        /// <br/>Default value: <see langword="false"/>.</param>
         /// <returns>An <see cref="IViewModel"/> instance that represents a view model for managing language settings.</returns>
-        public static IViewModel CreateEditResources(CultureInfo culture) => new EditResourcesViewModel(culture);
+        public static IViewModel CreateEditResources(CultureInfo culture, bool hasPendingChanges = false) => new EditResourcesViewModel(culture, hasPendingChanges);
 
         /// <summary>
         /// Creates a view model for downloading resources.

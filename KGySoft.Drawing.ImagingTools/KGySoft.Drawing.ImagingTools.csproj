@@ -22,10 +22,10 @@
     <NoWarn>$(NoWarn);NETSDK1138</NoWarn>
   </PropertyGroup>
 
-  <!--Package references-->
+  <!--Common package references-->
   <ItemGroup>
-    <PackageReference Include="KGySoft.CoreLibraries" Version="5.6.1" />
-    <PackageReference Include="KGySoft.Drawing" Version="5.3.1" />
+    <PackageReference Include="KGySoft.CoreLibraries" Version="6.0.0-rc.2" />
+    <PackageReference Include="KGySoft.Drawing" Version="6.0.0-rc.1" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -37,6 +37,11 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Design" />
     <Reference Include="System.Configuration" />
+  </ItemGroup>
+
+  <!--.NET-only references-->
+  <ItemGroup Condition="'$(TargetFramework)'=='net5.0-windows'">
+    <PackageReference Include="System.Drawing.Common" Version="6.0.0-rc.1.21451.13" />
   </ItemGroup>
 
   <ItemGroup>

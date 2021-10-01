@@ -6,10 +6,9 @@
 //  Copyright (C) KGy SOFT, 2005-2021 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
-//  directory of this distribution. If not, then this file is considered as
-//  an illegal copy.
+//  directory of this distribution.
 //
-//  Unauthorized copying of this file, via any medium is strictly prohibited.
+//  Please refer to the LICENSE file if you want to use this source code.
 ///////////////////////////////////////////////////////////////////////////////
 
 #endregion
@@ -17,15 +16,12 @@
 #region Usings
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
-using KGySoft.CoreLibraries;
 
 #endregion
 
@@ -40,16 +36,6 @@ using KGySoft.CoreLibraries;
 
 namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
-    #region Usings
-
-#if NET35 || NET40
-    using ValidationList = IList<ValidationResult>;
-#else
-    using ValidationList = IReadOnlyList<ValidationResult>;
-#endif
-
-    #endregion
-
     /// <summary>
     /// Just a DataGridView that
     /// - provides some default style with a few fixed issues
@@ -141,37 +127,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Methods
 
-        #region Static Methods
-
-        private static string GetRowValidationText(ValidationResultsCollection validationResults) => validationResults.Count switch
-        {
-            0 => String.Empty,
-            1 => validationResults[0].Message,
-            _ => validationResults.Select(r => r.Message).Join(Environment.NewLine)
-        };
-
-        private static string GetCellValidationText(ValidationResultsCollection validationResults, string propertyName)
-        {
-            int len = validationResults.Count;
-            if (len == 0)
-                return String.Empty;
-
-            for (var s = ValidationSeverity.Error; s >= ValidationSeverity.Information; s--)
-            {
-                for (int i = 0; i < len; i++)
-                {
-                    if (validationResults[i].Severity == s && validationResults[i].PropertyName == propertyName)
-                        return validationResults[i].Message;
-                }
-            }
-
-            return String.Empty;
-        }
-
-        #endregion
-
-        #region Instance Methods
-
         #region Protected Methods
 
         protected override void OnParentChanged(EventArgs e)
@@ -218,7 +173,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (e.RowIndex < 0 || Rows[e.RowIndex].DataBoundItem is not IValidatingObject validatingObject)
                 return;
 
-            e.ErrorText = GetRowValidationText(validatingObject.ValidationResults);
+            e.ErrorText = validatingObject.ValidationResults.Message;
         }
 
         protected override void OnCellErrorTextNeeded(DataGridViewCellErrorTextNeededEventArgs e)
@@ -227,7 +182,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 return;
 
             ValidationResultsCollection validationResults = validatingObject.ValidationResults;
-            e.ErrorText = validationResults.Count == 0 ? String.Empty : GetCellValidationText(validationResults, Columns[e.ColumnIndex].DataPropertyName);
+            e.ErrorText = validationResults.TryGetFirstWithHighestSeverity(Columns[e.ColumnIndex].DataPropertyName)?.Message;
         }
 
         protected override void Dispose(bool disposing)
@@ -275,23 +230,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         private Bitmap? GetCellIcon(DataGridViewCellPaintingEventArgs e)
         {
-            #region Local Methods
-
-            static bool HasMatch(ValidationList list, string name)
-            {
-                // not using LINQ and delegates for better performance
-                int len = list.Count;
-                for (int i = 0; i < len; i++)
-                {
-                    if (list[i].PropertyName == name)
-                        return true;
-                }
-
-                return false;
-            }
-
-            #endregion
-
             if (e.RowIndex < 0)
                 return null;
 
@@ -316,10 +254,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             }
 
             // cell
-            string propertyName = Columns[e.ColumnIndex].DataPropertyName;
-            return HasMatch(validationResults.Errors, propertyName) ? ErrorIcon
-                : HasMatch(validationResults.Warnings, propertyName) ? WarningIcon
-                : HasMatch(validationResults.Infos, propertyName) ? InfoIcon
+            ValidationResultsCollection propertyValidation = validationResults[Columns[e.ColumnIndex].DataPropertyName];
+            return propertyValidation.HasErrors ? ErrorIcon
+                : propertyValidation.HasWarnings ? WarningIcon
+                : propertyValidation.HasInfos ? InfoIcon
                 : null;
         }
 
@@ -330,8 +268,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             ValidationResultsCollection validationResults = validatingObject.ValidationResults;
 
             cell.ErrorText = e.ColumnIndex < 0
-                ? GetRowValidationText(validationResults)
-                : GetCellValidationText(validationResults, Columns[e.ColumnIndex].DataPropertyName);
+                ? validationResults.Message
+                : validationResults.TryGetFirstWithHighestSeverity(Columns[e.ColumnIndex].DataPropertyName)?.Message;
         }
 
         private void AdjustAlternatingRowsColors()
@@ -347,8 +285,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         private bool ShouldSerializeAlternatingRowsDefaultCellStyle() => !Equals(AlternatingRowsDefaultCellStyle, defaultAlternatingRowsDefaultCellStyle);
         private bool ShouldSerializeColumnHeadersDefaultCellStyle() => !Equals(ColumnHeadersDefaultCellStyle, defaultColumnHeadersDefaultCellStyle);
         private bool ShouldSerializeDefaultCellStyle() => !Equals(DefaultCellStyle, defaultDefaultCellStyle);
-
-        #endregion
 
         #endregion
 

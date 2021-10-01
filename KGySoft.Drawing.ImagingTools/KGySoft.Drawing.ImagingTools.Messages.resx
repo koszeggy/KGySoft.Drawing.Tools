@@ -359,6 +359,15 @@ Brightness: {5:F0}%</value>
   <data name="ErrorMessage_ResourcePlaceholderUnusedIndices" xml:space="preserve">
     <value>One or more placeholders are missing from the translated resource format string.</value>
   </data>
+  <data name="ErrorMessage_PathIsEmpty" xml:space="preserve">
+    <value>The specified path cannot be empty.</value>
+  </data>
+  <data name="ErrorMessage_InvalidPath" xml:space="preserve">
+    <value>The specified path contains illegal characters.</value>
+  </data>
+  <data name="ErrorMessage_FileNotExpected" xml:space="preserve">
+    <value>The specified path is a file but should be a directory.</value>
+  </data>
   <data name="ErrorMessage_FailedToSaveImageFormat" xml:space="preserve">
     <value>Could not save image due to an error: {0}</value>
   </data>
@@ -432,6 +441,9 @@ Either select at least '{1}' or reduce the number of colors to {2}.</value>
   <data name="ErrorMessage_ResourcePlaceholderIndexInvalidFormat" xml:space="preserve">
     <value>Index '{0}' is invalid in the translated resource format string.</value>
   </data>
+  <data name="ErrorMessage_CannotApplyLanguageSettingsFormat" xml:space="preserve">
+    <value>Language settings cannot be applied: {0}</value>
+  </data>
   <data name="WarningMessage_CouldNotCreateNetCoreDirectoryFormat" xml:space="preserve">
     <value>Could not create directory {0}: {1}
 
@@ -470,6 +482,9 @@ so partial transparent pixels will be blended with back color.</value>
   </data>
   <data name="WarningMessage_UnsupportedCulture" xml:space="preserve">
     <value>This language is not supported on this platform or by the executing framework.</value>
+  </data>
+  <data name="WarningMessage_DirectoryNotExists" xml:space="preserve">
+    <value>The specified path is not an existing directory. It will be attempted to be created.</value>
   </data>
   <data name="ConfirmMessage_OverwriteInstallation" xml:space="preserve">
     <value>Are you sure you want to overwrite this installation?</value>
@@ -851,11 +866,17 @@ Harmonizing visual elements for all possible environments is never a trivial tas
     <value>When checked, uses the language of the operating system. The possibly non-existing resources will be automatically generated.</value>
   </data>
   <data name="chbExistingResourcesOnly.Text" xml:space="preserve">
-    <value>Show Languages Only With Existing Resources</value>
+    <value>List Languages Only With Existing Resources</value>
   </data>
   <data name="chbExistingResourcesOnly.ToolTipText" xml:space="preserve">
     <value>When checked, enlists languages only with existing resource files. Uncheck to allow generating resources for any language.
 Newly generated resources will contain English texts prefixed with "[T]". You can then edit the resources to translate these texts. </value>
+  </data>
+  <data name="gbResxResourcesPath.Text" xml:space="preserve">
+    <value>Custom Resources Path</value>
+  </data>
+  <data name="gbResxResourcesPath.ToolTipText" xml:space="preserve">
+    <value>When checked, then you can specify an absolute path for the editable .resx resources.</value>
   </data>
   <data name="gbDisplayLanguage.Text" xml:space="preserve">
     <value>Display Language</value>
@@ -985,7 +1006,7 @@ Tip: use '[T]' to filter untranslated texts.</value>
     <value>&amp;Add to Custom Colors</value>
   </data>
   <data name="Static.14146" xml:space="preserve">
-    <value>Select the target folder of the installation.</value>
+    <value>Select the target folder.</value>
   </data>
   <data name="Button.14150" xml:space="preserve">
     <value>&amp;Make New Folder</value>

@@ -40,8 +40,8 @@ The Imaging Tools application makes possible to load images and icons from file,
 KGy SOFT Imaging Tools supports a wide range of platforms. Windows is supported starting with Windows XP but by using [Mono](https://www.mono-project.com/download/stable/) you can execute it also on Linux. See the [downloads](#download) for details.
 
 <p align="center">
-  <img alt="KGySoft Imaging Tools on Ubuntu Linux, using dark theme" src="https://user-images.githubusercontent.com/27336165/124265526-157a8500-db36-11eb-8d3a-84e66259ce03.png"/>
-  <br/><em>KGySoft Imaging Tools on Ubuntu Linux, using dark theme</em>
+  <img alt="KGy SOFT Imaging Tools on Ubuntu Linux, using dark theme" src="https://user-images.githubusercontent.com/27336165/124265526-157a8500-db36-11eb-8d3a-84e66259ce03.png"/>
+  <br/><em>KGy SOFT Imaging Tools on Ubuntu Linux, using dark theme</em>
 </p>
 
 ### Localization
@@ -59,7 +59,7 @@ The edited resources are saved in .resx files in the `Resources` subfolder of th
 
 > _Note:_ If you create a localization for your language feel free to [submit a new issue](https://github.com/koszeggy/KGySoft.Drawing.Tools/issues/new?assignees=&labels=&template=submit-resources.md&title=%5BRes%5D) and I will make it available for everyone. Don't forget to mention your name in the translated About menu.
 
-#### Help, my reasources are gone!
+#### Help, my resources are gone!
 
 If you use Imaging Tools as debugger visualizers, then it can be executed from various locations. See the bottom of the [Troubleshooting](#troubleshooting) section below.
 
@@ -98,9 +98,11 @@ The `KGySoft.Drawing.DebuggerVisualizers` assembly provides debugger visualizers
 
 #### By VSIX Installer
 
-If you use Visual Studio 2013 or newer the simplest way is to download the [installer package](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers) from the VisualStudio Marketplace. 
+If you use Visual Studio 2013 or newer, then you can perform the install directly from Visual Studio by the _Extensions/Manage Extensions_ (older Visual Studio versions: _Tools/Extensions and Updates..._) menu if you search for the "_KGy SOFT Drawing DebuggerVisualizers_" extension.
 
-You can perform the install also from Visual Studio by the _Tools/Extensions and Updates..._ (Visual Studio 2019: _Extensions/Manage Extensions_) menu if you search for the "_KGy SOFT Drawing DebuggerVisualizers_" extension.
+Alternatively, you can download the installer package from the VisualStudio Marketplace. There are two versions available:
+* A [32-bit version](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers) for Visual Studio 2013-2019
+* And a [64-bit version](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) for Visual Studio 2022
 
 #### Manual Install
 
@@ -143,7 +145,7 @@ If Visual Studio cannot load the visualizer or you have other debugger visualize
 | Could not load this custom viewer.<br/>![Could not load this custom viewer.](https://kgysoft.net/images/DebuggerVisualizerTrShCouldNotLoadViewer.png) | Open _Debug / Options / Debugging / General_ and make sure that both _Use Managed Compatibility Mode_ and _Use legacy C# and VB expression evaluators_ are unchecked.<br/>![Debugging Options.](https://kgysoft.net/images/DebuggerVisualizerTrShCouldNotLoadSettings.png) |
 | An unhandled exception of type 'System.InvalidOperationException' was thrown by the custom visualizer component in the process being debugged. (Object is currently in use elsewhere.)<br/>![Object is currently in use elsewhere.](https://kgysoft.net/images/DebuggerVisualizerTrShObjectIsInUse.png) | You try to debug a `Graphics` instance, whose Device Context is in use (the `GetHdc` method has been called previously). This `Graphics` instance cannot be accessed until the `ReleaseHdc` method is called. |
 | Unable to perform function evaluation on the process being debugged (Unable to evaluate expression because the code is optimized or a native frame is on top of the call stack.)<br/>![Unable to evaluate expression because the code is optimized or a native frame is on top of the call stack.](https://kgysoft.net/images/DebuggerVisualizerTrShOptimized.png) | Can occur even with debug build, typically when debugging a .NET Core project. When it happens, then likely all members in the debug window show a similar error message. Perform a Step Over operation (F10 by default)/Set Next Statement (Ctrl+Shift+F10), or restart the debugging session and try again. |
-| Unable to perform function evaluation on the process being debugged (Function evaluation timed out)<br/>![Function evaluation timed out.](https://kgysoft.net/images/DebuggerVisualizerTrShTimeout.png) | On slower computers with a slower Visual Studio (with many add-ons, for example) it can happen that the visualizer loads too slowly for the first time. Just try to click the magnifier icon again, which usually solves the problem. Alternatively, you can try to set a `DWORD` value in the Registry under the `HKEY_CURRENT_USER\Software\Microsoft\VisualStudio\[version]\Debugger` key, called `LocalsTimeout`. The value represents milliseconds. |
+| Unable to perform function evaluation on the process being debugged (Function evaluation timed out)<br/>![Function evaluation timed out.](https://kgysoft.net/images/DebuggerVisualizerTrShTimeout.png) | It can happen that the visualizer loads too slowly for the first time. Just try to click the magnifier icon again, which usually solves the problem. If all members in the debug window show an error, then perform a Step Over operation first (F10 by default). |
 | Unable to load the custom visualizer (Operation is not valid due to the current state of the object)<br/>![Operation is not valid due to the current state of the object.](https://kgysoft.net/images/DebuggerVisualizerTrShOperationIsNotValid.png) | Typically happens after timeout. Likely all members in the debug window show a similar error message. Perform a Step Over operation (F10 by default)/Set Next Statement (Ctrl+Shift+F10), or restart the debugging session and try again. |
 | An unhandled exception of type 'System.NullReferenceException' was thrown by the custom visualizer component in the process being debugged.<br/>![An unhandled exception of type 'System.NullReferenceException' was thrown by the custom visualizer component in the process being debugged.](https://kgysoft.net/images/DebuggerVisualizerTrShExceptionNullRef.png) | • Occurs when you clear the debugged image in Visual Studio 2019, which does not support nullifying the debugged value.<br/>The bug has been [reported](https://developercommunity.visualstudio.com/content/problem/676481/visual-sudio-2019-throws-a-nullreferenceexception.html) to the VisualStudio team.<br/><br/> • Occurs in Visual Studio 2019 also when replacing a `Color` entry in an array by the visualizer.<br/>The bug has been [reported](https://developercommunity.visualstudio.com/content/problem/1142584/visual-sudio-2019-throws-a-nullreferenceexception-1.html) to the VisualStudio team. |
 | The Color visualizer appears in read-only, even though the debugged value is in a read-write context (eg. local variable).<br/>![Color visualizer appears as read-only.](https://kgysoft.net/images/DebuggerVisualizerTrShColorReadOnly.png) | Occurs with some specific builds of Visual Studio 2019<br/>The bug has been [reported](https://developercommunity.visualstudio.com/content/problem/1142584/visual-sudio-2019-throws-a-nullreferenceexception-1.html) to the VisualStudio team as part of another issue. |
@@ -163,6 +165,9 @@ If Visual Studio cannot load the visualizer or you have other debugger visualize
 | I edited the language resource files but I cannot find them (or they appear to be gone) | The _Visual Studio/Tools/KGy SOFT Drawing Debugger Visualizers_ and clicking the magnifier icon executes the Imaging Tools from different locations. If you edit the language resources at one place they will not be automatically applied at the other place. Therefore, the saved resources might be at different possible locations:<br/>• If you execute a manually deployed version the resources will be in a `Resources` subfolder in the folder you executed the Imaging Tools from.<br/>• During debugging the tool is executed from the debugger visualizers folder: `Documents\Visual Studio <version>\Visualizers`<br/>• If you launch the tool from the Visual Studio Tools menu, then it is located under `ProgramData\Microsoft\VisualStudio\Packages\...` |
 
 ## Download
+
+> _Tip:_ See [above](#by-vsix-installer) how to download the debugger visualizer installers
+
 You can download the sources and the binaries as .7z/.zip archives at the [releases](https://github.com/koszeggy/KGySoft.Drawing.Tools/releases) page.
 
 To support the widest possible range of platforms the binaries archive contains multiple builds in different folders.
@@ -176,11 +181,11 @@ To support the widest possible range of platforms the binaries archive contains 
 A simple test application is also available in the download binaries. Though it was created mainly for testing purposes it also demonstrates how to use the public API of the Imaging Tools application and the DebuggerVisualizers from a consumer library or application.
 
 <p align="center">
-  <img alt="Debugger Visualizer Test Tool" src="https://user-images.githubusercontent.com/27336165/124276069-a6a42880-db43-11eb-9c47-fe7c45cd7161.png"/>
+  <img alt="Debugger Visualizer Test Tool" src="https://user-images.githubusercontent.com/27336165/125045273-1a42ba00-e09d-11eb-8484-02b10dbafd8e.png"/>
   <br/><em>Debugger Visualizer Test Tool</em>
 </p>
 
-> _Note:_ The Debugger Visualizers Test Tool directly references a specific version of the `Microsoft.VisualStudio.DebuggerVisualizers` assembly, therefore Visual Studio will not able to display visualizers when debugging this project unless you use the very same version (Visual Studio 2013).
+> _Note:_ The Debugger Visualizers Test Tool directly references a specific version of the `Microsoft.VisualStudio.DebuggerVisualizers` assembly, therefore Visual Studio will not able to display visualizers when debugging this project unless you use the very same version (Visual Studio 2022).
 
 ## Release Notes
 

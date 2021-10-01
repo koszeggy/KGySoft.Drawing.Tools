@@ -6,10 +6,9 @@
 //  Copyright (C) KGy SOFT, 2005-2021 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
-//  directory of this distribution. If not, then this file is considered as
-//  an illegal copy.
+//  directory of this distribution.
 //
-//  Unauthorized copying of this file, via any medium is strictly prohibited.
+//  Please refer to the LICENSE file if you want to use this source code.
 ///////////////////////////////////////////////////////////////////////////////
 
 #endregion
@@ -90,11 +89,11 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
             #endregion
 
-            var result = new ValidationResultsCollection();
             EnsurePlaceholderCount();
             if (placeholderCount == 0)
-                return result;
+                return ValidationResultsCollection.Empty;
 
+            var result = new ValidationResultsCollection();
             Debug.Assert(placeholderCount < 32, "No resource is expected to contain more than 32 placeholders in KGy SOFT Libraries");
             int usedPlaceholders = 0;
             string value = TranslatedText;

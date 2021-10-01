@@ -6,6 +6,25 @@
 ===============================================================================
 
 ~~~~~~~~~
+* v2.5.0:
+~~~~~~~~~
+
+* KGySoft.Drawing.ImagingTools.exe
+==================================
+* Language Settings
+  + An absolute path can be set for the resources.
+- .NET 5 build: Opening URLs from the help menu didn't work due to a breaking change introduced in .NET Core 3.1.
+
+* API changes:
+  * ViewModelFactory class: CreateEditResources has an optional hasPendingChanges parameter that allows applying
+    changes without any editing.
+
++ KGySoft.Drawing.DebuggerVisualizers.Package.x64.dll
+=====================================================
++ This is a new installer for the 64-bit Visual Studio 2022
+
+
+~~~~~~~~~
 * v2.4.0:
 ~~~~~~~~~
 

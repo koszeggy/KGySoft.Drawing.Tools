@@ -6,10 +6,9 @@
 //  Copyright (C) KGy SOFT, 2005-2021 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
-//  directory of this distribution. If not, then this file is considered as
-//  an illegal copy.
+//  directory of this distribution.
 //
-//  Unauthorized copying of this file, via any medium is strictly prohibited.
+//  Please refer to the LICENSE file if you want to use this source code.
 ///////////////////////////////////////////////////////////////////////////////
 
 #endregion
@@ -77,8 +76,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Fields
 
         private readonly CultureInfo culture;
-        private readonly bool useInvariant;
         private readonly Dictionary<LocalizableLibraries, (IList<ResourceEntry> ResourceSet, bool IsModified)> resources;
+        private readonly bool useInvariant;
+        private readonly bool initializing;
+        private readonly bool createdWithPendingChanges;
 
         #endregion
 
@@ -102,18 +103,22 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Constructors
 
-        internal EditResourcesViewModel(CultureInfo culture)
+        internal EditResourcesViewModel(CultureInfo culture, bool hasPendingChanges)
         {
+            initializing = true;
             this.culture = culture ?? throw new ArgumentNullException(nameof(culture), PublicResources.ArgumentNull);
+            createdWithPendingChanges = hasPendingChanges;
 
             // The default language is used as the invariant resource set.
             // The invariant file name is preferred, unless only the language-specific file exists.
             useInvariant = Equals(culture, Res.DefaultLanguage) && !File.Exists(ToFileNameWithPath(LocalizableLibraries.ImagingTools));
             resources = new Dictionary<LocalizableLibraries, (IList<ResourceEntry>, bool)>(3, EnumComparer<LocalizableLibraries>.Comparer);
-            Set(String.Empty, false, nameof(Filter));
+            Filter = String.Empty;
             ResourceFiles = Enum<LocalizableLibraries>.GetFlags().Select(lib => new KeyValuePair<LocalizableLibraries, string>(lib, ToFileName(lib))).ToArray();
-            ApplyResourcesCommandState.Enabled = !Equals(Res.DisplayLanguage, culture);
+            ApplyResourcesCommandState.Enabled = hasPendingChanges || !Equals(Res.DisplayLanguage, culture);
             UpdateTitle();
+            initializing = false;
+
             SelectedLibrary = LocalizableLibraries.ImagingTools;
         }
 
@@ -125,9 +130,21 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         protected override bool AffectsModifiedState(string propertyName) => false; // set explicitly
 
+        internal override void ViewLoaded()
+        {
+            base.ViewLoaded();
+
+            // Marking VM modified immediately if apply is enabled and the display language is edited.
+            // Thus exiting by save (OK) will apply the pending changes (eg. path change for display language) without performing any actual change.
+            if (createdWithPendingChanges && Equals(Res.DisplayLanguage, culture))
+                SetModified(true);
+        }
+
         protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
         {
             base.OnPropertyChanged(e);
+            if (initializing)
+                return;
             switch (e.PropertyName)
             {
                 case nameof(SelectedLibrary):
@@ -207,7 +224,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 }
             }
 
-            resources[library] = (set, false);
+            // Missing file for non-default language will be marked as modified immediately. Not setting IsModified though,
+            // because if will be cleared in base.ViewLoaded anyway where we set it only if the active language is edited.
+            bool markModified = !Equals(culture, Res.DefaultLanguage) && !File.Exists(ToFileNameWithPath(library));
+            resources[library] = (set, markModified);
+
             ApplyFilter(set);
         }
 
@@ -267,6 +288,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 // Note that this will not generate any .resx files as we use the default AutoSave = None
                 using var resourceManger = new DynamicResourceManager(ResHelper.GetBaseName(library), ResHelper.GetAssembly(library))
                 {
+                    ResXResourcesDir = Res.ResourcesDir,
                     SafeMode = true,
                     Source = ResourceManagerSources.CompiledOnly,
                     AutoAppend = AutoAppendOptions.AppendFirstNeutralCulture,
@@ -384,8 +406,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnApplyResourcesCommand(ICommandState state)
         {
-            Debug.Assert(IsModified || !Equals(culture, Res.DisplayLanguage));
-            ResHelper.ReleaseAllResources();
+            // Apply saves the resources and also switches to the edited language
+            Debug.Assert(IsModified || !Equals(culture, Res.DisplayLanguage) || createdWithPendingChanges);
+            LanguageSettings.ReleaseAllResources();
             bool success = TrySaveResources();
             if (success)
                 ApplyResources();
@@ -393,10 +416,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnSaveResourcesCommand(ICommandState state)
         {
+            // OK saves the resources only if there was any explicit edit but non-existing files will not be created
+            // unless it is the active language so it must be applied along with saving
             bool success = true;
             if (IsModified)
             {
-                ResHelper.ReleaseAllResources();
+                LanguageSettings.ReleaseAllResources();
                 success = TrySaveResources();
                 if (success)
                 {

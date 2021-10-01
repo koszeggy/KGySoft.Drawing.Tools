@@ -6,10 +6,9 @@
 //  Copyright (C) KGy SOFT, 2005-2021 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
-//  directory of this distribution. If not, then this file is considered as
-//  an illegal copy.
+//  directory of this distribution.
 //
-//  Unauthorized copying of this file, via any medium is strictly prohibited.
+//  Please refer to the LICENSE file if you want to use this source code.
 ///////////////////////////////////////////////////////////////////////////////
 
 #endregion
@@ -40,6 +39,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             btnEditResources.Height = cmbLanguages.Height + 2; // helps aligning better for higher DPIs
             AcceptButton = okCancelApplyButtons.OKButton;
             CancelButton = okCancelApplyButtons.CancelButton;
+
+            // Mono/Windows: exiting because ToolTips throw an exception if set for an embedded control and
+            // since they don't appear for negative padding there is simply no place for them.
+            if (OSUtils.IsMono && OSUtils.IsWindows)
+                return;
+
+            ValidationMapping[nameof(viewModel.ResourceCustomPath)] = gbResxResourcesPath.CheckBox;
+            ErrorProvider.SetIconAlignment(gbResxResourcesPath.CheckBox, ErrorIconAlignment.TopRight);
         }
 
         #endregion
@@ -84,6 +91,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             base.OnLoad(e);
         }
 
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            // if user (or system) closes the window without pressing cancel we need to execute the cancel command
+            if (DialogResult != DialogResult.OK && e.CloseReason != CloseReason.None)
+                okCancelApplyButtons.CancelButton.PerformClick();
+            base.OnFormClosing(e);
+        }
+
         protected override void ApplyResources()
         {
             base.ApplyResources();
@@ -92,6 +107,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected override void ApplyViewModel()
         {
+            InitViewModelDependencies();
             InitCommandBindings();
             InitPropertyBindings();
             base.ApplyViewModel();
@@ -100,6 +116,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         #endregion
 
         #region Private Methods
+
+        private void InitViewModelDependencies() => ViewModel.SelectFolderCallback = () => Dialogs.SelectFolder(ViewModel.ResourceCustomPath);
 
         private void InitPropertyBindings()
         {
@@ -115,6 +133,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // VM.UseOSLanguage -> !cmbLanguages.Enabled
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.UseOSLanguage), nameof(cmbLanguages.Enabled), b => !((bool)b!), cmbLanguages);
 
+            // VM.UseCustomResourcePath <-> gbResxResourcesPath.Checked
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.UseCustomResourcePath), gbResxResourcesPath, nameof(gbResxResourcesPath.Checked));
+
+            // VM.ResourceCustomPath <-> txtResxResourcesPath.Text
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.ResourceCustomPath), txtResxResourcesPath, nameof(txtResxResourcesPath.Text));
+
             // VM.Languages -> cmbLanguages.DataSource
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Languages), nameof(cmbLanguages.DataSource), cmbLanguages);
 
@@ -127,11 +151,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void InitCommandBindings()
         {
-            CommandBindings.Add<ListControlConvertEventArgs>(OnFormatCultureCommand)
-                .AddSource(cmbLanguages, nameof(cmbLanguages.Format));
+            CommandBindings.Add(ViewModel.CancelCommand)
+                .AddSource(okCancelApplyButtons.CancelButton, nameof(okCancelApplyButtons.CancelButton.Click));
 
             CommandBindings.Add(ViewModel.SaveConfigCommand)
-                .AddSource(okCancelApplyButtons.OKButton, nameof(okCancelApplyButtons.OKButton.Click));
+                .AddSource(okCancelApplyButtons.OKButton, nameof(okCancelApplyButtons.OKButton.Click))
+                .Executed += (_, args) => DialogResult = args.State[LanguageSettingsViewModel.StateSaveExecutedWithError] is true ? DialogResult.None : DialogResult.OK;
 
             CommandBindings.Add(ViewModel.ApplyCommand, ViewModel.ApplyCommandState)
                 .AddSource(okCancelApplyButtons.ApplyButton, nameof(okCancelApplyButtons.ApplyButton.Click));
@@ -141,6 +166,20 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
             CommandBindings.Add(ViewModel.DownloadResourcesCommand)
                 .AddSource(btnDownloadResources, nameof(btnDownloadResources.Click));
+
+            CommandBindings.Add(ViewModel.FinalizePath)
+                .AddSource(txtResxResourcesPath, nameof(txtResxResourcesPath.Validating));
+
+            CommandBindings.Add(ViewModel.SelectFolderCommand)
+                .AddSource(txtResxResourcesPath, nameof(txtResxResourcesPath.DoubleClick));
+
+            // View commands
+            CommandBindings.Add<ListControlConvertEventArgs>(OnFormatCultureCommand)
+                .AddSource(cmbLanguages, nameof(cmbLanguages.Format));
+
+            CommandBindings.Add(ValidationResultsChangedCommand)
+                .AddSource(ViewModel, nameof(ViewModel.ValidationResultsChanged))
+                .WithParameter(() => ViewModel.ValidationResults);
         }
 
         #endregion
