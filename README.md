@@ -98,9 +98,11 @@ The `KGySoft.Drawing.DebuggerVisualizers` assembly provides debugger visualizers
 
 #### By VSIX Installer
 
-If you use Visual Studio 2013 or newer the simplest way is to download the [installer package](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers) from the VisualStudio Marketplace. 
+If you use Visual Studio 2013 or newer, then you can perform the install directly from Visual Studio by the _Extensions/Manage Extensions_ (older Visual Studio versions: _Tools/Extensions and Updates..._) menu if you search for the "_KGy SOFT Drawing DebuggerVisualizers_" extension.
 
-You can perform the install also from Visual Studio by the _Tools/Extensions and Updates..._ (Visual Studio 2019: _Extensions/Manage Extensions_) menu if you search for the "_KGy SOFT Drawing DebuggerVisualizers_" extension.
+Alternatively, you can download the installer package from the VisualStudio Marketplace. There are two versions available:
+* A [32-bit version](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers) for Visual Studio 2013-2019
+* And a [64-bit version](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) for Visual Studio 2022
 
 #### Manual Install
 
@@ -163,6 +165,9 @@ If Visual Studio cannot load the visualizer or you have other debugger visualize
 | I edited the language resource files but I cannot find them (or they appear to be gone) | The _Visual Studio/Tools/KGy SOFT Drawing Debugger Visualizers_ and clicking the magnifier icon executes the Imaging Tools from different locations. If you edit the language resources at one place they will not be automatically applied at the other place. Therefore, the saved resources might be at different possible locations:<br/>• If you execute a manually deployed version the resources will be in a `Resources` subfolder in the folder you executed the Imaging Tools from.<br/>• During debugging the tool is executed from the debugger visualizers folder: `Documents\Visual Studio <version>\Visualizers`<br/>• If you launch the tool from the Visual Studio Tools menu, then it is located under `ProgramData\Microsoft\VisualStudio\Packages\...` |
 
 ## Download
+
+> _Tip:_ See [above](#by-vsix-installer) how to download the debugger visualizer installers
+
 You can download the sources and the binaries as .7z/.zip archives at the [releases](https://github.com/koszeggy/KGySoft.Drawing.Tools/releases) page.
 
 To support the widest possible range of platforms the binaries archive contains multiple builds in different folders.
@@ -180,7 +185,7 @@ A simple test application is also available in the download binaries. Though it 
   <br/><em>Debugger Visualizer Test Tool</em>
 </p>
 
-> _Note:_ The Debugger Visualizers Test Tool directly references a specific version of the `Microsoft.VisualStudio.DebuggerVisualizers` assembly, therefore Visual Studio will not able to display visualizers when debugging this project unless you use the very same version (Visual Studio 2013).
+> _Note:_ The Debugger Visualizers Test Tool directly references a specific version of the `Microsoft.VisualStudio.DebuggerVisualizers` assembly, therefore Visual Studio will not able to display visualizers when debugging this project unless you use the very same version (Visual Studio 2022).
 
 ## Release Notes
 
