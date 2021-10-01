@@ -109,7 +109,7 @@
     <value>Kék</value>
   </data>
   <data name="chbExistingResourcesOnly.Text">
-    <value>Csak a fordítással rendelkező nyelvek mutatása</value>
+    <value>Csak a fordítással rendelkező nyelvek listázása</value>
   </data>
   <data name="chbExistingResourcesOnly.ToolTipText">
     <value>Ha ki van jelölve, csak a fordítással rendelkező nyelvek jelennek meg a listában. A kijelölés törlésével bármelyik nyelvhez generálhatók nyelvi fájlok.
@@ -691,7 +691,7 @@ Felbontás: {5}x{6} DPI</value>
     <value>Mappa:</value>
   </data>
   <data name="Static.14146">
-    <value>Mappa választása a debugger visualizer telepítéshez.</value>
+    <value>Célmappa kiválasztása</value>
   </data>
   <data name="Static.723">
     <value>&amp;Árny:</value>
