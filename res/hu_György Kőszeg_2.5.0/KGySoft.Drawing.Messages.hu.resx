@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<root>
+  <data name="Accessors_InstanceFieldDoesNotExistFormat">
+    <value>Nem található „{0}” nevű példány mező a(z) „{1}” típuson.</value>
+  </data>
+  <data name="Gdi32_GetEmfContentFailed">
+    <value>Az Enhanced Metafile tartalom kinyerése sikertelen volt.</value>
+  </data>
+  <data name="Gdi32_GetWmfContentFailed">
+    <value>A Windows Metafile tartalom kinyerése sikertelen volt.</value>
+  </data>
+  <data name="Gdi32_InvalidEmfHandle">
+    <value>Érvénytelen Enhanced Metafile leíró.</value>
+  </data>
+  <data name="Gdi32_InvalidHandle">
+    <value>Érvénytelen GDI objektumleíró.</value>
+  </data>
+  <data name="Gdi32_InvalidWmfHandle">
+    <value>Érvénytelen Windows Metafile leíró.</value>
+  </data>
+  <data name="General_InternalErrorFormat">
+    <value>Belső hiba: {0}</value>
+  </data>
+  <data name="General_InvalidAsyncResultFormat">
+    <value>Az IAsyncResult objektum nem a megfelelő „{0}” metódustól származik, vagy az End metódus többször meg lett hívva ugyanazzal az IAsyncResult példánnyal.</value>
+  </data>
+  <data name="General_OperationCanceled">
+    <value>A művelet meg lett szakítva.</value>
+  </data>
+  <data name="General_PixelFormatInvalidFormat">
+    <value>A(z) „{0}” érték nem egy tényleges pixelformátumot reprezentál.</value>
+  </data>
+  <data name="General_RequiresWindows">
+    <value>Ez a művelet csak Windowson támogatott.</value>
+  </data>
+  <data name="GraphicsExtensions_MetafileGraphicsNotSupported">
+    <value>Metafile objektumból származó Graphics nem támogatott. A Graphics felszabadítása után a MetafileExtensions.ToBitmap metódus használható a Metafile Bitmap objektummá való konvertálására.</value>
+  </data>
+  <data name="IconExtensions_ImagesColorsDifferentLength">
+    <value>Az images és transparentColors paraméterek hosszának egyezniük kell.</value>
+  </data>
+  <data name="ImageExtensions_EncoderSaveFailFormat">
+    <value>A kép mentése sikertelen volt a(z) „{0}” kódoló használatával.</value>
+  </data>
+  <data name="ImageExtensions_MultipageTiffSaveNotSupported">
+    <value>Ezen a platformon nem támogatott több oldalas TIFF képek mentése.</value>
+  </data>
+  <data name="ImageExtensions_NoEncoderFormat">
+    <value>Nem található kódoló a(z) „{0}” formátumhoz.</value>
+  </data>
+  <data name="Imaging_DithererInitializeNull">
+    <value>Az IDitherer.Initialize metódus null értéket adott vissza.</value>
+  </data>
+  <data name="Imaging_InvalidOperationIndexedOnly">
+    <value>Ez a metódus csak indexelt pixelformátumú bitképekhez használható.</value>
+  </data>
+  <data name="Imaging_NotBitmapDataStream">
+    <value>Érvénytelen bitkép adatfolyam.</value>
+  </data>
+  <data name="Imaging_PaletteTooLargeFormat">
+    <value>„{1}” pixelformátum esetén a paletta nem tartalmazhat több mint {0} színt.</value>
+  </data>
+  <data name="Imaging_PixelFormatNotSupportedFormat">
+    <value>A natív Bitmap típus nem támogatja a „{0}” pixelformátumot ezen a platformon.</value>
+  </data>
+  <data name="Imaging_QuantizerInitializeNull">
+    <value>A IQuantizer.Initialize metódus null értéket adott vissza.</value>
+  </data>
+  <data name="MetafileExtensions_CannotBeSavesAsEmf">
+    <value>A megadott metafájl csak WMF formátumban menthető.</value>
+  </data>
+  <data name="RawIcon_BadIconFormat">
+    <value>Hibás ikon formátum.</value>
+  </data>
+  <data name="RawIcon_CannotBeInstantiatedAsBitmap">
+    <value>Ezen a platformon ez az ikon nem példányosítható Bitmap típusként a jelenlegi mérettel vagy tömörítéssel.</value>
+  </data>
+  <data name="RawIcon_CannotBeInstantiatedAsIcon">
+    <value>Az ikon túl sok képet tartalmaz.</value>
+  </data>
+  <data name="RawIcon_TooManyImages">
+    <value>Az ikon túl sok képet tartalmaz.</value>
+  </data>
+  <data name="User32_CreateIconIndirectFailed">
+    <value>Az ikon vagy kurzor létrehozása sikertelen volt.</value>
+  </data>
+  <data name="User32_InvalidHandle">
+    <value>Érvénytelen leíró.</value>
+  </data>
+</root>
