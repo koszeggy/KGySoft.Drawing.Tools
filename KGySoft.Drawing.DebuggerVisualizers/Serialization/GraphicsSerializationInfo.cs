@@ -65,7 +65,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
             SerializationHelper.WriteImage(bw, GraphicsInfo.GraphicsImage!);
 
             // 2. Transformation matrix
-            BinarySerializer.SerializeByWriter(bw, GraphicsInfo.Transform!.Elements);
+            Matrix matrix = GraphicsInfo.Transform!;
+            bw.Write(matrix.IsIdentity);
+            if (!matrix.IsIdentity)
+            {
+                foreach (float element in matrix.Elements)
+                    bw.Write(element);
+            }
 
             // 3. Meta
             bw.Write(GraphicsInfo.OriginalVisibleClipBounds.X);
@@ -93,8 +99,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
             result.GraphicsImage = (Bitmap)SerializationHelper.ReadImage(br);
 
             // 2. Transformation matrix
-            var elements = (float[])BinarySerializer.DeserializeByReader(br)!;
-            result.Transform = new Matrix(elements[0], elements[1], elements[2], elements[3], elements[4], elements[5]);
+            result.Transform = br.ReadBoolean()
+                ? new Matrix()
+                : new Matrix(br.ReadSingle(), br.ReadSingle(), br.ReadSingle(), br.ReadSingle(), br.ReadSingle(), br.ReadSingle());
 
             // 3. Meta
             result.OriginalVisibleClipBounds = new Rectangle(br.ReadInt32(), br.ReadInt32(), br.ReadInt32(), br.ReadInt32());
