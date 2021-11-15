@@ -589,13 +589,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             Image? image = null;
             string? openedFileName = fileName;
+            bool isCustom = false;
 
             // bitmaps and metafiles are both allowed
             if ((imageTypes & (AllowedImageTypes.Bitmap | AllowedImageTypes.Metafile)) == (AllowedImageTypes.Bitmap | AllowedImageTypes.Metafile))
             {
                 try
                 {
-                    image = LoadImage(stream);
+                    image = LoadImage(stream, out isCustom);
                 }
                 catch (Exception e) when (!e.IsCriticalGdi())
                 {
@@ -619,14 +620,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             {
                 try
                 {
-                    image = LoadImage(stream);
+                    image = LoadImage(stream, out isCustom);
                 }
                 catch (Exception e) when (!e.IsCriticalGdi())
                 {
                     throw new ArgumentException(Res.ErrorMessageNotABitmapFile(e.Message), nameof(fileName), e);
                 }
 
-                if (image.RawFormat.Guid == ImageFormat.MemoryBmp.Guid)
+                if (!isCustom && image.RawFormat.Guid == ImageFormat.MemoryBmp.Guid)
                 {
                     SetNotification(Res.NotificationMetafileAsBitmapId);
                     openedFileName = null;
@@ -669,14 +670,18 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             else
                 Image = image;
 
-            // null will be assigned if the image has been converted (see notifications)
-            imageInfo.FileName = openedFileName;
+            // null will be assigned if the image has been converted (see notifications), or when it has a custom format so Image.FromFile cannot handle it
+            imageInfo.FileName = !isCustom ? openedFileName : null;
         }
 
-        private Image LoadImage(MemoryStream stream)
+        private Image LoadImage(MemoryStream stream, out bool isCustom)
         {
+            isCustom = false;
             if (TryLoadCustom(stream, out Image? image))
+            {
+                isCustom = true;
                 return image;
+            }
 
             // bitmaps and metafiles are both allowed
             if ((imageTypes & (AllowedImageTypes.Bitmap | AllowedImageTypes.Metafile)) == (AllowedImageTypes.Bitmap | AllowedImageTypes.Metafile))

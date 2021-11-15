@@ -9,6 +9,10 @@
 - v2.5.1:
 ~~~~~~~~~
 
+- KGySoft.Drawing.ImagingTools.exe
+==================================
+- Opening a .bdat file in Bitmap visualizer mode triggered the "Metafile has been converted to Bitmap..." message.
+
 - KGySoft.Drawing.DebuggerVisualizers.dll
 =========================================
 - Debugging a Graphics instance did not always work from a .NET [Core] project.
