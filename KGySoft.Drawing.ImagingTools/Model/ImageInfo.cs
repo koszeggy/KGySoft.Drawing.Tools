@@ -37,6 +37,12 @@ namespace KGySoft.Drawing.ImagingTools.Model
     /// <seealso cref="ImageInfoBase" />
     public sealed class ImageInfo : ImageInfoBase
     {
+        #region Constants
+
+        private const int propertyTagFrameDelay = 0x5100; // https://docs.microsoft.com/en-us/dotnet/api/system.drawing.imaging.propertyitem.id
+
+        #endregion
+
         #region Properties
 
         #region Public Properties
@@ -287,7 +293,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
             // in case of animation there is a compound image
             if (dimension == FrameDimension.Time)
-                times = image.GetPropertyItem(0x5100)?.Value;
+                times = image.GetPropertyItem(propertyTagFrameDelay)?.Value;
 
             frames = new ImageFrameInfo[frameCount];
             Frames = frames;
@@ -297,7 +303,16 @@ namespace KGySoft.Drawing.ImagingTools.Model
                 frames[frame] = new ImageFrameInfo(bitmap.CloneCurrentFrame()) { RawFormat = RawFormat };
                 if (times != null)
                 {
-                    int duration = BitConverter.ToInt32(times, frame << 2);
+                    int startIndex = frame << 2;
+                    int duration;
+                    if (times.Length >= startIndex + 4)
+                        duration = BitConverter.ToInt32(times, frame << 2);
+                    else // Mono/libgdiplus: the delay can be queried all frames separately
+                    {
+                        image.SelectActiveFrame(dimension, frame);
+                        byte[]? time = image.GetPropertyItem(propertyTagFrameDelay)?.Value;
+                        duration = time?.Length >= 4 ? BitConverter.ToInt32(time, 0) : 0;
+                    }
                     duration = duration == 0 ? 100 : duration * 10;
                     frames[frame].Duration = duration;
                 }

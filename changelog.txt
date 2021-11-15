@@ -12,6 +12,8 @@
 - KGySoft.Drawing.ImagingTools.exe
 ==================================
 - Opening a .bdat file in Bitmap visualizer mode triggered the "Metafile has been converted to Bitmap..." message.
+- Could not open an animated GIF in Mono/Linux. Known issue: libgdiplus decodes delta frames and different frame
+  sizes incorrectly. This could only be solved by a custom decoder.
 
 - KGySoft.Drawing.DebuggerVisualizers.dll
 =========================================
