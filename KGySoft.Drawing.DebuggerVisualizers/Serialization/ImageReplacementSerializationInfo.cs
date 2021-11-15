@@ -32,7 +32,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
         #region Fields
 
         private readonly ImageInfo? imageInfo;
-        private readonly Stream? stream;
+        private readonly BinaryReader? reader;
 
         #endregion
 
@@ -40,7 +40,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 
         internal ImageReplacementSerializationInfo(ImageInfo imageInfo) => this.imageInfo = imageInfo;
 
-        internal ImageReplacementSerializationInfo(Stream stream) => this.stream = stream;
+        internal ImageReplacementSerializationInfo(BinaryReader reader) => this.reader = reader;
 
         #endregion
 
@@ -51,7 +51,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
         public void Dispose()
         {
             imageInfo?.Dispose();
-            stream?.Dispose();
+            reader?.Dispose();
         }
 
         #endregion
@@ -108,7 +108,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 
         internal object? GetReplacementObject()
         {
-            var br = new BinaryReader(stream!);
+            BinaryReader br = reader!;
 
             // 1.) Image type
             ImageInfoType type = (ImageInfoType)br.ReadByte();

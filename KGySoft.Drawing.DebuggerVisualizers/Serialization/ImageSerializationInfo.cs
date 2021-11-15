@@ -38,19 +38,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 
         #region Constructors
 
-        internal ImageSerializationInfo(Image image)
-        {
-            ImageInfo = new ImageInfo(image);
-        }
+        internal ImageSerializationInfo(Image image) => ImageInfo = new ImageInfo(image);
 
-        internal ImageSerializationInfo(Icon icon)
-        {
-            ImageInfo = new ImageInfo(icon);
-        }
+        internal ImageSerializationInfo(Icon icon) => ImageInfo = new ImageInfo(icon);
 
-        internal ImageSerializationInfo(Stream stream)
+        internal ImageSerializationInfo(BinaryReader reader)
         {
-            ReadFrom(new BinaryReader(stream));
+            ReadFrom(reader);
             ImageInfo.SetModified(false);
         }
 

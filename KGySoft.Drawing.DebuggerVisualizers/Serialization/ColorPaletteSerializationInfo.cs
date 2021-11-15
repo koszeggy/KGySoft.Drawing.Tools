@@ -35,15 +35,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 
         #region Constructors
 
-        internal ColorPaletteSerializationInfo(ColorPalette palette)
-        {
-            Palette = palette;
-        }
+        internal ColorPaletteSerializationInfo(ColorPalette palette) => Palette = palette;
 
-        internal ColorPaletteSerializationInfo(Stream stream)
-        {
-            ReadFrom(new BinaryReader(stream));
-        }
+        internal ColorPaletteSerializationInfo(BinaryReader reader) => ReadFrom(reader);
 
         #endregion
 

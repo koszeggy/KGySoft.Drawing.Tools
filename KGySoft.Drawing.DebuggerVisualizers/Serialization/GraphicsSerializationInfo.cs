@@ -37,15 +37,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 
         #region Constructors
 
-        internal GraphicsSerializationInfo(Graphics graphics)
-        {
-            GraphicsInfo = new GraphicsInfo(graphics);
-        }
+        internal GraphicsSerializationInfo(Graphics graphics) => GraphicsInfo = new GraphicsInfo(graphics);
 
-        internal GraphicsSerializationInfo(Stream stream)
-        {
-            ReadFrom(new BinaryReader(stream));
-        }
+        internal GraphicsSerializationInfo(BinaryReader reader) => ReadFrom(reader);
 
         #endregion
 

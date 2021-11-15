@@ -15,11 +15,12 @@
 
 #region Usings
 
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-
+using System.Text;
 using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Reflection;
@@ -33,55 +34,197 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
     /// </summary>
     internal static class SerializationHelper
     {
+        #region Nested Classes
+
+        #region LeaveOpenReader class
+
+        private sealed class LeaveOpenReader : BinaryReader
+        {
+            #region Constructors
+
+            internal LeaveOpenReader(Stream stream)
+#if NET35 || NET40
+                : base(stream, Encoding.UTF8)
+#else
+                : base(stream, Encoding.UTF8, true)
+#endif
+            {
+            }
+
+            #endregion
+
+            #region Methods
+
+#if NET35 || NET40
+            protected override void Dispose(bool disposing)
+            {
+                // just not calling the base to prevent from closing the stream
+            }
+#endif
+
+            #endregion
+        }
+
+        #endregion
+
+        #region LeaveOpenWriter class
+
+        private sealed class LeaveOpenWriter : BinaryWriter
+        {
+            #region Fields
+#if NET35 || NET40
+
+            private bool isDisposed;
+
+#endif
+            #endregion
+
+            #region Constructors
+
+            internal LeaveOpenWriter(Stream stream)
+#if NET35 || NET40
+                : base(stream, Encoding.UTF8)
+#else
+                : base(stream, Encoding.UTF8, true)
+#endif
+            {
+            }
+
+            #endregion
+
+            #region Methods
+#if NET35 || NET40
+
+            protected override void Dispose(bool disposing)
+            {
+                if (isDisposed)
+                    return;
+                isDisposed = true;
+                OutStream.Flush();
+            }
+
+#endif
+            #endregion
+        }
+
+        #endregion
+
+        #region TempFileReader class
+
+        private sealed class TempFileReader : BinaryReader
+        {
+            #region Fields
+
+            private readonly string tempFileName;
+
+            #endregion
+
+            #region Constructors
+
+            internal TempFileReader(string fileName) : base(File.OpenRead(fileName)) => tempFileName = fileName;
+
+            #endregion
+
+            #region Methods
+
+            protected override void Dispose(bool disposing)
+            {
+                base.Dispose(disposing);
+                try
+                {
+                    File.Delete(tempFileName);
+                }
+                catch (Exception e) when (!e.IsCritical())
+                {
+                }
+            }
+
+            #endregion
+        }
+
+        #endregion
+
+        #endregion
+
         #region Internal Methods
 
         internal static void SerializeImageInfo(Image image, Stream outgoingData)
         {
-            using (var imageInfo = new ImageSerializationInfo(image))
-                imageInfo.Write(new BinaryWriter(outgoingData));
+            using var imageInfo = new ImageSerializationInfo(image);
+            using BinaryWriter writer = InitWriter(outgoingData);
+            imageInfo.Write(writer);
         }
 
         internal static void SerializeIconInfo(Icon icon, Stream outgoingData)
         {
-            using (var iconInfo = new ImageSerializationInfo(icon))
-                iconInfo.Write(new BinaryWriter(outgoingData));
+            using var iconInfo = new ImageSerializationInfo(icon);
+            using BinaryWriter writer = InitWriter(outgoingData);
+            iconInfo.Write(new BinaryWriter(outgoingData));
         }
 
         internal static void SerializeReplacementImageInfo(ImageInfo imageInfo, Stream outgoingData)
         {
-            using (var replacementInfo = new ImageReplacementSerializationInfo(imageInfo))
-                replacementInfo.Write(new BinaryWriter(outgoingData));
+            using var replacementInfo = new ImageReplacementSerializationInfo(imageInfo);
+            using BinaryWriter writer = InitWriter(outgoingData);
+            replacementInfo.Write(writer);
         }
 
         internal static void SerializeGraphicsInfo(Graphics g, Stream outgoingData)
         {
-            using (var graphicsInfo = new GraphicsSerializationInfo(g))
-                graphicsInfo.Write(new BinaryWriter(outgoingData));
+            using var graphicsInfo = new GraphicsSerializationInfo(g);
+            using BinaryWriter writer = InitWriter(outgoingData);
+            graphicsInfo.Write(writer);
         }
 
         internal static void SerializeBitmapDataInfo(BitmapData bitmapData, Stream outgoingData)
         {
-            using (var bitmapDataInfo = new BitmapDataSerializationInfo(bitmapData))
-                bitmapDataInfo.Write(new BinaryWriter(outgoingData));
+            using var bitmapDataInfo = new BitmapDataSerializationInfo(bitmapData);
+            using BinaryWriter writer = InitWriter(outgoingData);
+            bitmapDataInfo.Write(writer);
         }
 
+        // color info is always serialized without a temp file
         internal static void SerializeColor(Color color, Stream outgoingData) => new ColorSerializationInfo(color).Write(new BinaryWriter(outgoingData));
 
-        internal static void SerializeColorPalette(ColorPalette palette, Stream outgoingData) => new ColorPaletteSerializationInfo(palette).Write(new BinaryWriter(outgoingData));
+        internal static void SerializeColorPalette(ColorPalette palette, Stream outgoingData)
+        {
+            using BinaryWriter writer = InitWriter(outgoingData);
+            new ColorPaletteSerializationInfo(palette).Write(writer);
+        }
 
-        internal static ImageInfo DeserializeImageInfo(Stream stream) => new ImageSerializationInfo(stream).ImageInfo;
+        internal static ImageInfo DeserializeImageInfo(Stream stream)
+        {
+            using BinaryReader reader = InitReader(stream);
+            return new ImageSerializationInfo(reader).ImageInfo;
+        }
 
-        internal static Image? DeserializeReplacementImage(Stream stream) => (Image?)new ImageReplacementSerializationInfo(stream).GetReplacementObject();
+        internal static object? DeserializeReplacementImage(Stream stream)
+        {
+            using var imageInfo = new ImageReplacementSerializationInfo(InitReader(stream));
+            return imageInfo.GetReplacementObject();
+        }
 
-        internal static Icon? DeserializeReplacementIcon(Stream stream) => (Icon?)new ImageReplacementSerializationInfo(stream).GetReplacementObject();
+        internal static BitmapDataInfo DeserializeBitmapDataInfo(Stream stream)
+        {
+            using BinaryReader reader = InitReader(stream);
+            return new BitmapDataSerializationInfo(reader).BitmapDataInfo;
+        }
 
-        internal static BitmapDataInfo DeserializeBitmapDataInfo(Stream stream) => new BitmapDataSerializationInfo(stream).BitmapDataInfo;
+        internal static GraphicsInfo DeserializeGraphicsInfo(Stream stream)
+        {
+            using BinaryReader reader = InitReader(stream);
+            return new GraphicsSerializationInfo(reader).GraphicsInfo;
+        }
 
-        internal static GraphicsInfo DeserializeGraphicsInfo(Stream stream) => new GraphicsSerializationInfo(stream).GraphicsInfo;
+        // color is always deserialized without a temp file (and there is no ColorInfo type in ImagingTools.Model)
+        internal static Color DeserializeColor(Stream stream) => new ColorSerializationInfo(new BinaryReader(stream)).Color;
 
-        internal static Color DeserializeColor(Stream stream) => new ColorSerializationInfo(stream).Color;
-
-        internal static ColorPalette DeserializeColorPalette(Stream stream) => new ColorPaletteSerializationInfo(stream).Palette;
+        // there is no PaletteInfo type in ImagingTools.Model
+        internal static ColorPalette DeserializeColorPalette(Stream stream)
+        {
+            using BinaryReader reader = InitReader(stream);
+            return new ColorPaletteSerializationInfo(reader).Palette;
+        }
 
         internal static void WriteImage(BinaryWriter bw, Image image)
         {
@@ -103,6 +246,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
                 return;
             }
 
+            // writing the image without any encoder in a raw format preserving any pixel format
             WriteRawBitmap((Bitmap)image, bw);
         }
 
@@ -125,6 +269,57 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
         #endregion
 
         #region Private Methods
+
+        /// <summary>
+        /// Whenever possible, we try to create a temp file and create the writer for that.
+        /// This is needed because if the debugger is experiencing large memory usage, then it starts to dispose
+        /// the objects in the watch window, including images. This may happen even in the middle of serialization
+        /// causing AccessViolationException while reading image pixels.
+        /// </summary>
+        private static BinaryWriter InitWriter(Stream outgoingData)
+        {
+            string? fileName = null;
+            Stream? fileStream = null;
+            try
+            {
+                fileName = Path.GetTempFileName();
+                fileStream = File.OpenWrite(fileName);
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                fileStream?.Dispose();
+                fileStream = null;
+                try
+                {
+                    if (fileName != null)
+                        File.Delete(fileName);
+                }
+                catch (Exception ex) when (!ex.IsCritical())
+                {
+                }
+                finally
+                {
+                    fileName = null;
+                }
+            }
+
+            var outgoingWriter = new LeaveOpenWriter(outgoingData);
+            outgoingWriter.Write(fileName != null);
+
+            // Temp file could not be created: falling back to serializing in the outgoing stream (which is actually a memory stream)
+            if (fileStream == null)
+                return outgoingWriter;
+
+            // We could create a temp file: we write only the path in the outgoing data.
+            outgoingWriter.Write(fileName!);
+            return new BinaryWriter(fileStream);
+        }
+
+        private static BinaryReader InitReader(Stream incomingData)
+        {
+            var incomingReader = new LeaveOpenReader(incomingData);
+            return incomingReader.ReadBoolean() ? new TempFileReader(incomingReader.ReadString()) : incomingReader;
+        }
 
         private static void WriteAsImage(BinaryWriter bw, Image image)
         {

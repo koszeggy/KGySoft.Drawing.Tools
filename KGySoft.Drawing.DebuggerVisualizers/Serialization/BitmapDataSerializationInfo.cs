@@ -36,15 +36,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 
         #region Constructors
 
-        internal BitmapDataSerializationInfo(Stream stream)
-        {
-            ReadFrom(new BinaryReader(stream));
-        }
+        internal BitmapDataSerializationInfo(BinaryReader reader) => ReadFrom(reader);
 
-        internal BitmapDataSerializationInfo(BitmapData bitmapData)
-        {
-            BitmapDataInfo = new BitmapDataInfo(bitmapData);
-        }
+        internal BitmapDataSerializationInfo(BitmapData bitmapData) => BitmapDataInfo = new BitmapDataInfo(bitmapData);
 
         #endregion
 

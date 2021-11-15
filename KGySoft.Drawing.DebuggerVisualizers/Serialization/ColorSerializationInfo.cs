@@ -32,15 +32,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 
         #region Constructors
 
-        internal ColorSerializationInfo(Color color)
-        {
-            Color = color;
-        }
+        internal ColorSerializationInfo(Color color) => Color = color;
 
-        internal ColorSerializationInfo(Stream stream)
-        {
-            ReadFrom(new BinaryReader(stream));
-        }
+        internal ColorSerializationInfo(BinaryReader reader) => ReadFrom(reader);
 
         #endregion
 
