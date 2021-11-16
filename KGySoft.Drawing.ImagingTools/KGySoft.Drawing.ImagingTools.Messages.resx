@@ -344,9 +344,6 @@ Brightness: {5:F0}%</value>
   <data name="ErrorMessage_FailedToLoadFileFormat" xml:space="preserve">
     <value>Could not load file due to an error: {0}</value>
   </data>
-  <data name="ErrorMessage_AnimGifNotSupported" xml:space="preserve">
-    <value>Saving modifications as animated GIF is not supported</value>
-  </data>
   <data name="ErrorMessage_InstallationCannotBeOverwritten" xml:space="preserve">
     <value>The current installation is being executed, which cannot be overwritten</value>
   </data>

@@ -267,9 +267,6 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Error: {0}</summary>
         internal static string ErrorMessageId => "ErrorMessageFormat";
 
-        /// <summary>Saving modifications as animated GIF is not supported</summary>
-        internal static string ErrorMessageAnimGifNotSupported => Get("ErrorMessage_AnimGifNotSupported");
-
         /// <summary>The current installation is being executed, which cannot be overwritten</summary>
         internal static string ErrorMessageInstallationCannotBeOverwritten => Get("ErrorMessage_InstallationCannotBeOverwritten");
 

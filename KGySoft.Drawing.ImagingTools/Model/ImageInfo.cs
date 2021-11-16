@@ -434,7 +434,11 @@ namespace KGySoft.Drawing.ImagingTools.Model
                     }
 
                 case ImageInfoType.Animation:
-                    throw new NotSupportedException(Res.ErrorMessageAnimGifNotSupported);
+                    ms = new MemoryStream();
+                    ImageFrameInfo[] frames = Frames!;
+                    frames.Select(f => f.Image!).SaveAsAnimatedGif(ms, frames.Select(f => TimeSpan.FromMilliseconds(f.Duration)));
+                    ms.Position = 0;
+                    return new Bitmap(ms);
 
                 default:
                     throw new InvalidOperationException(Res.InternalError($"Unexpected type in {nameof(GenerateImage)}: {Type}"));
