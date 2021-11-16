@@ -6,21 +6,26 @@
 ===============================================================================
 
 ~~~~~~~~~
-- v2.5.1:
+* v2.6.0:
 ~~~~~~~~~
 
-- KGySoft.Drawing.ImagingTools.exe
+* KGySoft.Drawing.ImagingTools.exe
 ==================================
 - Opening a .bdat file in Bitmap visualizer mode triggered the "Metafile has been converted to Bitmap..." message.
 - Could not open an animated GIF in Mono/Linux. Known issue: libgdiplus decodes delta frames and different frame
   sizes incorrectly. This could only be solved by a custom decoder.
 
++ API changes:
+  + ImageInfo class: New constructor overloads to be able to prevent cloning each frames.
+
 - KGySoft.Drawing.DebuggerVisualizers.dll
 =========================================
 - Debugging a Graphics instance did not always work from a .NET [Core] project.
 - Fixing possible AcessViolationException when replacing a small debugged image to a huge one and debugging the
-  replaced huge image again. In such case the VisualStudio debugger may dispose large objects even in the middle
+  replaced huge image again. In such case the Visual Studio debugger may dispose large objects even in the middle
   of a serialization session to prevent running out of memory. It also rendered the debugged object invalid.
+- When serializing, not cloning each frame of multi-page images to prevent the Visual Studio debugger from disposing
+  the debugged image.
 - Fixing possible OutOfMemoryException from the debugger domain when a large debugged image has been replaced to
   a modified but unsaved image, in which case huge memory streams were transferred between application domains.
   From now on the debugger visualizer uses temp files if its domain has write access to the system TEMP folder.

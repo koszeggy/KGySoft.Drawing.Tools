@@ -43,13 +43,13 @@ namespace KGySoft.Drawing.ImagingTools.Model
         #region Public Constructors
         
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImageFrameInfo"/> class from a <see cref="Bitmap"/>.
+        /// Initializes a new instance of the <see cref="ImageFrameInfo"/> class from an <see cref="Image"/>.
         /// </summary>
-        /// <param name="bitmap">The bitmap that contains the image of the current frame.</param>
-        public ImageFrameInfo(Bitmap? bitmap)
+        /// <param name="image">The image that contains the image of the current frame.</param>
+        public ImageFrameInfo(Image? image)
         {
-            Image = bitmap;
-            InitMeta(bitmap);
+            Image = image;
+            InitMeta(image);
         }
 
         #endregion

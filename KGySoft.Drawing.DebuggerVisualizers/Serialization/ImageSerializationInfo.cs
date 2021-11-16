@@ -38,9 +38,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 
         #region Constructors
 
-        internal ImageSerializationInfo(Image image) => ImageInfo = new ImageInfo(image);
+        internal ImageSerializationInfo(Image image) => ImageInfo = new ImageInfo(image, false);
 
-        internal ImageSerializationInfo(Icon icon) => ImageInfo = new ImageInfo(icon);
+        internal ImageSerializationInfo(Icon icon) => ImageInfo = new ImageInfo(icon, false);
 
         internal ImageSerializationInfo(BinaryReader reader)
         {
@@ -127,23 +127,46 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
             WriteMeta(bw, ImageInfo);
 
             // 4. Frames (if any)
-            if (ImageInfo.HasFrames)
+            if (!ImageInfo.HasFrames)
+                return;
+
+            ImageFrameInfo[] frames = ImageInfo.Frames!;
+            int length = frames.Length;
+            bw.Write(length);
+            for (int i = 0; i < length; i++)
             {
-                bw.Write(ImageInfo.Frames!.Length);
-                foreach (ImageFrameInfo frame in ImageInfo.Frames)
-                {
-                    if (!saveAsSingleImage)
-                        SerializationHelper.WriteImage(bw, frame.Image!);
-                    WriteMeta(bw, frame);
-                    if (ImageInfo.Type == ImageInfoType.Animation)
-                        bw.Write(frame.Duration);
-                }
+                ImageFrameInfo frame = frames[i];
+                if (!saveAsSingleImage)
+                    SerializationHelper.WriteImage(bw, GetFrame(i));
+                WriteMeta(bw, frame);
+                if (ImageInfo.Type == ImageInfoType.Animation)
+                    bw.Write(frame.Duration);
+
             }
         }
 
         #endregion
 
         #region Private Methods
+
+        private Image GetFrame(int imageIndex)
+        {
+            Debug.Assert(ImageInfo.Frames?.Length > imageIndex);
+
+            if (ImageInfo.Frames![imageIndex].Image is Image frame)
+                return frame;
+
+            FrameDimension dimension = ImageInfo.Type switch
+            {
+                ImageInfoType.Animation => FrameDimension.Time,
+                ImageInfoType.Pages => FrameDimension.Page,
+                _ => throw new InvalidOperationException($"Unexpected image type: {ImageInfo.Type}")
+            };
+
+            Image result = ImageInfo.Image!;
+            result.SelectActiveFrame(dimension, imageIndex);
+            return result;
+        }
 
         private void ReadFrom(BinaryReader br)
         {

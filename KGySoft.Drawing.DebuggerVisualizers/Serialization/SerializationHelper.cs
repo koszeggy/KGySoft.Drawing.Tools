@@ -159,7 +159,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
         {
             using var iconInfo = new ImageSerializationInfo(icon);
             using BinaryWriter writer = InitWriter(outgoingData);
-            iconInfo.Write(new BinaryWriter(outgoingData));
+            iconInfo.Write(writer);
         }
 
         internal static void SerializeReplacementImageInfo(ImageInfo imageInfo, Stream outgoingData)
