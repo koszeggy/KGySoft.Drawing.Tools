@@ -90,8 +90,8 @@ The `KGySoft.Drawing.DebuggerVisualizers` assembly provides debugger visualizers
 - `System.Drawing.Color`: In a non read-only context the color can be replaced.
 
 <p align="center">
-  <img alt="Debugging a Palette instance" src="https://user-images.githubusercontent.com/27336165/124268121-66d84380-db39-11eb-97f5-6ff569b01daa.png"/>
-  <br/><em>Debugging a Palette instance</em>
+  <img alt="Debugging a ColorPalette instance" src="https://user-images.githubusercontent.com/27336165/124268121-66d84380-db39-11eb-97f5-6ff569b01daa.png"/>
+  <br/><em>Debugging a ColorPalette instance</em>
 </p>
 
 ### Installing Debugger Visualizers
