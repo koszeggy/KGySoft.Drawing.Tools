@@ -133,7 +133,10 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         protected override void Dispose(bool disposing)
         {
             if (disposing)
+            {
                 CommandBindings.Dispose();
+                handleCreated.Dispose();
+            }
 
             base.Dispose(disposing);
         }

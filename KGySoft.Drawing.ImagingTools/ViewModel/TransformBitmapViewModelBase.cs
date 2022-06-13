@@ -248,7 +248,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             var task = (GenerateTaskBase)state;
 
             // This is a fairly large lock ensuring that only one generate task is running at once.
-            // Instead of this sync we could await the canceled task before queuing a new one but then the UI can freeze for some moments.
+            // Instead of this we could await the canceled task before queuing a new one but then the UI can freeze for some moments.
             // (It wouldn't cause deadlocks because here every TryInvokeSync is after completing the task.)
             // But many threads can be queued, which all stop here before acquiring the lock. To prevent spawning too many threads we
             // don't use a regular lock here but a bit active spinning that can exit without taking the lock if the task gets outdated.

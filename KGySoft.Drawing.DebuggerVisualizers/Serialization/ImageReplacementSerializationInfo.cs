@@ -51,7 +51,11 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
         public void Dispose()
         {
             imageInfo?.Dispose();
+#if NET35
+            (reader as IDisposable)?.Dispose();
+#else
             reader?.Dispose();
+#endif
         }
 
         #endregion

@@ -187,6 +187,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             {
                 components?.Dispose();
                 CommandBindings.Dispose();
+                handleCreated.Dispose();
             }
 
             base.Dispose(disposing);
