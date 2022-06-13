@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <!--<TargetFrameworks>net35;net40;net45;net5.0-windows</TargetFrameworks>-->
-    <TargetFrameworks>net45</TargetFrameworks>
+    <TargetFrameworks>net35;net40;net45;net5.0-windows</TargetFrameworks>
+    <!--<TargetFrameworks>net45</TargetFrameworks>-->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>KGySoft.Drawing.DebuggerVisualizers.Test</RootNamespace>
     <SignAssembly>true</SignAssembly>
@@ -23,8 +23,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="KGySoft.CoreLibraries" Version="6.0.0" />
-    <PackageReference Include="KGySoft.Drawing" Version="6.0.0" />
+    <PackageReference Include="KGySoft.Drawing" Version="7.0.0-preview.1" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

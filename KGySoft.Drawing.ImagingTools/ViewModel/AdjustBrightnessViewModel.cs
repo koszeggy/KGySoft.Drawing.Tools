@@ -19,6 +19,7 @@ using System;
 using System.Drawing;
 
 using KGySoft.Drawing.Imaging;
+using KGySoft.Threading;
 
 #endregion
 

@@ -23,6 +23,7 @@ using System.Threading;
 
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.Threading;
 
 #endregion
 
@@ -86,7 +87,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommandState ResetCommandState => Get(() => new CommandState { Enabled = false });
 
         internal bool IsGenerating { get => Get<bool>(); set => Set(value); }
-        internal DrawingProgress Progress { get => Get<DrawingProgress>(); set => Set(value); }
+        internal AsyncProgress<DrawingOperation> Progress { get => Get<AsyncProgress<DrawingOperation>>(); set => Set(value); }
 
         #endregion
 
@@ -276,7 +277,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 Debug.Assert(activeTask == null);
 
                 // resetting possible previous progress
-                drawingProgressManager?.Report(default);
+                drawingProgressManager?.New(DrawingOperation.UndefinedProcessing);
 
                 // from now on the task can be canceled
                 activeTask = task;
@@ -362,7 +363,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
         }
 
-        private void TrySetProgress(DrawingProgress progress)
+        private void TrySetProgress(AsyncProgress<DrawingOperation> progress)
         {
             if (IsDisposed)
                 return;

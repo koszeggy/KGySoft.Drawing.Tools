@@ -17,43 +17,48 @@
 
 using System;
 
+using KGySoft.Threading;
+
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools
 {
-    internal class DrawingProgressManager : IDrawingProgress
+    internal class DrawingProgressManager : IAsyncProgress
     {
         #region Fields
 
-        private readonly Action<DrawingProgress> reportCallback;
+        private readonly Action<AsyncProgress<DrawingOperation>> reportCallback;
         private readonly object syncRoot = new object();
 
-        private DrawingProgress current;
+        private AsyncProgress<DrawingOperation> current;
 
         #endregion
 
         #region Constructors
 
-        internal DrawingProgressManager(Action<DrawingProgress> reportCallback) => this.reportCallback = reportCallback;
+        internal DrawingProgressManager(Action<AsyncProgress<DrawingOperation>> reportCallback) => this.reportCallback = reportCallback;
 
         #endregion
 
         #region Methods
 
-        public void Report(DrawingProgress progress)
+        public void Report<T>(AsyncProgress<T> progress)
         {
+            if (progress is not AsyncProgress<DrawingOperation> drawingProgress)
+                return;
+
             lock (syncRoot)
             {
-                if (progress == current)
+                if (drawingProgress == current)
                     return;
-                current = progress;
+                current = drawingProgress;
             }
 
-            reportCallback.Invoke(progress);
+            reportCallback.Invoke(drawingProgress);
         }
 
-        public void New(DrawingOperation operationType, int maximumValue, int currentValue)
-            => Report(new DrawingProgress(operationType, maximumValue, currentValue));
+        public void New<T>(T operationType, int maximumValue = 0, int currentValue = 0)
+            => Report(new AsyncProgress<T>(operationType, maximumValue, currentValue));
 
         public void Increment()
         {
@@ -61,7 +66,7 @@ namespace KGySoft.Drawing.ImagingTools
             {
                 if (current.CurrentValue >= current.MaximumValue)
                     return;
-                current = new DrawingProgress(current.OperationType, current.MaximumValue, current.CurrentValue + 1);
+                current = new AsyncProgress<DrawingOperation>(current.OperationType, current.MaximumValue, current.CurrentValue + 1);
             }
 
             reportCallback.Invoke(current);
@@ -73,7 +78,7 @@ namespace KGySoft.Drawing.ImagingTools
             {
                 if (current.CurrentValue == value)
                     return;
-                current = new DrawingProgress(current.OperationType, current.MaximumValue, Math.Min(value, current.MaximumValue));
+                current = new AsyncProgress<DrawingOperation>(current.OperationType, current.MaximumValue, Math.Min(value, current.MaximumValue));
             }
 
             reportCallback.Invoke(current);
@@ -85,7 +90,7 @@ namespace KGySoft.Drawing.ImagingTools
             {
                 if (current.CurrentValue >= current.MaximumValue)
                     return;
-                current = new DrawingProgress(current.OperationType, current.MaximumValue, current.MaximumValue);
+                current = new AsyncProgress<DrawingOperation>(current.OperationType, current.MaximumValue, current.MaximumValue);
             }
 
             reportCallback.Invoke(current);
