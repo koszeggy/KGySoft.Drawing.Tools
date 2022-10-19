@@ -64,15 +64,15 @@ namespace KGySoft.Drawing.ImagingTools.Model
         #region Explicitly Implemented Interface Methods
 
         AttributeCollection ICustomTypeDescriptor.GetAttributes() => TypeDescriptor.GetAttributes(this, true);
-        string ICustomTypeDescriptor.GetClassName() => TypeDescriptor.GetClassName(this, true);
+        string? ICustomTypeDescriptor.GetClassName() => TypeDescriptor.GetClassName(this, true);
         string? ICustomTypeDescriptor.GetComponentName() => TypeDescriptor.GetComponentName(this, true);
         TypeConverter ICustomTypeDescriptor.GetConverter() => TypeDescriptor.GetConverter(this, true);
         EventDescriptor? ICustomTypeDescriptor.GetDefaultEvent() => TypeDescriptor.GetDefaultEvent(this, true);
         PropertyDescriptor? ICustomTypeDescriptor.GetDefaultProperty() => TypeDescriptor.GetDefaultProperty(this, true);
         object? ICustomTypeDescriptor.GetEditor(Type editorBaseType) => TypeDescriptor.GetEditor(this, editorBaseType, true);
         EventDescriptorCollection ICustomTypeDescriptor.GetEvents() => TypeDescriptor.GetEvents(this, true);
-        EventDescriptorCollection ICustomTypeDescriptor.GetEvents(Attribute[] attributes) => TypeDescriptor.GetEvents(this, attributes, true);
-        object ICustomTypeDescriptor.GetPropertyOwner(PropertyDescriptor pd) => this;
+        EventDescriptorCollection ICustomTypeDescriptor.GetEvents(Attribute[]? attributes) => TypeDescriptor.GetEvents(this, attributes, true);
+        object ICustomTypeDescriptor.GetPropertyOwner(PropertyDescriptor? pd) => this;
         PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties() => propertyDescriptors;
         PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties(Attribute[]? attributes)
             => new PropertyDescriptorCollection(propertyDescriptors.Cast<PropertyDescriptor>().Where(p => attributes == null || attributes.Any(a => p.Attributes.Contains(a))).ToArray());

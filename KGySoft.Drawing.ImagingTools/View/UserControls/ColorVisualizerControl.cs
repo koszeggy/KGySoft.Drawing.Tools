@@ -296,7 +296,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         //ReSharper disable InconsistentNaming
 #pragma warning disable IDE1006 // Naming Styles
 
-        private void pnlColor_Paint(object sender, PaintEventArgs e)
+        private void pnlColor_Paint(object? sender, PaintEventArgs e)
         {
             // painting checked background
             if (color.A != 255)

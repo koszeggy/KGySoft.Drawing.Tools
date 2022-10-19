@@ -160,8 +160,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private void AddWinFormsBinding(string sourceName, IBindableComponent target, string propertyName, Func<object, object> format, Func<object, object> parse)
         {
             var binding = new Binding(propertyName, ViewModel, sourceName, true, DataSourceUpdateMode.OnPropertyChanged);
-            binding.Format += (_, e) => e.Value = format.Invoke(e.Value);
-            binding.Parse += (_, e) => e.Value = parse.Invoke(e.Value);
+            binding.Format += (_, e) => e.Value = format.Invoke(e.Value!);
+            binding.Parse += (_, e) => e.Value = parse.Invoke(e.Value!);
             target.DataBindings.Add(binding);
         }
 

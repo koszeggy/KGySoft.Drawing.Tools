@@ -26,6 +26,12 @@ using KGySoft.CoreLibraries;
 
 #endregion
 
+#region Suppressions
+
+#pragma warning disable CS8765 // Nullability of type of parameter doesn't match overridden member - false alarm, component is always an ICustomPropertiesProvider in this implementation
+
+#endregion
+
 namespace KGySoft.Drawing.ImagingTools.Model
 {
     /// <summary>
@@ -58,13 +64,13 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
             #region Methods
 
-            public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) => wrappedConverter.CanConvertFrom(context, sourceType);
-            public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType) => wrappedConverter.CanConvertTo(context, destinationType);
-            public override object? ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value) => wrappedConverter.ConvertFrom(context, culture, value);
-            public override object? ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType) => wrappedConverter.ConvertTo(context, culture, value, destinationType);
-            public override bool GetStandardValuesSupported(ITypeDescriptorContext context) => true;
-            public override bool GetStandardValuesExclusive(ITypeDescriptorContext context) => true;
-            public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context) => new StandardValuesCollection(allowedValues);
+            public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType) => wrappedConverter.CanConvertFrom(context, sourceType);
+            public override bool CanConvertTo(ITypeDescriptorContext? context, Type? destinationType) => wrappedConverter.CanConvertTo(context, destinationType);
+            public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value) => wrappedConverter.ConvertFrom(context, culture, value);
+            public override object? ConvertTo(ITypeDescriptorContext? context, CultureInfo? culture, object? value, Type destinationType) => wrappedConverter.ConvertTo(context, culture, value, destinationType);
+            public override bool GetStandardValuesSupported(ITypeDescriptorContext? context) => true;
+            public override bool GetStandardValuesExclusive(ITypeDescriptorContext? context) => true;
+            public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext? context) => new StandardValuesCollection(allowedValues);
 
             #endregion
         }
@@ -98,7 +104,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
             }
         }
 
-        public override TypeConverter? Converter => AllowedValues == null || base.Converter == null ? base.Converter : converter ??= new PickValueConverter(base.Converter, AllowedValues);
+        public override TypeConverter Converter => AllowedValues == null || base.Converter == null! ? new TypeConverter() : converter ??= new PickValueConverter(base.Converter, AllowedValues);
         public override Type ComponentType => typeof(ICustomPropertiesProvider);
         public override bool IsReadOnly => false;
         public override Type PropertyType { get; }
@@ -175,7 +181,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
         public override bool ShouldSerializeValue(object component) => !Equals(GetValue(component), DefaultValue);
         public override bool CanResetValue(object component) => ShouldSerializeValue(component);
         public override void ResetValue(object component) => ((ICustomPropertiesProvider)component).ResetValue(Name);
-        public override void SetValue(object component, object value) => ((ICustomPropertiesProvider)component).SetValue(Name, DoAdjustValue(value));
+        public override void SetValue(object component, object? value) => ((ICustomPropertiesProvider)component).SetValue(Name, DoAdjustValue(value));
         public override object? GetValue(object component) => DoAdjustValue(((ICustomPropertiesProvider)component).GetValue(Name, DefaultValue));
         public override string ToString() => $"{Name}: {PropertyType}";
 

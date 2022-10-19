@@ -386,7 +386,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Event Handlers
 
-        private void FilteredSet_ListChanged(object sender, ListChangedEventArgs e)
+        private void FilteredSet_ListChanged(object? sender, ListChangedEventArgs e)
         {
             if (!IsViewLoaded || e.ListChangedType != ListChangedType.ItemChanged || e.PropertyDescriptor?.Name != nameof(ResourceEntry.TranslatedText))
                 return;

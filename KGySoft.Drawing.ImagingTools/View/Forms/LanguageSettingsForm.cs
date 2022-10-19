@@ -68,7 +68,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private static void OnFormatCultureCommand(ICommandSource<ListControlConvertEventArgs> source)
         {
-            var culture = (CultureInfo)source.EventArgs.ListItem;
+            var culture = (CultureInfo)source.EventArgs.ListItem!;
             source.EventArgs.Value = $"{culture.EnglishName} ({culture.NativeName})";
         }
 
