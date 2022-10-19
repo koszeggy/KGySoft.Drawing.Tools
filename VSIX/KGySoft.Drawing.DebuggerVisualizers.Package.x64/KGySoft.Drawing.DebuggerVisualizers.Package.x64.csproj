@@ -102,7 +102,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="KGySoft.Drawing">
-      <Version>7.0.0-preview.1</Version>
+      <Version>7.0.0-rc.2</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.SDK">
       <Version>17.0.31902.203</Version>

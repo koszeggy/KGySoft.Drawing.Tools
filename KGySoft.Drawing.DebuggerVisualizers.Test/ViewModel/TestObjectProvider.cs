@@ -29,8 +29,6 @@ using Microsoft.VisualStudio.DebuggerVisualizers;
 
 #if NET5_0_OR_GREATER
 #pragma warning disable SYSLIB0011 // Type or member is obsolete - must use BinaryFormatter to be compatible with the MS implementation
-#pragma warning disable IDE0079 // Remove unnecessary suppression - must use BinaryFormatter to be compatible with the MS implementation
-#pragma warning disable CS0618 // Use of obsolete symbol - as above  
 #endif
 
 #endregion
