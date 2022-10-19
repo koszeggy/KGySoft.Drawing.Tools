@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <TargetFrameworks>net35;net40;net45;net5.0-windows</TargetFrameworks>
-    <!--<TargetFrameworks>net5.0-windows</TargetFrameworks>-->
+    <!--<TargetFrameworks>net35;net40;net45;net6.0-windows</TargetFrameworks>-->
+    <TargetFrameworks>net6.0-windows</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>KGySoft.Drawing.ImagingTools</RootNamespace>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
@@ -24,8 +24,8 @@
 
   <!--Common package references-->
   <ItemGroup>
-    <PackageReference Include="KGySoft.Drawing" Version="7.0.0-preview.1" />
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
+    <PackageReference Include="KGySoft.Drawing" Version="7.0.0-rc.2" />
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.0-preview1.22464.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -39,8 +39,8 @@
   </ItemGroup>
 
   <!--.NET-only references-->
-  <ItemGroup Condition="'$(TargetFramework)'=='net5.0-windows'">
-    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
+  <ItemGroup Condition="'$(TargetFramework)'=='net6.0-windows'">
+    <PackageReference Include="System.Drawing.Common" Version="7.0.0-rc.2.22472.3 " />
   </ItemGroup>
 
   <ItemGroup>

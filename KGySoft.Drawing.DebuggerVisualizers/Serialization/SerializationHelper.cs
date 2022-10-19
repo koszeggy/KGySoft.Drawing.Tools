@@ -364,7 +364,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
             using (IReadableBitmapData data = bitmap.GetReadableBitmapData())
             {
                 int width = data.RowSize >> 2;
-                IReadableBitmapDataRow row = data.FirstRow;
+                IReadableBitmapDataRowMovable row = data.FirstRow;
                 do
                 {
                     for (int x = 0; x < width; x++)
@@ -399,7 +399,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
             using (IWritableBitmapData data = result.GetWritableBitmapData())
             {
                 int width = data.RowSize >> 2;
-                IWritableBitmapDataRow row = data.FirstRow;
+                IWritableBitmapDataRowMovable row = data.FirstRow;
                 do
                 {
                     for (int x = 0; x < width; x++)
