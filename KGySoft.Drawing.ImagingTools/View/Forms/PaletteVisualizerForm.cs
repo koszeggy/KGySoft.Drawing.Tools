@@ -25,8 +25,14 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
-    internal partial class PaletteVisualizerForm : MvvmBaseForm<PaletteVisualizerViewModel>
+    internal partial class PaletteVisualizerForm : MvvmBaseForm
     {
+        #region Properties
+
+        private new PaletteVisualizerViewModel ViewModel => (PaletteVisualizerViewModel)base.ViewModel;
+
+        #endregion
+
         #region Constructors
 
         #region Internal Constructors

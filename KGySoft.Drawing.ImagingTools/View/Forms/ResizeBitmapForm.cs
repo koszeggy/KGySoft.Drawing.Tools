@@ -30,7 +30,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
     {
         #region Properties
 
-        private ResizeBitmapViewModel VM => (ResizeBitmapViewModel)ViewModel;
+        private new ResizeBitmapViewModel ViewModel => (ResizeBitmapViewModel)base.ViewModel;
 
         #endregion
 
@@ -110,51 +110,51 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private void InitPropertyBindings()
         {
             // simple initializations rather than bindings because these will not change:
-            cmbScalingMode.DataSource = VM.ScalingModes;
+            cmbScalingMode.DataSource = ViewModel.ScalingModes;
 
-            // VM.ScalingMode -> cmbScalingMode.SelectedItem (cannot use two-way for SelectedItem because there is no SelectedItemChanged event)
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(VM.ScalingMode), nameof(cmbScalingMode.SelectedItem), cmbScalingMode);
+            // ViewModel.ScalingMode -> cmbScalingMode.SelectedItem (cannot use two-way for SelectedItem because there is no SelectedItemChanged event)
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.ScalingMode), nameof(cmbScalingMode.SelectedItem), cmbScalingMode);
 
-            // cmbScalingMode.SelectedValue -> VM.ScalingMode (cannot use two-way for SelectedValue because ValueMember is not set)
-            CommandBindings.AddPropertyBinding(cmbScalingMode, nameof(cmbScalingMode.SelectedValue), nameof(VM.ScalingMode), ViewModel);
+            // cmbScalingMode.SelectedValue -> ViewModel.ScalingMode (cannot use two-way for SelectedValue because ValueMember is not set)
+            CommandBindings.AddPropertyBinding(cmbScalingMode, nameof(cmbScalingMode.SelectedValue), nameof(ViewModel.ScalingMode), ViewModel);
 
-            // VM.KeepAspectRatio <-> chbMaintainAspectRatio.Checked
-            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.KeepAspectRatio), chbMaintainAspectRatio, nameof(chbMaintainAspectRatio.Checked));
+            // ViewModel.KeepAspectRatio <-> chbMaintainAspectRatio.Checked
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.KeepAspectRatio), chbMaintainAspectRatio, nameof(chbMaintainAspectRatio.Checked));
 
-            //  rbByPercentage.Checked <-> VM.ByPercentage -> txtWidthPercent.Enabled, txtHeightPercent.Enabled
-            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.ByPercentage), rbByPercentage, nameof(rbByPercentage.Checked));
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(VM.ByPercentage), nameof(Enabled), txtWidthPercent, txtHeightPercent);
+            //  rbByPercentage.Checked <-> ViewModel.ByPercentage -> txtWidthPercent.Enabled, txtHeightPercent.Enabled
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.ByPercentage), rbByPercentage, nameof(rbByPercentage.Checked));
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.ByPercentage), nameof(Enabled), txtWidthPercent, txtHeightPercent);
 
-            // rbByPixels.Checked <-> VM.ByPixels -> txtWidthPx.Enabled, txtHeightPx.Enabled
-            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.ByPixels), rbByPixels, nameof(rbByPixels.Checked));
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(VM.ByPixels), nameof(Enabled), txtWidthPx, txtHeightPx);
+            // rbByPixels.Checked <-> ViewModel.ByPixels -> txtWidthPx.Enabled, txtHeightPx.Enabled
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.ByPixels), rbByPixels, nameof(rbByPixels.Checked));
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.ByPixels), nameof(Enabled), txtWidthPx, txtHeightPx);
 
             // Regular WinForms binding behaves a bit better because it does not clear the currently edited text box on parse error
             // but it fails to sync the other properties properly on Mono so using KGy SOFT binding in Mono systems.
 
-            // VM.WidthRatio <-> txtWidthPercent.Text
+            // ViewModel.WidthRatio <-> txtWidthPercent.Text
             if (OSUtils.IsMono)
-                CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.WidthRatio), txtWidthPercent, nameof(txtWidthPercent.Text), FormatPercentage!, ParsePercentage!);
+                CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.WidthRatio), txtWidthPercent, nameof(txtWidthPercent.Text), FormatPercentage!, ParsePercentage!);
             else
-                AddWinFormsBinding(nameof(VM.WidthRatio), txtWidthPercent, nameof(txtWidthPercent.Text), FormatPercentage, ParsePercentage);
+                AddWinFormsBinding(nameof(ViewModel.WidthRatio), txtWidthPercent, nameof(txtWidthPercent.Text), FormatPercentage, ParsePercentage);
 
-            // VM.HeightRatio <-> txtHeightPercent.Text
+            // ViewModel.HeightRatio <-> txtHeightPercent.Text
             if (OSUtils.IsMono)
-                CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.HeightRatio), txtHeightPercent, nameof(txtHeightPercent.Text), FormatPercentage!, ParsePercentage!);
+                CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.HeightRatio), txtHeightPercent, nameof(txtHeightPercent.Text), FormatPercentage!, ParsePercentage!);
             else
-                AddWinFormsBinding(nameof(VM.HeightRatio), txtHeightPercent, nameof(txtHeightPercent.Text), FormatPercentage, ParsePercentage);
+                AddWinFormsBinding(nameof(ViewModel.HeightRatio), txtHeightPercent, nameof(txtHeightPercent.Text), FormatPercentage, ParsePercentage);
 
-            // VM.Width <-> txtWidthPx.Text
+            // ViewModel.Width <-> txtWidthPx.Text
             if (OSUtils.IsMono)
-                CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.Width), txtWidthPx, nameof(txtWidthPx.Text), FormatInteger!, ParseInteger!);
+                CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.Width), txtWidthPx, nameof(txtWidthPx.Text), FormatInteger!, ParseInteger!);
             else
-                AddWinFormsBinding(nameof(VM.Width), txtWidthPx, nameof(txtWidthPx.Text), FormatInteger, ParseInteger);
+                AddWinFormsBinding(nameof(ViewModel.Width), txtWidthPx, nameof(txtWidthPx.Text), FormatInteger, ParseInteger);
 
-            // VM.Height <-> txtHeightPx.Text
+            // ViewModel.Height <-> txtHeightPx.Text
             if (OSUtils.IsMono)
-                CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.Height), txtHeightPx, nameof(txtHeightPx.Text), FormatInteger!, ParseInteger!);
+                CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.Height), txtHeightPx, nameof(txtHeightPx.Text), FormatInteger!, ParseInteger!);
             else
-                AddWinFormsBinding(nameof(VM.Height), txtHeightPx, nameof(txtHeightPx.Text), FormatInteger, ParseInteger);
+                AddWinFormsBinding(nameof(ViewModel.Height), txtHeightPx, nameof(txtHeightPx.Text), FormatInteger, ParseInteger);
         }
 
         private void AddWinFormsBinding(string sourceName, IBindableComponent target, string propertyName, Func<object, object> format, Func<object, object> parse)

@@ -30,8 +30,7 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
-    internal partial class MvvmBaseForm<TViewModel> : BaseForm, IView
-        where TViewModel : IDisposable // BUG: Actually should be ViewModelBase but WinForms designer with derived forms dies from that
+    internal partial class MvvmBaseForm : BaseForm, IView
     {
         #region Fields
 
@@ -51,9 +50,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Properties
 
-        #region Protected Properties
-
-        protected TViewModel ViewModel { get; } = default!;
+        protected ViewModelBase ViewModel { get; } = default!;
         protected CommandBindingsCollection CommandBindings { get; } = new WinFormsCommandBindingsCollection();
 
         protected ErrorProvider ErrorProvider => errorProvider ??= CreateProvider(ValidationSeverity.Error);
@@ -65,20 +62,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #endregion
 
-        #region Private Properties
-
-        // this would not be needed if where TViewModel : ViewModelBase didn't conflict with WinForms designer
-        private ViewModelBase VM => (ViewModelBase)(object)ViewModel;
-
-        #endregion
-
-        #endregion
-
         #region Constructors
 
         #region Protected Constructors
 
-        protected MvvmBaseForm(TViewModel viewModel)
+        protected MvvmBaseForm(ViewModelBase viewModel)
         {
             threadId = Thread.CurrentThread.ManagedThreadId;
             handleCreated = new ManualResetEventSlim();
@@ -92,15 +80,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 return;
 
             ViewModel = viewModel;
-            ViewModelBase vm = VM;
-            vm.ShowInfoCallback = Dialogs.InfoMessage;
-            vm.ShowWarningCallback = Dialogs.WarningMessage;
-            vm.ShowErrorCallback = Dialogs.ErrorMessage;
-            vm.ConfirmCallback = Dialogs.ConfirmMessage;
-            vm.CancellableConfirmCallback = (msg, btn) => Dialogs.CancellableConfirmMessage(msg, btn switch { 0 => MessageBoxDefaultButton.Button1, 1 => MessageBoxDefaultButton.Button2, _ => MessageBoxDefaultButton.Button3 });
-            vm.ShowChildViewCallback = ShowChildView;
-            vm.CloseViewCallback = () => BeginInvoke(new Action(Close));
-            vm.SynchronizedInvokeCallback = InvokeIfRequired;
+            viewModel.ShowInfoCallback = Dialogs.InfoMessage;
+            viewModel.ShowWarningCallback = Dialogs.WarningMessage;
+            viewModel.ShowErrorCallback = Dialogs.ErrorMessage;
+            viewModel.ConfirmCallback = Dialogs.ConfirmMessage;
+            viewModel.CancellableConfirmCallback = (msg, btn) => Dialogs.CancellableConfirmMessage(msg, btn switch { 0 => MessageBoxDefaultButton.Button1, 1 => MessageBoxDefaultButton.Button2, _ => MessageBoxDefaultButton.Button3 });
+            viewModel.ShowChildViewCallback = ShowChildView;
+            viewModel.CloseViewCallback = () => BeginInvoke(new Action(Close));
+            viewModel.SynchronizedInvokeCallback = InvokeIfRequired;
         }
 
         #endregion
@@ -157,7 +144,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             InitPropertyBindings();
             InitCommandBindings();
-            VM.ViewLoaded();
+            ViewModel.ViewLoaded();
         }
 
         protected override void OnHandleCreated(EventArgs e)

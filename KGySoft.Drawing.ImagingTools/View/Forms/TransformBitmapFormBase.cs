@@ -23,8 +23,14 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
-    internal partial class TransformBitmapFormBase : MvvmBaseForm<TransformBitmapViewModelBase>
+    internal partial class TransformBitmapFormBase : MvvmBaseForm
     {
+        #region Properties
+
+        private new TransformBitmapViewModelBase ViewModel => (TransformBitmapViewModelBase)base.ViewModel;
+
+        #endregion
+
         #region Constructors
 
         #region Protected Constructors

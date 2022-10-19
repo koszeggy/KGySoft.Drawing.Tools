@@ -24,8 +24,14 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
-    internal partial class ColorVisualizerForm : MvvmBaseForm<ColorVisualizerViewModel>
+    internal partial class ColorVisualizerForm : MvvmBaseForm
     {
+        #region Properties
+
+        private new ColorVisualizerViewModel ViewModel => (ColorVisualizerViewModel)base.ViewModel;
+
+        #endregion
+
         #region Constructors
 
         #region Internal Constructors

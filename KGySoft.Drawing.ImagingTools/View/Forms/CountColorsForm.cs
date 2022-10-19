@@ -23,8 +23,14 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
-    internal partial class CountColorsForm : MvvmBaseForm<CountColorsViewModel>
+    internal partial class CountColorsForm : MvvmBaseForm
     {
+        #region Properties
+
+        private new CountColorsViewModel ViewModel => (CountColorsViewModel)base.ViewModel;
+
+        #endregion
+
         #region Constructors
 
         #region Internal Constructors
