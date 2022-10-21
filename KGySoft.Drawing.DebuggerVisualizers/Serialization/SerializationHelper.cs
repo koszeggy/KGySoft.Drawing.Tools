@@ -146,6 +146,12 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 
         #endregion
 
+        #region Constants
+
+        private const PixelFormat Format32bppCmyk = (PixelFormat)0x200F;
+
+        #endregion
+
         #region Internal Methods
 
         internal static void SerializeImageInfo(Image image, Stream outgoingData)
@@ -385,7 +391,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
                     palette[i] = Color.FromArgb(br.ReadInt32());
             }
 
-            var result = new Bitmap(size.Width, size.Height, pixelFormat);
+            var result = new Bitmap(size.Width, size.Height, pixelFormat == Format32bppCmyk ? PixelFormat.Format24bppRgb : pixelFormat);
             if (palette != null)
             {
                 ColorPalette resultPalette = result.Palette;

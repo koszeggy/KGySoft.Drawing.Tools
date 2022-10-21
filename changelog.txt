@@ -12,6 +12,11 @@
 - KGySoft.Drawing.ImagingTools.exe
 ==================================
 - Adjust Gamma: Adjusting the slider with the mouse not always worked.
+- Supporting CMYK images
+
+- KGySoft.Drawing.DebuggerVisualizers.dll
+=========================================
+- Supporting CMYK images
 
 
 ~~~~~~~~~
