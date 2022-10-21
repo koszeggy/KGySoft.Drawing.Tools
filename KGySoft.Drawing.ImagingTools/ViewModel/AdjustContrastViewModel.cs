@@ -66,7 +66,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Methods
 
-        protected override GenerateTaskBase CreateGenerateTask() => new GenerateTask(Value, ColorChannels);
+        protected override GenerateTaskBase CreateGenerateTask() => new GenerateTask(ValueF, ColorChannels);
 
         #endregion
     }

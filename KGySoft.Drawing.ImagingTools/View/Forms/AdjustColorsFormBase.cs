@@ -110,8 +110,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private void InitPropertyBindings()
         {
             // simple initializations rather than bindings because these will not change:
-            trackBar.Minimum = (int)(ViewModel.MinValue * 100f);
-            trackBar.Maximum = (int)(ViewModel.MaxValue * 100f);
+            trackBar.Minimum = ViewModel.MinValue;
+            trackBar.Maximum = ViewModel.MaxValue;
             trackBar.TickFrequency = trackBar.LargeChange = (trackBar.Maximum - trackBar.Minimum) / 20;
 
             // ViewModel.ColorChannels <-> chbRed.Checked
@@ -130,12 +130,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 flag => flag is true ? ViewModel.ColorChannels | ColorChannels.B : ViewModel.ColorChannels & ~ColorChannels.B);
 
             // ViewModel.Value <-> trackBar.Value
-            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.Value), trackBar, nameof(trackBar.Value),
-                value => (int)((float)value! * 100),
-                value => (int)value! / 100f);
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.Value), trackBar, nameof(trackBar.Value));
 
             // ViewModel.Value -> lblValue.Text
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Value), nameof(lblValue.Text), v => ((float)v!).ToString("F2", LanguageSettings.FormattingLanguage), lblValue);
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Value), nameof(lblValue.Text), v => ((int)v! / 100f).ToString("F2", LanguageSettings.FormattingLanguage), lblValue);
         }
 
         #endregion

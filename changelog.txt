@@ -6,6 +6,15 @@
 ===============================================================================
 
 ~~~~~~~~~
+- v3.0.0:
+~~~~~~~~~
+
+- KGySoft.Drawing.ImagingTools.exe
+==================================
+- Adjust Gamma: Adjusting the slider with the mouse not always worked.
+
+
+~~~~~~~~~
 * v2.6.0:
 ~~~~~~~~~
 
