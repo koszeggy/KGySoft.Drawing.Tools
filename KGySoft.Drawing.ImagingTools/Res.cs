@@ -524,7 +524,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// {7}Pixel Format: {3}
         /// Raw format: {4}
         /// Resolution: {5}x{6} DPI</summary>
-        internal static string InfoImage(string type, Size size, PixelFormat pixelFormat, string rawFormat, float hres, float vres, string frameInfo)
+        internal static string InfoImage(string type, Size size, string pixelFormat, string rawFormat, float hres, float vres, string frameInfo)
             => Get("InfoText_ImageFormat", type, size.Width, size.Height, pixelFormat, rawFormat, hres, vres, frameInfo);
 
         /// <summary>Size: {0}x{1} pixels

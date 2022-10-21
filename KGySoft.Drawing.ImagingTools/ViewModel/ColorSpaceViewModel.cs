@@ -197,7 +197,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             PixelFormat quantizerPixelFormat = quantizer == null ? default : quantizer.PixelFormatHint.ToPixelFormat();
 
             // errors
-            if (!pixelFormat.IsSupportedNatively())
+            if (pixelFormat != originalPixelFormat && !pixelFormat.IsSupportedNatively()) // IsSupportedNatively returns false for CMYK, that's why the check for the original
                 result.AddError(nameof(PixelFormat), Res.ErrorMessagePixelFormatNotSupported(pixelFormat));
 
             if (quantizerError != null)
