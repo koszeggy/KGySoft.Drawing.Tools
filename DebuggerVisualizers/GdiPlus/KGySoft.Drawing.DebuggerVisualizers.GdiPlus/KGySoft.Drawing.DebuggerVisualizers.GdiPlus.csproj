@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!--<TargetFrameworks>net35;net40;net45;net5.0-windows</TargetFrameworks>-->
+    <TargetFrameworks>net45;net5.0-windows</TargetFrameworks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <RootNamespace>KGySoft.Drawing.DebuggerVisualizers.GdiPlus</RootNamespace>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\..\KGySoft.snk</AssemblyOriginatorKeyFile>
+    <LangVersion>latest</LangVersion>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageLicenseFile>..\..\..\LICENSE</PackageLicenseFile>
+    <Authors>György Kőszeg</Authors>
+    <Nullable>enable</Nullable>
+
+    <!--Suppression NETSDK1138: The target framework 'net5.0-windows' is out of support - this is not an application but a library so targeting the lowest possible versions is intended -->
+    <NoWarn>$(NoWarn);NETSDK1138</NoWarn>
+  </PropertyGroup>
+
+  <!-- Common NuGet references -->
+  <ItemGroup>
+    <PackageReference Include="KGySoft.Drawing" Version="7.0.0-rc.2.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.0-preview1.22464.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!-- .NET Framework only references -->
+  <ItemGroup Condition="'$(TargetFramework)'=='net35' OR '$(TargetFramework)'=='net40' OR '$(TargetFramework)'=='net45'">
+    <!--Note: VSSDK.DebuggerVisualizers does not work in VS2022 anymore if VSIX is also installed, because it causes
+        "Unable to cast object [...] to type DialogDebuggerVisualizer"-->
+    <PackageReference Include="Microsoft.VisualStudio.DebuggerVisualizers" Version="17.0.1061105" />
+  </ItemGroup>
+
+  <!-- .NET only references (note: doesn't really make sense but allows testing from KGySoft.Drawing.DebuggerVisualizers.Test) -->
+  <ItemGroup Condition="'$(TargetFramework)'=='net5.0-windows'">
+    <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers">
+      <HintPath>..\..\_ref\Microsoft.VisualStudio.DebuggerVisualizers.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Project references -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\KGySoft.Drawing.ImagingTools\KGySoft.Drawing.ImagingTools.csproj" />
+  </ItemGroup>
+
+</Project>

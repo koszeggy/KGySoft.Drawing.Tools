@@ -62,7 +62,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\KGySoft.Drawing.DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.csproj">
+    <ProjectReference Include="..\..\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.csproj">
       <Project>{6415c328-a2c2-49c3-b113-b3b8c4e09c22}</Project>
       <Name>KGySoft.Drawing.DebuggerVisualizers</Name>
     </ProjectReference>
@@ -102,7 +102,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="KGySoft.Drawing">
-      <Version>7.0.0-rc.2</Version>
+      <Version>7.0.0-rc.2.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.SDK">
       <Version>17.0.31902.203</Version>
