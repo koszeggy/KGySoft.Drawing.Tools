@@ -40,7 +40,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus
         protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
         {
             using (GraphicsInfo graphicsInfo = SerializationHelper.DeserializeGraphicsInfo(objectProvider.GetData()))
-                DebuggerHelper.DebugGraphics(graphicsInfo);
+                GdiPlusDebuggerHelper.DebugGraphics(graphicsInfo);
         }
 
         #endregion

@@ -59,8 +59,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.ViewModel
             new HashSet<string> { nameof(FileAsImage), nameof(FileAsBitmap), nameof(FileAsMetafile),nameof(FileAsIcon) },
         };
 
-        private static readonly Dictionary<Type, DebuggerVisualizerAttribute> debuggerVisualizers = Attribute.GetCustomAttributes(typeof(DebuggerHelper).Assembly, typeof(DebuggerVisualizerAttribute))
-            .Cast<DebuggerVisualizerAttribute>().ToDictionary(a => a.Target!, a => a);
+        private static readonly Dictionary<Type, DebuggerVisualizerAttribute> debuggerVisualizers = GdiPlusDebuggerHelper.GetDebuggerVisualizers();
 
         #endregion
 

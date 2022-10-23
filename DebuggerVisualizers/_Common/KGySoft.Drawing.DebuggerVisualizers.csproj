@@ -2,15 +2,15 @@
 
   <PropertyGroup>
     <!--<TargetFrameworks>net35;net40;net45;net5.0-windows</TargetFrameworks>-->
-    <TargetFrameworks>net45</TargetFrameworks>
+    <TargetFrameworks>net45;net5.0-windows</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>KGySoft.Drawing.DebuggerVisualizers</RootNamespace>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\..\KGySoft.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\KGySoft.snk</AssemblyOriginatorKeyFile>
     <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <PackageLicenseFile>..\..\..\LICENSE</PackageLicenseFile>
+    <PackageLicenseFile>..\..\LICENSE</PackageLicenseFile>
     <Authors>György Kőszeg</Authors>
     <Nullable>enable</Nullable>
 
@@ -20,7 +20,7 @@
 
   <!-- Common NuGet references -->
   <ItemGroup>
-    <PackageReference Include="KGySoft.Drawing" Version="7.0.0-rc.2.1" />
+    <!--<PackageReference Include="KGySoft.Drawing" Version="7.0.0-rc.2.1" />-->
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.0-preview1.22464.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -37,13 +37,13 @@
   <!-- .NET only references (note: doesn't really make sense but allows testing from KGySoft.Drawing.DebuggerVisualizers.Test) -->
   <ItemGroup Condition="'$(TargetFramework)'=='net5.0-windows'">
     <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers">
-      <HintPath>..\..\_ref\Microsoft.VisualStudio.DebuggerVisualizers.dll</HintPath>
+      <HintPath>..\_ref\Microsoft.VisualStudio.DebuggerVisualizers.dll</HintPath>
     </Reference>
   </ItemGroup>
 
   <!-- Project references -->
   <ItemGroup>
-    <ProjectReference Include="..\..\..\KGySoft.Drawing.ImagingTools\KGySoft.Drawing.ImagingTools.csproj" />
+    <ProjectReference Include="..\..\KGySoft.Drawing.ImagingTools\KGySoft.Drawing.ImagingTools.csproj" />
   </ItemGroup>
 
 </Project>

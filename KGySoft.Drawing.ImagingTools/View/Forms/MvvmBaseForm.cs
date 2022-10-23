@@ -299,7 +299,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             do
             {
-                ShowDialog(owner is IWin32Window window ? window : null);
+                ShowDialog(owner as IWin32Window);
             } while (isRtlChanging);
         }
 

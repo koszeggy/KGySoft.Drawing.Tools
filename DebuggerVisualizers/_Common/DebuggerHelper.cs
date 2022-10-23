@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: DebuggerHelper.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2021 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2022 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -20,13 +20,12 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 
-using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.ImagingTools.View;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
 
-namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus
+namespace KGySoft.Drawing.DebuggerVisualizers
 {
     /// <summary>
     /// Provides debugger methods for debugger visualizers
@@ -35,13 +34,12 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus
     {
         #region Methods
 
-        #region Public Methods
-
         /// <summary>
         /// Shows a debugger dialog for the specified <paramref name="image"/>.
         /// </summary>
         /// <param name="image">The image to debug.</param>
-        /// <param name="isReplaceable"><see langword="true"/>, if the debugged instance can be replaced or edited; otherwise, <see langword="false"/>.</param>
+        /// <param name="isReplaceable"><see langword="true"/>, if the debugged instance can be replaced or edited; otherwise, <see langword="false"/>. This parameter is optional.
+        /// <br/>Default value: <see langword="true"/>.</param>
         /// <param name="ownerWindowHandle">If specified, then the created dialog will be owned by the window that has specified handle. This parameter is optional.
         /// <br/>Default value: <see cref="IntPtr.Zero">IntPtr.Zero</see>.</param>
         /// <returns>An <see cref="Image"/> that is returned by the debugger. If <paramref name="isReplaceable"/> is <see langword="false"/>, then this will be always the original <paramref name="image"/>.</returns>
@@ -58,7 +56,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus
         /// Shows a debugger dialog for the specified <paramref name="bitmap"/>.
         /// </summary>
         /// <param name="bitmap">The bitmap to debug.</param>
-        /// <param name="isReplaceable"><see langword="true"/>, if the debugged instance can be replaced or edited; otherwise, <see langword="false"/>.</param>
+        /// <param name="isReplaceable"><see langword="true"/>, if the debugged instance can be replaced or edited; otherwise, <see langword="false"/>. This parameter is optional.
+        /// <br/>Default value: <see langword="true"/>.</param>
         /// <param name="ownerWindowHandle">If specified, then the created dialog will be owned by the window that has specified handle. This parameter is optional.
         /// <br/>Default value: <see cref="IntPtr.Zero">IntPtr.Zero</see>.</param>
         /// <returns>A <see cref="Bitmap"/> that is returned by the debugger. If <paramref name="isReplaceable"/> is <see langword="false"/>, then this will be always the original <paramref name="bitmap"/>.</returns>
@@ -75,7 +74,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus
         /// Shows a debugger dialog for the specified <paramref name="metafile"/>.
         /// </summary>
         /// <param name="metafile">The metafile to debug.</param>
-        /// <param name="isReplaceable"><see langword="true"/>, if the debugged instance can be replaced or edited; otherwise, <see langword="false"/>.</param>
+        /// <param name="isReplaceable"><see langword="true"/>, if the debugged instance can be replaced or edited; otherwise, <see langword="false"/>. This parameter is optional.
+        /// <br/>Default value: <see langword="true"/>.</param>
         /// <param name="ownerWindowHandle">If specified, then the created dialog will be owned by the window that has specified handle. This parameter is optional.
         /// <br/>Default value: <see cref="IntPtr.Zero">IntPtr.Zero</see>.</param>
         /// <returns>A <see cref="Metafile"/> that is returned by the debugger. If <paramref name="isReplaceable"/> is <see langword="false"/>, then this will be always the original <paramref name="metafile"/>.</returns>
@@ -92,7 +92,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus
         /// Shows a debugger dialog for the specified <paramref name="icon"/>.
         /// </summary>
         /// <param name="icon">The icon to debug.</param>
-        /// <param name="isReplaceable"><see langword="true"/>, if the debugged instance can be replaced or edited; otherwise, <see langword="false"/>.</param>
+        /// <param name="isReplaceable"><see langword="true"/>, if the debugged instance can be replaced or edited; otherwise, <see langword="false"/>. This parameter is optional.
+        /// <br/>Default value: <see langword="true"/>.</param>
         /// <param name="ownerWindowHandle">If specified, then the created dialog will be owned by the window that has specified handle. This parameter is optional.
         /// <br/>Default value: <see cref="IntPtr.Zero">IntPtr.Zero</see>.</param>
         /// <returns>An <see cref="Icon"/> that is returned by the debugger. If <paramref name="isReplaceable"/> is <see langword="false"/>, then this will be always the original <paramref name="icon"/>.</returns>
@@ -164,7 +165,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus
         /// Shows the debugger for a <see cref="Color"/> instance.
         /// </summary>
         /// <param name="color">The color object to debug.</param>
-        /// <param name="isReplaceable">Indicates whether the color is replaceable.</param>
+        /// <param name="isReplaceable"><see langword="true"/>, if the debugged instance can be replaced or edited; otherwise, <see langword="false"/>. This parameter is optional.
+        /// <br/>Default value: <see langword="true"/>.</param>
         /// <param name="ownerWindowHandle">If specified, then the created dialog will be owned by the window that has specified handle. This parameter is optional.
         /// <br/>Default value: <see cref="IntPtr.Zero">IntPtr.Zero</see>.</param>
         /// <returns>A non-<see langword="null"/>&#160;instance, when the color has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
@@ -179,61 +181,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus
 
             return null;
         }
-
-        #endregion
-
-        #region Internal Methods
-
-        internal static ImageInfo? DebugImage(ImageInfo imageInfo, bool isReplaceable)
-        {
-            using (IViewModel<ImageInfo> viewModel = ViewModelFactory.FromImage(imageInfo, !isReplaceable))
-                return DebugImageInfo(viewModel, isReplaceable);
-        }
-
-        internal static ImageInfo? DebugBitmap(ImageInfo bitmapInfo, bool isReplaceable)
-        {
-            using (IViewModel<ImageInfo> viewModel = ViewModelFactory.FromBitmap(bitmapInfo, !isReplaceable))
-                return DebugImageInfo(viewModel, isReplaceable);
-        }
-
-        internal static ImageInfo? DebugMetafile(ImageInfo metafileInfo, bool isReplaceable)
-        {
-            using (IViewModel<ImageInfo> viewModel = ViewModelFactory.FromMetafile(metafileInfo, !isReplaceable))
-                return DebugImageInfo(viewModel, isReplaceable);
-        }
-
-        internal static ImageInfo? DebugIcon(ImageInfo iconInfo, bool isReplaceable)
-        {
-            using (IViewModel<ImageInfo> viewModel = ViewModelFactory.FromIcon(iconInfo, !isReplaceable))
-                return DebugImageInfo(viewModel, isReplaceable);
-        }
-
-        internal static void DebugBitmapData(BitmapDataInfo bitmapDataInfo)
-        {
-            using (IViewModel vm = ViewModelFactory.FromBitmapData(bitmapDataInfo))
-                ViewFactory.ShowDialog(vm);
-        }
-
-        internal static void DebugGraphics(GraphicsInfo graphicsInfo)
-        {
-            using (IViewModel vm = ViewModelFactory.FromGraphics(graphicsInfo))
-                ViewFactory.ShowDialog(vm);
-        }
-
-        #endregion
-
-        #region Private Methods
-
-        private static ImageInfo? DebugImageInfo(IViewModel<ImageInfo> viewModel, bool isReplaceable)
-        {
-            ViewFactory.ShowDialog(viewModel);
-            if (isReplaceable && viewModel.IsModified)
-                return viewModel.GetEditedModel();
-
-            return null;
-        }
-
-        #endregion
 
         #endregion
     }

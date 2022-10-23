@@ -4,7 +4,6 @@ using System.Drawing.Imaging;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-using KGySoft.Drawing.DebuggerVisualizers;
 using KGySoft.Drawing.DebuggerVisualizers.GdiPlus;
 using KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization;
 

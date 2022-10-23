@@ -41,7 +41,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus
         protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
         {
             using ImageInfo imageInfo = SerializationHelper.DeserializeImageInfo(objectProvider.GetData());
-            ImageInfo? replacementObject = DebuggerHelper.DebugImage(imageInfo, objectProvider.IsObjectReplaceable);
+            ImageInfo? replacementObject = GdiPlusDebuggerHelper.DebugImage(imageInfo, objectProvider.IsObjectReplaceable);
             if (replacementObject == null)
                 return;
 

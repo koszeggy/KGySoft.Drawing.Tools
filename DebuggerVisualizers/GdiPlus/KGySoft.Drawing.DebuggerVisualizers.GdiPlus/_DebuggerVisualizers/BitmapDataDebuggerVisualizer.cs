@@ -40,7 +40,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus
         protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
         {
             using (BitmapDataInfo bitmapDataInfo = SerializationHelper.DeserializeBitmapDataInfo(objectProvider.GetData()))
-                DebuggerHelper.DebugBitmapData(bitmapDataInfo);
+                GdiPlusDebuggerHelper.DebugBitmapData(bitmapDataInfo);
         }
 
         #endregion
