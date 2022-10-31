@@ -275,6 +275,8 @@ Pixel Format: {3}</value>
   </data>
   <data name="InfoText_CustomBitmapFormat" xml:space="preserve">
     <value>Type: {0}
+
+Properties:
 {1}</value>
   </data>
   <data name="InfoText_UnknownFormat" xml:space="preserve">

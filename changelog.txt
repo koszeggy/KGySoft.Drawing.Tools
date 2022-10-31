@@ -14,9 +14,28 @@
 - Adjust Gamma: Adjusting the slider with the mouse not always worked.
 - Supporting CMYK images
 
-- KGySoft.Drawing.DebuggerVisualizers.dll
++ API changes:
+  + New CustomBitmapInfo class
+
+! KGySoft.Drawing.DebuggerVisualizers.dll
 =========================================
+! The actual debugger visualizers have been extracted into a new assembly.
 - Supporting CMYK images
+
++ API changes:
+  + New KGySoft.Drawing.DebuggerVisualizers.Serialization namespace
+    + New CustomBitmapSerializationInfoBase class for serializing custom bitmaps
+  + DebuggerHelper class:
+    + New DebugCustomBitmap method
+
++ KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll
+=================================================
++ A new assembly. The original debugger visualizers of KGySoft.Drawing.DebuggerVisualizers have been
+  extracted into this assembly to support GDI+ (System.Drawing) types.
+
++ KGySoft.Drawing.DebuggerVisualizers.Wpf.dll
+=============================================
++ A new debugger visualizer assembly to support WPF types.
 
 
 ~~~~~~~~~

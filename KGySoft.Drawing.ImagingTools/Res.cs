@@ -534,7 +534,8 @@ namespace KGySoft.Drawing.ImagingTools
             => Get("InfoText_BitmapDataFormat", size.Width, size.Height, stride, pixelFormat);
 
         /// <summary>Type: {0}
-        /// Size: {1}x{2} pixels
+        ///
+        /// Properties:
         /// {3}</summary>
         internal static string InfoCustomBitmap(string type, string? customInfo)
             => Get("InfoText_CustomBitmapFormat", type, customInfo);
