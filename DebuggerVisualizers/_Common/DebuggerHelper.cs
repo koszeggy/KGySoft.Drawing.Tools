@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 
+using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.ImagingTools.View;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
@@ -117,6 +118,20 @@ namespace KGySoft.Drawing.DebuggerVisualizers
             if (bitmapData == null)
                 throw new ArgumentNullException(nameof(bitmapData), PublicResources.ArgumentNull);
             using (IViewModel vm = ViewModelFactory.FromBitmapData(bitmapData))
+                ViewFactory.ShowDialog(vm, ownerWindowHandle);
+        }
+
+        /// <summary>
+        /// Shows a debugger dialog for the specified <paramref name="bitmapData"/>.
+        /// </summary>
+        /// <param name="customBitmapInfo">The custom bitmap info debug.</param>
+        /// <param name="ownerWindowHandle">If specified, then the created dialog will be owned by the window that has specified handle. This parameter is optional.
+        /// <br/>Default value: <see cref="IntPtr.Zero">IntPtr.Zero</see>.</param>
+        public static void DebugCustomBitmap(CustomBitmapInfo customBitmapInfo, IntPtr ownerWindowHandle = default)
+        {
+            if (customBitmapInfo == null)
+                throw new ArgumentNullException(nameof(customBitmapInfo), PublicResources.ArgumentNull);
+            using (IViewModel vm = ViewModelFactory.FromCustomBitmap(customBitmapInfo))
                 ViewFactory.ShowDialog(vm, ownerWindowHandle);
         }
 

@@ -533,6 +533,12 @@ namespace KGySoft.Drawing.ImagingTools
         internal static string InfoBitmapData(Size size, int stride, PixelFormat pixelFormat)
             => Get("InfoText_BitmapDataFormat", size.Width, size.Height, stride, pixelFormat);
 
+        /// <summary>Type: {0}
+        /// Size: {1}x{2} pixels
+        /// {3}</summary>
+        internal static string InfoCustomBitmap(string type, string? customInfo)
+            => Get("InfoText_CustomBitmapFormat", type, customInfo);
+
         /// <summary>Unknown format: {0}</summary>
         internal static string InfoUnknownFormat(Guid format) => Get("InfoText_UnknownFormat", format);
 
