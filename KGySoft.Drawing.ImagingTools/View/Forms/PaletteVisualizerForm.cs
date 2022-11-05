@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: PaletteVisualizerForm.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2021 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2022 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -85,7 +85,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             InitPropertyBindings();
             InitCommandBindings();
-            UpdateInfo();
             base.ApplyViewModel();
         }
 
@@ -131,11 +130,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // VM.Count -> Text (formatted)
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Count), nameof(Text), c => Res.TitlePaletteCount((int)c!), this);
 
-            // VM.ReadOnly -> ucColorVisualizer.ReadOnly
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.ReadOnly), nameof(ucColorVisualizer.ReadOnly), ucColorVisualizer);
+            // VM.SelectedColorViewModel -> colorVisualizerControl.ViewModel
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SelectedColorViewModel), nameof(colorVisualizerControl.ViewModel), colorVisualizerControl);
 
-            // pnlPalette.SelectedColor -> ucColorVisualizer.Color
-            CommandBindings.AddPropertyBinding(pnlPalette, nameof(pnlPalette.SelectedColor), nameof(ucColorVisualizer.Color), ucColorVisualizer);
+            // pnlPalette.SelectedColorIndex -> VM.SelectedColorIndex
+            CommandBindings.AddPropertyBinding(pnlPalette, nameof(pnlPalette.SelectedColorIndex), nameof(ViewModel.SelectedColorIndex), ViewModel);
 
             // VM.IsModified -> OKButton.Enabled
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsModified), nameof(okCancelButtons.OKButton.Enabled), okCancelButtons.OKButton);
@@ -143,32 +142,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void InitCommandBindings()
         {
-            CommandBindings.Add(OnColorEditedCommand)
-                .AddSource(ucColorVisualizer, nameof(ucColorVisualizer.ColorEdited));
-            CommandBindings.Add(OnSelectedColorChangedCommand)
-                .AddSource(pnlPalette, nameof(pnlPalette.SelectedColorChanged));
             CommandBindings.Add(OnCancelCommand)
                 .AddSource(okCancelButtons.CancelButton, nameof(okCancelButtons.CancelButton.Click));
         }
 
-        private void UpdateInfo() => ucColorVisualizer.SpecialInfo = Res.InfoSelectedIndex(pnlPalette.SelectedColorIndex);
-
         #endregion
 
         #region Command Handlers
-
-        private void OnColorEditedCommand()
-        {
-            if (ViewModel.ReadOnly)
-                return;
-
-            // if there is no cloning, both of the following lines set the same instance in the collection but it is cleaner to set twice
-            ViewModel.Palette[pnlPalette.SelectedColorIndex] = ucColorVisualizer.Color;
-            pnlPalette.SelectedColor = ucColorVisualizer.Color;
-            ViewModel.SetModified(true);
-        }
-
-        private void OnSelectedColorChangedCommand() => UpdateInfo();
 
         private void OnCancelCommand() => ViewModel.SetModified(false);
 

@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: MvvmBaseUserControl.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2021 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2022 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -50,9 +50,13 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             {
                 if (ReferenceEquals(viewModel, value))
                     return;
+
                 viewModel = value;
-                if (isLoaded)
-                    ApplyViewModel();
+                if (!isLoaded)
+                    return;
+
+                CommandBindings.Dispose();
+                ApplyViewModel();
             }
         }
 
