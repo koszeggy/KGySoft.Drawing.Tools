@@ -47,3 +47,8 @@ using KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization;
 [assembly: DebuggerVisualizer(typeof(ImageSourceDebuggerVisualizer), typeof(ImageSourceSerializer),
     Target = typeof(ImageSource),
     Description = "KGy SOFT ImageSource Debugger Visualizer")]
+
+// Color
+[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
+    Target = typeof(Color),
+    Description = "KGy SOFT Color Debugger Visualizer")]

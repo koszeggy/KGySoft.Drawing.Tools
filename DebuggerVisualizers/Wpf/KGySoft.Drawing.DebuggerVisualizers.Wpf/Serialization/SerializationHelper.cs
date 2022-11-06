@@ -46,6 +46,12 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization
             return new ImageSourceSerializationInfo(reader).BitmapInfo!;
         }
 
+        // color info is always serialized without a temp file
+        internal static void SerializeCustomColorInfo(Color color, Stream outgoingData) => new ColorSerializationInfo(color).Write(new BinaryWriter(outgoingData));
+
+        // color is always deserialized without a temp file (and there is no ColorInfo type in ImagingTools.Model)
+        internal static CustomColorInfo DeserializeCustomColorInfo(Stream stream) => new ColorSerializationInfo(new BinaryReader(stream)).ColorInfo!;
+
         #endregion
     }
 }
