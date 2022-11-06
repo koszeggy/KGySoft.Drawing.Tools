@@ -16,9 +16,7 @@
 #region Usings
 
 using System;
-using System.Collections.Generic;
 
-using KGySoft.Collections;
 using KGySoft.Drawing.Imaging;
 
 #endregion
@@ -28,7 +26,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
     /// <summary>
     /// Represents a descriptor for any bitmap that can represented by an <see cref="IReadableBitmapData"/>.
     /// </summary>
-    public sealed class CustomBitmapInfo : IDisposable
+    public sealed class CustomBitmapInfo : CustomObjectInfoBase, IDisposable
     {
         #region Fields
 
@@ -42,22 +40,12 @@ namespace KGySoft.Drawing.ImagingTools.Model
         /// Gets or sets the bitmap data.
         /// </summary>
         public IReadableBitmapData? BitmapData { get; set; }
-
-        /// <summary>
-        /// Gets or sets the name of the type represented by the <see cref="BitmapData"/> property.
-        /// </summary>
-        public string? Type { get; set; }
-
+        
         /// <summary>
         /// Gets or sets whether the size of <see cref="BitmapData"/> represents the actual pixel size of the custom bitmap.
         /// </summary>
         public bool ShowPixelSize { get; set; }
-
-        /// <summary>
-        /// Gets a dictionary that can be populated by custom attributes that will be displayed as debug information.
-        /// </summary>
-        public IDictionary<string, string> CustomAttributes { get; } = new StringKeyedDictionary<string>();
-
+        
         #endregion
 
         #region Constructors

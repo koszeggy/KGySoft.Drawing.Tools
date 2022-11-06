@@ -15,7 +15,6 @@
 
 #region Usings
 
-using System.Drawing;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.ViewModel;
@@ -113,8 +112,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // !VM.ReadOnly -> okCancelButtons.Visible
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.ReadOnly), nameof(okCancelButtons.Visible), ro => ro is false, okCancelButtons);
 
-            // VM.Color -> Text
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Color), nameof(Text), c => Res.TitleColor((Color)c!), this);
+            // VM.TitleCaption -> Text
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.TitleCaption), nameof(Text), this);
 
             // VM.IsModified -> OKButton.Enabled
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsModified), nameof(okCancelButtons.OKButton.Enabled), okCancelButtons.OKButton);

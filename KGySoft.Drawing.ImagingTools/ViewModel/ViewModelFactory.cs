@@ -155,6 +155,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         public static IViewModel<Color> FromColor(Color color, bool readOnly) => new ColorVisualizerViewModel { Color = color, ReadOnly = readOnly };
 
         /// <summary>
+        /// Creates a view model for a <see cref="CustomColorInfo"/> from arbitrary debug information.
+        /// </summary>
+        /// <param name="customColorInfo">The debug information for a custom color.</param>
+        /// <returns>An <see cref="IViewModel"/> instance that represents a view model for a <see cref="CustomColorInfo"/>.</returns>
+        public static IViewModel FromCustomColor(CustomColorInfo? customColorInfo) => new CustomColorVisualizerViewModel { CustomColorInfo = customColorInfo };
+
+        /// <summary>
         /// Creates a view model for managing debugger visualizer installations.
         /// </summary>
         /// <param name="hintPath">If the provided path is among the detected Visual Studio installations, then it will be preselected in the view. This parameter is optional.

@@ -92,8 +92,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal Color Color { get => Get<Color>(); set => Set(value); }
         internal bool ReadOnly { get => Get<bool>(); set => Set(value); }
         internal int? SelectedIndex { get => Get<int?>(); set => Set(value); }
-        internal string? InfoText { get => Get<string?>(); private set => Set(value); }
-        internal string? CustomInfo { get => Get<string?>(); set => Set(value); }
+        internal string? InfoText { get => Get<string?>(); set => Set(value); }
+        internal string? TitleCaption { get => Get<string?>(); set => Set(value); }
 
         #endregion
 
@@ -137,18 +137,15 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
         }
 
-        protected void UpdateInfo()
+        protected virtual void UpdateInfo()
         {
+            Color color = Color;
+            TitleCaption = Res.TitleColor(color.Name);
             var sb = new StringBuilder();
             if (SelectedIndex is int index)
                 sb.AppendLine(Res.InfoSelectedIndex(index));
 
-            Color color = Color;
-            if (CustomInfo is string customInfo)
-                sb.Append(customInfo);
-            else
-                sb.Append(Res.InfoColor(color.ToArgb(), GetKnownColor(color), GetSystemColors(color), color.GetHue(), color.GetSaturation() * 100f, color.GetBrightness() * 100f));
-            
+            sb.Append(Res.InfoColor(color.ToArgb(), GetKnownColor(color), GetSystemColors(color), color.GetHue(), color.GetSaturation() * 100f, color.GetBrightness() * 100f));
             InfoText = sb.ToString();
         }
 

@@ -491,7 +491,7 @@ namespace KGySoft.Drawing.ImagingTools
         internal static string TitleOriginalVisibleClip(Rectangle rect) => Get("Title_OriginalVisibleClipFormat", rect.X, rect.Y, rect.Width, rect.Height);
 
         /// <summary>Color: {0}</summary>
-        internal static string TitleColor(Color color) => Get("Title_ColorFormat", color.Name);
+        internal static string TitleColor(string colorName) => Get("Title_ColorFormat", colorName);
 
         /// <summary>Edit Resources – {0}</summary>
         internal static string TitleEditResources(string langName) => Get("Title_EditResourcesFormat", langName);
@@ -533,12 +533,9 @@ namespace KGySoft.Drawing.ImagingTools
         internal static string InfoBitmapData(Size size, int stride, PixelFormat pixelFormat)
             => Get("InfoText_BitmapDataFormat", size.Width, size.Height, stride, pixelFormat);
 
-        /// <summary>Type: {0}
-        ///
-        /// Properties:
-        /// {3}</summary>
-        internal static string InfoCustomBitmap(string type, string? customInfo)
-            => Get("InfoText_CustomBitmapFormat", type, customInfo);
+        /// <summary>Properties:
+        /// {0}</summary>
+        internal static string InfoCustomProperties(string customProperties) => Get("InfoText_CustomPropertiesFormat", customProperties);
 
         /// <summary>Unknown format: {0}</summary>
         internal static string InfoUnknownFormat(Guid format) => Get("InfoText_UnknownFormat", format);

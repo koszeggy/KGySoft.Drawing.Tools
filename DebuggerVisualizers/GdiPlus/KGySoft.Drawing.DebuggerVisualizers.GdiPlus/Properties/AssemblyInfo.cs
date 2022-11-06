@@ -79,7 +79,7 @@ using KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization;
     Target = typeof(ColorPalette),
     Description = "KGy SOFT Color Palette Debugger Visualizer")]
 
-// Color (regular serialization)
+// Color
 [assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
     Target = typeof(Color),
     Description = "KGy SOFT Color Debugger Visualizer")]

@@ -122,7 +122,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         }
 
         /// <summary>
-        /// Shows a debugger dialog for the specified <paramref name="bitmapData"/>.
+        /// Shows a debugger dialog for the specified <paramref name="customBitmapInfo"/>.
         /// </summary>
         /// <param name="customBitmapInfo">The custom bitmap info debug.</param>
         /// <param name="ownerWindowHandle">If specified, then the created dialog will be owned by the window that has specified handle. This parameter is optional.
@@ -195,6 +195,20 @@ namespace KGySoft.Drawing.DebuggerVisualizers
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Shows a debugger dialog for the specified <paramref name="customColor"/>.
+        /// </summary>
+        /// <param name="customColor">The custom color info to debug.</param>
+        /// <param name="ownerWindowHandle">If specified, then the created dialog will be owned by the window that has specified handle. This parameter is optional.
+        /// <br/>Default value: <see cref="IntPtr.Zero">IntPtr.Zero</see>.</param>
+        public static void DebugCustomColor(CustomColorInfo customColor, IntPtr ownerWindowHandle = default)
+        {
+            if (customColor == null)
+                throw new ArgumentNullException(nameof(customColor), PublicResources.ArgumentNull);
+            using IViewModel vm = ViewModelFactory.FromCustomColor(customColor);
+            ViewFactory.ShowDialog(vm, ownerWindowHandle);
         }
 
         #endregion

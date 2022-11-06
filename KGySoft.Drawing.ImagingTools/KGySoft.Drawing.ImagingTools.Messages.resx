@@ -273,11 +273,9 @@ Resolution: {5}x{6} DPI</value>
 Stride: {2} bytes
 Pixel Format: {3}</value>
   </data>
-  <data name="InfoText_CustomBitmapFormat" xml:space="preserve">
-    <value>Type: {0}
-
-Properties:
-{1}</value>
+  <data name="InfoText_CustomPropertiesFormat" xml:space="preserve">
+    <value>Properties:
+{0}</value>
   </data>
   <data name="InfoText_UnknownFormat" xml:space="preserve">
     <value>Unknown format: {0}</value>

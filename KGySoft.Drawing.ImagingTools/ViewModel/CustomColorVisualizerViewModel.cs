@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: CustomBitmapVisualizerViewModel.cs
+//  File: CustomColorVisualizerViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2022 - All Rights Reserved
 //
@@ -21,25 +21,23 @@ using System.Text;
 
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
-using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
 
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal sealed class CustomBitmapVisualizerViewModel : ImageVisualizerViewModel
+    internal sealed class CustomColorVisualizerViewModel : ColorVisualizerViewModel
     {
         #region Properties
 
-        internal CustomBitmapInfo? CustomBitmapInfo { get => Get<CustomBitmapInfo?>(); init => Set(value); }
+        internal CustomColorInfo? CustomColorInfo { get => Get<CustomColorInfo?>(); init => Set(value); }
 
         #endregion
 
         #region Constructors
 
-        internal CustomBitmapVisualizerViewModel()
-            : base(AllowedImageTypes.Bitmap)
+        internal CustomColorVisualizerViewModel()
         {
             ReadOnly = true;
         }
@@ -51,28 +49,33 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
         {
             base.OnPropertyChanged(e);
-            if (e.PropertyName == nameof(CustomBitmapInfo))
+            if (e.PropertyName == nameof(CustomColorInfo))
             {
-                var customBitmapInfo = (CustomBitmapInfo?)e.NewValue;
-                Image = customBitmapInfo?.BitmapData?.ToBitmap();
+                var info = (CustomColorInfo)e.NewValue!;
+                Color = info.DisplayColor.ToColor();
             }
         }
 
         protected override void UpdateInfo()
         {
-            CustomBitmapInfo? info = CustomBitmapInfo;
-            IReadableBitmapData? bitmapData = info?.BitmapData;
-
-            if (bitmapData == null)
+            CustomColorInfo? info = CustomColorInfo;
+            if (info == null)
             {
-                TitleCaption = Res.TitleNoImage;
-                InfoText = null;
+                base.UpdateInfo();
                 return;
             }
 
-            string type = info!.Type ?? bitmapData.GetType().Name;
-            TitleCaption = $"{Res.TitleType(type)}{(info.ShowPixelSize ? $"{Res.TextSeparator}{Res.TitleSize(bitmapData.Size)}" : String.Empty)}";
-            var sb = new StringBuilder(Res.TitleType(type));
+            TitleCaption = Res.TitleType(info.Type ?? nameof(System.Drawing.Color));
+
+            var sb = new StringBuilder();
+            if (SelectedIndex is int index)
+                sb.AppendLine(Res.InfoSelectedIndex(index));
+
+            if (info.Type is string type)
+                sb.AppendLine(Res.TitleType(type));
+            if (info.Name is string name)
+                sb.AppendLine(Res.TitleColor(name));
+
             if (info.CustomAttributes.Count > 0)
             {
                 sb.AppendLine();
@@ -80,13 +83,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
 
             InfoText = sb.ToString();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-                CustomBitmapInfo?.Dispose();
-            base.Dispose(disposing);
         }
 
         #endregion

@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Reflection;
 
 using KGySoft.ComponentModel;
 
@@ -93,13 +94,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     int index = (int)e.NewValue!;
                     if (Count == 0)
                         break;
-                    SelectedColorViewModel = new ColorVisualizerViewModel
-                    {
-                        Color = Palette[index],
-                        ReadOnly = ReadOnly,
-                        SelectedIndex = index,
-                        CustomInfo = GetColorCustomInfo(index)
-                    };
+                    SelectedColorViewModel = GetSelectedColorViewModel(index);
                     break;
 
                 case nameof(SelectedColorViewModel):
@@ -111,10 +106,20 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                         SelectedColor = newValue.Color;
                     }
                     break;
+
+                case nameof(ReadOnly):
+                    if (SelectedColorViewModel is { } selectedColorViewModel)
+                        selectedColorViewModel.ReadOnly = ReadOnly;
+                    break;
             }
         }
 
-        protected virtual string? GetColorCustomInfo(int index) => null;
+        protected virtual ColorVisualizerViewModel GetSelectedColorViewModel(int index) => new ColorVisualizerViewModel
+        {
+            Color = Palette[index],
+            ReadOnly = ReadOnly,
+            SelectedIndex = index
+        };
 
         protected override void Dispose(bool disposing)
         {

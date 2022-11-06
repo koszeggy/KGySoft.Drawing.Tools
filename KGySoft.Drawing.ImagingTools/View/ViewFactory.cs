@@ -59,7 +59,7 @@ namespace KGySoft.Drawing.ImagingTools.View
                 GraphicsVisualizerViewModel graphicsVisualizerViewModel => new GraphicsVisualizerForm(graphicsVisualizerViewModel),
                 ImageVisualizerViewModel imageVisualizerViewModel => new ImageVisualizerForm(imageVisualizerViewModel), // also for BitmapData and CustomBitmap
                 PaletteVisualizerViewModel paletteVisualizerViewModel => new PaletteVisualizerForm(paletteVisualizerViewModel),
-                ColorVisualizerViewModel colorVisualizerViewModel => new ColorVisualizerForm(colorVisualizerViewModel),
+                ColorVisualizerViewModel colorVisualizerViewModel => new ColorVisualizerForm(colorVisualizerViewModel), // also for custom color
                 ManageInstallationsViewModel manageInstallationsViewModel => new ManageInstallationsForm(manageInstallationsViewModel),
                 ResizeBitmapViewModel resizeBitmapViewModel => new ResizeBitmapForm(resizeBitmapViewModel),
                 ColorSpaceViewModel colorSpaceViewModel => new ColorSpaceForm(colorSpaceViewModel),
