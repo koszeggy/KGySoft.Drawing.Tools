@@ -30,15 +30,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.DebuggerVisualizers
 
         protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
         {
-            CustomBitmapInfo bitmapInfo = SerializationHelper.DeserializeCustomBitmapInfo(objectProvider.GetData());
+            using CustomBitmapInfo bitmapInfo = SerializationHelper.DeserializeCustomBitmapInfo(objectProvider.GetData());
             DebuggerHelper.DebugCustomBitmap(bitmapInfo);
-            //ImageInfo? replacementObject = GdiPlusDebuggerHelper.DebugImage(imageInfo, objectProvider.IsObjectReplaceable);
-            //if (replacementObject == null)
-            //    return;
-
-            //using var ms = new MemoryStream();
-            //SerializationHelper.SerializeReplacementImageInfo(replacementObject, ms);
-            //objectProvider.ReplaceData(ms);
         }
 
         #endregion

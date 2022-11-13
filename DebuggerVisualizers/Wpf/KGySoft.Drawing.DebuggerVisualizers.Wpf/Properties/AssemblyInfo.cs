@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 using KGySoft.Drawing.DebuggerVisualizers.Wpf.DebuggerVisualizers;
 using KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization;
@@ -52,3 +53,8 @@ using KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization;
 [assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
     Target = typeof(Color),
     Description = "KGy SOFT Color Debugger Visualizer")]
+
+// BitmapPalette
+[assembly: DebuggerVisualizer(typeof(BitmapPaletteDebuggerVisualizer), typeof(BitmapPaletteSerializer),
+    Target = typeof(BitmapPalette),
+    Description = "KGy SOFT BitmapPalette Debugger Visualizer")]

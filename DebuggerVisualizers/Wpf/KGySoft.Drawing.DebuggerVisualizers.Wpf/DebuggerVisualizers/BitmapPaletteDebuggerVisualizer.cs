@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: ColorDebuggerVisualizer.cs
+//  File: BitmapPaletteDebuggerVisualizer.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2022 - All Rights Reserved
 //
@@ -27,12 +27,12 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.DebuggerVisualizers
 {
     [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses",
         Justification = "False alarm, instantiated by VS debugger visualizers")]
-    internal class ColorDebuggerVisualizer : DialogDebuggerVisualizer
+    internal class BitmapPaletteDebuggerVisualizer : DialogDebuggerVisualizer
     {
         #region Methods
 
         protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
-            => DebuggerHelper.DebugCustomColor(SerializationHelper.DeserializeCustomColorInfo(objectProvider.GetData()));
+            => DebuggerHelper.DebugCustomPalette(SerializationHelper.DeserializeCustomPaletteInfo(objectProvider.GetData()));
 
         #endregion
     }
