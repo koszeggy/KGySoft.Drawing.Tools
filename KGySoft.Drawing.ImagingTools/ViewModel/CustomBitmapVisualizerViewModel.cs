@@ -19,7 +19,6 @@ using System;
 using System.Linq;
 using System.Text;
 
-using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
@@ -30,17 +29,19 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
     internal sealed class CustomBitmapVisualizerViewModel : ImageVisualizerViewModel
     {
-        #region Properties
+        #region Fields
 
-        internal CustomBitmapInfo? CustomBitmapInfo { get => Get<CustomBitmapInfo?>(); init => Set(value); }
+        private readonly CustomBitmapInfo bitmapInfo;
 
         #endregion
 
         #region Constructors
 
-        internal CustomBitmapVisualizerViewModel()
+        internal CustomBitmapVisualizerViewModel(CustomBitmapInfo bitmapInfo)
             : base(AllowedImageTypes.Bitmap)
         {
+            this.bitmapInfo = bitmapInfo;
+            Image = bitmapInfo.BitmapData?.ToBitmap();
             ReadOnly = true;
         }
 
@@ -48,20 +49,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Methods
 
-        protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
-        {
-            base.OnPropertyChanged(e);
-            if (e.PropertyName == nameof(CustomBitmapInfo))
-            {
-                var customBitmapInfo = (CustomBitmapInfo?)e.NewValue;
-                Image = customBitmapInfo?.BitmapData?.ToBitmap();
-            }
-        }
-
         protected override void UpdateInfo()
         {
-            CustomBitmapInfo? info = CustomBitmapInfo;
-            IReadableBitmapData? bitmapData = info?.BitmapData;
+            IReadableBitmapData? bitmapData = bitmapInfo?.BitmapData;
 
             if (bitmapData == null)
             {
@@ -70,13 +60,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 return;
             }
 
-            string type = info!.Type ?? bitmapData.GetType().Name;
-            TitleCaption = $"{Res.TitleType(type)}{(info.ShowPixelSize ? $"{Res.TextSeparator}{Res.TitleSize(bitmapData.Size)}" : String.Empty)}";
+            string type = bitmapInfo!.Type ?? bitmapData.GetType().Name;
+            TitleCaption = $"{Res.TitleType(type)}{(bitmapInfo.ShowPixelSize ? $"{Res.TextSeparator}{Res.TitleSize(bitmapData.Size)}" : String.Empty)}";
             var sb = new StringBuilder(Res.TitleType(type));
-            if (info.CustomAttributes.Count > 0)
+            if (bitmapInfo.CustomAttributes.Count > 0)
             {
                 sb.AppendLine();
-                sb.Append(Res.InfoCustomProperties(info.CustomAttributes.Select(a => $"{a.Key}: {a.Value}").Join(Environment.NewLine)));
+                sb.Append(Res.InfoCustomProperties(bitmapInfo.CustomAttributes.Select(a => $"{a.Key}: {a.Value}").Join(Environment.NewLine)));
             }
 
             InfoText = sb.ToString();
@@ -84,8 +74,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         protected override void Dispose(bool disposing)
         {
+            if (IsDisposed)
+                return;
+
             if (disposing)
-                CustomBitmapInfo?.Dispose();
+                bitmapInfo.Dispose();
+            
             base.Dispose(disposing);
         }
 

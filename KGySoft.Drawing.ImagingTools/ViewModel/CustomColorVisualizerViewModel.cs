@@ -19,7 +19,6 @@ using System;
 using System.Linq;
 using System.Text;
 
-using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
 
@@ -29,57 +28,42 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
     internal sealed class CustomColorVisualizerViewModel : ColorVisualizerViewModel
     {
-        #region Properties
+        #region Fields
 
-        internal CustomColorInfo? CustomColorInfo { get => Get<CustomColorInfo?>(); init => Set(value); }
+        private readonly CustomColorInfo colorInfo;
 
         #endregion
 
         #region Constructors
 
-        internal CustomColorVisualizerViewModel()
+        internal CustomColorVisualizerViewModel(CustomColorInfo colorInfo)
         {
+            this.colorInfo = colorInfo;
             ReadOnly = true;
+            Color = colorInfo.DisplayColor.ToColor();
         }
 
         #endregion
 
         #region Methods
 
-        protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
-        {
-            base.OnPropertyChanged(e);
-            if (e.PropertyName == nameof(CustomColorInfo))
-            {
-                var info = (CustomColorInfo)e.NewValue!;
-                Color = info.DisplayColor.ToColor();
-            }
-        }
-
         protected override void UpdateInfo()
         {
-            CustomColorInfo? info = CustomColorInfo;
-            if (info == null)
-            {
-                base.UpdateInfo();
-                return;
-            }
-
-            TitleCaption = Res.TitleType(info.Type ?? nameof(System.Drawing.Color));
+            TitleCaption = Res.TitleType(colorInfo.Type ?? nameof(System.Drawing.Color));
 
             var sb = new StringBuilder();
             if (SelectedIndex is int index)
                 sb.AppendLine(Res.InfoSelectedIndex(index));
 
-            if (info.Type is string type)
+            if (colorInfo.Type is string type)
                 sb.AppendLine(Res.TitleType(type));
-            if (info.Name is string name)
+            if (colorInfo.Name is string name)
                 sb.AppendLine(Res.TitleColor(name));
 
-            if (info.CustomAttributes.Count > 0)
+            if (colorInfo.CustomAttributes.Count > 0)
             {
                 sb.AppendLine();
-                sb.Append(Res.InfoCustomProperties(info.CustomAttributes.Select(a => $"{a.Key}: {a.Value}").Join(Environment.NewLine)));
+                sb.Append(Res.InfoCustomProperties(colorInfo.CustomAttributes.Select(a => $"{a.Key}: {a.Value}").Join(Environment.NewLine)));
             }
 
             InfoText = sb.ToString();

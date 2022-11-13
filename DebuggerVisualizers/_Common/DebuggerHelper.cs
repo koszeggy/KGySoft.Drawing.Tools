@@ -177,6 +177,20 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         }
 
         /// <summary>
+        /// Shows a debugger dialog for the specified <paramref name="customPalette"/>.
+        /// </summary>
+        /// <param name="customPalette">The custom palette info to debug.</param>
+        /// <param name="ownerWindowHandle">If specified, then the created dialog will be owned by the window that has specified handle. This parameter is optional.
+        /// <br/>Default value: <see cref="IntPtr.Zero">IntPtr.Zero</see>.</param>
+        public static void DebugCustomPalette(CustomPaletteInfo customPalette, IntPtr ownerWindowHandle = default)
+        {
+            if (customPalette == null)
+                throw new ArgumentNullException(nameof(customPalette), PublicResources.ArgumentNull);
+            using IViewModel vm = ViewModelFactory.FromCustomPalette(customPalette);
+            ViewFactory.ShowDialog(vm, ownerWindowHandle);
+        }
+
+        /// <summary>
         /// Shows the debugger for a <see cref="Color"/> instance.
         /// </summary>
         /// <param name="color">The color object to debug.</param>

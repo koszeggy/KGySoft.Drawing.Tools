@@ -15,9 +15,7 @@
 
 #region Usings
 
-#if NETFRAMEWORK
 using System;
-#endif
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -147,6 +145,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         public static IViewModel<Color[]> FromPalette(Color[] palette, bool readOnly) => new PaletteVisualizerViewModel { Palette = palette, ReadOnly = readOnly };
 
         /// <summary>
+        /// Creates a view model from a custom palette.
+        /// </summary>
+        /// <param name="customPaletteInfo">The debug information for a custom palette.</param>
+        /// <returns>An <see cref="IViewModel"/> instance that represents a view model for a palette.</returns>
+        public static IViewModel FromCustomPalette(CustomPaletteInfo customPaletteInfo)
+            => new CustomPaletteVisualizerViewModel(customPaletteInfo ?? throw new ArgumentNullException(nameof(customPaletteInfo), PublicResources.ArgumentNull));
+
+        /// <summary>
         /// Creates a view model from a <see cref="Color"/>.
         /// </summary>
         /// <param name="color">The color.</param>
@@ -159,7 +165,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// </summary>
         /// <param name="customColorInfo">The debug information for a custom color.</param>
         /// <returns>An <see cref="IViewModel"/> instance that represents a view model for a <see cref="CustomColorInfo"/>.</returns>
-        public static IViewModel FromCustomColor(CustomColorInfo? customColorInfo) => new CustomColorVisualizerViewModel { CustomColorInfo = customColorInfo };
+        public static IViewModel FromCustomColor(CustomColorInfo? customColorInfo)
+            => new CustomColorVisualizerViewModel(customColorInfo ?? throw new ArgumentNullException(nameof(customColorInfo), PublicResources.ArgumentNull));
 
         /// <summary>
         /// Creates a view model for managing debugger visualizer installations.
@@ -189,7 +196,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// </summary>
         /// <param name="customBitmapInfo">The debug information for a custom bitmap.</param>
         /// <returns>An <see cref="IViewModel"/> instance that represents a view model for a <see cref="CustomBitmapInfo"/>.</returns>
-        public static IViewModel FromCustomBitmap(CustomBitmapInfo? customBitmapInfo) => new CustomBitmapVisualizerViewModel { CustomBitmapInfo = customBitmapInfo };
+        public static IViewModel FromCustomBitmap(CustomBitmapInfo customBitmapInfo)
+            => new CustomBitmapVisualizerViewModel(customBitmapInfo ?? throw new ArgumentNullException(nameof(customBitmapInfo), PublicResources.ArgumentNull));
 
         /// <summary>
         /// Creates a view model from a <see cref="Graphics"/>.

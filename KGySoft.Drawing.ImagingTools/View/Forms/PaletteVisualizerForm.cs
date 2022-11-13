@@ -127,8 +127,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // VM.Palette -> pnlPalette.Palette
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Palette), nameof(pnlPalette.Palette), pnlPalette);
 
-            // VM.Count -> Text (formatted)
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Count), nameof(Text), c => Res.TitlePaletteCount((int)c!), this);
+            // VM.TitleCaption -> Text
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.TitleCaption), nameof(Text), this);
 
             // VM.SelectedColorViewModel -> colorVisualizerControl.ViewModel
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SelectedColorViewModel), nameof(colorVisualizerControl.ViewModel), colorVisualizerControl);

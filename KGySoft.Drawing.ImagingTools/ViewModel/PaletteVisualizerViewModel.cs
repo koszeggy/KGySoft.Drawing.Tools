@@ -45,6 +45,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal int SelectedColorIndex { get => Get(-1); set => Set(value); }
         internal ColorVisualizerViewModel? SelectedColorViewModel { get => Get<ColorVisualizerViewModel?>(); private set => Set(value); }
         internal Color SelectedColor { get => Get<Color>(); private set => Set(value); }
+        internal string? TitleCaption { get => Get(() => Res.TitlePaletteCount(Count)); set => Set(value); }
         
         #endregion
 
@@ -116,9 +117,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         protected virtual ColorVisualizerViewModel GetSelectedColorViewModel(int index) => new ColorVisualizerViewModel
         {
+            SelectedIndex = index,
             Color = Palette[index],
             ReadOnly = ReadOnly,
-            SelectedIndex = index
         };
 
         protected override void Dispose(bool disposing)

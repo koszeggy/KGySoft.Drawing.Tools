@@ -6,7 +6,7 @@
 ===============================================================================
 
 ~~~~~~~~~
-- v3.0.0:
+! v3.0.0:
 ~~~~~~~~~
 
 - KGySoft.Drawing.ImagingTools.exe
@@ -15,8 +15,15 @@
 - Supporting CMYK images
 
 + API changes:
-  + New CustomBitmapInfo class
-  + New CustomColorInfo class
+  + KGySoft.Drawing.ImagingTools.Model namespace:
+    + New CustomBitmapInfo class
+    + New CustomColorInfo class
+    + New CustomPaletteInfo class
+  + KGySoft.Drawing.ImagingTools.ViewModel namespace:
+    + ViewModelFactory class:
+      + New FromCustomBitmap method
+      + New FromCustomColor method
+      + New FromCustomPalette method
 
 ! KGySoft.Drawing.DebuggerVisualizers.dll
 =========================================
@@ -29,6 +36,7 @@
   + DebuggerHelper class:
     + New DebugCustomBitmap method
     + New DebugCustomColor method
+    + New DebugCustomPalette method
 
 + KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll
 =================================================
