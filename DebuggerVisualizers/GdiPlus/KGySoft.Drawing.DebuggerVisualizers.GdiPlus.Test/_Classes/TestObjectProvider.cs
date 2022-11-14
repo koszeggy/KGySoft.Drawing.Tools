@@ -33,7 +33,7 @@ using Microsoft.VisualStudio.DebuggerVisualizers;
 
 #endregion
 
-namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.ViewModel
+namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test
 {
     internal class TestObjectProvider : IVisualizerObjectProvider
     {
