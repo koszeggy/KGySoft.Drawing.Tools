@@ -21,6 +21,7 @@
     + New CustomPaletteInfo class
   + KGySoft.Drawing.ImagingTools.ViewModel namespace:
     + ViewModelFactory class:
+      + New FromPalette overload
       + New FromCustomBitmap method
       + New FromCustomColor method
       + New FromCustomPalette method

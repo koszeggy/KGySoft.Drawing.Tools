@@ -74,7 +74,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Test.ViewModel
             .Select(p => (PixelFormat)p.GetValue(null, null)!)
             .ToArray();
 
-        public PixelFormat SelectedFormat { get => Get(System.Windows.Media.PixelFormats.Bgra32); set => Set(value); }
+        public PixelFormat SelectedFormat { get => Get(System.Windows.Media.PixelFormats.Indexed8); set => Set(value); }
         public ImageSource? PreviewImage { get => Get<ImageSource?>(); set => Set(value); }
         public bool BitmapSource { get => Get(true); set => Set(value); }
         public bool ImageSource { get => Get<bool>(); set => Set(value); }

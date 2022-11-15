@@ -38,8 +38,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             this.paletteInfo = paletteInfo;
             ReadOnly = true;
             Palette = paletteInfo.Entries.Select(ci => ci.DisplayColor.ToColor()).ToArray();
-            if (paletteInfo.Type is string type)
-                TitleCaption = Res.TitleType(type);
+            Type = paletteInfo.Type;
         }
 
         #endregion

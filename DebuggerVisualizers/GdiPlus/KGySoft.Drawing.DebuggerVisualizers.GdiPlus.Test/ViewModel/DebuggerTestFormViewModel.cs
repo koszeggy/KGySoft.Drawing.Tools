@@ -74,7 +74,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.ViewModel
             .OrderBy(pf => pf & PixelFormat.Max)
             .ToArray());
         
-        internal PixelFormat PixelFormat { get => Get(PixelFormat.Format32bppArgb); set => Set(value); }
+        internal PixelFormat PixelFormat { get => Get(PixelFormat.Format8bppIndexed); set => Set(value); }
         internal bool PixelFormatEnabled { get => Get<bool>(); set => Set(value); }
 
         internal bool Bitmap { get => Get<bool>(); set => Set(value); }

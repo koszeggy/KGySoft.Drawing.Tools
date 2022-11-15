@@ -132,6 +132,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             switch (e.PropertyName)
             {
                 case (nameof(Color)):
+                case (nameof(SelectedIndex)):
                     UpdateInfo();
                     break;
             }

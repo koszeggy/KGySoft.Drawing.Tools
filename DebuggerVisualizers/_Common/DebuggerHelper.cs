@@ -161,8 +161,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         {
             if (palette == null)
                 throw new ArgumentNullException(nameof(palette), PublicResources.ArgumentNull);
-            Color[] entries = palette.Entries;
-            using (IViewModel<Color[]> vm = ViewModelFactory.FromPalette(entries, !isReplaceable))
+            using (IViewModel<Color[]> vm = ViewModelFactory.FromPalette(palette, !isReplaceable))
             {
                 ViewFactory.ShowDialog(vm, ownerWindowHandle);
                 if (!isReplaceable || !vm.IsModified)
@@ -170,7 +169,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
                 Color[] result = vm.GetEditedModel();
 
                 // TODO: if length can change use the code from OnShowPaletteCommand
-                Debug.Assert(result.Length == entries.Length, "Palette length is not expected to be changed");
+                Debug.Assert(result.Length == palette.Entries.Length, "Palette length is not expected to be changed");
                 result.CopyTo(palette.Entries, 0);
                 return palette;
             }

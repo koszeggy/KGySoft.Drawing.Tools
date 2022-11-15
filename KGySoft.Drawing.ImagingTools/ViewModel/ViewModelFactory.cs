@@ -145,6 +145,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         public static IViewModel<Color[]> FromPalette(Color[] palette, bool readOnly) => new PaletteVisualizerViewModel { Palette = palette, ReadOnly = readOnly };
 
         /// <summary>
+        /// Creates a view model from a palette.
+        /// </summary>
+        /// <param name="palette">The palette.</param>
+        /// <param name="readOnly"><see langword="true"/>, to create a read-only instance; otherwise, <see langword="false"/>.</param>
+        /// <returns>An <see cref="IViewModel{TModel}"/> instance that represents a view model for a palette.</returns>
+        public static IViewModel<Color[]> FromPalette(ColorPalette palette, bool readOnly) => new PaletteVisualizerViewModel { Palette = palette.Entries, Type = nameof(ColorPalette), ReadOnly = readOnly };
+
+        /// <summary>
         /// Creates a view model from a custom palette.
         /// </summary>
         /// <param name="customPaletteInfo">The debug information for a custom palette.</param>

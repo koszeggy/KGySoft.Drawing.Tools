@@ -159,7 +159,7 @@
   <data name="Title_SizeFormat" xml:space="preserve">
     <value>Size: {0}x{1}</value>
   </data>
-  <data name="Title_ColorCountFormat" xml:space="preserve">
+  <data name="Title_PaletteCountFormat" xml:space="preserve">
     <value>Palette Color Count: {0}</value>
   </data>
   <data name="Title_VisibleClipFormat" xml:space="preserve">
@@ -173,6 +173,9 @@
   </data>
   <data name="Title_EditResourcesFormat" xml:space="preserve">
     <value>Edit Resources – {0}</value>
+  </data>
+  <data name="Title_ColorCountFormat" xml:space="preserve">
+    <value>Color Count: {0}</value>
   </data>
   <data name="Text_Files" xml:space="preserve">
     <value>files</value>

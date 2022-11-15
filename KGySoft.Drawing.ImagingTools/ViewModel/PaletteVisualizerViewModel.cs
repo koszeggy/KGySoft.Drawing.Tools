@@ -45,6 +45,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal int SelectedColorIndex { get => Get(-1); set => Set(value); }
         internal ColorVisualizerViewModel? SelectedColorViewModel { get => Get<ColorVisualizerViewModel?>(); private set => Set(value); }
         internal Color SelectedColor { get => Get<Color>(); private set => Set(value); }
+        internal string? Type { get => Get<string?>(); set => Set(value); }
         internal string? TitleCaption { get => Get(() => Res.TitlePaletteCount(Count)); set => Set(value); }
         
         #endregion
@@ -82,6 +83,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             switch (e.PropertyName)
             {
+                case nameof(Type):
+                    if (e.NewValue is string type)
+                        TitleCaption = $"{Res.TitleType(type)}{Res.TextSeparator}{Res.TitleColorCount(Count)}";
+                    break;
+
                 case nameof(Palette):
                     var palette = (IList<Color>)e.NewValue!;
                     Count = palette.Count;

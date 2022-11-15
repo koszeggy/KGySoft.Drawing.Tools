@@ -482,7 +482,7 @@ namespace KGySoft.Drawing.ImagingTools
         internal static string TitleSize(Size size) => Get("Title_SizeFormat", size.Width, size.Height);
 
         /// <summary>Palette Color Count: {0}</summary>
-        internal static string TitlePaletteCount(int count) => Get("Title_ColorCountFormat", count);
+        internal static string TitlePaletteCount(int count) => Get("Title_PaletteCountFormat", count);
 
         /// <summary>Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2}x{3}}}</summary>
         internal static string TitleVisibleClip(Rectangle rect) => Get("Title_VisibleClipFormat", rect.X, rect.Y, rect.Width, rect.Height);
@@ -495,6 +495,9 @@ namespace KGySoft.Drawing.ImagingTools
 
         /// <summary>Edit Resources – {0}</summary>
         internal static string TitleEditResources(string langName) => Get("Title_EditResourcesFormat", langName);
+
+        /// <summary>Color Count: {0}</summary>
+        internal static string TitleColorCount(int count) => Get("Title_ColorCountFormat", count);
 
         #endregion
 
