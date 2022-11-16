@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!--<TargetFrameworks>net35;net40;net45;net5.0-windows</TargetFrameworks>-->
-    <TargetFrameworks>net45;net5.0-windows</TargetFrameworks>
+    <TargetFrameworks>net35;net40;net45</TargetFrameworks>
+    <!--<TargetFrameworks>net6.0-windows</TargetFrameworks>-->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>KGySoft.Drawing.DebuggerVisualizers.Wpf</RootNamespace>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
@@ -41,6 +41,13 @@
       <HintPath>..\..\_ref\Microsoft.VisualStudio.DebuggerVisualizers.dll</HintPath>
     </Reference>
   </ItemGroup>
+
+  <!-- This works only for .NET Framework targets because in .NET 5 and above KGySoft.Drawing.Wpf.dll is not copied to the output directory.
+  But debugger visualizers have to be compiled as .NET Framework assemblies anyway. -->
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy bin\$(ConfigurationName)\$(TargetFramework)\$(TargetFileName) ..\..\..\KGySoft.Drawing.ImagingTools\bin\$(ConfigurationName)\$(TargetFramework)\ /Y" />
+    <Exec Command="xcopy bin\$(ConfigurationName)\$(TargetFramework)\KGySoft.Drawing.Wpf.dll ..\..\..\KGySoft.Drawing.ImagingTools\bin\$(ConfigurationName)\$(TargetFramework)\ /Y" />
+  </Target>
 
   <!-- Project references -->
   <ItemGroup>

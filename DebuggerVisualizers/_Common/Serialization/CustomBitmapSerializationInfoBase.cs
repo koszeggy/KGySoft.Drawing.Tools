@@ -120,6 +120,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
                 writer.Write(BitmapInfo.Type);
 
             // 2. Attributes
+            writer.Write(BitmapInfo.ShowPixelSize);
             writer.Write(BitmapInfo.CustomAttributes.Count);
             foreach (KeyValuePair<string, string> attribute in BitmapInfo.CustomAttributes)
             {
@@ -159,6 +160,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
                 BitmapInfo.Type = br.ReadString();
 
             // 2. Attributes
+            BitmapInfo.ShowPixelSize = br.ReadBoolean();
             int count = br.ReadInt32();
             for (int i = 0; i < count; i++)
                 BitmapInfo.CustomAttributes[br.ReadString()] = br.ReadString();

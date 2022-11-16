@@ -28,7 +28,7 @@
       <Menu guid="guidMenuCommandSet" id="SubMenu" priority="0x0100" type="Menu">
         <Parent guid="guidMenuCommandSet" id="TopMenuGroup"/>
         <Strings>
-          <ButtonText>KGy SOFT Drawing DebuggerVisualizers</ButtonText>
+          <ButtonText>KGy SOFT Image DebuggerVisualizers</ButtonText>
         </Strings>
       </Menu>
     </Menus>
