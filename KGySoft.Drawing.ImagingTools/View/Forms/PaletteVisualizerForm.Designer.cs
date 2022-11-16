@@ -21,7 +21,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.gbPalette = new System.Windows.Forms.GroupBox();
             this.pnlPalette = new KGySoft.Drawing.ImagingTools.View.Controls.PalettePanel();
             this.gbSelectedColor = new System.Windows.Forms.GroupBox();
-            this.ucColorVisualizer = new KGySoft.Drawing.ImagingTools.View.UserControls.ColorVisualizerControl();
+            this.colorVisualizerControl = new KGySoft.Drawing.ImagingTools.View.UserControls.ColorVisualizerControl();
             this.okCancelButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
             this.gbPalette.SuspendLayout();
             this.gbSelectedColor.SuspendLayout();
@@ -47,7 +47,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // 
             // gbSelectedColor
             // 
-            this.gbSelectedColor.Controls.Add(this.ucColorVisualizer);
+            this.gbSelectedColor.Controls.Add(this.colorVisualizerControl);
             this.gbSelectedColor.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.gbSelectedColor.Location = new System.Drawing.Point(3, 236);
             this.gbSelectedColor.Name = "gbSelectedColor";
@@ -57,11 +57,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // 
             // ucColorVisualizer
             // 
-            this.ucColorVisualizer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ucColorVisualizer.Location = new System.Drawing.Point(3, 16);
-            this.ucColorVisualizer.Name = "ucColorVisualizer";
-            this.ucColorVisualizer.Size = new System.Drawing.Size(235, 197);
-            this.ucColorVisualizer.TabIndex = 0;
+            this.colorVisualizerControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.colorVisualizerControl.Location = new System.Drawing.Point(3, 16);
+            this.colorVisualizerControl.Name = "colorVisualizerControl";
+            this.colorVisualizerControl.Size = new System.Drawing.Size(235, 197);
+            this.colorVisualizerControl.TabIndex = 0;
             // 
             // okCancelButtons
             // 
@@ -95,7 +95,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private System.Windows.Forms.GroupBox gbPalette;
         private PalettePanel pnlPalette;
         private System.Windows.Forms.GroupBox gbSelectedColor;
-        private ColorVisualizerControl ucColorVisualizer;
+        private ColorVisualizerControl colorVisualizerControl;
         private OkCancelButtons okCancelButtons;
     }
 }

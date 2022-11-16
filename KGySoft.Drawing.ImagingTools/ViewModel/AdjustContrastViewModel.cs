@@ -19,6 +19,7 @@ using System;
 using System.Drawing;
 
 using KGySoft.Drawing.Imaging;
+using KGySoft.Threading;
 
 #endregion
 
@@ -65,7 +66,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Methods
 
-        protected override GenerateTaskBase CreateGenerateTask() => new GenerateTask(Value, ColorChannels);
+        protected override GenerateTaskBase CreateGenerateTask() => new GenerateTask(ValueF, ColorChannels);
 
         #endregion
     }

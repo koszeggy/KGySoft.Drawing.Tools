@@ -25,6 +25,7 @@ using System.Threading;
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.Imaging;
+using KGySoft.Threading;
 
 #endregion
 
@@ -193,15 +194,16 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             int bpp = pixelFormat.ToBitsPerPixel();
             int originalBpp = originalPixelFormat.ToBitsPerPixel();
             int? bppHint = quantizer?.PixelFormatHint.ToBitsPerPixel();
+            PixelFormat quantizerPixelFormat = quantizer == null ? default : quantizer.PixelFormatHint.ToPixelFormat();
 
             // errors
-            if (!pixelFormat.IsSupportedNatively())
+            if (pixelFormat != originalPixelFormat && !pixelFormat.IsSupportedNatively()) // IsSupportedNatively returns false for CMYK, that's why the check for the original
                 result.AddError(nameof(PixelFormat), Res.ErrorMessagePixelFormatNotSupported(pixelFormat));
 
             if (quantizerError != null)
                 result.AddError(nameof(QuantizerSelectorViewModel.Quantizer), Res.ErrorMessageFailedToInitializeQuantizer(quantizerError.Message));
             else if (bppHint <= 8 && bppHint > bpp)
-                result.AddError(nameof(QuantizerSelectorViewModel.Quantizer), Res.ErrorMessageQuantizerPaletteTooLarge(pixelFormat, quantizer!.PixelFormatHint, 1 << bpp));
+                result.AddError(nameof(QuantizerSelectorViewModel.Quantizer), Res.ErrorMessageQuantizerPaletteTooLarge(pixelFormat, quantizerPixelFormat, 1 << bpp));
 
             if (dithererError != null)
                 result.AddError(nameof(DithererSelectorViewModel.Ditherer), Res.ErrorMessageFailedToInitializeDitherer(dithererError.Message));
@@ -214,7 +216,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 result.AddWarning(nameof(PixelFormat), Res.WarningMessageWideConversionLoss(originalPixelFormat));
 
             if (bppHint > bpp)
-                result.AddWarning(nameof(QuantizerSelectorViewModel.Quantizer), Res.WarningMessageQuantizerTooWide(pixelFormat, quantizer!.PixelFormatHint));
+                result.AddWarning(nameof(QuantizerSelectorViewModel.Quantizer), Res.WarningMessageQuantizerTooWide(pixelFormat, quantizerPixelFormat));
 
             if (bppHint == 32 && ditherer != null)
                 result.AddWarning(nameof(DithererSelectorViewModel.Ditherer), Res.WarningMessageDithererNoAlphaGradient);
@@ -223,7 +225,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (changePixelFormat && pixelFormat == originalPixelFormat)
                 result.AddInfo(nameof(PixelFormat), Res.InfoMessageSamePixelFormat);
             if (bppHint < bpp)
-                result.AddInfo(nameof(PixelFormat), Res.InfoMessagePixelFormatUnnecessarilyWide(quantizer!.PixelFormatHint));
+                result.AddInfo(nameof(PixelFormat), Res.InfoMessagePixelFormatUnnecessarilyWide(quantizerPixelFormat));
 
             if (!useQuantizer)
             {
@@ -239,7 +241,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             else if (bppHint == 32 && originalBpp >= 32 && !originalPixelFormat.HasAlpha())
                 result.AddInfo(nameof(QuantizerSelectorViewModel.Quantizer), Res.InfoMessageArgbQuantizerHasNoEffect);
 
-            if (bppHint < originalBpp && !useDitherer && quantizer!.PixelFormatHint.CanBeDithered())
+            if (bppHint < originalBpp && !useDitherer && quantizerPixelFormat.CanBeDithered())
             {
                 if (QuantizerSelectorViewModel.SelectedQuantizer!.Method.Name != nameof(PredefinedColorsQuantizer.Grayscale))
                     result.AddInfo(nameof(DithererSelectorViewModel.Ditherer), Res.InfoMessageQuantizerCanBeDithered(originalPixelFormat));

@@ -25,8 +25,14 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
-    internal partial class EditResourcesForm : MvvmBaseForm<EditResourcesViewModel>
+    internal partial class EditResourcesForm : MvvmBaseForm
     {
+        #region Properties
+
+        private new EditResourcesViewModel ViewModel => (EditResourcesViewModel)base.ViewModel;
+
+        #endregion
+
         #region Constructors
 
         #region Internal Constructors

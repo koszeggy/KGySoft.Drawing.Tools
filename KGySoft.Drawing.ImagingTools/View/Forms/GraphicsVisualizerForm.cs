@@ -35,7 +35,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Properties
 
-        private GraphicsVisualizerViewModel VM => (GraphicsVisualizerViewModel)ViewModel;
+        private new GraphicsVisualizerViewModel ViewModel => (GraphicsVisualizerViewModel)base.ViewModel;
 
         #endregion
 
@@ -112,24 +112,24 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void InitViewModelDependencies()
         {
-            VM.DrawFocusRectangleCallback = (g, visibleRect) => ControlPaint.DrawFocusRectangle(g, visibleRect, Color.White, Color.Black);
+            ViewModel.DrawFocusRectangleCallback = (g, visibleRect) => ControlPaint.DrawFocusRectangle(g, visibleRect, Color.White, Color.Black);
         }
 
         private void InitPropertyBindings()
         {
-            // VM.Crop -> btnCrop.Checked
-            CommandBindings.AddPropertyBinding(VM, nameof(VM.Crop), nameof(btnCrop.Checked), btnCrop);
+            // ViewModel.Crop -> btnCrop.Checked
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Crop), nameof(btnCrop.Checked), btnCrop);
 
-            // VM.HighlightVisibleClip -> btnHighlightClip.Checked
-            CommandBindings.AddPropertyBinding(VM, nameof(VM.HighlightVisibleClip), nameof(btnHighlightClip.Checked), btnHighlightClip);
+            // ViewModel.HighlightVisibleClip -> btnHighlightClip.Checked
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.HighlightVisibleClip), nameof(btnHighlightClip.Checked), btnHighlightClip);
         }
 
         private void InitCommandBindings()
         {
-            CommandBindings.Add(VM.CropCommand, VM.CropCommandState)
+            CommandBindings.Add(ViewModel.CropCommand, ViewModel.CropCommandState)
                 .WithParameter(() => btnCrop.Checked)
                 .AddSource(btnCrop, nameof(btnCrop.CheckedChanged));
-            CommandBindings.Add(VM.HighlightVisibleClipCommand, VM.HighlightVisibleClipCommandState)
+            CommandBindings.Add(ViewModel.HighlightVisibleClipCommand, ViewModel.HighlightVisibleClipCommandState)
                 .WithParameter(() => btnHighlightClip.Checked)
                 .AddSource(btnHighlightClip, nameof(btnHighlightClip.CheckedChanged));
         }

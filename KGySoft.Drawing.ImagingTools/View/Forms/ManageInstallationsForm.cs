@@ -25,8 +25,14 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
-    internal partial class ManageInstallationsForm : MvvmBaseForm<ManageInstallationsViewModel>
+    internal partial class ManageInstallationsForm : MvvmBaseForm
     {
+        #region Properties
+
+        private new ManageInstallationsViewModel ViewModel => (ManageInstallationsViewModel)base.ViewModel;
+
+        #endregion
+
         #region Constructors
 
         #region Internal Constructors

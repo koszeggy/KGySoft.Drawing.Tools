@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ColorVisualizerForm.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2021 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2022 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -15,7 +15,6 @@
 
 #region Usings
 
-using System.Drawing;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.ViewModel;
@@ -24,8 +23,14 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
-    internal partial class ColorVisualizerForm : MvvmBaseForm<ColorVisualizerViewModel>
+    internal partial class ColorVisualizerForm : MvvmBaseForm
     {
+        #region Properties
+
+        private new ColorVisualizerViewModel ViewModel => (ColorVisualizerViewModel)base.ViewModel;
+
+        #endregion
+
         #region Constructors
 
         #region Internal Constructors
@@ -102,15 +107,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void InitPropertyBindings()
         {
+            ucColorVisualizer.ViewModel = ViewModel;
+
             // !VM.ReadOnly -> okCancelButtons.Visible
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.ReadOnly), nameof(okCancelButtons.Visible), ro => ro is false, okCancelButtons);
 
-            // VM.ReadOnly -> ucColorVisualizer.ReadOnly
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.ReadOnly), nameof(ucColorVisualizer.ReadOnly), ucColorVisualizer);
-
-            // VM.Color -> ucColorVisualizer.Color, Text
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Color), nameof(ucColorVisualizer.Color), ucColorVisualizer);
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Color), nameof(Text), c => Res.TitleColor((Color)c!), this);
+            // VM.TitleCaption -> Text
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.TitleCaption), nameof(Text), this);
 
             // VM.IsModified -> OKButton.Enabled
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsModified), nameof(okCancelButtons.OKButton.Enabled), okCancelButtons.OKButton);
@@ -118,8 +121,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void InitCommandBindings()
         {
-            CommandBindings.Add(OnColorEditedCommand)
-                .AddSource(ucColorVisualizer, nameof(ucColorVisualizer.ColorEdited));
             CommandBindings.Add(OnCancelCommand)
                 .AddSource(okCancelButtons.CancelButton, nameof(okCancelButtons.CancelButton.Click));
         }
@@ -127,13 +128,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         #endregion
 
         #region Command Handlers
-
-        private void OnColorEditedCommand()
-        {
-            if (ViewModel.ReadOnly)
-                return;
-            ViewModel.Color = ucColorVisualizer.Color;
-        }
 
         private void OnCancelCommand() => ViewModel.SetModified(false);
 

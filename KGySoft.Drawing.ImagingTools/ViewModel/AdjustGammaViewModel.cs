@@ -19,6 +19,7 @@ using System;
 using System.Drawing;
 
 using KGySoft.Drawing.Imaging;
+using KGySoft.Threading;
 
 #endregion
 
@@ -67,14 +68,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Internal Properties
         
-        internal override float MinValue => 0f;
-        internal override float MaxValue => 10f;
+        internal override int MinValue => 0;
+        internal override int MaxValue => 1000;
 
         #endregion
 
         #region Protected Properties
         
-        protected override float DefaultValue => 1f;
+        protected override int DefaultValue => 100;
 
         #endregion
 
@@ -82,7 +83,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Methods
 
-        protected override GenerateTaskBase CreateGenerateTask() => new GenerateTask(Value, ColorChannels);
+        protected override GenerateTaskBase CreateGenerateTask() => new GenerateTask(ValueF, ColorChannels);
 
         #endregion
     }

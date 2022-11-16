@@ -502,7 +502,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Static Methods
 
-        private static void ToolTip_Draw(object sender, DrawToolTipEventArgs e) => e.DrawToolTipAdvanced();
+        private static void ToolTip_Draw(object? sender, DrawToolTipEventArgs e) => e.DrawToolTipAdvanced();
 
         #endregion
 

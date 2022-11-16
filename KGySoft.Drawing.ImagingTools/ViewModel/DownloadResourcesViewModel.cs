@@ -34,6 +34,16 @@ using KGySoft.Serialization.Xml;
 
 #endregion
 
+#region Suppressions
+
+#if NET6_0_OR_GREATER
+
+#pragma warning disable SYSLIB0014 // WebRequest is obsolete - the suggested HttpRequest must NOT be used here because it does not support FTP, shared or local folders
+
+#endif
+
+#endregion
+
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
     internal class DownloadResourcesViewModel : ViewModelBase, IViewModel<ICollection<LocalizationInfo>>
@@ -386,9 +396,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Event Handlers
 
-        private void Items_ListChanged(object sender, ListChangedEventArgs e)
+        private void Items_ListChanged(object? sender, ListChangedEventArgs e)
         {
-            var items = (DownloadableResourceItemCollection)sender;
+            var items = (DownloadableResourceItemCollection)sender!;
             if (e.ListChangedType != ListChangedType.ItemChanged || e.PropertyDescriptor?.Name != nameof(DownloadableResourceItem.Selected))
                 return;
 

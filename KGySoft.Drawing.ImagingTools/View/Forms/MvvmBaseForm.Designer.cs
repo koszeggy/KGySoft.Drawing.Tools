@@ -1,6 +1,6 @@
 ﻿namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
-    partial class MvvmBaseForm<TViewModel>
+    partial class MvvmBaseForm
     {
         private KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolTip toolTip;
         private System.ComponentModel.IContainer components;

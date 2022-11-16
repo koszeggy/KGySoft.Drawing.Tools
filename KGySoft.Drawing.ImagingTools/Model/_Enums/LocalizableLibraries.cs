@@ -38,13 +38,18 @@ namespace KGySoft.Drawing.ImagingTools.Model
         CoreLibraries = 1,
 
         /// <summary>
+        /// Represents the <c>KGySoft.Drawing.Core.dll</c> assembly.
+        /// </summary>
+        DrawingCoreLibraries = 1 << 1,
+
+        /// <summary>
         /// Represents the <c>KGySoft.Drawing.dll</c> assembly.
         /// </summary>
-        DrawingLibraries = 1 << 1,
+        DrawingLibraries = 1 << 2,
 
         /// <summary>
         /// Represents the <c>KGySoft.Drawing.ImagingTools.exe</c> assembly.
         /// </summary>
-        ImagingTools = 1 << 2
+        ImagingTools = 1 << 3
     }
 }

@@ -21,8 +21,18 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    internal sealed partial class QuantizerSelectorControl : MvvmBaseUserControl<QuantizerSelectorViewModel>
+    internal sealed partial class QuantizerSelectorControl : MvvmBaseUserControl
     {
+        #region Properties
+
+        internal new QuantizerSelectorViewModel? ViewModel
+        {
+            get => (QuantizerSelectorViewModel?)base.ViewModel;
+            set => base.ViewModel = value;
+        }
+
+        #endregion
+
         #region Constructors
 
         public QuantizerSelectorControl()

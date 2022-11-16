@@ -22,6 +22,7 @@ using System.Threading;
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.Threading;
 
 #endregion
 
@@ -61,7 +62,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Properties
 
         internal bool IsProcessing { get => Get<bool>(); set => Set(value); }
-        internal DrawingProgress Progress { get => Get<DrawingProgress>(); set => Set(value); }
+        internal AsyncProgress<DrawingOperation> Progress { get => Get<AsyncProgress<DrawingOperation>>(); set => Set(value); }
         internal string DisplayText { get => Get<string>(); set => Set(value); }
 
         internal ICommand CancelCommand => Get(() => new SimpleCommand(OnCancelCommand));

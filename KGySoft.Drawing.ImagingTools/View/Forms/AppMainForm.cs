@@ -116,7 +116,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             // Base updates Text when ViewModel.TitleCaption changes.
             // Here adding an update also for FileName and IsModified changes in a compatible way
-            CommandBindings.AddPropertyChangedHandler(() => Text = ViewModel.TitleCaption!, ViewModel,
+            CommandBindings.AddPropertyChangedHandlerBinding(ViewModel, () => Text = ViewModel.TitleCaption!,
                 nameof(ViewModel.FileName), nameof(ViewModel.IsModified));
         }
 

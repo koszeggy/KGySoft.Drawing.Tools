@@ -159,7 +159,7 @@
   <data name="Title_SizeFormat" xml:space="preserve">
     <value>Size: {0}x{1}</value>
   </data>
-  <data name="Title_ColorCountFormat" xml:space="preserve">
+  <data name="Title_PaletteCountFormat" xml:space="preserve">
     <value>Palette Color Count: {0}</value>
   </data>
   <data name="Title_VisibleClipFormat" xml:space="preserve">
@@ -173,6 +173,9 @@
   </data>
   <data name="Title_EditResourcesFormat" xml:space="preserve">
     <value>Edit Resources – {0}</value>
+  </data>
+  <data name="Title_ColorCountFormat" xml:space="preserve">
+    <value>Color Count: {0}</value>
   </data>
   <data name="Text_Files" xml:space="preserve">
     <value>files</value>
@@ -273,6 +276,10 @@ Resolution: {5}x{6} DPI</value>
 Stride: {2} bytes
 Pixel Format: {3}</value>
   </data>
+  <data name="InfoText_CustomPropertiesFormat" xml:space="preserve">
+    <value>Properties:
+{0}</value>
+  </data>
   <data name="InfoText_UnknownFormat" xml:space="preserve">
     <value>Unknown format: {0}</value>
   </data>
@@ -343,9 +350,6 @@ Brightness: {5:F0}%</value>
   </data>
   <data name="ErrorMessage_FailedToLoadFileFormat" xml:space="preserve">
     <value>Could not load file due to an error: {0}</value>
-  </data>
-  <data name="ErrorMessage_AnimGifNotSupported" xml:space="preserve">
-    <value>Saving modifications as animated GIF is not supported</value>
   </data>
   <data name="ErrorMessage_InstallationCannotBeOverwritten" xml:space="preserve">
     <value>The current installation is being executed, which cannot be overwritten</value>

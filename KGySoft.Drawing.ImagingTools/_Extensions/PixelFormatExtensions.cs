@@ -23,6 +23,12 @@ namespace KGySoft.Drawing.ImagingTools
 {
     internal static class PixelFormatExtensions
     {
+        #region Constants
+        
+        internal const PixelFormat Format32bppCmyk = (PixelFormat)0x200F;
+
+        #endregion
+
         #region Methods
 
         internal static bool CanBeDithered(this PixelFormat dstFormat) => dstFormat.ToBitsPerPixel() <= 16 && dstFormat != PixelFormat.Format16bppGrayScale;

@@ -27,7 +27,6 @@ namespace KGySoft.Drawing.ImagingTools.Model
     /// Represents the metadata of localized resources.
     /// </summary>
     [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Setter accessors are needed for the deserializer")]
-    [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "ReSharper issue")]
     public class LocalizationInfo
     {
         #region Fields

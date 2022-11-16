@@ -286,7 +286,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 return;
             }
 
-            ImageInfoBase currentImage = GetCurrentImage();
+            ImageInfoBase currentImage = GetCurrentImageInfo();
             var sb = new StringBuilder();
             sb.Append(Res.TitleType(GetTypeName()));
             if (!imageInfo.IsMetafile)
@@ -300,7 +300,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             sb.Length = 0;
             sb.Append(Res.InfoImage(GetTypeName(),
                 GetSize(),
-                currentImage.PixelFormat,
+                currentImage.PixelFormat == PixelFormatExtensions.Format32bppCmyk ? nameof(PixelFormatExtensions.Format32bppCmyk) : currentImage.PixelFormat.ToString<PixelFormat>(),
                 RawFormatToString(currentImage.RawFormat),
                 currentImage.HorizontalRes, currentImage.VerticalRes,
                 GetFrameInfo(false)));
@@ -354,27 +354,19 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             {
                 // BMP
                 if (encoder?.FormatID == ImageFormat.Bmp.Guid)
-                    GetCurrentImage().Image!.SaveAsBmp(fileName);
+                    GetCurrentImageOrFirst().SaveAsBmp(fileName);
                 // JPEG
                 else if (encoder?.FormatID == ImageFormat.Jpeg.Guid)
-                    GetCurrentImage().Image!.SaveAsJpeg(fileName, 95);
+                    GetCurrentImageOrFirst().SaveAsJpeg(fileName, 95);
                 // GIF
                 else if (encoder?.FormatID == ImageFormat.Gif.Guid)
-                    GetCurrentImage().Image!.SaveAsGif(fileName);
+                    SaveGif(fileName);
                 // Tiff
                 else if (encoder?.FormatID == ImageFormat.Tiff.Guid)
-                {
-                    if (imageInfo.HasFrames && IsCompoundView)
-                    {
-                        using (Stream stream = File.Create(fileName))
-                            imageInfo.Frames!.Select(f => f.Image!).SaveAsMultipageTiff(stream);
-                    }
-                    else
-                        GetCurrentImage().Image!.SaveAsTiff(fileName);
-                }
+                    SaveTiff(fileName);
                 // PNG
                 else if (encoder?.FormatID == ImageFormat.Png.Guid)
-                    GetCurrentImage().Image!.SaveAsPng(fileName);
+                    GetCurrentImageOrFirst().SaveAsPng(fileName);
                 // icon
                 else if (selectedFormat == "*.ico")
                     SaveIcon(fileName);
@@ -386,7 +378,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     ((Metafile)imageInfo.Image!).SaveAsEmf(fileName);
                 // Some unrecognized encoder - we assume it can handle every pixel format
                 else if (encoder != null)
-                    GetCurrentImage().Image!.Save(fileName, encoder, null);
+                    GetCurrentImageOrFirst().Save(fileName, encoder, null);
                 else if (selectedFormat == "*.bdat")
                     SaveBitmapData(fileName);
                 else
@@ -451,9 +443,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (!value.IsValid)
             {
                 ValidationResult error = value.ValidationResults.Errors[0];
-
-                // ReSharper disable once LocalizableElement - the message comes from resource
-                throw new ArgumentException($"{error.PropertyName}: {error.Message}", nameof(value));
+                throw new ArgumentException(PublicResources.PropertyMessage(error.PropertyName, error.Message), nameof(value));
             }
 
             bool valid = value.Type == ImageInfoType.None
@@ -489,11 +479,24 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             _ => Res.TooltipTextCompoundMultiSize
         };
 
-        private ImageInfoBase GetCurrentImage()
+        private ImageInfoBase GetCurrentImageInfo()
         {
             if (!imageInfo.HasFrames || currentFrame < 0 || IsAutoPlaying)
                 return imageInfo;
             return imageInfo.Frames![currentFrame];
+        }
+
+        private Image GetCurrentImageOrFirst()
+        {
+            ImageInfoBase frameInfo = GetCurrentImageInfo();
+            Image? result = frameInfo.Image;
+            if (result != null)
+                return result;
+
+            Debug.Assert(frameInfo == imageInfo && imageInfo.HasFrames, "A frame was null. Only the serializer should initialize such ImageInfo.");
+
+            // compound image was null: returning the first frame
+            return imageInfo.Frames![0].Image ?? throw new InvalidOperationException(Res.InternalError("Frames should not be null here"));
         }
 
         private bool IsSingleImageShown() => imageInfo.Type != ImageInfoType.None && !imageInfo.HasFrames
@@ -509,7 +512,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void ImageChanged()
         {
-            ImageInfoBase image = GetCurrentImage();
+            ImageInfoBase image = GetCurrentImageInfo();
             ShowPaletteCommandState.Enabled = image.Palette.Length > 0;
             SaveFileCommandState.Enabled = imageInfo.Type != ImageInfoType.None;
             ClearCommandState.Enabled = imageInfo.Type != ImageInfoType.None && !ReadOnly;
@@ -551,14 +554,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             if (imageInfo.IsMultiRes && imageInfo.HasFrames && currentFrame == -1)
                 return currentResolution;
-            return GetCurrentImage().Size;
+            return GetCurrentImageInfo().Size;
         }
 
         private string GetTypeName()
         {
             if (imageInfo.Type == ImageInfoType.Icon)
                 return nameof(System.Drawing.Icon);
-            Image? img = GetCurrentImage().Image;
+            Image? img = GetCurrentImageInfo().Image;
             return img?.GetType().Name ?? nameof(Bitmap);
         }
 
@@ -589,13 +592,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             Image? image = null;
             string? openedFileName = fileName;
+            bool isCustom = false;
 
             // bitmaps and metafiles are both allowed
             if ((imageTypes & (AllowedImageTypes.Bitmap | AllowedImageTypes.Metafile)) == (AllowedImageTypes.Bitmap | AllowedImageTypes.Metafile))
             {
                 try
                 {
-                    image = LoadImage(stream);
+                    image = LoadImage(stream, out isCustom);
                 }
                 catch (Exception e) when (!e.IsCriticalGdi())
                 {
@@ -619,14 +623,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             {
                 try
                 {
-                    image = LoadImage(stream);
+                    image = LoadImage(stream, out isCustom);
                 }
                 catch (Exception e) when (!e.IsCriticalGdi())
                 {
                     throw new ArgumentException(Res.ErrorMessageNotABitmapFile(e.Message), nameof(fileName), e);
                 }
 
-                if (image.RawFormat.Guid == ImageFormat.MemoryBmp.Guid)
+                if (!isCustom && image.RawFormat.Guid == ImageFormat.MemoryBmp.Guid)
                 {
                     SetNotification(Res.NotificationMetafileAsBitmapId);
                     openedFileName = null;
@@ -669,14 +673,18 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             else
                 Image = image;
 
-            // null will be assigned if the image has been converted (see notifications)
-            imageInfo.FileName = openedFileName;
+            // null will be assigned if the image has been converted (see notifications), or when it has a custom format so Image.FromFile cannot handle it
+            imageInfo.FileName = !isCustom ? openedFileName : null;
         }
 
-        private Image LoadImage(MemoryStream stream)
+        private Image LoadImage(MemoryStream stream, out bool isCustom)
         {
+            isCustom = false;
             if (TryLoadCustom(stream, out Image? image))
+            {
+                isCustom = true;
                 return image;
+            }
 
             // bitmaps and metafiles are both allowed
             if ((imageTypes & (AllowedImageTypes.Bitmap | AllowedImageTypes.Metafile)) == (AllowedImageTypes.Bitmap | AllowedImageTypes.Metafile))
@@ -759,6 +767,30 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             UpdateInfo();
         }
 
+        private void SaveGif(string fileName)
+        {
+            // This includes animated GIF if there was no change since opening it
+            if (!imageInfo.HasFrames || !IsCompoundView || imageInfo.Type == ImageInfoType.Animation && imageInfo.Image != null)
+            {
+                GetCurrentImageOrFirst().SaveAsGif(fileName);
+                return;
+            }
+
+            // Encoding a new GIF animation: if the image originally is not an animation, the using 1s delay for each frames
+            ImageFrameInfo[] frames = imageInfo.Frames!;
+            frames.Select(f => f.Image!).SaveAsAnimatedGif(fileName, imageInfo.Type == ImageInfoType.Animation
+                ? frames.Select(f => TimeSpan.FromMilliseconds(f.Duration))
+                : new[] { TimeSpan.FromSeconds(1) });
+        }
+
+        private void SaveTiff(string fileName)
+        {
+            if (imageInfo.HasFrames && IsCompoundView)
+                imageInfo.Frames!.Select(f => f.Image!).SaveAsMultipageTiff(fileName);
+            else
+                GetCurrentImageOrFirst().SaveAsTiff(fileName);
+        }
+
         private void SaveIcon(string fileName)
         {
             using (Stream stream = File.Create(fileName))
@@ -799,7 +831,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
             else
             {
-                using (Icon i = Icons.Combine((Bitmap)GetCurrentImage().Image!))
+                // This is single icon, combine is just to force saving a managed icon
+                using (Icon i = Icons.Combine((Bitmap)GetCurrentImageOrFirst()))
                     i.Save(stream);
             }
 
@@ -809,7 +842,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void SaveBitmapData(string fileName)
         {
             using Stream stream = File.Create(fileName);
-            Image image = IsCompoundView ? imageInfo.GetCreateImage()! : GetCurrentImage().Image!;
+            Image image = GetCurrentImageOrFirst();
             Bitmap bmp = image as Bitmap ?? new Bitmap(image);
             try
             {
@@ -1003,7 +1036,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void SetCurrentImage(Bitmap? image)
         {
             // replacing the whole image (non-compound one)
-            if (GetCurrentImage() == imageInfo)
+            if (GetCurrentImageInfo() == imageInfo)
             {
                 Debug.Assert(!imageInfo.HasFrames);
                 if (!ReferenceEquals(imageInfo.Image, image))
@@ -1031,7 +1064,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             Debug.Assert(imageInfo.Type != ImageInfoType.None && !imageInfo.IsMetafile, "Non-metafile image is expected");
 
-            ImageInfoBase image = GetCurrentImage();
+            ImageInfoBase image = GetCurrentImageInfo();
 
             Debug.Assert(image.Image is Bitmap, "Existing bitmap image is expected");
             using (IViewModel<Bitmap?> viewModel = createViewModel.Invoke((Bitmap)image.Image!))
@@ -1045,13 +1078,24 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void RotateBitmap(RotateFlipType direction)
         {
             Debug.Assert(imageInfo.Type != ImageInfoType.None && !imageInfo.IsMetafile, "Non-metafile image is expected");
-            ImageInfoBase image = GetCurrentImage();
+            ImageInfoBase image = GetCurrentImageInfo();
             Debug.Assert(image.Image is Bitmap, "Existing bitmap image is expected");
+            var bmp = (Bitmap)image.Image!;
+            Bitmap? clone = null;
 
             // must be in a lock because it can be in use in the UI (where it is also locked)
-            lock (image.Image!)
-                image.Image.RotateFlip(direction);
-            SetCurrentImage((Bitmap)image.Image);
+            lock (bmp)
+            {
+                if (bmp.PixelFormat != PixelFormatExtensions.Format32bppCmyk)
+                    bmp.RotateFlip(direction);
+                else
+                {
+                    clone = bmp.CloneCurrentFrame();
+                    clone.RotateFlip(direction);
+                }
+            }
+
+            SetCurrentImage(clone ?? bmp);
         }
 
         private void UpdateSmoothZoomingTooltip()
@@ -1155,7 +1199,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnShowPaletteCommand()
         {
-            ImageInfoBase currentImage = GetCurrentImage();
+            ImageInfoBase currentImage = GetCurrentImageInfo();
             if (currentImage.Palette.Length == 0)
                 return;
 
@@ -1200,7 +1244,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             Debug.Assert(imageInfo.Type != ImageInfoType.None && !imageInfo.IsMetafile, "Non-metafile image is expected");
 
-            ImageInfoBase image = GetCurrentImage();
+            ImageInfoBase image = GetCurrentImageInfo();
 
             Debug.Assert(image.Image is Bitmap, "Existing bitmap image is expected");
             using IViewModel<int?> viewModel = ViewModelFactory.CreateCountColors((Bitmap)image.Image!);

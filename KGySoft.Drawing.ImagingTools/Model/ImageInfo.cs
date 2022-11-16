@@ -37,6 +37,12 @@ namespace KGySoft.Drawing.ImagingTools.Model
     /// <seealso cref="ImageInfoBase" />
     public sealed class ImageInfo : ImageInfoBase
     {
+        #region Constants
+
+        private const int propertyTagFrameDelay = 0x5100; // https://docs.microsoft.com/en-us/dotnet/api/system.drawing.imaging.propertyitem.id
+
+        #endregion
+
         #region Properties
 
         #region Public Properties
@@ -96,9 +102,20 @@ namespace KGySoft.Drawing.ImagingTools.Model
         /// Initializes a new instance of the <see cref="ImageInfo"/> class from an <see cref="Image"/>.
         /// </summary>
         /// <param name="image">The image to be used for the initialization.</param>
-        public ImageInfo(Image? image)
+        public ImageInfo(Image? image) : this(image, true)
         {
-            InitFromImage(image);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImageInfo"/> class from an <see cref="Image"/>.
+        /// </summary>
+        /// <param name="image">The image to be used for the initialization.</param>
+        /// <param name="cloneFrames"><see langword="true"/>&#160;to clone each frame when initializing <see cref="Frames"/>; otherwise, <see langword="false"/>.
+        /// When <see langword="false"/>, then <see cref="ImageInfoBase.Image"/> will not be set in <see cref="Frames"/> so you must extract the corresponding frames from
+        /// the specified <paramref name="image"/> manually to access the actual frame content.</param>
+        public ImageInfo(Image? image, bool cloneFrames)
+        {
+            InitFromImage(image, cloneFrames);
             SetModified(false);
         }
 
@@ -106,9 +123,20 @@ namespace KGySoft.Drawing.ImagingTools.Model
         /// Initializes a new instance of the <see cref="ImageInfo"/> class from an <see cref="System.Drawing.Icon"/>.
         /// </summary>
         /// <param name="icon">The icon to be used for the initialization.</param>
-        public ImageInfo(Icon? icon)
+        public ImageInfo(Icon? icon) : this(icon, true)
         {
-            InitFromIcon(icon);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImageInfo"/> class from an <see cref="System.Drawing.Icon"/>.
+        /// </summary>
+        /// <param name="icon">The icon to be used for the initialization.</param>
+        /// <param name="cloneImages"><see langword="true"/>&#160;to clone each frame when initializing <see cref="Frames"/>; otherwise, <see langword="false"/>.
+        /// When <see langword="false"/>, then <see cref="ImageInfoBase.Image"/> will not be set in <see cref="Frames"/> so you must extract the corresponding frames from
+        /// the specified <paramref name="icon"/> manually to access the actual frame content.</param>
+        public ImageInfo(Icon? icon, bool cloneImages)
+        {
+            InitFromIcon(icon, cloneImages);
             SetModified(false);
         }
 
@@ -224,8 +252,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         [SuppressMessage("ReSharper", "PossibleUnintendedReferenceComparison",
             Justification = "The dimension variable is compared with the references we set earlier")]
-        [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "ReSharper issue")]
-        private void InitFromImage(Image? image)
+        private void InitFromImage(Image? image, bool cloneFrames)
         {
             if (image == null)
                 return;
@@ -287,26 +314,38 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
             // in case of animation there is a compound image
             if (dimension == FrameDimension.Time)
-                times = image.GetPropertyItem(0x5100)?.Value;
+                times = image.GetPropertyItem(propertyTagFrameDelay)?.Value;
 
             frames = new ImageFrameInfo[frameCount];
             Frames = frames;
             for (int frame = 0; frame < frameCount; frame++)
             {
                 image.SelectActiveFrame(dimension, frame);
-                frames[frame] = new ImageFrameInfo(bitmap.CloneCurrentFrame()) { RawFormat = RawFormat };
+                frames[frame] = new ImageFrameInfo(cloneFrames ? bitmap.CloneCurrentFrame() : image) { RawFormat = RawFormat };
                 if (times != null)
                 {
-                    int duration = BitConverter.ToInt32(times, frame << 2);
+                    int startIndex = frame << 2;
+                    int duration;
+                    if (times.Length >= startIndex + 4)
+                        duration = BitConverter.ToInt32(times, frame << 2);
+                    else // Mono/libgdiplus: the delay can be queried all frames separately
+                    {
+                        byte[]? time = image.GetPropertyItem(propertyTagFrameDelay)?.Value;
+                        duration = time?.Length >= 4 ? BitConverter.ToInt32(time, 0) : 0;
+                    }
                     duration = duration == 0 ? 100 : duration * 10;
                     frames[frame].Duration = duration;
                 }
+
+                // preventing frame from disposing if it was not cloned
+                if (!cloneFrames)
+                    frames[frame].Image = null;
             }
 
             image.SelectActiveFrame(dimension, 0);
         }
 
-        private void InitFromIcon(Icon? icon)
+        private void InitFromIcon(Icon? icon, bool cloneImages)
         {
             #region Local Methods
 
@@ -343,12 +382,12 @@ namespace KGySoft.Drawing.ImagingTools.Model
                 return;
             }
 
-            Bitmap?[] iconImages = icon.ExtractBitmaps();
-            Debug.Assert(iconInfo.Length == iconImages.Length);
+            Bitmap?[]? iconImages = cloneImages ? icon.ExtractBitmaps() : null;
+            Debug.Assert(!cloneImages || iconInfo.Length == iconImages!.Length);
             var frames = new ImageFrameInfo[iconInfo.Length];
             for (int i = 0; i < frames.Length; i++)
             {
-                frames[i] = new ImageFrameInfo(iconImages[i]);
+                frames[i] = new ImageFrameInfo(iconImages?[i]);
                 InitIconMeta(iconInfo[i], frames[i]);
 
                 // In Windows XP all icon images are uncompressed so displaying just Icon
@@ -369,9 +408,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
             if (!IsValid)
             {
                 ValidationResult error = ValidationResults.Errors[0];
-
-                // ReSharper disable once LocalizableElement - the message comes from resource
-                throw new InvalidOperationException($"{error.PropertyName}: {error.Message}");
+                throw new InvalidOperationException(PublicResources.PropertyMessage(error.PropertyName, error.Message));
             }
 
             Debug.Assert(HasFrames || Type == ImageInfoType.Icon, "Frames or icon are expected here");
@@ -396,7 +433,11 @@ namespace KGySoft.Drawing.ImagingTools.Model
                     }
 
                 case ImageInfoType.Animation:
-                    throw new NotSupportedException(Res.ErrorMessageAnimGifNotSupported);
+                    ms = new MemoryStream();
+                    ImageFrameInfo[] frames = Frames!;
+                    frames.Select(f => f.Image!).SaveAsAnimatedGif(ms, frames.Select(f => TimeSpan.FromMilliseconds(f.Duration)));
+                    ms.Position = 0;
+                    return new Bitmap(ms);
 
                 default:
                     throw new InvalidOperationException(Res.InternalError($"Unexpected type in {nameof(GenerateImage)}: {Type}"));
@@ -408,9 +449,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
             if (!IsValid)
             {
                 ValidationResult error = ValidationResults.Errors[0];
-
-                // ReSharper disable once LocalizableElement - the message comes from resource
-                throw new InvalidOperationException($"{error.PropertyName}: {error.Message}");
+                throw new InvalidOperationException(PublicResources.PropertyMessage(error.PropertyName, error.Message));
             }
 
             return !HasFrames ? Image!.ToIcon() : Icons.Combine(Frames!.Select(f => (Bitmap)f.Image!));

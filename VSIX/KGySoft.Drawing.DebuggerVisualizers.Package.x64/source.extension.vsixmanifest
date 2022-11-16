@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-	<Identity Id="9029031a-4b33-48a7-ae94-138c537ee202" Version="2.5.0" Language="en-US" Publisher="KGy SOFT" />
-    <DisplayName>KGy SOFT Drawing DebuggerVisualizers x64</DisplayName>
-    <Description xml:space="preserve">Debugger Visualizers for System.Drawing types such as Image (Bitmap and Metafile), Icon, Graphics, BitmapData, ColorPalette and Color.</Description>
+	<Identity Id="9029031a-4b33-48a7-ae94-138c537ee202" Version="3.0.0" Language="en-US" Publisher="KGy SOFT" />
+    <DisplayName>KGy SOFT Image DebuggerVisualizers x64</DisplayName>
+    <Description xml:space="preserve">Debugger Visualizers for GDI+ and WPF image types such as Bitmap, BitmapSource, Metafile, ImageSource, Icon, Graphics, BitmapData, ColorPalette, BitmapPalette and Color. Possible derived types such as DrawingImage, BitmapFrame, WriteableBitmap, etc. are also supported.</Description>
     <MoreInfo>https://github.com/koszeggy/KGySoft.Drawing.Tools</MoreInfo>
     <License>LICENSE</License>
     <ReleaseNotes>https://github.com/koszeggy/KGySoft.Drawing.Tools/blob/master/changelog.txt</ReleaseNotes>

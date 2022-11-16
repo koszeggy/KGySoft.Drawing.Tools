@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: MvvmBaseUserControl.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2021 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2022 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -16,7 +16,6 @@
 #region Usings
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -27,54 +26,41 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    internal class MvvmBaseUserControl<TViewModel> : BaseUserControl
-        where TViewModel : IDisposable // BUG: Actually should be ViewModelBase but WinForms designer with derived types dies from that
+    internal class MvvmBaseUserControl : BaseUserControl
     {
         #region Fields
 
         private readonly int threadId;
         private readonly ManualResetEventSlim handleCreated;
 
-        private TViewModel? vm;
+        private ViewModelBase? viewModel;
         private bool isLoaded;
 
         #endregion
 
         #region Properties
 
-        #region Internal Properties
-
         /// <summary>
         /// Gets or sets the view model. Can be null before initializing. Not null if called from <see cref="ApplyViewModel"/>.
         /// </summary>
-        [MaybeNull]
-        internal TViewModel ViewModel
+        protected ViewModelBase? ViewModel
         {
-            get => vm;
+            get => viewModel;
             set
             {
-                if (ReferenceEquals(vm, value))
+                if (ReferenceEquals(viewModel, value))
                     return;
-                vm = value;
-                if (isLoaded)
-                    ApplyViewModel();
+
+                viewModel = value;
+                if (!isLoaded)
+                    return;
+
+                CommandBindings.Dispose();
+                ApplyViewModel();
             }
         }
 
-        #endregion
-
-        #region Protected Properties
-
         protected CommandBindingsCollection CommandBindings { get; }
-
-        #endregion
-
-        #region Private Properties
-
-        // this would not be needed if where TViewModel : ViewModelBase didn't conflict with WinForms designer
-        private ViewModelBase? VM => (ViewModelBase?)(object?)ViewModel;
-
-        #endregion
 
         #endregion
 
@@ -101,7 +87,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             if (DesignMode)
                 return;
 
-            if (vm != null)
+            if (viewModel != null)
                 ApplyViewModel();
         }
 
@@ -113,15 +99,18 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         protected virtual void ApplyViewModel()
         {
-            ViewModelBase vmb = VM!;
-            vmb.ShowInfoCallback = Dialogs.InfoMessage;
-            vmb.ShowWarningCallback = Dialogs.WarningMessage;
-            vmb.ShowErrorCallback = Dialogs.ErrorMessage;
-            vmb.ConfirmCallback = Dialogs.ConfirmMessage;
-            vmb.CancellableConfirmCallback = (msg, btn) => Dialogs.CancellableConfirmMessage(msg, btn switch { 0 => MessageBoxDefaultButton.Button1, 1 => MessageBoxDefaultButton.Button2, _ => MessageBoxDefaultButton.Button3 });
-            vmb.SynchronizedInvokeCallback = InvokeIfRequired;
+            ViewModelBase? vm = ViewModel;
+            if (vm == null)
+                return;
 
-            vmb.ViewLoaded();
+            vm.ShowInfoCallback = Dialogs.InfoMessage;
+            vm.ShowWarningCallback = Dialogs.WarningMessage;
+            vm.ShowErrorCallback = Dialogs.ErrorMessage;
+            vm.ConfirmCallback = Dialogs.ConfirmMessage;
+            vm.CancellableConfirmCallback = (msg, btn) => Dialogs.CancellableConfirmMessage(msg, btn switch { 0 => MessageBoxDefaultButton.Button1, 1 => MessageBoxDefaultButton.Button2, _ => MessageBoxDefaultButton.Button3 });
+            vm.SynchronizedInvokeCallback = InvokeIfRequired;
+
+            vm.ViewLoaded();
         }
 
         protected override void OnHandleCreated(EventArgs e)
@@ -133,7 +122,10 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         protected override void Dispose(bool disposing)
         {
             if (disposing)
+            {
                 CommandBindings.Dispose();
+                handleCreated.Dispose();
+            }
 
             base.Dispose(disposing);
         }

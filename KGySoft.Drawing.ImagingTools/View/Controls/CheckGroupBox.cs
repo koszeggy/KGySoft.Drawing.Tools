@@ -85,7 +85,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         #region Constructors
 
         [SuppressMessage("ReSharper", "LocalizableElement", Justification = "Whitespace")]
-        [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "ReSharper issue")]
         public CheckGroupBox()
         {
             InitializeComponent();
