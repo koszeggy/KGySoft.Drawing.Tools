@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: PalettePanel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2021 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2022 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -61,10 +61,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Events
 
-        internal event EventHandler? SelectedColorChanged
+        internal event EventHandler? SelectedColorIndexChanged
         {
-            add => Events.AddHandler(nameof(SelectedColorChanged), value);
-            remove => Events.RemoveHandler(nameof(SelectedColorChanged), value);
+            add => Events.AddHandler(nameof(SelectedColorIndexChanged), value);
+            remove => Events.RemoveHandler(nameof(SelectedColorIndexChanged), value);
         }
 
         #endregion
@@ -120,7 +120,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 else
                     Invalidate(GetColorRect(selectedColorIndex));
 
-                OnSelectedColorChanged(EventArgs.Empty);
+                OnSelectedColorIndexChanged(EventArgs.Empty);
             }
         }
 
@@ -437,7 +437,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             => selectedColorIndex >= firstVisibleColor
                 && selectedColorIndex < firstVisibleColor + (visibleRowCount << 4);
 
-        private void OnSelectedColorChanged(EventArgs e) => Events.GetHandler<EventHandler>(nameof(SelectedColorChanged))?.Invoke(this, e);
+        private void OnSelectedColorIndexChanged(EventArgs e) => Events.GetHandler<EventHandler>(nameof(SelectedColorIndexChanged))?.Invoke(this, e);
 
         #endregion
 

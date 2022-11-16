@@ -300,7 +300,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             sb.Length = 0;
             sb.Append(Res.InfoImage(GetTypeName(),
                 GetSize(),
-                currentImage.PixelFormat,
+                currentImage.PixelFormat == PixelFormatExtensions.Format32bppCmyk ? nameof(PixelFormatExtensions.Format32bppCmyk) : currentImage.PixelFormat.ToString<PixelFormat>(),
                 RawFormatToString(currentImage.RawFormat),
                 currentImage.HorizontalRes, currentImage.VerticalRes,
                 GetFrameInfo(false)));
@@ -1080,11 +1080,22 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             Debug.Assert(imageInfo.Type != ImageInfoType.None && !imageInfo.IsMetafile, "Non-metafile image is expected");
             ImageInfoBase image = GetCurrentImageInfo();
             Debug.Assert(image.Image is Bitmap, "Existing bitmap image is expected");
+            var bmp = (Bitmap)image.Image!;
+            Bitmap? clone = null;
 
             // must be in a lock because it can be in use in the UI (where it is also locked)
-            lock (image.Image!)
-                image.Image.RotateFlip(direction);
-            SetCurrentImage((Bitmap)image.Image);
+            lock (bmp)
+            {
+                if (bmp.PixelFormat != PixelFormatExtensions.Format32bppCmyk)
+                    bmp.RotateFlip(direction);
+                else
+                {
+                    clone = bmp.CloneCurrentFrame();
+                    clone.RotateFlip(direction);
+                }
+            }
+
+            SetCurrentImage(clone ?? bmp);
         }
 
         private void UpdateSmoothZoomingTooltip()

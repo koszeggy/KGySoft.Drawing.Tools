@@ -21,8 +21,18 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    internal sealed partial class DithererSelectorControl : MvvmBaseUserControl<DithererSelectorViewModel>
+    internal sealed partial class DithererSelectorControl : MvvmBaseUserControl
     {
+        #region Properties
+
+        internal new DithererSelectorViewModel? ViewModel
+        {
+            get => (DithererSelectorViewModel?)base.ViewModel;
+            set => base.ViewModel = value;
+        }
+
+        #endregion
+
         #region Constructors
 
         public DithererSelectorControl()

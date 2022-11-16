@@ -27,8 +27,14 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
-    internal partial class LanguageSettingsForm : MvvmBaseForm<LanguageSettingsViewModel>
+    internal partial class LanguageSettingsForm : MvvmBaseForm
     {
+        #region Properties
+
+        private new LanguageSettingsViewModel ViewModel => (LanguageSettingsViewModel)base.ViewModel;
+
+        #endregion
+
         #region Constructors
 
         #region Internal Constructors
@@ -68,7 +74,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private static void OnFormatCultureCommand(ICommandSource<ListControlConvertEventArgs> source)
         {
-            var culture = (CultureInfo)source.EventArgs.ListItem;
+            var culture = (CultureInfo)source.EventArgs.ListItem!;
             source.EventArgs.Value = $"{culture.EnglishName} ({culture.NativeName})";
         }
 

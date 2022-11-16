@@ -17,15 +17,17 @@
 
 using System.Windows.Forms;
 
+using KGySoft.Threading;
+
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
-    internal class DrawingProgressFooter : ProgressFooter<DrawingProgress>
+    internal class DrawingProgressFooter : ProgressFooter<AsyncProgress<DrawingOperation>>
     {
         #region Fields
 
-        private DrawingProgress? displayedProgress;
+        private AsyncProgress<DrawingOperation>? displayedProgress;
 
         #endregion
 
@@ -33,7 +35,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         protected override void UpdateProgress()
         {
-            DrawingProgress progress = Progress;
+            AsyncProgress<DrawingOperation> progress = Progress;
             if (progress == displayedProgress)
                 return;
 

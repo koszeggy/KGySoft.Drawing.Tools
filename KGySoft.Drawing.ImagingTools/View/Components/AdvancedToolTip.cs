@@ -41,7 +41,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
 
         #region Static Methods
 
-        private static void AdvancedToolTip_Draw(object sender, DrawToolTipEventArgs e) => e.DrawToolTipAdvanced();
+        private static void AdvancedToolTip_Draw(object? sender, DrawToolTipEventArgs e) => e.DrawToolTipAdvanced();
 
         #endregion
 

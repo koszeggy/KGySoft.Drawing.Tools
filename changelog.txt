@@ -6,6 +6,51 @@
 ===============================================================================
 
 ~~~~~~~~~
+! v3.0.0:
+~~~~~~~~~
+
+* KGySoft.Drawing.ImagingTools.exe
+==================================
+- Adjust Gamma: Adjusting the slider with the mouse not always worked.
+- Supporting CMYK images
+- Fixing language initialization from custom location
+
++ API changes:
+  + KGySoft.Drawing.ImagingTools.Model namespace:
+    + New CustomBitmapInfo class
+    + New CustomColorInfo class
+    + New CustomPaletteInfo class
+  + KGySoft.Drawing.ImagingTools.ViewModel namespace:
+    + ViewModelFactory class:
+      + New FromPalette overload
+      + New FromCustomBitmap method
+      + New FromCustomColor method
+      + New FromCustomPalette method
+
+! KGySoft.Drawing.DebuggerVisualizers.dll
+=========================================
+! The actual debugger visualizers have been extracted into a new assembly.
+- Supporting CMYK images
+
++ API changes:
+  + New KGySoft.Drawing.DebuggerVisualizers.Serialization namespace
+    + New CustomBitmapSerializationInfoBase class for serializing custom bitmaps
+  + DebuggerHelper class:
+    + New DebugCustomBitmap method
+    + New DebugCustomColor method
+    + New DebugCustomPalette method
+
++ KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll
+=================================================
++ A new assembly. The original debugger visualizers of KGySoft.Drawing.DebuggerVisualizers have been
+  extracted into this assembly to support GDI+ (System.Drawing) types.
+
++ KGySoft.Drawing.DebuggerVisualizers.Wpf.dll
+=============================================
++ A new debugger visualizer assembly to support WPF types.
+
+
+~~~~~~~~~
 * v2.6.0:
 ~~~~~~~~~
 

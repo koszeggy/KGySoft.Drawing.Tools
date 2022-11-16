@@ -252,7 +252,6 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         [SuppressMessage("ReSharper", "PossibleUnintendedReferenceComparison",
             Justification = "The dimension variable is compared with the references we set earlier")]
-        [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "ReSharper issue")]
         private void InitFromImage(Image? image, bool cloneFrames)
         {
             if (image == null)

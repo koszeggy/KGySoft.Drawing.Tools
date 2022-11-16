@@ -26,6 +26,7 @@ using KGySoft.CoreLibraries;
 using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Reflection;
+using KGySoft.Threading;
 
 #endregion
 
@@ -569,7 +570,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
                             // not using Task and await we want to be compatible with .NET 3.5
                             IAsyncResult asyncResult = src.BeginDrawInto(dst,
-                                new Rectangle(Point.Empty, task.SourceImage!.Size),
+                                new Rectangle(Point.Empty, task.SourceImage.Size),
                                 new Rectangle(Point.Empty, task.Size), 
                                 asyncConfig: new AsyncConfig
                                 {

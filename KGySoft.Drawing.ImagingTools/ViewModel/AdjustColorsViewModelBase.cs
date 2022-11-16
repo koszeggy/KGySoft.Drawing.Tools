@@ -121,16 +121,17 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Internal Properties
 
         internal ColorChannels ColorChannels { get => Get(ColorChannels.Rgb); set => Set(value); }
-        internal float Value { get => Get(DefaultValue); set => Set(value); }
-        internal virtual float MinValue => -1f;
-        internal virtual float MaxValue => 1f;
+        internal int Value { get => Get(DefaultValue); set => Set(value); }
+        internal virtual int MinValue => -100;
+        internal virtual int MaxValue => 100;
 
         #endregion
 
         #region Protected Properties
 
-        protected virtual float DefaultValue => 0f;
+        protected virtual int DefaultValue => 0;
         protected override bool AreSettingsChanged => !Value.Equals(DefaultValue) || ColorChannels != ColorChannels.Rgb;
+        protected float ValueF => Value / 100f;
 
         #endregion
 
@@ -151,9 +152,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         protected override ValidationResultsCollection DoValidation()
         {
             ValidationResultsCollection result = base.DoValidation();
-            float value = Value;
-            float min = MinValue;
-            float max = MaxValue;
+            int value = Value;
+            int min = MinValue;
+            int max = MaxValue;
             if (value < min || value > max)
                 result.AddError(nameof(Value), Res.ErrorMessageValueMustBeBetween(min, max));
             return result;
@@ -164,7 +165,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         protected override bool MatchesSettings(GenerateTaskBase task)
         {
             var t = (AdjustColorsTaskBase)task;
-            return t.Value.Equals(Value) && t.ColorChannels == ColorChannels;
+            return t.Value.Equals(ValueF) && t.ColorChannels == ColorChannels;
         }
 
         protected override bool MatchesOriginal(GenerateTaskBase task)

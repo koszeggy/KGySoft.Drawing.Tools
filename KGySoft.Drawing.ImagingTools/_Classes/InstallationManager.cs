@@ -49,9 +49,13 @@ namespace KGySoft.Drawing.ImagingTools
         private static readonly string[] files =
         {
             "KGySoft.Drawing.ImagingTools.exe",
+            "KGySoft.Drawing.Core.dll",
             "KGySoft.Drawing.dll",
+            "KGySoft.Drawing.Wpf.dll",
             "KGySoft.CoreLibraries.dll",
-            debuggerVisualizerFileName
+            "KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll",
+            "KGySoft.Drawing.DebuggerVisualizers.Wpf.dll",
+            debuggerVisualizerFileName,
         };
 
         private static InstallationInfo? availableVersion;
@@ -143,6 +147,7 @@ namespace KGySoft.Drawing.ImagingTools
                 }
                 catch (Exception e) when (!e.IsCritical())
                 {
+                    Uninstall(directory, out error);
                     error = Res.ErrorMessageCouldNotCopyFile(file, e.Message);
                     return;
                 }

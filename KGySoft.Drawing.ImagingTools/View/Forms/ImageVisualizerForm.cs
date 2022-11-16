@@ -36,8 +36,14 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
-    internal partial class ImageVisualizerForm : MvvmBaseForm<ImageVisualizerViewModel>
+    internal partial class ImageVisualizerForm : MvvmBaseForm
     {
+        #region Properties
+
+        private new ImageVisualizerViewModel ViewModel => (ImageVisualizerViewModel)base.ViewModel;
+
+        #endregion
+
         #region Constructors
 
         #region Internal Constructors

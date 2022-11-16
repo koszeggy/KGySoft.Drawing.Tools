@@ -23,6 +23,7 @@ using System.Threading;
 
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.Threading;
 
 #endregion
 
@@ -86,7 +87,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommandState ResetCommandState => Get(() => new CommandState { Enabled = false });
 
         internal bool IsGenerating { get => Get<bool>(); set => Set(value); }
-        internal DrawingProgress Progress { get => Get<DrawingProgress>(); set => Set(value); }
+        internal AsyncProgress<DrawingOperation> Progress { get => Get<AsyncProgress<DrawingOperation>>(); set => Set(value); }
 
         #endregion
 
@@ -248,7 +249,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             var task = (GenerateTaskBase)state;
 
             // This is a fairly large lock ensuring that only one generate task is running at once.
-            // Instead of this sync we could await the canceled task before queuing a new one but then the UI can freeze for some moments.
+            // Instead of this we could await the canceled task before queuing a new one but then the UI can freeze for some moments.
             // (It wouldn't cause deadlocks because here every TryInvokeSync is after completing the task.)
             // But many threads can be queued, which all stop here before acquiring the lock. To prevent spawning too many threads we
             // don't use a regular lock here but a bit active spinning that can exit without taking the lock if the task gets outdated.
@@ -276,7 +277,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 Debug.Assert(activeTask == null);
 
                 // resetting possible previous progress
-                drawingProgressManager?.Report(default);
+                drawingProgressManager?.New(DrawingOperation.UndefinedProcessing);
 
                 // from now on the task can be canceled
                 activeTask = task;
@@ -362,7 +363,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
         }
 
-        private void TrySetProgress(DrawingProgress progress)
+        private void TrySetProgress(AsyncProgress<DrawingOperation> progress)
         {
             if (IsDisposed)
                 return;

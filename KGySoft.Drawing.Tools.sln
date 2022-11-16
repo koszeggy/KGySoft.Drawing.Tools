@@ -5,16 +5,13 @@ VisualStudioVersion = 17.0.31717.71
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KGySoft.Drawing.ImagingTools", "KGySoft.Drawing.ImagingTools\KGySoft.Drawing.ImagingTools.csproj", "{9080594A-56AA-41E5-9D9A-A23C39A1648A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KGySoft.Drawing.DebuggerVisualizers", "KGySoft.Drawing.DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.csproj", "{6415C328-A2C2-49C3-B113-B3B8C4E09C22}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CA8E7B44-9FA9-4ABD-A337-4C930802F22E}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution Items", "_Solution Items", "{CA8E7B44-9FA9-4ABD-A337-4C930802F22E}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		changelog.txt = changelog.txt
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KGySoft.Drawing.DebuggerVisualizers.Test", "KGySoft.Drawing.DebuggerVisualizers.Test\KGySoft.Drawing.DebuggerVisualizers.Test.csproj", "{A7629EA9-0A40-4B26-98CA-5EF60BED4657}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VSIX", "VSIX", "{21E5CF27-6EA7-4333-9D70-558054B58C22}"
 EndProject
@@ -24,12 +21,23 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KGySoft.Drawing.DebuggerVis
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KGySoft.Drawing.DebuggerVisualizers.Package.x64", "VSIX\KGySoft.Drawing.DebuggerVisualizers.Package.x64\KGySoft.Drawing.DebuggerVisualizers.Package.x64.csproj", "{B8A718CB-1F21-4E26-98CF-34CB27D2CD25}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DebuggerVisualizers", "DebuggerVisualizers", "{3E3D796B-752E-45EA-9A24-50A40141EFC1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GdiPlus", "GdiPlus", "{7F4C3787-BB13-458C-B333-767B802C6DBF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Wpf", "Wpf", "{B7D59D6F-2A2B-45EE-9D49-09236CFB7A86}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KGySoft.Drawing.DebuggerVisualizers.Wpf", "DebuggerVisualizers\Wpf\KGySoft.Drawing.DebuggerVisualizers.Wpf\KGySoft.Drawing.DebuggerVisualizers.Wpf.csproj", "{01A30ABC-DE70-4679-B9F9-C0FD0646C44E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KGySoft.Drawing.DebuggerVisualizers.GdiPlus", "DebuggerVisualizers\GdiPlus\KGySoft.Drawing.DebuggerVisualizers.GdiPlus\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.csproj", "{6FDA8750-E12B-4DB0-8208-B0014D399F2D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test", "DebuggerVisualizers\GdiPlus\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.csproj", "{82F140D9-ED5D-4E64-A8E4-8F556FB88AC8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KGySoft.Drawing.DebuggerVisualizers", "DebuggerVisualizers\_Common\KGySoft.Drawing.DebuggerVisualizers.csproj", "{65BEDD4F-6BD0-44CB-9E61-99FEB6A600F0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KGySoft.Drawing.DebuggerVisualizers.Wpf.Test", "DebuggerVisualizers\Wpf\KGySoft.Drawing.DebuggerVisualizers.Wpf.Test\KGySoft.Drawing.DebuggerVisualizers.Wpf.Test.csproj", "{868382C1-9C39-4793-94CD-802D00E78B94}"
+EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		VSIX\KGySoft.Drawing.DebuggerVisualizers.Package\KGySoft.Drawing.DebuggerVisualizers.Package.projitems*{5fb996a6-1344-4297-bbf5-6ced26d5a699}*SharedItemsImports = 13
-		VSIX\KGySoft.Drawing.DebuggerVisualizers.Package\KGySoft.Drawing.DebuggerVisualizers.Package.projitems*{6c5b3a51-884f-456b-8e36-071813d2d5ec}*SharedItemsImports = 4
-		VSIX\KGySoft.Drawing.DebuggerVisualizers.Package\KGySoft.Drawing.DebuggerVisualizers.Package.projitems*{b8a718cb-1f21-4e26-98cf-34cb27d2cd25}*SharedItemsImports = 4
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x86 = Debug|x86
@@ -45,22 +53,6 @@ Global
 		{9080594A-56AA-41E5-9D9A-A23C39A1648A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9080594A-56AA-41E5-9D9A-A23C39A1648A}.Release|x86.ActiveCfg = Release|Any CPU
 		{9080594A-56AA-41E5-9D9A-A23C39A1648A}.Release|x86.Build.0 = Release|Any CPU
-		{6415C328-A2C2-49C3-B113-B3B8C4E09C22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6415C328-A2C2-49C3-B113-B3B8C4E09C22}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6415C328-A2C2-49C3-B113-B3B8C4E09C22}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{6415C328-A2C2-49C3-B113-B3B8C4E09C22}.Debug|x86.Build.0 = Debug|Any CPU
-		{6415C328-A2C2-49C3-B113-B3B8C4E09C22}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6415C328-A2C2-49C3-B113-B3B8C4E09C22}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6415C328-A2C2-49C3-B113-B3B8C4E09C22}.Release|x86.ActiveCfg = Release|Any CPU
-		{6415C328-A2C2-49C3-B113-B3B8C4E09C22}.Release|x86.Build.0 = Release|Any CPU
-		{A7629EA9-0A40-4B26-98CA-5EF60BED4657}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A7629EA9-0A40-4B26-98CA-5EF60BED4657}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A7629EA9-0A40-4B26-98CA-5EF60BED4657}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{A7629EA9-0A40-4B26-98CA-5EF60BED4657}.Debug|x86.Build.0 = Debug|Any CPU
-		{A7629EA9-0A40-4B26-98CA-5EF60BED4657}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A7629EA9-0A40-4B26-98CA-5EF60BED4657}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A7629EA9-0A40-4B26-98CA-5EF60BED4657}.Release|x86.ActiveCfg = Release|Any CPU
-		{A7629EA9-0A40-4B26-98CA-5EF60BED4657}.Release|x86.Build.0 = Release|Any CPU
 		{6C5B3A51-884F-456B-8E36-071813D2D5EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6C5B3A51-884F-456B-8E36-071813D2D5EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C5B3A51-884F-456B-8E36-071813D2D5EC}.Debug|x86.ActiveCfg = Debug|x86
@@ -77,6 +69,46 @@ Global
 		{B8A718CB-1F21-4E26-98CF-34CB27D2CD25}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B8A718CB-1F21-4E26-98CF-34CB27D2CD25}.Release|x86.ActiveCfg = Release|x86
 		{B8A718CB-1F21-4E26-98CF-34CB27D2CD25}.Release|x86.Build.0 = Release|x86
+		{01A30ABC-DE70-4679-B9F9-C0FD0646C44E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01A30ABC-DE70-4679-B9F9-C0FD0646C44E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01A30ABC-DE70-4679-B9F9-C0FD0646C44E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{01A30ABC-DE70-4679-B9F9-C0FD0646C44E}.Debug|x86.Build.0 = Debug|Any CPU
+		{01A30ABC-DE70-4679-B9F9-C0FD0646C44E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01A30ABC-DE70-4679-B9F9-C0FD0646C44E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01A30ABC-DE70-4679-B9F9-C0FD0646C44E}.Release|x86.ActiveCfg = Release|Any CPU
+		{01A30ABC-DE70-4679-B9F9-C0FD0646C44E}.Release|x86.Build.0 = Release|Any CPU
+		{6FDA8750-E12B-4DB0-8208-B0014D399F2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FDA8750-E12B-4DB0-8208-B0014D399F2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FDA8750-E12B-4DB0-8208-B0014D399F2D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6FDA8750-E12B-4DB0-8208-B0014D399F2D}.Debug|x86.Build.0 = Debug|Any CPU
+		{6FDA8750-E12B-4DB0-8208-B0014D399F2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FDA8750-E12B-4DB0-8208-B0014D399F2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FDA8750-E12B-4DB0-8208-B0014D399F2D}.Release|x86.ActiveCfg = Release|Any CPU
+		{6FDA8750-E12B-4DB0-8208-B0014D399F2D}.Release|x86.Build.0 = Release|Any CPU
+		{82F140D9-ED5D-4E64-A8E4-8F556FB88AC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82F140D9-ED5D-4E64-A8E4-8F556FB88AC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82F140D9-ED5D-4E64-A8E4-8F556FB88AC8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{82F140D9-ED5D-4E64-A8E4-8F556FB88AC8}.Debug|x86.Build.0 = Debug|Any CPU
+		{82F140D9-ED5D-4E64-A8E4-8F556FB88AC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82F140D9-ED5D-4E64-A8E4-8F556FB88AC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82F140D9-ED5D-4E64-A8E4-8F556FB88AC8}.Release|x86.ActiveCfg = Release|Any CPU
+		{82F140D9-ED5D-4E64-A8E4-8F556FB88AC8}.Release|x86.Build.0 = Release|Any CPU
+		{65BEDD4F-6BD0-44CB-9E61-99FEB6A600F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65BEDD4F-6BD0-44CB-9E61-99FEB6A600F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65BEDD4F-6BD0-44CB-9E61-99FEB6A600F0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{65BEDD4F-6BD0-44CB-9E61-99FEB6A600F0}.Debug|x86.Build.0 = Debug|Any CPU
+		{65BEDD4F-6BD0-44CB-9E61-99FEB6A600F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65BEDD4F-6BD0-44CB-9E61-99FEB6A600F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65BEDD4F-6BD0-44CB-9E61-99FEB6A600F0}.Release|x86.ActiveCfg = Release|Any CPU
+		{65BEDD4F-6BD0-44CB-9E61-99FEB6A600F0}.Release|x86.Build.0 = Release|Any CPU
+		{868382C1-9C39-4793-94CD-802D00E78B94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{868382C1-9C39-4793-94CD-802D00E78B94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{868382C1-9C39-4793-94CD-802D00E78B94}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{868382C1-9C39-4793-94CD-802D00E78B94}.Debug|x86.Build.0 = Debug|Any CPU
+		{868382C1-9C39-4793-94CD-802D00E78B94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{868382C1-9C39-4793-94CD-802D00E78B94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{868382C1-9C39-4793-94CD-802D00E78B94}.Release|x86.ActiveCfg = Release|Any CPU
+		{868382C1-9C39-4793-94CD-802D00E78B94}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -85,8 +117,20 @@ Global
 		{5FB996A6-1344-4297-BBF5-6CED26D5A699} = {21E5CF27-6EA7-4333-9D70-558054B58C22}
 		{6C5B3A51-884F-456B-8E36-071813D2D5EC} = {21E5CF27-6EA7-4333-9D70-558054B58C22}
 		{B8A718CB-1F21-4E26-98CF-34CB27D2CD25} = {21E5CF27-6EA7-4333-9D70-558054B58C22}
+		{7F4C3787-BB13-458C-B333-767B802C6DBF} = {3E3D796B-752E-45EA-9A24-50A40141EFC1}
+		{B7D59D6F-2A2B-45EE-9D49-09236CFB7A86} = {3E3D796B-752E-45EA-9A24-50A40141EFC1}
+		{01A30ABC-DE70-4679-B9F9-C0FD0646C44E} = {B7D59D6F-2A2B-45EE-9D49-09236CFB7A86}
+		{6FDA8750-E12B-4DB0-8208-B0014D399F2D} = {7F4C3787-BB13-458C-B333-767B802C6DBF}
+		{82F140D9-ED5D-4E64-A8E4-8F556FB88AC8} = {7F4C3787-BB13-458C-B333-767B802C6DBF}
+		{65BEDD4F-6BD0-44CB-9E61-99FEB6A600F0} = {3E3D796B-752E-45EA-9A24-50A40141EFC1}
+		{868382C1-9C39-4793-94CD-802D00E78B94} = {B7D59D6F-2A2B-45EE-9D49-09236CFB7A86}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1C6D13FB-5E94-4260-96B6-74BDDFA8F815}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		VSIX\KGySoft.Drawing.DebuggerVisualizers.Package\KGySoft.Drawing.DebuggerVisualizers.Package.projitems*{5fb996a6-1344-4297-bbf5-6ced26d5a699}*SharedItemsImports = 13
+		VSIX\KGySoft.Drawing.DebuggerVisualizers.Package\KGySoft.Drawing.DebuggerVisualizers.Package.projitems*{6c5b3a51-884f-456b-8e36-071813d2d5ec}*SharedItemsImports = 4
+		VSIX\KGySoft.Drawing.DebuggerVisualizers.Package\KGySoft.Drawing.DebuggerVisualizers.Package.projitems*{b8a718cb-1f21-4e26-98cf-34cb27d2cd25}*SharedItemsImports = 4
 	EndGlobalSection
 EndGlobal

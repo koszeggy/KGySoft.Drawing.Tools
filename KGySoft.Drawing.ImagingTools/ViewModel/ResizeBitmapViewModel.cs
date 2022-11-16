@@ -24,6 +24,7 @@ using System.Threading;
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.Imaging;
+using KGySoft.Threading;
 
 #endregion
 

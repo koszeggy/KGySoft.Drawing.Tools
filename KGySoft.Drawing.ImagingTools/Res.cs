@@ -371,16 +371,7 @@ namespace KGySoft.Drawing.ImagingTools
             DefaultLanguage = (Attribute.GetCustomAttribute(typeof(Res).Assembly, typeof(NeutralResourcesLanguageAttribute)) is NeutralResourcesLanguageAttribute attr
                 ? CultureInfo.GetCultureInfo(attr.CultureName)
                 : CultureInfo.InvariantCulture).GetClosestNeutralCulture();
-            DrawingModule.Initialize();
-
-            bool allowResXResources = Configuration.AllowResXResources;
-            displayLanguage = allowResXResources
-                ? Configuration.UseOSLanguage ? OSLanguage : Configuration.DisplayLanguage // here, allowing specific languages, too
-                : DefaultLanguage;
-
-            if (Equals(displayLanguage, CultureInfo.InvariantCulture) || (!Equals(displayLanguage, DefaultLanguage) && !ResHelper.GetAvailableLanguages().Contains(displayLanguage)))
-                displayLanguage = DefaultLanguage;
-            DisplayLanguage = displayLanguage;
+            DrawingModule.Initialize(); // This implicitly initializes DrawingCoreModule, too
 
             string? desiredResXPath = Configuration.ResXResourcesCustomPath;
             if (PathHelper.HasInvalidChars(desiredResXPath))
@@ -397,7 +388,16 @@ namespace KGySoft.Drawing.ImagingTools
                     ResourcesDir = null;
                 }
             }
-             
+
+            bool allowResXResources = Configuration.AllowResXResources;
+            displayLanguage = allowResXResources
+                ? Configuration.UseOSLanguage ? OSLanguage : Configuration.DisplayLanguage // here, allowing specific languages, too
+                : DefaultLanguage;
+
+            if (Equals(displayLanguage, CultureInfo.InvariantCulture) || (!Equals(displayLanguage, DefaultLanguage) && !ResHelper.GetAvailableLanguages().Contains(displayLanguage)))
+                displayLanguage = DefaultLanguage;
+            DisplayLanguage = displayLanguage;
+
             LanguageSettings.DynamicResourceManagersSource = allowResXResources ? ResourceManagerSources.CompiledAndResX : ResourceManagerSources.CompiledOnly;
         }
 
@@ -482,7 +482,7 @@ namespace KGySoft.Drawing.ImagingTools
         internal static string TitleSize(Size size) => Get("Title_SizeFormat", size.Width, size.Height);
 
         /// <summary>Palette Color Count: {0}</summary>
-        internal static string TitlePaletteCount(int count) => Get("Title_ColorCountFormat", count);
+        internal static string TitlePaletteCount(int count) => Get("Title_PaletteCountFormat", count);
 
         /// <summary>Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2}x{3}}}</summary>
         internal static string TitleVisibleClip(Rectangle rect) => Get("Title_VisibleClipFormat", rect.X, rect.Y, rect.Width, rect.Height);
@@ -491,10 +491,13 @@ namespace KGySoft.Drawing.ImagingTools
         internal static string TitleOriginalVisibleClip(Rectangle rect) => Get("Title_OriginalVisibleClipFormat", rect.X, rect.Y, rect.Width, rect.Height);
 
         /// <summary>Color: {0}</summary>
-        internal static string TitleColor(Color color) => Get("Title_ColorFormat", color.Name);
+        internal static string TitleColor(string colorName) => Get("Title_ColorFormat", colorName);
 
         /// <summary>Edit Resources – {0}</summary>
         internal static string TitleEditResources(string langName) => Get("Title_EditResourcesFormat", langName);
+
+        /// <summary>Color Count: {0}</summary>
+        internal static string TitleColorCount(int count) => Get("Title_ColorCountFormat", count);
 
         #endregion
 
@@ -524,7 +527,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// {7}Pixel Format: {3}
         /// Raw format: {4}
         /// Resolution: {5}x{6} DPI</summary>
-        internal static string InfoImage(string type, Size size, PixelFormat pixelFormat, string rawFormat, float hres, float vres, string frameInfo)
+        internal static string InfoImage(string type, Size size, string pixelFormat, string rawFormat, float hres, float vres, string frameInfo)
             => Get("InfoText_ImageFormat", type, size.Width, size.Height, pixelFormat, rawFormat, hres, vres, frameInfo);
 
         /// <summary>Size: {0}x{1} pixels
@@ -532,6 +535,10 @@ namespace KGySoft.Drawing.ImagingTools
         /// Pixel Format: {3}</summary>
         internal static string InfoBitmapData(Size size, int stride, PixelFormat pixelFormat)
             => Get("InfoText_BitmapDataFormat", size.Width, size.Height, stride, pixelFormat);
+
+        /// <summary>Properties:
+        /// {0}</summary>
+        internal static string InfoCustomProperties(string customProperties) => Get("InfoText_CustomPropertiesFormat", customProperties);
 
         /// <summary>Unknown format: {0}</summary>
         internal static string InfoUnknownFormat(Guid format) => Get("InfoText_UnknownFormat", format);

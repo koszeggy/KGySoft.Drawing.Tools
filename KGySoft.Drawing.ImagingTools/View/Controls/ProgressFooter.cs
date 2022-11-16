@@ -47,7 +47,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         #region Internal Properties
         
         [SuppressMessage("ReSharper", "LocalizableElement", Justification = "Whitespace")]
-        [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "ReSharper issue")]
         internal virtual bool ProgressVisible
         {
             get => progressVisible;

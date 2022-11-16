@@ -26,9 +26,15 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    internal partial class PreviewImageControl : MvvmBaseUserControl<PreviewImageViewModel>
+    internal partial class PreviewImageControl : MvvmBaseUserControl
     {
         #region Properties
+
+        internal new PreviewImageViewModel? ViewModel
+        {
+            get => (PreviewImageViewModel?)base.ViewModel;
+            set => base.ViewModel = value;
+        }
 
         internal Image? Image
         {

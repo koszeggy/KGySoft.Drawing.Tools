@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <!--<TargetFrameworks>net35;net40;net45;net5.0-windows</TargetFrameworks>-->
-    <TargetFrameworks>net45</TargetFrameworks>
+    <TargetFrameworks>net35;net40;net45;net5.0-windows</TargetFrameworks>
+    <!--<TargetFrameworks>net45;net5.0-windows</TargetFrameworks>-->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>KGySoft.Drawing.ImagingTools</RootNamespace>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
@@ -18,15 +18,16 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Nullable>enable</Nullable>
 
-    <!--Suppression NETSDK1138: The target framework 'netcoreapp3.0' is out of support - this is not just an application but also a library so targeting the lowest possible versions is intended -->
-    <NoWarn>$(NoWarn);NETSDK1138</NoWarn>
+    <!--Suppressions
+        - NETSDK1138: The target framework 'net5.0-windows' is out of support - this is not just an application but also a library with public API so targeting the lowest possible versions is intended
+        - WFAC010: Remove high DPI settings from app.manifest and configure via Application.SetHighDpiMode - as targeting many frameworks handling it manually everywhere is intended. Otherwise, it would cause conflicts, eg. scaling sizes multiple times, etc. -->
+    <NoWarn>$(NoWarn);NETSDK1138;WFAC010</NoWarn>
   </PropertyGroup>
 
   <!--Common package references-->
   <ItemGroup>
-    <PackageReference Include="KGySoft.CoreLibraries" Version="6.0.0" />
-    <PackageReference Include="KGySoft.Drawing" Version="6.0.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
+    <PackageReference Include="KGySoft.Drawing" Version="7.0.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.0-preview1.22464.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -40,8 +41,8 @@
   </ItemGroup>
 
   <!--.NET-only references-->
-  <ItemGroup Condition="'$(TargetFramework)'=='net5.0-windows'">
-    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
+  <ItemGroup Condition="'$(TargetFramework)'=='net6.0-windows'">
+    <PackageReference Include="System.Drawing.Common" Version="7.0.0-rc.2.22472.3 " />
   </ItemGroup>
 
   <ItemGroup>

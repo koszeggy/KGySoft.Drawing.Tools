@@ -28,8 +28,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
     {
         #region Properties
 
-        // this would not be needed if designer had better generics support
-        private ColorSpaceViewModel VM => (ColorSpaceViewModel)ViewModel;
+        private new ColorSpaceViewModel ViewModel => (ColorSpaceViewModel)base.ViewModel;
 
         #endregion
 
@@ -101,24 +100,24 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private void InitPropertyBindings()
         {
             // simple initializations rather than bindings because these will not change:
-            cmbPixelFormat.DataSource = VM.PixelFormats;
-            quantizerSelector.ViewModel = VM.QuantizerSelectorViewModel;
-            dithererSelector.ViewModel = VM.DithererSelectorViewModel;
+            cmbPixelFormat.DataSource = ViewModel.PixelFormats;
+            quantizerSelector.ViewModel = ViewModel.QuantizerSelectorViewModel;
+            dithererSelector.ViewModel = ViewModel.DithererSelectorViewModel;
 
-            // VM.ChangePixelFormat <-> gbPixelFormat.Checked
-            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.ChangePixelFormat), gbPixelFormat, nameof(gbPixelFormat.Checked));
+            // ViewModel.ChangePixelFormat <-> gbPixelFormat.Checked
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.ChangePixelFormat), gbPixelFormat, nameof(gbPixelFormat.Checked));
 
-            // VM.SelectedPixelFormat -> cmbPixelFormat.SelectedItem (cannot use two-way for SelectedItem because there is no SelectedItemChanged event)
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(VM.PixelFormat), nameof(cmbPixelFormat.SelectedItem), cmbPixelFormat);
+            // ViewModel.SelectedPixelFormat -> cmbPixelFormat.SelectedItem (cannot use two-way for SelectedItem because there is no SelectedItemChanged event)
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.PixelFormat), nameof(cmbPixelFormat.SelectedItem), cmbPixelFormat);
 
-            // cmbPixelFormat.SelectedValue -> VM.SelectedPixelFormat (cannot use two-way for SelectedValue because ValueMember is not set)
-            CommandBindings.AddPropertyBinding(cmbPixelFormat, nameof(cmbPixelFormat.SelectedValue), nameof(VM.PixelFormat), ViewModel);
+            // cmbPixelFormat.SelectedValue -> ViewModel.SelectedPixelFormat (cannot use two-way for SelectedValue because ValueMember is not set)
+            CommandBindings.AddPropertyBinding(cmbPixelFormat, nameof(cmbPixelFormat.SelectedValue), nameof(ViewModel.PixelFormat), ViewModel);
 
-            // VM.UseQuantizer <-> gbQuantizer.Checked
-            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.UseQuantizer), gbQuantizer, nameof(gbQuantizer.Checked));
+            // ViewModel.UseQuantizer <-> gbQuantizer.Checked
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.UseQuantizer), gbQuantizer, nameof(gbQuantizer.Checked));
 
-            // VM.UseDitherer <-> gbDitherer.Checked
-            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(VM.UseDitherer), gbDitherer, nameof(gbDitherer.Checked));
+            // ViewModel.UseDitherer <-> gbDitherer.Checked
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.UseDitherer), gbDitherer, nameof(gbDitherer.Checked));
         }
 
         #endregion
