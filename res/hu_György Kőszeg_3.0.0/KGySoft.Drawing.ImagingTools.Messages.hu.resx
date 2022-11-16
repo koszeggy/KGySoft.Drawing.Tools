@@ -1,0 +1,908 @@
+<?xml version="1.0"?>
+<root>
+  <data name="AdjustBrightnessForm.Text">
+    <value>Fényerő</value>
+  </data>
+  <data name="AdjustContrastForm.Text">
+    <value>Kontraszt</value>
+  </data>
+  <data name="AdjustGammaForm.Text">
+    <value>Gamma</value>
+  </data>
+  <data name="btnAbout.Text">
+    <value>Névjegy</value>
+  </data>
+  <data name="btnAntiAlias.Text">
+    <value>Átméretezett kép simítása (Alt+S)</value>
+  </data>
+  <data name="btnApply.Text">
+    <value>&amp;Alkalmaz</value>
+  </data>
+  <data name="btnCancel.Text">
+    <value>&amp;Mégse</value>
+  </data>
+  <data name="btnClear.Text">
+    <value>Törlés (Ctrl+Del)</value>
+  </data>
+  <data name="btnClose.Text">
+    <value>&amp;Bezár</value>
+  </data>
+  <data name="btnColorSettings.Text">
+    <value>Színbeállítások</value>
+  </data>
+  <data name="btnConfiguration.ToolTipText">
+    <value>Beállítások</value>
+  </data>
+  <data name="btnCrop.Text">
+    <value>Csak a nem levágott látható tartomány mutatása</value>
+  </data>
+  <data name="btnDownload.Text">
+    <value>Letöltés</value>
+  </data>
+  <data name="btnDownloadResources.Text">
+    <value>Nyelvi fájlok &amp;letöltése...</value>
+  </data>
+  <data name="btnEdit.Text">
+    <value>Aktuális kép/képkocka/oldal szerkesztése</value>
+  </data>
+  <data name="btnEditResources.Text">
+    <value>&amp;Szövegek szerkeztése...</value>
+  </data>
+  <data name="btnHighlightClip.Text">
+    <value>Látható vágási tartomány kiemelése</value>
+  </data>
+  <data name="btnInstall.Text">
+    <value>Telepítés</value>
+  </data>
+  <data name="btnNext.Text">
+    <value>Következő kép (Shift+Jobbra)</value>
+  </data>
+  <data name="btnOK.Text">
+    <value>&amp;OK</value>
+  </data>
+  <data name="btnOpen.Text">
+    <value>Megnyitás... (Ctrl+O)</value>
+  </data>
+  <data name="btnPrev.Text">
+    <value>Előző kép (Shift+Balra)</value>
+  </data>
+  <data name="btnRemove.Text">
+    <value>Eltávolítás</value>
+  </data>
+  <data name="btnReset.Text">
+    <value>Vissza</value>
+  </data>
+  <data name="btnSave.Text">
+    <value>Mentés másként... (Ctrl+S)</value>
+  </data>
+  <data name="btnSelectColor.Text">
+    <value>Szín kiválasztása</value>
+  </data>
+  <data name="btnShowOriginal.Text">
+    <value>Eredeti mutatása</value>
+  </data>
+  <data name="btnZoom.Text">
+    <value>Auto nagyítás (Alt+Z) / Nagyítási lehetőségek</value>
+  </data>
+  <data name="Button.1">
+    <value>&amp;OK</value>
+  </data>
+  <data name="Button.14150">
+    <value>Új &amp;mappa</value>
+  </data>
+  <data name="Button.2">
+    <value>&amp;Mégse</value>
+  </data>
+  <data name="Button.6">
+    <value>&amp;Igen</value>
+  </data>
+  <data name="Button.7">
+    <value>&amp;Nem</value>
+  </data>
+  <data name="Button.712">
+    <value>&amp;Hozzáadás az egyedi színekhez</value>
+  </data>
+  <data name="Button.719">
+    <value>Egyedi színek &amp;definiálása &gt;&gt;</value>
+  </data>
+  <data name="chbBlue.Text">
+    <value>Kék</value>
+  </data>
+  <data name="chbExistingResourcesOnly.Text">
+    <value>Csak a fordítással rendelkező nyelvek listázása</value>
+  </data>
+  <data name="chbExistingResourcesOnly.ToolTipText">
+    <value>Ha ki van jelölve, csak a fordítással rendelkező nyelvek jelennek meg a listában. A kijelölés törlésével bármelyik nyelvhez generálhatók nyelvi fájlok.
+Az újonnan generált nyelvi fájlok „[T]” prefixszel ellátott angol nyelvű szövegeket fognak tartalmazni, melyek lefordíthatók a „Szövegek szerkesztése” gombra kattintással.</value>
+  </data>
+  <data name="chbGreen.Text">
+    <value>Zöld</value>
+  </data>
+  <data name="chbMaintainAspectRatio.Text">
+    <value>Oldalarány &amp;megőrzése</value>
+  </data>
+  <data name="chbRed.Text">
+    <value>Piros</value>
+  </data>
+  <data name="chbUseOSLanguage.Text">
+    <value>Az operációs rendszer nyelvének használata</value>
+  </data>
+  <data name="chbUseOSLanguage.ToolTipText">
+    <value>Ha ki van jelölve, az operációs rendszer nyelve lesz kiválasztva. Az esetleg nem létező nyelvi fájlok automatikusan legenerálódnak.</value>
+  </data>
+  <data name="colAuthor.HeaderText">
+    <value>Író</value>
+  </data>
+  <data name="colDescription.HeaderText">
+    <value>Leírás</value>
+  </data>
+  <data name="colImagingToolsVersion.HeaderText">
+    <value>Imaging Tools verzió</value>
+  </data>
+  <data name="colLanguage.HeaderText">
+    <value>Nyelv</value>
+  </data>
+  <data name="ColorDialog.Static.-1">
+    <value>&amp;Alapszínek:</value>
+  </data>
+  <data name="ColorDialog.Static.-2">
+    <value>&amp;Egyedi színek:</value>
+  </data>
+  <data name="colOriginalText.HeaderText">
+    <value>Eredeti szöveg</value>
+  </data>
+  <data name="ColorSpaceForm.Text">
+    <value>Pixelformátum/kvantálás/árnyalás</value>
+  </data>
+  <data name="colResourceKey.HeaderText">
+    <value>Azonosító</value>
+  </data>
+  <data name="colSelected.HeaderText">
+    <value>Kiválasztva</value>
+  </data>
+  <data name="colTranslatedText.HeaderText">
+    <value>Lefordított szöveg</value>
+  </data>
+  <data name="ConfirmMessage_DiscardChanges">
+    <value>Vannak mentetlen módosítások. Biztosan elvethetők?</value>
+  </data>
+  <data name="ConfirmMessage_MessageOverwriteResourcesFormat">
+    <value>A következő fájlok már léteznek:
+{0}
+
+Biztosan felülírhatóak?</value>
+  </data>
+  <data name="ConfirmMessage_NetCoreVersion">
+    <value>A .NET Core verziót a Visual Studio valószínűleg nem támogatja, mint debugger visualizert. Biztosan folytatódjon a telepítés?</value>
+  </data>
+  <data name="ConfirmMessage_OverwriteInstallation">
+    <value>Biztosan felülírható ez a telepítés?</value>
+  </data>
+  <data name="ConfirmMessage_RemoveInstallation">
+    <value>Biztosan eltávolítható ez a telepítés?</value>
+  </data>
+  <data name="ConfirmMessage_ResourceVersionMismatch">
+    <value>Egy vagy több kiválasztott elem az Imaging Tools egy másik verziójához készült.
+Biztosan folytatódjon a letöltés?</value>
+  </data>
+  <data name="ConfirmMessage_SaveFileExtensionFormat">
+    <value>A fájlnév megadott kiterjesztése („{0}”) nem felel meg a kiválasztott formátumnak ({1}).
+
+Biztosan folytatódjon a mentés a megadott kiterjesztéssel?</value>
+  </data>
+  <data name="ConfirmMessage_TryRegenerateResourceFormat">
+    <value>A következő nyelvi fájl beolvasása sikertelen volt: {0} ({1})
+
+Meg lehet próbálni újragenerálni, de akkor az eredeti tartalom törlődni fog. Menjen az újragenerálás?</value>
+  </data>
+  <data name="CountColorsForm.Text">
+    <value>Színek száma</value>
+  </data>
+  <data name="DownloadResourcesForm.Text">
+    <value>Nyelvi fájlok letöltése</value>
+  </data>
+  <data name="DrawingOperation.GeneratingPalette">
+    <value>Paletta generálása...</value>
+  </data>
+  <data name="DrawingOperation.InitializingDitherer">
+    <value>Árnyaló inicializálása...</value>
+  </data>
+  <data name="DrawingOperation.InitializingQuantizer">
+    <value>Kvantáló inicializálása...</value>
+  </data>
+  <data name="DrawingOperation.Loading">
+    <value>Betöltés...</value>
+  </data>
+  <data name="DrawingOperation.ProcessingPixels">
+    <value>Feldolgozás...</value>
+  </data>
+  <data name="DrawingOperation.Saving">
+    <value>Mentés...</value>
+  </data>
+  <data name="DrawingOperation.UndefinedProcessing">
+    <value>Feldolgozás...</value>
+  </data>
+  <data name="ErrorMessage_CannotApplyLanguageSettingsFormat">
+    <value>A nyelvi beállításokat nem sikerült alkalmazni: {0}</value>
+  </data>
+  <data name="ErrorMessage_CouldNotAccessOnlineResourcesFormat">
+    <value>Az online nyelvi fájlok elérése sikertelen volt: {0}</value>
+  </data>
+  <data name="ErrorMessage_CouldNotCopyFileFormat">
+    <value>A következő fájl másolása sikertelen volt: {0} ({1})</value>
+  </data>
+  <data name="ErrorMessage_CouldNotCreateDirectoryFormat">
+    <value>A következő mappa létrehozása sikertelen volt: {0} ({1})</value>
+  </data>
+  <data name="ErrorMessage_CouldNotDeleteFileFormat">
+    <value>A következő fájl törlése sikertelen volt: {0} ({1})</value>
+  </data>
+  <data name="ErrorMessage_FailedToDownloadResourceFormat">
+    <value>A következő nyelvi fájl letöltése sikertelen volt: {0} ({1})</value>
+  </data>
+  <data name="ErrorMessage_FailedToGeneratePreviewFormat">
+    <value>Az előnézet legenerálása sikertelen volt: {0}</value>
+  </data>
+  <data name="ErrorMessage_FailedToInitializeDithererFormat">
+    <value>Az árnyaló inicializálása sikertelen volt: {0}</value>
+  </data>
+  <data name="ErrorMessage_FailedToInitializeQuantizerFormat">
+    <value>A kvantáló inicializálása sikertelen volt: {0}</value>
+  </data>
+  <data name="ErrorMessage_FailedToLoadFileFormat">
+    <value>A fájl betöltése sikertelen volt: {0}</value>
+  </data>
+  <data name="ErrorMessage_FailedToRegenerateResourceFormat">
+    <value>A következő nyelvi fájl legenerálása sikertelen volt: {0} ({1})</value>
+  </data>
+  <data name="ErrorMessage_FailedToSaveImageFormat">
+    <value>A kép elmentése sikertelen volt: {0}</value>
+  </data>
+  <data name="ErrorMessage_FailedToSaveResourceFormat">
+    <value>A következő nyelvi fájl mentése sikertelen volt: {0} ({1})</value>
+  </data>
+  <data name="ErrorMessage_FailedToSaveSettingsFormat">
+    <value>A beállítások mentése sikertelen volt: {0}</value>
+  </data>
+  <data name="ErrorMessage_FileDoesNotExistFormat">
+    <value>A fájl nem található: {0}</value>
+  </data>
+  <data name="ErrorMessage_FileNotExpected">
+    <value>A megadott útvonal egy fájl, nem pedig egy mappa.</value>
+  </data>
+  <data name="ErrorMessage_InstallationCannotBeOverwritten">
+    <value>A jelenlegi telepítés fut éppen, ezért nem írható felül</value>
+  </data>
+  <data name="ErrorMessage_InstallationCannotBeRemoved">
+    <value>A jelenlegi telepítés fut éppen, ezért nem távolítható el</value>
+  </data>
+  <data name="ErrorMessage_InstallationFailedFormat">
+    <value>A telepítés sikertelen volt: {0}</value>
+  </data>
+  <data name="ErrorMessage_InvalidPath">
+    <value>A megadott útvonal érvénytelen karaktereket tartalmaz.</value>
+  </data>
+  <data name="ErrorMessage_NotABitmapFileFormat">
+    <value>A fájl nem nyitható meg Bitmap objektumként: {0}</value>
+  </data>
+  <data name="ErrorMessage_NotAMetafileFormat">
+    <value>A fájl nem nyitható meg Metafile objektumként: {0}</value>
+  </data>
+  <data name="ErrorMessage_NotAnIconFileFormat">
+    <value>A fájl nem nyitható meg Icon objektumként: {0}</value>
+  </data>
+  <data name="ErrorMessage_NotAnImageFileFormat">
+    <value>A fájl nem nyitható meg Image objektumként: {0}</value>
+  </data>
+  <data name="ErrorMessage_PathIsEmpty">
+    <value>A megadott útvonal nem lehet üres.</value>
+  </data>
+  <data name="ErrorMessage_PixelFormatNotSupportedFormat">
+    <value>A „{0}” pixelformátum nem támogatott a jelenlegi platformon.</value>
+  </data>
+  <data name="ErrorMessage_QuantizerPaletteTooLargeFormat">
+    <value>A kiválasztott kvantáló túl nagy palettát használ a „{0}” pixelformátumhoz.
+Vagy legalább a „{1}” formátum kiválasztása, vagy a színek számának {2} vagy az alá csökkentése szükséges.</value>
+  </data>
+  <data name="ErrorMessage_RemoveInstallationFailedFormat">
+    <value>Az eltávolítás sikertelen volt: {0}</value>
+  </data>
+  <data name="ErrorMessage_ResourceFormatError">
+    <value>A szöveg formátuma hibás.</value>
+  </data>
+  <data name="ErrorMessage_ResourcePlaceholderIndexInvalidFormat">
+    <value>Nem használható „{0}” indexű elem a lefordított szöveg formátumában.</value>
+  </data>
+  <data name="ErrorMessage_ResourcePlaceholderUnusedIndices">
+    <value>A szöveg fordításából hiányzik egy vagy több. az eredetiben szereplő indexű helyőrző.</value>
+  </data>
+  <data name="ErrorMessage_ValueMustBeBetweenFormat">
+    <value>Az értéknek {0} és {1} közé kell esnie</value>
+  </data>
+  <data name="ErrorMessage_ValueMustBeGreaterThanFormat">
+    <value>Az értéknek nagyobbnak kell lennie, mint {0}</value>
+  </data>
+  <data name="ErrorMessageFormat">
+    <value>Hiba: {0}</value>
+  </data>
+  <data name="FolderDialog.Button.1">
+    <value>Kiválaszt</value>
+  </data>
+  <data name="gbAllowResxResources.Text">
+    <value>Nyelvi fájlok engedélyezése</value>
+  </data>
+  <data name="gbAllowResxResources.ToolTipText">
+    <value>Ha ki van jelölve, engedélyezett a .resx formátumú nyelvi fájlok közvetlen használata.</value>
+  </data>
+  <data name="gbAvailableVersion.Text">
+    <value>Telepíthető verzió:</value>
+  </data>
+  <data name="gbDisplayLanguage.Text">
+    <value>A megjelenítés nyelve</value>
+  </data>
+  <data name="gbDitherer.Text">
+    <value>&amp;Árnyalás</value>
+  </data>
+  <data name="gbInstallation.Text">
+    <value>A telepítés állapota</value>
+  </data>
+  <data name="gbOriginalText.Text">
+    <value>Eredeti szöveg</value>
+  </data>
+  <data name="gbPalette.Text">
+    <value>Paletta színek</value>
+  </data>
+  <data name="gbParameters.Text">
+    <value>Paraméterek</value>
+  </data>
+  <data name="gbPixelFormat.Text">
+    <value>&amp;Pixelformátum váltás</value>
+  </data>
+  <data name="gbQuantizer.Text">
+    <value>&amp;Kvantálás</value>
+  </data>
+  <data name="gbResourceEntries.Text">
+    <value>Nyelvi elemek</value>
+  </data>
+  <data name="gbResourceFile.Text">
+    <value>Nyelvi fájl</value>
+  </data>
+  <data name="gbResxResourcesPath.Text">
+    <value>Nyelvi fájlok egyedi útvonala</value>
+  </data>
+  <data name="gbResxResourcesPath.ToolTipText">
+    <value>Ha ki van jelölve, megadható egy egyedi abszolút útvonal a szerkeszthető .resx nyelvi fájlok számára.</value>
+  </data>
+  <data name="gbSelectedColor.Text">
+    <value>Kijelölt szín</value>
+  </data>
+  <data name="gbTranslatedText.Text">
+    <value>Lefordított szöveg</value>
+  </data>
+  <data name="gbVisualStudioVersions.Text">
+    <value>Azonosított Visual Studio verziók:</value>
+  </data>
+  <data name="General_InternalErrorFormat">
+    <value>Belső hiba: {0}</value>
+  </data>
+  <data name="InfoMessage_About">
+    <value>A KGy SOFT Imaging Tools névjegye
+
+Verzió: v{0}
+Író: Kőszeg György
+Platform: {1}
+
+A magyar fordítást Kőszeg György készítette.
+Copyright © {2} KGy SOFT. Minden jog fenntartva.</value>
+  </data>
+  <data name="InfoMessage_AlphaTurnsBlack">
+    <value>Kvantáló kiválasztása nélkül az eredeti kép esetleges átlátszó területei fekete háttérrel jelennek meg.
+Egy kvantáló kiválasztásával megadható feketétől eltérő háttérszín is.</value>
+  </data>
+  <data name="InfoMessage_ArgbQuantizerHasNoEffect">
+    <value>A kiválasztott kvantáló mindössze a részleges átlátszóság eltávolítására lenne alkalmas,
+de gyakorlatilag nincs hatása, mert a forráskép nem támogatja az átlátszóságot.</value>
+  </data>
+  <data name="InfoMessage_DithererIgnoredFormat">
+    <value>Az árnyaló nincs használva a „{0}” pixelformátumhoz, ha nincs kiválasztott kvantáló.</value>
+  </data>
+  <data name="InfoMessage_DownloadCompletedFormat">
+    <value>{0} fájl letöltése befejőzött.</value>
+  </data>
+  <data name="InfoMessage_EasterEgg">
+    <value>Csak egy sima ToolStrip menü, igaz?
+
+Akkor most képzeljük el a lehetséges platfomokat .NET Framework 3.5-től .NET 5-ig, az operációs rendszereket Windows XP-től Linux/Monóig, a különböző DPI beállításokat, témaválasztásokat, kontrasztos megjelenítést, jobbról-balra kiosztást és ezek minden kombinációját...
+
+A vizuális elemek harmonizációja az összes lehetséges platformra sosem egyszerű feladat, de atyaég, a ToolStrip nem volt egy sétagalopp. Hihetetlen, de minden egyes kombinációval volt legalább egy megjelenítési probléma. A tetszőlegesen nagyítható ImageViewer komponensem az aszinkron, több magon generált simítva átméretezett képeivel ehhez képest gyerekjáték volt...</value>
+  </data>
+  <data name="InfoMessage_PaletteAutoSelectedFormat">
+    <value>Egy {0} színű alapértelmezett rendszerpaletta alkalmazva a kiválasztott „{1}” pixelformátumhoz.
+A színek és beállítások módosításához egy konkrét kvantáló kiválasztása szükséges.</value>
+  </data>
+  <data name="InfoMessage_PaletteEmpty">
+    <value>A paletta nem tartalmaz színeket. Az ablak az OK-ra kattintásra bezáródik.</value>
+  </data>
+  <data name="InfoMessage_PixelFormatCanBeDitheredFormat">
+    <value>A kiválasztott pixelformátum szűkebb színtartományt képvisel, mint az eredeti „{0}”.
+Egy árnyaló kiválasztása segíthet jobban megőrizni a részleteket.</value>
+  </data>
+  <data name="InfoMessage_PixelFormatUnnecessarilyWideFormat">
+    <value>{0} a legszűkebb kompatibilis pixelformátum, ami még kompatibilis a kiválasztott kvantálóval.</value>
+  </data>
+  <data name="InfoMessage_QuantizerAutoSelectedFormat">
+    <value>Automatikusan választott kvántáló alkalmazva a „{0}” pixelformátumhoz, alapértelmezett beállításokkal.
+A paraméterek módosításához egy konkrét kvantáló kiválasztása szükséges.</value>
+  </data>
+  <data name="InfoMessage_QuantizerCanBeDitheredFormat">
+    <value>A kiválasztott kvantáló szűkebb színtartományt képvisel, mint az eredeti „{0}”.
+Egy árnyaló kiválasztása segíthet jobban megőrizni a részleteket.</value>
+  </data>
+  <data name="InfoMessage_QuantizerMayHaveNoEffect">
+    <value>A kiválasztott kvantáló több színt használ, mint az eredeti kép.
+Lehetséges, hogy nincs hatással az eredményre.</value>
+  </data>
+  <data name="InfoMessage_ResourceVersionMismatch">
+    <value>Ez az elem az Imaging Tools egy másik verziójához készült.</value>
+  </data>
+  <data name="InfoMessage_SamePixelFormat">
+    <value>A választott pixelformátum megegyezik az eredetivel.</value>
+  </data>
+  <data name="InfoText_BitmapDataFormat">
+    <value>Méret: {0}x{1} pixel
+Egy sor mérete: {2} byte
+Pixelformátum: {3}</value>
+  </data>
+  <data name="InfoText_ColorFormat">
+    <value>ARGB érték: {0:X8} ({0})
+Azonos ismert színek: {1}
+Azonos rendszerszínek: {2}
+Színárnyalat: {3:F0}°
+Telítettség: {4:F0}%
+Fényerő: {5:F0}%</value>
+  </data>
+  <data name="InfoText_CurrentFrameFormat">
+    <value>Aktuális kép: {0}/{1}</value>
+  </data>
+  <data name="InfoText_CustomPropertiesFormat">
+    <value>Tulajdonságok:
+{0}</value>
+  </data>
+  <data name="InfoText_FramesCountFormat">
+    <value>Képek száma: {0}</value>
+  </data>
+  <data name="InfoText_HorizontalZoomFormat">
+    <value>Vízszintes nagyítás: {0}</value>
+  </data>
+  <data name="InfoText_ImageFormat">
+    <value>Típus: {0}
+Méret: {1}x{2} pixel
+{7}Pixelformátum: {3}
+Képformátum: {4}
+Felbontás: {5}x{6} DPI</value>
+  </data>
+  <data name="InfoText_NoTransformation">
+    <value>Nincs (egységmátrix)</value>
+  </data>
+  <data name="InfoText_OriginalVisibleClipFormat">
+    <value>Eredeti látható vágási tartomány: {{X = {0}, Y = {1}, Méret = {2}x{3} pixel}}</value>
+  </data>
+  <data name="InfoText_PaletteFormat">
+    <value>Palettaszínek száma: {0}</value>
+  </data>
+  <data name="InfoText_ResolutionFormat">
+    <value>Felbontás: {0}x{1} DPI</value>
+  </data>
+  <data name="InfoText_RotationZoomFormat">
+    <value>Elforgatás és nagyítási mátrix: [{0}; {1}] [{2}; {3}]</value>
+  </data>
+  <data name="InfoText_SelectedIndexFormat">
+    <value>Kijelölt index: {0}</value>
+  </data>
+  <data name="InfoText_SizeFormat">
+    <value>{{Szélesség={0}, Magasság={1}}}</value>
+  </data>
+  <data name="InfoText_TransformedVisibleClipFormat">
+    <value>Transzformált látható vágási tartomány: {{X = {0}, Y = {1}, Méret = {2}x{3} (Egység: {4})}}</value>
+  </data>
+  <data name="InfoText_TransformOffsetFormat">
+    <value>Eltolás: {{X={0}, Y={1}}}</value>
+  </data>
+  <data name="InfoText_UnknownFormat">
+    <value>Ismeretlen formátum: {0}</value>
+  </data>
+  <data name="InfoText_VerticalZoomFormat">
+    <value>Függőleges nagyítás: {0}</value>
+  </data>
+  <data name="InfoText_VisibleClipFormat">
+    <value>Látható levágási artomány: {{X = {0}, Y = {1}, Méret = {2}x{3} pixel}}</value>
+  </data>
+  <data name="InfoText_WorldTransformation">
+    <value>Világtranszformáció: </value>
+  </data>
+  <data name="InfoText_ZoomFormat">
+    <value>Nagyítás: {0}</value>
+  </data>
+  <data name="Installation_AvailableFormat">
+    <value>Debugger verzió: {0}</value>
+  </data>
+  <data name="Installation_AvailableWithRuntimeFormat">
+    <value>Debugger verzió: {0} – Runtime: {1}</value>
+  </data>
+  <data name="Installation_AvailableWithTargetFrameworkFormat">
+    <value>Debugger verzió: {0} – Platform: {1}</value>
+  </data>
+  <data name="Installations_CustomDir">
+    <value>&lt;egyedi útvonal...&gt;</value>
+  </data>
+  <data name="Installations_NotAvailable">
+    <value>— (Hiányzik a KGySoft.Drawing.DebuggerVisualizers.dll fájl)</value>
+  </data>
+  <data name="Installations_StatusInstalledFormat">
+    <value>Telepítve: {0}</value>
+  </data>
+  <data name="Installations_StatusInstalledWithRuntimeFormat">
+    <value>Telepítve: {0} – Runtime: {1}</value>
+  </data>
+  <data name="Installations_StatusInstalledWithTargetFrameworkFormat">
+    <value>Telepítve: {0} – Platform: {1}</value>
+  </data>
+  <data name="Installations_StatusNotInstalled">
+    <value>Nincs telepítve</value>
+  </data>
+  <data name="Installations_StatusUnknown">
+    <value>Ismeretlen verzió (inkompatibilis runtime?)</value>
+  </data>
+  <data name="LanguageSettingsForm.Text">
+    <value>Nyelvi beállítások</value>
+  </data>
+  <data name="lblFilter.Text">
+    <value>&amp;Szűrő:</value>
+  </data>
+  <data name="lblHeight.Text">
+    <value>Magasság:</value>
+  </data>
+  <data name="lblHeightPercent.Text">
+    <value>%</value>
+  </data>
+  <data name="lblHeightPx.Text">
+    <value>pixel</value>
+  </data>
+  <data name="lblNotification.ToolTipText">
+    <value>Elrejtés kattintással</value>
+  </data>
+  <data name="lblPath.Text">
+    <value>&amp;Útvonal:</value>
+  </data>
+  <data name="lblScalingMode.Text">
+    <value>Skálázás módja:</value>
+  </data>
+  <data name="lblStatus.Text">
+    <value>Állapot:</value>
+  </data>
+  <data name="lblWidth.Text">
+    <value>Szélesség:</value>
+  </data>
+  <data name="lblWidthPercent.Text">
+    <value>%</value>
+  </data>
+  <data name="lblWidthPx.Text">
+    <value>pixel</value>
+  </data>
+  <data name="ManageInstallationsForm.Text">
+    <value>Debugger visualizer telepítések</value>
+  </data>
+  <data name="miAbout.Text">
+    <value>Névjegy...</value>
+  </data>
+  <data name="miAdjustColors.Text">
+    <value>Színek...</value>
+  </data>
+  <data name="miAutoZoom.Text">
+    <value>Auto nagyítás</value>
+  </data>
+  <data name="miBackColor.Text">
+    <value>Háttérszín</value>
+  </data>
+  <data name="miBackColorBlack.Text">
+    <value>Fekete</value>
+  </data>
+  <data name="miBackColorDefault.Text">
+    <value>Alapértelmezett</value>
+  </data>
+  <data name="miBackColorWhite.Text">
+    <value>Fehér</value>
+  </data>
+  <data name="miBrightness.Text">
+    <value>Fényerő...</value>
+  </data>
+  <data name="miColorSpace.Text">
+    <value>Pixelformátum/kvantálás/árnyalás...</value>
+  </data>
+  <data name="miContrast.Text">
+    <value>Kontraszt...</value>
+  </data>
+  <data name="miCountColors.Text">
+    <value>Színek száma...</value>
+  </data>
+  <data name="miDecreaseZoom.Text">
+    <value>Kicsinyítés</value>
+  </data>
+  <data name="miEasterEgg.Text">
+    <value>Atyaég, ez kemény volt...</value>
+  </data>
+  <data name="miGamma.Text">
+    <value>Gamma...</value>
+  </data>
+  <data name="miGitHub.Text">
+    <value>A projekt GitHub oldalának felkeresése...</value>
+  </data>
+  <data name="miIncreaseZoom.Text">
+    <value>Nagyítás</value>
+  </data>
+  <data name="miLanguageSettings.Text">
+    <value>Nyelvi beállítások...</value>
+  </data>
+  <data name="miManageInstallations.Text">
+    <value>A Debugger Visualizer telepítések kezelése...</value>
+  </data>
+  <data name="miMarketplace.Text">
+    <value>A VisualStudio Marketplace felkeresése...</value>
+  </data>
+  <data name="miResetZoom.Text">
+    <value>Eredeti méret</value>
+  </data>
+  <data name="miResizeBitmap.Text">
+    <value>Átméretezés...</value>
+  </data>
+  <data name="miRotateLeft.Text">
+    <value>Forgatás balra</value>
+  </data>
+  <data name="miRotateRight.Text">
+    <value>Forgatás jobbra</value>
+  </data>
+  <data name="miShowPalette.Text">
+    <value>Paletta...</value>
+  </data>
+  <data name="miSubmitResources.Text">
+    <value>Nyelvi fájlok beküldése...</value>
+  </data>
+  <data name="miWebSite.Text">
+    <value>Weboldal felkeresése...</value>
+  </data>
+  <data name="Notification_ImageAsIcon">
+    <value>A betöltött kép ikonná lett konvertálva</value>
+  </data>
+  <data name="Notification_MetafileAsBitmap">
+    <value>A betöltött metafile Bitmap objektummá lett konvertálva. Metafile objektumként való betöltéshez az Image Debugger Visualizer kiválasztása szükséges.</value>
+  </data>
+  <data name="Notification_PaletteCannotBeRestored">
+    <value>Az indexelt BitmapData palettája nem nyerhető ki, ezért egy alapértelmezett palettával jelenik meg. A paletta színei a menüből megváltoztathatók.</value>
+  </data>
+  <data name="rbByPercentage.Text">
+    <value>&amp;Százalékosan</value>
+  </data>
+  <data name="rbByPixels.Text">
+    <value>&amp;Pixel szerint</value>
+  </data>
+  <data name="ResizeBitmapForm.Text">
+    <value>Átméretezés</value>
+  </data>
+  <data name="Static.1090">
+    <value>Mappa:</value>
+  </data>
+  <data name="Static.14146">
+    <value>Célmappa kiválasztása</value>
+  </data>
+  <data name="Static.723">
+    <value>&amp;Árny:</value>
+  </data>
+  <data name="Static.724">
+    <value>&amp;Tel:</value>
+  </data>
+  <data name="Static.725">
+    <value>&amp;Fény:</value>
+  </data>
+  <data name="Static.726">
+    <value>&amp;Piros:</value>
+  </data>
+  <data name="Static.727">
+    <value>&amp;Zöld:</value>
+  </data>
+  <data name="Static.728">
+    <value>&amp;Kék:</value>
+  </data>
+  <data name="Static.730">
+    <value>Cél</value>
+  </data>
+  <data name="Static.731">
+    <value>szín</value>
+  </data>
+  <data name="tbAlpha.ToolTipText">
+    <value>Alfa színkomponens (átlátszóság)</value>
+  </data>
+  <data name="tbBlue.ToolTipText">
+    <value>Kék színkomponens</value>
+  </data>
+  <data name="tbGreen.ToolTipText">
+    <value>Zöld színkomponens</value>
+  </data>
+  <data name="tbRed.ToolTipText">
+    <value>Piros színkomponens</value>
+  </data>
+  <data name="Text_AllFiles">
+    <value>Minden fájl</value>
+  </data>
+  <data name="Text_AlphaValueFormat">
+    <value>A: {0}</value>
+  </data>
+  <data name="Text_Auto">
+    <value>Auto</value>
+  </data>
+  <data name="Text_BlueValueFormat">
+    <value>B: {0}</value>
+  </data>
+  <data name="Text_ColorCountFormat">
+    <value>Színek száma: {0:N0}</value>
+  </data>
+  <data name="Text_CountingColors">
+    <value>Színek számolása...</value>
+  </data>
+  <data name="Text_Downloading">
+    <value>Letöltés...</value>
+  </data>
+  <data name="Text_FileFormat">
+    <value>fájlformátum</value>
+  </data>
+  <data name="Text_Files">
+    <value>fájl</value>
+  </data>
+  <data name="Text_GreenValueFormat">
+    <value>G: {0}</value>
+  </data>
+  <data name="Text_Icon">
+    <value>Ikon</value>
+  </data>
+  <data name="Text_Images">
+    <value>Képek</value>
+  </data>
+  <data name="Text_Metafiles">
+    <value>Metafájlok</value>
+  </data>
+  <data name="Text_Raw">
+    <value>Nyers bitkép</value>
+  </data>
+  <data name="Text_RedValueFormat">
+    <value>R: {0}</value>
+  </data>
+  <data name="Text_Separator">
+    <value>; </value>
+  </data>
+  <data name="Text_Unnamed">
+    <value>Névtelen</value>
+  </data>
+  <data name="Text_UnsupportedCultureFormat">
+    <value>Nem támogatott nyelv ({0})</value>
+  </data>
+  <data name="Title_AppNameWithFileNameFormat">
+    <value>KGy SOFT Imaging Tools v{0} [{1}{2}] – {3}</value>
+  </data>
+  <data name="Title_ColorCountFormat">
+    <value>Színek száma: {0}</value>
+  </data>
+  <data name="Title_ColorDialog">
+    <value>Szín kiválasztása</value>
+  </data>
+  <data name="Title_ColorFormat">
+    <value>Szín: {0}</value>
+  </data>
+  <data name="Title_Confirmation">
+    <value>Megerősítés</value>
+  </data>
+  <data name="Title_EditResourcesFormat">
+    <value>Szövegek szerkesztése – {0}</value>
+  </data>
+  <data name="Title_Error">
+    <value>Hiba</value>
+  </data>
+  <data name="Title_FolderDialog">
+    <value>Mappa kiválasztása</value>
+  </data>
+  <data name="Title_Information">
+    <value>Információ</value>
+  </data>
+  <data name="Title_NoImage">
+    <value>Nincs kép</value>
+  </data>
+  <data name="Title_OpenFileDialog">
+    <value>Kép megnyitása</value>
+  </data>
+  <data name="Title_OriginalVisibleClipFormat">
+    <value>Eredeti látható levágási tartomány: {{X = {0}, Y = {1}, Méret = {2}x{3}}}</value>
+  </data>
+  <data name="Title_PaletteCountFormat">
+    <value>Palettaszínek száma: {0}</value>
+  </data>
+  <data name="Title_SaveFileDialog">
+    <value>Kép mentése</value>
+  </data>
+  <data name="Title_SizeFormat">
+    <value>Méret: {0}x{1}</value>
+  </data>
+  <data name="Title_TypeFormat">
+    <value>Típus: {0}</value>
+  </data>
+  <data name="Title_VisibleClipFormat">
+    <value>Látható levágási tartomány: {{X = {0}, Y = {1}, Méret = {2}x{3}}}</value>
+  </data>
+  <data name="Title_Warning">
+    <value>Figyelmeztetés</value>
+  </data>
+  <data name="TooltipText_CompoundAnimation">
+    <value>Ki/be kapcsolja a kép animációként való kezelését.
+• Kijelölt állapotban az animáció lejátszása történik, és a GIF-ként való mentés menti a teljes animációt.
+• Ha nincs kijelölve, lehetséges a képkockák között navigálni, és a mentés csak a kiválasztott képkockára vonatkozik.</value>
+  </data>
+  <data name="TooltipText_CompoundMultiPage">
+    <value>Ki/be kapcsolja a kép oldalainak együttes kezelését.
+• Kijelölt állapontban a TIFF-ként való mentés az összes oldalt menti.
+• Ha nincs kijelölve, a mentés csak a kiválasztott oldalra vonatkozik.</value>
+  </data>
+  <data name="TooltipText_CompoundMultiSize">
+    <value>Ki/be kapcsolja az ikon többfelbontású képként való kezelését.
+• Kijelölt állapotban mindig a legmegfelelőbb kép jelenik meg, és az okonként való mentés menti az összes képet.
+• Ha nincs kijelölve, lehetséges az egyes ikonképek között navigálni, és a mentés csak a kiválasztott képre vonatkozik.</value>
+  </data>
+  <data name="TooltipText_SmoothBitmap">
+    <value>Átméretezett kép simítása (Alt+S)</value>
+  </data>
+  <data name="TooltipText_SmoothMetafile">
+    <value>Élek simítása (Alt+S)</value>
+  </data>
+  <data name="txtFilter.ToolTipText">
+    <value>A szűrés figyelmen kívül hagyja a kis- és nagybetűket, az ékezeteket és karakterszélességet.
+Tipp: „[T]” megadásával szűrhetők a még nem lefordított szövegek.</value>
+  </data>
+  <data name="WarningMessage_CouldNotCopyFileNetCoreFormat">
+    <value>A következő fájl másolása sikertelen volt: {0} ({1})
+
+A debugger visualizer valószínűleg nem fog működni .NET Core projektek esetén.</value>
+  </data>
+  <data name="WarningMessage_CouldNotCreateNetCoreDirectoryFormat">
+    <value>A következő mappa létrehozása sikertelen volt: {0} ({1})
+
+A debugger visualizer valószínűleg nem fog működni .NET Core projektek esetén.</value>
+  </data>
+  <data name="WarningMessage_CouldNotCreateNetCoreLinkFormat">
+    <value>A következő fájlra nem sikerült linket létrehozni: {0} ({1})
+
+A debugger visualizer valószínűleg nem fog működni .NET Core projektek esetén.</value>
+  </data>
+  <data name="WarningMessage_DirectoryNotExists">
+    <value>A megadott útvonal nem egy létező mappa. A mentés megkísérli majd létrehozni.</value>
+  </data>
+  <data name="WarningMessage_DithererNoAlphaGradient">
+    <value>A kiválasztott kvantáló támogatja a részleges átlátszóságot, amit viszont az árnyalók nem támogatnak,
+ezért a részlegesen átlátszó pixelek a kvantálóban beállított háttérszínnel fognak megjelenni.</value>
+  </data>
+  <data name="WarningMessage_DownloadCompletedWithUnsupportedCulturesFormat">
+    <value>{0} fájl letöltése befejőzött.
+
+Egy vagy több letöltött fordítás nyelve nem támogatott ezen a platformon. Az érintett nyelvek nem fognak megjelenni a választható nyelvek között.</value>
+  </data>
+  <data name="WarningMessage_InstallationWarningFormat">
+    <value>A telepítés a következő figyelmeztetéssel fejeződött be: {0}</value>
+  </data>
+  <data name="WarningMessage_QuantizerTooWideFormat">
+    <value>A kiválasztott kvantáló több színt használ, mint amennyit a kiválasztott „{0}” pixelformátum támogat.
+Vagy legalább a „{1}” pixelformátum, vagy egy, a {0} által reprezentált színeknél nem több színt használó
+kvantáló kiválasztása szükséges, különben lehet, hogy az eredmény még árnyalással sem lesz megfelelő.</value>
+  </data>
+  <data name="WarningMessage_UnsupportedCulture">
+    <value>Ez a nyelv nem támogatott ezen a platformon vagy a futtatókörnyezet által.</value>
+  </data>
+  <data name="WarningMessage_WideConversionLossFormat">
+    <value>Egy széles pixelformátumú („{0}”) kép egy másik széles formátumba történő konvertálása közben
+a színek a 32 bites ARGB tartományba kvantálódnak, még akkor is, ha a konverzióhoz nincs kvantáló használva.</value>
+  </data>
+</root>

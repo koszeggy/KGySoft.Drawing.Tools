@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<root>
+  <data name="General_InternalErrorFormat">
+    <value>Belső hiba: {0}</value>
+  </data>
+  <data name="General_InvalidAsyncResultFormat">
+    <value>Az IAsyncResult objektum nem a megfelelő „{0}” metódustól származik, vagy az End metódus többször meg lett hívva ugyanazzal az IAsyncResult példánnyal.</value>
+  </data>
+  <data name="General_OperationCanceled">
+    <value>A művelet meg lett szakítva.</value>
+  </data>
+  <data name="General_PixelFormatInvalidFormat">
+    <value>A(z) „{0}” érték nem egy tényleges pixelformátumot reprezentál.</value>
+  </data>
+  <data name="GifEncoder_AnimationContainsNoFrames">
+    <value>Az enkóder beállításai nem tartalmazak egy képkockát se.</value>
+  </data>
+  <data name="GifEncoder_CannotChangeProperty">
+    <value>Ez a tulajdonság nem változtatható meg az első kép hozzáadása után.</value>
+  </data>
+  <data name="GifEncoder_CommentNotAscii">
+    <value>Egy GIF komment csak ASCII karaktereket tartalmazhat.</value>
+  </data>
+  <data name="GifEncoder_CommentTooLong">
+    <value>Egy GIF komment nem lehet hosszabb 255 karakternél.</value>
+  </data>
+  <data name="GifEncoder_NullFrame">
+    <value>Az enkóder beállításai visszaadtak egy null képkockát adtak vissza. A GifEncodingOptions által visszadott képkockák nem tartalmazhatnak null példányt.</value>
+  </data>
+  <data name="GifEncoder_PaletteTooLarge">
+    <value>A paletta nemt tartalmazhat több mint 256 színt.</value>
+  </data>
+  <data name="GifEncoder_UnexpectedFrameSize">
+    <value>Váratlan méretű képkocka. A GifEncodingOptions.SizeHandling tulajdonság beállításával megadható az eltérő méretű képkockák kezelési módja.</value>
+  </data>
+  <data name="Imaging_BufferLengthTooSmallFormat">
+    <value>A buffer paraméternek legalább {0} eleműnek kell lennie, hogy megfeleljen a megadott felbontásnak, sorméretnek és pixelformátumnak.</value>
+  </data>
+  <data name="Imaging_DithererInitializeNull">
+    <value>Az IDitherer.Initialize metódus null értéket adott vissza.</value>
+  </data>
+  <data name="Imaging_IndexedPixelFormatExpected">
+    <value>Ez a metódus csak indexelt pixelformátummal használható.</value>
+  </data>
+  <data name="Imaging_IndexedPixelFormatTooLarge">
+    <value>Egy indexelt pixelformátum legfeljebb 16 bites lehet pixelenként.</value>
+  </data>
+  <data name="Imaging_InvalidBitmapDataSize">
+    <value>A bitkép mérete érvénytelen.</value>
+  </data>
+  <data name="Imaging_InvalidOperationIndexedOnly">
+    <value>Ez a metódus csak indexelt pixelformátumú bitképekhez használható.</value>
+  </data>
+  <data name="Imaging_InvalidPaletteIndexFormat">
+    <value>Érvénytelen paletta index: {0}. Nem lehet {1} vagy nagyobb, ami a paletta színeinek száma.</value>
+  </data>
+  <data name="Imaging_NonIndexedPixelFormatExpected">
+    <value>Ez a metódus csak nem indexelt pixelformátummal használható.</value>
+  </data>
+  <data name="Imaging_NotBitmapDataStream">
+    <value>Érvénytelen bitkép adatfolyam.</value>
+  </data>
+  <data name="Imaging_PaletteTooLargeFormat">
+    <value>„{1}” pixelformátum esetén a paletta nem tartalmazhat több mint {0} színt.</value>
+  </data>
+  <data name="Imaging_QuantizerInitializeNull">
+    <value>A IQuantizer.Initialize metódus null értéket adott vissza.</value>
+  </data>
+  <data name="Imaging_StrideInvalidFormat">
+    <value>Ha az elemtípus „{0}”, a sorhosszt jelentő stride paraméternek {1} többszöröségek kell lennie.</value>
+  </data>
+  <data name="Imaging_StrideTooSmallFormat">
+    <value>A megadott pixelformátum és szélesség alapján a sorhosszt jelentő stride paraméter nem lehet kisebb, mint {0}.</value>
+  </data>
+  <data name="Imaging_WidthTooLarge">
+    <value>A megadott szélesség túl nagy a buffer paraméter szélességéhez és a megadott pixelformátumhoz.</value>
+  </data>
+</root>

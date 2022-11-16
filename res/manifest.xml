@@ -3,14 +3,14 @@
     <CultureName>hu</CultureName>
     <Description>Complete Hungarian translation for ImagingTools, Core Libraries and Drawing Libraries.</Description>
     <ResourceSets>ImagingTools,CoreLibraries,DrawingLibraries</ResourceSets>
-    <ImagingToolsVersion>2.4.0</ImagingToolsVersion>
+    <ImagingToolsVersion>2.5.0</ImagingToolsVersion>
     <Author>György Kőszeg</Author>
   </item>
   <item>
     <CultureName>hu</CultureName>
-    <Description>Complete Hungarian translation for ImagingTools, Core Libraries and Drawing Libraries.</Description>
-    <ResourceSets>ImagingTools,CoreLibraries,DrawingLibraries</ResourceSets>
-    <ImagingToolsVersion>2.5.0</ImagingToolsVersion>
+    <Description>Complete Hungarian translation for ImagingTools and other dependent libraries.</Description>
+    <ResourceSets>ImagingTools,CoreLibraries,DrawingLibraries,DrawingCoreLibraries</ResourceSets>
+    <ImagingToolsVersion>3.0.0</ImagingToolsVersion>
     <Author>György Kőszeg</Author>
   </item>
 </manifest>
