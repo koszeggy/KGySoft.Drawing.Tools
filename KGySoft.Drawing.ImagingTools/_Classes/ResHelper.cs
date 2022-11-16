@@ -35,6 +35,7 @@ namespace KGySoft.Drawing.ImagingTools
         #region Constants
 
         private const string coreLibrariesBaseName = "KGySoft.CoreLibraries.Messages";
+        private const string drawingCoreLibrariesBaseName = "KGySoft.Drawing.Core.Messages";
         private const string drawingLibrariesBaseName = "KGySoft.Drawing.Messages";
         private const string imagingToolsBaseName = "KGySoft.Drawing.ImagingTools.Messages";
 
@@ -90,6 +91,7 @@ namespace KGySoft.Drawing.ImagingTools
         internal static string GetBaseName(LocalizableLibraries library) => library switch
         {
             LocalizableLibraries.CoreLibraries => coreLibrariesBaseName,
+            LocalizableLibraries.DrawingCoreLibraries => drawingCoreLibrariesBaseName,
             LocalizableLibraries.DrawingLibraries => drawingLibrariesBaseName,
             LocalizableLibraries.ImagingTools => imagingToolsBaseName,
             _ => throw new ArgumentOutOfRangeException(nameof(library), PublicResources.EnumOutOfRange(library))
@@ -98,6 +100,7 @@ namespace KGySoft.Drawing.ImagingTools
         internal static Assembly GetAssembly(LocalizableLibraries library) => library switch
         {
             LocalizableLibraries.CoreLibraries => typeof(LanguageSettings).Assembly,
+            LocalizableLibraries.DrawingCoreLibraries => typeof(DrawingCoreModule).Assembly,
             LocalizableLibraries.DrawingLibraries => typeof(DrawingModule).Assembly,
             LocalizableLibraries.ImagingTools => typeof(Res).Assembly,
             _ => throw new ArgumentOutOfRangeException(nameof(library), PublicResources.EnumOutOfRange(library))

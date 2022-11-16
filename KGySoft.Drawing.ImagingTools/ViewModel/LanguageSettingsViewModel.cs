@@ -437,7 +437,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             bool allowResX = AllowResXResources;
             Configuration.AllowResXResources = allowResX;
-            Configuration.UseOSLanguage = allowResX ? UseOSLanguage : false;
+            Configuration.UseOSLanguage = allowResX && UseOSLanguage;
             Configuration.DisplayLanguage = allowResX ? CurrentLanguage : Res.DefaultLanguage;
             string path = allowResX && UseCustomResourcePath ? ResourceCustomPath : String.Empty;
             if (path != lastSavedResourcesPath)
