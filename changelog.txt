@@ -9,10 +9,11 @@
 ! v3.0.0:
 ~~~~~~~~~
 
-- KGySoft.Drawing.ImagingTools.exe
+* KGySoft.Drawing.ImagingTools.exe
 ==================================
 - Adjust Gamma: Adjusting the slider with the mouse not always worked.
 - Supporting CMYK images
+- Fixing language initialization from custom location
 
 + API changes:
   + KGySoft.Drawing.ImagingTools.Model namespace:

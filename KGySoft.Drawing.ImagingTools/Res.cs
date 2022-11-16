@@ -371,16 +371,7 @@ namespace KGySoft.Drawing.ImagingTools
             DefaultLanguage = (Attribute.GetCustomAttribute(typeof(Res).Assembly, typeof(NeutralResourcesLanguageAttribute)) is NeutralResourcesLanguageAttribute attr
                 ? CultureInfo.GetCultureInfo(attr.CultureName)
                 : CultureInfo.InvariantCulture).GetClosestNeutralCulture();
-            DrawingModule.Initialize();
-
-            bool allowResXResources = Configuration.AllowResXResources;
-            displayLanguage = allowResXResources
-                ? Configuration.UseOSLanguage ? OSLanguage : Configuration.DisplayLanguage // here, allowing specific languages, too
-                : DefaultLanguage;
-
-            if (Equals(displayLanguage, CultureInfo.InvariantCulture) || (!Equals(displayLanguage, DefaultLanguage) && !ResHelper.GetAvailableLanguages().Contains(displayLanguage)))
-                displayLanguage = DefaultLanguage;
-            DisplayLanguage = displayLanguage;
+            DrawingModule.Initialize(); // This implicitly initializes DrawingCoreModule, too
 
             string? desiredResXPath = Configuration.ResXResourcesCustomPath;
             if (PathHelper.HasInvalidChars(desiredResXPath))
@@ -397,7 +388,16 @@ namespace KGySoft.Drawing.ImagingTools
                     ResourcesDir = null;
                 }
             }
-             
+
+            bool allowResXResources = Configuration.AllowResXResources;
+            displayLanguage = allowResXResources
+                ? Configuration.UseOSLanguage ? OSLanguage : Configuration.DisplayLanguage // here, allowing specific languages, too
+                : DefaultLanguage;
+
+            if (Equals(displayLanguage, CultureInfo.InvariantCulture) || (!Equals(displayLanguage, DefaultLanguage) && !ResHelper.GetAvailableLanguages().Contains(displayLanguage)))
+                displayLanguage = DefaultLanguage;
+            DisplayLanguage = displayLanguage;
+
             LanguageSettings.DynamicResourceManagersSource = allowResXResources ? ResourceManagerSources.CompiledAndResX : ResourceManagerSources.CompiledOnly;
         }
 
