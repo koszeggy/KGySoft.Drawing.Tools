@@ -30,7 +30,6 @@
 ! KGySoft.Drawing.DebuggerVisualizers.dll
 =========================================
 ! The actual debugger visualizers have been extracted into a new assembly.
-- Supporting CMYK images
 
 + API changes:
   + New KGySoft.Drawing.DebuggerVisualizers.Serialization namespace
@@ -40,10 +39,11 @@
     + New DebugCustomColor method
     + New DebugCustomPalette method
 
-+ KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll
+* KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll
 =================================================
 + A new assembly. The original debugger visualizers of KGySoft.Drawing.DebuggerVisualizers have been
   extracted into this assembly to support GDI+ (System.Drawing) types.
+- Supporting CMYK images
 
 + KGySoft.Drawing.DebuggerVisualizers.Wpf.dll
 =============================================
