@@ -24,10 +24,6 @@
     <ProjectReference Include="..\..\..\KGySoft.Drawing.ImagingTools\KGySoft.Drawing.ImagingTools.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)'=='net35' OR '$(TargetFramework)'=='net40' OR '$(TargetFramework)'=='net45'">
-    <Reference Include="System.Windows.Forms" />
-  </ItemGroup>
-
   <!-- Note: Package reference to Microsoft.VisualStudio.DebuggerVisualizers does not work here because it is not copied and contains no implementation anyway.
        And VSSDK.DebuggerVisualizers cannot be used anymore for VS2022 if VSIX is also installed because it causes InvalidCastException -->
   <ItemGroup>
