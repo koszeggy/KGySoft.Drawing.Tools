@@ -20,7 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\_Common\KGySoft.Drawing.DebuggerVisualizers.csproj" />
-    <!--<ProjectReference Include="..\KGySoft.Drawing.DebuggerVisualizers.SkiaSharp\KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.csproj" />-->
+    <ProjectReference Include="..\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.csproj" />
     <ProjectReference Include="..\..\..\KGySoft.Drawing.ImagingTools\KGySoft.Drawing.ImagingTools.csproj" />
   </ItemGroup>
 

@@ -41,6 +41,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SkiaSharp", "SkiaSharp", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Test", "DebuggerVisualizers\SkiaSharp\Test\KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Test.csproj", "{D2374DE6-AEBA-41AC-81E2-20F0AFE96956}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KGySoft.Drawing.DebuggerVisualizers.SkiaSharp", "DebuggerVisualizers\SkiaSharp\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.csproj", "{0B4CE14A-370E-478D-9F0D-689210925A6C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -121,6 +123,14 @@ Global
 		{D2374DE6-AEBA-41AC-81E2-20F0AFE96956}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D2374DE6-AEBA-41AC-81E2-20F0AFE96956}.Release|x86.ActiveCfg = Release|Any CPU
 		{D2374DE6-AEBA-41AC-81E2-20F0AFE96956}.Release|x86.Build.0 = Release|Any CPU
+		{0B4CE14A-370E-478D-9F0D-689210925A6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B4CE14A-370E-478D-9F0D-689210925A6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B4CE14A-370E-478D-9F0D-689210925A6C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0B4CE14A-370E-478D-9F0D-689210925A6C}.Debug|x86.Build.0 = Debug|Any CPU
+		{0B4CE14A-370E-478D-9F0D-689210925A6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B4CE14A-370E-478D-9F0D-689210925A6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B4CE14A-370E-478D-9F0D-689210925A6C}.Release|x86.ActiveCfg = Release|Any CPU
+		{0B4CE14A-370E-478D-9F0D-689210925A6C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -138,6 +148,7 @@ Global
 		{868382C1-9C39-4793-94CD-802D00E78B94} = {B7D59D6F-2A2B-45EE-9D49-09236CFB7A86}
 		{8A185B13-9837-4120-ACFA-D5E260A0867F} = {3E3D796B-752E-45EA-9A24-50A40141EFC1}
 		{D2374DE6-AEBA-41AC-81E2-20F0AFE96956} = {8A185B13-9837-4120-ACFA-D5E260A0867F}
+		{0B4CE14A-370E-478D-9F0D-689210925A6C} = {8A185B13-9837-4120-ACFA-D5E260A0867F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1C6D13FB-5E94-4260-96B6-74BDDFA8F815}

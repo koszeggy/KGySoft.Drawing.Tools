@@ -62,7 +62,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Test.ViewModel
             }
         };
 
-        private static readonly Dictionary<Type, DebuggerVisualizerAttribute> debuggerVisualizers = null;//SkiaSharpDebuggerHelper.GetDebuggerVisualizers();
+        private static readonly Dictionary<Type, DebuggerVisualizerAttribute> debuggerVisualizers = SkiaSharpDebuggerHelper.GetDebuggerVisualizers();
 
         #endregion
 
