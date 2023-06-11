@@ -29,6 +29,36 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization
     {
         #region Methods
 
+        internal static void SerializeCustomBitmapInfo(SKBitmap bitmap, Stream outgoingData)
+        {
+            using BinaryWriter writer = outgoingData.InitSerializationWriter();
+            new BitmapDataSerializationInfo(bitmap).Write(writer);
+        }
+
+        internal static void SerializeCustomBitmapInfo(SKPixmap pixmap, Stream outgoingData)
+        {
+            using BinaryWriter writer = outgoingData.InitSerializationWriter();
+            new BitmapDataSerializationInfo(pixmap).Write(writer);
+        }
+
+        internal static void SerializeCustomBitmapInfo(SKImage image, Stream outgoingData)
+        {
+            using BinaryWriter writer = outgoingData.InitSerializationWriter();
+            new BitmapDataSerializationInfo(image).Write(writer);
+        }
+
+        internal static void SerializeCustomBitmapInfo(SKSurface image, Stream outgoingData)
+        {
+            using BinaryWriter writer = outgoingData.InitSerializationWriter();
+            new BitmapDataSerializationInfo(image).Write(writer);
+        }
+
+        internal static CustomBitmapInfo DeserializeCustomBitmapInfo(Stream stream)
+        {
+            using BinaryReader reader = stream.InitSerializationReader();
+            return new BitmapDataSerializationInfo(reader).BitmapInfo!;
+        }
+
         internal static void SerializeCustomColorInfo(SKColor color, Stream outgoingData)
         {
             using BinaryWriter writer = outgoingData.InitSerializationWriter();

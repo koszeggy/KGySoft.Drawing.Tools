@@ -44,6 +44,26 @@ using SkiaSharp;
 [assembly: AssemblyFileVersion("3.0.0")]
 [assembly: AssemblyInformationalVersion("3.0.0")]
 
+// SKBitmap
+[assembly: DebuggerVisualizer(typeof(SkiaCustomBitmapDebuggerVisualizer), typeof(SKBitmapSerializer),
+    Target = typeof(SKBitmap),
+    Description = "KGy SOFT SKBitmap Debugger Visualizer")]
+
+// SKPixmap
+[assembly: DebuggerVisualizer(typeof(SkiaCustomBitmapDebuggerVisualizer), typeof(SKPixmapSerializer),
+    Target = typeof(SKPixmap),
+    Description = "KGy SOFT SKPixmap Debugger Visualizer")]
+
+// SKImage
+[assembly: DebuggerVisualizer(typeof(SkiaCustomBitmapDebuggerVisualizer), typeof(SKImageSerializer),
+    Target = typeof(SKImage),
+    Description = "KGy SOFT SKImage Debugger Visualizer")]
+
+// SKSurface
+[assembly: DebuggerVisualizer(typeof(SkiaCustomBitmapDebuggerVisualizer), typeof(SKSurfaceSerializer),
+    Target = typeof(SKSurface),
+    Description = "KGy SOFT SKSurface Debugger Visualizer")]
+
 // SKColor
 [assembly: DebuggerVisualizer(typeof(SKColorDebuggerVisualizer), typeof(SKColorSerializer),
     Target = typeof(SKColor),

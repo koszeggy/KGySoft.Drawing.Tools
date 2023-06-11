@@ -27,7 +27,7 @@ using SkiaSharp;
 
 namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization
 {
-    internal class SKColorSerializationInfo
+    internal sealed class SKColorSerializationInfo
     {
         #region Fields
 

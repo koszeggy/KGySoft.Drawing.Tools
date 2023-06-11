@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: SKColorDebuggerVisualizer.cs
+//  File: SkiaCustomBitmapDebuggerVisualizer.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
 //
@@ -15,9 +15,8 @@
 
 #region Usings
 
-using System.Diagnostics.CodeAnalysis;
-
 using KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization;
+using KGySoft.Drawing.ImagingTools.Model;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;
 
@@ -25,14 +24,15 @@ using Microsoft.VisualStudio.DebuggerVisualizers;
 
 namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.DebuggerVisualizers
 {
-    [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses",
-        Justification = "False alarm, instantiated by VS debugger visualizers")]
-    internal sealed class SKColorDebuggerVisualizer : DialogDebuggerVisualizer
+    internal sealed class SkiaCustomBitmapDebuggerVisualizer : DialogDebuggerVisualizer
     {
         #region Methods
 
         protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
-            => DebuggerHelper.DebugCustomColor(SerializationHelper.DeserializeCustomColorInfo(objectProvider.GetData()));
+        {
+            using CustomBitmapInfo bitmapInfo = SerializationHelper.DeserializeCustomBitmapInfo(objectProvider.GetData());
+            DebuggerHelper.DebugCustomBitmap(bitmapInfo);
+        }
 
         #endregion
     }
