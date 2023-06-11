@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!--<TargetFrameworks>net461;net6.0-windows</TargetFrameworks>-->
+    <TargetFrameworks>net6.0-windows</TargetFrameworks>
+    <OutputType>WinExe</OutputType>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="KGySoft.Drawing.Wpf" Version="7.2.0" />
+    <PackageReference Include="KGySoft.Drawing.SkiaSharp" Version="7.2.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\_Common\KGySoft.Drawing.DebuggerVisualizers.csproj" />
+    <!--<ProjectReference Include="..\KGySoft.Drawing.DebuggerVisualizers.SkiaSharp\KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.csproj" />-->
+    <ProjectReference Include="..\..\..\KGySoft.Drawing.ImagingTools\KGySoft.Drawing.ImagingTools.csproj" />
+  </ItemGroup>
+
+  <!-- Note: Package reference to Microsoft.VisualStudio.DebuggerVisualizers does not work here because it is not copied and contains no implementation anyway.
+       And VSSDK.DebuggerVisualizers cannot be used anymore for VS2022 if VSIX is also installed because it causes InvalidCastException -->
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers">
+      <HintPath>..\..\_ref\Microsoft.VisualStudio.DebuggerVisualizers.dll</HintPath>
+      <CopyLocal>True</CopyLocal>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Despite of the CopyLocal above, it is copied only if KGySoft.Drawing.DebuggerVisualizers references the actual library, which is
+       the case only when targeting .NET 5 or above -->
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy ..\..\_ref\Microsoft.VisualStudio.DebuggerVisualizers.dll bin\$(ConfigurationName)\$(TargetFramework)\ /Y" />
+  </Target>
+
+</Project>
