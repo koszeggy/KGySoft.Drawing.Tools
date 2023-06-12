@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!--<TargetFrameworks>net35;net40;net45;net6.0-windows</TargetFrameworks>-->
-    <TargetFrameworks>net6.0-windows</TargetFrameworks>
+    <!--<TargetFrameworks>net35;net40;net45;net462;net6.0-windows</TargetFrameworks>-->
+    <TargetFrameworks>net462</TargetFrameworks>
     <OutputType>WinExe</OutputType>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
@@ -24,7 +24,7 @@
     <ProjectReference Include="..\..\..\KGySoft.Drawing.ImagingTools\KGySoft.Drawing.ImagingTools.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)'=='net35' OR '$(TargetFramework)'=='net40' OR '$(TargetFramework)'=='net45'">
+  <ItemGroup Condition="'$(TargetFramework)'=='net35' OR '$(TargetFramework)'=='net40' OR '$(TargetFramework)'=='net45' OR '$(TargetFramework)'=='net462'">
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
 

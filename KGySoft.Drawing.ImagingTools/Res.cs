@@ -674,7 +674,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Language settings cannot be applied: {0}</summary>
         internal static string ErrorMessageCannotApplyLanguageSettings(string message) => Get("ErrorMessage_CannotApplyLanguageSettingsFormat", message);
 
-#if NET45
+#if NET45_OR_GREATER
         /// <summary>Could not create directory {0}: {1}
         ///
         /// The debugger visualizer may will not work for .NET Core projects.</summary>

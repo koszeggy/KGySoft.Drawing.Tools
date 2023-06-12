@@ -1,4 +1,4 @@
-﻿#if NET35 || NET40 || NET45
+﻿#if NET35 || NET40 || NET45 || NET462
 using System.Collections.Generic;
 
 // ReSharper disable once CheckNamespace

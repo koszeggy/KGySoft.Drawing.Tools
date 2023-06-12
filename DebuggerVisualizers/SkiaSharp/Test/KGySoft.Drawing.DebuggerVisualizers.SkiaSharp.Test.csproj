@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!--<TargetFrameworks>net461;net6.0-windows</TargetFrameworks>-->
-    <TargetFrameworks>net6.0-windows</TargetFrameworks>
+    <!--<TargetFrameworks>net462;net6.0-windows</TargetFrameworks>-->
+    <TargetFrameworks>net462</TargetFrameworks>
     <OutputType>WinExe</OutputType>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
@@ -22,6 +22,10 @@
     <ProjectReference Include="..\..\_Common\KGySoft.Drawing.DebuggerVisualizers.csproj" />
     <ProjectReference Include="..\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.csproj" />
     <ProjectReference Include="..\..\..\KGySoft.Drawing.ImagingTools\KGySoft.Drawing.ImagingTools.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'=='net462'">
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
 
   <!-- Note: Package reference to Microsoft.VisualStudio.DebuggerVisualizers does not work here because it is not copied and contains no implementation anyway.
