@@ -56,6 +56,7 @@ namespace KGySoft.Drawing.ImagingTools
             "KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll",
             "KGySoft.Drawing.DebuggerVisualizers.Wpf.dll",
 #if NET462_OR_GREATER || NETCOREAPP
+            "KGySoft.Drawing.SkiaSharp.dll",
             "KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.dll",
 #endif
             debuggerVisualizerFileName,
