@@ -43,6 +43,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KGySoft.Drawing.DebuggerVis
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KGySoft.Drawing.DebuggerVisualizers.SkiaSharp", "DebuggerVisualizers\SkiaSharp\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.csproj", "{0B4CE14A-370E-478D-9F0D-689210925A6C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageFixer", "VSIX\PackageFixer\PackageFixer.csproj", "{0D4918CA-E4CB-4DB2-8E73-270CE424F861}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -131,6 +133,14 @@ Global
 		{0B4CE14A-370E-478D-9F0D-689210925A6C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0B4CE14A-370E-478D-9F0D-689210925A6C}.Release|x86.ActiveCfg = Release|Any CPU
 		{0B4CE14A-370E-478D-9F0D-689210925A6C}.Release|x86.Build.0 = Release|Any CPU
+		{0D4918CA-E4CB-4DB2-8E73-270CE424F861}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D4918CA-E4CB-4DB2-8E73-270CE424F861}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D4918CA-E4CB-4DB2-8E73-270CE424F861}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0D4918CA-E4CB-4DB2-8E73-270CE424F861}.Debug|x86.Build.0 = Debug|Any CPU
+		{0D4918CA-E4CB-4DB2-8E73-270CE424F861}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D4918CA-E4CB-4DB2-8E73-270CE424F861}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D4918CA-E4CB-4DB2-8E73-270CE424F861}.Release|x86.ActiveCfg = Release|Any CPU
+		{0D4918CA-E4CB-4DB2-8E73-270CE424F861}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -149,6 +159,7 @@ Global
 		{8A185B13-9837-4120-ACFA-D5E260A0867F} = {3E3D796B-752E-45EA-9A24-50A40141EFC1}
 		{D2374DE6-AEBA-41AC-81E2-20F0AFE96956} = {8A185B13-9837-4120-ACFA-D5E260A0867F}
 		{0B4CE14A-370E-478D-9F0D-689210925A6C} = {8A185B13-9837-4120-ACFA-D5E260A0867F}
+		{0D4918CA-E4CB-4DB2-8E73-270CE424F861} = {21E5CF27-6EA7-4333-9D70-558054B58C22}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1C6D13FB-5E94-4260-96B6-74BDDFA8F815}
