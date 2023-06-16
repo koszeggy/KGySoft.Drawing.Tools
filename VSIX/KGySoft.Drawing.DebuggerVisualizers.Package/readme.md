@@ -6,7 +6,7 @@
 
 **VS 2008-2022**: See [manual installation](https://github.com/koszeggy/KGySoft.Drawing.Tools#installing-debugger-visualizers)
 
-This package provides debugger visualizers for several  GDI+ and WPF image types such as `Bitmap`, `BitmapSource`, `Metafile`, `ImageSource`, `Icon`, `Graphics`, `BitmapData`, `ColorPalette`, `BitmapPalette` and `Color`. Possible derived types such as `DrawingImage`, `BitmapFrame`, `WriteableBitmap`, etc. are also supported). For GDI+ types it also supports multi-page, multi-resolution and animated images as well as saving them in various formats.
+This package provides debugger visualizers for several  GDI+, WPF and SkiaSharp image types such as `Bitmap`, `BitmapSource`, `SKBitmap`, `Metafile`, `ImageSource`, `SKImage`, `Icon`, `Graphics`, `SKSurface`, `BitmapData`, `SKPixmap`, `ColorPalette`, `BitmapPalette`, `Color` and `SKColor`. Possible derived types such as `DrawingImage`, `BitmapFrame`, `WriteableBitmap`, etc. are also supported). For GDI+ types it also supports multi-page, multi-resolution and animated images as well as saving them in various formats.
 
 When a type is debugged in Visual Studio and there is a debugger visualizer installed for that type, then a magnifier icon appears that you can click to open the visualizer.
 
@@ -30,7 +30,7 @@ Several modifications are allowed on non-read-only images such as rotating, resi
 
 ## Installing Debugger Visualizers
 
-* For Visual Studio 2013 and above you can use this VSIX package (the [32-bit version](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers) for VS2013-2019 or the [64-bit version](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) for VS2022). It will install the .NET Framework 4.5 build, which works also for .NET Core projects.
+* For Visual Studio 2013 and above you can use this VSIX package (the [32-bit version](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers) for VS2013-2019 or the [64-bit version](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) for VS2022). It will install the .NET Framework 4.6.2 build, which works also for .NET Core projects.
 * For older Visual Studio versions and/or frameworks follow the [installation steps](https://github.com/koszeggy/KGySoft.Drawing.Tools#installing-debugger-visualizers) at the project site.
 
 ## Release Notes
@@ -50,6 +50,9 @@ See the [change log](https://github.com/koszeggy/KGySoft.Drawing.Tools/blob/mast
 
 **Q:** Are WPF image types supported?
 <br/>**A:** Yes, starting with version 3.0.0 WPF `ImageSource` (and derived types), `BitmapPalette` and `Color` types are supported as well. You might need to explicitly select the correct visualizer from the drop-down menu next to the magnifier icon.
+
+**Q:** Are other 3rd party image types supported?
+<br/>**A:** Yes, starting with version 3.1.0 SkiaSharp types `SKBitmap`, `SKImage`, `SKPixmap`, `SKSurface` and `SKColor` are also supported. The infrastructure is extensible so further frameworks can be expected in future versions.
 
 **Q:** Where do I find the edited/downloaded resource files? Even my previously edited/downloaded resources have been disappeared.
 <br/>**A:** The _Visual Studio/Tools/KGy SOFT Image Debugger Visualizers_ and clicking the magnifier icon executes the Imaging Tools from different locations. If you edit the language resources at one place they will not be automatically applied at the other place. Therefore, the saved resources might be at different possible locations:

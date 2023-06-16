@@ -6,6 +6,15 @@
 ===============================================================================
 
 ~~~~~~~~~
++ v3.1.0:
+~~~~~~~~~
+
++ KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.dll
+===================================================
++ A new debugger visualizer assembly to support SkiaSharp types.
+
+
+~~~~~~~~~
 ! v3.0.0:
 ~~~~~~~~~
 

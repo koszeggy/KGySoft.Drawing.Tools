@@ -2,7 +2,7 @@
 
 # KGy SOFT Drawing Tools
 
-The KGy SOFT Drawing Tools repository contains a couple of applications and some [Debugger Visualizers](#debugger-visualizers) for several GDI+ and WPF types such as `Bitmap`, `Metafile`, `Icon`, `BitmapData`, `Graphics`, `ImageSource` etc. (see also below). The visualizers use [KGy SOFT Imaging Tools](#kgy-soft-imaging-tools) to display these types visually, which can be executed as a standalone application as well.
+The KGy SOFT Drawing Tools repository contains a couple of applications and some [Debugger Visualizers](#debugger-visualizers) for several GDI+, WPF and SkiaSharp types such as `Bitmap`, `Metafile`, `Icon`, `BitmapData`, `Graphics`, `ImageSource`, `SKBitmap`, etc. (see also below). The visualizers use [KGy SOFT Imaging Tools](#kgy-soft-imaging-tools) to display these types visually, which can be executed as a standalone application as well.
 
 [![Website](https://img.shields.io/website/https/kgysoft.net/corelibraries.svg)](https://kgysoft.net/drawing)
 [![Drawing Libraries Repo](https://img.shields.io/github/repo-size/koszeggy/KGySoft.Drawing.svg?label=Drawing%20Libraries)](https://github.com/koszeggy/KGySoft.Drawing)
@@ -32,7 +32,7 @@ The Imaging Tools application makes possible to load images and icons from file,
   <br/><em>Changing Pixel Format with Quantizing and Dithering</em>
 </p>
 
-> _Tip:_ As a developer, you can access all of these image manipulaion functions by using [KGy SOFT Drawing Libraries](https://github.com/koszeggy/KGySoft.Drawing). It supports not just `System.Drawing` types but also completely managed and technology agnostic bitmap data manipulation as well.
+> 💡 _Tip:_ As a developer, you can access all of these image manipulaion functions by using [KGy SOFT Drawing Libraries](https://github.com/koszeggy/KGySoft.Drawing). It supports not just `System.Drawing` types but also completely managed and technology agnostic bitmap data manipulation as well.
 
 ### Compatibility
 
@@ -43,11 +43,16 @@ KGy SOFT Imaging Tools supports a wide range of platforms. Windows is supported 
   <br/><em>KGy SOFT Imaging Tools on Ubuntu Linux, using dark theme</em>
 </p>
 
+<p align="center">
+  <img alt="KGy SOFT Imaging Tools on ReactOS" src="https://github.com/koszeggy/KGySoft.Drawing.Tools/assets/27336165/0eef286a-2bb6-4639-b775-b6f75c0e7fba"/>
+  <br/><em>KGy SOFT Imaging Tools on ReactOS</em>
+</p>
+
 ### Localization
 
 KGy SOFT Imaging Tools supports localization from .resx files. New language resources can be generated for any languages, and you can edit the texts within the application. The changes can be applied on-the-fly, without exiting the application. If you switch to a right-to-left language, then the layout is also immediately applied (at least on Windows).
 
-> _Tip:_ As a developer, you can use [KGy SOFT Core Libraries](https://github.com/koszeggy/KGySoft.CoreLibraries#dynamic-resource-management) if you want something similar in your application.
+> 💡 _Tip:_ As a developer, you can use [KGy SOFT Core Libraries](https://github.com/koszeggy/KGySoft.CoreLibraries#dynamic-resource-management) if you want something similar in your application.
 
 The edited resources are saved in .resx files in the `Resources` subfolder of the application. Resources can be downloaded from within the application as well.
 
@@ -56,7 +61,7 @@ The edited resources are saved in .resx files in the `Resources` subfolder of th
   <br/><em>Editing resources in KGy SOFT Imaging Tools</em>
 </p>
 
-> _Note:_ If you create a localization for your language feel free to [submit a new issue](https://github.com/koszeggy/KGySoft.Drawing.Tools/issues/new?assignees=&labels=&template=submit-resources.md&title=%5BRes%5D) and I will make it available for everyone. Don't forget to mention your name in the translated About menu.
+> 📝 _Note:_ If you create a localization for your language feel free to [submit a new issue](https://github.com/koszeggy/KGySoft.Drawing.Tools/issues/new?assignees=&labels=&template=submit-resources.md&title=%5BRes%5D) and I will make it available for everyone. Don't forget to mention your name in the translated About menu.
 
 #### Help, my resources are gone!
 
@@ -92,6 +97,12 @@ Either click the magnifier icon or choose a debugger visualizer from the drop do
    - `System.Windows.Media.ImageSource`: All derived types are supported, including vector images (`System.Windows.Media.DrawingImage`) and bitmaps (types derived from `System.Windows.Media.Imaging.BitmapSource` such as `BitmapFrame`, `BitmapFrame`, `WriteableBitmap`, etc.). Vector images are displayed as bitmaps, adjusted to the size of the primary display.
    - `System.Windows.Media.Imaging.BitmapPalette`: Color entries can be examined individually.
    - `System.Windows.Media.Color`: sRGB, ScRGB, and colors with context profile are all supported.
+- The `KGySoft.Drawing.DebuggerVisualizers.SkiaSharp` assembly supports the following types (in read-only mode):
+   - `SkiaSharp.SKBitmap`: All color/alpha types of any color space are supported
+   - `SkiaSharp.SKImage`
+   - `SkiaSharp.SKPixmap`
+   - `SkiaSharp.SKSurface`: All back-ends are supported
+   - `SkiaSharp.SKColor`
 
 <p align="center">
   <img alt="Debugging a ColorPalette instance" src="https://user-images.githubusercontent.com/27336165/124268121-66d84380-db39-11eb-97f5-6ff569b01daa.png"/>
@@ -111,11 +122,12 @@ Alternatively, you can download the installer package from the VisualStudio Mark
 #### Manual Install
 
 1. [Download](#download) the binaries and extract the .7z archive to any folder.
-2. Open the folder with the extracted content. You will find four folders there:
-  - `net35` contains the .NET Framework 3.5 version. Compatible with all Visual Studio versions starting with Visual Studio 2008 (tested with versions 2008-2019). Cannot be used to debug .NET Core applications. 
-  - `net40` contains the .NET Framework 4.0 version. You cannot use this one for Visual Studio 2008. Cannot be used to debug .NET Core applications.
-  - `net45` contains the .NET Framework 4.5 version. You cannot use this one for Windows XP and Visual Studio 2008/2010. With some limitations supports also .NET Core/.NET projects (in case of issues see the [Troubleshooting](#Troubleshooting) section).
-  - `net5.0-windows` contains the .NET 5.0 binaries of the Imaging Tools application. Debugger visualizers are not included because it would not be recognized by Visual Studio anyway.
+2. Open the folder with the extracted content. You will find five folders there:
+  - `net35` contains the .NET Framework 3.5 build. Compatible with all Visual Studio versions starting with Visual Studio 2008 (tested with versions 2008-2019). Cannot be used to debug .NET Core applications. 
+  - `net40` contains the .NET Framework 4.0 build. It requires at least Visual Studio 2010 but it's compatible even with Windows XP and ReactOS. Cannot be used to debug .NET Core applications.
+  - `net45` contains the .NET Framework 4.5 build. It requires at least Windows Vista SP2 and Visual Studio 2012. With some limitations supports also .NET Core/.NET projects (in case of issues see the [Troubleshooting](#Troubleshooting) section).
+  - `net462` contains the .NET Framework 4.6.2 build. It requires at least Windows 7 SP1 and Visual Studio 2012. It contains also the SkiaSharp debugger visualizers, which is not included into the other builds. With some limitations supports also .NET Core/.NET projects (in case of issues see the [Troubleshooting](#Troubleshooting) section).
+  - `net6.0-windows` contains the .NET 6.0 binaries of the Imaging Tools application. Debugger visualizers are not included because it would not be recognized by Visual Studio anyway.
 3. Execute `KGySoft.Drawing.ImagingTools.exe` from one of the folders listed above. Click the _Manage Debugger Visualizer Installations..._ button (the gear icon) on the toolbar.
 
 <p align="center">
@@ -123,7 +135,7 @@ Alternatively, you can download the installer package from the VisualStudio Mark
   <br/><em>Installing Debugger Visualizers from Imaging Tools</em>
 </p>
 
-> _Note:_ Starting with version 2.1.0 the debugger visualizers can be used also for .NET Core projects from Visual Studio 2019, even though no .NET Core binaries are used.
+> 📝 _Note:_ Starting with version 2.1.0 the debugger visualizers can be used also for .NET Core projects from Visual Studio 2019, even though no .NET Core binaries are used.
 
 4. In the drop down list you will see the identified Visual Studio versions in your Documents folder. You can select either one of them or the _&lt;Custom Path...&gt;_ menu item to install the visualizer debuggers into a custom folder.
 
@@ -163,7 +175,7 @@ If Visual Studio cannot load the visualizer or you have other debugger visualize
 | An unhandled exception of type 'System.TypeLoadException' / 'System.MissingMethodException' was thrown by the custom visualizer component in the process being debugged.<br/>![An unhandled exception of type 'System.TypeLoadException' was thrown by the custom visualizer component in the process being debugged.](https://kgysoft.net/images/DebuggerVisualizerTrShExceptionTypeLoad.png)<br/>![An unhandled exception of type 'System.MissingMethodException' was thrown by the custom visualizer component in the process being debugged.](https://kgysoft.net/images/DebuggerVisualizerTrShExceptionMissingMethod.png) | You are probably debugging a .NET Core 2.0 application referencing the `System.Drawing.Common` NuGet package. The project should target at least .NET Core 2.1 to be able to debug `System.Drawing` types. |
 | Unable to load the custom visualizer (serializer could not be resolved).<br/>![Unable to load the custom visualizer (serializer could not be resolved).](https://kgysoft.net/images/DebuggerVisualizerTrShUnableToLoadSerializer.png) | The project you debug references an unmatching version of the `Microsoft.VisualStudio.DebuggerVisualizers` to your actual VisualStudio version. |
 | Unable to load the custom visualizer (The UI-side visualizer type must derive from 'DialogDebuggerVisualizer').<br/>![Unable to load the custom visualizer (The UI-side visualizer type must derive from 'DialogDebuggerVisualizer').](https://kgysoft.net/images/DebuggerVisualizerTrShUnableToLoadMustDeriveFrom.png) | The `Microsoft.VisualStudio.DebuggerVisualizers.dll` has been copied to the debugger visualizers installation folder. Recent Visual Studio versions can handle if a debugger visualizer references an unmatching version of this assembly but only if this assembly is not deployed along with the visualizers. |
-| Could not load file or assembly 'KGySoft.Drawing.DebuggerVisualizers.dll'.<br/>![Could not load file or assembly 'KGySoft.Drawing.DebuggerVisualizers.dll'.](https://kgysoft.net/images/DebuggerVisualizerTrShCouldNotLoadVisualizer.png) or one of its dependencies. | Visual Studio 2008 supports the .NET 3.5 version only. A similar error may occur even if some files are missing. Just [install](#installing-debugger-visualizers) a correct version again. |
+| Could not load file or assembly 'KGySoft.Drawing.DebuggerVisualizers.dll' or one of its dependencies.<br/>![Could not load file or assembly 'KGySoft.Drawing.DebuggerVisualizers.dll'.](https://kgysoft.net/images/DebuggerVisualizerTrShCouldNotLoadVisualizer.png) | Visual Studio 2008 supports the .NET 3.5 version only. A similar error may occur even if some files are missing. Just [install](#installing-debugger-visualizers) a correct version again. |
 | Value does not fall within the expected range.<br/>![Value does not fall within the expected range.](https://kgysoft.net/images/DebuggerVisualizerTrShValueUnexpectedRange.png) | Windows XP does not support the .NET 4.5 version. |
 | The app looks blurry. | If you changed the DPI settins, you need to restart the application. Per-monitor DPI awareness is not supported. |
 | The visual elements are scaled incorrectly.<br/>![Incorrectly scaled image](https://user-images.githubusercontent.com/27336165/124148578-0e993700-da90-11eb-9c67-4e06e522795b.png) | May happen if you use Imaging Tools from debugger visualizers, and you have just changed the DPI settings without signing out/in. However, signing in and out is not required if you execute the app directly. |
@@ -171,7 +183,7 @@ If Visual Studio cannot load the visualizer or you have other debugger visualize
 
 ## Download
 
-> _Tip:_ See [above](#by-vsix-installer) how to download the debugger visualizer installers
+> 💡 _Tip:_ See [above](#by-vsix-installer) how to download the debugger visualizer installers
 
 You can download the sources and the binaries as .7z/.zip archives at the [releases](https://github.com/koszeggy/KGySoft.Drawing.Tools/releases) page.
 
