@@ -191,7 +191,7 @@ To support the widest possible range of platforms the binaries archive contains 
 * `net35`: This contains the .NET Framework 3.5 build and though it works on every platforms Imaging Tools supports, it is not really recommended to use as a standalone application. If you use Imaging Tools as [debugger visualizers](#installing-debugger-visualizers), then it is the only version you can use for Visual Studio 2008. For newer Visual Studio versions use it only if you want to debug a .NET Framework 2.0-3.5 application.
 * `net40`: This is the .NET Framework 4.0 build. As a standalone application, it's basically recommended only for Windows XP.
 * `net45`: This is the .NET Framework 4.5 build, which is the recommended version to use as a debugger visualizer for .NET Framework 4.x and .NET Core projects (including .NET 5 and newer platforms). As a standalone application, this is also the recommended version for Linux (though 3.5/4.0 also support it).
-* `net5.0-windows`: This folder contains the .NET 5.0 build. As a standalone application this is the recommended version for Windows 7 and above. On the other hand, this one cannot be used as a debugger visualizer (even for .NET Core projects) and does not support Linux either.
+* `net6.0-windows`: This folder contains the .NET 6.0 build. As a standalone application this is the recommended version for Windows 7 and above. On the other hand, this one cannot be used as a debugger visualizer (even for .NET Core projects) and does not support Linux either.
 
 ## Release Notes
 
