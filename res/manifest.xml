@@ -10,7 +10,7 @@
     <CultureName>hu</CultureName>
     <Description>Complete Hungarian translation for ImagingTools and other dependent libraries.</Description>
     <ResourceSets>ImagingTools,CoreLibraries,DrawingLibraries,DrawingCoreLibraries</ResourceSets>
-    <ImagingToolsVersion>3.0.0</ImagingToolsVersion>
+    <ImagingToolsVersion>3.1.0</ImagingToolsVersion>
     <Author>György Kőszeg</Author>
   </item>
 </manifest>
