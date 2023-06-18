@@ -121,7 +121,7 @@
     <value>KGy SOFT Image DebuggerVisualizers</value>
   </data>
   <data name="112" xml:space="preserve">
-    <value>Debugger Visualizers for GDI+ and WPF image types such as Bitmap, BitmapSource, Metafile, ImageSource, Icon, Graphics, BitmapData, ColorPalette, BitmapPalette and Color. Possible derived types such as DrawingImage, BitmapFrame, WriteableBitmap, etc. are also supported.</value>
+    <value>Debugger Visualizers for GDI+, WPF and SkiaSharp image types such as Bitmap, BitmapSource, SKBitmap, Metafile, ImageSource, SKImage, Icon, Graphics, SKSurface, BitmapData, SKPixmap, ColorPalette, BitmapPalette, Color and SKColor. Possible derived types such as DrawingImage, BitmapFrame, WriteableBitmap, etc. are also supported).</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="400" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -142,9 +142,9 @@ Make sure every running debugger is closed. Installing will be tried again on re
     <value>The installation of KGy SOFT Image DebuggerVisualizers to {0} finished with a warning: {1}</value>
   </data>
   <data name="InfoMessage_InstallationFinishedFormat" xml:space="preserve">
-    <value>KGy SOFT Image DebuggerVisualizers {0} have been installed to {1}</value>
+    <value>The KGy SOFT Image DebuggerVisualizers {0} extension has been installed to {1}</value>
   </data>
   <data name="InfoMessage_InstallationUpgradedFormat" xml:space="preserve">
-    <value>KGy SOFT Image DebuggerVisualizers {0} have been upgraded to version {1} at {2}</value>
+    <value>The KGy SOFT Image DebuggerVisualizers {0} extension has been upgraded to version {1} at {2}</value>
   </data>
 </root>

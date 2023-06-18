@@ -6,6 +6,15 @@
 ===============================================================================
 
 ~~~~~~~~~
++ v3.1.0:
+~~~~~~~~~
+
++ KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.dll
+===================================================
++ A new debugger visualizer assembly to support SkiaSharp types.
+
+
+~~~~~~~~~
 ! v3.0.0:
 ~~~~~~~~~
 
@@ -30,7 +39,6 @@
 ! KGySoft.Drawing.DebuggerVisualizers.dll
 =========================================
 ! The actual debugger visualizers have been extracted into a new assembly.
-- Supporting CMYK images
 
 + API changes:
   + New KGySoft.Drawing.DebuggerVisualizers.Serialization namespace
@@ -40,10 +48,11 @@
     + New DebugCustomColor method
     + New DebugCustomPalette method
 
-+ KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll
+* KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll
 =================================================
 + A new assembly. The original debugger visualizers of KGySoft.Drawing.DebuggerVisualizers have been
   extracted into this assembly to support GDI+ (System.Drawing) types.
+- Supporting CMYK images
 
 + KGySoft.Drawing.DebuggerVisualizers.Wpf.dll
 =============================================

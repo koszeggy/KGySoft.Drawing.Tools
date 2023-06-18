@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: InstallationManager.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2021 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -24,7 +24,7 @@ using System.Security;
 
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
-#if NET45
+#if NET45_OR_GREATER
 using KGySoft.Drawing.ImagingTools.WinApi;
 #endif
 
@@ -55,6 +55,10 @@ namespace KGySoft.Drawing.ImagingTools
             "KGySoft.CoreLibraries.dll",
             "KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll",
             "KGySoft.Drawing.DebuggerVisualizers.Wpf.dll",
+#if NET462_OR_GREATER || NETCOREAPP
+            "KGySoft.Drawing.SkiaSharp.dll",
+            "KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.dll",
+#endif
             debuggerVisualizerFileName,
         };
 
@@ -153,10 +157,10 @@ namespace KGySoft.Drawing.ImagingTools
                 }
             }
 
-#if NET45
+#if NET45_OR_GREATER
             // .NET Core support: the visualizer must be in a netstandard2.0 subdirectory.
             // And actually it can contain framework assemblies so we just create a symbolic link to it
-            // NOTE: It must be the .NET 4.5 build, others do not work (even a Core build itself, even in netcoreapp folder)
+            // NOTE: It must be the .NET 4.5 or greater build, others do not work (even a Core build itself, even in netcoreapp folder)
             string netCorePath = Path.Combine(directory, netCoreSubdirectory);
             try
             {

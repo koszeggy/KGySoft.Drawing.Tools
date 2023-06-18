@@ -1,0 +1,1 @@
+bin\Release\net6.0\PackageFixer ..\KGySoft.Drawing.DebuggerVisualizers.Package.x86\bin\Release\KGySoft.Drawing.DebuggerVisualizers.Package.vsix D:\Letolt\refPackage.x86.vsix
