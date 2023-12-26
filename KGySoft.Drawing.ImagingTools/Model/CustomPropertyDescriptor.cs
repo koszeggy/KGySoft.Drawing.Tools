@@ -54,9 +54,9 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
             #region Constructors
 
-            internal PickValueConverter(TypeConverter converter, object?[] allowedValues)
+            internal PickValueConverter(TypeConverter? converter, object?[] allowedValues)
             {
-                wrappedConverter = converter;
+                wrappedConverter = converter ?? new TypeConverter();
                 this.allowedValues = allowedValues;
             }
 
@@ -104,7 +104,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
             }
         }
 
-        public override TypeConverter Converter => AllowedValues == null || base.Converter == null! ? new TypeConverter() : converter ??= new PickValueConverter(base.Converter, AllowedValues);
+        public override TypeConverter Converter => AllowedValues == null ? base.Converter ?? new TypeConverter() : converter ??= new PickValueConverter(base.Converter, AllowedValues);
         public override Type ComponentType => typeof(ICustomPropertiesProvider);
         public override bool IsReadOnly => false;
         public override Type PropertyType { get; }
