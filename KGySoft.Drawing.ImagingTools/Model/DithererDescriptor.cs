@@ -17,12 +17,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 #if NETFRAMEWORK
 using KGySoft.CoreLibraries;
 #endif
 using KGySoft.Drawing.Imaging;
+using KGySoft.Reflection;
 
 #endregion
 
@@ -32,34 +34,13 @@ namespace KGySoft.Drawing.ImagingTools.Model
     {
         #region Fields
 
-        // TODO: delete
-        private static readonly Dictionary<string, CustomPropertyDescriptor> parametersMapping = new Dictionary<string, CustomPropertyDescriptor>
-        {
-            //["matrix"] = new CustomPropertyDescriptor("matrix", typeof(byte[,]))
-            //{
-            //    DefaultValue = new byte[,] { { 0, 1 }, { 2, 3 } }
-            //},
-            ["strength"] = new CustomPropertyDescriptor("strength", typeof(float))
-            {
-                DefaultValue = 0f,
-                AdjustValue = value => value is float f && f >= 0f && f <= 1f ? f : 0f,
-                UITypeEditor = DesignDependencies.DithererStrengthEditor
-            },
-            //["divisor"] = new CustomPropertyDescriptor("divisor", typeof(int)) { DefaultValue = 16 },
-            //["matrixFirstPixelIndex"] = new CustomPropertyDescriptor("matrixFirstPixelIndex", typeof(int)) { DefaultValue = 0 },
-            //["serpentineProcessing"] = new CustomPropertyDescriptor("serpentineProcessing", typeof(bool)) { DefaultValue = false },
-            ["serpentine"] = new CustomPropertyDescriptor("serpentine", typeof(bool)) { DefaultValue = false },
-            ["byBrightness"] = new CustomPropertyDescriptor("byBrightness", typeof(bool?)),
-            ["seed"] = new CustomPropertyDescriptor("seed", typeof(int?)),
-        };
+        private readonly CreateInstanceAccessor? ctor;
+        private readonly ParameterInfo[]? parameters;
+        private readonly PropertyAccessor? property;
 
         #endregion
 
         #region Properties
-
-        // TODO: delete
-        internal List<MemberInfo> InvokeChain { get; }
-        internal List<CustomPropertyDescriptor> Parameters { get; }
 
         internal bool HasStrength { get; }
         internal bool HasSerpentineProcessing { get; }
@@ -76,76 +57,70 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         internal DithererDescriptor(MemberInfo member)
         {
-            HasStrength = member.DeclaringType != typeof(ErrorDiffusionDitherer);
-            HasSerpentineProcessing = HasByBrightness = member.DeclaringType == typeof(ErrorDiffusionDitherer);
-            HasSeed = member.DeclaringType == typeof(RandomNoiseDitherer);
-
-            // TODO: remove
-            var chain = new List<MemberInfo> { member };
-            var parameters = new List<CustomPropertyDescriptor>();
-
             switch (member)
             {
-                case ConstructorInfo ctor:
-                    AddParameters(parameters, ctor.GetParameters());
+                case ConstructorInfo ci:
+                    parameters = ci.GetParameters();
+                    ctor = CreateInstanceAccessor.GetAccessor(ci);
+                    HasStrength = parameters.Any(p => p.Name == "strength");
+                    HasSeed = parameters.Any(p => p.Name == "seed");
                     break;
-                case PropertyInfo property:
-                    if (property.DeclaringType == typeof(OrderedDitherer))
-                        AddMethodChain(chain, parameters, typeof(OrderedDitherer).GetMethod(nameof(OrderedDitherer.ConfigureStrength))!);
-                    else if (property.DeclaringType == typeof(ErrorDiffusionDitherer))
-                    {
-                        AddMethodChain(chain, parameters, typeof(ErrorDiffusionDitherer).GetMethod(nameof(ErrorDiffusionDitherer.ConfigureProcessingDirection))!);
-                        AddMethodChain(chain, parameters, typeof(ErrorDiffusionDitherer).GetMethod(nameof(ErrorDiffusionDitherer.ConfigureErrorDiffusionMode))!);
-                    }
 
+                case PropertyInfo pi:
+                    property = PropertyAccessor.GetAccessor(pi);
+                    HasStrength = pi.DeclaringType == typeof(OrderedDitherer);
+                    HasSerpentineProcessing = HasByBrightness = pi.DeclaringType == typeof(ErrorDiffusionDitherer);
                     break;
+
                 default:
-                    throw new InvalidOperationException(Res.InternalError($"Unexpected member: {member}"));
+                    throw new ArgumentException($"Unexpected member: {member}");
             }
-
-            InvokeChain = chain;
-            Parameters = parameters;
         }
 
         #endregion
 
         #region Methods
 
-        #region Static Methods
-
-        private static void AddParameters(List<CustomPropertyDescriptor> descriptors, ParameterInfo[] reflectedParameters)
-        {
-            foreach (ParameterInfo pi in reflectedParameters)
-                descriptors.Add(parametersMapping.GetValueOrDefault(pi.Name!) ?? throw new InvalidOperationException(Res.InternalError($"Unexpected parameter: {pi.Name}")));
-        }
-
-        private static void AddMethodChain(List<MemberInfo> chain, List<CustomPropertyDescriptor> parameters, MethodInfo method)
-        {
-            chain.Add(method);
-            AddParameters(parameters, method.GetParameters());
-        }
-
-        #endregion
-
         #region Instance Methods
 
         #region Public Methods
 
-        public override string ToString() => InvokeChain[0] is ConstructorInfo ctor
-            ? ctor.DeclaringType!.Name
-            : $"{InvokeChain[0].DeclaringType!.Name}.{InvokeChain[0].Name}";
+        public override string ToString() => ctor != null
+            ? ctor.MemberInfo.DeclaringType!.Name
+            : $"{property!.MemberInfo.DeclaringType!.Name}.{property.MemberInfo.Name}";
 
         #endregion
 
         #region Internal Methods
 
-        internal object?[] EvaluateParameters(ParameterInfo[] parameters, CustomPropertiesObject values)
+        internal IDitherer Create(IDithererSettings settings)
         {
-            var result = new object?[parameters.Length];
-            for (int i = 0; i < result.Length; i++)
+            IDitherer result;
+            if (ctor != null)
             {
-                string paramName = parameters[i].Name!;
-                result[i] = Parameters.Find(d => d.Name == paramName)!.GetValue(values);
+                object?[] args = new object[parameters!.Length];
+                for (int i = 0; i < parameters.Length; i++)
+                {
+                    args[i] = parameters[i].Name switch
+                    {
+                        "strength" => settings.Strength,
+                        "seed" => settings.Seed,
+                        _ => throw new InvalidOperationException($"Unhandled parameter: {parameters[i].Name}")
+                    };
+                }
+
+                result = (IDitherer)ctor.CreateInstance(args);
+            }
+            else
+            {
+                result = property!.GetStaticValue<IDitherer>();
+                result = result switch
+                {
+                    OrderedDitherer ordered => ordered.ConfigureStrength(settings.Strength),
+                    ErrorDiffusionDitherer errorDiffusion => errorDiffusion.ConfigureErrorDiffusionMode(settings.ByBrightness)
+                        .ConfigureProcessingDirection(settings.DoSerpentineProcessing),
+                    _ => result
+                };
             }
 
             return result;

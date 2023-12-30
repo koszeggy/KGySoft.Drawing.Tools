@@ -39,7 +39,7 @@
             this.cmbDitherer.Location = new System.Drawing.Point(0, 0);
             this.cmbDitherer.Name = "cmbDitherer";
             this.cmbDitherer.Size = new System.Drawing.Size(311, 21);
-            this.cmbDitherer.TabIndex = 4;
+            this.cmbDitherer.TabIndex = 0;
             // 
             // tblStrength
             // 
@@ -56,7 +56,7 @@
             this.tblStrength.RowCount = 1;
             this.tblStrength.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tblStrength.Size = new System.Drawing.Size(311, 22);
-            this.tblStrength.TabIndex = 6;
+            this.tblStrength.TabIndex = 1;
             // 
             // lblStrength
             // 
@@ -78,7 +78,7 @@
             this.lblStrengthValue.Location = new System.Drawing.Point(243, 4);
             this.lblStrengthValue.Name = "lblStrengthValue";
             this.lblStrengthValue.Size = new System.Drawing.Size(13, 13);
-            this.lblStrengthValue.TabIndex = 1;
+            this.lblStrengthValue.TabIndex = 2;
             this.lblStrengthValue.Text = "0";
             // 
             // tbStrength
@@ -90,7 +90,7 @@
             this.tbStrength.Maximum = 255;
             this.tbStrength.Name = "tbStrength";
             this.tbStrength.Size = new System.Drawing.Size(120, 22);
-            this.tbStrength.TabIndex = 2;
+            this.tbStrength.TabIndex = 1;
             this.tbStrength.TickFrequency = 16;
             // 
             // chbSerpentineProcessing
@@ -101,7 +101,7 @@
             this.chbSerpentineProcessing.Name = "chbSerpentineProcessing";
             this.chbSerpentineProcessing.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
             this.chbSerpentineProcessing.Size = new System.Drawing.Size(311, 22);
-            this.chbSerpentineProcessing.TabIndex = 9;
+            this.chbSerpentineProcessing.TabIndex = 2;
             this.chbSerpentineProcessing.Text = "chbSerpentineProcessing";
             this.chbSerpentineProcessing.UseVisualStyleBackColor = true;
             // 
@@ -115,7 +115,7 @@
             this.chbByBrightness.Name = "chbByBrightness";
             this.chbByBrightness.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
             this.chbByBrightness.Size = new System.Drawing.Size(311, 22);
-            this.chbByBrightness.TabIndex = 10;
+            this.chbByBrightness.TabIndex = 3;
             this.chbByBrightness.Text = "chbByBrightness";
             this.chbByBrightness.ThreeState = true;
             this.chbByBrightness.UseVisualStyleBackColor = true;
@@ -134,7 +134,7 @@
             this.tblSeed.RowCount = 1;
             this.tblSeed.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tblSeed.Size = new System.Drawing.Size(311, 22);
-            this.tblSeed.TabIndex = 11;
+            this.tblSeed.TabIndex = 4;
             // 
             // lblSeed
             // 

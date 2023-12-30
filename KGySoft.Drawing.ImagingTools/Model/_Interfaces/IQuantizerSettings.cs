@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: ICustomPropertiesProvider.cs
+//  File: IQuantizerSettings.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
 //
@@ -15,19 +15,25 @@
 
 #region Usings
 
-using System.ComponentModel;
+using System.Drawing;
+
+using KGySoft.Drawing.Imaging;
 
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.Model
 {
-    internal interface ICustomPropertiesProvider : ICustomTypeDescriptor
+    internal interface IQuantizerSettings
     {
-        #region Methods
+        #region Properties
 
-        object? GetValue(string propertyName, object? defaultValue);
-        void SetValue(string propertyName, object? value);
-        void ResetValue(string propertyName);
+        Color BackColor { get; }
+        byte AlphaThreshold { get; }
+        byte WhiteThreshold { get; }
+        bool DirectMapping { get; }
+        int PaletteSize { get; }
+        byte? BitLevel { get; }
+        WorkingColorSpace WorkingColorSpace { get; }
 
         #endregion
     }

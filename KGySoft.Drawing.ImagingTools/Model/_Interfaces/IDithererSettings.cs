@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: DesignDependencies.cs
+//  File: IDithererSettings.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
 //
@@ -13,20 +13,16 @@
 
 #endregion
 
-#region Usings
-
-using System;
-
-#endregion
-
 namespace KGySoft.Drawing.ImagingTools.Model
 {
-    internal static class DesignDependencies
+    internal interface IDithererSettings
     {
         #region Properties
 
-        internal static Type? QuantizerThresholdEditor { get; set; }
-        internal static Type? DithererStrengthEditor { get; set; }
+        float Strength { get; }
+        int? Seed { get; }
+        bool? ByBrightness { get; }
+        bool DoSerpentineProcessing { get; }
 
         #endregion
     }

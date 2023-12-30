@@ -70,23 +70,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         private void InitCommandBindings()
         {
             CommandBindings.AddPropertyChangedHandlerBinding(ViewModel!, ResetParentSize, nameof(ViewModel.SelectedQuantizer));
-            // TODO
-            //// not for ViewModel.Parameters.PropertyChanged because it is not triggered for expanded properties such as collection elements
-            //CommandBindings.Add(ViewModel!.ResetQuantizer)
-            //    .AddSource(pgParameters, nameof(pgParameters.PropertyValueChanged));
         }
 
         private void InitPropertyBindings()
         {
             // will not change so not as an actual binding
             cmbQuantizer.DataSource = ViewModel!.Quantizers;
-
-            // TODO
-            //// VM.Parameters -> pgParameters.SelectedObject
-            //CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Parameters), nameof(pgParameters.SelectedObject), pgParameters);
-
-            // cmbQuantizer.SelectedValue -> VM.SelectedQuantizer
-            CommandBindings.AddPropertyBinding(cmbQuantizer, nameof(cmbQuantizer.SelectedValue), nameof(ViewModel.SelectedQuantizer), ViewModel);
 
             // BackColor
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.BackColorEnabled), nameof(tblBackColor.Enabled), tblBackColor);
@@ -106,6 +95,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
             // BitLevel
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.BitLevelVisible), nameof(tblBitLevel.Visible), tblBitLevel);
+
+            // cmbQuantizer.SelectedValue -> VM.SelectedQuantizer (intentionally last so visibilities are already bound)
+            CommandBindings.AddPropertyBinding(cmbQuantizer, nameof(cmbQuantizer.SelectedValue), nameof(ViewModel.SelectedQuantizer), ViewModel);
         }
 
         private void ResetParentSize()

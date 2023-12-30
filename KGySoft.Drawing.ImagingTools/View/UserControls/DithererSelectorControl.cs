@@ -70,23 +70,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         private void InitCommandBindings()
         {
             CommandBindings.AddPropertyChangedHandlerBinding(ViewModel!, ResetParentSize, nameof(ViewModel.SelectedDitherer));
-            // TODO
-            //// not for ViewModel.Parameters.PropertyChanged because it is not triggered for expanded properties such as collection elements
-            //CommandBindings.Add(ViewModel!.ResetDitherer)
-            //    .AddSource(pgParameters, nameof(pgParameters.PropertyValueChanged));
         }
 
         private void InitPropertyBindings()
         {
             // will not change so not as an actual binding
             cmbDitherer.DataSource = ViewModel!.Ditherers;
-
-            // TODO
-            //// VM.Parameters -> pgParameters.SelectedObject
-            //CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Parameters), nameof(pgParameters.SelectedObject), pgParameters);
-
-            // cmbDitherer.SelectedValue -> VM.SelectedDitherer
-            CommandBindings.AddPropertyBinding(cmbDitherer, nameof(cmbDitherer.SelectedValue), nameof(ViewModel.SelectedDitherer), ViewModel);
 
             // Strength
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.StrengthVisible), nameof(tblStrength.Visible), tblStrength);
@@ -99,6 +88,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
             // Seed
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SeedVisible), nameof(tblSeed.Visible), tblSeed);
+
+            // cmbDitherer.SelectedValue -> VM.SelectedDitherer (intentionally last so visibilities are already bound)
+            CommandBindings.AddPropertyBinding(cmbDitherer, nameof(cmbDitherer.SelectedValue), nameof(ViewModel.SelectedDitherer), ViewModel);
         }
 
         private void ResetParentSize()

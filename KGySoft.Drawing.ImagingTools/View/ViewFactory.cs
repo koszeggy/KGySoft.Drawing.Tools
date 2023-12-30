@@ -17,8 +17,6 @@
 
 using System;
 
-using KGySoft.Drawing.ImagingTools.Model;
-using KGySoft.Drawing.ImagingTools.View.Design;
 using KGySoft.Drawing.ImagingTools.View.Forms;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
@@ -31,16 +29,6 @@ namespace KGySoft.Drawing.ImagingTools.View
     /// </summary>
     public static class ViewFactory
     {
-        #region Constructors
-
-        static ViewFactory()
-        {
-            DesignDependencies.QuantizerThresholdEditor = typeof(QuantizerThresholdEditor);
-            DesignDependencies.DithererStrengthEditor = typeof(DithererStrengthEditor);
-        }
-
-        #endregion
-
         #region Methods
 
         /// <summary>

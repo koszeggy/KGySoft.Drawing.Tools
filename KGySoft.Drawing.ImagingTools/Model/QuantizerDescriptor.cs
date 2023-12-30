@@ -33,53 +33,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
     {
         #region Fields
 
-        // TODO: delete
-        private static readonly Dictionary<string, CustomPropertyDescriptor> parametersMapping = new Dictionary<string, CustomPropertyDescriptor>
-        {
-            ["backColor"] = new CustomPropertyDescriptor("backColor", typeof(Color)) { DefaultValue = Color.Black },
-            ["alphaThreshold"] = new CustomPropertyDescriptor("alphaThreshold", typeof(byte))
-            {
-                DefaultValue = (byte)128,
-                UITypeEditor = DesignDependencies.QuantizerThresholdEditor
-            },
-            ["whiteThreshold"] = new CustomPropertyDescriptor("whiteThreshold", typeof(byte))
-            {
-                DefaultValue = (byte)128,
-                UITypeEditor = DesignDependencies.QuantizerThresholdEditor
-            },
-            ["palette"] = new CustomPropertyDescriptor("palette", typeof(Color[]))
-            {
-                DefaultValue = new[]
-                {
-                    Color.Black, Color.White, Color.Transparent, 
-                    Color.Red, Color.Lime, Color.Blue,
-                    Color.Cyan, Color.Yellow, Color.Magenta
-                },
-            },
-            ["pixelFormat"] = new CustomPropertyDescriptor("pixelFormat", typeof(PixelFormat))
-            {
-                AllowedValues = Enum<PixelFormat>.GetValues()
-                    .Where(pf => pf.IsValidFormat())
-                    // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
-                    .OrderBy(pf => pf & PixelFormat.Max)
-                    .Select(pf => (object)pf)
-                    .ToArray(),
-            },
-            ["directMapping"] = new CustomPropertyDescriptor("directMapping", typeof(bool)) { DefaultValue = false },
-            ["maxColors"] = new CustomPropertyDescriptor("maxColors", typeof(int))
-            {
-                DefaultValue = 256,
-                AdjustValue = value =>
-                {
-                    if (value is not int i)
-                        return 0;
-
-                    return i < 0 ? 0
-                        : i > 256 ? 256
-                        : i;
-                }
-            },
-        };
+        private readonly ParameterInfo[] parameters;
 
         #endregion
 
@@ -87,8 +41,6 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         internal MethodInfo Method { get; }
 
-        // TODO: delete
-        internal CustomPropertyDescriptor[] Parameters { get; }
         internal bool IsOptimized { get; }
         internal bool HasAlpha { get; }
         internal bool HasSingleBitAlpha { get; }
@@ -106,17 +58,12 @@ namespace KGySoft.Drawing.ImagingTools.Model
         internal QuantizerDescriptor(MethodInfo method)
         {
             Method = method;
-            ParameterInfo[] methodParams = method.GetParameters();
+            parameters = method.GetParameters();
             IsOptimized = method.DeclaringType == typeof(OptimizedPaletteQuantizer);
-            HasAlpha = methodParams.Any(p => p.Name == "alphaThreshold");
+            HasAlpha = parameters.Any(p => p.Name == "alphaThreshold");
             HasSingleBitAlpha = IsOptimized || method.Name is nameof(PredefinedColorsQuantizer.Argb1555) or nameof(PredefinedColorsQuantizer.SystemDefault8BppPalette);
             HasWhiteThreshold = method.Name == nameof(PredefinedColorsQuantizer.BlackAndWhite);
-            HasDirectMapping = methodParams.Any(p => p.Name == "directMapping");
-
-            // TODO: remove
-            Parameters = new CustomPropertyDescriptor[methodParams.Length];
-            for (int i = 0; i < Parameters.Length; i++)
-                Parameters[i] = parametersMapping.GetValueOrDefault(methodParams[i].Name!) ?? throw new InvalidOperationException(Res.InternalError($"Unexpected parameter: {methodParams[i].Name}"));
+            HasDirectMapping = parameters.Any(p => p.Name == "directMapping");
         }
 
         #endregion
@@ -124,18 +71,36 @@ namespace KGySoft.Drawing.ImagingTools.Model
         #region Methods
 
         #region Public Methods
-        
+
         public override string ToString() => $"{Method.DeclaringType!.Name}.{Method.Name}";
 
         #endregion
 
         #region Internal Methods
 
-        internal object?[] EvaluateParameters(CustomPropertiesObject values)
+        internal IQuantizer Create(IQuantizerSettings settings)
         {
-            var result = new object?[Parameters.Length];
-            for (int i = 0; i < result.Length; i++)
-                result[i] = Parameters[i].GetValue(values);
+            object[] args = new object[parameters.Length];
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                args[i] = parameters[i].Name switch
+                {
+                    "backColor" => settings.BackColor,
+                    "alphaThreshold" => settings.AlphaThreshold,
+                    "whiteThreshold" => settings.WhiteThreshold,
+                    "directMapping" => settings.DirectMapping,
+                    "maxColors" => settings.PaletteSize,
+                    _ => throw new InvalidOperationException($"Unhandled parameter: {parameters[i].Name}")
+                };
+            }
+
+            IQuantizer result = (IQuantizer)Method.Invoke(null, args)!;
+            result = result switch
+            {
+                OptimizedPaletteQuantizer optimized => optimized.ConfigureBitLevel(settings.BitLevel).ConfigureColorSpace(settings.WorkingColorSpace),
+                PredefinedColorsQuantizer predefined => predefined.ConfigureColorSpace(settings.WorkingColorSpace),
+                _ => result
+            };
             return result;
         }
 
