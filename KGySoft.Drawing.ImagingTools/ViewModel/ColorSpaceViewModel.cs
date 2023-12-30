@@ -177,6 +177,21 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Protected Methods
 
+        protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+            switch (e.PropertyName)
+            {
+                case nameof(PixelFormat):
+                case nameof(ChangePixelFormat):
+                    QuantizerSelectorViewModel.PixelFormat = ChangePixelFormat ? PixelFormat : originalPixelFormat;
+                    break;
+                case nameof(UseDitherer):
+                    QuantizerSelectorViewModel.UseDithering = (bool)e.NewValue!;
+                    break;
+            }
+        }
+
         protected override ValidationResultsCollection DoValidation()
         {
             ValidationResultsCollection result = base.DoValidation();
@@ -289,10 +304,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             base.Dispose(disposing);
         }
-
-        #endregion
-
-        #region Private Methods
 
         #endregion
 

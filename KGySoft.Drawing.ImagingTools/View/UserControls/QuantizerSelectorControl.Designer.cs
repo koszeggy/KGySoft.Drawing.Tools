@@ -143,10 +143,9 @@
             // 
             // pnlBackColor
             // 
-            this.pnlBackColor.Location = new System.Drawing.Point(123, 0);
-            this.pnlBackColor.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            this.pnlBackColor.Location = new System.Drawing.Point(123, 3);
             this.pnlBackColor.Name = "pnlBackColor";
-            this.pnlBackColor.Size = new System.Drawing.Size(114, 22);
+            this.pnlBackColor.Size = new System.Drawing.Size(114, 16);
             this.pnlBackColor.TabIndex = 1;
             // 
             // btnBackColor
@@ -273,11 +272,13 @@
             this.tbNumColors.LargeChange = 64;
             this.tbNumColors.Location = new System.Drawing.Point(120, 0);
             this.tbNumColors.Margin = new System.Windows.Forms.Padding(0);
-            this.tbNumColors.Maximum = 255;
+            this.tbNumColors.Maximum = 256;
+            this.tbNumColors.Minimum = 2;
             this.tbNumColors.Name = "tbNumColors";
             this.tbNumColors.Size = new System.Drawing.Size(120, 22);
             this.tbNumColors.TabIndex = 1;
             this.tbNumColors.TickFrequency = 16;
+            this.tbNumColors.Value = 2;
             // 
             // chbDirectMapping
             // 
@@ -334,10 +335,10 @@
             // tbBitLevel
             // 
             this.tbBitLevel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tbBitLevel.LargeChange = 64;
+            this.tbBitLevel.LargeChange = 4;
             this.tbBitLevel.Location = new System.Drawing.Point(120, 0);
             this.tbBitLevel.Margin = new System.Windows.Forms.Padding(0);
-            this.tbBitLevel.Maximum = 255;
+            this.tbBitLevel.Maximum = 8;
             this.tbBitLevel.Name = "tbBitLevel";
             this.tbBitLevel.Size = new System.Drawing.Size(120, 22);
             this.tbBitLevel.TabIndex = 1;
