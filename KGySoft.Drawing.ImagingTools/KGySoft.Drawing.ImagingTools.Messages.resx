@@ -758,9 +758,6 @@ Harmonizing visual elements for all possible environments is never a trivial tas
   <data name="gbDitherer.Text" xml:space="preserve">
     <value>&amp;Ditherer</value>
   </data>
-  <data name="gbParameters.Text" xml:space="preserve">
-    <value>Parameters</value>
-  </data>
   <data name="btnOK.Text" xml:space="preserve">
     <value>&amp;OK</value>
   </data>

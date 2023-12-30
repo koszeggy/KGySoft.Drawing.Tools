@@ -15,6 +15,8 @@
 
 #region Usings
 
+using System.Windows.Forms;
+
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
@@ -67,9 +69,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private void InitCommandBindings()
         {
-            // not for ViewModel.Parameters.PropertyChanged because it is not triggered for expanded properties such as collection elements
-            CommandBindings.Add(ViewModel!.ResetQuantizer)
-                .AddSource(pgParameters, nameof(pgParameters.PropertyValueChanged));
+            CommandBindings.AddPropertyChangedHandlerBinding(ViewModel!, ResetParentSize, nameof(ViewModel.SelectedQuantizer));
+            // TODO
+            //// not for ViewModel.Parameters.PropertyChanged because it is not triggered for expanded properties such as collection elements
+            //CommandBindings.Add(ViewModel!.ResetQuantizer)
+            //    .AddSource(pgParameters, nameof(pgParameters.PropertyValueChanged));
         }
 
         private void InitPropertyBindings()
@@ -77,11 +81,49 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // will not change so not as an actual binding
             cmbQuantizer.DataSource = ViewModel!.Quantizers;
 
-            // VM.Parameters -> pgParameters.SelectedObject
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Parameters), nameof(pgParameters.SelectedObject), pgParameters);
+            // TODO
+            //// VM.Parameters -> pgParameters.SelectedObject
+            //CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Parameters), nameof(pgParameters.SelectedObject), pgParameters);
 
             // cmbQuantizer.SelectedValue -> VM.SelectedQuantizer
             CommandBindings.AddPropertyBinding(cmbQuantizer, nameof(cmbQuantizer.SelectedValue), nameof(ViewModel.SelectedQuantizer), ViewModel);
+
+            // BackColor
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.BackColorEnabled), nameof(tblBackColor.Enabled), tblBackColor);
+
+            // AlphaThreshold
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.AlphaThresholdVisible), nameof(tblAlphaThreshold.Visible), tblAlphaThreshold);
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.AlphaThresholdEnabled), nameof(tblAlphaThreshold.Enabled), tblAlphaThreshold);
+
+            // WhiteThreshold
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.WhiteThresholdVisible), nameof(tblWhiteThreshold.Visible), tblWhiteThreshold);
+
+            // Number of colors
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.NumColorsVisible), nameof(tblNumColors.Visible), tblNumColors);
+
+            // DirectMapping
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.DirectMappingVisible), nameof(chbDirectMapping.Visible), chbDirectMapping);
+
+            // BitLevel
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.BitLevelVisible), nameof(tblBitLevel.Visible), tblBitLevel);
+        }
+
+        private void ResetParentSize()
+        {
+            Control? parent = Parent?.Parent;
+            if (parent == null)
+                return;
+
+            int height = 0;
+            foreach (Control control in Controls)
+            {
+                if (!control.Visible)
+                    continue;
+
+                height += control.Height;
+            }
+
+            parent.Height = height + (parent.Height - parent.DisplayRectangle.Height);
         }
 
         #endregion

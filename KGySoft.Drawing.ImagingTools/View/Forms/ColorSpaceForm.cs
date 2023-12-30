@@ -82,6 +82,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected override void ApplyViewModel()
         {
+            InitCommandBindings();
             InitPropertyBindings();
             base.ApplyViewModel();
         }
@@ -96,6 +97,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         #endregion
 
         #region Private Methods
+
+        private void InitCommandBindings()
+        {
+            CommandBindings.Add(OnAdjustParametersHeightCommand)
+                .AddSource(gbQuantizer, nameof(gbQuantizer.SizeChanged))
+                .AddSource(gbDitherer, nameof(gbDitherer.SizeChanged));
+        }
 
         private void InitPropertyBindings()
         {
@@ -119,6 +127,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // ViewModel.UseDitherer <-> gbDitherer.Checked
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.UseDitherer), gbDitherer, nameof(gbDitherer.Checked));
         }
+
+        #endregion
+
+        #region Command Handlers
+
+        private void OnAdjustParametersHeightCommand() => pnlSettings.Height = pnlSettings.Controls.Cast<Control>().Sum(c => c.Height);
 
         #endregion
 

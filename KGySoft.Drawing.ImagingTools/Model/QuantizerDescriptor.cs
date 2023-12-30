@@ -23,6 +23,7 @@ using System.Linq;
 using System.Reflection;
 
 using KGySoft.CoreLibraries;
+using KGySoft.Drawing.Imaging;
 
 #endregion
 
@@ -32,6 +33,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
     {
         #region Fields
 
+        // TODO: delete
         private static readonly Dictionary<string, CustomPropertyDescriptor> parametersMapping = new Dictionary<string, CustomPropertyDescriptor>
         {
             ["backColor"] = new CustomPropertyDescriptor("backColor", typeof(Color)) { DefaultValue = Color.Black },
@@ -85,7 +87,13 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         internal MethodInfo Method { get; }
 
+        // TODO: delete
         internal CustomPropertyDescriptor[] Parameters { get; }
+        internal bool IsOptimized { get; }
+        internal bool HasAlpha { get; }
+        internal bool HasSingleBitAlpha { get; }
+        internal bool HasWhiteThreshold { get; }
+        internal bool HasDirectMapping { get; }
 
         #endregion
 
@@ -99,6 +107,13 @@ namespace KGySoft.Drawing.ImagingTools.Model
         {
             Method = method;
             ParameterInfo[] methodParams = method.GetParameters();
+            IsOptimized = method.DeclaringType == typeof(OptimizedPaletteQuantizer);
+            HasAlpha = methodParams.Any(p => p.Name == "alphaThreshold");
+            HasSingleBitAlpha = IsOptimized || method.Name is nameof(PredefinedColorsQuantizer.Argb1555) or nameof(PredefinedColorsQuantizer.SystemDefault8BppPalette);
+            HasWhiteThreshold = method.Name == nameof(PredefinedColorsQuantizer.BlackAndWhite);
+            HasDirectMapping = methodParams.Any(p => p.Name == "directMapping");
+
+            // TODO: remove
             Parameters = new CustomPropertyDescriptor[methodParams.Length];
             for (int i = 0; i < Parameters.Length; i++)
                 Parameters[i] = parametersMapping.GetValueOrDefault(methodParams[i].Name!) ?? throw new InvalidOperationException(Res.InternalError($"Unexpected parameter: {methodParams[i].Name}"));

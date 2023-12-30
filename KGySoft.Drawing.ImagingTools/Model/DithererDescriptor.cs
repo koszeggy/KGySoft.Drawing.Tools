@@ -32,6 +32,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
     {
         #region Fields
 
+        // TODO: delete
         private static readonly Dictionary<string, CustomPropertyDescriptor> parametersMapping = new Dictionary<string, CustomPropertyDescriptor>
         {
             //["matrix"] = new CustomPropertyDescriptor("matrix", typeof(byte[,]))
@@ -56,9 +57,14 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #region Properties
 
+        // TODO: delete
         internal List<MemberInfo> InvokeChain { get; }
-
         internal List<CustomPropertyDescriptor> Parameters { get; }
+
+        internal bool HasStrength { get; }
+        internal bool HasSerpentineProcessing { get; }
+        internal bool HasByBrightness { get; }
+        internal bool HasSeed { get; }
 
         #endregion
 
@@ -70,6 +76,11 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         internal DithererDescriptor(MemberInfo member)
         {
+            HasStrength = member.DeclaringType != typeof(ErrorDiffusionDitherer);
+            HasSerpentineProcessing = HasByBrightness = member.DeclaringType == typeof(ErrorDiffusionDitherer);
+            HasSeed = member.DeclaringType == typeof(RandomNoiseDitherer);
+
+            // TODO: remove
             var chain = new List<MemberInfo> { member };
             var parameters = new List<CustomPropertyDescriptor>();
 

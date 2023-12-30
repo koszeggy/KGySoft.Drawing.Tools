@@ -15,6 +15,8 @@
 
 #region Usings
 
+using System.Windows.Forms;
+
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
@@ -67,9 +69,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private void InitCommandBindings()
         {
-            // not for ViewModel.Parameters.PropertyChanged because it is not triggered for expanded properties such as collection elements
-            CommandBindings.Add(ViewModel!.ResetDitherer)
-                .AddSource(pgParameters, nameof(pgParameters.PropertyValueChanged));
+            CommandBindings.AddPropertyChangedHandlerBinding(ViewModel!, ResetParentSize, nameof(ViewModel.SelectedDitherer));
+            // TODO
+            //// not for ViewModel.Parameters.PropertyChanged because it is not triggered for expanded properties such as collection elements
+            //CommandBindings.Add(ViewModel!.ResetDitherer)
+            //    .AddSource(pgParameters, nameof(pgParameters.PropertyValueChanged));
         }
 
         private void InitPropertyBindings()
@@ -77,11 +81,42 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // will not change so not as an actual binding
             cmbDitherer.DataSource = ViewModel!.Ditherers;
 
-            // VM.Parameters -> pgParameters.SelectedObject
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Parameters), nameof(pgParameters.SelectedObject), pgParameters);
+            // TODO
+            //// VM.Parameters -> pgParameters.SelectedObject
+            //CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Parameters), nameof(pgParameters.SelectedObject), pgParameters);
 
             // cmbDitherer.SelectedValue -> VM.SelectedDitherer
             CommandBindings.AddPropertyBinding(cmbDitherer, nameof(cmbDitherer.SelectedValue), nameof(ViewModel.SelectedDitherer), ViewModel);
+
+            // Strength
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.StrengthVisible), nameof(tblStrength.Visible), tblStrength);
+
+            // Serpentine processing
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SerpentineProcessingVisible), nameof(chbSerpentineProcessing.Visible), chbSerpentineProcessing);
+
+            // By Brightness
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.ByBrightnessVisible), nameof(chbByBrightness.Visible), chbByBrightness);
+
+            // Seed
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SeedVisible), nameof(tblSeed.Visible), tblSeed);
+        }
+
+        private void ResetParentSize()
+        {
+            Control? parent = Parent?.Parent;
+            if (parent == null)
+                return;
+
+            int height = 0;
+            foreach (Control control in Controls)
+            {
+                if (!control.Visible)
+                    continue;
+
+                height += control.Height;
+            }
+
+            parent.Height = height + (parent.Height - parent.DisplayRectangle.Height);
         }
 
         #endregion
