@@ -113,7 +113,12 @@ namespace KGySoft.Drawing.ImagingTools.Model
             }
             else
             {
+#if NET35
+                // In .NET Framework 3.5 we cannot use the generic version due to the lack of Func<T> covariance
+                result = (IDitherer)property!.Get(null)!;
+#else
                 result = property!.GetStaticValue<IDitherer>();
+#endif
                 result = result switch
                 {
                     OrderedDitherer ordered => ordered.ConfigureStrength(settings.Strength),

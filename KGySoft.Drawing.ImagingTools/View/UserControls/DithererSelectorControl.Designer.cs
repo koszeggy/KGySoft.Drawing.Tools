@@ -87,7 +87,7 @@
             this.tbStrength.LargeChange = 64;
             this.tbStrength.Location = new System.Drawing.Point(120, 0);
             this.tbStrength.Margin = new System.Windows.Forms.Padding(0);
-            this.tbStrength.Maximum = 255;
+            this.tbStrength.Maximum = 256;
             this.tbStrength.Name = "tbStrength";
             this.tbStrength.Size = new System.Drawing.Size(120, 22);
             this.tbStrength.TabIndex = 1;
@@ -156,7 +156,6 @@
             this.txtSeed.Name = "txtSeed";
             this.txtSeed.Size = new System.Drawing.Size(114, 20);
             this.txtSeed.TabIndex = 1;
-            this.txtSeed.Text = "0";
             // 
             // DithererSelectorControl
             // 

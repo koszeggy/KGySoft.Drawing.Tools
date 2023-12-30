@@ -30,7 +30,7 @@
             this.tbAlphaThreshold = new System.Windows.Forms.TrackBar();
             this.chbLinearColorSpace = new System.Windows.Forms.CheckBox();
             this.tblNumColors = new System.Windows.Forms.TableLayoutPanel();
-            this.label1 = new System.Windows.Forms.Label();
+            this.lblNumColors = new System.Windows.Forms.Label();
             this.lblNumColorsValue = new System.Windows.Forms.Label();
             this.tbNumColors = new System.Windows.Forms.TrackBar();
             this.chbDirectMapping = new System.Windows.Forms.CheckBox();
@@ -231,7 +231,7 @@
             this.tblNumColors.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F));
             this.tblNumColors.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F));
             this.tblNumColors.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tblNumColors.Controls.Add(this.label1, 0, 0);
+            this.tblNumColors.Controls.Add(this.lblNumColors, 0, 0);
             this.tblNumColors.Controls.Add(this.lblNumColorsValue, 2, 0);
             this.tblNumColors.Controls.Add(this.tbNumColors, 1, 0);
             this.tblNumColors.Dock = System.Windows.Forms.DockStyle.Top;
@@ -243,17 +243,17 @@
             this.tblNumColors.Size = new System.Drawing.Size(320, 22);
             this.tblNumColors.TabIndex = 5;
             // 
-            // label1
+            // lblNumColors
             // 
-            this.label1.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label1.AutoSize = true;
-            this.label1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.label1.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.label1.Location = new System.Drawing.Point(3, 4);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(68, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "lblNumColors";
+            this.lblNumColors.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lblNumColors.AutoSize = true;
+            this.lblNumColors.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.lblNumColors.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblNumColors.Location = new System.Drawing.Point(3, 4);
+            this.lblNumColors.Name = "lblNumColors";
+            this.lblNumColors.Size = new System.Drawing.Size(68, 13);
+            this.lblNumColors.TabIndex = 0;
+            this.lblNumColors.Text = "lblNumColors";
             // 
             // lblNumColorsValue
             // 
@@ -392,7 +392,7 @@
         private System.Windows.Forms.TrackBar tbAlphaThreshold;
         private System.Windows.Forms.CheckBox chbLinearColorSpace;
         private System.Windows.Forms.TableLayoutPanel tblNumColors;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblNumColors;
         private System.Windows.Forms.Label lblNumColorsValue;
         private System.Windows.Forms.TrackBar tbNumColors;
         private System.Windows.Forms.CheckBox chbDirectMapping;
