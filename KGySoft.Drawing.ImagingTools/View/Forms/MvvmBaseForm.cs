@@ -73,7 +73,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             ApplyRightToLeft();
             InitializeComponent();
             StartPosition = OSUtils.IsMono && OSUtils.IsWindows ? FormStartPosition.WindowsDefaultLocation : FormStartPosition.CenterParent;
-
+#if !NET35
+            if (!OSUtils.IsWindows11OrLater) 
+#endif
+            {
+                toolTip.AutoPopDelay = Int16.MaxValue;
+            }
 
             // occurs in design mode but DesignMode is false for grandchild forms
             if (viewModel == null!)

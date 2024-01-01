@@ -490,7 +490,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (toolTip == null)
                 return;
             toolTip = (ToolTip)Reflector.GetProperty(this, nameof(ToolTip))!;
-            toolTip.AutoPopDelay = 10_000;
+#if !NET35
+            if (!OSUtils.IsWindows11OrLater) 
+#endif
+            {
+                toolTip.AutoPopDelay = Int16.MaxValue;
+            }
 
             // Effectively used only when RTL is true because OwnerDraw is enabled only in that case
             toolTip.Draw += ToolTip_Draw;

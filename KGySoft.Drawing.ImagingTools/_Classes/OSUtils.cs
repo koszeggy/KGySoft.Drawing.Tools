@@ -17,7 +17,11 @@
 
 using System;
 using System.Drawing;
-using KGySoft.CoreLibraries;
+using System.Linq;
+
+#if NETFRAMEWORK
+using Microsoft.Win32;
+#endif
 
 #endregion
 
@@ -29,6 +33,7 @@ namespace KGySoft.Drawing.ImagingTools
 
         private static bool? isVistaOrLater;
         private static bool? isWin8OrLater;
+        private static bool? isWin11OrLater;
         private static bool? isWindows;
         private static bool? isLinux;
         private static bool? isMono;
@@ -37,8 +42,8 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Properties
 
-        internal static bool IsWindows => isWindows ??= Environment.OSVersion.Platform.In(PlatformID.Win32NT, PlatformID.Win32Windows);
-        internal static bool IsLinux => isLinux ??= Environment.OSVersion.Platform.In(PlatformID.Unix, (PlatformID)128);
+        internal static bool IsWindows => isWindows ??= Environment.OSVersion.Platform is PlatformID.Win32NT or PlatformID.Win32Windows;
+        internal static bool IsLinux => isLinux ??= Environment.OSVersion.Platform is PlatformID.Unix or (PlatformID)128;
         internal static bool IsMono => isMono ??= Type.GetType("Mono.Runtime") != null;
 
         internal static bool IsVistaOrLater
@@ -76,6 +81,43 @@ namespace KGySoft.Drawing.ImagingTools
 
                 isWin8OrLater = os.Version >= new Version(6, 2, 9200);
                 return isWin8OrLater.Value;
+            }
+        }
+
+        internal static bool IsWindows11OrLater
+        {
+            get
+            {
+                if (isWin11OrLater.HasValue)
+                    return isWin11OrLater.Value;
+
+                OperatingSystem osVer = Environment.OSVersion;
+                if (osVer.Platform != PlatformID.Win32NT)
+                {
+                    isWin11OrLater = false;
+                    return false;
+                }
+
+#if NETCOREAPP
+                isWin11OrLater = osVer.Version >= new Version(10, 0, 22000);
+#else
+                // .NET Framework never returns a higher version than Windows 8, so we need to access the Registry
+                const string path = @"SOFTWARE\Microsoft\Windows NT\CurrentVersion";
+                const string key = "CurrentBuild";
+                try
+                {
+                    using RegistryKey? reg = Registry.LocalMachine.OpenSubKey(path);
+                    isWin11OrLater = reg?.GetValueNames().Contains(key) == true
+                        && reg.GetValue(key) is string value
+                        && Int32.TryParse(value, out int buildNumber)
+                        && buildNumber >= 22000;
+                }
+                catch (Exception e) when (!e.IsCritical())
+                {
+                    isWin11OrLater = false;
+                }
+#endif
+                return isWin11OrLater.Value; 
             }
         }
 

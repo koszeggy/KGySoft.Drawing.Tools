@@ -13,7 +13,6 @@
             // 
             // toolTip
             // 
-            this.toolTip.AutoPopDelay = 10000;
             this.toolTip.InitialDelay = 500;
             this.toolTip.ReshowDelay = 100;
             // 
