@@ -752,11 +752,131 @@ Harmonizing visual elements for all possible environments is never a trivial tas
   <data name="gbPixelFormat.Text" xml:space="preserve">
     <value>Change &amp;Pixel Format</value>
   </data>
+  <data name="gbPixelFormat.ToolTipText" xml:space="preserve">
+    <value>Check to change the pixel format. When changing to a lower bit-per-pixel format, it is recommended to enable dithering.</value>
+  </data>
   <data name="gbQuantizer.Text" xml:space="preserve">
     <value>&amp;Quantizer</value>
   </data>
+  <data name="gbQuantizer.ToolTipText" xml:space="preserve">
+    <value>Check to use a quantizer. Quantizing allows reducing the number of colors even without changing the pixel format.
+For lower bit-per-pixel quantizers it is recommended to enable dithering.</value>
+  </data>
+  <data name="cmbQuantizer.ToolTipText" xml:space="preserve">
+    <value>The desired quantizer to use. For lower bit-per-pixel formats it is recommended to enable dithering as well.</value>
+  </data>
+  <data name="chbLinearColorSpace.Text" xml:space="preserve">
+    <value>Use &amp;Linear Color Space</value>
+  </data>
+  <data name="chbLinearColorSpace.ToolTipText" xml:space="preserve">
+    <value>When checked, quantizing (and dithering if selected) uses the linear color space rather than sRGB.
+
+Affects blending with the background color if the target pixel format or the quantizer does not support transparency.
+Affects also how the result colors are determined for indexed (palette based) pixel formats, though this can be ignored if the quantizer uses direct mapping.
+
+Please note though that if the result has transparency, the blending with the background is performed by the rendering engine.
+Use quantizers without alpha or set alpha threshold to zero to avoid mixing sRGB and linear blending.
+
+Similarly, resizing the preview image is also performed by the rendering engine, which is not affected by this option.
+The apparent brightness of the result might be wrong when resized in the sRGB color space. Check the result in its actual size to avoid this issue.</value>
+  </data>
+  <data name="lblBackColor.Text" xml:space="preserve">
+    <value>Back Color:</value>
+  </data>
+  <data name="btnBackColor.Text" xml:space="preserve">
+    <value>Pick Color</value>
+  </data>
+  <data name="btnBackColor.ToolTipText" xml:space="preserve">
+    <value>When the selected pixel format or quantizer does not support gradient transparency, or dithering is selected, then specifies the background color.
+Alpha pixels that are considered opaque are blended with this color during the processing.</value>
+  </data>
+  <data name="lblAlphaThreshold.Text" xml:space="preserve">
+    <value>Alpha Threshold:</value>
+  </data>
+  <data name="tbAlphaThreshold.ToolTipText" xml:space="preserve">
+    <value>Specifies the alpha threshold under which the pixel is considered transparent.
+If 0, then the result will not have any transparent pixels.
+If 255, then all partially transparent pixels will turn transparent.</value>
+  </data>
+  <data name="lblWhiteThreshold.Text" xml:space="preserve">
+    <value>White Threshold:</value>
+  </data>
+  <data name="tbWhiteThreshold.ToolTipText" xml:space="preserve">
+    <value>Determines the lowest input brightness between 0 and 255 to consider the result color white.</value>
+  </data>
+  <data name="lblNumColors.Text" xml:space="preserve">
+    <value>Palette Size:</value>
+  </data>
+  <data name="tbNumColors.ToolTipText" xml:space="preserve">
+    <value>Determines the maximum number of allowed colors the quantizer can use.
+The allowed maximum value depends on the pixel format of the result.</value>
+  </data>
+  <data name="chbDirectMapping.Text" xml:space="preserve">
+    <value>Direct Color Mapping</value>
+  </data>
+  <data name="chbDirectMapping.ToolTipText" xml:space="preserve">
+    <value>Check to map any color directly to color palette index instead of searching for the nearest color, which is very fast
+but may end up in a result of a bit higher contrast than the original image.
+
+Uncheck to perform a lookup to determine nearest colors, which may be slower but more accurate.
+
+When this option is enabled color lookup ignores the working color space (though dithering still respects it if selected).</value>
+  </data>
+  <data name="lblBitLevel.Text" xml:space="preserve">
+    <value>Bit Level:</value>
+  </data>
+  <data name="tbBitLevel.ToolTipText" xml:space="preserve">
+    <value>Determines the allowed number of bits used for each color channels.
+Higher value means more accuracy, larger target color space, slower processing and larger memory usage.
+
+For example, if 1, then the result can have no more than 8 colors, or when 2, no more than 64 colors.
+For Octree and Wu quantizers it affects also the maximum number of possible monochromatic shades.
+For example, if 5 (which is the default for Wu quantizer with 256 colors), only 32 monochromatic shades can be differentiated.
+
+⚠️ Caution: The Wu quantizer consumes at least 650 MB with the highest value, even for small images.</value>
+  </data>
   <data name="gbDitherer.Text" xml:space="preserve">
     <value>&amp;Ditherer</value>
+  </data>
+  <data name="gbDitherer.ToolTipText" xml:space="preserve">
+    <value>Check to use a ditherer. For high bit-per-pixel formats it makes little sense as for those its only practical effect is just removing possible partial transparency.</value>
+  </data>
+  <data name="cmbDitherer.ToolTipText" xml:space="preserve">
+    <value>The selected ditherer.
+Error diffusion ditherers do not support parallel processing but usually provide high quality.
+Others support parallel processing but the strength auto-calibration might not be optimal for a palette with unevenly distributed colors.</value>
+  </data>
+  <data name="lblStrength.Text" xml:space="preserve">
+    <value>Strength:</value>
+  </data>
+  <data name="tbStrength.ToolTipText" xml:space="preserve">
+    <value>The strength of the ditherer, or 0 to auto calibrate strength.</value>
+  </data>
+  <data name="chbSerpentineProcessing.Text" xml:space="preserve">
+    <value>Serpentine Processing</value>
+  </data>
+  <data name="chbSerpentineProcessing.ToolTipText" xml:space="preserve">
+    <value>When checked, the error propagation direction is altered from line to line.
+This helps to reduce the ripple effect of the error diffusion dithering.</value>
+  </data>
+  <data name="chbByBrightness.Text" xml:space="preserve">
+    <value>Process by Brightness</value>
+  </data>
+  <data name="chbByBrightness.ToolTipText" xml:space="preserve">
+    <value>Determines the way the error propagation is applied to the neighboring pixels.
+
+In indetermined state (the default value) the method is detected from the pixel format or the selected quantizer.
+When unchecked, the quantization error is calculated for each color channels independently.
+When checked, the error propagation of the quantization error is performed by brightness based on human eye perception.</value>
+  </data>
+  <data name="lblSeed.Text" xml:space="preserve">
+    <value>Seed:</value>
+  </data>
+  <data name="txtSeed.ToolTipText" xml:space="preserve">
+    <value>An integer seed to be used to produce a specific random dithering pattern.
+Leave it empty to use a random seed.
+
+Using a specific seed disables parallel processing, which impacts performance on a multi-core CPU.</value>
   </data>
   <data name="btnOK.Text" xml:space="preserve">
     <value>&amp;OK</value>
