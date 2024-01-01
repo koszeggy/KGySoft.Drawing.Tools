@@ -270,7 +270,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         }
 
         protected override bool AffectsPreview(string propertyName)
-            => propertyName.In(nameof(PixelFormat), nameof(ChangePixelFormat), nameof(UseQuantizer), nameof(UseDitherer));
+            => propertyName is nameof(PixelFormat) or nameof(ChangePixelFormat) or nameof(UseQuantizer) or nameof(UseDitherer);
 
         protected override GenerateTaskBase CreateGenerateTask()
             => new GenerateTask(ChangePixelFormat ? PixelFormat : originalPixelFormat,
@@ -311,8 +311,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void Selector_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName.In(nameof(QuantizerSelectorViewModel.Quantizer), nameof(QuantizerSelectorViewModel.CreateQuantizerError),
-                nameof(DithererSelectorViewModel.Ditherer), nameof(DithererSelectorViewModel.CreateDithererError)))
+            if (e.PropertyName is nameof(QuantizerSelectorViewModel.Quantizer) or nameof(QuantizerSelectorViewModel.CreateQuantizerError)
+                or nameof(DithererSelectorViewModel.Ditherer) or nameof(DithererSelectorViewModel.CreateDithererError))
             {
                 Validate();
             }
