@@ -6,6 +6,18 @@
 ===============================================================================
 
 ~~~~~~~~~
+* v4.0.0:
+~~~~~~~~~
+
+* KGySoft.Drawing.ImagingTools.exe
+==================================
+* Pixel Format/Quantizing/Dithering:
+  + Improved configuration of parameters
+  + New localizable tool tips for every parameter
+  - Fixing quantizing CMYK images when no new pixel format is selected 
+
+
+~~~~~~~~~
 + v3.1.0:
 ~~~~~~~~~
 

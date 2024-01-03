@@ -155,6 +155,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #endregion
 
+        #region Private Properties
+
+        private PixelFormat OriginalPixelFormat => originalPixelFormat == PixelFormatExtensions.Format32bppCmyk ? PixelFormat.Format24bppRgb : originalPixelFormat;
+
+        #endregion
+
         #endregion
 
         #region Constructors
@@ -253,7 +259,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
             else if (bppHint > originalBpp)
                 result.AddInfo(nameof(QuantizerSelectorViewModel.Quantizer), Res.InfoMessageQuantizerMayHaveNoEffect);
-            else if (bppHint == 32 && originalBpp >= 32 && !originalPixelFormat.HasAlpha())
+            else if (bppHint == 32 && originalBpp == 32 && !originalPixelFormat.HasAlpha())
                 result.AddInfo(nameof(QuantizerSelectorViewModel.Quantizer), Res.InfoMessageArgbQuantizerHasNoEffect);
 
             if (bppHint < originalBpp && !useDitherer && quantizerPixelFormat.CanBeDithered())
@@ -273,14 +279,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             => propertyName is nameof(PixelFormat) or nameof(ChangePixelFormat) or nameof(UseQuantizer) or nameof(UseDitherer);
 
         protected override GenerateTaskBase CreateGenerateTask()
-            => new GenerateTask(ChangePixelFormat ? PixelFormat : originalPixelFormat,
+            => new GenerateTask(ChangePixelFormat ? PixelFormat : OriginalPixelFormat,
                 UseQuantizer ? QuantizerSelectorViewModel.Quantizer : null,
                 UseDitherer ? DithererSelectorViewModel.Ditherer : null);
 
         protected override bool MatchesSettings(GenerateTaskBase task)
         {
             var t = (GenerateTask)task;
-            return t.PixelFormat == (ChangePixelFormat ? PixelFormat : originalPixelFormat)
+            return t.PixelFormat == (ChangePixelFormat ? PixelFormat : OriginalPixelFormat)
                 && t.Quantizer == (UseQuantizer ? QuantizerSelectorViewModel.Quantizer : null)
                 && t.Ditherer == (UseDitherer ? DithererSelectorViewModel.Ditherer : null);
         }
