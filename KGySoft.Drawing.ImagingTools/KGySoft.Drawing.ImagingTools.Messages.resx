@@ -471,7 +471,7 @@ The debugger visualizer may will not work for .NET Core projects.</value>
 then colors will be quantized to the 32 bit ARGB color space during the conversion even if there is no quantizer used.</value>
   </data>
   <data name="WarningMessage_QuantizerTooWideFormat" xml:space="preserve">
-    <value>The selected quantizer uses more colors than the selected pixel format '{0}' supports.
+    <value>The selected quantizer uses more colors than the original or selected pixel format '{0}' supports.
 Either select at least {1} pixel format or use another quantizer that uses no more colors than '{0}' can represent;
 otherwise, the result might not be optimal even with dithering.</value>
   </data>
@@ -530,7 +530,7 @@ Are you sure you want to continue?</value>
 It is possible that is has no effect.</value>
   </data>
   <data name="InfoMessage_ArgbQuantizerHasNoEffect" xml:space="preserve">
-    <value>The selected quantizer can only remove partial transparency but it has practically no effect as source has no alpha.</value>
+    <value>The selected quantizer can only remove partial transparency, but it has practically no effect as source has no alpha.</value>
   </data>
   <data name="InfoMessage_SamePixelFormat" xml:space="preserve">
     <value>The selected pixel format is the same as the original one.</value>
@@ -783,6 +783,9 @@ For lower bit-per-pixel quantizers it is recommended to enable dithering.</value
   <data name="PredefinedColorsQuantizer.SystemDefault8BppPalette" xml:space="preserve">
     <value>System default 8 bpp palette (224 different colors and transparency)</value>
   </data>
+  <data name="PredefinedColorsQuantizer.Argb1111" xml:space="preserve">
+    <value>ARGB1111 palette (8 colors and transparency)</value>
+  </data>
   <data name="PredefinedColorsQuantizer.Rgb332" xml:space="preserve">
     <value>RGB332 palette (256 colors)</value>
   </data>
@@ -799,7 +802,7 @@ For lower bit-per-pixel quantizers it is recommended to enable dithering.</value
     <value>RGB888 color space (16.7M colors)</value>
   </data>
   <data name="PredefinedColorsQuantizer.Argb8888" xml:space="preserve">
-    <value>ARGB8888 color space (16.7M colors with 256 shades of alpha)</value>
+    <value>ARGB8888 color space (16.7M colors with 256 levels of transparency)</value>
   </data>
   <data name="OptimizedPaletteQuantizer.Octree" xml:space="preserve">
     <value>Optimized palette (Octree algorithm)</value>

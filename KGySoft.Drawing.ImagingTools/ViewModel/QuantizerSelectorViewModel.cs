@@ -19,10 +19,12 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Reflection;
 
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.Reflection;
 
 #endregion
 
@@ -100,16 +102,21 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private static IList<QuantizerDescriptor> InitQuantizers() =>
             new List<QuantizerDescriptor>
             {
-                // TODO
                 //new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.FromPixelFormat)),
                 new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.BlackAndWhite)),
-                //new QuantizerDescriptor(typeof(PredefinedColorsQuantizer).GetMethod(nameof(PredefinedColorsQuantizer.FromCustomPalette), new[] { typeof(Color[]), typeof(Color), typeof(byte) })!),
                 new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.Grayscale4)),
                 new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.Grayscale16)),
                 new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.Grayscale)),
                 //new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.SystemDefault1BppPalette)),
                 new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.SystemDefault4BppPalette)),
                 new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.SystemDefault8BppPalette)),
+                new QuantizerDescriptor($"{nameof(PredefinedColorsQuantizer)}.Argb1111",
+                    (MethodInfo)Reflector.MemberOf(() => PredefinedColorsQuantizer.FromCustomPalette(Reflector.EmptyArray<Color>(), default, default)),
+                    true, true,
+                    new Dictionary<string, object?>
+                    {
+                        ["palette"] = new[] { Color.Black, Color.Red, Color.Lime, Color.Blue, Color.Yellow, Color.Cyan, Color.Magenta, Color.White, Color.Transparent }
+                    }),
                 new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.Rgb332)),
                 new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.Rgb555)),
                 new QuantizerDescriptor(typeof(PredefinedColorsQuantizer), nameof(PredefinedColorsQuantizer.Rgb565)),
@@ -146,17 +153,16 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             switch (e.PropertyName)
             {
                 case nameof(PixelFormat):
-                    var selectedQuantizer = SelectedQuantizer ?? Quantizers[0];
                     var pixelFormat = (PixelFormat)e.NewValue!;
-                    AlphaThresholdEnabled = (pixelFormat.HasAlpha() || pixelFormat.IsIndexed()) && (selectedQuantizer.HasSingleBitAlpha || selectedQuantizer.HasAlpha && UseDithering);
+                    AlphaThresholdEnabled = (pixelFormat.HasAlpha() || pixelFormat.IsIndexed()) && SelectedQuantizer is { HasAlpha: true };
                     AdjustMaxColors();
                     break;
                 case nameof(SelectedQuantizer):
-                    selectedQuantizer = (QuantizerDescriptor)e.NewValue!;
+                    var selectedQuantizer = (QuantizerDescriptor)e.NewValue!;
                     pixelFormat = PixelFormat;
                     BackColorEnabled = !selectedQuantizer.HasAlpha || selectedQuantizer.HasSingleBitAlpha || UseDithering;
                     AlphaThresholdVisible = selectedQuantizer.HasAlpha;
-                    AlphaThresholdEnabled = (pixelFormat.HasAlpha() || pixelFormat.IsIndexed()) && (selectedQuantizer.HasSingleBitAlpha || selectedQuantizer.HasAlpha && UseDithering);
+                    AlphaThresholdEnabled = (pixelFormat.HasAlpha() || pixelFormat.IsIndexed()) && selectedQuantizer.HasAlpha;
                     WhiteThresholdVisible = selectedQuantizer.HasWhiteThreshold;
                     NumColorsVisible = selectedQuantizer.IsOptimized;
                     DirectMappingVisible = selectedQuantizer.HasDirectMapping;

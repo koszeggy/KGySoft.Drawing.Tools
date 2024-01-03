@@ -17,12 +17,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.Linq;
 using System.Reflection;
 
-using KGySoft.CoreLibraries;
 using KGySoft.Drawing.Imaging;
 
 #endregion
@@ -34,6 +31,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
         #region Fields
 
         private readonly ParameterInfo[] parameters;
+        private readonly Dictionary<string, object?>? parameterValues;
         private readonly string displayName;
 
         #endregion
@@ -57,11 +55,21 @@ namespace KGySoft.Drawing.ImagingTools.Model
             displayName = Res.Get($"{type.Name}.{methodName}");
             Method = type.GetMethod(methodName)!;
             parameters = Method.GetParameters();
-            IsOptimized = Method.DeclaringType == typeof(OptimizedPaletteQuantizer);
+            IsOptimized = type == typeof(OptimizedPaletteQuantizer);
             HasAlpha = parameters.Any(p => p.Name == "alphaThreshold");
-            HasSingleBitAlpha = IsOptimized || Method.Name is nameof(PredefinedColorsQuantizer.Argb1555) or nameof(PredefinedColorsQuantizer.SystemDefault8BppPalette);
-            HasWhiteThreshold = Method.Name == nameof(PredefinedColorsQuantizer.BlackAndWhite);
+            HasSingleBitAlpha = IsOptimized || methodName is nameof(PredefinedColorsQuantizer.Argb1555) or nameof(PredefinedColorsQuantizer.SystemDefault8BppPalette);
+            HasWhiteThreshold = methodName == nameof(PredefinedColorsQuantizer.BlackAndWhite);
             HasDirectMapping = parameters.Any(p => p.Name == "directMapping");
+        }
+
+        internal QuantizerDescriptor(string resName, MethodInfo method, bool hasAlpha, bool hasSingleBitAlpha, Dictionary<string, object?>? parameterValues)
+        {
+            displayName = Res.Get(resName);
+            HasAlpha = hasAlpha;
+            HasSingleBitAlpha = hasSingleBitAlpha;
+            Method = method;
+            parameters = Method.GetParameters();
+            this.parameterValues = parameterValues;
         }
 
         #endregion
@@ -78,7 +86,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         internal IQuantizer Create(IQuantizerSettings settings)
         {
-            object[] args = new object[parameters.Length];
+            object?[] args = new object[parameters.Length];
             for (int i = 0; i < parameters.Length; i++)
             {
                 args[i] = parameters[i].Name switch
@@ -88,7 +96,9 @@ namespace KGySoft.Drawing.ImagingTools.Model
                     "whiteThreshold" => settings.WhiteThreshold,
                     "directMapping" => settings.DirectMapping,
                     "maxColors" => settings.PaletteSize,
-                    _ => throw new InvalidOperationException($"Unhandled parameter: {parameters[i].Name}")
+                    _ => parameterValues?.TryGetValue(parameters[i].Name, out object? value) == true
+                        ? value
+                        : throw new InvalidOperationException($"Unhandled parameter: {parameters[i].Name}")
                 };
             }
 
