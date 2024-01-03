@@ -765,6 +765,51 @@ For lower bit-per-pixel quantizers it is recommended to enable dithering.</value
   <data name="cmbQuantizer.ToolTipText" xml:space="preserve">
     <value>The desired quantizer to use. For lower bit-per-pixel formats it is recommended to enable dithering as well.</value>
   </data>
+  <data name="PredefinedColorsQuantizer.BlackAndWhite" xml:space="preserve">
+    <value>Black and White</value>
+  </data>
+  <data name="PredefinedColorsQuantizer.Grayscale4" xml:space="preserve">
+    <value>Grayscale (4 shades)</value>
+  </data>
+    <data name="PredefinedColorsQuantizer.Grayscale16" xml:space="preserve">
+    <value>Grayscale (16 shades)</value>
+  </data>
+  <data name="PredefinedColorsQuantizer.Grayscale" xml:space="preserve">
+    <value>Grayscale (256 shades)</value>
+  </data>
+  <data name="PredefinedColorsQuantizer.SystemDefault4BppPalette" xml:space="preserve">
+    <value>System default 4 bpp palette (16 standard basic colors)</value>
+  </data>
+  <data name="PredefinedColorsQuantizer.SystemDefault8BppPalette" xml:space="preserve">
+    <value>System default 8 bpp palette (224 different colors and transparency)</value>
+  </data>
+  <data name="PredefinedColorsQuantizer.Rgb332" xml:space="preserve">
+    <value>RGB332 palette (256 colors)</value>
+  </data>
+  <data name="PredefinedColorsQuantizer.Rgb555" xml:space="preserve">
+    <value>RGB555 color space (32,768 colors)</value>
+  </data>
+  <data name="PredefinedColorsQuantizer.Rgb565" xml:space="preserve">
+    <value>RGB565 color space (65,536 colors)</value>
+  </data>
+  <data name="PredefinedColorsQuantizer.Argb1555" xml:space="preserve">
+    <value>ARGB1555 color space (32,768 different colors and transparency)</value>
+  </data>
+  <data name="PredefinedColorsQuantizer.Rgb888" xml:space="preserve">
+    <value>RGB888 color space (16.7M colors)</value>
+  </data>
+  <data name="PredefinedColorsQuantizer.Argb8888" xml:space="preserve">
+    <value>ARGB8888 color space (16.7M colors with 256 shades of alpha)</value>
+  </data>
+  <data name="OptimizedPaletteQuantizer.Octree" xml:space="preserve">
+    <value>Optimized palette (Octree algorithm)</value>
+  </data>
+  <data name="OptimizedPaletteQuantizer.MedianCut" xml:space="preserve">
+    <value>Optimized palette (Median Cut algorithm)</value>
+  </data>
+  <data name="OptimizedPaletteQuantizer.Wu" xml:space="preserve">
+    <value>Optimized palette (Wu's algorithm)</value>
+  </data>
   <data name="chbLinearColorSpace.Text" xml:space="preserve">
     <value>Use &amp;Linear Color Space</value>
   </data>
@@ -772,7 +817,7 @@ For lower bit-per-pixel quantizers it is recommended to enable dithering.</value
     <value>When checked, quantizing (and dithering if selected) uses the linear color space rather than sRGB.
 
 Affects blending with the background color if the target pixel format or the quantizer does not support transparency.
-Affects also how the result colors are determined for indexed (palette based) pixel formats, though this can be ignored if the quantizer uses direct mapping.
+Affects also how the result colors are determined for indexed (palette based) pixel formats, though this may be ignored if the quantizer uses direct mapping.
 
 Please note though that if the result has transparency, the blending with the background is performed by the rendering engine.
 Use quantizers without alpha or set alpha threshold to zero to avoid mixing sRGB and linear blending.
@@ -820,7 +865,7 @@ but may end up in a result of a bit higher contrast than the original image.
 
 Uncheck to perform a lookup to determine nearest colors, which may be slower but more accurate.
 
-When this option is enabled color lookup ignores the working color space (though dithering still respects it if selected).</value>
+When this option is enabled color lookup may ignore the working color space (though dithering still respects it if selected).</value>
   </data>
   <data name="lblBitLevel.Text" xml:space="preserve">
     <value>Bit Level:</value>
@@ -848,6 +893,57 @@ Others support parallel processing but the strength auto-calibration might not b
   </data>
   <data name="lblStrength.Text" xml:space="preserve">
     <value>Strength:</value>
+  </data>  
+  <data name="OrderedDitherer.Bayer2x2" xml:space="preserve">
+    <value>Bayer 2x2 (Ordered)</value>
+  </data>
+  <data name="OrderedDitherer.Bayer3x3" xml:space="preserve">
+    <value>Bayer 3x3 (Ordered)</value>
+  </data>
+  <data name="OrderedDitherer.Bayer4x4" xml:space="preserve">
+    <value>Bayer 4x4 (Ordered)</value>
+  </data>
+  <data name="OrderedDitherer.Bayer8x8" xml:space="preserve">
+    <value>Bayer 8x8 (Ordered)</value>
+  </data>
+  <data name="OrderedDitherer.DottedHalftone" xml:space="preserve">
+    <value>Dotted Halftone (Ordered)</value>
+  </data>
+  <data name="OrderedDitherer.BlueNoise" xml:space="preserve">
+    <value>Blue Noise (Ordered)</value>
+  </data>
+  <data name="ErrorDiffusionDitherer.Atkinson" xml:space="preserve">
+    <value>Atkinson (Error Diffusion)</value>
+  </data>
+  <data name="ErrorDiffusionDitherer.Burkes" xml:space="preserve">
+    <value>Burkes (Error Diffusion)</value>
+  </data>
+  <data name="ErrorDiffusionDitherer.FloydSteinberg" xml:space="preserve">
+    <value>Floyd-Steinberg (Error Diffusion)</value>
+  </data>
+  <data name="ErrorDiffusionDitherer.JarvisJudiceNinke" xml:space="preserve">
+    <value>Jarvis-Judice-Ninke (Error Diffusion)</value>
+  </data>
+  <data name="ErrorDiffusionDitherer.Sierra3" xml:space="preserve">
+    <value>Sierra 3 (Error Diffusion)</value>
+  </data>
+  <data name="ErrorDiffusionDitherer.Sierra2" xml:space="preserve">
+    <value>Sierra 2 (Error Diffusion)</value>
+  </data>
+  <data name="ErrorDiffusionDitherer.SierraLite" xml:space="preserve">
+    <value>Sierra Lite (Error Diffusion)</value>
+  </data>
+  <data name="ErrorDiffusionDitherer.StevensonArce" xml:space="preserve">
+    <value>Stevenson-Arce (Error Diffusion)</value>
+  </data>
+  <data name="ErrorDiffusionDitherer.Stucki" xml:space="preserve">
+    <value>Stucki (Error Diffusion)</value>
+  </data>
+  <data name="RandomNoiseDitherer" xml:space="preserve">
+    <value>Random White Noise</value>
+  </data>
+  <data name="InterleavedGradientNoiseDitherer" xml:space="preserve">
+    <value>Interleaved Gradient Noise</value>
   </data>
   <data name="tbStrength.ToolTipText" xml:space="preserve">
     <value>The strength of the ditherer, or 0 to auto calibrate strength.</value>

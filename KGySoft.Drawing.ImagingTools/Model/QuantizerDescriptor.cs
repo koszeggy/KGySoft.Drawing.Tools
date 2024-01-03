@@ -34,6 +34,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
         #region Fields
 
         private readonly ParameterInfo[] parameters;
+        private readonly string displayName;
 
         #endregion
 
@@ -51,18 +52,15 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #region Constructors
 
-        internal QuantizerDescriptor(Type type, string methodName) : this(type.GetMethod(methodName)!)
+        internal QuantizerDescriptor(Type type, string methodName)
         {
-        }
-
-        internal QuantizerDescriptor(MethodInfo method)
-        {
-            Method = method;
-            parameters = method.GetParameters();
-            IsOptimized = method.DeclaringType == typeof(OptimizedPaletteQuantizer);
+            displayName = Res.Get($"{type.Name}.{methodName}");
+            Method = type.GetMethod(methodName)!;
+            parameters = Method.GetParameters();
+            IsOptimized = Method.DeclaringType == typeof(OptimizedPaletteQuantizer);
             HasAlpha = parameters.Any(p => p.Name == "alphaThreshold");
-            HasSingleBitAlpha = IsOptimized || method.Name is nameof(PredefinedColorsQuantizer.Argb1555) or nameof(PredefinedColorsQuantizer.SystemDefault8BppPalette);
-            HasWhiteThreshold = method.Name == nameof(PredefinedColorsQuantizer.BlackAndWhite);
+            HasSingleBitAlpha = IsOptimized || Method.Name is nameof(PredefinedColorsQuantizer.Argb1555) or nameof(PredefinedColorsQuantizer.SystemDefault8BppPalette);
+            HasWhiteThreshold = Method.Name == nameof(PredefinedColorsQuantizer.BlackAndWhite);
             HasDirectMapping = parameters.Any(p => p.Name == "directMapping");
         }
 
@@ -72,7 +70,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #region Public Methods
 
-        public override string ToString() => $"{Method.DeclaringType!.Name}.{Method.Name}";
+        public override string ToString() => displayName;
 
         #endregion
 

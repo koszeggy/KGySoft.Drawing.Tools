@@ -37,6 +37,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
         private readonly CreateInstanceAccessor? ctor;
         private readonly ParameterInfo[]? parameters;
         private readonly PropertyAccessor? property;
+        private readonly string displayName;
 
         #endregion
 
@@ -60,6 +61,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
             switch (member)
             {
                 case ConstructorInfo ci:
+                    displayName = Res.Get(ci.DeclaringType!.Name);
                     parameters = ci.GetParameters();
                     ctor = CreateInstanceAccessor.GetAccessor(ci);
                     HasStrength = parameters.Any(p => p.Name == "strength");
@@ -67,6 +69,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
                     break;
 
                 case PropertyInfo pi:
+                    displayName = Res.Get($"{pi.DeclaringType!.Name}.{pi.Name}");
                     property = PropertyAccessor.GetAccessor(pi);
                     HasStrength = pi.DeclaringType == typeof(OrderedDitherer);
                     HasSerpentineProcessing = HasByBrightness = pi.DeclaringType == typeof(ErrorDiffusionDitherer);
@@ -85,9 +88,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #region Public Methods
 
-        public override string ToString() => ctor != null
-            ? ctor.MemberInfo.DeclaringType!.Name
-            : $"{property!.MemberInfo.DeclaringType!.Name}.{property.MemberInfo.Name}";
+        public override string ToString() => displayName;
 
         #endregion
 

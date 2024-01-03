@@ -82,10 +82,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Static Methods
 
+        // Note that it evaluates the body whenever it's called, so it's always initialized by the current language.
         private static IList<DithererDescriptor> InitDitherers() =>
             new List<DithererDescriptor>
             {
-                // TODO
                 //new DithererDescriptor(typeof(OrderedDitherer).GetConstructor(new[] { typeof(byte[,]), typeof(float) })),
                 new DithererDescriptor(typeof(OrderedDitherer), nameof(OrderedDitherer.Bayer2x2)),
                 new DithererDescriptor(typeof(OrderedDitherer), nameof(OrderedDitherer.Bayer3x3)),
