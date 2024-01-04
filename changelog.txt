@@ -11,6 +11,7 @@
 
 * KGySoft.Drawing.ImagingTools.exe
 ==================================
+- Zooming keeps the center of the currently visible rectangle
 * Pixel Format/Quantizing/Dithering:
   + Improved configuration of parameters
   + New localizable tool tips for every parameter
