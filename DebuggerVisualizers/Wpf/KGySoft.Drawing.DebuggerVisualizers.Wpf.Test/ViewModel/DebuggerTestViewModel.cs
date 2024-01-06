@@ -58,7 +58,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Test.ViewModel
             nameof(BitmapSource),
             nameof(ImageSource),
             nameof(Palette),
-            nameof(SingleColor),
+            nameof(SingleColorSrgb),
+            nameof(SingleColorLinear),
+            nameof(SingleColorFromProfile),
         };
 
         private static readonly Dictionary<Type, DebuggerVisualizerAttribute> debuggerVisualizers = WpfDebuggerHelper.GetDebuggerVisualizers();
@@ -79,7 +81,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Test.ViewModel
         public bool BitmapSource { get => Get(true); set => Set(value); }
         public bool ImageSource { get => Get<bool>(); set => Set(value); }
         public bool Palette { get => Get<bool>(); set => Set(value); }
-        public bool SingleColor { get => Get<bool>(); set => Set(value); }
+        public bool SingleColorSrgb { get => Get<bool>(); set => Set(value); }
+        public bool SingleColorLinear { get => Get<bool>(); set => Set(value); }
+        public bool SingleColorFromProfile { get => Get<bool>(); set => Set(value); }
 
         public ICommand DirectViewCommand => Get(() => new SimpleCommand(OnViewDirectCommand));
         public ICommand DebugCommand => Get(() => new SimpleCommand(OnDebugCommand));
@@ -213,8 +217,14 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Test.ViewModel
                         : null;
                 }
 
-                if (SingleColor)
-                    return Colors.Black;
+                if (SingleColorSrgb)
+                    return Colors.Red;
+
+                if (SingleColorLinear)
+                    return Color.FromScRgb(1f, 0f, 1f, 0f);
+
+                if (SingleColorFromProfile)
+                    return Color.FromValues([0f, 0f, 1f], new Uri("C:\\Windows\\System32\\spool\\drivers\\color\\AdobeRGB1998.icc"));
 
                 // TODO
                 //if (ImageFromFile)

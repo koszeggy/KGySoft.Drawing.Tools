@@ -15,7 +15,7 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="130"/>
+            <ColumnDefinition Width="160"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
@@ -30,7 +30,9 @@
             <RadioButton IsChecked="{Binding BitmapSource}">BitmapSource</RadioButton>
             <RadioButton IsChecked="{Binding ImageSource}">ImageSource</RadioButton>
             <RadioButton IsChecked="{Binding Palette}">Palette</RadioButton>
-            <RadioButton IsChecked="{Binding SingleColor}">Single Color</RadioButton>
+            <RadioButton IsChecked="{Binding SingleColorSrgb}">Single Color (sRGB)</RadioButton>
+            <RadioButton IsChecked="{Binding SingleColorLinear}">Single Color (Linear)</RadioButton>
+            <RadioButton IsChecked="{Binding SingleColorFromProfile}">Single Color (From Profile)</RadioButton>
 
             <Button Click="{v:EventToCommand Command={Binding DirectViewCommand}, State={Binding DebugCommandState}}">View Directly</Button>
             <Button Click="{v:EventToCommand Command={Binding DebugCommand}, State={Binding DebugCommandState}}">View by Debugger</Button>
