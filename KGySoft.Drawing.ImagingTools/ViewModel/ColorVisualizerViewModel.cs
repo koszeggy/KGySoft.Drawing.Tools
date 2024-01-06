@@ -94,6 +94,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal int? SelectedIndex { get => Get<int?>(); set => Set(value); }
         internal string? InfoText { get => Get<string?>(); set => Set(value); }
         internal string? TitleCaption { get => Get<string?>(); set => Set(value); }
+        internal KeyValuePair<string, string>[]? CustomColorComponents { get => Get<KeyValuePair<string, string>[]>(); set => Set(value); }
 
         #endregion
 

@@ -16,6 +16,7 @@
 #region Usings
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -99,6 +100,44 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
             // VM.InfoText -> txtColor.Text
             CommandBindings.AddPropertyBinding(vm, nameof(ViewModel.InfoText), nameof(txtColor.Text), txtColor);
+
+            // Removing color channel panels if there are custom components (this cannot be undone in this instance)
+            if (vm.CustomColorComponents != null)
+                ApplyCustomColorComponentsLayout();
+        }
+
+        private void ApplyCustomColorComponentsLayout()
+        {
+            #region Local Methods
+
+            static void DestroyPanel(ref Panel? c)
+            {
+                if (c == null)
+                    return;
+
+                c.Parent = null;
+                c.Dispose();
+                c = null;
+            }
+
+            #endregion
+
+            // Already applied
+            if (pnlAlpha == null)
+                return;
+
+            pnlAlpha.Paint -= pnlColor_Paint;
+
+            // We need to remove the color component panels to be able to extend the custom labels
+            DestroyPanel(ref pnlAlpha);
+            DestroyPanel(ref pnlRed);
+            DestroyPanel(ref pnlGreen);
+            DestroyPanel(ref pnlBlue);
+
+            tblColor.SetColumnSpan(lblAlpha, 2);
+            tblColor.SetColumnSpan(lblRed, 2);
+            tblColor.SetColumnSpan(lblGreen, 2);
+            tblColor.SetColumnSpan(lblBlue, 2);
         }
 
         private void InitCommandBindings()
@@ -135,16 +174,17 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
+            if (disposing)
             {
-                components.Dispose();
+                components?.Dispose();
                 alphaPattern?.Dispose();
                 attrTiles?.Dispose();
             }
 
             alphaPattern = null;
             attrTiles = null;
-            pnlAlpha.Paint -= pnlColor_Paint;
+            if (pnlAlpha != null)
+                pnlAlpha.Paint -= pnlColor_Paint;
             pnlColor.Paint -= pnlColor_Paint;
             base.Dispose(disposing);
         }
@@ -174,28 +214,39 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private void UpdateColor()
         {
-            Color color = ViewModel!.Color;
+            ColorVisualizerViewModel vm = ViewModel!;
+            Color color = vm.Color;
             byte a = color.A;
             byte r = color.R;
             byte g = color.G;
             byte b = color.B;
 
-            tbAlpha.Value = a;
-            tbRed.Value = r;
-            tbGreen.Value = g;
-            tbBlue.Value = b;
-
-            lblAlpha.Text = Res.TextAlphaValue(a);
-            lblRed.Text = Res.TextRedValue(r);
-            lblGreen.Text = Res.TextGreenValue(g);
-            lblBlue.Text = Res.TextBlueValue(b);
-
-            pnlAlpha.Invalidate();
-            tbAlpha.BackColor = Color.FromArgb(a, a, a);
-            tbRed.BackColor = pnlRed.BackColor = Color.FromArgb(r, 0, 0);
-            tbGreen.BackColor = pnlGreen.BackColor = Color.FromArgb(0, g, 0);
-            tbBlue.BackColor = pnlBlue.BackColor = Color.FromArgb(0, 0, b);
             pnlColor.Invalidate();
+            KeyValuePair<string, string>[]? customComponents = vm.CustomColorComponents;
+            if (customComponents is null)
+            {
+                tbAlpha.Value = a;
+                tbRed.Value = r;
+                tbGreen.Value = g;
+                tbBlue.Value = b;
+
+                lblAlpha.Text = Res.TextAlphaValue(a);
+                lblRed.Text = Res.TextRedValue(r);
+                lblGreen.Text = Res.TextGreenValue(g);
+                lblBlue.Text = Res.TextBlueValue(b);
+
+                pnlAlpha.Invalidate();
+                tbAlpha.BackColor = Color.FromArgb(a, a, a);
+                tbRed.BackColor = pnlRed.BackColor = Color.FromArgb(r, 0, 0);
+                tbGreen.BackColor = pnlGreen.BackColor = Color.FromArgb(0, g, 0);
+                tbBlue.BackColor = pnlBlue.BackColor = Color.FromArgb(0, 0, b);
+                return;
+            }
+
+            lblAlpha.Text = customComponents.Length > 0 ? $"{customComponents[0].Key}: {customComponents[0].Value}" : String.Empty;
+            lblRed.Text = customComponents.Length > 1 ? $"{customComponents[1].Key}: {customComponents[1].Value}" : String.Empty;
+            lblGreen.Text = customComponents.Length > 2 ? $"{customComponents[2].Key}: {customComponents[2].Value}" : String.Empty;
+            lblBlue.Text = customComponents.Length > 3 ? $"{customComponents[3].Key}: {customComponents[3].Value}" : String.Empty;
         }
 
         #endregion

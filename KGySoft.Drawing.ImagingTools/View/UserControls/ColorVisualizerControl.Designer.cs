@@ -82,6 +82,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.tblColor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tblColor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tblColor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tblColor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tblColor.Size = new System.Drawing.Size(223, 80);
             this.tblColor.TabIndex = 1;
             // 
@@ -261,6 +262,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.txtColor.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtColor.Size = new System.Drawing.Size(247, 105);
             this.txtColor.TabIndex = 1;
+            this.txtColor.TabStop = false;
             this.txtColor.WordWrap = false;
             // 
             // ColorVisualizerControl

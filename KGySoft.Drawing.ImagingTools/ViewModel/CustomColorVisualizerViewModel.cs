@@ -16,6 +16,7 @@
 #region Usings
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -41,6 +42,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             this.colorInfo = colorInfo;
             ReadOnly = true;
             Color = colorInfo.DisplayColor.ToColor();
+            CustomColorComponents = colorInfo.CustomColorComponents;
         }
 
         #endregion
@@ -60,10 +62,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (colorInfo.Name is string name)
                 sb.AppendLine(Res.TitleColor(name));
 
-            if (colorInfo.CustomAttributes.Count > 0)
+            if (colorInfo.CustomAttributes.Count > 0 || colorInfo.CustomColorComponents is { Length: > 4 } )
             {
+                var attrs = new List<KeyValuePair<string, string>>(colorInfo.CustomAttributes);
+                if (colorInfo.CustomColorComponents is { Length: > 4 })
+                    attrs.InsertRange(0, colorInfo.CustomAttributes);
                 sb.AppendLine();
-                sb.Append(Res.InfoCustomProperties(colorInfo.CustomAttributes.Select(a => $"{a.Key}: {a.Value}").Join(Environment.NewLine)));
+                sb.Append(Res.InfoCustomProperties(attrs.Select(a => $"{a.Key}: {a.Value}").Join(Environment.NewLine)));
             }
 
             InfoText = sb.ToString();

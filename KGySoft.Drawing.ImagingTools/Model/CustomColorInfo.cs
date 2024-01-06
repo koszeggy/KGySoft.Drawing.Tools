@@ -15,6 +15,8 @@
 
 #region Usings
 
+using System.Collections.Generic;
+
 using KGySoft.Drawing.Imaging;
 
 #endregion
@@ -37,6 +39,13 @@ namespace KGySoft.Drawing.ImagingTools.Model
         /// Gets or sets a specific display name for the color.
         /// </summary>
         public string? Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets custom color components. If set, then the regular ARGB color components will not be displayed.
+        /// If there are more than four components, then they will be displayed as if they have been added
+        /// to <see cref="CustomObjectInfoBase.CustomAttributes"/>. The order of the components are guaranteed to be preserved.
+        /// </summary>
+        public KeyValuePair<string, string>[]? CustomColorComponents { get; set; }
 
         #endregion
     }
