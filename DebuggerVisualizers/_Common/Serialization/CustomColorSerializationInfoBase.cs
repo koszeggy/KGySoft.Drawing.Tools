@@ -29,7 +29,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
     /// <summary>
     /// The base class for custom debugger visualizers to serialize custom colors.
     /// </summary>
-    public abstract class CustomColorSerializationInfoBase : IDisposable
+    public abstract class CustomColorSerializationInfoBase
     {
         #region Properties
         
@@ -42,24 +42,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 
         #endregion
 
-        #region Protected Properties
-
-        /// <summary>
-        /// Gets or sets an optional backing object that represents the actual color.
-        /// Specify it to prevent the actual object from being garbage collected
-        /// so the possibly native color data of <see cref="ColorInfo"/> will not be released as long as this instance is in use.
-        /// </summary>
-        protected object? BackingObject { get; set; }
-
-        #endregion
-
         #endregion
 
         #region Constructors
 
         /// <summary>
         /// Creates a new instance of the <see cref="CustomColorSerializationInfoBase"/> class for serialization.
-        /// <see cref="ColorInfo"/> and <see cref="BackingObject"/> should be set from the derived constructor.
+        /// <see cref="ColorInfo"/> should be set from the derived constructor.
         /// </summary>
         protected CustomColorSerializationInfoBase()
         {
@@ -81,11 +70,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
         #region Methods
 
         #region Public Methods
-
-        /// <summary>
-        /// Releases this <see cref="CustomBitmapSerializationInfoBase"/> instance.
-        /// </summary>
-        public void Dispose() => Dispose(true);
 
         /// <summary>
         /// Serializes the value of the <see cref="ColorInfo"/> property.
@@ -131,16 +115,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
                 writer.Write(attribute.Value);
             }
         }
-
-        #endregion
-
-        #region Protected Methods
-
-        /// <summary>
-        /// Releases the resource held by this <see cref="CustomColorSerializationInfoBase"/> instance.
-        /// </summary>
-        /// <param name="disposing"><see langword="true"/>, if this instance is being disposed; otherwise, <see langword="false"/>.</param>
-        protected virtual void Dispose(bool disposing) => BackingObject = null;
 
         #endregion
 

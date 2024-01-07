@@ -31,6 +31,11 @@
 =============================================
 * Better support of ScRGB and color profile-based colors.
 
++ KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.dll
+===================================================
++ New visualizer for SKPMColor type
++ New visualizer for SKColorF type
+
 
 ~~~~~~~~~
 + v3.1.0:

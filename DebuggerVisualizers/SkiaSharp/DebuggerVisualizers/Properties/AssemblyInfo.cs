@@ -86,8 +86,18 @@ using SkiaSharp;
     Description = "KGy SOFT SKSurface Debugger Visualizer")]
 
 // SKColor
-[assembly: DebuggerVisualizer(typeof(SKColorDebuggerVisualizer), typeof(SKColorSerializer),
+[assembly: DebuggerVisualizer(typeof(SkiaCustomColorDebuggerVisualizer), typeof(SKColorSerializer),
     Target = typeof(SKColor),
     Description = "KGy SOFT SKColor Debugger Visualizer")]
+
+// SKPMColor
+[assembly: DebuggerVisualizer(typeof(SkiaCustomColorDebuggerVisualizer), typeof(SKPMColorSerializer),
+    Target = typeof(SKPMColor),
+    Description = "KGy SOFT SKPMColor Debugger Visualizer")]
+
+// SKColorF
+[assembly: DebuggerVisualizer(typeof(SkiaCustomColorDebuggerVisualizer), typeof(SKColorFSerializer),
+    Target = typeof(SKColorF),
+    Description = "KGy SOFT SKColorF Debugger Visualizer")]
 
 #endregion
