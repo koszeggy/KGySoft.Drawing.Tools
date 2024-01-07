@@ -23,7 +23,7 @@ using System.Linq;
 using System.Windows.Media;
 
 using KGySoft.CoreLibraries;
-using KGySoft.Drawing.Imaging;
+using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.Wpf;
 
@@ -31,146 +31,52 @@ using KGySoft.Drawing.Wpf;
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization
 {
-    internal sealed class ColorSerializationInfo
+    internal sealed class ColorSerializationInfo : CustomColorSerializationInfoBase
     {
-        #region Nested Types
-
-        private enum ColorType
-        {
-            Srgb,
-            Linear,
-            FromProfile
-        }
-
-        #endregion
-
-        #region Fields
-
-        private readonly Color color;
-
-        #endregion
-
-        #region Properties
-
-        internal CustomColorInfo? ColorInfo { get; private set; }
-
-        #endregion
-
         #region Constructors
 
-        internal ColorSerializationInfo(Color color) => this.color = color;
-
-        internal ColorSerializationInfo(BinaryReader reader) => ReadFrom(reader);
-
-        #endregion
-
-        #region Methods
-
-        #region Internal Methods
-
         [SuppressMessage("ReSharper", "PossiblyImpureMethodCallOnReadonlyVariable", Justification = "Color.GetNativeColorValues is pure")]
-        internal void Write(BinaryWriter bw)
+        internal ColorSerializationInfo(Color color)
         {
-            string asString = color.ToString();
-            ColorType type = color.ColorContext != null ? ColorType.FromProfile
-                : asString.StartsWith("sc#", StringComparison.Ordinal) ? ColorType.Linear
-                : ColorType.Srgb;
-
-            // 1. Type
-            bw.Write((byte)type);
-
-            switch (type)
+            ColorInfo = new CustomColorInfo
             {
-                case ColorType.Srgb:
-                    // 2. Name
-                    bw.Write(asString);
+                Type = nameof(Color),
+                DisplayColor = color.ToColor32()
+            };
 
-                    // 3. Color components
-                    bw.Write(color.A);
-                    bw.Write(color.R);
-                    bw.Write(color.G);
-                    bw.Write(color.B);
-                    break;
+            // Color from profile
+            if (color.ColorContext != null)
+            {
+                float[] values = color.GetNativeColorValues()!;
+                ColorInfo.Name = $"[{values.Select(f => $"{f:R}").Join("; ")}] ({Path.GetFileName(color.ColorContext!.ProfileUri.LocalPath)})";
 
-                case ColorType.Linear:
-                    // 2. Name
-                    bw.Write(asString);
-
-                    // 3. Color components
-                    bw.Write(color.ScA);
-                    bw.Write(color.ScR);
-                    bw.Write(color.ScG);
-                    bw.Write(color.ScB);
-                    break;
-
-                case ColorType.FromProfile:
-                    // 2. Name
-                    float[] values = color.GetNativeColorValues()!;
-                    bw.Write($"[{values.Select(f => $"{f:R}").Join("; ")}] ({Path.GetFileName(color.ColorContext!.ProfileUri.LocalPath)})");
-
-                    // 3. Color components
-                    // 3.a. as 32-bit ARGB for the display color
-                    bw.Write(color.ToColor32().ToArgb());
-
-                    // 3.b. the native components
-                    bw.Write((byte)values.Length);
-                    foreach (float value in values)
-                        bw.Write(value);
-                    break;
-
-                default:
-                    throw new ArgumentOutOfRangeException();
+                ColorInfo.CustomColorComponents = new KeyValuePair<string, string>[values.Length];
+                for (int i = 0; i < values.Length; i++)
+                    ColorInfo.CustomColorComponents[i] = new($"#{i}", $"{values[i]:F6}");
+                
+                return;
             }
+
+            ColorInfo.Name = color.ToString();
+
+            // sRGB color
+            if (!ColorInfo.Name.StartsWith("sc#", StringComparison.Ordinal))
+                return;
+
+            // Linear color
+            ColorInfo.CustomColorComponents = new KeyValuePair<string, string>[]
+            {
+                new(nameof(color.ScA), $"{color.ScA:F6}"),
+                new(nameof(color.ScR), $"{color.ScR:F6}"),
+                new(nameof(color.ScG), $"{color.ScG:F6}"),
+                new(nameof(color.ScB), $"{color.ScB:F6}"),
+            };
         }
 
-        #endregion
-
-        #region Private Methods
-
-        private void ReadFrom(BinaryReader br)
+        internal ColorSerializationInfo(BinaryReader reader)
+            : base(reader)
         {
-            ColorInfo = new CustomColorInfo { Type = nameof(Color) };
-
-            // 1. Type
-            ColorType type = (ColorType)br.ReadByte();
-
-            // 2. Name
-            ColorInfo.Name = br.ReadString();
-
-            // 3. Color components
-            switch (type)
-            {
-                case ColorType.Srgb:
-                    ColorInfo.DisplayColor = new Color32(br.ReadByte(), br.ReadByte(), br.ReadByte(), br.ReadByte());
-                    break;
-
-                case ColorType.Linear:
-                    ColorF asLinear = new ColorF(br.ReadSingle(), br.ReadSingle(), br.ReadSingle(), br.ReadSingle());
-                    ColorInfo.DisplayColor = asLinear.ToColor32();
-                    ColorInfo.CustomColorComponents = new KeyValuePair<string, string>[]
-                    {
-                        new(nameof(Color.ScA), $"{asLinear.A:F6}"),
-                        new(nameof(Color.ScR), $"{asLinear.R:F6}"),
-                        new(nameof(Color.ScG), $"{asLinear.G:F6}"),
-                        new(nameof(Color.ScB), $"{asLinear.B:F6}")
-                    };
-                    break;
-
-                case ColorType.FromProfile:
-                    ColorInfo.DisplayColor = Color32.FromArgb(br.ReadInt32());
-                    int channelCount = br.ReadByte();
-                    ColorInfo.CustomColorComponents = new KeyValuePair<string, string>[channelCount];
-                    for (int i = 0; i < channelCount; i++)
-                        ColorInfo.CustomColorComponents[i] = new($"#{i}", $"{br.ReadSingle():F6}");
-
-                    break;
-
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
         }
-
-        #endregion
 
         #endregion
     }
