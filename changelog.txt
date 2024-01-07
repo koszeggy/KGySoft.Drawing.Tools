@@ -21,9 +21,9 @@
   + KGySoft.Drawing.ImagingTools.Model namespace:
     + New CustomColorInfo class: New CustomColorComponents property
 
-+ KGySoft.Drawing.DebuggerVisualizers.Wpf.dll
+* KGySoft.Drawing.DebuggerVisualizers.Wpf.dll
 =============================================
-+ Better support of ScRGB and color profile-based colors.
+* Better support of ScRGB and color profile-based colors.
 
 
 ~~~~~~~~~
