@@ -96,7 +96,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
                     "whiteThreshold" => settings.WhiteThreshold,
                     "directMapping" => settings.DirectMapping,
                     "maxColors" => settings.PaletteSize,
-                    _ => parameterValues?.TryGetValue(parameters[i].Name, out object? value) == true
+                    _ => parameterValues?.TryGetValue(parameters[i].Name!, out object? value) == true
                         ? value
                         : throw new InvalidOperationException($"Unhandled parameter: {parameters[i].Name}")
                 };

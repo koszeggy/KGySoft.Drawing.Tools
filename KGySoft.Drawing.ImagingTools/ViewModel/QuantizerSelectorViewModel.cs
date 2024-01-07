@@ -181,7 +181,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             base.OnPropertyChanged(e);
 
-            if (affectsQuantizer.Contains(e.PropertyName))
+            if (affectsQuantizer.Contains(e.PropertyName!))
                 ResetQuantizer();
         }
 

@@ -130,7 +130,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             base.OnPropertyChanged(e);
 
-            if (affectsDitherer.Contains(e.PropertyName))
+            if (affectsDitherer.Contains(e.PropertyName!))
                 ResetDitherer();
         }
 
