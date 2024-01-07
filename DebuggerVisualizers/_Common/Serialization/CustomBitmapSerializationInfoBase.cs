@@ -66,18 +66,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
         }
 
         /// <summary>
-        /// Creates a new instance of the <see cref="CustomBitmapSerializationInfoBase"/> class for serialization.
-        /// </summary>
-        /// <param name="bitmapInfo">A <see cref="CustomBitmapInfo"/> containing information about a specific bitmap.</param>
-        /// <param name="backingObject">An optional object that represents the actual bitmap. Specify it to prevent the actual object from being garbage collected
-        /// so the bitmap data of <paramref name="bitmapInfo"/> will not be released as long as this instance is in use.</param>
-        protected CustomBitmapSerializationInfoBase(CustomBitmapInfo bitmapInfo, object? backingObject = null)
-        {
-            this.BackingObject = backingObject;
-            BitmapInfo = bitmapInfo ?? throw new ArgumentNullException(nameof(bitmapInfo), PublicResources.ArgumentNull);
-        }
-
-        /// <summary>
         /// Creates a new instance of the <see cref="CustomBitmapSerializationInfoBase"/> class for deserialization.
         /// </summary>
         /// <param name="reader"></param>
@@ -98,10 +86,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
         /// Releases this <see cref="CustomBitmapSerializationInfoBase"/> instance.
         /// </summary>
         public void Dispose() => Dispose(true);
-
-        #endregion
-
-        #region Public Methods
 
         /// <summary>
         /// Serializes the value of the <see cref="BitmapInfo"/> property.
