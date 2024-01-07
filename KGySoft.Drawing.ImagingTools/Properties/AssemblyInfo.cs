@@ -1,6 +1,27 @@
-﻿using System.Reflection;
+﻿#region Copyright
+
+///////////////////////////////////////////////////////////////////////////////
+//  File: AssemblyInfo.cs
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//
+//  You should have received a copy of the LICENSE file at the top-level
+//  directory of this distribution.
+//
+//  Please refer to the LICENSE file if you want to use this source code.
+///////////////////////////////////////////////////////////////////////////////
+
+#endregion
+
+#region Usings
+
+using System.Reflection;
 using System.Resources;
 using System.Runtime.InteropServices;
+
+#endregion
+
+#region Assembly Attributes
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
@@ -40,3 +61,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyInformationalVersion("3.1.0")]
 
 [assembly: NeutralResourcesLanguage("en")]
+
+#endregion

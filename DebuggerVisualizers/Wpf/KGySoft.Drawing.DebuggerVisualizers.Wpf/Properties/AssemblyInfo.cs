@@ -1,4 +1,21 @@
-﻿using System.Diagnostics;
+﻿#region Copyright
+
+///////////////////////////////////////////////////////////////////////////////
+//  File: AssemblyInfo.cs
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//
+//  You should have received a copy of the LICENSE file at the top-level
+//  directory of this distribution.
+//
+//  Please refer to the LICENSE file if you want to use this source code.
+///////////////////////////////////////////////////////////////////////////////
+
+#endregion
+
+#region Usings
+
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Media;
@@ -6,6 +23,10 @@ using System.Windows.Media.Imaging;
 
 using KGySoft.Drawing.DebuggerVisualizers.Wpf.DebuggerVisualizers;
 using KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization;
+
+#endregion
+
+#region Assembly Attributes
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
@@ -58,3 +79,5 @@ using KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization;
 [assembly: DebuggerVisualizer(typeof(BitmapPaletteDebuggerVisualizer), typeof(BitmapPaletteSerializer),
     Target = typeof(BitmapPalette),
     Description = "KGy SOFT BitmapPalette Debugger Visualizer")]
+
+#endregion
