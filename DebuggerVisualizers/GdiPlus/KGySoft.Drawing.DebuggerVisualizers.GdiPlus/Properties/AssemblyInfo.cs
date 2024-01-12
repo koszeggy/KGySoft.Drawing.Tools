@@ -31,8 +31,8 @@ using KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("KGySoft.Drawing.DebuggerVisualizers")]
-[assembly: AssemblyDescription("KGy SOFT Drawing Debugger Visualizers")]
+[assembly: AssemblyTitle("KGySoft.Drawing.DebuggerVisualizers.GdiPlus")]
+[assembly: AssemblyDescription("KGy SOFT Drawing Debugger Visualizers for GDI+")]
 #if DEBUG
 [assembly: AssemblyConfiguration("Debug")]
 #else

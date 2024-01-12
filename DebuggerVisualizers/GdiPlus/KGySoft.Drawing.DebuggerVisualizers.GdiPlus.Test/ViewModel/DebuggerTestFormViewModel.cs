@@ -26,6 +26,7 @@ using System.Linq;
 
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
+using KGySoft.Drawing.Imaging;
 using KGySoft.Reflection;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;
@@ -118,13 +119,14 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.ViewModel
 
         private static Image? FromPalette(IList<Color> palette)
         {
-            var size = palette.Count;
+            int size = palette.Count;
             if (size == 0)
                 return null;
             var result = new Bitmap(size, size, PixelFormat.Format32bppArgb);
-            for (int x = 0; x < size; x++)
+            using IWritableBitmapData bmpData = result.GetWritableBitmapData();
             for (int y = 0; y < size; y++)
-                result.SetPixel(x, y, palette[x]);
+            for (int x = 0; x < size; x++)
+                bmpData.SetPixel(x, y, palette[x]);
             return result;
         }
 
