@@ -15,8 +15,14 @@
 
 #region Usings
 
+using System.Diagnostics;
+using System.Drawing;
 using System.Reflection;
 using System.Runtime.InteropServices;
+
+using KGySoft.Drawing.DebuggerVisualizers.Core.DebuggerVisualizers;
+using KGySoft.Drawing.DebuggerVisualizers.Core.Serialization;
+using KGySoft.Drawing.Imaging;
 
 #endregion
 
@@ -58,5 +64,10 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("4.0.0")]
 [assembly: AssemblyFileVersion("4.0.0")]
 [assembly: AssemblyInformationalVersion("4.0.0")]
+
+// IReadableBitmapData
+[assembly: DebuggerVisualizer(typeof(ReadableBitmapDataDebuggerVisualizer), typeof(ReadableBitmapDataSerializer),
+    Target = typeof(IReadableBitmapData),
+    Description = "KGy SOFT IReadableBitmapData Debugger Visualizer")]
 
 #endregion
