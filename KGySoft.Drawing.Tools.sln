@@ -45,6 +45,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KGySoft.Drawing.DebuggerVis
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageFixer", "VSIX\PackageFixer\PackageFixer.csproj", "{0D4918CA-E4CB-4DB2-8E73-270CE424F861}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{7E5837D3-F588-4D9E-9108-53D04BB85FC3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KGySoft.Drawing.DebuggerVisualizers.Core", "DebuggerVisualizers\Core\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.Core.csproj", "{017FA50B-2F4A-4598-A838-D7FD5C71EE0E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KGySoft.Drawing.DebuggerVisualizers.Core.Test", "DebuggerVisualizers\Core\Test\KGySoft.Drawing.DebuggerVisualizers.Core.Test.csproj", "{5AF020A6-F445-4CEB-8767-92EB94297E52}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -141,6 +147,22 @@ Global
 		{0D4918CA-E4CB-4DB2-8E73-270CE424F861}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0D4918CA-E4CB-4DB2-8E73-270CE424F861}.Release|x86.ActiveCfg = Release|Any CPU
 		{0D4918CA-E4CB-4DB2-8E73-270CE424F861}.Release|x86.Build.0 = Release|Any CPU
+		{017FA50B-2F4A-4598-A838-D7FD5C71EE0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{017FA50B-2F4A-4598-A838-D7FD5C71EE0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{017FA50B-2F4A-4598-A838-D7FD5C71EE0E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{017FA50B-2F4A-4598-A838-D7FD5C71EE0E}.Debug|x86.Build.0 = Debug|Any CPU
+		{017FA50B-2F4A-4598-A838-D7FD5C71EE0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{017FA50B-2F4A-4598-A838-D7FD5C71EE0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{017FA50B-2F4A-4598-A838-D7FD5C71EE0E}.Release|x86.ActiveCfg = Release|Any CPU
+		{017FA50B-2F4A-4598-A838-D7FD5C71EE0E}.Release|x86.Build.0 = Release|Any CPU
+		{5AF020A6-F445-4CEB-8767-92EB94297E52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AF020A6-F445-4CEB-8767-92EB94297E52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AF020A6-F445-4CEB-8767-92EB94297E52}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5AF020A6-F445-4CEB-8767-92EB94297E52}.Debug|x86.Build.0 = Debug|Any CPU
+		{5AF020A6-F445-4CEB-8767-92EB94297E52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AF020A6-F445-4CEB-8767-92EB94297E52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AF020A6-F445-4CEB-8767-92EB94297E52}.Release|x86.ActiveCfg = Release|Any CPU
+		{5AF020A6-F445-4CEB-8767-92EB94297E52}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -160,13 +182,11 @@ Global
 		{D2374DE6-AEBA-41AC-81E2-20F0AFE96956} = {8A185B13-9837-4120-ACFA-D5E260A0867F}
 		{0B4CE14A-370E-478D-9F0D-689210925A6C} = {8A185B13-9837-4120-ACFA-D5E260A0867F}
 		{0D4918CA-E4CB-4DB2-8E73-270CE424F861} = {21E5CF27-6EA7-4333-9D70-558054B58C22}
+		{7E5837D3-F588-4D9E-9108-53D04BB85FC3} = {3E3D796B-752E-45EA-9A24-50A40141EFC1}
+		{017FA50B-2F4A-4598-A838-D7FD5C71EE0E} = {7E5837D3-F588-4D9E-9108-53D04BB85FC3}
+		{5AF020A6-F445-4CEB-8767-92EB94297E52} = {7E5837D3-F588-4D9E-9108-53D04BB85FC3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1C6D13FB-5E94-4260-96B6-74BDDFA8F815}
-	EndGlobalSection
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		VSIX\KGySoft.Drawing.DebuggerVisualizers.Package\KGySoft.Drawing.DebuggerVisualizers.Package.projitems*{5fb996a6-1344-4297-bbf5-6ced26d5a699}*SharedItemsImports = 13
-		VSIX\KGySoft.Drawing.DebuggerVisualizers.Package\KGySoft.Drawing.DebuggerVisualizers.Package.projitems*{6c5b3a51-884f-456b-8e36-071813d2d5ec}*SharedItemsImports = 4
-		VSIX\KGySoft.Drawing.DebuggerVisualizers.Package\KGySoft.Drawing.DebuggerVisualizers.Package.projitems*{b8a718cb-1f21-4e26-98cf-34cb27d2cd25}*SharedItemsImports = 4
 	EndGlobalSection
 EndGlobal
