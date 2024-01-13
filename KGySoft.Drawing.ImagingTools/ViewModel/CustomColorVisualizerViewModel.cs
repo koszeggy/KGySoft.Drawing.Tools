@@ -35,12 +35,19 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #endregion
 
+        #region Properties
+
+        internal string? Type { get; set; }
+
+        #endregion
+
         #region Constructors
 
         internal CustomColorVisualizerViewModel(CustomColorInfo colorInfo)
         {
             this.colorInfo = colorInfo;
             ReadOnly = true;
+            Type = colorInfo.Type;
             Color = colorInfo.DisplayColor.ToColor();
             CustomColorComponents = colorInfo.CustomColorComponents;
         }
@@ -51,13 +58,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         protected override void UpdateInfo()
         {
-            TitleCaption = Res.TitleType(colorInfo.Type ?? nameof(System.Drawing.Color));
+            TitleCaption = Res.TitleType(Type ?? nameof(System.Drawing.Color));
 
             var sb = new StringBuilder();
             if (SelectedIndex is int index)
                 sb.AppendLine(Res.InfoSelectedIndex(index));
 
-            if (colorInfo.Type is string type)
+            if (Type is string type)
                 sb.AppendLine(Res.TitleType(type));
             if (colorInfo.Name is string name)
                 sb.AppendLine(Res.TitleColor(name));

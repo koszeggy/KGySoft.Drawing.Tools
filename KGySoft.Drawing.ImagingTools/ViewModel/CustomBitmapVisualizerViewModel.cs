@@ -72,6 +72,20 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             InfoText = sb.ToString();
         }
 
+        protected override bool IsPaletteAvailable() => bitmapInfo.CustomPalette != null || base.IsPaletteAvailable();
+
+        protected override void ShowPalette()
+        {
+            if (bitmapInfo.CustomPalette == null)
+            {
+                base.ShowPalette();
+                return;
+            }
+
+            using IViewModel vmPalette = ViewModelFactory.FromCustomPalette(bitmapInfo.CustomPalette);
+            ShowChildViewCallback?.Invoke(vmPalette);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (IsDisposed)

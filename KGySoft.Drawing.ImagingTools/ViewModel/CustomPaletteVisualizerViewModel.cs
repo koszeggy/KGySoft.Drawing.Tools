@@ -46,10 +46,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Methods
 
         protected override ColorVisualizerViewModel GetSelectedColorViewModel(int index)
-            => new CustomColorVisualizerViewModel(paletteInfo.Entries[index])
-            {
-                SelectedIndex = index,
-            };
+        {
+            var result = new CustomColorVisualizerViewModel(paletteInfo.Entries[index]);
+            result.Type ??= paletteInfo.EntryType;
+            result.SelectedIndex = index;
+            return result;
+        }
 
         #endregion
     }
