@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: CustomColorSerializationInfoBase.cs
+//  File: CustomColorSerializationInfo.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
@@ -27,38 +27,34 @@ using KGySoft.Drawing.ImagingTools.Model;
 namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 {
     /// <summary>
-    /// The base class for custom debugger visualizers to serialize custom colors.
+    /// A class for custom debugger visualizers to provide binary serialization for custom colors.
     /// </summary>
-    public abstract class CustomColorSerializationInfoBase
+    public class CustomColorSerializationInfo
     {
         #region Properties
-        
-        #region Public Properties
 
         /// <summary>
         /// Gets the <see cref="CustomColorInfo"/> containing information about the color to debug.
         /// </summary>
-        public CustomColorInfo? ColorInfo { get; protected set; }
-
-        #endregion
+        public CustomColorInfo? ColorInfo { get; set; }
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Creates a new instance of the <see cref="CustomColorSerializationInfoBase"/> class for serialization.
-        /// <see cref="ColorInfo"/> should be set from the derived constructor.
+        /// Creates a new instance of the <see cref="CustomColorSerializationInfo"/> class for serialization.
+        /// <see cref="ColorInfo"/> should be set by the caller.
         /// </summary>
-        protected CustomColorSerializationInfoBase()
+        public CustomColorSerializationInfo()
         {
         }
 
         /// <summary>
-        /// Creates a new instance of the <see cref="CustomColorSerializationInfoBase"/> class for deserialization.
+        /// Creates a new instance of the <see cref="CustomColorSerializationInfo"/> class for deserialization.
         /// </summary>
-        /// <param name="reader"></param>
-        protected CustomColorSerializationInfoBase(BinaryReader reader)
+        /// <param name="reader">The reader that deserializes the <see cref="ColorInfo"/> property.</param>
+        public CustomColorSerializationInfo(BinaryReader reader)
         {
             if (reader == null)
                 throw new ArgumentNullException(nameof(reader), PublicResources.ArgumentNull);
@@ -152,6 +148,5 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
         #endregion
 
         #endregion
-
     }
 }

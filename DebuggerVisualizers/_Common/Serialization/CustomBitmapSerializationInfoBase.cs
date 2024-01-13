@@ -27,7 +27,7 @@ using KGySoft.Drawing.ImagingTools.Model;
 namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
 {
     /// <summary>
-    /// The base class for custom debugger visualizers to serialize custom bitmaps.
+    /// The base class for custom debugger visualizers to provide binary serialization for custom bitmaps.
     /// </summary>
     public abstract class CustomBitmapSerializationInfoBase : IDisposable
     {
@@ -47,7 +47,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
         /// <summary>
         /// Gets or sets an optional backing object that represents the actual bitmap.
         /// Specify it to prevent the actual object from being garbage collected
-        /// so the bitmap data of <see cref="BitmapInfo"/> will not be released as long as this instance is in use.
+        /// so the possibly unmanaged bitmap data of <see cref="BitmapInfo"/> will not be released as long as this instance is in use.
         /// </summary>
         protected object? BackingObject { get; set; }
 
@@ -112,7 +112,12 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
                 writer.Write(attribute.Value);
             }
 
-            // 3. BitmapData
+            // 3. CustomPalette
+            writer.Write(BitmapInfo.CustomPalette != null);
+            if (BitmapInfo.CustomPalette != null)
+                new CustomPaletteSerializationInfo { PaletteInfo = BitmapInfo.CustomPalette }.Write(writer);
+
+            // 4. BitmapData
             BitmapInfo.BitmapData!.Save(writer.BaseStream);
         }
 
@@ -149,7 +154,11 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
             for (int i = 0; i < count; i++)
                 BitmapInfo.CustomAttributes[br.ReadString()] = br.ReadString();
 
-            // 3. BitmapData
+            // 3. CustomPalette
+            if (br.ReadBoolean())
+                BitmapInfo.CustomPalette = new CustomPaletteSerializationInfo(br).PaletteInfo;
+
+            // 4. BitmapData
             BitmapInfo.BitmapData = BitmapDataFactory.Load(br.BaseStream);
         }
         
