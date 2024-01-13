@@ -83,6 +83,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization
                 ShowPixelSize = true,
                 Type = bitmap.GetType().Name,
                 BitmapData = bitmap.GetReadableBitmapData(),
+                CustomPalette = BitmapPaletteSerializationInfo.GetPaletteInfo(bitmap.Palette),
                 CustomAttributes =
                 {
                     { nameof(bitmap.PixelWidth), $"{bitmap.PixelWidth}" },

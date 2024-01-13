@@ -29,7 +29,7 @@
             <!--Options-->
             <RadioButton IsChecked="{Binding BitmapSource}">BitmapSource</RadioButton>
             <RadioButton IsChecked="{Binding ImageSource}">ImageSource</RadioButton>
-            <RadioButton IsChecked="{Binding Palette}">Palette</RadioButton>
+            <RadioButton IsChecked="{Binding Palette}">BitmapPalette</RadioButton>
             <RadioButton IsChecked="{Binding SingleColorSrgb}">Single Color (sRGB)</RadioButton>
             <RadioButton IsChecked="{Binding SingleColorLinear}">Single Color (Linear)</RadioButton>
             <RadioButton IsChecked="{Binding SingleColorFromProfile}">Single Color (From Profile)</RadioButton>

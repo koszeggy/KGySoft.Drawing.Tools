@@ -31,16 +31,27 @@ using KGySoft.Drawing.Wpf;
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization
 {
-    internal sealed class ColorSerializationInfo : CustomColorSerializationInfoBase
+    internal sealed class ColorSerializationInfo : CustomColorSerializationInfo
     {
         #region Constructors
 
         [SuppressMessage("ReSharper", "PossiblyImpureMethodCallOnReadonlyVariable", Justification = "Color.GetNativeColorValues is pure")]
-        internal ColorSerializationInfo(Color color)
+        internal ColorSerializationInfo(Color color) => ColorInfo = GetColorInfo(color, true);
+
+        internal ColorSerializationInfo(BinaryReader reader)
+            : base(reader)
         {
-            ColorInfo = new CustomColorInfo
+        }
+
+        #endregion
+
+        #region Methods
+
+        internal static CustomColorInfo GetColorInfo(Color color, bool setType)
+        {
+            var result = new CustomColorInfo
             {
-                Type = nameof(Color),
+                Type = setType ? nameof(Color) : null,
                 DisplayColor = color.ToColor32()
             };
 
@@ -48,34 +59,31 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization
             if (color.ColorContext != null)
             {
                 float[] values = color.GetNativeColorValues()!;
-                ColorInfo.Name = $"[{values.Select(f => $"{f:R}").Join("; ")}] ({Path.GetFileName(color.ColorContext!.ProfileUri.LocalPath)})";
+                result.Name = $"[{values.Select(f => $"{f:R}").Join("; ")}] ({Path.GetFileName(color.ColorContext!.ProfileUri.LocalPath)})";
 
-                ColorInfo.CustomColorComponents = new KeyValuePair<string, string>[values.Length];
+                result.CustomColorComponents = new KeyValuePair<string, string>[values.Length];
                 for (int i = 0; i < values.Length; i++)
-                    ColorInfo.CustomColorComponents[i] = new($"#{i}", $"{values[i]:F6}");
-                
-                return;
+                    result.CustomColorComponents[i] = new($"#{i}", $"{values[i]:F6}");
+
+                return result;
             }
 
-            ColorInfo.Name = color.ToString();
+            result.Name = color.ToString();
 
             // sRGB color
-            if (!ColorInfo.Name.StartsWith("sc#", StringComparison.Ordinal))
-                return;
+            if (!result.Name.StartsWith("sc#", StringComparison.Ordinal))
+                return result;
 
             // Linear color
-            ColorInfo.CustomColorComponents = new KeyValuePair<string, string>[]
+            result.CustomColorComponents = new KeyValuePair<string, string>[]
             {
                 new(nameof(color.ScA), $"{color.ScA:F6}"),
                 new(nameof(color.ScR), $"{color.ScR:F6}"),
                 new(nameof(color.ScG), $"{color.ScG:F6}"),
                 new(nameof(color.ScB), $"{color.ScB:F6}"),
             };
-        }
 
-        internal ColorSerializationInfo(BinaryReader reader)
-            : base(reader)
-        {
+            return result;
         }
 
         #endregion
