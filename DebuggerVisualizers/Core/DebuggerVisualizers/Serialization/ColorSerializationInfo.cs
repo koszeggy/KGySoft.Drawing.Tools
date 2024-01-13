@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: ReadableBitmapDataSerializer.cs
+//  File: ColorSerializationInfo.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
@@ -17,22 +17,29 @@
 
 using System.IO;
 
+using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 using KGySoft.Drawing.Imaging;
-
-using Microsoft.VisualStudio.DebuggerVisualizers;
+using KGySoft.Drawing.ImagingTools.Model;
 
 #endregion
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
 {
-    internal sealed class ReadableBitmapDataSerializer : VisualizerObjectSource
+    internal sealed class ColorSerializationInfo : CustomColorSerializationInfoBase
     {
-        #region Methods
+        #region Constructors
 
-        /// <summary>
-        /// Called when the object to be debugged is about to be serialized
-        /// </summary>
-        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeCustomBitmapInfo((IReadableBitmapData)target, outgoingData);
+        internal ColorSerializationInfo(Color32 color) => ColorInfo = new CustomColorInfo
+        {
+            Type = nameof(Color32),
+            Name = color.ToString(),
+            DisplayColor = color
+        };
+
+        internal ColorSerializationInfo(BinaryReader reader)
+            : base(reader)
+        {
+        }
 
         #endregion
     }

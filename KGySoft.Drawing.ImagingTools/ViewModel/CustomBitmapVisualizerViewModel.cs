@@ -51,7 +51,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         protected override void UpdateInfo()
         {
-            IReadableBitmapData? bitmapData = bitmapInfo?.BitmapData;
+            IReadableBitmapData? bitmapData = bitmapInfo.BitmapData;
 
             if (bitmapData == null)
             {

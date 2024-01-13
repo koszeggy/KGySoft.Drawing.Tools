@@ -15,6 +15,7 @@
 
 #region Usings
 
+using System.Drawing;
 using System.IO;
 
 using KGySoft.Drawing.Imaging;
@@ -37,6 +38,30 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
         {
             using BinaryReader reader = stream.InitSerializationReader();
             return new ReadableBitmapDataSerializationInfo(reader).BitmapInfo!;
+        }
+
+        internal static void SerializeCustomPaletteInfo(IPalette palette, Stream outgoingData)
+        {
+            using BinaryWriter writer = outgoingData.InitSerializationWriter();
+            new PaletteSerializationInfo(palette).Write(writer);
+        }
+
+        internal static CustomPaletteInfo DeserializeCustomPaletteInfo(Stream stream)
+        {
+            using BinaryReader reader = stream.InitSerializationReader();
+            return new PaletteSerializationInfo(reader).PaletteInfo!;
+        }
+
+        internal static void SerializeCustomColorInfo(Color32 color, Stream outgoingData)
+        {
+            using BinaryWriter writer = outgoingData.InitSerializationWriter();
+            new ColorSerializationInfo(color).Write(writer);
+        }
+
+        internal static CustomColorInfo DeserializeCustomColorInfo(Stream stream)
+        {
+            using BinaryReader reader = stream.InitSerializationReader();
+            return new ColorSerializationInfo(reader).ColorInfo!;
         }
     }
 }

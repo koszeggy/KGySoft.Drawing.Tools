@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: ReadableBitmapDataSerializer.cs
+//  File: ColorDebuggerVisualizer.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
@@ -15,24 +15,20 @@
 
 #region Usings
 
-using System.IO;
-
-using KGySoft.Drawing.Imaging;
+using KGySoft.Drawing.DebuggerVisualizers.Core.Serialization;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;
 
 #endregion
 
-namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
+namespace KGySoft.Drawing.DebuggerVisualizers.Core.DebuggerVisualizers
 {
-    internal sealed class ReadableBitmapDataSerializer : VisualizerObjectSource
+    internal sealed class ColorDebuggerVisualizer : DialogDebuggerVisualizer
     {
         #region Methods
 
-        /// <summary>
-        /// Called when the object to be debugged is about to be serialized
-        /// </summary>
-        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeCustomBitmapInfo((IReadableBitmapData)target, outgoingData);
+        protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
+            => DebuggerHelper.DebugCustomColor(SerializationHelper.DeserializeCustomColorInfo(objectProvider.GetData()));
 
         #endregion
     }

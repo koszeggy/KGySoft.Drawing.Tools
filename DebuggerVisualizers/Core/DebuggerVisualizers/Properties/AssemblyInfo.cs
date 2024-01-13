@@ -70,4 +70,14 @@ using KGySoft.Drawing.Imaging;
     Target = typeof(IReadableBitmapData),
     Description = "KGy SOFT IReadableBitmapData Debugger Visualizer")]
 
+// Palette
+[assembly: DebuggerVisualizer(typeof(PaletteDebuggerVisualizer), typeof(PaletteSerializer),
+    Target = typeof(IPalette),
+    Description = "KGy SOFT IPalette Debugger Visualizer")]
+
+// Color32
+[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(Color32Serializer),
+    Target = typeof(Color32),
+    Description = "KGy SOFT Color32 Debugger Visualizer")]
+
 #endregion

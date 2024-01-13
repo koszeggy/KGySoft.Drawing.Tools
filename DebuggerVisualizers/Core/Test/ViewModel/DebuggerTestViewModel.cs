@@ -550,8 +550,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.ViewModel
             if (testObject == null)
                 return;
 
-            Type targetType = testObject is IReadableBitmapData
-                ? typeof(IReadableBitmapData)
+            Type targetType = testObject is IReadableBitmapData ? typeof(IReadableBitmapData)
+                : testObject is IPalette ? typeof(IPalette)
                 : testObject.GetType();
             DebuggerVisualizerAttribute? attr = debuggerVisualizers.GetValueOrDefault(targetType);
             if (attr == null)

@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: ReadableBitmapDataSerializer.cs
+//  File: PaletteSerializer.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
@@ -25,14 +25,11 @@ using Microsoft.VisualStudio.DebuggerVisualizers;
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
 {
-    internal sealed class ReadableBitmapDataSerializer : VisualizerObjectSource
+    internal sealed class PaletteSerializer : VisualizerObjectSource
     {
         #region Methods
 
-        /// <summary>
-        /// Called when the object to be debugged is about to be serialized
-        /// </summary>
-        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeCustomBitmapInfo((IReadableBitmapData)target, outgoingData);
+        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeCustomPaletteInfo((IPalette)target, outgoingData);
 
         #endregion
     }
