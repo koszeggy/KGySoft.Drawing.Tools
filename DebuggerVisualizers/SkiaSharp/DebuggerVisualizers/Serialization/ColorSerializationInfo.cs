@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using System.IO;
 
 using KGySoft.Drawing.DebuggerVisualizers.Serialization;
-using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.SkiaSharp;
 
@@ -29,7 +28,7 @@ using SkiaSharp;
 
 namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization
 {
-    internal sealed class ColorSerializationInfo : CustomColorSerializationInfoBase
+    internal sealed class ColorSerializationInfo : CustomColorSerializationInfo
     {
         #region Constructors
 
