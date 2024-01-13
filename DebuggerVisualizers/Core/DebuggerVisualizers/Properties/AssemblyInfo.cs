@@ -65,15 +65,15 @@ using KGySoft.Drawing.Imaging;
 [assembly: AssemblyFileVersion("4.0.0")]
 [assembly: AssemblyInformationalVersion("4.0.0")]
 
-// IReadableBitmapData
+// BitmapData
 [assembly: DebuggerVisualizer(typeof(ReadableBitmapDataDebuggerVisualizer), typeof(ReadableBitmapDataSerializer),
-    Target = typeof(IReadableBitmapData),
-    Description = "KGy SOFT IReadableBitmapData Debugger Visualizer")]
+    TargetTypeName = "KGySoft.Drawing.Imaging.BitmapDataBase, KGySoft.Drawing.Core",
+    Description = "KGy SOFT BitmapDataBase Debugger Visualizer")]
 
 // Palette
 [assembly: DebuggerVisualizer(typeof(PaletteDebuggerVisualizer), typeof(PaletteSerializer),
-    Target = typeof(IPalette),
-    Description = "KGy SOFT IPalette Debugger Visualizer")]
+    Target = typeof(Palette),
+    Description = "KGy SOFT Palette Debugger Visualizer")]
 
 // Color32
 [assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(Color32Serializer),

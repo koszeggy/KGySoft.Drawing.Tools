@@ -241,6 +241,28 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.ViewModel
             return result;
         }
 
+        private static CustomPaletteInfo? GetCustomPalette(Palette? palette)
+        {
+            if (palette == null)
+                return null;
+            var result = new CustomPaletteInfo
+            {
+                Type = palette.GetType().Name,
+                EntryType = nameof(Imaging.Color32)
+            };
+
+            foreach (Color32 color in palette.GetEntries())
+            {
+                result.Entries.Add(new CustomColorInfo
+                {
+                    DisplayColor = color,
+                    Name = color.ToString()
+                });
+            }
+
+            return result;
+        }
+
         #endregion
 
         #region Instance Methods
@@ -448,6 +470,10 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.ViewModel
             bitmapDataOwner = null;
         }
 
+        #endregion
+
+        #region Command Handlers
+        
         private void OnViewDirectCommand()
         {
             IntPtr hwnd = GetHwndCallback?.Invoke() ?? IntPtr.Zero;
@@ -461,22 +487,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.ViewModel
                         {
                             Type = bitmapData.GetType().Name,
                             ShowPixelSize = true,
-                            BitmapData = bitmapData
+                            BitmapData = bitmapData,
+                            CustomPalette = GetCustomPalette(bitmapData.Palette)
                         }, hwnd);
                         return;
 
                     case Palette palette:
-                        var paletteInfo = new CustomPaletteInfo { Type = palette.GetType().Name };
-                        foreach (Color32 color in palette.GetEntries())
-                        {
-                            paletteInfo.Entries.Add(new CustomColorInfo
-                            {
-                                DisplayColor = color,
-                                Type = nameof(Color32),
-                                Name = color.ToString()
-                            });
-                        }
-
+                        CustomPaletteInfo paletteInfo = GetCustomPalette(palette);
                         DebuggerHelper.DebugCustomPalette(paletteInfo, hwnd);
                         return;
 
@@ -550,9 +567,12 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.ViewModel
             if (testObject == null)
                 return;
 
-            Type targetType = testObject is IReadableBitmapData ? typeof(IReadableBitmapData)
-                : testObject is IPalette ? typeof(IPalette)
-                : testObject.GetType();
+            Type targetType = testObject switch
+            {
+                IReadableBitmapData => Reflector.ResolveType("KGySoft.Drawing.Imaging.BitmapDataBase")!,
+                //IPalette => typeof(IPalette),
+                _ => testObject.GetType()
+            };
             DebuggerVisualizerAttribute? attr = debuggerVisualizers.GetValueOrDefault(targetType);
             if (attr == null)
             {
@@ -577,6 +597,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.ViewModel
         }
 
         #endregion
+
 
         #endregion
 

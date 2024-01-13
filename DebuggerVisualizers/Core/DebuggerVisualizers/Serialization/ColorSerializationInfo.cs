@@ -25,21 +25,27 @@ using KGySoft.Drawing.ImagingTools.Model;
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
 {
-    internal sealed class ColorSerializationInfo : CustomColorSerializationInfoBase
+    internal sealed class ColorSerializationInfo : CustomColorSerializationInfo
     {
         #region Constructors
 
-        internal ColorSerializationInfo(Color32 color) => ColorInfo = new CustomColorInfo
-        {
-            Type = nameof(Color32),
-            Name = color.ToString(),
-            DisplayColor = color
-        };
+        internal ColorSerializationInfo(Color32 color) => ColorInfo = GetColorInfo(color, true);
 
         internal ColorSerializationInfo(BinaryReader reader)
             : base(reader)
         {
         }
+
+        #endregion
+
+        #region Methods
+
+        internal static CustomColorInfo GetColorInfo(Color32 color, bool setType) => new CustomColorInfo
+        {
+            Type = setType ? nameof(Color32) : null,
+            Name = color.ToString(),
+            DisplayColor = color
+        };
 
         #endregion
     }

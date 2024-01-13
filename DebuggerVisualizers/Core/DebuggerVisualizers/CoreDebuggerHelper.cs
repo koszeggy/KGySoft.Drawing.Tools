@@ -20,9 +20,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-using KGySoft.Drawing.ImagingTools.Model;
-using KGySoft.Drawing.ImagingTools.View;
-using KGySoft.Drawing.ImagingTools.ViewModel;
+using KGySoft.Reflection;
 
 #endregion
 
@@ -35,21 +33,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core
     {
         #region Methods
 
-        #region Public Methods
-
         /// <summary>
         /// Gets the debugger visualizers of this assembly.
         /// </summary>
         /// <returns>The debugger visualizers of this assembly.</returns>
         public static Dictionary<Type, DebuggerVisualizerAttribute> GetDebuggerVisualizers()
             => Attribute.GetCustomAttributes(typeof(CoreDebuggerHelper).Assembly, typeof(DebuggerVisualizerAttribute))
-                .Cast<DebuggerVisualizerAttribute>().ToDictionary(a => a.Target!);
-
-        #endregion
-
-        #region Internal Methods
-
-        #endregion
+                .Cast<DebuggerVisualizerAttribute>().ToDictionary(a => a.Target ?? Reflector.ResolveType(a.TargetTypeName, ResolveTypeOptions.AllowPartialAssemblyMatch)!);
 
         #endregion
     }

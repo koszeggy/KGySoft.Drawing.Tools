@@ -37,6 +37,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
                 ShowPixelSize = true,
                 Type = bitmapData.GetType().GetName(TypeNameKind.ShortName),
                 BitmapData = bitmapData,
+                CustomPalette = PaletteSerializationInfo.GetPaletteInfo(bitmapData.Palette),
                 CustomAttributes =
                 {
                     { nameof(bitmapData.PixelFormat), $"{bitmapData.PixelFormat}" },

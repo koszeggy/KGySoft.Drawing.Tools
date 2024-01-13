@@ -17,6 +17,7 @@
 
 using System.IO;
 
+using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
 
@@ -24,55 +25,36 @@ using KGySoft.Drawing.ImagingTools.Model;
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
 {
-    internal sealed class PaletteSerializationInfo
+    internal sealed class PaletteSerializationInfo : CustomPaletteSerializationInfo
     {
-        #region Fields
-
-        private readonly IPalette? palette;
-
-        #endregion
-
-        #region Properties
-
-        internal CustomPaletteInfo? PaletteInfo { get; private set; }
-
-        #endregion
-
         #region Constructors
 
-        internal PaletteSerializationInfo(IPalette palette) => this.palette = palette;
+        internal PaletteSerializationInfo(IPalette palette) => PaletteInfo = GetPaletteInfo(palette);
 
-        internal PaletteSerializationInfo(BinaryReader reader) => ReadFrom(reader);
+        internal PaletteSerializationInfo(BinaryReader reader)
+            : base(reader)
+        {
+        }
 
         #endregion
 
         #region Methods
 
-        #region Internal Methods
-
-        internal void Write(BinaryWriter bw)
+        internal static CustomPaletteInfo? GetPaletteInfo(IPalette? palette)
         {
-            bw.Write(palette!.GetType().Name);
+            if (palette == null)
+                return null;
 
-            int count = palette.Count;
-            bw.Write(count);
-            for (int i = 0; i < count; i++)
-                new ColorSerializationInfo(palette[i]).Write(bw);
+            var result = new CustomPaletteInfo
+            {
+                Type = palette.GetType().Name,
+                EntryType = nameof(Color32)
+            };
+
+            for (int i = 0; i < palette.Count; i++)
+                result.Entries.Add(ColorSerializationInfo.GetColorInfo(palette[i], false));
+            return result;
         }
-
-        #endregion
-
-        #region Private Methods
-
-        private void ReadFrom(BinaryReader br)
-        {
-            PaletteInfo = new CustomPaletteInfo { Type = br.ReadString() };
-            int count = br.ReadInt32();
-            for (int i = 0; i < count; i++)
-                PaletteInfo.Entries.Add(new ColorSerializationInfo(br).ColorInfo!);
-        }
-
-        #endregion
 
         #endregion
     }
