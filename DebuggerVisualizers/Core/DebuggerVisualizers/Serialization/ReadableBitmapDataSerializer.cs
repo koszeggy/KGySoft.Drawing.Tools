@@ -29,9 +29,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
     {
         #region Methods
 
-        /// <summary>
-        /// Called when the object to be debugged is about to be serialized
-        /// </summary>
         public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeCustomBitmapInfo((IReadableBitmapData)target, outgoingData);
 
         #endregion

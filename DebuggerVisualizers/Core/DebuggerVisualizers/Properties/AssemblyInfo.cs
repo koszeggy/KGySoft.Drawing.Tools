@@ -80,4 +80,29 @@ using KGySoft.Drawing.Imaging;
     Target = typeof(Color32),
     Description = "KGy SOFT Color32 Debugger Visualizer")]
 
+// PColor32
+[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(PColor32Serializer),
+    Target = typeof(PColor32),
+    Description = "KGy SOFT PColor32 Debugger Visualizer")]
+
+// Color64
+[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(Color64Serializer),
+    Target = typeof(Color64),
+    Description = "KGy SOFT Color64 Debugger Visualizer")]
+
+// PColor64
+[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(PColor64Serializer),
+    Target = typeof(PColor64),
+    Description = "KGy SOFT PColor64 Debugger Visualizer")]
+
+// ColorF
+[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorFSerializer),
+    Target = typeof(ColorF),
+    Description = "KGy SOFT ColorF Debugger Visualizer")]
+
+// PColorF
+[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(PColorFSerializer),
+    Target = typeof(PColorF),
+    Description = "KGy SOFT PColorF Debugger Visualizer")]
+
 #endregion

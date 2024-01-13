@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: Color32Serializer.cs
+//  File: PColorFSerializer.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
@@ -25,11 +25,11 @@ using Microsoft.VisualStudio.DebuggerVisualizers;
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
 {
-    internal sealed class Color32Serializer : VisualizerObjectSource
+    internal sealed class PColorFSerializer : VisualizerObjectSource
     {
         #region Methods
 
-        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeCustomColorInfo((Color32)target, outgoingData);
+        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeCustomColorInfo((PColorF)target, outgoingData);
 
         #endregion
     }

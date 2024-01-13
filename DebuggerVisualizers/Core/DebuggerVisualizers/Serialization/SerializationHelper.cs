@@ -58,6 +58,36 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
             new ColorSerializationInfo(color).Write(writer);
         }
 
+        internal static void SerializeCustomColorInfo(PColor32 color, Stream outgoingData)
+        {
+            using BinaryWriter writer = outgoingData.InitSerializationWriter();
+            new ColorSerializationInfo(color).Write(writer);
+        }
+
+        internal static void SerializeCustomColorInfo(Color64 color, Stream outgoingData)
+        {
+            using BinaryWriter writer = outgoingData.InitSerializationWriter();
+            new ColorSerializationInfo(color).Write(writer);
+        }
+
+        internal static void SerializeCustomColorInfo(PColor64 color, Stream outgoingData)
+        {
+            using BinaryWriter writer = outgoingData.InitSerializationWriter();
+            new ColorSerializationInfo(color).Write(writer);
+        }
+
+        internal static void SerializeCustomColorInfo(ColorF color, Stream outgoingData)
+        {
+            using BinaryWriter writer = outgoingData.InitSerializationWriter();
+            new ColorSerializationInfo(color).Write(writer);
+        }
+
+        internal static void SerializeCustomColorInfo(PColorF color, Stream outgoingData)
+        {
+            using BinaryWriter writer = outgoingData.InitSerializationWriter();
+            new ColorSerializationInfo(color).Write(writer);
+        }
+
         internal static CustomColorInfo DeserializeCustomColorInfo(Stream stream)
         {
             using BinaryReader reader = stream.InitSerializationReader();

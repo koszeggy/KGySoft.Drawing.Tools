@@ -389,8 +389,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.ViewModel
             CustomBitmapDataConfigBase cfg = GetConfig(info);
             var result = cfg switch
             {
-                CustomBitmapDataConfig customCfg => BitmapDataFactory.CreateBitmapData(GetBuffer(info, bmpShield.Size), bmpShield.Width, customCfg),
-                CustomIndexedBitmapDataConfig customIndexedCfg => BitmapDataFactory.CreateBitmapData(GetBuffer(info, bmpShield.Size), bmpShield.Width, customIndexedCfg),
+                CustomBitmapDataConfig customCfg => BitmapDataFactory.CreateBitmapData(GetBuffer(info, source.Size), source.Width, customCfg),
+                CustomIndexedBitmapDataConfig customIndexedCfg => BitmapDataFactory.CreateBitmapData(GetBuffer(info, source.Size), source.Width, customIndexedCfg),
                 _ => throw new InvalidOperationException()
             };
 
@@ -493,7 +493,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.ViewModel
                         return;
 
                     case Palette palette:
-                        CustomPaletteInfo paletteInfo = GetCustomPalette(palette);
+                        CustomPaletteInfo paletteInfo = GetCustomPalette(palette)!;
                         DebuggerHelper.DebugCustomPalette(paletteInfo, hwnd);
                         return;
 
