@@ -139,12 +139,18 @@
 Make sure every running debugger is closed. Installing will be tried again on restarting Visual Studio.</value>
   </data>
   <data name="WarningMessage_InstallationFinishedWithWarningFormat" xml:space="preserve">
-    <value>The installation of KGy SOFT Image DebuggerVisualizers to {0} finished with a warning: {1}</value>
+    <value>The installation of KGy SOFT Drawing DebuggerVisualizers to {0} finished with a warning: {1}.</value>
   </data>
   <data name="InfoMessage_InstallationFinishedFormat" xml:space="preserve">
-    <value>The KGy SOFT Image DebuggerVisualizers {0} extension has been installed to {1}</value>
+    <value>KGy SOFT Imaging Tools and Drawing DebuggerVisualizers {0} have been installed to {1}.</value>
   </data>
   <data name="InfoMessage_InstallationUpgradedFormat" xml:space="preserve">
-    <value>The KGy SOFT Image DebuggerVisualizers {0} extension has been upgraded to version {1} at {2}</value>
+    <value>KGy SOFT Imaging Tools and Drawing DebuggerVisualizers {0} have been upgraded to version {1} at {2}.</value>
+  </data>
+  <data name="InfoMessage_ReleaseNotes" xml:space="preserve">
+    <value>Release notes</value>
+  </data>
+  <data name="InfoMessage_OpenImagingTools" xml:space="preserve">
+    <value>Open Imaging Tools</value>
   </data>
 </root>

@@ -23,8 +23,6 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
 
-#nullable enable
-
 namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
     internal static class ViewHelper

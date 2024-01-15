@@ -27,8 +27,6 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 #endregion
 
-#nullable enable
-
 namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
     internal static class ManageDebuggerVisualizerInstallationsCommand
@@ -36,8 +34,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         #region Fields
 
         private static MenuCommand? commandInstance;
-        private static IServiceProvider serviceProvider = default!;
-        private static IVsShell? shellService;
         private static IView? manageInstallationsView;
 
         #endregion
@@ -46,17 +42,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
         #region Internal Methods
 
-        internal static MenuCommand GetCreateCommand(IServiceProvider package, IVsShell? vsShell)
-        {
-            if (commandInstance == null)
-            {
-                serviceProvider = package;
-                shellService = vsShell;
-                commandInstance = new OleMenuCommand(OnExecuteManageDebuggerVisualizerInstallationsCommand, new CommandID(Ids.CommandSet, Ids.ManageDebuggerVisualizerInstallationsCommandId));
-            }
-
-            return commandInstance;
-        }
+        internal static MenuCommand GetCreateCommand()
+            => commandInstance ??= new OleMenuCommand(OnExecuteManageDebuggerVisualizerInstallationsCommand, new CommandID(Ids.CommandSet, Ids.ManageDebuggerVisualizerInstallationsCommandId));
 
         internal static void DestroyCommand()
         {
@@ -78,7 +65,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
                 if (manageInstallationsView == null || manageInstallationsView.IsDisposed)
                 {
                     object? documentsDirObj = null;
-                    shellService?.GetProperty((int)__VSSPROPID2.VSSPROPID_VisualStudioDir, out documentsDirObj);
+                    Services.ShellService?.GetProperty((int)__VSSPROPID2.VSSPROPID_VisualStudioDir, out documentsDirObj);
                     manageInstallationsView = ViewHelper.CreateViewInNewThread(() => ViewModelFactory.CreateManageInstallations(documentsDirObj?.ToString()));
                 }
                 else
@@ -88,7 +75,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             {
                 manageInstallationsView?.Dispose();
                 manageInstallationsView = null;
-                ShellDialogs.Error(serviceProvider, Res.ErrorMessageUnexpectedError(ex.Message));
+                Notifications.Error(Res.ErrorMessageUnexpectedError(ex.Message));
             }
         }
 

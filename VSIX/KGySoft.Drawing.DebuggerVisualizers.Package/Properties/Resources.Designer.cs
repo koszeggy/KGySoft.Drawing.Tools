@@ -143,5 +143,25 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package.Properties {
                 return ResourceManager.GetString("WarningMessage_InstallationFinishedWithWarningFormat", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Release notes
+        /// </summary>
+        internal static string InfoMessage_ReleaseNotes
+        {
+            get {
+                return ResourceManager.GetString("InfoMessage_ReleaseNotes", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Open Imaging Tools
+        /// </summary>
+        internal static string InfoMessage_OpenImagingTools
+        {
+            get {
+                return ResourceManager.GetString("InfoMessage_OpenImagingTools", resourceCulture);
+            }
+        }
     }
 }
