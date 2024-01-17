@@ -15,7 +15,8 @@
 * Pixel Format/Quantizing/Dithering:
   + Improved configuration of parameters
   + New localizable tool tips for every parameter
-  - Fixing quantizing CMYK images when no new pixel format is selected 
+  - Fixing quantizing CMYK images when no new pixel format is selected
+* Resizing: Improved validation
 
 + API changes:
   + KGySoft.Drawing.ImagingTools.Model namespace:
@@ -38,6 +39,18 @@
 ===================================================
 + New visualizer for SKPMColor type
 + New visualizer for SKColorF type
+
++ KGySoft.Drawing.DebuggerVisualizers.Core.dll
+==============================================
++ A new debugger visualizer assembly to support KGySoft.Drawing.Core types.
+
+* KGySoft.Drawing.DebuggerVisualizers.Package.dll
+=================================================
+* Whenever possible (VS2015 and later) using info bars instead of message dialogs.
+
+* KGySoft.Drawing.DebuggerVisualizers.Package.x64.dll
+=====================================================
+* Using info bars instead of message dialogs.
 
 
 ~~~~~~~~~
