@@ -189,11 +189,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         {
             #region Local Methods
 
-            static IVsInfoBarTextSpan[] GetReleaseNotesSpan() => [new InfoBarTextSpan("\t"), new InfoBarHyperlink(Resources.InfoMessage_ReleaseNotes,
-                (Action)(() => Process.Start(new ProcessStartInfo("https://github.com/koszeggy/KGySoft.Drawing.Tools/blob/master/changelog.txt") { UseShellExecute = true })))];
+            // ReSharper disable RedundantDelegateCreation - not redundant for the x64 build where the implicit delegate creation would create Func<>
+            static IVsInfoBarTextSpan[] GetReleaseNotesSpan() => [new InfoBarTextSpan("\t"), new InfoBarHyperlink(Resources.InfoMessage_ChangeLog,
+                new Action(() => Process.Start(new ProcessStartInfo("https://github.com/koszeggy/KGySoft.Drawing.Tools/blob/master/changelog.txt") { UseShellExecute = true })))];
 
             static IVsInfoBarActionItem[] GetOpenImagingToolsButton() => [new InfoBarButton(Resources.InfoMessage_OpenImagingTools,
-                (Action)(ExecuteImagingToolsCommand.ExecuteImagingTools))];
+                new Action(ExecuteImagingToolsCommand.ExecuteImagingTools))];
+            // ReSharper restore RedundantDelegateCreation
 
             #endregion
 

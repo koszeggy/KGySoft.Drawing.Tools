@@ -147,8 +147,8 @@ Make sure every running debugger is closed. Installing will be tried again on re
   <data name="InfoMessage_InstallationUpgradedFormat" xml:space="preserve">
     <value>KGy SOFT Imaging Tools and Drawing DebuggerVisualizers {0} have been upgraded to version {1} at {2}.</value>
   </data>
-  <data name="InfoMessage_ReleaseNotes" xml:space="preserve">
-    <value>Release notes</value>
+  <data name="InfoMessage_ChangeLog" xml:space="preserve">
+    <value>Change log</value>
   </data>
   <data name="InfoMessage_OpenImagingTools" xml:space="preserve">
     <value>Open Imaging Tools</value>

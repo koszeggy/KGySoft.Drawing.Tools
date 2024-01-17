@@ -145,12 +145,12 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package.Properties {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to Release notes
+        ///   Looks up a localized string similar to Change log
         /// </summary>
-        internal static string InfoMessage_ReleaseNotes
+        internal static string InfoMessage_ChangeLog
         {
             get {
-                return ResourceManager.GetString("InfoMessage_ReleaseNotes", resourceCulture);
+                return ResourceManager.GetString("InfoMessage_ChangeLog", resourceCulture);
             }
         }
 
