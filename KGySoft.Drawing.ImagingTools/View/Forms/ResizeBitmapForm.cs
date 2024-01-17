@@ -18,8 +18,8 @@
 using System;
 using System.Drawing;
 using System.Globalization;
-using System.Windows.Forms;
 
+using KGySoft.ComponentModel;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
@@ -61,17 +61,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Methods
 
-        #region Static Methods
-
-        private static object FormatPercentage(object value) => value is 0f ? String.Empty : ((float)value * 100f).ToString("F0", LanguageSettings.FormattingLanguage);
-        private static object ParsePercentage(object value) => Single.TryParse((string)value, NumberStyles.Number, LanguageSettings.FormattingLanguage, out float result) ? result / 100f : 0f;
-        private static object FormatInteger(object value) => value is 0 ? String.Empty : ((int)value).ToString("F0", LanguageSettings.FormattingLanguage);
-        private static object ParseInteger(object value) => Int32.TryParse((string)value, NumberStyles.Integer, LanguageSettings.FormattingLanguage, out int result) ? result : 0;
-
-        #endregion
-
-        #region Instance Methods
-
         #region Protected Methods
 
         protected override void OnLoad(EventArgs e)
@@ -109,7 +98,29 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void InitPropertyBindings()
         {
-            // simple initializations rather than bindings because these will not change:
+            #region Local Methods
+
+            static object FormatPercentage(object value) => ((float)value * 100f).ToString("F0", LanguageSettings.FormattingLanguage);
+            static object ParsePercentage(object value) => Single.Parse((string)value, NumberStyles.Number, LanguageSettings.FormattingLanguage) / 100f;
+            static object FormatInteger(object value) => ((int)value).ToString("F0", LanguageSettings.FormattingLanguage);
+            static object ParseInteger(object value) => Int32.Parse((string)value, NumberStyles.Integer, LanguageSettings.FormattingLanguage);
+
+            void AddTwoWayValidatedBinding(object source, string sourcePropertyName, object target, string targetPropertyName,
+                Func<object?, object?> format, Func<object?, object?> parse)
+            {
+                // Creating the regular two-way binding and adding error handling to the View -> VM (back) direction, which is the 2nd item.
+                ICommandBinding[] bindings = CommandBindings.AddTwoWayPropertyBinding(source, sourcePropertyName, target, targetPropertyName, format, parse);
+                bindings[1].Executing += (_, _) => ViewModel.SetBindingError(sourcePropertyName, null);
+                bindings[1].Error += (_, e) =>
+                {
+                    ViewModel.SetBindingError(sourcePropertyName, PublicResources.ArgumentInvalidString);
+                    e.Handled = true;
+                };
+            }
+
+            #endregion
+
+            // Simple initialization rather than bindings because this will not change:
             cmbScalingMode.DataSource = ViewModel.ScalingModes;
 
             // ViewModel.ScalingMode -> cmbScalingMode.SelectedItem (cannot use two-way for SelectedItem because there is no SelectedItemChanged event)
@@ -129,43 +140,21 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.ByPixels), rbByPixels, nameof(rbByPixels.Checked));
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.ByPixels), nameof(Enabled), txtWidthPx, txtHeightPx);
 
-            // Regular WinForms binding behaves a bit better because it does not clear the currently edited text box on parse error
-            // but it fails to sync the other properties properly on Mono so using KGy SOFT binding in Mono systems.
+            // The validations can be achieved also by WinForms bindings by handling the BindingComplete event,
+            // but on Mono it fails to sync the other properties properly whereas KGy SOFT binding works on every target.
 
             // ViewModel.WidthRatio <-> txtWidthPercent.Text
-            if (OSUtils.IsMono)
-                CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.WidthRatio), txtWidthPercent, nameof(txtWidthPercent.Text), FormatPercentage!, ParsePercentage!);
-            else
-                AddWinFormsBinding(nameof(ViewModel.WidthRatio), txtWidthPercent, nameof(txtWidthPercent.Text), FormatPercentage, ParsePercentage);
+            AddTwoWayValidatedBinding(ViewModel, nameof(ViewModel.WidthRatio), txtWidthPercent, nameof(txtWidthPercent.Text), FormatPercentage!, ParsePercentage!);
 
             // ViewModel.HeightRatio <-> txtHeightPercent.Text
-            if (OSUtils.IsMono)
-                CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.HeightRatio), txtHeightPercent, nameof(txtHeightPercent.Text), FormatPercentage!, ParsePercentage!);
-            else
-                AddWinFormsBinding(nameof(ViewModel.HeightRatio), txtHeightPercent, nameof(txtHeightPercent.Text), FormatPercentage, ParsePercentage);
+            AddTwoWayValidatedBinding(ViewModel, nameof(ViewModel.HeightRatio), txtHeightPercent, nameof(txtHeightPercent.Text), FormatPercentage!, ParsePercentage!);
 
             // ViewModel.Width <-> txtWidthPx.Text
-            if (OSUtils.IsMono)
-                CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.Width), txtWidthPx, nameof(txtWidthPx.Text), FormatInteger!, ParseInteger!);
-            else
-                AddWinFormsBinding(nameof(ViewModel.Width), txtWidthPx, nameof(txtWidthPx.Text), FormatInteger, ParseInteger);
+            AddTwoWayValidatedBinding(ViewModel, nameof(ViewModel.Width), txtWidthPx, nameof(txtWidthPx.Text), FormatInteger!, ParseInteger!);
 
             // ViewModel.Height <-> txtHeightPx.Text
-            if (OSUtils.IsMono)
-                CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.Height), txtHeightPx, nameof(txtHeightPx.Text), FormatInteger!, ParseInteger!);
-            else
-                AddWinFormsBinding(nameof(ViewModel.Height), txtHeightPx, nameof(txtHeightPx.Text), FormatInteger, ParseInteger);
+            AddTwoWayValidatedBinding(ViewModel, nameof(ViewModel.Height), txtHeightPx, nameof(txtHeightPx.Text), FormatInteger!, ParseInteger!);
         }
-
-        private void AddWinFormsBinding(string sourceName, IBindableComponent target, string propertyName, Func<object, object> format, Func<object, object> parse)
-        {
-            var binding = new Binding(propertyName, ViewModel, sourceName, true, DataSourceUpdateMode.OnPropertyChanged);
-            binding.Format += (_, e) => e.Value = format.Invoke(e.Value!);
-            binding.Parse += (_, e) => e.Value = parse.Invoke(e.Value!);
-            target.DataBindings.Add(binding);
-        }
-
-        #endregion
 
         #endregion
 

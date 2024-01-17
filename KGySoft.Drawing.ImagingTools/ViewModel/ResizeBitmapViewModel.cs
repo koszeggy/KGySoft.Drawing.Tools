@@ -170,7 +170,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Public Properties
 
-        // The binding needs these to be public
+        // WinForms binding needs these to be public
         public int Width { get => Get(originalSize.Width); set => Set(value); }
         public int Height { get => Get(originalSize.Height); set => Set(value); }
         public float WidthRatio { get => Get(1f); set => Set(value); }
@@ -194,6 +194,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #endregion
 
+        #region Private Properties
+
+        private string? WidthBindingError { get => Get<string?>(); set => Set(value); }
+        private string? HeightBindingError { get => Get<string?>(); set => Set(value); }
+
+        #endregion
+
         #endregion
 
         #region Constructors
@@ -209,6 +216,20 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #endregion
 
         #region Methods
+
+        #region Internal Methods
+
+        internal void SetBindingError(string propertyName, string? error)
+        {
+            if (propertyName.StartsWith(nameof(Width), StringComparison.Ordinal))
+                WidthBindingError = error;
+            else if (propertyName.StartsWith(nameof(Height), StringComparison.Ordinal))
+                HeightBindingError = error;
+        }
+
+        #endregion
+
+        #region Protected Methods
 
         protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
         {
@@ -312,15 +333,21 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         protected override ValidationResultsCollection DoValidation()
         {
             ValidationResultsCollection result = base.DoValidation();
-            if (Width <= 0)
-                result.AddError(nameof(Width), Res.ErrorMessageValueMustBeGreaterThan(0f));
+            if (WidthBindingError is string { Length: > 0 } widthError)
+                result.AddError(nameof(Width), widthError);
+            else if (Width <= 0)
+                result.AddError(nameof(Width), Res.ErrorMessageValueMustBeGreaterThan(0));
+
+            if (HeightBindingError is string { Length: > 0 } heightError)
+                result.AddError(nameof(Height), heightError);
             if (Height <= 0)
-                result.AddError(nameof(Height), Res.ErrorMessageValueMustBeGreaterThan(0f));
+                result.AddError(nameof(Height), Res.ErrorMessageValueMustBeGreaterThan(0));
             return result;
         }
 
         protected override bool AffectsPreview(string propertyName)
-            => propertyName.In(nameof(Width), nameof(Height), nameof(ScalingMode));
+            => propertyName is nameof(Width) or nameof(Height) or nameof(ScalingMode)
+                or nameof(WidthBindingError) or nameof(HeightBindingError);
 
         protected override GenerateTaskBase CreateGenerateTask()
             => new ResizeTask(new Size(Width, Height), ScalingMode);
@@ -336,6 +363,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             var t = (ResizeTask)task;
             return t.Size == originalSize;
         }
+
+        #endregion
 
         #endregion
     }
