@@ -53,6 +53,7 @@ namespace KGySoft.Drawing.ImagingTools
             "KGySoft.Drawing.dll",
             "KGySoft.Drawing.Wpf.dll",
             "KGySoft.CoreLibraries.dll",
+            "KGySoft.Drawing.DebuggerVisualizers.Core.dll",
             "KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll",
             "KGySoft.Drawing.DebuggerVisualizers.Wpf.dll",
 #if NET462_OR_GREATER || NETCOREAPP

@@ -178,9 +178,9 @@ namespace KGySoft.Drawing.ImagingTools.Model
                 {
                     // initializing by the constructor rather than unwrapping and calling a public method because unwrap may fail if executed from a Visual Studio package
 #if NET35
-                    Activator.CreateInstance(sandboxDomain, Assembly.GetExecutingAssembly().FullName, typeof(InitializerSandbox).FullName, false, BindingFlags.Public | BindingFlags.Instance, null, new object[] { this, path }, null, null, evidence);
+                    Activator.CreateInstance(sandboxDomain, Assembly.GetExecutingAssembly().FullName, typeof(InitializerSandbox).FullName!, false, BindingFlags.Public | BindingFlags.Instance, null, new object[] { this, path }, null, null, evidence);
 #else
-                    Activator.CreateInstance(sandboxDomain, Assembly.GetExecutingAssembly().FullName, typeof(InitializerSandbox).FullName, false, BindingFlags.Public | BindingFlags.Instance, null, new object[] { this, path }, null, null);
+                    Activator.CreateInstance(sandboxDomain, Assembly.GetExecutingAssembly().FullName, typeof(InitializerSandbox).FullName!, false, BindingFlags.Public | BindingFlags.Instance, null, new object[] { this, path }, null, null);
 #endif
                 }
                 finally
