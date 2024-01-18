@@ -68,9 +68,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package.Properties {
                 return ResourceManager.GetString("110", resourceCulture);
             }
         }
-        
+
         /// <summary>
-        ///   Looks up a localized string similar to Debugger Visualizers for System.Drawing types such as Image, Bitmap, Metafile, Icon, Graphics, BitmapData, ColorPalette and Color..
+        ///   Looks up a localized string similar to Debugger Visualizers for GDI+, WPF, SkiaSharp and KGy SOFT types like Bitmap, BitmapSource, SKBitmap, Metafile, ImageSource, SKIm..
         /// </summary>
         internal static string _112 {
             get {

@@ -850,7 +850,8 @@ If 255, then all partially transparent pixels will turn transparent.</value>
     <value>White Threshold:</value>
   </data>
   <data name="tbWhiteThreshold.ToolTipText" xml:space="preserve">
-    <value>Determines the lowest input brightness between 0 and 255 to consider the result color white.</value>
+    <value>Determines the lowest input brightness between 0 and 255 to consider the result color white.
+Affects the brightness of the result, though an error diffusion ditherer may compensate the effect of this parameter.</value>
   </data>
   <data name="lblNumColors.Text" xml:space="preserve">
     <value>Palette Size:</value>
@@ -864,7 +865,7 @@ The allowed maximum value depends on the pixel format of the result.</value>
   </data>
   <data name="chbDirectMapping.ToolTipText" xml:space="preserve">
     <value>Check to map any color directly to color palette index instead of searching for the nearest color, which is very fast
-but may end up in a result of a bit higher contrast than the original image.
+but may end up in a result of a bit higher contrast than the original image. An error diffusion ditherer may compensate the effect of this parameter.
 
 Uncheck to perform a lookup to determine nearest colors, which may be slower but more accurate.
 

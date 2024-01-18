@@ -121,7 +121,7 @@
     <value>KGy SOFT Image DebuggerVisualizers</value>
   </data>
   <data name="112" xml:space="preserve">
-    <value>Debugger Visualizers for GDI+, WPF and SkiaSharp image types such as Bitmap, BitmapSource, SKBitmap, Metafile, ImageSource, SKImage, Icon, Graphics, SKSurface, BitmapData, SKPixmap, ColorPalette, BitmapPalette, Color and SKColor. Possible derived types such as DrawingImage, BitmapFrame, WriteableBitmap, etc. are also supported).</value>
+    <value>Debugger Visualizers for GDI+, WPF, SkiaSharp and KGy SOFT types like Bitmap, BitmapSource, SKBitmap, Metafile, ImageSource, SKImage, Icon, Graphics, SKSurface, BitmapData, SKPixmap, ColorPalette, BitmapPalette, Color, SKColor and more. Possible derived types such as DrawingImage, BitmapFrame, WriteableBitmap, etc. are also supported.</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="400" type="System.Resources.ResXFileRef, System.Windows.Forms">
