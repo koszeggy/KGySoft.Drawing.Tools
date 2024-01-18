@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Windows.Forms;
 
 using EnvDTE;
 
@@ -104,7 +105,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         /// </summary>
         internal static void Info(string mainMessage, IEnumerable<IVsInfoBarTextSpan>? additionalSpans, IEnumerable<IVsInfoBarActionItem>? actionItems = null)
         {
-            IEnumerable<IVsInfoBarTextSpan> textSpans = [new InfoBarTextSpan(mainMessage)];
+            IEnumerable<IVsInfoBarTextSpan> textSpans = [new InfoBarTextSpan($"{Res.TitleMessageDialog}: {mainMessage}")];
             if (additionalSpans != null)
                 textSpans = textSpans.Concat(additionalSpans);
             if (!TryShowInfoBar(KnownMonikers.StatusInformation, textSpans, actionItems ?? Array.Empty<IVsInfoBarActionItem>()))
@@ -116,7 +117,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         #region Private Methods
 
         private static bool TryShowInfoBar(ImageMoniker icon, string message)
-            => TryShowInfoBar(icon, [new InfoBarTextSpan(message)], Array.Empty<IVsInfoBarActionItem>());
+            => TryShowInfoBar(icon, [new InfoBarTextSpan($"{Res.TitleMessageDialog}: {message}")], Array.Empty<IVsInfoBarActionItem>());
 
         private static bool TryShowInfoBar(ImageMoniker icon, IEnumerable<IVsInfoBarTextSpan> textSpans, IEnumerable<IVsInfoBarActionItem> actionItems)
         {

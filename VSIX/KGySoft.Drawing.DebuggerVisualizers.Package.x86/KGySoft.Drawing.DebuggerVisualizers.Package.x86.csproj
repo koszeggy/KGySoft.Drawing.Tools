@@ -78,6 +78,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\DebuggerVisualizers\Core\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.Core.csproj">
+      <Project>{017fa50b-2f4a-4598-a838-d7fd5c71ee0e}</Project>
+      <Name>KGySoft.Drawing.DebuggerVisualizers.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\DebuggerVisualizers\GdiPlus\KGySoft.Drawing.DebuggerVisualizers.GdiPlus\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.csproj">
       <Project>{6fda8750-e12b-4db0-8208-b0014d399f2d}</Project>
       <Name>KGySoft.Drawing.DebuggerVisualizers.GdiPlus</Name>

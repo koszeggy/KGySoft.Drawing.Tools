@@ -189,4 +189,9 @@ Global
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1C6D13FB-5E94-4260-96B6-74BDDFA8F815}
 	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		VSIX\KGySoft.Drawing.DebuggerVisualizers.Package\KGySoft.Drawing.DebuggerVisualizers.Package.projitems*{5fb996a6-1344-4297-bbf5-6ced26d5a699}*SharedItemsImports = 13
+		VSIX\KGySoft.Drawing.DebuggerVisualizers.Package\KGySoft.Drawing.DebuggerVisualizers.Package.projitems*{6c5b3a51-884f-456b-8e36-071813d2d5ec}*SharedItemsImports = 4
+		VSIX\KGySoft.Drawing.DebuggerVisualizers.Package\KGySoft.Drawing.DebuggerVisualizers.Package.projitems*{b8a718cb-1f21-4e26-98cf-34cb27d2cd25}*SharedItemsImports = 4
+	EndGlobalSection
 EndGlobal

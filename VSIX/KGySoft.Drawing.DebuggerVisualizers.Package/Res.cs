@@ -39,7 +39,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
         #region Properties
 
-        /// <summary>KGy SOFT Drawing DebuggerVisualizers</summary>
+        /// <summary>KGy SOFT Image DebuggerVisualizers</summary>
         internal static string TitleMessageDialog => Get(Ids.ResourceTitle);
 
         #endregion
@@ -56,13 +56,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         /// Make sure every running debugger is closed. Installing will be tried again on restarting Visual Studio.</summary>
         internal static string ErrorMessageFailedToInstall(string targetPath, string message) => Get(Resources.ErrorMessage_FailedToInstallFormat, targetPath, message);
 
-        /// <summary>The installation of KGy SOFT Drawing DebuggerVisualizers to {0} finished with a warning: {1}.</summary>
+        /// <summary>The installation KGy SOFT Imaging Tools v{0} and the debugger visualizers finished with a warning: {1}.</summary>
         internal static string WarningMessageInstallationFinishedWithWarning(string targetPath, string message) => Get(Resources.WarningMessage_InstallationFinishedWithWarningFormat, targetPath, message);
 
-        /// <summary>KGy SOFT Imaging Tools and Drawing DebuggerVisualizers {0} have been installed to {1}.</summary>
+        /// <summary>KGy SOFT Imaging Tools v{0} and the debugger visualizers have been installed to {1}.</summary>
         internal static string InfoMessageInstallationFinished(Version version, string targetPath) => Get(Resources.InfoMessage_InstallationFinishedFormat, version, targetPath);
 
-        /// <summary>KGy SOFT Imaging Tools and Drawing DebuggerVisualizers {0} have been upgraded to version {1} at {2}.</summary>
+        /// <summary>KGy SOFT Imaging Tools v{0} and the debugger visualizers have been upgraded to version {1} at {2}.</summary>
         internal static string InfoMessageUpgradeFinished(Version oldVersion, Version newVersion, string targetPath) => Get(Resources.InfoMessage_InstallationUpgradedFormat, oldVersion, newVersion, targetPath);
 
         #endregion
