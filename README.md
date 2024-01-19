@@ -188,11 +188,11 @@ If Visual Studio cannot load the visualizer or you have other debugger visualize
 You can download the sources and the binaries as .7z/.zip archives at the [releases](https://github.com/koszeggy/KGySoft.Drawing.Tools/releases) page.
 
 To support the widest possible range of platforms the binaries archive contains multiple builds in different folders.
-* `net35`: This contains the .NET Framework 3.5 build and though it works on every platforms Imaging Tools supports, it is not really recommended to use as a standalone application. If you use Imaging Tools as [debugger visualizers](#installing-debugger-visualizers), then it is the only version you can use for Visual Studio 2008. For newer Visual Studio versions use it only if you want to debug a .NET Framework 2.0-3.5 application.
-* `net40`: This is the .NET Framework 4.0 build. As a standalone application, it's basically recommended for Windows XP and ReactOS only.
+* `net35`: This contains the .NET Framework 3.5 build and though it works on every platform supported by Imaging Tools, it is not really recommended to use as a standalone application. If you use Imaging Tools as [debugger visualizers](#installing-debugger-visualizers), then this is the only version you can use for Visual Studio 2008. For newer Visual Studio versions use it only if you want to debug a .NET Framework 2.0-3.5 application.
+* `net40`: This is the .NET Framework 4.0 build. As a standalone application, it's basically recommended for Windows XP and ReactOS only. As a debugger visualizer you need this one for Visual Studio 2010 to debug .NET Framework 4.0 projects.
 * `net45`: This is the .NET Framework 4.5 build. Requires Windows Vista or later. As a debugger visualizer works both for .NET Framework 4.x and .NET Core projects (including .NET 5 and newer platforms) but does not support debugging SkiaSharp types.
 * `net462`: This is the .NET Framework 4.6.2 build. Requires Windows 7 or greater, and this is the recommended version to use as a debugger visualizer for .NET Framework 4.x and .NET Core projects (including .NET 5 and newer platforms). As a standalone application, this is also the recommended version for Linux (requires Mono).
-* `net6.0-windows`: This folder contains the .NET 6.0 build. As a standalone application this is the recommended version for Windows 7 and above. On the other hand, this one cannot be used as a debugger visualizer (even for .NET or .NET Core projects) and does not support Linux either.
+* `net6.0-windows`: This folder contains the .NET 6.0 build. As a standalone application this is the recommended version for Windows 7 and above. On the other hand, this one cannot be used as a debugger visualizer (even for .NET or .NET Core projects) and cannot be executed on Linux either.
 
 ## Release Notes
 
