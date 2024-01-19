@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: DithererSelectorControl.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -14,6 +14,10 @@
 #endregion
 
 #region Usings
+
+using System;
+using System.Globalization;
+using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
@@ -67,21 +71,81 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private void InitCommandBindings()
         {
-            // not for ViewModel.Parameters.PropertyChanged because it is not triggered for expanded properties such as collection elements
-            CommandBindings.Add(ViewModel!.ResetDitherer)
-                .AddSource(pgParameters, nameof(pgParameters.PropertyValueChanged));
+            CommandBindings.AddPropertyChangedHandlerBinding(ViewModel!, ResetParentSize, nameof(ViewModel.SelectedDitherer));
         }
 
         private void InitPropertyBindings()
         {
+            #region Local Methods
+
+            static object FormatStrength(object? value)
+            {
+                int v = (int)value!;
+                return v switch
+                {
+                    0 => Res.TextAuto,
+                    _ => (v / (float)DithererSelectorViewModel.MaxStrength).ToString("P2", LanguageSettings.FormattingLanguage)
+                };
+            }
+
+            static object? FormatCheckState(object? value) => ((CheckState)value!) switch
+            {
+                CheckState.Unchecked => false,
+                CheckState.Checked => true,
+                _ => null
+            };
+
+            static object? FormatSeed(object? value)
+            {
+                string? s = (string?)value;
+                return String.IsNullOrEmpty(s) ? null
+                    : Int32.TryParse(s, NumberStyles.Integer, LanguageSettings.FormattingLanguage, out int i) ? i
+                    : null;
+            }
+
+            #endregion
+
             // will not change so not as an actual binding
             cmbDitherer.DataSource = ViewModel!.Ditherers;
 
-            // VM.Parameters -> pgParameters.SelectedObject
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Parameters), nameof(pgParameters.SelectedObject), pgParameters);
+            // Strength
+            tbStrength.Maximum = DithererSelectorViewModel.MaxStrength;
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.StrengthVisible), nameof(tblStrength.Visible), tblStrength);
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.Strength), tbStrength, nameof(tbStrength.Value));
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Strength), nameof(lblStrengthValue.Text), FormatStrength, lblStrengthValue);
 
-            // cmbDitherer.SelectedValue -> VM.SelectedDitherer
+            // Serpentine processing
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SerpentineProcessingVisible), nameof(chbSerpentineProcessing.Visible), chbSerpentineProcessing);
+            CommandBindings.AddPropertyBinding(chbSerpentineProcessing, nameof(chbSerpentineProcessing.Checked), nameof(ViewModel.SerpentineProcessing), ViewModel);
+
+            // By Brightness
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.ByBrightnessVisible), nameof(chbByBrightness.Visible), chbByBrightness);
+            CommandBindings.AddPropertyBinding(chbByBrightness, nameof(chbByBrightness.CheckState), nameof(ViewModel.ByBrightness), FormatCheckState, ViewModel);
+
+            // Seed
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SeedVisible), nameof(tblSeed.Visible), tblSeed);
+            CommandBindings.AddPropertyBinding(txtSeed, nameof(txtSeed.Text), nameof(ViewModel.Seed), FormatSeed, ViewModel);
+
+            // cmbDitherer.SelectedValue -> VM.SelectedDitherer (intentionally last so visibilities are already bound)
             CommandBindings.AddPropertyBinding(cmbDitherer, nameof(cmbDitherer.SelectedValue), nameof(ViewModel.SelectedDitherer), ViewModel);
+        }
+
+        private void ResetParentSize()
+        {
+            Control? parent = Parent?.Parent;
+            if (parent == null)
+                return;
+
+            int height = 0;
+            foreach (Control control in Controls)
+            {
+                if (!control.Visible)
+                    continue;
+
+                height += control.Height;
+            }
+
+            parent.Height = height + (parent.Height - parent.DisplayRectangle.Height);
         }
 
         #endregion

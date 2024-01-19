@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="KGySoft.CoreLibraries" Version="7.2.0" />
+    <PackageReference Include="KGySoft.CoreLibraries" Version="8.0.0" />
     <PackageReference Include="KGySoft.Json" Version="3.0.1" />
   </ItemGroup>
 

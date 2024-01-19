@@ -1,9 +1,9 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: ICustomPropertiesProvider.cs
+//  File: PColor32Serializer.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -15,19 +15,21 @@
 
 #region Usings
 
-using System.ComponentModel;
+using System.IO;
+
+using KGySoft.Drawing.Imaging;
+
+using Microsoft.VisualStudio.DebuggerVisualizers;
 
 #endregion
 
-namespace KGySoft.Drawing.ImagingTools.Model
+namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
 {
-    internal interface ICustomPropertiesProvider : ICustomTypeDescriptor
+    internal sealed class PColor32Serializer : VisualizerObjectSource
     {
         #region Methods
 
-        object? GetValue(string propertyName, object? defaultValue);
-        void SetValue(string propertyName, object? value);
-        void ResetValue(string propertyName);
+        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeCustomColorInfo((PColor32)target, outgoingData);
 
         #endregion
     }

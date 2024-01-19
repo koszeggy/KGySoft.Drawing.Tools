@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ColorVisualizerViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -89,11 +89,16 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #endregion
 
+        #region Instance Properties
+        
         internal Color Color { get => Get<Color>(); set => Set(value); }
         internal bool ReadOnly { get => Get<bool>(); set => Set(value); }
         internal int? SelectedIndex { get => Get<int?>(); set => Set(value); }
         internal string? InfoText { get => Get<string?>(); set => Set(value); }
         internal string? TitleCaption { get => Get<string?>(); set => Set(value); }
+        internal KeyValuePair<string, string>[]? CustomColorComponents { get => Get<KeyValuePair<string, string>[]>(); set => Set(value); }
+
+        #endregion
 
         #endregion
 

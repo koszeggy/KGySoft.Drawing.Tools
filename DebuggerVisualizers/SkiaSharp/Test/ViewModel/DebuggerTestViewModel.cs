@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: DebuggerTestViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -58,7 +58,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Test.ViewModel
                 nameof(IsSKPixmap),
                 nameof(IsSKImage),
                 nameof(IsSKSurface),
-                nameof(IsSingleColor),
+                nameof(IsSKColor),
+                nameof(IsSKPMColor),
+                nameof(IsSKColorF),
             }
         };
 
@@ -95,7 +97,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Test.ViewModel
         public bool IsSKPixmap { get => Get<bool>(); set => Set(value); }
         public bool IsSKImage { get => Get<bool>(); set => Set(value); }
         public bool IsSKSurface { get => Get<bool>(); set => Set(value); }
-        public bool IsSingleColor { get => Get<bool>(); set => Set(value); }
+        public bool IsSKColor { get => Get<bool>(); set => Set(value); }
+        public bool IsSKPMColor { get => Get<bool>(); set => Set(value); }
+        public bool IsSKColorF { get => Get<bool>(); set => Set(value); }
 
         public ICommand DirectViewCommand => Get(() => new SimpleCommand(OnViewDirectCommand));
         public ICommand DebugCommand => Get(() => new SimpleCommand(OnDebugCommand));
@@ -208,8 +212,14 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Test.ViewModel
         {
             FreeTestObject();
 
-            if (IsSingleColor)
-                return SKColors.Black;
+            if (IsSKColor)
+                return SKColors.Red;
+
+            if (IsSKPMColor)
+                return new SKPMColor(0xFF00FF00);
+
+            if (IsSKColorF)
+                return new SKColorF(0f, 0f, 1f, 1f);
 
             // TODO
             //if (ImageFromFile)
@@ -273,6 +283,18 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Test.ViewModel
                     case SKSurface surface:
                         return surface.GetReadableBitmapData().ToWriteableBitmap();
                     case SKColor color:
+                        {
+                            using IReadWriteBitmapData bmpData = BitmapDataFactory.CreateBitmapData(new Size(1, 1));
+                            bmpData.SetColor32(0, 0, color.ToColor32());
+                            return bmpData.ToWriteableBitmap();
+                        }
+                    case SKPMColor color:
+                        {
+                            using IReadWriteBitmapData bmpData = BitmapDataFactory.CreateBitmapData(new Size(1, 1));
+                            bmpData.SetColor32(0, 0, color.ToColor32());
+                            return bmpData.ToWriteableBitmap();
+                        }
+                    case SKColorF color:
                         {
                             using IReadWriteBitmapData bmpData = BitmapDataFactory.CreateBitmapData(new Size(1, 1));
                             bmpData.SetColor32(0, 0, color.ToColor32());
@@ -372,6 +394,24 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Test.ViewModel
                         return;
 
                     case SKColor color:
+                        DebuggerHelper.DebugCustomColor(new CustomColorInfo
+                        {
+                            Type = color.GetType().Name,
+                            DisplayColor = color.ToColor32(),
+                            Name = color.ToString()
+                        }, hwnd);
+                        return;
+
+                    case SKPMColor color:
+                        DebuggerHelper.DebugCustomColor(new CustomColorInfo
+                        {
+                            Type = color.GetType().Name,
+                            DisplayColor = color.ToColor32(),
+                            Name = color.ToString()
+                        }, hwnd);
+                        return;
+
+                    case SKColorF color:
                         DebuggerHelper.DebugCustomColor(new CustomColorInfo
                         {
                             Type = color.GetType().Name,

@@ -1,9 +1,9 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: SKColorDebuggerVisualizer.cs
+//  File: SkiaCustomColorDebuggerVisualizer.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -27,7 +27,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.DebuggerVisualizers
 {
     [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses",
         Justification = "False alarm, instantiated by VS debugger visualizers")]
-    internal sealed class SKColorDebuggerVisualizer : DialogDebuggerVisualizer
+    internal sealed class SkiaCustomColorDebuggerVisualizer : DialogDebuggerVisualizer
     {
         #region Methods
 

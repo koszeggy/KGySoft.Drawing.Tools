@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: MvvmBaseForm.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -73,7 +73,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             ApplyRightToLeft();
             InitializeComponent();
             StartPosition = OSUtils.IsMono && OSUtils.IsWindows ? FormStartPosition.WindowsDefaultLocation : FormStartPosition.CenterParent;
-
+#if !NET35
+            if (!OSUtils.IsWindows11OrLater) 
+#endif
+            {
+                toolTip.AutoPopDelay = Int16.MaxValue;
+            }
 
             // occurs in design mode but DesignMode is false for grandchild forms
             if (viewModel == null!)

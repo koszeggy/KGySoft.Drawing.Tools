@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ExecuteImagingToolsCommand.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -25,8 +25,6 @@ using Microsoft.VisualStudio.Shell;
 
 #endregion
 
-#nullable enable
-
 namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
     internal static class ExecuteImagingToolsCommand
@@ -34,7 +32,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         #region Fields
 
         private static MenuCommand? commandInstance;
-        private static IServiceProvider? serviceProvider;
         private static volatile IView? imagingToolsView;
 
         #endregion
@@ -43,16 +40,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
         #region Internal Methods
 
-        internal static MenuCommand GetCreateCommand(IServiceProvider package)
-        {
-            if (commandInstance == null)
-            {
-                serviceProvider = package;
-                commandInstance = new OleMenuCommand(OnExecuteImagingToolsCommand, new CommandID(Ids.CommandSet, Ids.ExecuteImagingToolsCommandId));
-            }
-
-            return commandInstance;
-        }
+        internal static MenuCommand GetCreateCommand()
+            => commandInstance ??= new OleMenuCommand(OnExecuteImagingToolsCommand, new CommandID(Ids.CommandSet, Ids.ExecuteImagingToolsCommandId));
 
         internal static void DestroyCommand()
         {
@@ -60,11 +49,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             imagingToolsView = null;
         }
 
-        #endregion
-
-        #region Event handlers
-
-        private static void OnExecuteImagingToolsCommand(object sender, EventArgs e)
+        internal static void ExecuteImagingTools()
         {
             try
             {
@@ -77,9 +62,15 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             {
                 imagingToolsView?.Dispose();
                 imagingToolsView = null;
-                ShellDialogs.Error(serviceProvider!, Res.ErrorMessageUnexpectedError(ex.Message));
+                Notifications.Error(Res.ErrorMessageUnexpectedError(ex.Message));
             }
         }
+
+        #endregion
+
+        #region Event handlers
+
+        private static void OnExecuteImagingToolsCommand(object sender, EventArgs e) => ExecuteImagingTools();
 
         #endregion
 

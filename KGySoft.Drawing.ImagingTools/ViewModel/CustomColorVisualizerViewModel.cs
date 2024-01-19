@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: CustomColorVisualizerViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -16,6 +16,7 @@
 #region Usings
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -34,13 +35,21 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #endregion
 
+        #region Properties
+
+        internal string? Type { get; set; }
+
+        #endregion
+
         #region Constructors
 
         internal CustomColorVisualizerViewModel(CustomColorInfo colorInfo)
         {
             this.colorInfo = colorInfo;
             ReadOnly = true;
+            Type = colorInfo.Type;
             Color = colorInfo.DisplayColor.ToColor();
+            CustomColorComponents = colorInfo.CustomColorComponents;
         }
 
         #endregion
@@ -49,21 +58,24 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         protected override void UpdateInfo()
         {
-            TitleCaption = Res.TitleType(colorInfo.Type ?? nameof(System.Drawing.Color));
+            TitleCaption = Res.TitleType(Type ?? nameof(System.Drawing.Color));
 
             var sb = new StringBuilder();
             if (SelectedIndex is int index)
                 sb.AppendLine(Res.InfoSelectedIndex(index));
 
-            if (colorInfo.Type is string type)
+            if (Type is string type)
                 sb.AppendLine(Res.TitleType(type));
             if (colorInfo.Name is string name)
                 sb.AppendLine(Res.TitleColor(name));
 
-            if (colorInfo.CustomAttributes.Count > 0)
+            if (colorInfo.CustomAttributes.Count > 0 || colorInfo.CustomColorComponents is { Length: > 4 } )
             {
+                var attrs = new List<KeyValuePair<string, string>>(colorInfo.CustomAttributes);
+                if (colorInfo.CustomColorComponents is { Length: > 4 })
+                    attrs.InsertRange(0, colorInfo.CustomAttributes);
                 sb.AppendLine();
-                sb.Append(Res.InfoCustomProperties(colorInfo.CustomAttributes.Select(a => $"{a.Key}: {a.Value}").Join(Environment.NewLine)));
+                sb.Append(Res.InfoCustomProperties(attrs.Select(a => $"{a.Key}: {a.Value}").Join(Environment.NewLine)));
             }
 
             InfoText = sb.ToString();

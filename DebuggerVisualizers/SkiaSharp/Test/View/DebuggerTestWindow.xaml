@@ -45,7 +45,9 @@
             <RadioButton IsChecked="{Binding IsSKPixmap}">SKPixmap</RadioButton>
             <RadioButton IsChecked="{Binding IsSKImage}">SKImage</RadioButton>
             <RadioButton IsChecked="{Binding IsSKSurface}">SKSurface</RadioButton>
-            <RadioButton IsChecked="{Binding IsSingleColor}">Single Color</RadioButton>
+            <RadioButton IsChecked="{Binding IsSKColor}">SKColor</RadioButton>
+            <RadioButton IsChecked="{Binding IsSKPMColor}">SKPMColor</RadioButton>
+            <RadioButton IsChecked="{Binding IsSKColorF}">SKColorF</RadioButton>
 
             <Button Click="{v:EventToCommand Command={Binding DirectViewCommand}, State={Binding DebugCommandState}}">View Directly</Button>
             <Button Click="{v:EventToCommand Command={Binding DebugCommand}, State={Binding DebugCommandState}}">View by Debugger</Button>

@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ImageSourceSerializationInfo.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -83,6 +83,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization
                 ShowPixelSize = true,
                 Type = bitmap.GetType().Name,
                 BitmapData = bitmap.GetReadableBitmapData(),
+                CustomPalette = BitmapPaletteSerializationInfo.GetPaletteInfo(bitmap.Palette),
                 CustomAttributes =
                 {
                     { nameof(bitmap.PixelWidth), $"{bitmap.PixelWidth}" },

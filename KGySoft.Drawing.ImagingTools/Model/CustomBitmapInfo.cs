@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: CustomBitmapInfo.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -37,15 +37,21 @@ namespace KGySoft.Drawing.ImagingTools.Model
         #region Properties
 
         /// <summary>
-        /// Gets or sets the bitmap data.
+        /// Gets or sets the bitmap data to be displayed.
         /// </summary>
         public IReadableBitmapData? BitmapData { get; set; }
+
+        /// <summary>
+        /// Gets or sets a custom palette to be displayed.
+        /// If <see langword="null"/> but <see cref="IBitmapData.Palette"/> is set in <see cref="BitmapData"/>, then it will be used instead.
+        /// </summary>
+        public CustomPaletteInfo? CustomPalette { get; set; }
         
         /// <summary>
         /// Gets or sets whether the size of <see cref="BitmapData"/> represents the actual pixel size of the custom bitmap.
         /// </summary>
         public bool ShowPixelSize { get; set; }
-        
+
         #endregion
 
         #region Constructors

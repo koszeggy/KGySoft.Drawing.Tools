@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: SerializationHelper.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -32,25 +32,29 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization
         internal static void SerializeCustomBitmapInfo(SKBitmap bitmap, Stream outgoingData)
         {
             using BinaryWriter writer = outgoingData.InitSerializationWriter();
-            new BitmapDataSerializationInfo(bitmap).Write(writer);
+            using var info = new BitmapDataSerializationInfo(bitmap);
+            info.Write(writer);
         }
 
         internal static void SerializeCustomBitmapInfo(SKPixmap pixmap, Stream outgoingData)
         {
             using BinaryWriter writer = outgoingData.InitSerializationWriter();
-            new BitmapDataSerializationInfo(pixmap).Write(writer);
+            using var info = new BitmapDataSerializationInfo(pixmap);
+            info.Write(writer);
         }
 
         internal static void SerializeCustomBitmapInfo(SKImage image, Stream outgoingData)
         {
             using BinaryWriter writer = outgoingData.InitSerializationWriter();
-            new BitmapDataSerializationInfo(image).Write(writer);
+            using var info = new BitmapDataSerializationInfo(image);
+            info.Write(writer);
         }
 
         internal static void SerializeCustomBitmapInfo(SKSurface image, Stream outgoingData)
         {
             using BinaryWriter writer = outgoingData.InitSerializationWriter();
-            new BitmapDataSerializationInfo(image).Write(writer);
+            using var info = new BitmapDataSerializationInfo(image);
+            info.Write(writer);
         }
 
         internal static CustomBitmapInfo DeserializeCustomBitmapInfo(Stream stream)
@@ -62,13 +66,25 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization
         internal static void SerializeCustomColorInfo(SKColor color, Stream outgoingData)
         {
             using BinaryWriter writer = outgoingData.InitSerializationWriter();
-            new SKColorSerializationInfo(color).Write(writer);
+            new ColorSerializationInfo(color).Write(writer);
+        }
+
+        internal static void SerializeCustomColorInfo(SKPMColor color, Stream outgoingData)
+        {
+            using BinaryWriter writer = outgoingData.InitSerializationWriter();
+            new ColorSerializationInfo(color).Write(writer);
+        }
+
+        internal static void SerializeCustomColorInfo(SKColorF color, Stream outgoingData)
+        {
+            using BinaryWriter writer = outgoingData.InitSerializationWriter();
+            new ColorSerializationInfo(color).Write(writer);
         }
 
         internal static CustomColorInfo DeserializeCustomColorInfo(Stream stream)
         {
             using BinaryReader reader = stream.InitSerializationReader();
-            return new SKColorSerializationInfo(reader).ColorInfo!;
+            return new ColorSerializationInfo(reader).ColorInfo!;
         }
 
         #endregion

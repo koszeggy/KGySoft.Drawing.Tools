@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: CustomBitmapVisualizerViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -51,7 +51,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         protected override void UpdateInfo()
         {
-            IReadableBitmapData? bitmapData = bitmapInfo?.BitmapData;
+            IReadableBitmapData? bitmapData = bitmapInfo.BitmapData;
 
             if (bitmapData == null)
             {
@@ -70,6 +70,20 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
 
             InfoText = sb.ToString();
+        }
+
+        protected override bool IsPaletteAvailable() => bitmapInfo.CustomPalette != null || base.IsPaletteAvailable();
+
+        protected override void ShowPalette()
+        {
+            if (bitmapInfo.CustomPalette == null)
+            {
+                base.ShowPalette();
+                return;
+            }
+
+            using IViewModel vmPalette = ViewModelFactory.FromCustomPalette(bitmapInfo.CustomPalette);
+            ShowChildViewCallback?.Invoke(vmPalette);
         }
 
         protected override void Dispose(bool disposing)

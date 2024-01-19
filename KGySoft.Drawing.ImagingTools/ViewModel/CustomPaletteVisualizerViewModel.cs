@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: CustomPaletteVisualizerViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -46,10 +46,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Methods
 
         protected override ColorVisualizerViewModel GetSelectedColorViewModel(int index)
-            => new CustomColorVisualizerViewModel(paletteInfo.Entries[index])
-            {
-                SelectedIndex = index,
-            };
+        {
+            var result = new CustomColorVisualizerViewModel(paletteInfo.Entries[index]);
+            result.Type ??= paletteInfo.EntryType;
+            result.SelectedIndex = index;
+            return result;
+        }
 
         #endregion
     }

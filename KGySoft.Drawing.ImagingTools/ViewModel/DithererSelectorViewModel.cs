@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: DithererSelectorViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -17,28 +17,64 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Reflection;
 
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
-using KGySoft.Reflection;
 
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal class DithererSelectorViewModel : ViewModelBase
+    internal class DithererSelectorViewModel : ViewModelBase, IDithererSettings
     {
+        #region Constants
+
+        internal const int MaxStrength = 256;
+
+        #endregion
+
+        #region Fields
+
+        private static readonly HashSet<string> affectsDitherer = new()
+        {
+            nameof(SelectedDitherer),
+            nameof(Strength),
+            nameof(Seed),
+            nameof(SerpentineProcessing),
+            nameof(ByBrightness),
+        };
+
+        #endregion
+
         #region Properties
+
+        #region Internal Properties
 
         // not a static property so always can be reinitialized with the current language
         internal IList<DithererDescriptor> Ditherers => Get(InitDitherers);
         internal DithererDescriptor? SelectedDitherer { get => Get<DithererDescriptor?>(); private set => Set(value); }
-        internal CustomPropertiesObject? Parameters { get => Get<CustomPropertiesObject?>(); private set => Set(value); }
+        internal bool StrengthVisible { get => Get<bool>(); private set => Set(value); }
+        internal int Strength { get => Get<int>(); set => Set(value); }
+        internal bool SerpentineProcessingVisible { get => Get<bool>(); private set => Set(value); }
+        internal bool SerpentineProcessing { get => Get<bool>(); set => Set(value); }
+        internal bool ByBrightnessVisible { get => Get<bool>(); private set => Set(value); }
+        internal bool? ByBrightness { get => Get<bool?>(); set => Set(value); }
+        internal bool SeedVisible { get => Get<bool>(); private set => Set(value); }
+        internal int? Seed { get => Get<int?>(); set => Set(value); }
         internal IDitherer? Ditherer { get => Get<IDitherer?>(); private set => Set(value); }
         internal Exception? CreateDithererError { get => Get<Exception?>(); set => Set(value); }
+
+        #endregion
+
+        #region Explicitly Implemented Interface Properties
+
+        float IDithererSettings.Strength => Strength / (float)MaxStrength;
+        int? IDithererSettings.Seed => Seed;
+        bool? IDithererSettings.ByBrightness => ByBrightness;
+        bool IDithererSettings.DoSerpentineProcessing => SerpentineProcessing;
+
+        #endregion
 
         #endregion
 
@@ -46,6 +82,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Static Methods
 
+        // Note that it evaluates the body whenever it's called, so it's always initialized by the current language.
         private static IList<DithererDescriptor> InitDitherers() =>
             new List<DithererDescriptor>
             {
@@ -76,76 +113,25 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Instance Methods
 
-        #region Internal Methods
-
-        internal void ResetDitherer()
-        {
-            DithererDescriptor? descriptor = SelectedDitherer;
-            CustomPropertiesObject? parameters = Parameters;
-            CreateDithererError = null;
-
-            if (descriptor == null || parameters == null)
-            {
-                Ditherer = null;
-                return;
-            }
-
-            IDitherer? ditherer = null;
-            try
-            {
-                foreach (MemberInfo memberInfo in descriptor.InvokeChain)
-                {
-                    switch (memberInfo)
-                    {
-                        case ConstructorInfo ctor:
-                            Debug.Assert(ditherer == null);
-                            ditherer = (IDitherer)CreateInstanceAccessor.GetAccessor(ctor).CreateInstance(descriptor.EvaluateParameters(ctor.GetParameters(), parameters));
-                            break;
-
-                        case PropertyInfo property:
-                            Debug.Assert(ditherer == null && property.GetGetMethod()!.IsStatic);
-                            ditherer = (IDitherer)PropertyAccessor.GetAccessor(property).Get(null)!;
-                            break;
-
-                        case MethodInfo method:
-                            Debug.Assert(ditherer != null && !method.IsStatic);
-                            ditherer = (IDitherer)MethodAccessor.GetAccessor(method).Invoke(ditherer, descriptor.EvaluateParameters(method.GetParameters(), parameters))!;
-                            break;
-
-                        default:
-                            throw new InvalidOperationException(Res.InternalError($"Unexpected member in invoke chain: {memberInfo}"));
-                    }
-                }
-
-                Ditherer = ditherer;
-            }
-            catch (Exception e) when (!e.IsCritical())
-            {
-                Ditherer = null;
-                CreateDithererError = e;
-            }
-        }
-
-        #endregion
-
         #region Protected Methods
 
         protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
         {
-            base.OnPropertyChanged(e);
             switch (e.PropertyName)
             {
                 case nameof(SelectedDitherer):
-                    CustomPropertiesObject? previousParameters = Parameters;
-                    Parameters = previousParameters == null
-                        ? new CustomPropertiesObject(SelectedDitherer!.Parameters)
-                        : new CustomPropertiesObject(previousParameters, SelectedDitherer!.Parameters);
-                    return;
-
-                case nameof(Parameters):
-                    ResetDitherer();
-                    return;
+                    var selectedDitherer = (DithererDescriptor)e.NewValue!;
+                    StrengthVisible = selectedDitherer.HasStrength;
+                    SerpentineProcessingVisible = selectedDitherer.HasSerpentineProcessing;
+                    ByBrightnessVisible = selectedDitherer.HasByBrightness;
+                    SeedVisible = selectedDitherer.HasSeed;
+                    break;
             }
+
+            base.OnPropertyChanged(e);
+
+            if (affectsDitherer.Contains(e.PropertyName!))
+                ResetDitherer();
         }
 
         protected override void Dispose(bool disposing)
@@ -158,6 +144,23 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #endregion
 
         #region Private Methods
+
+        private void ResetDitherer()
+        {
+            DithererDescriptor? descriptor = SelectedDitherer;
+            if (descriptor == null)
+                return;
+
+            try
+            {
+                Ditherer = descriptor.Create(this);
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                Ditherer = null;
+                CreateDithererError = e;
+            }
+        }
 
         #endregion
 

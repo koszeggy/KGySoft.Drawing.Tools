@@ -1,4 +1,21 @@
-﻿using System.Diagnostics;
+﻿#region Copyright
+
+///////////////////////////////////////////////////////////////////////////////
+//  File: AssemblyInfo.cs
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//
+//  You should have received a copy of the LICENSE file at the top-level
+//  directory of this distribution.
+//
+//  Please refer to the LICENSE file if you want to use this source code.
+///////////////////////////////////////////////////////////////////////////////
+
+#endregion
+
+#region Usings
+
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Reflection;
@@ -7,11 +24,15 @@ using System.Runtime.InteropServices;
 using KGySoft.Drawing.DebuggerVisualizers.GdiPlus;
 using KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization;
 
+#endregion
+
+#region Assembly Attributes
+
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("KGySoft.Drawing.DebuggerVisualizers")]
-[assembly: AssemblyDescription("KGy SOFT Drawing Debugger Visualizers")]
+[assembly: AssemblyTitle("KGySoft.Drawing.DebuggerVisualizers.GdiPlus")]
+[assembly: AssemblyDescription("KGy SOFT Drawing Debugger Visualizers for GDI+")]
 #if DEBUG
 [assembly: AssemblyConfiguration("Debug")]
 #else
@@ -40,9 +61,9 @@ using KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("3.1.0")]
-[assembly: AssemblyFileVersion("3.1.0")]
-[assembly: AssemblyInformationalVersion("3.1.0")]
+[assembly: AssemblyVersion("4.0.0")]
+[assembly: AssemblyFileVersion("4.0.0")]
+[assembly: AssemblyInformationalVersion("4.0.0")]
 
 // Image
 [assembly: DebuggerVisualizer(typeof(ImageDebuggerVisualizer), typeof(ImageSerializer),
@@ -83,3 +104,5 @@ using KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization;
 [assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
     Target = typeof(Color),
     Description = "KGy SOFT Color Debugger Visualizer")]
+
+#endregion

@@ -1,9 +1,9 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: DesignDependencies.cs
+//  File: PColor64Serializer.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -15,18 +15,21 @@
 
 #region Usings
 
-using System;
+using System.IO;
+
+using KGySoft.Drawing.Imaging;
+
+using Microsoft.VisualStudio.DebuggerVisualizers;
 
 #endregion
 
-namespace KGySoft.Drawing.ImagingTools.Model
+namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
 {
-    internal static class DesignDependencies
+    internal sealed class PColor64Serializer : VisualizerObjectSource
     {
-        #region Properties
+        #region Methods
 
-        internal static Type? QuantizerThresholdEditor { get; set; }
-        internal static Type? DithererStrengthEditor { get; set; }
+        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeCustomColorInfo((PColor64)target, outgoingData);
 
         #endregion
     }

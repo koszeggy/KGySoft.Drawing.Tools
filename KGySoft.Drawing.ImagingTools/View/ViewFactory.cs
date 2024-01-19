@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ViewFactory.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -17,8 +17,6 @@
 
 using System;
 
-using KGySoft.Drawing.ImagingTools.Model;
-using KGySoft.Drawing.ImagingTools.View.Design;
 using KGySoft.Drawing.ImagingTools.View.Forms;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
@@ -31,16 +29,6 @@ namespace KGySoft.Drawing.ImagingTools.View
     /// </summary>
     public static class ViewFactory
     {
-        #region Constructors
-
-        static ViewFactory()
-        {
-            DesignDependencies.QuantizerThresholdEditor = typeof(QuantizerThresholdEditor);
-            DesignDependencies.DithererStrengthEditor = typeof(DithererStrengthEditor);
-        }
-
-        #endregion
-
         #region Methods
 
         /// <summary>

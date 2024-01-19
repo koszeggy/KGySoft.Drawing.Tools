@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: CustomPaletteInfo.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -32,6 +32,11 @@ namespace KGySoft.Drawing.ImagingTools.Model
         /// Gets the palette entries to display.
         /// </summary>
         public IList<CustomColorInfo> Entries { get; } = new List<CustomColorInfo>();
+
+        /// <summary>
+        /// Gets or sets the type name of the color entries if <see cref="CustomObjectInfoBase.Type"/> is <see langword="null"/> in <see cref="Entries"/>.
+        /// </summary>
+        public string? EntryType { get; set; }
 
         #endregion
     }

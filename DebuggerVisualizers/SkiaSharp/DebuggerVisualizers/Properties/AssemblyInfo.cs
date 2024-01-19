@@ -1,4 +1,21 @@
-﻿using System.Diagnostics;
+﻿#region Copyright
+
+///////////////////////////////////////////////////////////////////////////////
+//  File: AssemblyInfo.cs
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//
+//  You should have received a copy of the LICENSE file at the top-level
+//  directory of this distribution.
+//
+//  Please refer to the LICENSE file if you want to use this source code.
+///////////////////////////////////////////////////////////////////////////////
+
+#endregion
+
+#region Usings
+
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -6,6 +23,10 @@ using KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.DebuggerVisualizers;
 using KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization;
 
 using SkiaSharp;
+
+#endregion
+
+#region Assembly Attributes
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
@@ -40,9 +61,9 @@ using SkiaSharp;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("3.1.0")]
-[assembly: AssemblyFileVersion("3.1.0")]
-[assembly: AssemblyInformationalVersion("3.1.0")]
+[assembly: AssemblyVersion("4.0.0")]
+[assembly: AssemblyFileVersion("4.0.0")]
+[assembly: AssemblyInformationalVersion("4.0.0")]
 
 // SKBitmap
 [assembly: DebuggerVisualizer(typeof(SkiaCustomBitmapDebuggerVisualizer), typeof(SKBitmapSerializer),
@@ -65,7 +86,18 @@ using SkiaSharp;
     Description = "KGy SOFT SKSurface Debugger Visualizer")]
 
 // SKColor
-[assembly: DebuggerVisualizer(typeof(SKColorDebuggerVisualizer), typeof(SKColorSerializer),
+[assembly: DebuggerVisualizer(typeof(SkiaCustomColorDebuggerVisualizer), typeof(SKColorSerializer),
     Target = typeof(SKColor),
     Description = "KGy SOFT SKColor Debugger Visualizer")]
 
+// SKPMColor
+[assembly: DebuggerVisualizer(typeof(SkiaCustomColorDebuggerVisualizer), typeof(SKPMColorSerializer),
+    Target = typeof(SKPMColor),
+    Description = "KGy SOFT SKPMColor Debugger Visualizer")]
+
+// SKColorF
+[assembly: DebuggerVisualizer(typeof(SkiaCustomColorDebuggerVisualizer), typeof(SKColorFSerializer),
+    Target = typeof(SKColorF),
+    Description = "KGy SOFT SKColorF Debugger Visualizer")]
+
+#endregion

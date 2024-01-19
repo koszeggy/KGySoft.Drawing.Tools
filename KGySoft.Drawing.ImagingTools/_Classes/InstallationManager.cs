@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: InstallationManager.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -53,6 +53,7 @@ namespace KGySoft.Drawing.ImagingTools
             "KGySoft.Drawing.dll",
             "KGySoft.Drawing.Wpf.dll",
             "KGySoft.CoreLibraries.dll",
+            "KGySoft.Drawing.DebuggerVisualizers.Core.dll",
             "KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll",
             "KGySoft.Drawing.DebuggerVisualizers.Wpf.dll",
 #if NET462_OR_GREATER || NETCOREAPP

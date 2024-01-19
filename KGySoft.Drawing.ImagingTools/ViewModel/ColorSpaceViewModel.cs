@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ColorSpaceViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -155,6 +155,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #endregion
 
+        #region Private Properties
+
+        private PixelFormat OriginalPixelFormat => originalPixelFormat == PixelFormatExtensions.Format32bppCmyk ? PixelFormat.Format24bppRgb : originalPixelFormat;
+
+        #endregion
+
         #endregion
 
         #region Constructors
@@ -176,6 +182,21 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Methods
 
         #region Protected Methods
+
+        protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+            switch (e.PropertyName)
+            {
+                case nameof(PixelFormat):
+                case nameof(ChangePixelFormat):
+                    QuantizerSelectorViewModel.PixelFormat = ChangePixelFormat ? PixelFormat : originalPixelFormat;
+                    break;
+                case nameof(UseDitherer):
+                    QuantizerSelectorViewModel.UseDithering = (bool)e.NewValue!;
+                    break;
+            }
+        }
 
         protected override ValidationResultsCollection DoValidation()
         {
@@ -238,7 +259,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
             else if (bppHint > originalBpp)
                 result.AddInfo(nameof(QuantizerSelectorViewModel.Quantizer), Res.InfoMessageQuantizerMayHaveNoEffect);
-            else if (bppHint == 32 && originalBpp >= 32 && !originalPixelFormat.HasAlpha())
+            else if (bppHint == 32 && originalBpp == 32 && !originalPixelFormat.HasAlpha())
                 result.AddInfo(nameof(QuantizerSelectorViewModel.Quantizer), Res.InfoMessageArgbQuantizerHasNoEffect);
 
             if (bppHint < originalBpp && !useDitherer && quantizerPixelFormat.CanBeDithered())
@@ -255,17 +276,17 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         }
 
         protected override bool AffectsPreview(string propertyName)
-            => propertyName.In(nameof(PixelFormat), nameof(ChangePixelFormat), nameof(UseQuantizer), nameof(UseDitherer));
+            => propertyName is nameof(PixelFormat) or nameof(ChangePixelFormat) or nameof(UseQuantizer) or nameof(UseDitherer);
 
         protected override GenerateTaskBase CreateGenerateTask()
-            => new GenerateTask(ChangePixelFormat ? PixelFormat : originalPixelFormat,
+            => new GenerateTask(ChangePixelFormat ? PixelFormat : OriginalPixelFormat,
                 UseQuantizer ? QuantizerSelectorViewModel.Quantizer : null,
                 UseDitherer ? DithererSelectorViewModel.Ditherer : null);
 
         protected override bool MatchesSettings(GenerateTaskBase task)
         {
             var t = (GenerateTask)task;
-            return t.PixelFormat == (ChangePixelFormat ? PixelFormat : originalPixelFormat)
+            return t.PixelFormat == (ChangePixelFormat ? PixelFormat : OriginalPixelFormat)
                 && t.Quantizer == (UseQuantizer ? QuantizerSelectorViewModel.Quantizer : null)
                 && t.Ditherer == (UseDitherer ? DithererSelectorViewModel.Ditherer : null);
         }
@@ -292,16 +313,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #endregion
 
-        #region Private Methods
-
-        #endregion
-
         #region Event Handlers
 
         private void Selector_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName.In(nameof(QuantizerSelectorViewModel.Quantizer), nameof(QuantizerSelectorViewModel.CreateQuantizerError),
-                nameof(DithererSelectorViewModel.Ditherer), nameof(DithererSelectorViewModel.CreateDithererError)))
+            if (e.PropertyName is nameof(QuantizerSelectorViewModel.Quantizer) or nameof(QuantizerSelectorViewModel.CreateQuantizerError)
+                or nameof(DithererSelectorViewModel.Ditherer) or nameof(DithererSelectorViewModel.CreateDithererError))
             {
                 Validate();
             }

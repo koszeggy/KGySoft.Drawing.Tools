@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ImageVisualizerViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -399,6 +399,43 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             SetModified(IsDebuggerVisualizer);
         }
 
+        protected virtual bool IsPaletteAvailable() => GetCurrentImageInfo().Palette.Length > 0;
+
+        protected virtual void ShowPalette()
+        {
+            ImageInfoBase currentImage = GetCurrentImageInfo();
+            if (currentImage.Palette.Length == 0)
+                return;
+
+            using IViewModel<Color[]> vmPalette = ViewModelFactory.FromPalette(currentImage.Palette, IsPaletteReadOnly);
+            ShowChildViewCallback?.Invoke(vmPalette);
+            if (!vmPalette.IsModified)
+                return;
+
+            // apply changes
+            ColorPalette palette = currentImage.Image!.Palette;
+            Color[] newPalette = vmPalette.GetEditedModel();
+
+            // even if the length of the palette is not edited it can happen that the preview image is ARGB32
+            if (palette.Entries.Length != newPalette.Length)
+            {
+                // using the original palette for the conversion before applying the new colors
+                Image newImage = currentImage.Image.ConvertPixelFormat(currentImage.PixelFormat, currentImage.Palette);
+                currentImage.Image.Dispose();
+                PreviewImage = currentImage.Image = newImage;
+                palette = newImage.Palette;
+            }
+
+            for (int i = 0; i < newPalette.Length; i++)
+                palette.Entries[i] = newPalette[i];
+
+            // must be in a lock because it can be in use in the UI (where it is also locked)
+            lock (currentImage.Image)
+                currentImage.Image.Palette = palette; // the preview changes only if we apply the palette
+            currentImage.Palette = palette.Entries; // the actual palette will be taken from here
+            InvalidateImage();
+        }
+
         protected override void ApplyDisplayLanguage()
         {
             isOpenFilterUpToDate = false;
@@ -512,8 +549,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void ImageChanged()
         {
-            ImageInfoBase image = GetCurrentImageInfo();
-            ShowPaletteCommandState.Enabled = image.Palette.Length > 0;
+            ShowPaletteCommandState.Enabled = IsPaletteAvailable();
             SaveFileCommandState.Enabled = imageInfo.Type != ImageInfoType.None;
             ClearCommandState.Enabled = imageInfo.Type != ImageInfoType.None && !ReadOnly;
             EditBitmapCommandState.Enabled = CanEditImage();
@@ -1197,42 +1233,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             ImageChanged();
         }
 
-        private void OnShowPaletteCommand()
-        {
-            ImageInfoBase currentImage = GetCurrentImageInfo();
-            if (currentImage.Palette.Length == 0)
-                return;
-
-            using (IViewModel<Color[]> vmPalette = ViewModelFactory.FromPalette(currentImage.Palette, IsPaletteReadOnly))
-            {
-                ShowChildViewCallback?.Invoke(vmPalette);
-                if (!vmPalette.IsModified)
-                    return;
-
-                // apply changes
-                ColorPalette palette = currentImage.Image!.Palette;
-                Color[] newPalette = vmPalette.GetEditedModel();
-
-                // even if the length of the palette is not edited it can happen that the preview image is ARGB32
-                if (palette.Entries.Length != newPalette.Length)
-                {
-                    // using the original palette for the conversion before applying the new colors
-                    Image newImage = currentImage.Image.ConvertPixelFormat(currentImage.PixelFormat, currentImage.Palette);
-                    currentImage.Image.Dispose();
-                    PreviewImage = currentImage.Image = newImage;
-                    palette = newImage.Palette;
-                }
-
-                for (int i = 0; i < newPalette.Length; i++)
-                    palette.Entries[i] = newPalette[i];
-
-                // must be in a lock because it can be in use in the UI (where it is also locked)
-                lock (currentImage.Image)
-                    currentImage.Image.Palette = palette; // the preview changes only if we apply the palette
-                currentImage.Palette = palette.Entries; // the actual palette will be taken from here
-                InvalidateImage();
-            }
-        }
+        private void OnShowPaletteCommand() => ShowPalette();
 
         private void OnManageInstallationsCommand()
         {

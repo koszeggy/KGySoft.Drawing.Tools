@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: Res.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -19,8 +19,6 @@ using System;
 using System.Globalization;
 
 #endregion
-
-#nullable enable
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
@@ -41,7 +39,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
         #region Properties
 
-        /// <summary>KGy SOFT Drawing DebuggerVisualizers</summary>
+        /// <summary>KGy SOFT Image DebuggerVisualizers</summary>
         internal static string TitleMessageDialog => Get(Ids.ResourceTitle);
 
         #endregion
@@ -55,16 +53,16 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
         /// <summary>Failed to install the visualizers to {0}: {1}
         ///
-        /// Make sure every running debugger is closed.Installing will be tried again on restarting Visual Studio.</summary>
+        /// Make sure every running debugger is closed. Installing will be tried again on restarting Visual Studio.</summary>
         internal static string ErrorMessageFailedToInstall(string targetPath, string message) => Get(Resources.ErrorMessage_FailedToInstallFormat, targetPath, message);
 
-        /// <summary>The installation of KGy SOFT Drawing DebuggerVisualizers to {0} finished with a warning: {1}</summary>
+        /// <summary>The installation KGy SOFT Imaging Tools v{0} and the debugger visualizers finished with a warning: {1}.</summary>
         internal static string WarningMessageInstallationFinishedWithWarning(string targetPath, string message) => Get(Resources.WarningMessage_InstallationFinishedWithWarningFormat, targetPath, message);
 
-        /// <summary>The KGy SOFT Drawing DebuggerVisualizers {0} extension has been installed to {1}</summary>
+        /// <summary>KGy SOFT Imaging Tools v{0} and the debugger visualizers have been installed to {1}.</summary>
         internal static string InfoMessageInstallationFinished(Version version, string targetPath) => Get(Resources.InfoMessage_InstallationFinishedFormat, version, targetPath);
 
-        /// <summary>The KGy SOFT Drawing DebuggerVisualizers {0} extension has been upgraded to version {1} at {2}</summary>
+        /// <summary>KGy SOFT Imaging Tools v{0} and the debugger visualizers have been upgraded to version {1} at {2}.</summary>
         internal static string InfoMessageUpgradeFinished(Version oldVersion, Version newVersion, string targetPath) => Get(Resources.InfoMessage_InstallationUpgradedFormat, oldVersion, newVersion, targetPath);
 
         #endregion

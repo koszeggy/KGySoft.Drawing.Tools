@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: BitmapPaletteSerializationInfo.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -20,59 +20,44 @@ using System.IO;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
+using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 using KGySoft.Drawing.ImagingTools.Model;
 
 #endregion
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization
 {
-    internal sealed class BitmapPaletteSerializationInfo
+    internal sealed class BitmapPaletteSerializationInfo : CustomPaletteSerializationInfo
     {
-        #region Fields
-
-        private readonly BitmapPalette? palette;
-
-        #endregion
-
-        #region Properties
-
-        internal CustomPaletteInfo? PaletteInfo { get; private set; }
-
-        #endregion
-
         #region Constructors
 
-        internal BitmapPaletteSerializationInfo(BitmapPalette palette) => this.palette = palette;
+        internal BitmapPaletteSerializationInfo(BitmapPalette palette) => PaletteInfo = GetPaletteInfo(palette);
 
-        internal BitmapPaletteSerializationInfo(BinaryReader reader) => ReadFrom(reader);
+        internal BitmapPaletteSerializationInfo(BinaryReader reader)
+            : base(reader)
+        {
+        }
 
         #endregion
 
         #region Methods
 
-        #region Internal Methods
-
-        internal void Write(BinaryWriter bw)
+        internal static CustomPaletteInfo? GetPaletteInfo(BitmapPalette? palette)
         {
-            IList<Color>? colors = palette!.Colors;
-            bw.Write(colors.Count);
-            foreach (Color color in colors)
-                new ColorSerializationInfo(color).Write(bw);
+            if (palette == null)
+                return null;
+
+            var result = new CustomPaletteInfo
+            {
+                Type = palette.GetType().Name,
+                EntryType = nameof(Color)
+            };
+
+            foreach (Color color in palette.Colors)
+                result.Entries.Add(ColorSerializationInfo.GetColorInfo(color, false));
+
+            return result;
         }
-
-        #endregion
-
-        #region Private Methods
-
-        private void ReadFrom(BinaryReader br)
-        {
-            PaletteInfo = new CustomPaletteInfo { Type = nameof(BitmapPalette) };
-            int count = br.ReadInt32();
-            for (int i = 0; i < count; i++)
-                PaletteInfo.Entries.Add(new ColorSerializationInfo(br).ColorInfo!);
-        }
-
-        #endregion
 
         #endregion
     }

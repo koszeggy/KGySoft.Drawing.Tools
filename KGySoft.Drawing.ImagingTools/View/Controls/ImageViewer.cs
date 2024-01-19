@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ImageViewer.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -486,11 +486,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             // adjust scrollbar values
             if (sbHorizontalVisible)
             {
+                float origCenter = sbHorizontal.Visible
+                    ? (sbHorizontal.Value - sbHorizontal.Minimum + sbHorizontal.LargeChange / 2f) / (sbHorizontal.Maximum - sbHorizontal.Minimum)
+                    : 0.5f;
                 sbHorizontal.Minimum = targetLocation.X;
                 sbHorizontal.Maximum = targetLocation.X + scaledSize.Width;
                 sbHorizontal.LargeChange = clientSize.Width;
                 sbHorizontal.SmallChange = this.ScaleSize(referenceScrollSize).Width;
-                sbHorizontal.Value = Math.Min(sbHorizontal.Value, sbHorizontal.Maximum - sbHorizontal.LargeChange);
+                int newValue = (int)(scaledSize.Width * origCenter - clientSize.Width / 2f) + targetLocation.X;
+                sbHorizontal.Value = Math.Min(Math.Max(newValue, sbHorizontal.Minimum), sbHorizontal.Maximum - sbHorizontal.LargeChange);
             }
 
             if (sbVerticalVisible)
@@ -501,11 +505,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     clientLocation.X = scrollbarSize.Width;
                 }
 
+                float origCenter = sbVertical.Visible
+                    ? (sbVertical.Value - sbVertical.Minimum + sbVertical.LargeChange / 2f) / (sbVertical.Maximum - sbVertical.Minimum)
+                    : 0.5f;
                 sbVertical.Minimum = targetLocation.Y;
                 sbVertical.Maximum = targetLocation.Y + scaledSize.Height;
                 sbVertical.LargeChange = clientSize.Height;
                 sbVertical.SmallChange = this.ScaleSize(referenceScrollSize).Height;
-                sbVertical.Value = Math.Min(sbVertical.Value, sbVertical.Maximum - sbVertical.LargeChange);
+                int newValue = (int)(scaledSize.Height * origCenter - clientSize.Height / 2f) + targetLocation.Y;
+                sbVertical.Value = Math.Min(Math.Max(newValue, sbVertical.Minimum), sbVertical.Maximum - sbVertical.LargeChange);
             }
 
             sbHorizontal.Visible = sbHorizontalVisible;

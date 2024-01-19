@@ -36,6 +36,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.gbPalette.Size = new System.Drawing.Size(241, 233);
             this.gbPalette.TabIndex = 0;
             this.gbPalette.TabStop = false;
+            this.gbPalette.Text = "gbPalette";
             // 
             // pnlPalette
             // 
@@ -54,8 +55,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.gbSelectedColor.Size = new System.Drawing.Size(241, 216);
             this.gbSelectedColor.TabIndex = 1;
             this.gbSelectedColor.TabStop = false;
+            this.gbSelectedColor.Text = "gbSelectedColor";
             // 
-            // ucColorVisualizer
+            // colorVisualizerControl
             // 
             this.colorVisualizerControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.colorVisualizerControl.Location = new System.Drawing.Point(3, 16);
@@ -65,6 +67,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // 
             // okCancelButtons
             // 
+            this.okCancelButtons.BackColor = System.Drawing.Color.Transparent;
             this.okCancelButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.okCancelButtons.Location = new System.Drawing.Point(3, 452);
             this.okCancelButtons.Name = "okCancelButtons";

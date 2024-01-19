@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: CustomColorInfo.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -14,6 +14,8 @@
 #endregion
 
 #region Usings
+
+using System.Collections.Generic;
 
 using KGySoft.Drawing.Imaging;
 
@@ -37,6 +39,13 @@ namespace KGySoft.Drawing.ImagingTools.Model
         /// Gets or sets a specific display name for the color.
         /// </summary>
         public string? Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets custom color components. If set, then the regular ARGB color components will not be displayed.
+        /// If there are more than four components, then they will be displayed as if they have been added
+        /// to <see cref="CustomObjectInfoBase.CustomAttributes"/>. The order of the components are guaranteed to be preserved.
+        /// </summary>
+        public KeyValuePair<string, string>[]? CustomColorComponents { get; set; }
 
         #endregion
     }

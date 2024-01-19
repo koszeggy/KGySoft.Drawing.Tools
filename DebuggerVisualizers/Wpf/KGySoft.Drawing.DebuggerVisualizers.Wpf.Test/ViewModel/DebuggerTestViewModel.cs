@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: DebuggerTestViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2023 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -14,10 +14,6 @@
 #endregion
 
 #region Usings
-
-using KGySoft.Reflection;
-
-using Microsoft.VisualStudio.DebuggerVisualizers;
 
 #region Used Namespaces
 
@@ -36,6 +32,9 @@ using KGySoft.CoreLibraries;
 using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.Wpf;
+using KGySoft.Reflection;
+
+using Microsoft.VisualStudio.DebuggerVisualizers;
 
 #endregion
 
@@ -58,7 +57,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Test.ViewModel
             nameof(BitmapSource),
             nameof(ImageSource),
             nameof(Palette),
-            nameof(SingleColor),
+            nameof(SingleColorSrgb),
+            nameof(SingleColorLinear),
+            nameof(SingleColorFromProfile),
         };
 
         private static readonly Dictionary<Type, DebuggerVisualizerAttribute> debuggerVisualizers = WpfDebuggerHelper.GetDebuggerVisualizers();
@@ -79,7 +80,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Test.ViewModel
         public bool BitmapSource { get => Get(true); set => Set(value); }
         public bool ImageSource { get => Get<bool>(); set => Set(value); }
         public bool Palette { get => Get<bool>(); set => Set(value); }
-        public bool SingleColor { get => Get<bool>(); set => Set(value); }
+        public bool SingleColorSrgb { get => Get<bool>(); set => Set(value); }
+        public bool SingleColorLinear { get => Get<bool>(); set => Set(value); }
+        public bool SingleColorFromProfile { get => Get<bool>(); set => Set(value); }
 
         public ICommand DirectViewCommand => Get(() => new SimpleCommand(OnViewDirectCommand));
         public ICommand DebugCommand => Get(() => new SimpleCommand(OnDebugCommand));
@@ -127,6 +130,29 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Test.ViewModel
             for (int x = 0; x < size; x++)
             for (int y = 0; y < size; y++)
                 bitmapData.SetColor32(x, y, palette.Colors[x].ToColor32());
+            return result;
+        }
+
+        private static CustomPaletteInfo? GetCustomPalette(BitmapPalette? palette)
+        {
+            if (palette == null)
+                return null;
+
+            var result = new CustomPaletteInfo
+            {
+                Type = palette.GetType().Name,
+                EntryType = nameof(Color)
+            };
+
+            foreach (Color color in palette.Colors)
+            {
+                result.Entries.Add(new CustomColorInfo
+                {
+                    DisplayColor = color.ToColor32(),
+                    Name = color.ToString()
+                });
+            }
+
             return result;
         }
 
@@ -213,8 +239,14 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Test.ViewModel
                         : null;
                 }
 
-                if (SingleColor)
-                    return Colors.Black;
+                if (SingleColorSrgb)
+                    return Colors.Red;
+
+                if (SingleColorLinear)
+                    return Color.FromScRgb(1f, 0f, 1f, 0f);
+
+                if (SingleColorFromProfile)
+                    return Color.FromValues([0f, 0f, 1f], new Uri("C:\\Windows\\System32\\spool\\drivers\\color\\AdobeRGB1998.icc"));
 
                 // TODO
                 //if (ImageFromFile)
@@ -281,6 +313,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Test.ViewModel
                             Type = bitmapSource.GetType().Name,
                             ShowPixelSize = true,
                             BitmapData = bitmapSource.GetReadableBitmapData(),
+                            CustomPalette = GetCustomPalette(bitmapSource.Palette)
                         }, hwnd);
                         return;
 
@@ -297,17 +330,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Test.ViewModel
                         return;
 
                     case BitmapPalette palette:
-                        var paletteInfo = new CustomPaletteInfo { Type = palette.GetType().Name };
-                        foreach (Color color in palette.Colors)
-                        {
-                            paletteInfo.Entries.Add(new CustomColorInfo
-                            {
-                                Type = color.GetType().Name,
-                                DisplayColor = color.ToColor32(),
-                                Name = color.ToString()
-                            });
-                        }
-
+                        CustomPaletteInfo paletteInfo = GetCustomPalette(palette)!;
                         DebuggerHelper.DebugCustomPalette(paletteInfo, hwnd);
                         return;
 
