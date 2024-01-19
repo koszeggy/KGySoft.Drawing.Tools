@@ -121,7 +121,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.ViewModel
             .Where(pf => pf.IsValidFormat())
             .Select(pf => pf.GetInfo())
             .OrderBy(pf => pf.BitsPerPixel)
-            .Concat([new(16) { Indexed = true }, new(4) { HasSingleBitAlpha = true }])
+            .Concat(new[] { new PixelFormatInfo(16) { Indexed = true }, new(4) { HasSingleBitAlpha = true } })
             .ToArray();
 
         internal PixelFormatInfo SelectedFormat { get => Get<PixelFormatInfo>(); set => Set(value); }

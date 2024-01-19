@@ -39,7 +39,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core
         /// <returns>The debugger visualizers of this assembly.</returns>
         public static Dictionary<Type, DebuggerVisualizerAttribute> GetDebuggerVisualizers()
             => Attribute.GetCustomAttributes(typeof(CoreDebuggerHelper).Assembly, typeof(DebuggerVisualizerAttribute))
-                .Cast<DebuggerVisualizerAttribute>().ToDictionary(a => a.Target ?? Reflector.ResolveType(a.TargetTypeName, ResolveTypeOptions.AllowPartialAssemblyMatch)!);
+                .Cast<DebuggerVisualizerAttribute>().ToDictionary(a => a.Target ?? Reflector.ResolveType(a.TargetTypeName!, ResolveTypeOptions.AllowPartialAssemblyMatch)!);
 
         #endregion
     }
