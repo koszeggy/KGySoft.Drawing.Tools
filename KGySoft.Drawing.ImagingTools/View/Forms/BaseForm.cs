@@ -158,7 +158,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             DefWndProc(ref m);
             if (AutoSizeMode == AutoSizeMode.GrowAndShrink)
             {
-                int result = (int)m.Result;
+                nint result = m.Result;
                 if (result >= 10 && result <= 17)
                     m.Result = (IntPtr)18;
             }
