@@ -1,36 +1,36 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <!--When creating an out-of-proc extension, then target can be .NET 6+ or .NET Framework. Both have issues though:
-        - When targeting .NET Framework, we always get a StreamJsonRpc.ConnectionLostException, even if the references are copied into a net4.6.2 folder as per the documentation: https://learn.microsoft.com/en-us/visualstudio/extensibility/visualstudio.extensibility/debugger-visualizer/debugger-visualizers?view=vs-2022#add-the-visualizer-object-source-dll-to-the-extension
-          If we enable Just My Code, we see that maybe the issue is that the DependencyInjection.ServiceProvider class does not implement the AsyncDisposable method
-        - When targeting .NET 6.0, we cannot debug .NET Framework projects: attempting to call visualizerTarget.ObjectSource.RequestDataAsync ends up in a StreamJsonRpc.RemoteInvocationException: 'Could not load file or assembly System.Runtime, Version=6.0.0.0 ...'
-        - The visualizer must be a remote control, whose VM properties are forcibly serialized by JSON (unlike the debugged object itself that can use a custom binary serialization), and does not work for any complex type such as a BitmapSource
+    <!--When creating an in-proc extension, the target must be .NET Framework. This is the only working way to debug both .NET Framework and .NET [Core] projects.
+        It also allows using othwerwise non-JSON serializable types in the bindings, such as images.
     --> 
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>12</LangVersion>
     <UseWPF>true</UseWPF>
 
-    <!-- Required for in-proc debugging only. -->
-    <!--<VssdkCompatibleExtension>true</VssdkCompatibleExtension>-->
+    <!-- Required for in-proc extensions. -->
+    <VssdkCompatibleExtension>true</VssdkCompatibleExtension>
   </PropertyGroup>
   
-  <!--vsixmanifest is needed for in-process hosting when no metadata is specified in the entry point so we exclude it for out-of-process extensions-->
-  <ItemGroup>
+  <!--For in-process hosting we don't exclude the vsixmanifest file-->
+  <!--<ItemGroup>
     <None Remove="source.extension.vsixmanifest" />
-  </ItemGroup>
+  </ItemGroup>-->
 
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Extensibility.Sdk" Version="17.9.2092" />
     <PackageReference Include="Microsoft.VisualStudio.Extensibility.Build" Version="17.9.2092" />
-    <!--<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.6.36389" ExcludeAssets="runtime" />-->
+
+    <!--Reqireqd for in-proc extensions. Contains the WpfControlWrapper and also makes possible to use JoinableTaskFactory.SwitchToMainThreadAsync-->
+    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.6.36389" ExcludeAssets="runtime" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\StandardSerializerTest\StandardSerializerTest.csproj" />
+    <ProjectReference Include="..\StandardSerializerTest\StandardSerializerTest.csproj"/>
   </ItemGroup>
 
+  <!--Linking the references is always for out-of-process extensions. For in-process extensions it is required to debug .NET [Core] projects.-->
   <ItemGroup>
     <!--<Content Include="..\..\DebuggerVisualizers\GdiPlus\KGySoft.Drawing.DebuggerVisualizers.GdiPlus\bin\$(Configuration)\net462\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll" Link="netstandard2.0\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\DebuggerVisualizers\_Common\bin\$(Configuration)\net462\KGySoft.Drawing.DebuggerVisualizers.dll" Link="netstandard2.0\KGySoft.Drawing.DebuggerVisualizers.dll" CopyToOutputDirectory="PreserveNewest" />
@@ -44,10 +44,10 @@
     <!--<Content Include="..\StandardSerializerTest\bin\$(Configuration)\net6.0-windows\StandardSerializerTest.dll" Link="netcoreapp\StandardSerializerTest.dll" CopyToOutputDirectory="PreserveNewest" />-->
   </ItemGroup>
 
-  <!--The XAML file must be embedded as a resource, because it is transferred to the remote side.-->
-  <ItemGroup>
+  <!--Embedding the XAML file as a resource is required for out-of-process extensions only.-->
+  <!--<ItemGroup>
     <None Remove="_View\ImageVisualizerControl.xaml" />
     <EmbeddedResource Include="_View\ImageVisualizerControl.xaml" LogicalName="$(RootNamespace).ImageVisualizerControl.xaml" />
-  </ItemGroup>
+  </ItemGroup>-->
 
 </Project>

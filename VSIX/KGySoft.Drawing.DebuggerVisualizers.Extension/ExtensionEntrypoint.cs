@@ -13,12 +13,12 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Extension
         public override ExtensionConfiguration ExtensionConfiguration => new()
         {
             // Needed for out-of-process hosting of non-VSSDK extensions when there is no vsixmanifest file
-            Metadata = new ExtensionMetadata("acb4aeb6-77ea-465f-a305-982511fe70c3",
-                this.ExtensionAssemblyVersion,
-                "KGy SOFT",
-                "KGy SOFT Image DebuggerVisualizers x64",
-                "Debugger visualizers for GDI+, WPF, SkiaSharp and KGy SOFT types like Bitmap, BitmapSource, SKBitmap, Metafile, ImageSource, SKImage, Icon, Graphics, SKSurface, BitmapData, SKPixmap, WriteableBitmap, ColorPalette, BitmapPalette and more."),
-            //RequiresInProcessHosting = true,
+            //Metadata = new ExtensionMetadata("acb4aeb6-77ea-465f-a305-982511fe70c3",
+            //    this.ExtensionAssemblyVersion,
+            //    "KGy SOFT",
+            //    "KGy SOFT Image DebuggerVisualizers x64",
+            //    "Debugger visualizers for GDI+, WPF, SkiaSharp and KGy SOFT types like Bitmap, BitmapSource, SKBitmap, Metafile, ImageSource, SKImage, Icon, Graphics, SKSurface, BitmapData, SKPixmap, WriteableBitmap, ColorPalette, BitmapPalette and more."),
+            RequiresInProcessHosting = true,
         };
 
         /// <inheritdoc />

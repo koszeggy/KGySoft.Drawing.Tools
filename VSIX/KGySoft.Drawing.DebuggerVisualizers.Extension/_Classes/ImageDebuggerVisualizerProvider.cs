@@ -17,7 +17,7 @@ using Microsoft.VisualStudio.DebuggerVisualizers;
 //using Microsoft.VisualStudio.DebuggerVisualizers;
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.DebuggerVisualizers;
-//using Microsoft.VisualStudio.Extensibility.VSSdkCompatibility; // TODO: remove along with Microsoft.VisualStudio.Shell.15.0 package reference
+using Microsoft.VisualStudio.Extensibility.VSSdkCompatibility; // TODO: remove along with Microsoft.VisualStudio.Shell.15.0 package reference
 using Microsoft.VisualStudio.RpcContracts.RemoteUI;
 using Microsoft.VisualStudio.Shell;
 
@@ -64,17 +64,17 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Extension
             VisualizerObjectSourceType = new VisualizerObjectSourceType(typeof(ImageSerializer))
         };
 
-        public override Task<IRemoteUserControl> CreateVisualizerAsync(VisualizerTarget visualizerTarget, CancellationToken cancellationToken)
+        public override async Task<IRemoteUserControl> CreateVisualizerAsync(VisualizerTarget visualizerTarget, CancellationToken cancellationToken)
         {
             //var data = await visualizerTarget.ObjectSource.RequestDataAsync(default(ReadOnlySequence<byte>), cancellationToken);
 
             // in-proc: everything is allowed, even embedded WinForms can be used
-            //await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-            //return new WpfControlWrapper(new ViewImageControl(visualizerTarget)); // TODO: custom ILocalControlWrapper with WinForms
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            return new WpfControlWrapper(new ViewImageControl(visualizerTarget)); // TODO: custom ILocalControlWrapper with WinForms
 
             // out-of-proc: very limited, only property bindings are allowed in the XAML, which is retrieved as an embedded resource,
             // and even the properties must be serializable, so BitmapSource will not work here
-            return Task.FromResult<IRemoteUserControl>(new ImageVisualizerControl(visualizerTarget));
+            //return Task.FromResult<IRemoteUserControl>(new ImageVisualizerControl(visualizerTarget));
         }
     }
 }
