@@ -1,15 +1,30 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Diagnostics;
+
+using EnvDTE;
+
+using KGySoft.Drawing.DebuggerVisualizers.GdiPlus;
+
+using Microsoft;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Extensibility;
+using Microsoft.VisualStudio.Extensibility.VSSdkCompatibility;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+
+using GlobalProvider = Microsoft.VisualStudio.Shell.ServiceProvider;
+
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Extension
 {
+
+
     /// <summary>
     /// Extension entrypoint for the VisualStudio.Extensibility extension.
     /// </summary>
     [VisualStudioContribution]
     internal class ExtensionEntrypoint : Microsoft.VisualStudio.Extensibility.Extension
     {
-        /// <inheritdoc />
         public override ExtensionConfiguration ExtensionConfiguration => new()
         {
             // Needed for out-of-process hosting of non-VSSDK extensions when there is no vsixmanifest file
@@ -19,14 +34,27 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Extension
             //    "KGy SOFT Image DebuggerVisualizers x64",
             //    "Debugger visualizers for GDI+, WPF, SkiaSharp and KGy SOFT types like Bitmap, BitmapSource, SKBitmap, Metafile, ImageSource, SKImage, Icon, Graphics, SKSurface, BitmapData, SKPixmap, WriteableBitmap, ColorPalette, BitmapPalette and more."),
             RequiresInProcessHosting = true,
+            LoadedWhen = ActivationConstraint.SolutionState(SolutionState.FullyLoaded)
         };
 
-        /// <inheritdoc />
         protected override void InitializeServices(IServiceCollection serviceCollection)
         {
             base.InitializeServices(serviceCollection);
-
             // You can configure dependency injection here by adding services to the serviceCollection.
+        }
+
+        protected override async Task OnInitializedAsync(VisualStudioExtensibility extensibility, CancellationToken cancellationToken)
+        {
+            Services.ServiceProvider = GlobalProvider.GlobalProvider;
+            Services.ShellService = await GlobalProvider.GetGlobalServiceAsync(typeof(SVsShell)) as IVsShell;
+            Services.InfoBarUIFactory = await GlobalProvider.GetGlobalServiceAsync(typeof(SVsInfoBarUIFactory)) as IVsInfoBarUIFactory;
+            Services.DTE = await GlobalProvider.GetGlobalServiceAsync(typeof(DTE)) as DTE;
+
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            Notifications.Info("Hello from Extension");
+
+            await base.OnInitializedAsync(extensibility, cancellationToken);
         }
 
         protected override void Dispose(bool disposing)
