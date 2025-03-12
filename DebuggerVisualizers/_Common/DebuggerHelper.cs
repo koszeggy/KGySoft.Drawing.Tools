@@ -16,13 +16,20 @@
 #region Usings
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Linq;
+using System.Reflection;
 
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.ImagingTools.View;
 using KGySoft.Drawing.ImagingTools.ViewModel;
+
+#if NET472_OR_GREATER
+using Microsoft.VisualStudio.Extensibility.DebuggerVisualizers;
+#endif
 
 #endregion
 
@@ -223,6 +230,50 @@ namespace KGySoft.Drawing.DebuggerVisualizers
             using IViewModel vm = ViewModelFactory.FromCustomColor(customColor);
             ViewFactory.ShowDialog(vm, ownerWindowHandle);
         }
+
+        /// <summary>
+        /// Gets the debugger visualizers of the specified assembly.
+        /// </summary>
+        /// <param name="assembly">The assembly to get the debugger visualizers for.</param>
+        /// <returns>The debugger visualizers of the specified assembly.</returns>
+        public static Dictionary<Type, DebuggerVisualizerAttribute> GetDebuggerVisualizers(Assembly assembly)
+            => Attribute.GetCustomAttributes(assembly ?? throw new ArgumentNullException(nameof(assembly), PublicResources.ArgumentNull), typeof(DebuggerVisualizerAttribute))
+                .Cast<DebuggerVisualizerAttribute>().ToDictionary(a => a.Target!);
+
+#if NET472_OR_GREATER
+        /// <summary>
+        /// Gets the debugger visualizer providers of the specified assembly.
+        /// </summary>
+        /// <param name="assembly">The assembly to get the debugger visualizer providers for.</param>
+        /// <returns>The debugger visualizer providers of the specified assembly.</returns>
+        public static Dictionary<Type, IDebuggerVisualizerProvider> GetDebuggerVisualizerProviders(Assembly assembly)
+        {
+            var result = new Dictionary<Type, IDebuggerVisualizerProvider>();
+            Type?[] types;
+
+            try
+            {
+                types = assembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException e)
+            {
+                types = e.Types;
+            }
+
+            foreach (Type? type in types)
+            {
+                if (type is null || type.IsInterface || type.IsAbstract || !typeof(IDebuggerVisualizerProvider).IsAssignableFrom(type))
+                    continue;
+
+                var provider = (IDebuggerVisualizerProvider)Activator.CreateInstance(type);
+                DebuggerVisualizerProviderConfiguration cfg = provider.DebuggerVisualizerProviderConfiguration;
+                foreach (VisualizerTargetType target in cfg.Targets)
+                    result[Type.GetType(target.TargetType)] = provider;
+            }
+
+            return result;
+        }
+#endif
 
         #endregion
     }
