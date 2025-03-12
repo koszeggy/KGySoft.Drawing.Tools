@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net35;net40;net45;net462;net6.0-windows</TargetFrameworks>
-    <!--<TargetFrameworks>net462</TargetFrameworks>-->
+    <!--<TargetFrameworks>net35;net40;net45;net462;net6.0-windows</TargetFrameworks>-->
+    <TargetFrameworks>net472</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>KGySoft.Drawing.DebuggerVisualizers.GdiPlus</RootNamespace>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
@@ -13,6 +13,7 @@
     <PackageLicenseFile>..\..\..\LICENSE</PackageLicenseFile>
     <Authors>György Kőszeg</Authors>
     <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
   </PropertyGroup>
 
   <!-- Common NuGet references -->
@@ -23,14 +24,12 @@
     </PackageReference>
   </ItemGroup>
 
-  <!-- .NET Framework only references -->
-  <ItemGroup Condition="'$(TargetFramework)'=='net35' OR '$(TargetFramework)'=='net40' OR '$(TargetFramework)'=='net45'">
-    <!--Note: VSSDK.DebuggerVisualizers does not work in VS2022 anymore if VSIX is also installed, because it causes
-        "Unable to cast object [...] to type DialogDebuggerVisualizer"-->
-    <PackageReference Include="Microsoft.VisualStudio.DebuggerVisualizers" Version="17.0.1061105" />
+  <!-- .NET Framework 4.7.2 only references (to support modern visualizer extensions) -->
+  <ItemGroup Condition="'$(TargetFramework)'=='net472'">
+    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.6.36389"/>
   </ItemGroup>
 
-  <!-- .NET only references (note: doesn't really make sense but allows testing from KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test) -->
+<!-- .NET only references (note: doesn't really make sense but allows testing from KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test) -->
   <ItemGroup Condition="'$(TargetFramework)'=='net6.0-windows'">
     <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers">
       <HintPath>..\..\_ref\Microsoft.VisualStudio.DebuggerVisualizers.dll</HintPath>

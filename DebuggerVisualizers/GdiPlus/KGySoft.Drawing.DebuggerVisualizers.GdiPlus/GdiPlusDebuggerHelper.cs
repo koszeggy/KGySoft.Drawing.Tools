@@ -19,10 +19,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.ImagingTools.View;
 using KGySoft.Drawing.ImagingTools.ViewModel;
+
+using Microsoft.VisualStudio.Extensibility.DebuggerVisualizers;
 
 #endregion
 
@@ -41,9 +44,15 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus
         /// Gets the debugger visualizers of this assembly.
         /// </summary>
         /// <returns>The debugger visualizers of this assembly.</returns>
-        public static Dictionary<Type, DebuggerVisualizerAttribute> GetDebuggerVisualizers()
-            => Attribute.GetCustomAttributes(typeof(GdiPlusDebuggerHelper).Assembly, typeof(DebuggerVisualizerAttribute))
-                .Cast<DebuggerVisualizerAttribute>().ToDictionary(a => a.Target!);
+        public static Dictionary<Type, DebuggerVisualizerAttribute> GetDebuggerVisualizers() => DebuggerHelper.GetDebuggerVisualizers(typeof(GdiPlusDebuggerHelper).Assembly);
+
+#if NET472_OR_GREATER
+        /// <summary>
+        /// Gets the debugger visualizer providers of this assembly.
+        /// </summary>
+        /// <returns>The debugger visualizer providers of this assembly.</returns>
+        public static Dictionary<Type, IDebuggerVisualizerProvider> GetDebuggerVisualizerProviders() => DebuggerHelper.GetDebuggerVisualizerProviders(typeof(GdiPlusDebuggerHelper).Assembly);
+#endif
 
         #endregion
 
@@ -51,38 +60,38 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus
 
         internal static ImageInfo? DebugImage(ImageInfo imageInfo, bool isReplaceable)
         {
-            using (IViewModel<ImageInfo> viewModel = ViewModelFactory.FromImage(imageInfo, !isReplaceable))
-                return DebugImageInfo(viewModel, isReplaceable);
+            using IViewModel<ImageInfo> viewModel = ViewModelFactory.FromImage(imageInfo, !isReplaceable);
+            return DebugImageInfo(viewModel, isReplaceable);
         }
 
         internal static ImageInfo? DebugBitmap(ImageInfo bitmapInfo, bool isReplaceable)
         {
-            using (IViewModel<ImageInfo> viewModel = ViewModelFactory.FromBitmap(bitmapInfo, !isReplaceable))
-                return DebugImageInfo(viewModel, isReplaceable);
+            using IViewModel<ImageInfo> viewModel = ViewModelFactory.FromBitmap(bitmapInfo, !isReplaceable);
+            return DebugImageInfo(viewModel, isReplaceable);
         }
 
         internal static ImageInfo? DebugMetafile(ImageInfo metafileInfo, bool isReplaceable)
         {
-            using (IViewModel<ImageInfo> viewModel = ViewModelFactory.FromMetafile(metafileInfo, !isReplaceable))
-                return DebugImageInfo(viewModel, isReplaceable);
+            using IViewModel<ImageInfo> viewModel = ViewModelFactory.FromMetafile(metafileInfo, !isReplaceable);
+            return DebugImageInfo(viewModel, isReplaceable);
         }
 
         internal static ImageInfo? DebugIcon(ImageInfo iconInfo, bool isReplaceable)
         {
-            using (IViewModel<ImageInfo> viewModel = ViewModelFactory.FromIcon(iconInfo, !isReplaceable))
-                return DebugImageInfo(viewModel, isReplaceable);
+            using IViewModel<ImageInfo> viewModel = ViewModelFactory.FromIcon(iconInfo, !isReplaceable);
+            return DebugImageInfo(viewModel, isReplaceable);
         }
 
         internal static void DebugBitmapData(BitmapDataInfo bitmapDataInfo)
         {
-            using (IViewModel vm = ViewModelFactory.FromBitmapData(bitmapDataInfo))
-                ViewFactory.ShowDialog(vm);
+            using IViewModel vm = ViewModelFactory.FromBitmapData(bitmapDataInfo);
+            ViewFactory.ShowDialog(vm);
         }
 
         internal static void DebugGraphics(GraphicsInfo graphicsInfo)
         {
-            using (IViewModel vm = ViewModelFactory.FromGraphics(graphicsInfo))
-                ViewFactory.ShowDialog(vm);
+            using IViewModel vm = ViewModelFactory.FromGraphics(graphicsInfo);
+            ViewFactory.ShowDialog(vm);
         }
 
         #endregion
