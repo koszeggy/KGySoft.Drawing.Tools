@@ -16,8 +16,10 @@
 #region Usings
 
 using System;
+using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.View.Forms;
+using KGySoft.Drawing.ImagingTools.View.UserControls;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
@@ -30,6 +32,8 @@ namespace KGySoft.Drawing.ImagingTools.View
     public static class ViewFactory
     {
         #region Methods
+
+        #region Public Methods
 
         /// <summary>
         /// Creates a view for the specified <see cref="IViewModel"/> instance.
@@ -51,7 +55,7 @@ namespace KGySoft.Drawing.ImagingTools.View
                 ManageInstallationsViewModel manageInstallationsViewModel => new ManageInstallationsForm(manageInstallationsViewModel),
                 ResizeBitmapViewModel resizeBitmapViewModel => new ResizeBitmapForm(resizeBitmapViewModel),
                 ColorSpaceViewModel colorSpaceViewModel => new ColorSpaceForm(colorSpaceViewModel),
-                CountColorsViewModel countColorsViewModel => new CountColorsForm(countColorsViewModel),
+                CountColorsViewModel countColorsViewModel => new CountColorsControl(countColorsViewModel),
                 AdjustBrightnessViewModel adjustBrightnessViewModel => new AdjustBrightnessForm(adjustBrightnessViewModel),
                 AdjustContrastViewModel adjustContrastViewModel => new AdjustContrastForm(adjustContrastViewModel),
                 AdjustGammaViewModel adjustGammaViewModel => new AdjustGammaForm(adjustGammaViewModel),
@@ -88,6 +92,24 @@ namespace KGySoft.Drawing.ImagingTools.View
             using IView view = CreateView(viewModel);
             view.ShowDialog(owner);
         }
+
+        #endregion
+
+        #region Internal Methods
+
+        internal static MvvmParentForm? TryCreateParentForm(IView view)
+        {
+            if (view is not MvvmBaseUserControl mvvmControl)
+                return null;
+
+            if (mvvmControl.TopLevelControl is MvvmParentForm parent)
+                return parent;
+
+            // Custom parent: not creating a parent form
+            return mvvmControl.Parent != null ? null : new MvvmParentForm(mvvmControl);
+        }
+
+        #endregion
 
         #endregion
     }

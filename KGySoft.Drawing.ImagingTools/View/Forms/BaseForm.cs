@@ -40,15 +40,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
     /// </summary>
     internal class BaseForm : Form
     {
-        #region Constants
-
-#if !NET5_0_OR_GREATER
-        // ReSharper disable once InconsistentNaming
-        private const int WM_NCHITTEST = 0x0084;
-#endif
-
-        #endregion
-
         #region Fields
 
 #if !NET5_0_OR_GREATER
@@ -113,7 +104,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
             switch (m.Msg)
             {
-                case WM_NCHITTEST:
+                case Constants.WM_NCHITTEST:
                     WmNCHitTest(ref m);
                     return;
                 default:

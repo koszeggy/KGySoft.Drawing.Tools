@@ -30,6 +30,7 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
+    [Obsolete("Use MvvmParentForm instead")]
     internal partial class MvvmBaseForm : BaseForm, IView
     {
         #region Fields
@@ -50,6 +51,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Properties
 
+        #region Protected Properties
+
         protected ViewModelBase ViewModel { get; } = default!;
         protected CommandBindingsCollection CommandBindings { get; } = new WinFormsCommandBindingsCollection();
 
@@ -59,6 +62,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected Dictionary<string, Control> ValidationMapping { get; } = new Dictionary<string, Control>();
         protected ICommand ValidationResultsChangedCommand => validationResultsChangesCommand ??= new SimpleCommand<ValidationResultsCollection>(OnValidationResultsChangedCommand);
+
+        #endregion
+
+        #region Explicitly Implemented Interface Properties
+
+        IViewModel IView.ViewModel => ViewModel;
+
+        #endregion
 
         #endregion
 
@@ -73,6 +84,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             ApplyRightToLeft();
             InitializeComponent();
             StartPosition = OSUtils.IsMono && OSUtils.IsWindows ? FormStartPosition.WindowsDefaultLocation : FormStartPosition.CenterParent;
+
 #if !NET35
             if (!OSUtils.IsWindows11OrLater) 
 #endif
@@ -80,10 +92,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 toolTip.AutoPopDelay = Int16.MaxValue;
             }
 
-            // occurs in design mode but DesignMode is false for grandchild forms
+            // occurs in design mode but DesignMode is false for grandchild forms so checking the ViewModel instead
             if (viewModel == null!)
                 return;
 
+            // TODO: delete
             ViewModel = viewModel;
             viewModel.ShowInfoCallback = Dialogs.InfoMessage;
             viewModel.ShowWarningCallback = Dialogs.WarningMessage;
@@ -321,6 +334,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             Activate();
             BringToFront();
         });
+
+        bool IView.TrySetViewModel(IViewModel viewModel) => false;
 
         #endregion
 

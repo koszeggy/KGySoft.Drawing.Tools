@@ -16,32 +16,51 @@
 #region Usings
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
+using KGySoft.Drawing.ImagingTools.View.Forms;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    internal class MvvmBaseUserControl : BaseUserControl
+    internal partial class MvvmBaseUserControl : BaseUserControl, IView
     {
         #region Fields
 
         private readonly int threadId;
         private readonly ManualResetEventSlim handleCreated;
 
+        private ErrorProvider? warningProvider;
+        private ErrorProvider? infoProvider;
+        private ErrorProvider? errorProvider;
+        private ICommand? validationResultsChangesCommand;
+
         private ViewModelBase? viewModel;
+        private MvvmParentForm? mvvmParent;
         private bool isLoaded;
 
         #endregion
 
         #region Properties
 
+        #region Internal Properties
+
+        internal CommandBindingsCollection CommandBindings { get; } = new WinFormsCommandBindingsCollection();
+        internal virtual ParentViewProperties? ParentViewProperties => null;
+
+        #endregion
+
+        #region Protected Properties
+
         /// <summary>
-        /// Gets or sets the view model. Can be null before initializing. Not null if called from <see cref="ApplyViewModel"/>.
+        /// Gets or sets the view model. Can be null before initializing, if this user control is a child control.
         /// </summary>
         protected ViewModelBase? ViewModel
         {
@@ -55,86 +74,63 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 if (!isLoaded)
                     return;
 
-                CommandBindings.Dispose();
+                CommandBindings.Clear();
                 ApplyViewModel();
             }
         }
 
-        protected CommandBindingsCollection CommandBindings { get; }
+        protected ErrorProvider ErrorProvider => errorProvider ??= CreateProvider(ValidationSeverity.Error);
+        protected ErrorProvider WarningProvider => warningProvider ??= CreateProvider(ValidationSeverity.Warning);
+        protected ErrorProvider InfoProvider => infoProvider ??= CreateProvider(ValidationSeverity.Information);
+
+        protected Dictionary<string, Control> ValidationMapping { get; } = new Dictionary<string, Control>();
+        protected ICommand ValidationResultsChangedCommand => validationResultsChangesCommand ??= new SimpleCommand<ValidationResultsCollection>(OnValidationResultsChangedCommand);
+
+        #endregion
+
+        #region Explicitly Implemented Interface Properties
+
+        IViewModel IView.ViewModel => ViewModel!;
+
+        #endregion
 
         #endregion
 
         #region Constructors
 
+        /// <summary>
+        /// The constructor for creating an MvvmBaseUserControl as a child control. In this case, the <see cref="ViewModel"/> property should be set manually.
+        /// </summary>
         protected MvvmBaseUserControl()
         {
-            CommandBindings = new WinFormsCommandBindingsCollection();
             threadId = Thread.CurrentThread.ManagedThreadId;
             handleCreated = new ManualResetEventSlim();
+            ApplyRightToLeft();
+            InitializeComponent();
+
+#if !NET35
+            if (!OSUtils.IsWindows11OrLater)
+#endif
+            {
+                toolTip.AutoPopDelay = Int16.MaxValue;
+            }
+        }
+
+        /// <summary>
+        /// The constructor for creating an MvvmBaseUserControl as a (semi) top-level control that may or may not be embedded into an MvvmBaseForm.
+        /// </summary>
+        protected MvvmBaseUserControl(ViewModelBase viewModel) : this()
+        {
+            this.viewModel = viewModel;
         }
 
         #endregion
 
         #region Methods
 
-        #region Protected Methods
+        #region Internal Methods
 
-        protected override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);
-            isLoaded = true;
-            ApplyResources();
-            if (DesignMode)
-                return;
-
-            if (viewModel != null)
-                ApplyViewModel();
-        }
-
-        protected virtual void ApplyResources()
-        {
-            // Not calling ApplyStaticStringResources because we assume this UC belong to an MvvmBaseForm.
-            // If not, then a derived instance still can call it.
-        }
-
-        protected virtual void ApplyViewModel()
-        {
-            ViewModelBase? vm = ViewModel;
-            if (vm == null)
-                return;
-
-            vm.ShowInfoCallback = Dialogs.InfoMessage;
-            vm.ShowWarningCallback = Dialogs.WarningMessage;
-            vm.ShowErrorCallback = Dialogs.ErrorMessage;
-            vm.ConfirmCallback = Dialogs.ConfirmMessage;
-            vm.CancellableConfirmCallback = (msg, btn) => Dialogs.CancellableConfirmMessage(msg, btn switch { 0 => MessageBoxDefaultButton.Button1, 1 => MessageBoxDefaultButton.Button2, _ => MessageBoxDefaultButton.Button3 });
-            vm.SynchronizedInvokeCallback = InvokeIfRequired;
-
-            vm.ViewLoaded();
-        }
-
-        protected override void OnHandleCreated(EventArgs e)
-        {
-            base.OnHandleCreated(e);
-            handleCreated.Set();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                CommandBindings.Dispose();
-                handleCreated.Dispose();
-            }
-
-            base.Dispose(disposing);
-        }
-
-        #endregion
-
-        #region Private Methods
-
-        private void InvokeIfRequired(Action action)
+        internal void InvokeIfRequired(Action action)
         {
             if (Disposing || IsDisposed)
                 return;
@@ -150,6 +146,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
                 if (!handleCreated.IsSet)
                     handleCreated.Wait();
+
                 Invoke(action);
             }
             catch (ObjectDisposedException)
@@ -157,6 +154,202 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 // it can happen that actual Invoke is started to execute only after querying isClosing and when Disposing and IsDisposed both return false
             }
         }
+
+        #endregion
+
+        #region Protected Methods
+
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+
+            // Null VM occurs in design mode but DesignMode is false for grandchild forms
+            // isLoaded can be true if handle was recreated
+            if (isLoaded || ViewModel == null!)
+                return;
+
+            isLoaded = true;
+            ApplyResources();
+            ApplyViewModel();
+        }
+
+        protected virtual void ApplyResources() => ApplyStringResources();
+
+        protected virtual void ApplyStringResources() => this.ApplyStringResources(toolTip);
+
+        protected virtual void ApplyViewModel()
+        {
+            if (viewModel == null)
+                return;
+
+            viewModel.ShowInfoCallback = Dialogs.InfoMessage;
+            viewModel.ShowWarningCallback = Dialogs.WarningMessage;
+            viewModel.ShowErrorCallback = Dialogs.ErrorMessage;
+            viewModel.ConfirmCallback = Dialogs.ConfirmMessage;
+            viewModel.CancellableConfirmCallback = (msg, btn) => Dialogs.CancellableConfirmMessage(msg, btn switch { 0 => MessageBoxDefaultButton.Button1, 1 => MessageBoxDefaultButton.Button2, _ => MessageBoxDefaultButton.Button3 });
+            viewModel.ShowChildViewCallback = ShowChildView;
+            viewModel.SynchronizedInvokeCallback = InvokeIfRequired;
+            if (viewModel is ViewModelBase vm && mvvmParent is MvvmParentForm parent)
+                vm.CloseViewCallback = () => BeginInvoke(new Action(parent.Close));
+
+            InitPropertyBindings();
+            InitCommandBindings();
+
+            viewModel.ViewLoaded();
+        }
+
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            handleCreated.Set();
+        }
+
+        protected override void OnParentChanged(EventArgs e)
+        {
+            base.OnParentChanged(e);
+            mvvmParent = TopLevelControl as MvvmParentForm;
+            if (viewModel is ViewModelBase vm && mvvmParent is MvvmParentForm parent)
+                vm.CloseViewCallback = () => BeginInvoke(new Action(parent.Close));
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                components?.Dispose();
+                CommandBindings.Dispose();
+                handleCreated.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void InitPropertyBindings()
+        {
+            if (ValidationMapping.Count != 0)
+            {
+                // this.RightToLeft -> errorProvider/warningProvider/infoProvider.RightToLeft
+                CommandBindings.AddPropertyBinding(this, nameof(RightToLeft), nameof(ErrorProvider.RightToLeft),
+                    rtl => rtl is RightToLeft.Yes, ErrorProvider, WarningProvider, InfoProvider);
+            }
+        }
+
+        private void InitCommandBindings()
+        {
+            CommandBindings.Add(OnDisplayLanguageChangedCommand)
+                .AddSource(typeof(Res), nameof(Res.DisplayLanguageChanged));
+        }
+
+        private ErrorProvider CreateProvider(ValidationSeverity level) => new ErrorProvider(components)
+        {
+            ContainerControl = this,
+            Icon = level switch
+            {
+                ValidationSeverity.Error => Icons.SystemError.ToScaledIcon(this.GetScale()),
+                ValidationSeverity.Warning => Icons.SystemWarning.ToScaledIcon(this.GetScale()),
+                ValidationSeverity.Information => Icons.SystemInformation.ToScaledIcon(this.GetScale()),
+                _ => null
+            }
+        };
+
+        private void ShowChildView(IViewModel vm) => ViewFactory.ShowDialog(vm, this);
+
+        private void ApplyRightToLeft()
+        {
+            RightToLeft rtl = Res.DisplayLanguage.TextInfo.IsRightToLeft ? RightToLeft.Yes : RightToLeft.No;
+            RightToLeft = rtl;
+        }
+
+        #endregion
+
+        #region Command Handlers
+
+        private void OnDisplayLanguageChangedCommand() => InvokeIfRequired(() =>
+        {
+            ApplyRightToLeft();
+            ApplyStringResources();
+        });
+
+        private void OnValidationResultsChangedCommand(ValidationResultsCollection? validationResults)
+        {
+            foreach (KeyValuePair<string, Control> mapping in ValidationMapping)
+            {
+                ValidationResultsCollection? propertyResults = validationResults?[mapping.Key];
+                ValidationResult? error = propertyResults?.Errors.FirstOrDefault();
+                ValidationResult? warning = error == null ? propertyResults?.Warnings.FirstOrDefault() : null;
+                ValidationResult? info = error == null && warning == null ? propertyResults?.Infos.FirstOrDefault() : null;
+                ErrorProvider.SetError(mapping.Value, error?.Message);
+                WarningProvider.SetError(mapping.Value, warning?.Message);
+                InfoProvider.SetError(mapping.Value, info?.Message);
+            }
+        }
+
+        private MvvmParentForm? TryGetCreateParent() => mvvmParent ??= ViewFactory.TryGetForm(this) as MvvmParentForm;
+
+        #endregion
+
+        #region Explicit Interface Implementations
+
+        [SuppressMessage("CodeQuality", "IDE0002:Name can be simplified",
+            Justification = "Without the base qualifier executing in Mono causes StackOverflowException. See https://github.com/mono/mono/issues/21129")]
+        void IDisposable.Dispose()
+        {
+            InvokeIfRequired(mvvmParent is IDisposable parent ? parent.Dispose : base.Dispose);
+        }
+
+        void IView.ShowDialog(IntPtr ownerHandle)
+        {
+            MvvmParentForm? parent = TryGetCreateParent();
+            if (parent == null)
+            {
+                (TopLevelControl as Form)?.ShowDialog(ownerHandle == IntPtr.Zero ? null : new OwnerWindowHandle(ownerHandle));
+                return;
+            }
+
+            do
+            {
+                parent.ShowDialog(ownerHandle == IntPtr.Zero ? null : new OwnerWindowHandle(ownerHandle));
+            } while (parent.IsRtlChanging);
+        }
+
+        void IView.ShowDialog(IView? owner)
+        {
+            MvvmParentForm? parent = TryGetCreateParent();
+            if (parent == null)
+            {
+                (TopLevelControl as Form)?.ShowDialog(owner as IWin32Window);
+                return;
+            }
+
+            do
+            {
+               parent.ShowDialog(owner as IWin32Window);
+            } while (parent.IsRtlChanging);
+        }
+
+        void IView.Show() => InvokeIfRequired(() =>
+        {
+            Form? parent = TryGetCreateParent() ?? TopLevelControl as Form;
+            if (parent == null)
+                return;
+
+            if (!Visible)
+            {
+                parent.Show();
+                return;
+            }
+
+            if (parent.WindowState == FormWindowState.Minimized)
+                parent.WindowState = FormWindowState.Normal;
+            parent.Activate();
+            parent.BringToFront();
+        });
+
+        bool IView.TrySetViewModel(IViewModel vm) => false;
 
         #endregion
 

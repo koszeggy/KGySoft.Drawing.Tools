@@ -17,6 +17,8 @@
 
 using System;
 
+using KGySoft.Drawing.ImagingTools.ViewModel;
+
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.View
@@ -32,7 +34,12 @@ namespace KGySoft.Drawing.ImagingTools.View
         /// <summary>
         /// Gets whether this view is disposed.
         /// </summary>
-        public bool IsDisposed { get; }
+        bool IsDisposed { get; }
+
+        /// <summary>
+        /// Gets the view model associated with this view.
+        /// </summary>
+        IViewModel ViewModel { get; }
 
         #endregion
 
@@ -57,6 +64,13 @@ namespace KGySoft.Drawing.ImagingTools.View
         /// If the view was already shown, then makes it the active window.
         /// </summary>
         void Show();
+
+        /// <summary>
+        /// Tries to set the specified view model for this view by a potentially different instance.
+        /// </summary>
+        /// <param name="viewModel">The view model to set.</param>
+        /// <returns><see langword="true"/>, if this view supports resetting the view model, and it was successfully set; otherwise, <see langword="false"/>.</returns>
+        bool TrySetViewModel(IViewModel viewModel);
 
         #endregion
     }

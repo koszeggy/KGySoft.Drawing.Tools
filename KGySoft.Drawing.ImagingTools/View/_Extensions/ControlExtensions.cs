@@ -19,6 +19,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
+using KGySoft.Drawing.ImagingTools.View.UserControls;
 using KGySoft.Reflection;
 
 #endregion
@@ -129,7 +130,14 @@ namespace KGySoft.Drawing.ImagingTools.View
 
                 default:
                     foreach (Control child in control.Controls)
+                    {
+                        // MvvmBaseUserControl triggers ApplyStringResources on its own, so skipping it as a child control here
+                        if (child is MvvmBaseUserControl)
+                            continue;
+
                         child.ApplyStringResources(toolTip);
+                    }
+
                     break;
             }
         }

@@ -1,0 +1,182 @@
+﻿#region Copyright
+
+///////////////////////////////////////////////////////////////////////////////
+//  File: MvvmParentForm.cs
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//
+//  You should have received a copy of the LICENSE file at the top-level
+//  directory of this distribution.
+//
+//  Please refer to the LICENSE file if you want to use this source code.
+///////////////////////////////////////////////////////////////////////////////
+
+#endregion
+
+#region Usings
+
+using System;
+using System.Drawing;
+using System.Threading;
+using System.Windows.Forms;
+
+using KGySoft.Drawing.ImagingTools.View.UserControls;
+
+#endregion
+
+namespace KGySoft.Drawing.ImagingTools.View.Forms
+{
+    internal sealed class MvvmParentForm : BaseForm
+    {
+        #region Fields
+
+        private readonly ManualResetEventSlim handleCreated;
+        private readonly MvvmBaseUserControl mvvmChild;
+
+        private bool isLoaded;
+        private Point location;
+
+        #endregion
+
+        #region Properties
+
+        internal bool IsRtlChanging { get; private set; }
+
+        #endregion
+
+        #region Constructors
+
+        internal MvvmParentForm(MvvmBaseUserControl mvvmChild)
+        {
+            this.mvvmChild = mvvmChild;
+            handleCreated = new ManualResetEventSlim();
+            ApplyRightToLeft();
+            AutoScaleMode = AutoScaleMode.Font;
+            RightToLeftLayout = true;
+            StartPosition = OSUtils.IsMono && OSUtils.IsWindows ? FormStartPosition.WindowsDefaultLocation : FormStartPosition.CenterParent;
+            InitChild();
+        }
+
+        #endregion
+
+        #region Methods
+
+        #region Protected Methods
+
+        protected override void OnLoad(EventArgs e)
+        {
+            // Not Using tool window appearance on Linux because looks bad an on high DPI the close is too small
+            if (OSUtils.IsMono && OSUtils.IsLinux && FormBorderStyle == FormBorderStyle.SizableToolWindow)
+            {
+                FormBorderStyle = FormBorderStyle.Sizable;
+                MinimizeBox = false;
+            }
+
+            base.OnLoad(e);
+
+            // Loaded can be true if handle was recreated
+            if (isLoaded || DesignMode)
+            {
+                if (!IsRtlChanging)
+                    return;
+
+                // dialog has been reopened after changing RTL
+                IsRtlChanging = false;
+                Location = location;
+                return;
+            }
+
+            isLoaded = true;
+            ApplyStringResources();
+            InitCommandBindings();
+        }
+
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            handleCreated.Set();
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            // Changing RightToLeft causes the dialog close. We let it happen because the parent may also change,
+            // and if we cancel the closing here, then a dialog may turn a non-modal form. Reopen as a dialog is handled in IView.ShowDialog
+            if (IsRtlChanging)
+            {
+                if (DialogResult == DialogResult.OK)
+                    IsRtlChanging = false;
+                else
+                    location = Location;
+            }
+
+            base.OnFormClosing(e);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+                handleCreated.Dispose();
+
+            base.Dispose(disposing);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void InitChild()
+        {
+            SuspendLayout();
+            Size clientSize = mvvmChild.Size;
+            mvvmChild.Dock = DockStyle.Fill;
+            Controls.Add(mvvmChild);
+            ParentViewProperties properties = mvvmChild.ParentViewProperties ?? throw new InvalidOperationException(Res.InternalError($"{mvvmChild.Name} should override ParentViewProperties"));
+            Name = properties.Name;
+            FormBorderStyle = properties.BorderStyle;
+            if (properties.BorderStyle is FormBorderStyle.FixedDialog)
+                MinimizeBox = MaximizeBox = false;
+
+            Icon = properties.Icon;
+            AcceptButton = properties.AcceptButton;
+            CancelButton = properties.CancelButton;
+            if (!properties.MinimumSize.IsEmpty)
+                MinimumSize = properties.MinimumSize;
+            if (!properties.MaximumSize.IsEmpty)
+                MaximumSize = properties.MaximumSize;
+            if (properties.ClosingCallback is FormClosingEventHandler handler)
+                FormClosing += handler; // removed in base.Dispose
+            ClientSize = clientSize;
+            ResumeLayout();
+        }
+
+        private void ApplyStringResources() => this.ApplyStringResources(null);
+
+        private void InitCommandBindings()
+        {
+            mvvmChild.CommandBindings.Add(OnDisplayLanguageChangedCommand)
+                .AddSource(typeof(Res), nameof(Res.DisplayLanguageChanged));
+        }
+
+        private void ApplyRightToLeft()
+        {
+            RightToLeft rtl = Res.DisplayLanguage.TextInfo.IsRightToLeft ? RightToLeft.Yes : RightToLeft.No;
+            if (RightToLeft == rtl)
+                return;
+
+            if (!OSUtils.IsMono && IsHandleCreated)
+                IsRtlChanging = true;
+
+            RightToLeft = rtl;
+        }
+
+        private void OnDisplayLanguageChangedCommand() => mvvmChild.InvokeIfRequired(() =>
+        {
+            ApplyRightToLeft();
+            ApplyStringResources();
+        });
+
+        #endregion
+
+        #endregion
+    }
+}
