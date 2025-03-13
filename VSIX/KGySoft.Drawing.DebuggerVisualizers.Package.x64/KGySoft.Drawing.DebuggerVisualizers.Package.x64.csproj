@@ -31,6 +31,7 @@
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <TargetFrameworkProfile />
+    <VssdkCompatibleExtension>true</VssdkCompatibleExtension>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -118,8 +119,36 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.SDK">
-      <Version>17.0.31902.203</Version>
+      <!--<Version>17.0.31902.203</Version>-->
+      <!--<Version>17.9.37000</Version>-->
+      <!--<Version>17.11.40262</Version>-->
+      <Version>17.12.40392</Version>
+      <!--<Version>17.13.40008</Version>-->
     </PackageReference>
+
+    <!--v17.9.2092: Extensibility service is not loaded.
+        With disabled Just My Code only a TaskCanceledException is thrown, or sometimes a TimeoutException.
+        Maybe known error: https://github.com/microsoft/VSExtensibility/issues/375 -->
+    <!--<PackageReference Include="Microsoft.VisualStudio.Extensibility" Version="17.9.2092" />-->
+    <!--<PackageReference Include="Microsoft.VisualStudio.Extensibility.Sdk" Version="17.9.2092" />
+    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Build" Version="17.9.2092" />-->
+
+    <!--17.11.350: When Just My Code is enabled, there is a TaskCanceledException, followed by an ObjectDisposedException. Object name: 'Nerdbank.Streams.MultiplexingStream+Channel' -->
+    <!--<PackageReference Include="Microsoft.VisualStudio.Extensibility" Version="17.11.350" />-->
+
+    <!--17.12.2051: -->
+    <PackageReference Include="Microsoft.VisualStudio.Extensibility" Version="17.12.2051" />
+    <!--<PackageReference Include="Microsoft.VisualStudio.Extensibility.Sdk" Version="17.12.40390" />
+    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Build" Version="17.12.40390" />-->
+
+    <!--v17.13.2060: Not even the package is loaded: immediately the Dispose() is executed.
+    ActivityLog.xml: SetSite failed for package [DebuggerVisualizersPackage](null) -->
+    <!--<PackageReference Include="Microsoft.VisualStudio.Extensibility" Version="17.13.2060" />-->
+    <!--<PackageReference Include="Microsoft.VisualStudio.Extensibility.Sdk" Version="17.13.40008" />
+    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Build" Version="17.13.40008" />-->
+
+    <!--<PackageReference Include="Microsoft.VisualStudio.Shell.15.0" Version="17.13.40008" />-->
+    <!--<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.6.36389" ExcludeAssets="runtime" />-->
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

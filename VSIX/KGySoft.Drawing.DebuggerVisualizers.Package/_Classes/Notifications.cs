@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Windows.Forms;
 
 using EnvDTE;
 
@@ -121,6 +120,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
         private static bool TryShowInfoBar(ImageMoniker icon, IEnumerable<IVsInfoBarTextSpan> textSpans, IEnumerable<IVsInfoBarActionItem> actionItems)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (Services.InfoBarUIFactory == null || Services.ShellService == null)
                 return false;
 

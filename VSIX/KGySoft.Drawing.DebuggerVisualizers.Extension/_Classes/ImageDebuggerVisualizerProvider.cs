@@ -91,7 +91,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Extension
     [VisualStudioContribution]
     public class BitmapDebuggerVisualizerProvider : DebuggerVisualizerProvider
     {
-        private readonly GdiPlus.BitmapDebuggerVisualizerProvider providerImpl = new();
+        private readonly GdiPlus.BitmapDebuggerVisualizerProviderImpl providerImpl = new();
 
         //public override DebuggerVisualizerProviderConfiguration DebuggerVisualizerProviderConfiguration => providerImpl.DebuggerVisualizerProviderConfiguration; // ISSUE: CEE0005 - Could not evaluate compile-time constant
         public override DebuggerVisualizerProviderConfiguration DebuggerVisualizerProviderConfiguration => new("Bitmap debugger", typeof(Bitmap))

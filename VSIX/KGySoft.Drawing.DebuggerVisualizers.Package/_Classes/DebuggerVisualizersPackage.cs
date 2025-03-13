@@ -33,8 +33,10 @@ using KGySoft.Drawing.ImagingTools;
 using KGySoft.Drawing.ImagingTools.Model;
 
 #if VS2022_OR_GREATER
-using Microsoft.VisualStudio; 
+using Microsoft.VisualStudio;
 #endif
+using Microsoft.VisualStudio.Extensibility;
+using Microsoft.VisualStudio.Extensibility.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -62,7 +64,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
     [InstalledProductRegistration("#" + Ids.ResourceTitle, "#" + Ids.ResourceDetails, Ids.Version, IconResourceID = Ids.IconResourceId)]
 #if VS2022_OR_GREATER
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
-    [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string, PackageAutoLoadFlags.BackgroundLoad)]
+    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionOpening_string, PackageAutoLoadFlags.BackgroundLoad)]
 #else
     [PackageRegistrationAsync]
     [ProvideAutoLoadAsync]
@@ -135,14 +137,47 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         /// </summary>
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             Services.ServiceProvider = this;
             Services.AsyncServiceProvider = this;
             Services.ShellService = await GetServiceAsync(typeof(SVsShell)) as IVsShell;
             Services.MenuCommandService = await GetServiceAsync(typeof(IMenuCommandService)) as IMenuCommandService;
             Services.InfoBarUIFactory = await GetServiceAsync(typeof(SVsInfoBarUIFactory)) as IVsInfoBarUIFactory;
             Services.DTE = await GetServiceAsync(typeof(DTE)) as DTE;
-            DoInitialize();
+            //var extensionsService = await GetServiceAsync(typeof(VisualStudioExtensibility)) as VisualStudioExtensibility;
+
+            //DoInitialize();
+
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            Notifications.Info("Hello from Package");
+
+            // Microsoft.VisualStudio.Shell.ServiceUnavailableException: 'The VisualStudioExtensibility service is unavailable.'
+            //VisualStudioExtensibility extensibility = await this.GetServiceAsync<VisualStudioExtensibility, VisualStudioExtensibility>();
+            //await extensibility.Shell().ShowPromptAsync("Hello from in-proc", PromptOptions.OK, cancellationToken);
+
+            // v17.9: GetServiceAsync<,> throws Microsoft.VisualStudio.Shell.ServiceUnavailableException: 'The VisualStudioExtensibility service is unavailable.'
+            //        GetServiceAsync(typeof(VisualStudioExtensibility)) just returns null. When Just My Code is enabled, only a TaskCanceledException is thrown.
+            // v17.11: When Just My Code is enabled, there is a TaskCanceledException, followed by an ObjectDisposedException. Object name: 'Nerdbank.Streams.MultiplexingStream+Channel'
+            // v17.12: When Just My Code is enabled, there is a TaskCanceledException, followed by a System.Net.WebException: 'The request was aborted: The request cache-only policy does not allow a network request and the response is not found in cache.'
+            //         Still, this is the only version where the result is not null. My extension is still not loaded, though.
+            // v17.13: ActivityLog: SetSite failed for package [DebuggerVisualizersPackage](null) (this line is never reached, Dispose is called immediately)
+            //if (extensionsService != null)
+            //{
+            //    // Only in v17.12, this line is reached. Though it also throws an exception: Microsoft.ServiceHub.Framework.ServiceActivationFailedException: 'Activating the "Microsoft.VisualStudio.Shell.UserPromptService (1.0)" service failed.' Inner Exception: InternalErrorException: Cannot find an instance of the System.String service.
+            //    //await extensionsService.Shell().ShowPromptAsync("Hello from Extension", PromptOptions.OK, cancellationToken);
+
+            //    // Even though extensibility is available in v17.12, my extension is not loaded (ImageDebuggerVisualizerProvider.InitializeAsync is never reached).
+            //    // Attempting to load it manually also does not work:
+            //    // - Couldn't find any API in VisualStudioExtensibility to create an extension instance.
+            //    // - Instantiating it manually throws an exception: Microsoft.Assumes.InternalErrorException: 'Cannot find an instance of the System.IServiceProvider service.'
+            //    try
+            //    {
+            //        var _ = new ImageDebuggerVisualizerProvider();
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        Notifications.Error($"Failed to load {nameof(ImageDebuggerVisualizerProvider)}: {e.Message}");
+            //    }
+            //}
         }
 #endif
 

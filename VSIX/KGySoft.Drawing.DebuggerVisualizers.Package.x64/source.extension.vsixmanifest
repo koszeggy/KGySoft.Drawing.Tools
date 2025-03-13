@@ -10,9 +10,12 @@
     <Icon>Resources\ImageDebuggerVisualizers.ico</Icon>
     <PreviewImage>Resources\Preview.png</PreviewImage>
   </Metadata>
-  <Installation>
+  <Installation ExtensionType="VSSDK+VisualStudio.Extensibility">
     <InstallationTarget Id="Microsoft.VisualStudio.IntegratedShell" Version="[17.0,18.0)" >
       <ProductArchitecture>amd64</ProductArchitecture>
+    </InstallationTarget>
+    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 18.0)">
+      <ProductArchitecture>arm64</ProductArchitecture>
     </InstallationTarget>
   </Installation>
   <Dependencies>
