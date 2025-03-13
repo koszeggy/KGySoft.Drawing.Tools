@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <!--<TargetFrameworks>net35;net40;net45;net462;net6.0-windows</TargetFrameworks>-->
-    <TargetFrameworks>net472</TargetFrameworks>
+    <TargetFrameworks>net35;net40;net45;net462;net472;net6.0-windows</TargetFrameworks>
+    <!--<TargetFrameworks>net472</TargetFrameworks>-->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test</RootNamespace>
     <SignAssembly>true</SignAssembly>

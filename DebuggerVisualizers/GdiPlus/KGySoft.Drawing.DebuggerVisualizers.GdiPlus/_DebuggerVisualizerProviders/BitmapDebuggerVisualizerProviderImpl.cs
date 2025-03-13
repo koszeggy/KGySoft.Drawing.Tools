@@ -1,4 +1,5 @@
-﻿#region Copyright
+﻿#if NET472_OR_GREATER
+#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
 //  File: BitmapDebuggerVisualizerProviderImpl.cs
@@ -96,5 +97,5 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus
 
         #endregion
     }
-
 }
+#endif
