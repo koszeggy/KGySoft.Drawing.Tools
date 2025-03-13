@@ -84,7 +84,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test
 
         public void ReplaceObject(object newObject)
         {
-            Object = newObject.DeepClone(null);
+            Object = newObject.DeepClone();
             ObjectReplaced = true;
         }
 

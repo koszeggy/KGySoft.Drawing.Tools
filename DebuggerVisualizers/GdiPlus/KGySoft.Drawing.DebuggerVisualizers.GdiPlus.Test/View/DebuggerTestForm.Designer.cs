@@ -18,7 +18,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
         private void InitializeComponent()
         {
             this.btnViewDirect = new System.Windows.Forms.Button();
-            this.btnViewByDebugger = new System.Windows.Forms.Button();
+            this.btnViewByLegacyDebugger = new System.Windows.Forms.Button();
             this.txtFile = new System.Windows.Forms.TextBox();
             this.rbFromFile = new System.Windows.Forms.RadioButton();
             this.rbManagedIcon = new System.Windows.Forms.RadioButton();
@@ -40,6 +40,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
             this.rbGraphicsBitmap = new System.Windows.Forms.RadioButton();
             this.chbAsImage = new System.Windows.Forms.CheckBox();
             this.cmbPixelFormat = new System.Windows.Forms.ComboBox();
+            this.btnViewByExtensionDebugger = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.panelControls.SuspendLayout();
             this.gbFile.SuspendLayout();
@@ -56,16 +57,16 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
             this.btnViewDirect.Text = "View Directly";
             this.btnViewDirect.UseVisualStyleBackColor = true;
             // 
-            // btnViewByDebugger
+            // btnViewByLegacyDebugger
             // 
-            this.btnViewByDebugger.Dock = System.Windows.Forms.DockStyle.Top;
-            this.btnViewByDebugger.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnViewByDebugger.Location = new System.Drawing.Point(0, 371);
-            this.btnViewByDebugger.Name = "btnViewByDebugger";
-            this.btnViewByDebugger.Size = new System.Drawing.Size(196, 24);
-            this.btnViewByDebugger.TabIndex = 15;
-            this.btnViewByDebugger.Text = "View by Debugger";
-            this.btnViewByDebugger.UseVisualStyleBackColor = true;
+            this.btnViewByLegacyDebugger.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnViewByLegacyDebugger.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btnViewByLegacyDebugger.Location = new System.Drawing.Point(0, 371);
+            this.btnViewByLegacyDebugger.Name = "btnViewByLegacyDebugger";
+            this.btnViewByLegacyDebugger.Size = new System.Drawing.Size(196, 24);
+            this.btnViewByLegacyDebugger.TabIndex = 15;
+            this.btnViewByLegacyDebugger.Text = "View by Legacy Debugger";
+            this.btnViewByLegacyDebugger.UseVisualStyleBackColor = true;
             // 
             // txtFile
             // 
@@ -145,14 +146,15 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
             this.pictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox.Location = new System.Drawing.Point(224, 10);
             this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(195, 396);
+            this.pictureBox.Size = new System.Drawing.Size(195, 420);
             this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox.TabIndex = 14;
             this.pictureBox.TabStop = false;
             // 
             // panelControls
             // 
-            this.panelControls.Controls.Add(this.btnViewByDebugger);
+            this.panelControls.Controls.Add(this.btnViewByExtensionDebugger);
+            this.panelControls.Controls.Add(this.btnViewByLegacyDebugger);
             this.panelControls.Controls.Add(this.btnViewDirect);
             this.panelControls.Controls.Add(this.chbAsReadOnly);
             this.panelControls.Controls.Add(this.gbFile);
@@ -172,7 +174,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
             this.panelControls.Location = new System.Drawing.Point(15, 10);
             this.panelControls.Name = "panelControls";
             this.panelControls.Padding = new System.Windows.Forms.Padding(0, 0, 13, 0);
-            this.panelControls.Size = new System.Drawing.Size(209, 396);
+            this.panelControls.Size = new System.Drawing.Size(209, 420);
             this.panelControls.TabIndex = 0;
             // 
             // chbAsReadOnly
@@ -338,11 +340,22 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
             this.cmbPixelFormat.Size = new System.Drawing.Size(196, 21);
             this.cmbPixelFormat.TabIndex = 0;
             // 
+            // btnViewByExtensionDebugger
+            // 
+            this.btnViewByExtensionDebugger.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnViewByExtensionDebugger.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btnViewByExtensionDebugger.Location = new System.Drawing.Point(0, 395);
+            this.btnViewByExtensionDebugger.Name = "btnViewByExtensionDebugger";
+            this.btnViewByExtensionDebugger.Size = new System.Drawing.Size(196, 24);
+            this.btnViewByExtensionDebugger.TabIndex = 16;
+            this.btnViewByExtensionDebugger.Text = "View by Extension Debugger";
+            this.btnViewByExtensionDebugger.UseVisualStyleBackColor = true;
+            // 
             // DebuggerTestForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(434, 411);
+            this.ClientSize = new System.Drawing.Size(434, 435);
             this.Controls.Add(this.pictureBox);
             this.Controls.Add(this.panelControls);
             this.MinimizeBox = false;
@@ -367,7 +380,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
         private RadioButton rbManagedIcon;
         private RadioButton rbFromFile;
         private TextBox txtFile;
-        private Button btnViewByDebugger;
+        private Button btnViewByLegacyDebugger;
         private Button btnViewDirect;
         private PictureBox pictureBox;
         private Panel panelControls;
@@ -384,5 +397,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
         private ComboBox cmbPixelFormat;
         private CheckBox chbAsImage;
         private CheckBox chbAsReadOnly;
+        private Button btnViewByExtensionDebugger;
     }
 }

@@ -27,9 +27,6 @@ using System.Linq;
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.Imaging;
-using KGySoft.Reflection;
-
-using Microsoft.VisualStudio.DebuggerVisualizers;
 
 #endregion
 
@@ -60,7 +57,11 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.ViewModel
             new HashSet<string> { nameof(FileAsImage), nameof(FileAsBitmap), nameof(FileAsMetafile),nameof(FileAsIcon) },
         };
 
-        private static readonly Dictionary<Type, DebuggerVisualizerAttribute> debuggerVisualizers = GdiPlusDebuggerHelper.GetDebuggerVisualizers();
+        private static readonly Dictionary<Type, DebuggerVisualizerAttribute> legacyDebuggerVisualizers = GdiPlusDebuggerHelper.GetDebuggerVisualizers();
+
+#if NET472_OR_GREATER
+        private static readonly Dictionary<Type, IDebuggerVisualizerProvider> debuggerVisualizerProviders = GdiPlusDebuggerHelper.GetDebuggerVisualizerProviders();
+#endif
 
         #endregion
 
@@ -105,8 +106,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.ViewModel
         internal Func<IntPtr>? GetHwndCallback { get => Get<Func<IntPtr>?>(); set => Set(value); }
         internal Func<Rectangle>? GetClipCallback { get => Get<Func<Rectangle>?>(); set => Set(value); }
 
-        internal ICommand DebugCommand => Get(() => new SimpleCommand(OnDebugCommand));
         internal ICommand DirectViewCommand => Get(() => new SimpleCommand(OnViewDirectCommand));
+        internal ICommand LegacyDebugCommand => Get(() => new SimpleCommand(OnLegacyDebugCommand));
+        internal ICommand ExtensionDebugCommand => Get(() => new SimpleCommand(OnExtensionDebugCommand));
 
         private object? TestObject { get => Get<object?>(); set => Set(value); }
         private Bitmap? BitmapDataOwner { get => Get<Bitmap?>(); set => Set(value); }
@@ -473,7 +475,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.ViewModel
             }
         }
 
-        private void OnDebugCommand()
+        private void OnLegacyDebugCommand()
         {
             object? testObject = TestObject;
             if (testObject == null)
@@ -482,7 +484,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.ViewModel
             Type targetType = testObject is Image && (!ImageFromFile && AsImage || ImageFromFile && FileAsImage)
                 ? typeof(Image)
                 : testObject.GetType();
-            DebuggerVisualizerAttribute? attr = debuggerVisualizers.GetValueOrDefault(targetType);
+            DebuggerVisualizerAttribute? attr = legacyDebuggerVisualizers.GetValueOrDefault(targetType);
             if (attr == null)
             {
                 ErrorCallback?.Invoke($"No debugger visualizer found for type {targetType}");
@@ -491,18 +493,44 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.ViewModel
 
             try
             {
-                var windowService = new TestWindowService();
-                var objectProvider = new TestObjectProvider(testObject) { IsObjectReplaceable = !AsReadOnly };
-                DialogDebuggerVisualizer debugger = (DialogDebuggerVisualizer)Reflector.CreateInstance(Reflector.ResolveType(attr.VisualizerTypeName)!);
-                objectProvider.Serializer = (VisualizerObjectSource)Reflector.CreateInstance(Reflector.ResolveType(attr.VisualizerObjectSourceTypeName!)!);
-                Reflector.InvokeMethod(debugger, "Show", windowService, objectProvider);
-                if (objectProvider.ObjectReplaced)
-                    TestObject = objectProvider.Object;
+                if (DebuggerVisualizerHelper.ShowLegacyVisualizer(attr, testObject, !AsReadOnly, out object? replacementObject))
+                    TestObject = replacementObject;
             }
             catch (Exception e) when (e is not StackOverflowException)
             {
                 ErrorCallback?.Invoke($"Failed to debug object: {e.Message}");
             }
+        }
+
+        private void OnExtensionDebugCommand()
+        {
+            object? testObject = TestObject;
+            if (testObject == null)
+                return;
+
+#if NET472_OR_GREATER
+            Type targetType = testObject is Image && (!ImageFromFile && AsImage || ImageFromFile && FileAsImage)
+                ? typeof(Image)
+                : testObject.GetType();
+            IDebuggerVisualizerProvider? provider = debuggerVisualizerProviders.GetValueOrDefault(targetType);
+            if (provider == null)
+            {
+                ErrorCallback?.Invoke($"No debugger visualizer extension found for type {targetType}");
+                return;
+            }
+
+            try
+            {
+                if (DebuggerVisualizerHelper.ShowExtensionVisualizer(provider, testObject, !AsReadOnly, out object? replacementObject))
+                    TestObject = replacementObject;
+            }
+            catch (Exception e) when (e is not StackOverflowException)
+            {
+                ErrorCallback?.Invoke($"Failed to debug object: {e.Message}");
+            }
+#else
+            ErrorCallback?.Invoke($"Debugger visualizer extensions are supported only in .NET Framework 4.7.2 and above.");
+#endif
         }
 
         #endregion
