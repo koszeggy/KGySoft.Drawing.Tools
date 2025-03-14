@@ -1,9 +1,9 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: CountColorsForm.cs
+//  File: CountColorsControl.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -21,13 +21,31 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
 
-namespace KGySoft.Drawing.ImagingTools.View.Forms
+namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    internal partial class CountColorsForm : MvvmBaseForm
+    internal partial class CountColorsControl : MvvmBaseUserControl
     {
         #region Properties
 
-        private new CountColorsViewModel ViewModel => (CountColorsViewModel)base.ViewModel;
+        #region Internal Properties
+
+        internal override ParentViewProperties ParentViewProperties => new ParentViewProperties
+        {
+            Name = "CountColorsForm",
+            BorderStyle = FormBorderStyle.FixedDialog,
+            Icon = Properties.Resources.Palette,
+            AcceptButton = btnClose,
+            CancelButton = btnClose,
+            ClosingCallback = (_,_) => ViewModel.CancelIfRunning()
+        };
+
+        #endregion
+
+        #region Private Properties
+
+        private new CountColorsViewModel ViewModel => (CountColorsViewModel)base.ViewModel!;
+
+        #endregion
 
         #endregion
 
@@ -35,18 +53,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Internal Constructors
 
-        internal CountColorsForm(CountColorsViewModel viewModel)
-            : base(viewModel)
+        internal CountColorsControl(CountColorsViewModel viewModel) : base(viewModel)
         {
             InitializeComponent();
-            AcceptButton = CancelButton = btnClose;
         }
 
         #endregion
 
         #region Private Constructors
 
-        private CountColorsForm() : this(null!)
+        private CountColorsControl() : this(null!)
         {
             // this ctor is just for the designer
         }
@@ -59,23 +75,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Protected Methods
 
-        protected override void ApplyResources()
-        {
-            Icon = Properties.Resources.Palette;
-            base.ApplyResources();
-        }
-
         protected override void ApplyViewModel()
         {
             InitCommandBindings();
             InitPropertyBindings();
             base.ApplyViewModel();
-        }
-
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            ViewModel.CancelIfRunning();
-            base.OnFormClosing(e);
         }
 
         protected override void Dispose(bool disposing)

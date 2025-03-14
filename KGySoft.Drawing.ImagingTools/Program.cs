@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: Program.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -37,9 +37,51 @@ namespace KGySoft.Drawing.ImagingTools
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
+            //ViewModelFactory.CreateAdjustBrightness()
+            //ViewModelFactory.CreateAdjustColorSpace()
+            //ViewModelFactory.CreateAdjustContrast()
+            //ViewModelFactory.CreateAdjustGamma()
+            //ViewModelFactory.CreateDefault()
+            //ViewModelFactory.CreateDownloadResources()
+            //ViewModelFactory.CreateEditResources()
+            //ViewModelFactory.CreateLanguageSettings()
+            //ViewModelFactory.CreateManageInstallations()
+            //ViewModelFactory.CreateResizeBitmap()
+            //ViewModelFactory.CreateAdjustColorSpace();
+            //ViewModelFactory.FromBitmap()
+            //ViewModelFactory.FromBitmapData()
+            //ViewModelFactory.FromColor()
+            //ViewModelFactory.FromCommandLineArguments()
+            //ViewModelFactory.FromCustomBitmap()
+            //ViewModelFactory.FromCustomColor()
+            //ViewModelFactory.FromCustomPalette()
+            //ViewModelFactory.FromGraphics()
+            //ViewModelFactory.FromIcon()
+            //ViewModelFactory.FromImage()
+            //ViewModelFactory.FromMetafile()
+            //ViewModelFactory.FromPalette()
+
             using IViewModel viewModel = ViewModelFactory.FromCommandLineArguments(args);
             using IView view = ViewFactory.CreateView(viewModel);
-            Application.Run((Form)view);
+            Application.Run(ViewFactory.TryGetForm(view));
+
+            //using var bmp = new System.Drawing.Bitmap(100, 100);
+            
+            //using (IViewModel viewModel = ViewModelFactory.CreateCountColors(bmp))
+            //{
+            //    using IView view = ViewFactory.CreateView(viewModel);
+            //    Application.Run(ViewFactory.TryCreateParentForm(view));
+            //}
+
+            //// WPF test
+            //using (IViewModel viewModel = ViewModelFactory.CreateCountColors(bmp))
+            //{
+            //    using IView view = ViewFactory.CreateView(viewModel);
+            //    System.Windows.Application app = new();
+            //    app.Run(new System.Windows.Window { Content = new System.Windows.Forms.Integration.WindowsFormsHost { Child = (Control)view } });
+            //}
+
         }
 
         #endregion

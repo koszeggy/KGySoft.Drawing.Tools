@@ -1,6 +1,6 @@
-﻿namespace KGySoft.Drawing.ImagingTools.View.Forms
+﻿namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    partial class CountColorsForm
+    partial class CountColorsControl
     {
         /// <summary>
         /// Required designer variable.
@@ -28,8 +28,8 @@
             this.lblCountColorsStatus.Location = new System.Drawing.Point(0, 0);
             this.lblCountColorsStatus.Name = "lblCountColorsStatus";
             this.lblCountColorsStatus.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
-            this.lblCountColorsStatus.Size = new System.Drawing.Size(274, 39);
-            this.lblCountColorsStatus.TabIndex = 0;
+            this.lblCountColorsStatus.Size = new System.Drawing.Size(275, 39);
+            this.lblCountColorsStatus.TabIndex = 3;
             this.lblCountColorsStatus.Text = "lblCountColorsStatus";
             this.lblCountColorsStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
@@ -39,8 +39,8 @@
             this.pnlButton.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.pnlButton.Location = new System.Drawing.Point(0, 39);
             this.pnlButton.Name = "pnlButton";
-            this.pnlButton.Size = new System.Drawing.Size(274, 29);
-            this.pnlButton.TabIndex = 1;
+            this.pnlButton.Size = new System.Drawing.Size(275, 29);
+            this.pnlButton.TabIndex = 4;
             // 
             // btnClose
             // 
@@ -56,36 +56,30 @@
             // progress
             // 
             this.progress.BackColor = System.Drawing.Color.Transparent;
+            this.progress.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.progress.Location = new System.Drawing.Point(0, 68);
             this.progress.Name = "progress";
-            this.progress.Size = new System.Drawing.Size(274, 22);
-            this.progress.TabIndex = 2;
+            this.progress.Size = new System.Drawing.Size(275, 22);
+            this.progress.TabIndex = 5;
             this.progress.Text = "drawingProgressStatusStrip1";
             // 
-            // CountColorsForm
+            // CountColorsControl
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(274, 90);
             this.Controls.Add(this.lblCountColorsStatus);
             this.Controls.Add(this.pnlButton);
             this.Controls.Add(this.progress);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "CountColorsForm";
-            this.Text = "CountColorsForm";
+            this.Name = "CountColorsControl";
+            this.Size = new System.Drawing.Size(275, 90);
             this.pnlButton.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
-        private Controls.DrawingProgressFooter progress;
         private System.Windows.Forms.Label lblCountColorsStatus;
         private System.Windows.Forms.Panel pnlButton;
         private System.Windows.Forms.Button btnClose;
+        private Controls.DrawingProgressFooter progress;
     }
 }

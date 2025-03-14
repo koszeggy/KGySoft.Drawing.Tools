@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ViewFactory.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -97,10 +97,10 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         #region Internal Methods
 
-        internal static MvvmParentForm? TryCreateParentForm(IView view)
+        internal static Form? TryGetForm(IView view)
         {
             if (view is not MvvmBaseUserControl mvvmControl)
-                return null;
+                return view as Form;
 
             if (mvvmControl.TopLevelControl is MvvmParentForm parent)
                 return parent;
