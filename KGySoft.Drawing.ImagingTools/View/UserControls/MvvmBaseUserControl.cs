@@ -48,12 +48,24 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #endregion
 
+        #region Events
+
+        internal event EventHandler? ViewModelChanged
+        {
+            add => Events.AddHandler(nameof(ViewModelChanged), value);
+            remove => Events.RemoveHandler(nameof(ViewModelChanged), value);
+        }
+
+        #endregion
+
         #region Properties
 
         #region Internal Properties
 
         internal CommandBindingsCollection CommandBindings { get; } = new WinFormsCommandBindingsCollection();
         internal virtual ParentViewProperties? ParentViewProperties => null;
+        internal virtual Action<MvvmParentForm>? ParentViewPropertyBindingsInitializer => null;
+        //internal virtual Action<MvvmParentForm>? ParentViewCommandBindingsInitializer => null; // TODO: remove if not needed
 
         #endregion
 
@@ -71,11 +83,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                     return;
 
                 viewModel = value;
-                if (!isLoaded)
-                    return;
-
-                CommandBindings.Clear();
-                ApplyViewModel();
+                OnViewModelChanged(EventArgs.Empty);
             }
         }
 
@@ -85,12 +93,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         protected Dictionary<string, Control> ValidationMapping { get; } = new Dictionary<string, Control>();
         protected ICommand ValidationResultsChangedCommand => validationResultsChangesCommand ??= new SimpleCommand<ValidationResultsCollection>(OnValidationResultsChangedCommand);
-
-        #endregion
-
-        #region Explicitly Implemented Interface Properties
-
-        IViewModel IView.ViewModel => ViewModel!;
 
         #endregion
 
@@ -117,9 +119,10 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         }
 
         /// <summary>
-        /// The constructor for creating an MvvmBaseUserControl as a (semi) top-level control that may or may not be embedded into an MvvmBaseForm.
+        /// The constructor for creating an MvvmBaseUserControl as a (semi) top-level control that may or may not be embedded into an MvvmParentForm.
+        /// Modern debugger visualizer extensions may embed this control directly into a WPF control, without using the MvvmParentForm.
         /// </summary>
-        protected MvvmBaseUserControl(ViewModelBase viewModel) : this()
+        protected MvvmBaseUserControl(ViewModelBase? viewModel) : this()
         {
             this.viewModel = viewModel;
         }
@@ -163,14 +166,16 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             base.OnLoad(e);
 
-            // Null VM occurs in design mode but DesignMode is false for grandchild forms
             // isLoaded can be true if handle was recreated
-            if (isLoaded || ViewModel == null!)
+            if (isLoaded)
                 return;
 
+            // Null VM occurs in design mode but DesignMode is false for grandchild forms
             isLoaded = true;
             ApplyResources();
-            ApplyViewModel();
+
+            if (viewModel != null)
+                ApplyViewModel();
         }
 
         protected virtual void ApplyResources() => ApplyStringResources();
@@ -207,7 +212,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         protected override void OnParentChanged(EventArgs e)
         {
             base.OnParentChanged(e);
-            mvvmParent = TopLevelControl as MvvmParentForm;
+            mvvmParent = ParentForm as MvvmParentForm;
             if (viewModel is ViewModelBase vm && mvvmParent is MvvmParentForm parent)
                 vm.CloseViewCallback = () => BeginInvoke(new Action(parent.Close));
         }
@@ -264,6 +269,17 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             RightToLeft = rtl;
         }
 
+        private void OnViewModelChanged(EventArgs e)
+        {
+            if (!isLoaded)
+                return;
+
+            CommandBindings.Clear();
+            ApplyViewModel();
+
+            Events.GetHandler<EventHandler>(nameof(ViewModelChanged))?.Invoke(this, e);
+        }
+
         #endregion
 
         #region Command Handlers
@@ -306,7 +322,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             MvvmParentForm? parent = TryGetCreateParent();
             if (parent == null)
             {
-                (TopLevelControl as Form)?.ShowDialog(ownerHandle == IntPtr.Zero ? null : new OwnerWindowHandle(ownerHandle));
+                ParentForm?.ShowDialog(ownerHandle == IntPtr.Zero ? null : new OwnerWindowHandle(ownerHandle));
                 return;
             }
 
@@ -321,7 +337,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             MvvmParentForm? parent = TryGetCreateParent();
             if (parent == null)
             {
-                (TopLevelControl as Form)?.ShowDialog(owner as IWin32Window);
+                ParentForm?.ShowDialog(owner as IWin32Window);
                 return;
             }
 
@@ -333,7 +349,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         void IView.Show() => InvokeIfRequired(() =>
         {
-            Form? parent = TryGetCreateParent() ?? TopLevelControl as Form;
+            Form? parent = TryGetCreateParent() ?? ParentForm;
             if (parent == null)
                 return;
 
@@ -348,8 +364,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             parent.Activate();
             parent.BringToFront();
         });
-
-        bool IView.TrySetViewModel(IViewModel vm) => false;
 
         #endregion
 

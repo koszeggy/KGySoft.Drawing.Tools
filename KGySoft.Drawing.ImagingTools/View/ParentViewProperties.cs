@@ -15,8 +15,11 @@
 
 #region Usings
 
+using System;
 using System.Drawing;
 using System.Windows.Forms;
+
+using KGySoft.Drawing.ImagingTools.View.Forms;
 
 #endregion
 
@@ -32,8 +35,9 @@ namespace KGySoft.Drawing.ImagingTools.View
         internal IButtonControl? AcceptButton { get; set; }
         internal IButtonControl? CancelButton { get; set; }
         internal Size MinimumSize { get; set; }
-        internal Size MaximumSize { get; set; }
+        //internal Size MaximumSize { get; set; } // TODO: remove if not needed
         internal FormClosingEventHandler? ClosingCallback { get; set; }
+        internal Func<MvvmParentForm, Keys, bool>? ProcessKeyCallback { get; set; }
 
         #endregion
     }

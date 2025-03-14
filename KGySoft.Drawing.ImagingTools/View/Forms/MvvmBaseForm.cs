@@ -51,8 +51,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Properties
 
-        #region Protected Properties
-
         protected ViewModelBase ViewModel { get; } = default!;
         protected CommandBindingsCollection CommandBindings { get; } = new WinFormsCommandBindingsCollection();
 
@@ -62,14 +60,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected Dictionary<string, Control> ValidationMapping { get; } = new Dictionary<string, Control>();
         protected ICommand ValidationResultsChangedCommand => validationResultsChangesCommand ??= new SimpleCommand<ValidationResultsCollection>(OnValidationResultsChangedCommand);
-
-        #endregion
-
-        #region Explicitly Implemented Interface Properties
-
-        IViewModel IView.ViewModel => ViewModel;
-
-        #endregion
 
         #endregion
 
@@ -335,7 +325,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             BringToFront();
         });
 
-        bool IView.TrySetViewModel(IViewModel viewModel) => false;
 
         #endregion
 

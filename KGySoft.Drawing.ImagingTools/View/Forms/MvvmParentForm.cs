@@ -35,6 +35,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private bool isLoaded;
         private Point location;
+        private Func<MvvmParentForm, Keys, bool>? processKeyCallback;
 
         #endregion
 
@@ -54,7 +55,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             AutoScaleMode = AutoScaleMode.Font;
             RightToLeftLayout = true;
             StartPosition = OSUtils.IsMono && OSUtils.IsWindows ? FormStartPosition.WindowsDefaultLocation : FormStartPosition.CenterParent;
-            InitChild();
+            InitializeForm();
         }
 
         #endregion
@@ -88,7 +89,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
             isLoaded = true;
             ApplyStringResources();
-            InitCommandBindings();
+            ApplyBindings();
         }
 
         protected override void OnHandleCreated(EventArgs e)
@@ -112,6 +113,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             base.OnFormClosing(e);
         }
 
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (processKeyCallback?.Invoke(this, keyData) == true)
+                return true;
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -124,7 +132,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Methods
 
-        private void InitChild()
+        private void InitializeForm()
         {
             SuspendLayout();
             Size clientSize = mvvmChild.Size;
@@ -133,28 +141,45 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             ParentViewProperties properties = mvvmChild.ParentViewProperties ?? throw new InvalidOperationException(Res.InternalError($"{mvvmChild.Name} should override ParentViewProperties"));
             Name = properties.Name;
             FormBorderStyle = properties.BorderStyle;
-            if (properties.BorderStyle is FormBorderStyle.FixedDialog)
-                MinimizeBox = MaximizeBox = false;
-
             Icon = properties.Icon;
             AcceptButton = properties.AcceptButton;
             CancelButton = properties.CancelButton;
+            processKeyCallback = properties.ProcessKeyCallback;
+            if (properties.BorderStyle is FormBorderStyle.FixedDialog)
+                MinimizeBox = MaximizeBox = false;
             if (!properties.MinimumSize.IsEmpty)
                 MinimumSize = properties.MinimumSize;
-            if (!properties.MaximumSize.IsEmpty)
-                MaximumSize = properties.MaximumSize;
+            //if (!properties.MaximumSize.IsEmpty) // TODO: remove if not needed
+            //    MaximumSize = properties.MaximumSize;
             if (properties.ClosingCallback is FormClosingEventHandler handler)
                 FormClosing += handler; // removed in base.Dispose
             ClientSize = clientSize;
             ResumeLayout();
+
+            // removed in BaseUserControl.Dispose
+            mvvmChild.ViewModelChanged += (_, _) => ApplyBindings();
         }
 
         private void ApplyStringResources() => this.ApplyStringResources(null);
+
+        private void ApplyBindings()
+        {
+            InitPropertyBindings();
+            InitCommandBindings();
+        }
+
+        private void InitPropertyBindings()
+        {
+            mvvmChild.ParentViewPropertyBindingsInitializer?.Invoke(this);
+        }
 
         private void InitCommandBindings()
         {
             mvvmChild.CommandBindings.Add(OnDisplayLanguageChangedCommand)
                 .AddSource(typeof(Res), nameof(Res.DisplayLanguageChanged));
+
+            // TODO: remove if not needed
+            //mvvmChild.ParentViewCommandBindingsInitializer?.Invoke(this);
         }
 
         private void ApplyRightToLeft()
@@ -168,6 +193,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
             RightToLeft = rtl;
         }
+
+        #endregion
+
+        #region Command Handlers
 
         private void OnDisplayLanguageChangedCommand() => mvvmChild.InvokeIfRequired(() =>
         {
