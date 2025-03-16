@@ -18,7 +18,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 
@@ -48,6 +47,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private List<CultureInfo>? selectableLanguages;
         private string lastSavedResourcesPath;
         private string? customPathError;
+        private EventHandler? validationResultsChangedHandler;
 
         #endregion
 
@@ -55,8 +55,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal event EventHandler? ValidationResultsChanged
         {
-            add => ValidationResultsChangedHandler += value;
-            remove => ValidationResultsChangedHandler -= value;
+            add => value.AddSafe(ref validationResultsChangedHandler);
+            remove => value.RemoveSafe(ref validationResultsChangedHandler);
         }
 
         #endregion
@@ -132,8 +132,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 return selectableLanguages;
             }
         }
-
-        private EventHandler? ValidationResultsChangedHandler { get => Get<EventHandler?>(); set => Set(value); }
 
         #endregion
 
@@ -240,7 +238,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 case nameof(ValidationResults):
                     var validationResults = (ValidationResultsCollection)e.NewValue!;
                     IsValid = !validationResults.HasErrors;
-                    ValidationResultsChangedHandler?.Invoke(this, EventArgs.Empty);
+                    validationResultsChangedHandler?.Invoke(this, EventArgs.Empty);
                     return;
 
                 case nameof(AllowResXResources):
@@ -291,6 +289,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (disposing)
                 (Languages as SortableBindingList<CultureInfo>)?.Dispose();
 
+            validationResultsChangedHandler = null;
             base.Dispose(disposing);
         }
 

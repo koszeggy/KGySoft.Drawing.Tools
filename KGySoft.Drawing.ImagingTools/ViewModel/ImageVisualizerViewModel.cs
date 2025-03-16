@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ImageVisualizerViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -37,7 +37,7 @@ using KGySoft.Drawing.ImagingTools.Model;
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal class ImageVisualizerViewModel : ViewModelBase, IViewModel<ImageInfo>, IViewModel<Image?>, IViewModel<Icon?>, IViewModel<Bitmap?>, IViewModel<Metafile?>
+    internal class ImageVisualizerViewModel : ViewModelBase<ImageInfo>, IViewModel<Image?>, IViewModel<Icon?>, IViewModel<Bitmap?>, IViewModel<Metafile?>
     {
         #region Constants
 
@@ -61,8 +61,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private readonly AllowedImageTypes imageTypes;
 
-        private ImageInfo imageInfo = new ImageInfo(ImageInfoType.None);
+        /// <summary>
+        /// Indicates that the current <see cref="imageInfo"/> instance has been returned by <see cref="GetEditedModel"/> so it should be kept alive.
+        /// If <see langword="true"/>, then the <see cref="imageInfo"/> will not be disposed when a new image is set or when the view model is closed.
+        /// </summary>
         private bool keepAliveImageInfo;
+
+        private ImageInfo imageInfo = new ImageInfo(ImageInfoType.None);
         private int currentFrame = -1;
         private bool isOpenFilterUpToDate;
         private Size currentResolution;
@@ -239,6 +244,16 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #endregion
 
         #region Instance Methods
+
+        #region Public Methods
+
+        public override ImageInfo GetEditedModel()
+        {
+            keepAliveImageInfo = true;
+            return imageTypes == AllowedImageTypes.Icon ? imageInfo.AsIcon() : imageInfo.AsImage();
+        }
+
+        #endregion
 
         #region Internal Methods
 
@@ -462,8 +477,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             ValidateImageInfo(value);
 
             currentResolution = Size.Empty;
-            imageInfo.Dispose();
+            if (!keepAliveImageInfo)
+                imageInfo.Dispose();
             imageInfo = value;
+            keepAliveImageInfo = false;
             SetModified(false);
             PreviewImage = null;
             InitAutoZoom(false);
@@ -1150,11 +1167,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         Icon? IViewModel<Icon?>.GetEditedModel() => Icon?.Clone() as Icon;
         Bitmap? IViewModel<Bitmap?>.GetEditedModel() => Image?.Clone() as Bitmap;
         Metafile? IViewModel<Metafile?>.GetEditedModel() => Image?.Clone() as Metafile;
-        ImageInfo IViewModel<ImageInfo>.GetEditedModel()
-        {
-            keepAliveImageInfo = true;
-            return imageTypes == AllowedImageTypes.Icon ? imageInfo.AsIcon() : imageInfo.AsImage();
-        }
+
+        bool IViewModel<Image?>.TrySetModel(Image? model) => false;
+        bool IViewModel<Icon?>.TrySetModel(Icon? model) => false;
+        bool IViewModel<Bitmap?>.TrySetModel(Bitmap? model) => false;
+        bool IViewModel<Metafile?>.TrySetModel(Metafile? model) => false;
 
         #endregion
 

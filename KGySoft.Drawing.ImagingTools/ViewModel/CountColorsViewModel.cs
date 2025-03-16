@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: CountColorsViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -28,7 +28,7 @@ using KGySoft.Threading;
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal class CountColorsViewModel : ViewModelBase, IViewModel<int?>
+    internal class CountColorsViewModel : ViewModelBase<int?>
     {
         #region Nested classes
 
@@ -84,7 +84,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Public Methods
 
-        public int? GetEditedModel()
+        public override int? GetEditedModel()
         {
             activeTask?.WaitForCompletion();
             return colorCount;

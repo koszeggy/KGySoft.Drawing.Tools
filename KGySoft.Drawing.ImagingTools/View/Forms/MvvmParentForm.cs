@@ -122,6 +122,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected override void Dispose(bool disposing)
         {
+            if (IsDisposed)
+                return;
+
             if (disposing)
                 handleCreated.Dispose();
 

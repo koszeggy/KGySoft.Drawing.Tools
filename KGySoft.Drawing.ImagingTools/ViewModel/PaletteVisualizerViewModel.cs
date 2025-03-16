@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: PaletteVisualizerViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -18,7 +18,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Reflection;
 
 using KGySoft.ComponentModel;
 
@@ -26,7 +25,7 @@ using KGySoft.ComponentModel;
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal class PaletteVisualizerViewModel : ViewModelBase, IViewModel<Color[]>
+    internal class PaletteVisualizerViewModel : ViewModelBase<Color[]>
     {
         #region Fields
 
@@ -59,6 +58,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #endregion
 
         #region Methods
+
+        #region Public Methods
+
+        public override Color[] GetEditedModel() => Palette;
+
+        #endregion
 
         #region Internal Methods
 
@@ -153,12 +158,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             Palette[SelectedColorIndex] = color;
             SetModified(true);
         }
-
-        #endregion
-
-        #region Explicitly Implemented Interface Methods
-
-        Color[] IViewModel<Color[]>.GetEditedModel() => Palette;
 
         #endregion
 

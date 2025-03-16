@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: TransformBitmapViewModelBase.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -17,11 +17,11 @@
 
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.Threading;
 
 using KGySoft.ComponentModel;
+using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Threading;
 
@@ -29,7 +29,7 @@ using KGySoft.Threading;
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal abstract class TransformBitmapViewModelBase : ViewModelBase, IViewModel<Bitmap?>, IValidatingObject
+    internal abstract class TransformBitmapViewModelBase : ViewModelBase<Bitmap?>, IValidatingObject
     {
         #region Nested Classes
 
@@ -54,6 +54,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private volatile GenerateTaskBase? activeTask;
         private bool keepResult;
         private DrawingProgressManager? drawingProgressManager;
+        private EventHandler? validationResultsChangedHandler;
 
         #endregion
 
@@ -61,8 +62,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal event EventHandler? ValidationResultsChanged
         {
-            add => ValidationResultsChangedHandler += value;
-            remove => ValidationResultsChangedHandler -= value;
+            add => value.AddSafe(ref validationResultsChangedHandler);
+            remove => value.RemoveSafe(ref validationResultsChangedHandler);
         }
 
         #endregion
@@ -100,7 +101,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Private Properties
 
         private Exception? GeneratePreviewError { get => Get<Exception?>(); set => Set(value); }
-        private EventHandler? ValidationResultsChangedHandler { get => Get<EventHandler?>(); set => Set(value); }
 
         #endregion
 
@@ -112,13 +112,19 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             originalImage = image ?? throw new ArgumentNullException(nameof(image), PublicResources.ArgumentNull);
             PreviewImageViewModel previewImage = PreviewImageViewModel;
-            previewImage.PropertyChanged += PreviewImage_PropertyChanged!;
+            previewImage.PropertyChanged += PreviewImage_PropertyChanged;
             previewImage.PreviewImage = previewImage.OriginalImage = image;
         }
 
         #endregion
 
         #region Methods
+
+        #region Public Methods
+
+        public override Bitmap? GetEditedModel() => PreviewImageViewModel.PreviewImage as Bitmap;
+
+        #endregion
 
         #region Internal Methods
 
@@ -141,7 +147,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 case nameof(ValidationResults):
                     var validationResults = (ValidationResultsCollection)e.NewValue!;
                     IsValid = !validationResults.HasErrors;
-                    ValidationResultsChangedHandler?.Invoke(this, EventArgs.Empty);
+                    validationResultsChangedHandler?.Invoke(this, EventArgs.Empty);
                     return;
 
                 case nameof(GeneratePreviewError):
@@ -205,7 +211,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             // Not awaiting the canceled task here to prevent the UI from lagging.
             IsGenerating = true;
-            ThreadPool.QueueUserWorkItem(DoGenerate!, CreateGenerateTask());
+            ThreadPool.QueueUserWorkItem(DoGenerate, CreateGenerateTask());
         }
 
         protected abstract GenerateTaskBase CreateGenerateTask();
@@ -219,6 +225,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             if (IsDisposed)
                 return;
+
             if (disposing)
             {
                 if (activeTask != null)
@@ -235,6 +242,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     preview?.Dispose();
 
                 drawingProgressManager = null;
+                validationResultsChangedHandler = null;
             }
 
             base.Dispose(disposing);
@@ -244,9 +252,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Private Methods
 
-        private void DoGenerate(object state)
+        private void DoGenerate(object? state)
         {
-            var task = (GenerateTaskBase)state;
+            var task = (GenerateTaskBase)state!;
 
             // This is a fairly large lock ensuring that only one generate task is running at once.
             // Instead of this we could await the canceled task before queuing a new one but then the UI can freeze for some moments.
@@ -409,9 +417,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Event Handlers
 
-        private void PreviewImage_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void PreviewImage_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            var vm = (PreviewImageViewModel)sender;
+            var vm = (PreviewImageViewModel)sender!;
 
             // preview image has been changed: updating IsModified accordingly
             if (e.PropertyName == nameof(vm.PreviewImage))
@@ -442,12 +450,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         }
 
         private void OnResetCommand() => ResetParameters();
-
-        #endregion
-
-        #region Explicitly Implemented Interface Methods
-
-        Bitmap? IViewModel<Bitmap?>.GetEditedModel() => PreviewImageViewModel.PreviewImage as Bitmap;
 
         #endregion
 

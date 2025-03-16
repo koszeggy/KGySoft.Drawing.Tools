@@ -62,8 +62,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         internal CountColorsControl(CountColorsViewModel viewModel) : base(viewModel)
         {
             InitializeComponent();
-
-
         }
 
         #endregion
@@ -92,6 +90,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         protected override void Dispose(bool disposing)
         {
+            if (IsDisposed)
+                return;
+
+            // Cancelling here may be required if this control is not parented by an MvvmParentForm
+            ViewModel.CancelIfRunning();
             if (disposing)
                 components?.Dispose();
             base.Dispose(disposing);

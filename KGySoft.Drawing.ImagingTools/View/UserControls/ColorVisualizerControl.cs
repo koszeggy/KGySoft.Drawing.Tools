@@ -213,6 +213,10 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // CancelButton.Click -> OnCancelCommand
             CommandBindings.Add(OnCancelCommand)
                 .AddSource(buttons.CancelButton, nameof(buttons.CancelButton.Click));
+
+            // ApplyButton.Click -> VM.ApplyChangesCommand
+            CommandBindings.Add(vm.ApplyChangesCommand)
+                .AddSource(buttons.ApplyButton, nameof(buttons.ApplyButton.Click));
         }
 
         private void ApplyCustomColorComponentsLayout()
@@ -251,6 +255,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         protected override void Dispose(bool disposing)
         {
+            if (IsDisposed)
+                return;
+
             if (disposing)
             {
                 components?.Dispose();

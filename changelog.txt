@@ -6,6 +6,16 @@
 ===============================================================================
 
 ~~~~~~~~~
+! v5.0.0:
+~~~~~~~~~
+
+! API changes:
+  ! KGySoft.Drawing.ImagingTools.ViewModel namespace:
+    ! IViewModel<TModel> interface: New ChangesApplied event and TrySetModel method. Breaking change only if you
+      implemented this interface, which is normally not needed.
+
+
+~~~~~~~~~
 * v4.0.0:
 ~~~~~~~~~
 

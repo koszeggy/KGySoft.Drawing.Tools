@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: DownloadResourcesViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -46,7 +46,7 @@ using KGySoft.Serialization.Xml;
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal class DownloadResourcesViewModel : ViewModelBase, IViewModel<ICollection<LocalizationInfo>>
+    internal class DownloadResourcesViewModel : ViewModelBase<ICollection<LocalizationInfo>>
     {
         #region Nested classes
 
@@ -138,6 +138,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Methods
 
+        #region Public Methods
+
+        public override ICollection<LocalizationInfo> GetEditedModel() => downloadedCultures;
+
+        #endregion
+
         #region Internal Methods
 
         internal void CancelIfRunning()
@@ -190,10 +196,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             IsProcessing = true;
             activeTask = new DownloadTask { Uri = new Uri(Configuration.BaseUri, "manifest.xml") };
-            ThreadPool.QueueUserWorkItem(DoDownloadManifest!, activeTask);
+            ThreadPool.QueueUserWorkItem(DoDownloadManifest, activeTask);
         }
 
-        private void DoDownloadManifest(object state)
+        private void DoDownloadManifest(object? state)
         {
             var task = (DownloadTask)state!;
             try
@@ -249,10 +255,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             DownloadCommandState.Enabled = false;
             IsProcessing = true;
             activeTask = new DownloadResourcesTask { Files = toDownload, Overwrite = overwrite };
-            ThreadPool.QueueUserWorkItem(DoDownloadResources!, activeTask);
+            ThreadPool.QueueUserWorkItem(DoDownloadResources, activeTask);
         }
 
-        private void DoDownloadResources(object state)
+        private void DoDownloadResources(object? state)
         {
             var task = (DownloadResourcesTask)state!;
             string current = null!;
@@ -359,10 +365,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             // We do not use the file size in the progress because
             // 1.) We work with small files
-            // 2.) When we download more files we can't set the maximum value for all of the files
+            // 2.) When we download more files we can't set the maximum value for all the files
             IncrementProgress();
             using Stream? src = response.GetResponseStream();
-            if (src == null)
+            if (src == null!)
                 return null;
 
             int len = (int)response.ContentLength;
@@ -385,12 +391,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             var current = Progress;
             Progress = (current.MaximumValue, current.CurrentValue + value);
         }
-
-        #endregion
-
-        #region Explicitly Implemented Interface Methods
-
-        ICollection<LocalizationInfo> IViewModel<ICollection<LocalizationInfo>>.GetEditedModel() => downloadedCultures;
 
         #endregion
 

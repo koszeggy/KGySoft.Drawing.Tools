@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ColorVisualizerViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -26,7 +26,7 @@ using KGySoft.CoreLibraries;
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal class ColorVisualizerViewModel : ViewModelBase, IViewModel<Color>
+    internal class ColorVisualizerViewModel : ViewModelBase<Color>
     {
         #region Fields
 
@@ -115,7 +115,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Public Methods
 
-        public Color GetEditedModel() => Color;
+        public override Color GetEditedModel() => Color;
 
         #endregion
 
