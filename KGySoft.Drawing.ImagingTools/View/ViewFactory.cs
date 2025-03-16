@@ -51,7 +51,7 @@ namespace KGySoft.Drawing.ImagingTools.View
                 GraphicsVisualizerViewModel graphicsVisualizerViewModel => new GraphicsVisualizerForm(graphicsVisualizerViewModel),
                 ImageVisualizerViewModel imageVisualizerViewModel => new ImageVisualizerForm(imageVisualizerViewModel), // also for BitmapData and CustomBitmap
                 PaletteVisualizerViewModel paletteVisualizerViewModel => new PaletteVisualizerForm(paletteVisualizerViewModel), // also for custom palette
-                ColorVisualizerViewModel colorVisualizerViewModel => new ColorVisualizerForm(colorVisualizerViewModel), // also for custom color
+                ColorVisualizerViewModel colorVisualizerViewModel => new ColorVisualizerControl(colorVisualizerViewModel), // also for custom color
                 ManageInstallationsViewModel manageInstallationsViewModel => new ManageInstallationsForm(manageInstallationsViewModel),
                 ResizeBitmapViewModel resizeBitmapViewModel => new ResizeBitmapForm(resizeBitmapViewModel),
                 ColorSpaceViewModel colorSpaceViewModel => new ColorSpaceForm(colorSpaceViewModel),
@@ -102,7 +102,7 @@ namespace KGySoft.Drawing.ImagingTools.View
             if (view is not MvvmBaseUserControl mvvmControl)
                 return view as Form;
 
-            if (mvvmControl.TopLevelControl is MvvmParentForm parent)
+            if (mvvmControl.ParentForm is MvvmParentForm parent)
                 return parent;
 
             // Custom parent: not creating a parent form

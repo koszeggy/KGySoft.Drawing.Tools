@@ -29,6 +29,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         #region Fields
 
         private bool isApplyVisible;
+        private bool areDefaultButtonsVisible = true;
 
         #endregion
 
@@ -55,6 +56,17 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         internal Button OKButton => btnOK;
         internal Button CancelButton => btnCancel;
         internal Button ApplyButton => btnApply;
+
+        internal bool DefaultButtonsVisible
+        {
+            get => areDefaultButtonsVisible;
+            set
+            {
+                if (areDefaultButtonsVisible == value)
+                    return;
+                OKButton.Visible = CancelButton.Visible = areDefaultButtonsVisible = value;
+            }
+        }
 
         #endregion
 

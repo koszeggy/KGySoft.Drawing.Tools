@@ -51,7 +51,6 @@ namespace KGySoft.Drawing.ImagingTools
             //ViewModelFactory.CreateAdjustColorSpace();
             //ViewModelFactory.FromBitmap()
             //ViewModelFactory.FromBitmapData()
-            //ViewModelFactory.FromColor()
             //ViewModelFactory.FromCommandLineArguments()
             //ViewModelFactory.FromCustomBitmap()
             //ViewModelFactory.FromCustomColor()
@@ -62,26 +61,25 @@ namespace KGySoft.Drawing.ImagingTools
             //ViewModelFactory.FromMetafile()
             //ViewModelFactory.FromPalette()
 
-            using IViewModel viewModel = ViewModelFactory.FromCommandLineArguments(args);
-            using IView view = ViewFactory.CreateView(viewModel);
-            Application.Run(ViewFactory.TryGetForm(view));
+            //using IViewModel viewModel = ViewModelFactory.FromCommandLineArguments(args);
+            //using IView view = ViewFactory.CreateView(viewModel);
+            //Application.Run(ViewFactory.TryGetForm(view));
 
             //using var bmp = new System.Drawing.Bitmap(100, 100);
-            
-            //using (IViewModel viewModel = ViewModelFactory.CreateCountColors(bmp))
-            //{
-            //    using IView view = ViewFactory.CreateView(viewModel);
-            //    Application.Run(ViewFactory.TryCreateParentForm(view));
-            //}
 
-            //// WPF test
-            //using (IViewModel viewModel = ViewModelFactory.CreateCountColors(bmp))
-            //{
-            //    using IView view = ViewFactory.CreateView(viewModel);
-            //    System.Windows.Application app = new();
-            //    app.Run(new System.Windows.Window { Content = new System.Windows.Forms.Integration.WindowsFormsHost { Child = (Control)view } });
-            //}
+            using (IViewModel viewModel = ViewModelFactory.FromColor(System.Drawing.Color.Red, false))
+            {
+                using IView view = ViewFactory.CreateView(viewModel);
+                Application.Run(ViewFactory.TryGetForm(view));
+            }
 
+            // WPF test
+            using (IViewModel viewModel = ViewModelFactory.FromColor(System.Drawing.Color.Red, false))
+            {
+                using IView view = ViewFactory.CreateView(viewModel);
+                System.Windows.Application app = new();
+                app.Run(new System.Windows.Window { Content = new System.Windows.Forms.Integration.WindowsFormsHost { Child = (Control)view } });
+            }
         }
 
         #endregion

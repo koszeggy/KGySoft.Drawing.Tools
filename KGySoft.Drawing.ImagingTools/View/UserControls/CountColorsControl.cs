@@ -25,11 +25,17 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
     internal partial class CountColorsControl : MvvmBaseUserControl
     {
+        #region Fields
+
+        private ParentViewProperties? parentProperties;
+        
+        #endregion
+
         #region Properties
 
         #region Internal Properties
 
-        internal override ParentViewProperties ParentViewProperties => new ParentViewProperties
+        internal override ParentViewProperties ParentViewProperties => parentProperties ??= new ParentViewProperties
         {
             Name = "CountColorsForm",
             BorderStyle = FormBorderStyle.FixedDialog,
@@ -56,6 +62,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         internal CountColorsControl(CountColorsViewModel viewModel) : base(viewModel)
         {
             InitializeComponent();
+
+
         }
 
         #endregion

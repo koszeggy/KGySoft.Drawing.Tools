@@ -35,6 +35,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.tsMenu = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedToolStrip();
             this.btnSelectColor = new System.Windows.Forms.ToolStripButton();
             this.txtColor = new System.Windows.Forms.TextBox();
+            this.buttons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
             this.pnlControls.SuspendLayout();
             this.tblColor.SuspendLayout();
             this.pnlRed.SuspendLayout();
@@ -260,10 +261,20 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.txtColor.Name = "txtColor";
             this.txtColor.ReadOnly = true;
             this.txtColor.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtColor.Size = new System.Drawing.Size(247, 105);
+            this.txtColor.Size = new System.Drawing.Size(247, 95);
             this.txtColor.TabIndex = 1;
             this.txtColor.TabStop = false;
             this.txtColor.WordWrap = false;
+            // 
+            // buttons
+            // 
+            this.buttons.BackColor = System.Drawing.Color.Transparent;
+            this.buttons.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.buttons.Location = new System.Drawing.Point(0, 178);
+            this.buttons.Name = "buttons";
+            this.buttons.Size = new System.Drawing.Size(247, 35);
+            this.buttons.TabIndex = 2;
+            this.buttons.Visible = false;
             // 
             // ColorVisualizerControl
             // 
@@ -271,8 +282,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.txtColor);
             this.Controls.Add(this.pnlControls);
+            this.Controls.Add(this.buttons);
             this.Name = "ColorVisualizerControl";
-            this.Size = new System.Drawing.Size(247, 188);
+            this.Size = new System.Drawing.Size(244, 221);
             this.pnlControls.ResumeLayout(false);
             this.pnlControls.PerformLayout();
             this.tblColor.ResumeLayout(false);
@@ -312,6 +324,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         private System.Windows.Forms.TrackBar tbRed;
         private System.Windows.Forms.TrackBar tbGreen;
         private System.Windows.Forms.TrackBar tbBlue;
-
+        private OkCancelButtons buttons;
     }
 }
