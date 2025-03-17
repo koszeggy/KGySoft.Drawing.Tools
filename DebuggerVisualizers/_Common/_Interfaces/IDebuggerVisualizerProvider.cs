@@ -48,6 +48,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <summary>
         /// Creates the visualizer control asynchronously. To be able to test the visualizer, this method should return an <see cref="ILocalControlWrapper"/> implementation.
         /// </summary>
+        /// <param name="visualizerTarget">The <see cref="VisualizerTarget" /> that provides information about the target process and object.</param>
+        /// <param name="cancellationToken">Cancellation token for the async call.</param>
+        /// <returns>An <see cref="IRemoteUserControl" /> that will show the representation of the target object.</returns>
         Task<IRemoteUserControl> CreateVisualizerAsync(VisualizerTarget visualizerTarget, CancellationToken cancellationToken);
 
         #endregion

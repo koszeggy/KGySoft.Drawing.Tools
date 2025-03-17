@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net35;net40;net45;net462;net472;net6.0-windows</TargetFrameworks>
-    <!--<TargetFrameworks>net472</TargetFrameworks>-->
+    <!--<TargetFrameworks>net35;net40;net45;net462;net472;net6.0-windows</TargetFrameworks>-->
+    <TargetFrameworks>net472</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>KGySoft.Drawing.DebuggerVisualizers</RootNamespace>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
@@ -13,6 +13,8 @@
     <PackageLicenseFile>..\..\LICENSE</PackageLicenseFile>
     <Authors>György Kőszeg</Authors>
     <Nullable>enable</Nullable>
+    <UseWPF Condition="'$(TargetFramework)'=='net472'">true</UseWPF>
+    <UseWindowsForms Condition="'$(TargetFramework)'=='net472'">true</UseWindowsForms>
   </PropertyGroup>
 
   <!-- Common NuGet references -->

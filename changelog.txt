@@ -9,10 +9,49 @@
 ! v5.0.0:
 ~~~~~~~~~
 
-! API changes:
-  ! KGySoft.Drawing.ImagingTools.ViewModel namespace:
-    ! IViewModel<TModel> interface: New ChangesApplied event and TrySetModel method. Breaking change only if you
-      implemented this interface, which is normally not needed.
+! KGySoft.Drawing.ImagingTools.exe
+==================================
+API changes:
+
+! KGySoft.Drawing.ImagingTools.ViewModel namespace:
+---------------------------------------------------
+! IViewModel<TModel> interface:
+  ! New ChangesApplied event and TrySetModel method. Breaking change only if you implemented this interface,
+    which is normally not needed.
+
++ KGySoft.Drawing.DebuggerVisualizers.dll
+=========================================
+
++ KGySoft.Drawing.DebuggerVisualizers namespace:
+------------------------------------------------
++ New IDebuggerVisualizerProvider interface (.NET Framework 4.7.2 only): Allows providing the implementation of
+  debugger visualizer extensions for Visual Studio 2022.
++ DebuggerHelper class:
+  + New GetDebuggerVisualizers method: Gets the classic debugger visualizers of a specified assembly.
+  + New GetDebuggerVisualizerProviders method (.NET Framework 4.7.2 only): Gets the debugger visualizer provider
+    implementations of an assembly for the new extension-based visualizers supported by Visual Studio 2022.
++ StreamExtensions class:
+  + New AsReadOnlySequence method (.NET Framework 4.7.2 only)
+  + New AsStream method (.NET Framework 4.7.2 only)
+
++ KGySoft.Drawing.DebuggerVisualizers.Serialization namespace:
+--------------------------------------------------------------
++ New SerializerBase class
+
++ KGySoft.Drawing.DebuggerVisualizers.View namespace:
+-----------------------------------------------------
++ New VisualizerExtensionWpfAdapter<TModel> class (.NET Framework 4.7.2 only)
+
++ KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll
+=================================================
+
++ KGySoft.Drawing.DebuggerVisualizers.GdiPlus namespace:
+--------------------------------------------------------
++ GdiPlusDebuggerHelper class: New GetDebuggerVisualizerProviders method (.NET Framework 4.7.2 only)
+
++ KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization namespace:
+----------------------------------------------------------------------
++ The ColorSerializer class has been made public.
 
 
 ~~~~~~~~~

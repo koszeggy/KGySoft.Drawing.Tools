@@ -16,8 +16,15 @@
 #region Usings
 
 using System;
+#if NET472_OR_GREATER
+using System.Buffers;
+#endif
 using System.IO;
 using System.Text;
+
+#if NET472_OR_GREATER
+using KGySoft.CoreLibraries;
+#endif
 
 #endregion
 
@@ -71,7 +78,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
             private bool isDisposed;
 
 #endif
-            #endregion
+#endregion
 
             #region Constructors
 
@@ -98,7 +105,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
             }
 
 #endif
-            #endregion
+#endregion
         }
 
         #endregion
@@ -196,6 +203,35 @@ namespace KGySoft.Drawing.DebuggerVisualizers
             var incomingReader = new LeaveOpenReader(incomingData);
             return incomingReader.ReadBoolean() ? new TempFileReader(incomingReader.ReadString()) : incomingReader;
         }
+
+#if NET472_OR_GREATER
+        public static Stream AsStream(this ReadOnlySequence<byte> readOnlySequence)
+        {
+            // TODO: try to get actual array, and use ToArray as a fallback only
+            if (readOnlySequence.IsSingleSegment)
+                return new MemoryStream(readOnlySequence.First.ToArray());
+
+            // TODO: implement a custom stream that reads from the sequence
+            // NOTE: In Nerdbank.Streams there is as an AsStream extension method, but it's risky to use because it's just a dependency of Microsoft.VisualStudio.Extensibility that may be removed in the future
+            return new MemoryStream(readOnlySequence.ToArray());
+        }
+
+        /// <summary>
+        /// Gets a <see cref="ReadOnlySequence{T}"/> of bytes from the specified <see cref="Stream"/>.
+        /// </summary>
+        /// <param name="stream">The stream to get as a sequence.</param>
+        /// <param name="disposeWhenReadToEnd"><see langword="true"/> to dispose the <paramref name="stream"/> when the returned sequence is read to the end; <see langword="false"/> to keep the <paramref name="stream"/> open.</param>
+        /// <returns>A <see cref="ReadOnlySequence{T}"/> of bytes from the specified <see cref="Stream"/>.</returns>
+        public static ReadOnlySequence<byte> AsReadOnlySequence(this Stream stream, bool disposeWhenReadToEnd = true)
+        {
+            if (stream is MemoryStream ms && ms.TryGetBuffer(out ArraySegment<byte> segment))
+                return new ReadOnlySequence<byte>(segment.Array, segment.Offset, segment.Count);
+
+            // TODO: implement an optionally custom sequence (if stream.Length is large enough) that reads from the stream
+            var result = stream.ToArray();
+            return new ReadOnlySequence<byte>(result);
+        }
+#endif
 
         #endregion
     }
