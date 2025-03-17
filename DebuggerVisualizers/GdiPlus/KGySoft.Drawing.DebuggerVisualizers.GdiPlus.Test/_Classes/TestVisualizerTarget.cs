@@ -16,6 +16,7 @@
 
 #region Usings
 
+using System;
 using System.Buffers;
 using System.IO;
 using System.Threading;
@@ -33,12 +34,11 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test
         #region Fields
 
         private readonly VisualizerObjectSource serializer;
+        private readonly Action<object> applyReplacedObject;
 
         #endregion
 
         #region Properties
-
-        internal bool IsReplaced { get; private set; }
 
         internal object Object { get; private set; }
 
@@ -46,10 +46,11 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test
 
         #region Constructors
 
-        internal TestVisualizerTarget(object target, VisualizerObjectSource serializer)
+        internal TestVisualizerTarget(object target, VisualizerObjectSource serializer, Action<object> applyReplacedObject)
         {
             Object = target;
             this.serializer = serializer;
+            this.applyReplacedObject = applyReplacedObject;
         }
 
         #endregion
@@ -66,8 +67,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test
 
         public Task ReplaceTargetObjectAsync(ReadOnlySequence<byte> data, CancellationToken cancellationToken)
         {
-            IsReplaced = true;
             Object = serializer.CreateReplacementObject(Object, new MemoryStream(data.ToArray()));
+            applyReplacedObject.Invoke(Object);
             return Task.CompletedTask;
         }
 

@@ -67,7 +67,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test
         }
 
 #if NET472_OR_GREATER
-        internal static bool ShowExtensionVisualizer(IDebuggerVisualizerProvider provider, object targetObject, bool isReplaceable, out object? replacementObject)
+        internal static void ShowExtensionVisualizer(IDebuggerVisualizerProvider provider, object targetObject, bool isReplaceable, Action<object?> applyReplacedObject)
         {
             EnsureThreadHelperInitialized();
             Type targetType = targetObject.GetType();
@@ -76,7 +76,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test
                 ? new VisualizerObjectSource()
                 : (VisualizerObjectSource)Reflector.CreateInstance(Reflector.ResolveType(cfg.VisualizerObjectSourceType.Type)!);
 
-            var testVisualizerTarget = new TestVisualizerTarget(targetObject, serializer);
+            var testVisualizerTarget = new TestVisualizerTarget(targetObject, serializer, applyReplacedObject);
             Type visualizerTargetImplementationType = Reflector.ResolveType(typeof(VisualizerTarget).Assembly, "Microsoft.VisualStudio.Extensibility.DebuggerVisualizers.VisualizerTargetImplementation")!;
             var visualizerTarget = (VisualizerTarget)Reflector.CreateInstance(visualizerTargetImplementationType, testVisualizerTarget,
                 new VisualizerTargetData(targetType.FullName!, targetType.Module.Name, targetType.Assembly.GetName().Version) { IsTargetReplaceable = isReplaceable });
@@ -85,12 +85,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test
             if (visualizer is not ILocalControlWrapper localControlWrapper)
                 throw new InvalidOperationException("Only local control wrappers are supported by this test.");
 
+            Reflector.InvokeMethod(visualizerTarget, "RaiseStateChangedAsync", VisualizerTargetStateNotification.Available);
             var handle = GCHandle.FromIntPtr((IntPtr)localControlWrapper.GetGCHandleAsync(CancellationToken.None).Result);
-
             new Window { Title = cfg.Targets.FirstOrDefault(t => t.TargetType == targetType.AssemblyQualifiedName)?.VisualizerDisplayName, Content = handle.Target }.ShowDialog();
-
-            replacementObject = testVisualizerTarget.IsReplaced ? testVisualizerTarget.Object : null;
-            return testVisualizerTarget.IsReplaced;
         }
 #endif
 

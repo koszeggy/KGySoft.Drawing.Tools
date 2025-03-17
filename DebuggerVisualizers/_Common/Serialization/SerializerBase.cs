@@ -15,12 +15,24 @@
 
 #region Usings
 
+#if NET472_OR_GREATER
 using System.Buffers;
+#endif
 using System.IO;
 using System.Threading;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;
+#if NET472_OR_GREATER
 using Microsoft.VisualStudio.Extensibility.DebuggerVisualizers;
+#endif
+
+#endregion
+
+#region Suppressions
+
+#if !NET472_OR_GREATER
+#pragma warning disable CS1574 // the documentation contains types that are not available in every target
+#endif
 
 #endregion
 
