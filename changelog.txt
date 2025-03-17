@@ -47,7 +47,9 @@ API changes:
 
 + KGySoft.Drawing.DebuggerVisualizers.GdiPlus namespace:
 --------------------------------------------------------
-+ GdiPlusDebuggerHelper class: New GetDebuggerVisualizerProviders method (.NET Framework 4.7.2 only)
++ GdiPlusDebuggerHelper class:
+  + New GetDebuggerVisualizerProviders method (.NET Framework 4.7.2 only)
++ New ColorDebuggerVisualizerProviderImpl class (.NET Framework 4.7.2 only)
 
 + KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization namespace:
 ----------------------------------------------------------------------

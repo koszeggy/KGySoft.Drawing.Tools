@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net35;net40;net45;net462;net472;net6.0-windows</TargetFrameworks>
-    <!--<TargetFrameworks>net472</TargetFrameworks>-->
+    <!--<TargetFrameworks>net35;net40;net45;net462;net472;net6.0-windows</TargetFrameworks>-->
+    <TargetFrameworks>net472</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>KGySoft.Drawing.DebuggerVisualizers.GdiPlus</RootNamespace>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
@@ -13,7 +13,8 @@
     <PackageLicenseFile>..\..\..\LICENSE</PackageLicenseFile>
     <Authors>György Kőszeg</Authors>
     <Nullable>enable</Nullable>
-    <UseWPF>true</UseWPF>
+    <UseWPF Condition="'$(TargetFramework)'=='net472'">true</UseWPF>
+    <UseWindowsForms Condition="'$(TargetFramework)'=='net472'">true</UseWindowsForms>
   </PropertyGroup>
 
   <!-- Common NuGet references -->
@@ -26,10 +27,10 @@
 
   <!-- .NET Framework 4.7.2 only references (to support modern visualizer extensions) -->
   <ItemGroup Condition="'$(TargetFramework)'=='net472'">
-    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.6.36389"/>
+    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.6.36389" />
   </ItemGroup>
 
-<!-- .NET only references (note: doesn't really make sense but allows testing from KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test) -->
+  <!-- .NET only references (note: doesn't really make sense but allows testing from KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test) -->
   <ItemGroup Condition="'$(TargetFramework)'=='net6.0-windows'">
     <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers">
       <HintPath>..\..\_ref\Microsoft.VisualStudio.DebuggerVisualizers.dll</HintPath>

@@ -521,8 +521,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.ViewModel
 
             try
             {
-                if (DebuggerVisualizerHelper.ShowExtensionVisualizer(provider, testObject, !AsReadOnly, out object? replacementObject))
-                    TestObject = replacementObject;
+                DebuggerVisualizerHelper.ShowExtensionVisualizer(provider, testObject, !AsReadOnly, o => TestObject = o);
             }
             catch (Exception e) when (e is not StackOverflowException)
             {
