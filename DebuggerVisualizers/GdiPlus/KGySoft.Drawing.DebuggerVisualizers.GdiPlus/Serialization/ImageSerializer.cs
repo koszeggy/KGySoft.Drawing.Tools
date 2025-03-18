@@ -19,7 +19,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 
-using Microsoft.VisualStudio.DebuggerVisualizers;
+using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 
 #endregion
 
@@ -27,7 +27,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization
 {
     [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses",
         Justification = "False alarm, instantiated by VS debugger visualizers")]
-    internal class ImageSerializer : VisualizerObjectSource
+    internal class ImageSerializer : SerializerBase
     {
         #region Methods
 

@@ -2,7 +2,7 @@
 #region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: ColorDebuggerVisualizerProviderImpl.cs
+//  File: ImageDebuggerVisualizerProviderImpl.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
@@ -17,11 +17,13 @@
 #region Usings
 
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Threading;
 using System.Threading.Tasks;
 
 using KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization;
 using KGySoft.Drawing.DebuggerVisualizers.View;
+using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 using Microsoft.VisualStudio.Extensibility.DebuggerVisualizers;
@@ -34,28 +36,30 @@ using Microsoft.VisualStudio.Shell;
 namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus
 {
     /// <summary>
-    /// Provides the implementation of a debugger visualizer extension for the <see cref="Color"/> struct.
+    /// Provides the implementation of a debugger visualizer extension for the <see cref="Bitmap"/> class.
     /// </summary>
-    public class ColorDebuggerVisualizerProviderImpl : IDebuggerVisualizerProvider
+    public class ImageDebuggerVisualizerProviderImpl : IDebuggerVisualizerProvider
     {
         #region Properties
 
         /// <summary>
-        /// Gets the configuration of the color debugger visualizer provider.
+        /// Gets the configuration of the bitmap debugger visualizer provider.
         /// </summary>
-        public DebuggerVisualizerProviderConfiguration DebuggerVisualizerProviderConfiguration
-            => new("KGy SOFT Color Debugger Visualizer", typeof(Color))
-            {
-                Style = VisualizerStyle.ToolWindow,
-                VisualizerObjectSourceType = new VisualizerObjectSourceType(typeof(ColorSerializer))
-            };
+        public DebuggerVisualizerProviderConfiguration DebuggerVisualizerProviderConfiguration => new(
+            new VisualizerTargetType("KGy SOFT Image Debugger Visualizer", typeof(Image).AssemblyQualifiedName!),
+            new VisualizerTargetType("KGy SOFT Bitmap Debugger Visualizer", typeof(Bitmap)),
+            new VisualizerTargetType("KGy SOFT Metafile Debugger Visualizer", typeof(Metafile)))
+        {
+            Style = VisualizerStyle.ToolWindow,
+            VisualizerObjectSourceType = new VisualizerObjectSourceType(typeof(ImageSerializer))
+        };
 
         #endregion
 
         #region Methods
 
         /// <summary>
-        /// Gets the view of the color debugger visualizer.
+        /// Gets the view of the bitmap debugger visualizer.
         /// </summary>
         /// <param name="visualizerTarget">The <see cref="VisualizerTarget" /> that provides information about the target process and object.</param>
         /// <param name="cancellationToken">Cancellation token for the async call.</param>
@@ -63,10 +67,12 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus
         public async Task<IRemoteUserControl> CreateVisualizerAsync(VisualizerTarget visualizerTarget, CancellationToken cancellationToken)
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-            var result = new VisualizerExtensionWpfAdapter<Color>(visualizerTarget,
-                (c, vt) => ViewModelFactory.FromColor(c, !vt.IsTargetReplaceable),
-                SerializationHelper.DeserializeColor,
-                SerializationHelper.SerializeColor);
+            var result = new VisualizerExtensionWpfAdapter<ImageInfo>(visualizerTarget,
+                visualizerTarget.TargetTypeFullName == typeof(Bitmap).FullName ? (info, vt) => ViewModelFactory.FromBitmap(info, !vt.IsTargetReplaceable)
+                : visualizerTarget.TargetTypeFullName == typeof(Metafile).FullName ? (info, vt) => ViewModelFactory.FromMetafile(info, !vt.IsTargetReplaceable)
+                : (info, vt) => ViewModelFactory.FromImage(info, !vt.IsTargetReplaceable),
+                SerializationHelper.DeserializeImageInfo,
+                SerializationHelper.SerializeReplacementImageInfo);
             await result.InitializeAsync(true);
             return new WpfControlWrapper(result);
         }
