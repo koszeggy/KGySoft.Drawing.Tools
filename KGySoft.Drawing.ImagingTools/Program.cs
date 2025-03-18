@@ -57,7 +57,6 @@ namespace KGySoft.Drawing.ImagingTools
             //ViewModelFactory.FromCustomPalette()
             //ViewModelFactory.FromGraphics()
             //ViewModelFactory.FromIcon()
-            //ViewModelFactory.FromImage()
             //ViewModelFactory.FromMetafile()
             //ViewModelFactory.FromPalette()
 
@@ -65,16 +64,17 @@ namespace KGySoft.Drawing.ImagingTools
             //using IView view = ViewFactory.CreateView(viewModel);
             //Application.Run(ViewFactory.TryGetForm(view));
 
-            //using var bmp = new System.Drawing.Bitmap(100, 100);
+            using System.Drawing.Image img = new System.Drawing.Bitmap(100, 100);
+            ((System.Drawing.Bitmap)img).Clear(System.Drawing.Color.AliceBlue);
 
-            using (IViewModel viewModel = ViewModelFactory.FromColor(System.Drawing.Color.Red, false))
+            using (IViewModel viewModel = ViewModelFactory.FromImage(img, false))
             {
                 using IView view = ViewFactory.CreateView(viewModel);
                 Application.Run(ViewFactory.TryGetForm(view));
             }
 
             // WPF test
-            using (IViewModel viewModel = ViewModelFactory.FromColor(System.Drawing.Color.Red, false))
+            using (IViewModel viewModel = ViewModelFactory.FromImage(img, false))
             {
                 using IView view = ViewFactory.CreateView(viewModel);
                 System.Windows.Application app = new();

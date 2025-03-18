@@ -253,6 +253,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             return imageTypes == AllowedImageTypes.Icon ? imageInfo.AsIcon() : imageInfo.AsImage();
         }
 
+        public override bool TrySetModel(ImageInfo model)
+        {
+            ImageInfo = model;
+            return true;
+        }
+
         #endregion
 
         #region Internal Methods
@@ -1168,10 +1174,20 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         Bitmap? IViewModel<Bitmap?>.GetEditedModel() => Image?.Clone() as Bitmap;
         Metafile? IViewModel<Metafile?>.GetEditedModel() => Image?.Clone() as Metafile;
 
-        bool IViewModel<Image?>.TrySetModel(Image? model) => false;
-        bool IViewModel<Icon?>.TrySetModel(Icon? model) => false;
-        bool IViewModel<Bitmap?>.TrySetModel(Bitmap? model) => false;
-        bool IViewModel<Metafile?>.TrySetModel(Metafile? model) => false;
+        bool IViewModel<Image?>.TrySetModel(Image? model)
+        {
+            Image = model;
+            return true;
+        }
+
+        bool IViewModel<Icon?>.TrySetModel(Icon? model)
+        {
+            Icon = model;
+            return true;
+        }
+
+        bool IViewModel<Bitmap?>.TrySetModel(Bitmap? model) => ((IViewModel<Image?>)this).TrySetModel(model);
+        bool IViewModel<Metafile?>.TrySetModel(Metafile? model) => ((IViewModel<Image?>)this).TrySetModel(model);
 
         #endregion
 

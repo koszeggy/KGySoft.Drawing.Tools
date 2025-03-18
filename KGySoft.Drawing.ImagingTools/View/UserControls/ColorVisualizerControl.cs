@@ -162,8 +162,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // !VM.ReadOnly -> buttons.Visible
             CommandBindings.AddPropertyBinding(vm, nameof(vm.ReadOnly), nameof(buttons.Visible), ro => ro is false, buttons);
 
-            // VM.IsModified -> OKButton.Enabled/ApplyButton.Enabled
-            CommandBindings.AddPropertyBinding(vm, nameof(ViewModel.IsModified), nameof(Enabled), buttons.OKButton, buttons.ApplyButton);
+            // VM.IsModified -> OKButton.Enabled
+            CommandBindings.AddPropertyBinding(vm, nameof(ViewModel.IsModified), nameof(Enabled), buttons.OKButton);
         }
 
         private void InitParentViewPropertyBindings(MvvmParentForm parent)
@@ -173,7 +173,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 return;
 
             // VM.TitleCaption -> Text
-            CommandBindings.AddPropertyBinding(vm, nameof(ViewModel.TitleCaption), nameof(Text), parent);
+            CommandBindings.AddPropertyBinding(vm, nameof(vm.TitleCaption), nameof(Text), parent);
         }
 
         private void InitCommandBindings()
@@ -215,7 +215,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 .AddSource(buttons.CancelButton, nameof(buttons.CancelButton.Click));
 
             // ApplyButton.Click -> VM.ApplyChangesCommand
-            CommandBindings.Add(vm.ApplyChangesCommand)
+            CommandBindings.Add(vm.ApplyChangesCommand, vm.ApplyChangesCommandCommandState)
                 .AddSource(buttons.ApplyButton, nameof(buttons.ApplyButton.Click));
         }
 
@@ -267,6 +267,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
             alphaPattern = null;
             attrTiles = null;
+            parentProperties = null;
             if (pnlAlpha != null)
                 pnlAlpha.Paint -= pnlColor_Paint;
             pnlColor.Paint -= pnlColor_Paint;

@@ -95,6 +95,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
             // Cancelling here may be required if this control is not parented by an MvvmParentForm
             ViewModel.CancelIfRunning();
+            parentProperties = null;
             if (disposing)
                 components?.Dispose();
             base.Dispose(disposing);

@@ -1,9 +1,9 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: ImageVisualizerForm.cs
+//  File: ImageVisualizerControl.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -21,6 +21,7 @@ using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.Drawing.ImagingTools.View.Forms;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
@@ -34,13 +35,54 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
 
-namespace KGySoft.Drawing.ImagingTools.View.Forms
+namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    internal partial class ImageVisualizerForm : MvvmBaseForm
+    internal partial class ImageVisualizerControl : MvvmBaseUserControl
     {
+        #region Fields
+
+        private ParentViewProperties? parentProperties;
+
+        #endregion
+
         #region Properties
 
-        private new ImageVisualizerViewModel ViewModel => (ImageVisualizerViewModel)base.ViewModel;
+        #region Internal Properties
+
+        internal override ParentViewProperties ParentViewProperties => parentProperties ??= new ParentViewProperties
+        {
+            Name = "ImageVisualizerForm",
+            BorderStyle = FormBorderStyle.SizableToolWindow,
+            Icon = Properties.Resources.ImagingTools,
+            MinimumSize = new Size(200, 200),
+            AcceptButton = buttons.OKButton,
+            CancelButton = buttons.CancelButton,
+            ProcessKeyCallback = (parent, key) =>
+            {
+                if (key == Keys.Escape && ViewModel.ReadOnly)
+                {
+                    parent.DialogResult = DialogResult.Cancel;
+                    return true;
+                }
+
+                return false;
+            },
+            ClosingCallback = (sender, _) =>
+            {
+                if (((MvvmParentForm)sender).DialogResult == DialogResult.Cancel)
+                    ViewModel.SetModified(false);
+            }
+        };
+
+        internal override Action<MvvmParentForm> ParentViewPropertyBindingsInitializer => InitParentViewPropertyBindings;
+
+        #endregion
+
+        #region Private Properties
+
+        private new ImageVisualizerViewModel ViewModel => (ImageVisualizerViewModel)base.ViewModel!;
+
+        #endregion
 
         #endregion
 
@@ -48,19 +90,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Internal Constructors
 
-        internal ImageVisualizerForm(ImageVisualizerViewModel viewModel)
-            : base(viewModel)
+        internal ImageVisualizerControl(ImageVisualizerViewModel viewModel) : base(viewModel)
         {
             InitializeComponent();
-            AcceptButton = okCancelButtons.OKButton;
-            CancelButton = okCancelButtons.CancelButton;
         }
 
         #endregion
 
         #region Private Constructors
 
-        private ImageVisualizerForm() : this(null!)
+        private ImageVisualizerControl() : this(null!)
         {
             // this ctor is just for the designer
         }
@@ -70,7 +109,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         #endregion
 
         #region Methods
-        
+
         #region Static Methods
 
         private static Image GetCompoundViewIcon(ImageInfoType type)
@@ -104,7 +143,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         protected override void ApplyResources()
         {
             base.ApplyResources();
-            Icon = Properties.Resources.ImagingTools;
 
             btnAntiAlias.Image = Images.SmoothZoom;
             btnOpen.Image = Images.Open;
@@ -124,7 +162,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
             btnPrev.Image = Images.Prev;
             btnNext.Image = Images.Next;
-            
+
             miManageInstallations.Image = Images.Settings;
             miLanguageSettings.Image = Images.Language;
             btnConfiguration.SetDefaultItem(miManageInstallations);
@@ -145,7 +183,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             InitViewModelDependencies();
             InitPropertyBindings();
             InitCommandBindings();
-            base.ApplyViewModel();
+            base.ApplyViewModel(); //Apply is Enabled, OK is Disabled. Why?
             imageViewer.Focus();
         }
 
@@ -171,20 +209,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 case Keys.Shift | Keys.Left:
                     (RightToLeft == RightToLeft.Yes ? btnNext : btnPrev).PerformClick();
                     return true;
-                case Keys.Escape when ViewModel.ReadOnly: // if not ReadOnly, use the Cancel button if available
-                    DialogResult = DialogResult.Cancel;
-                    return true;
 
                 default:
                     return base.ProcessCmdKey(ref msg, keyData);
             }
-        }
-
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            if (DialogResult == DialogResult.Cancel)
-                ViewModel.SetModified(false);
-            base.OnFormClosing(e);
         }
 
         protected override void Dispose(bool disposing)
@@ -192,6 +220,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             if (disposing)
                 components?.Dispose();
 
+            parentProperties = null;
             base.Dispose(disposing);
         }
 
@@ -202,29 +231,25 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         private void InitViewModelDependencies()
         {
             ViewModel.GetScreenRectangleCallback = GetScreenRectangle;
-            ViewModel.GetViewSizeCallback = () => Size;
+            ViewModel.GetViewSizeCallback = () => ParentForm?.Size ?? Size;
             ViewModel.GetImagePreviewSizeCallback = () => imageViewer.ClientSize;
             ViewModel.SelectFileToOpenCallback = SelectFileToOpen;
             ViewModel.SelectFileToSaveCallback = SelectFileToSave;
             ViewModel.ApplyViewSizeCallback = ApplySize;
-            ViewModel.UpdatePreviewImageCallback = () => imageViewer.UpdateImage();
             ViewModel.GetCompoundViewIconCallback = GetCompoundViewIcon;
         }
 
         private void InitPropertyBindings()
         {
-            // not as binding because will not change and we don't need the buttons for main form
+            // not as binding because will not change, and we don't need the buttons for main form
             if (ViewModel.ReadOnly)
-                okCancelButtons.Visible = false;
+                buttons.Visible = false;
 
             // VM.Notification -> lblNotification.Text
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Notification), nameof(Label.Text), lblNotification);
 
             // VM.PreviewImage != null -> btnSave.Enabled
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.PreviewImage), nameof(Button.Enabled), img => img != null, btnSave);
-
-            // VM.TitleCaption -> Text
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.TitleCaption), nameof(Text), this);
 
             // VM.InfoText -> txtInfo.Text
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.InfoText), nameof(TextBox.Text), txtInfo);
@@ -262,7 +287,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SaveFileDefaultExtension), nameof(dlgSave.DefaultExt), dlgSave);
 
             // VM.IsModified -> OKButton.Enabled
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsModified), nameof(okCancelButtons.OKButton.Enabled), okCancelButtons.OKButton);
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsModified), nameof(Enabled), buttons.OKButton);
+
+            bool isInForm = ParentForm != null;
+            buttons.DefaultButtonsVisible = isInForm;
+            buttons.ApplyButtonVisible = !isInForm;
+        }
+
+        private void InitParentViewPropertyBindings(MvvmParentForm parent)
+        {
+            // VM.TitleCaption -> Text
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.TitleCaption), nameof(Text), parent);
         }
 
         private void InitCommandBindings()
@@ -358,6 +393,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 .AddSource(imageViewer, nameof(imageViewer.SizeChanged));
             CommandBindings.Add(() => miEasterEgg.Visible |= ModifierKeys == (Keys.Shift | Keys.Control))
                 .AddSource(miAbout, nameof(miAbout.MouseDown));
+
+            // ApplyButton.Click -> VM.ApplyChangesCommand
+            CommandBindings.Add(ViewModel.ApplyChangesCommand, ViewModel.ApplyChangesCommandCommandState)
+                .AddSource(buttons.ApplyButton, nameof(buttons.ApplyButton.Click));
         }
 
         private Rectangle GetScreenRectangle() => Screen.FromHandle(Handle).WorkingArea;
@@ -382,7 +421,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             int minHeight = new Size(16, 16).Scale(this.GetScale()).Height + SystemInformation.HorizontalScrollBarHeight;
             if (imageViewer.Height >= minHeight)
                 return;
-            int buttonsHeight = okCancelButtons.Visible ? okCancelButtons.Height : 0;
+            int buttonsHeight = buttons.Visible ? buttons.Height : 0;
             int notificationHeight = lblNotification.Visible ? lblNotification.Height : 0;
             txtInfo.Height = ClientSize.Height - Padding.Vertical - tsMenu.Height - splitter.Height - buttonsHeight - notificationHeight - minHeight;
             PerformLayout();
@@ -390,16 +429,20 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void ApplySize(Size size)
         {
-            Size = size;
+            Form? parent = ParentForm;
+            if (parent == null)
+                return;
+
+            parent.Size = size;
             Rectangle workingArea = GetScreenRectangle();
-            if (Top < workingArea.Top)
-                Top = workingArea.Top;
-            if (Left < workingArea.Left)
-                Left = workingArea.Left;
-            if (Bottom > workingArea.Bottom)
-                Top = workingArea.Bottom - Height;
-            if (Right > workingArea.Right)
-                Left = workingArea.Right - Width;
+            if (parent.Top < workingArea.Top)
+                parent.Top = workingArea.Top;
+            if (parent.Left < workingArea.Left)
+                parent.Left = workingArea.Left;
+            if (parent.Bottom > workingArea.Bottom)
+                parent.Top = workingArea.Bottom - Height;
+            if (parent.Right > workingArea.Right)
+                parent.Left = workingArea.Right - Width;
         }
 
         #endregion
