@@ -16,7 +16,7 @@ using System.Windows.Media.Imaging;
 using KGySoft.Drawing.DebuggerVisualizers.GdiPlus;
 
 using Microsoft;
-using Microsoft.VisualStudio.DebuggerVisualizers;
+//using Microsoft.VisualStudio.DebuggerVisualizers;
 //using System.Windows.Forms.Integration;
 
 
@@ -72,7 +72,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Extension
     //        )
     //    {
     //        Style = VisualizerStyle.ModalDialog, // TODO: ToolWindow
-    //        //VisualizerObjectSourceType = new VisualizerObjectSourceType(typeof(ImageSerializer))
+    //        VisualizerObjectSourceType = new VisualizerObjectSourceType(typeof(ImageSerializerMock))
     //    };
 
     //    public override async Task<IRemoteUserControl> CreateVisualizerAsync(VisualizerTarget visualizerTarget, CancellationToken cancellationToken)

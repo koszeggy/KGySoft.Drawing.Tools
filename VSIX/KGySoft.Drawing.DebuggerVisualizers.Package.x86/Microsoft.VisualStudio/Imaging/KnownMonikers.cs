@@ -1,5 +1,4 @@
-﻿#if !VS2022_OR_GREATER
-#region Usings
+﻿#region Usings
 
 using System;
 
@@ -7,6 +6,7 @@ using Microsoft.VisualStudio.Imaging.Interop;
 
 #endregion
 
+// ReSharper disable once CheckNamespace
 namespace Microsoft.VisualStudio.Imaging
 {
     /// <summary>
@@ -40,4 +40,3 @@ namespace Microsoft.VisualStudio.Imaging
         #endregion
     }
 }
-#endif

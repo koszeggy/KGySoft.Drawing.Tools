@@ -15,16 +15,10 @@
     <VssdkCompatibleExtension>true</VssdkCompatibleExtension>
   </PropertyGroup>
   
-  <!--For in-process hosting we don't exclude the vsixmanifest file-->
-  <!--<ItemGroup>
-    <None Remove="source.extension.vsixmanifest" />
-  </ItemGroup>-->
-
   <ItemGroup>
     <!--<PackageReference Include="Microsoft.VisualStudio.Extensibility" Version="17.9.2092" />-->
     <PackageReference Include="Microsoft.VisualStudio.Extensibility.Sdk" Version="17.9.2092" />
     <PackageReference Include="Microsoft.VisualStudio.Extensibility.Build" Version="17.9.2092" />
-
     
     <!--Requireqd for in-proc extensions. Contains the WpfControlWrapper and also makes possible to use JoinableTaskFactory.SwitchToMainThreadAsync-->
     <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.6.36389" ExcludeAssets="runtime" />
@@ -33,38 +27,18 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\DebuggerVisualizers\GdiPlus\KGySoft.Drawing.DebuggerVisualizers.GdiPlus\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.csproj" />
-    <!--<ProjectReference Include="..\StandardSerializerTest\StandardSerializerTest.csproj" />-->
   </ItemGroup>
 
   <!--Linking the references is always for out-of-process extensions. For in-process extensions it is required to debug .NET [Core] projects.-->
   <ItemGroup>
     <Content Include="..\..\DebuggerVisualizers\GdiPlus\KGySoft.Drawing.DebuggerVisualizers.GdiPlus\bin\$(Configuration)\net472\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll" Link="netstandard2.0\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="..\..\DebuggerVisualizers\_Common\bin\$(Configuration)\net462\KGySoft.Drawing.DebuggerVisualizers.dll" Link="netstandard2.0\KGySoft.Drawing.DebuggerVisualizers.dll" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\DebuggerVisualizers\_Common\bin\$(Configuration)\net472\KGySoft.Drawing.DebuggerVisualizers.dll" Link="netstandard2.0\KGySoft.Drawing.DebuggerVisualizers.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\KGySoft.Drawing.ImagingTools\bin\$(Configuration)\net462\KGySoft.Drawing.ImagingTools.exe" Link="netstandard2.0\KGySoft.Drawing.ImagingTools.exe" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\KGySoft.Drawing.ImagingTools\bin\$(Configuration)\net462\KGySoft.CoreLibraries.dll" Link="netstandard2.0\KGySoft.CoreLibraries.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\KGySoft.Drawing.ImagingTools\bin\$(Configuration)\net462\KGySoft.Drawing.dll" Link="netstandard2.0\KGySoft.Drawing.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\KGySoft.Drawing.ImagingTools\bin\$(Configuration)\net462\KGySoft.Drawing.Core.dll" Link="netstandard2.0\KGySoft.Drawing.Core.dll" CopyToOutputDirectory="PreserveNewest" />
 
-    <!--We must link every reference from a netstandard2.0/net4.6.2/netcoreapp folder.-->
-    <!--<Content Include="..\StandardSerializerTest\bin\$(Configuration)\netstandard2.0\StandardSerializerTest.dll" Link="netstandard2.0\StandardSerializerTest.dll" CopyToOutputDirectory="PreserveNewest" />-->
-    <!--<Content Include="..\StandardSerializerTest\bin\$(Configuration)\net6.0-windows\StandardSerializerTest.dll" Link="netcoreapp\StandardSerializerTest.dll" CopyToOutputDirectory="PreserveNewest" />-->
-
-    <!--<Content Include="..\..\DebuggerVisualizers\GdiPlus\KGySoft.Drawing.DebuggerVisualizers.GdiPlus\bin\$(Configuration)\net462\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll" Link="netstandard2.0\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll" CopyToOutputDirectory="PreserveNewest" />-->
-    <!--<Content Include="..\..\DebuggerVisualizers\GdiPlus\KGySoft.Drawing.DebuggerVisualizers.GdiPlus\bin\$(Configuration)\net472\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll" Link="netstandard2.0\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll" CopyToOutputDirectory="PreserveNewest" />-->
-
     <!--<Content Include="..\_SharedResources\ImageDebuggerVisualizers.ico" Link="Images\ImageDebuggerVisualizers.ico" CopyToOutputDirectory="PreserveNewest" />-->
   </ItemGroup>
-
-  <!--Does not work in SDK projects:-->
-  <!--<VSCTCompile Include="DebuggerVisualizersPackage.vsct">
-    <ResourceName>Menus.ctmenu</ResourceName>
-    <SubType>Designer</SubType>
-  </VSCTCompile>-->
-
-  <!--Embedding the XAML file as a resource is required for out-of-process extensions only.-->
-  <!--<ItemGroup>
-    <None Remove="_View\ImageVisualizerControl.xaml" />
-    <EmbeddedResource Include="_View\ImageVisualizerControl.xaml" LogicalName="$(RootNamespace).ImageVisualizerControl.xaml" />
-  </ItemGroup>-->
 
 </Project>

@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: Services.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -20,9 +20,6 @@ using System.ComponentModel.Design;
 
 using EnvDTE;
 
-#if VS2022_OR_GREATER
-using Microsoft.VisualStudio.Shell;
-#endif
 using Microsoft.VisualStudio.Shell.Interop;
 
 #endregion
@@ -37,7 +34,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         #region Properties
 
         internal static IServiceProvider ServiceProvider { get; set; } = default!;
-        internal static IAsyncServiceProvider? AsyncServiceProvider { get; set; }
         internal static IVsShell? ShellService { get; set; }
         internal static IMenuCommandService? MenuCommandService { get; set; }
         internal static IVsInfoBarUIFactory? InfoBarUIFactory { get; set; }

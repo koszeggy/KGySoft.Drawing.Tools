@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: DebuggerVisualizersPackage.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -22,9 +22,6 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-#if VS2022_OR_GREATER
-using System.Threading;
-#endif
 using System.Threading.Tasks;
 
 using EnvDTE;
@@ -32,11 +29,6 @@ using EnvDTE;
 using KGySoft.Drawing.ImagingTools;
 using KGySoft.Drawing.ImagingTools.Model;
 
-#if VS2022_OR_GREATER
-using Microsoft.VisualStudio;
-#endif
-using Microsoft.VisualStudio.Extensibility;
-using Microsoft.VisualStudio.Extensibility.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -62,19 +54,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
     [ProvideBindingPath]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [InstalledProductRegistration("#" + Ids.ResourceTitle, "#" + Ids.ResourceDetails, Ids.Version, IconResourceID = Ids.IconResourceId)]
-#if VS2022_OR_GREATER
-    [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
-    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionOpening_string, PackageAutoLoadFlags.BackgroundLoad)]
-#else
     [PackageRegistrationAsync]
     [ProvideAutoLoadAsync]
-#endif
-    public sealed class DebuggerVisualizersPackage :
-#if VS2022_OR_GREATER
-        AsyncPackage
-#else
-        Microsoft.VisualStudio.Shell.Package, IAsyncLoadablePackageInitialize // VS2023-2019
-#endif
+    public sealed class DebuggerVisualizersPackage : Microsoft.VisualStudio.Shell.Package, IAsyncLoadablePackageInitialize
     {
         #region Fields
 
@@ -86,7 +68,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
         #region Public Methods
 
-#if !VS2022_OR_GREATER
         /// <summary>
         /// The async initialization in VS2015-2019
         /// </summary>
@@ -104,13 +85,11 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
                 return null;
             }).AsVsTask();
         }
-#endif
 
         #endregion
 
         #region Protected Methods
 
-#if !VS2022_OR_GREATER
         /// <summary>
         /// The legacy initialization for VS2013. For versions 2015-2019 the implicit IAsyncLoadablePackageInitialize implementation is used.
         /// </summary>
@@ -131,55 +110,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
             DoInitialize();
         }
-#else
-        /// <summary>
-        /// Initialization in VS2022 and above.
-        /// </summary>
-        protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
-        {
-            Services.ServiceProvider = this;
-            Services.AsyncServiceProvider = this;
-            Services.ShellService = await GetServiceAsync(typeof(SVsShell)) as IVsShell;
-            Services.MenuCommandService = await GetServiceAsync(typeof(IMenuCommandService)) as IMenuCommandService;
-            Services.InfoBarUIFactory = await GetServiceAsync(typeof(SVsInfoBarUIFactory)) as IVsInfoBarUIFactory;
-            Services.DTE = await GetServiceAsync(typeof(DTE)) as DTE;
-            //var extensionsService = await GetServiceAsync(typeof(VisualStudioExtensibility)) as VisualStudioExtensibility;
-
-            //DoInitialize();
-
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-            Notifications.Info("Hello from Package");
-
-            // Microsoft.VisualStudio.Shell.ServiceUnavailableException: 'The VisualStudioExtensibility service is unavailable.'
-            //VisualStudioExtensibility extensibility = await this.GetServiceAsync<VisualStudioExtensibility, VisualStudioExtensibility>();
-            //await extensibility.Shell().ShowPromptAsync("Hello from in-proc", PromptOptions.OK, cancellationToken);
-
-            // v17.9: GetServiceAsync<,> throws Microsoft.VisualStudio.Shell.ServiceUnavailableException: 'The VisualStudioExtensibility service is unavailable.'
-            //        GetServiceAsync(typeof(VisualStudioExtensibility)) just returns null. When Just My Code is enabled, only a TaskCanceledException is thrown.
-            // v17.11: When Just My Code is enabled, there is a TaskCanceledException, followed by an ObjectDisposedException. Object name: 'Nerdbank.Streams.MultiplexingStream+Channel'
-            // v17.12: When Just My Code is enabled, there is a TaskCanceledException, followed by a System.Net.WebException: 'The request was aborted: The request cache-only policy does not allow a network request and the response is not found in cache.'
-            //         Still, this is the only version where the result is not null. My extension is still not loaded, though.
-            // v17.13: ActivityLog: SetSite failed for package [DebuggerVisualizersPackage](null) (this line is never reached, Dispose is called immediately)
-            //if (extensionsService != null)
-            //{
-            //    // Only in v17.12, this line is reached. Though it also throws an exception: Microsoft.ServiceHub.Framework.ServiceActivationFailedException: 'Activating the "Microsoft.VisualStudio.Shell.UserPromptService (1.0)" service failed.' Inner Exception: InternalErrorException: Cannot find an instance of the System.String service.
-            //    //await extensionsService.Shell().ShowPromptAsync("Hello from Extension", PromptOptions.OK, cancellationToken);
-
-            //    // Even though extensibility is available in v17.12, my extension is not loaded (ImageDebuggerVisualizerProvider.InitializeAsync is never reached).
-            //    // Attempting to load it manually also does not work:
-            //    // - Couldn't find any API in VisualStudioExtensibility to create an extension instance.
-            //    // - Instantiating it manually throws an exception: Microsoft.Assumes.InternalErrorException: 'Cannot find an instance of the System.IServiceProvider service.'
-            //    try
-            //    {
-            //        var _ = new ImageDebuggerVisualizerProvider();
-            //    }
-            //    catch (Exception e)
-            //    {
-            //        Notifications.Error($"Failed to load {nameof(ImageDebuggerVisualizerProvider)}: {e.Message}");
-            //    }
-            //}
-        }
-#endif
 
         protected override void Dispose(bool disposing)
         {
@@ -194,7 +124,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
         #region Private Methods
 
-#if !VS2022_OR_GREATER
         private async Task<T?> GetServiceAsync<T>(IAsyncServiceProvider asyncServiceProvider, Type serviceType) where T : class
         {
             T? result = null;
@@ -208,7 +137,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
             return result;
         }
-#endif
 
         private void DoInitialize()
         {

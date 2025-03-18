@@ -1,11 +1,10 @@
-﻿#if !VS2022_OR_GREATER
-
-#region Usings
+﻿#region Usings
 
 using System;
 
 #endregion
 
+// ReSharper disable once CheckNamespace
 namespace Microsoft.VisualStudio.Shell
 {
     /// <summary>
@@ -14,12 +13,19 @@ namespace Microsoft.VisualStudio.Shell
     /// </summary>
     internal class InfoBarButton : InfoBarActionItem
     {
+        #region Constructors
+
         internal InfoBarButton(string text, Action actionContext)
             : base(text, actionContext)
         {
         }
 
+        #endregion
+
+        #region Properties
+        
         public override bool IsButton => true;
+
+        #endregion
     }
 } 
-#endif

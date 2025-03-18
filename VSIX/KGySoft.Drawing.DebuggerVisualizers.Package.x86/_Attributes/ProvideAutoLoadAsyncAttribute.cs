@@ -1,10 +1,9 @@
-﻿#if !VS2022_OR_GREATER
-#region Copyright
+﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ProvideAutoLoadAsyncAttribute.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -22,8 +21,6 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 
 #endregion
-
-#nullable enable
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
@@ -59,4 +56,3 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         #endregion
     }
 }
-#endif

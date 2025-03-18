@@ -1,10 +1,10 @@
-﻿#if !VS2022_OR_GREATER
-#region Usings
+﻿#region Usings
 
 using Microsoft.VisualStudio.Shell.Interop;
 
 #endregion
 
+// ReSharper disable once CheckNamespace
 namespace Microsoft.VisualStudio.Shell
 {
     /// <summary>
@@ -29,5 +29,3 @@ namespace Microsoft.VisualStudio.Shell
         #endregion
     }
 }
-
-#endif
