@@ -45,10 +45,10 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus
         /// </summary>
         public DebuggerVisualizerProviderConfiguration DebuggerVisualizerProviderConfiguration
             => new("KGy SOFT Color Debugger Visualizer", typeof(Color))
-            {
-                Style = VisualizerStyle.ToolWindow,
-                VisualizerObjectSourceType = new VisualizerObjectSourceType(typeof(ColorSerializer))
-            };
+        {
+            Style = VisualizerStyle.ToolWindow,
+            VisualizerObjectSourceType = new VisualizerObjectSourceType(typeof(ColorSerializer))
+        };
 
         #endregion
 
