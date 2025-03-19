@@ -15,7 +15,6 @@
 
 #region Usings
 
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 
@@ -28,8 +27,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization
     /// <summary>
     /// Provides serialization for the <see cref="Color"/> type.
     /// </summary>
-    [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses",
-        Justification = "False alarm, instantiated by VS debugger visualizers")]
     public sealed class ColorSerializer : SerializerBase
     {
         #region Methods
