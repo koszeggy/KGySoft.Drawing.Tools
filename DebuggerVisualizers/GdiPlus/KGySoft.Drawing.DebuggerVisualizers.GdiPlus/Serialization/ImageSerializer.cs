@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ImageSerializer.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -25,9 +25,12 @@ using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 
 namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization
 {
+    /// <summary>
+    /// Provides serialization for the <see cref="Image"/> type.
+    /// </summary>
     [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses",
         Justification = "False alarm, instantiated by VS debugger visualizers")]
-    internal class ImageSerializer : SerializerBase
+    public class ImageSerializer : SerializerBase
     {
         #region Methods
 
