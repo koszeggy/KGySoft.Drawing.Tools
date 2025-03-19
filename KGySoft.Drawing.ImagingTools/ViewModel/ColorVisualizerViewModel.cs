@@ -116,6 +116,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Public Methods
 
         public override Color GetEditedModel() => Color;
+        public override bool TrySetModel(Color model) => TryInvokeSync(() => Color = model);
 
         #endregion
 

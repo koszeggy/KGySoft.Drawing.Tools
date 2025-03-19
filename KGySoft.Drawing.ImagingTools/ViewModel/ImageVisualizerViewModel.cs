@@ -253,11 +253,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             return imageTypes == AllowedImageTypes.Icon ? imageInfo.AsIcon() : imageInfo.AsImage();
         }
 
-        public override bool TrySetModel(ImageInfo model)
-        {
-            ImageInfo = model;
-            return true;
-        }
+        public override bool TrySetModel(ImageInfo model) => TryInvokeSync(() => ImageInfo = model);
 
         #endregion
 
@@ -1173,19 +1169,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         Icon? IViewModel<Icon?>.GetEditedModel() => Icon?.Clone() as Icon;
         Bitmap? IViewModel<Bitmap?>.GetEditedModel() => Image?.Clone() as Bitmap;
         Metafile? IViewModel<Metafile?>.GetEditedModel() => Image?.Clone() as Metafile;
-
-        bool IViewModel<Image?>.TrySetModel(Image? model)
-        {
-            Image = model;
-            return true;
-        }
-
-        bool IViewModel<Icon?>.TrySetModel(Icon? model)
-        {
-            Icon = model;
-            return true;
-        }
-
+        bool IViewModel<Image?>.TrySetModel(Image? model) => TryInvokeSync(() => Image = model);
+        bool IViewModel<Icon?>.TrySetModel(Icon? model) => TryInvokeSync(() => Icon = model);
         bool IViewModel<Bitmap?>.TrySetModel(Bitmap? model) => ((IViewModel<Image?>)this).TrySetModel(model);
         bool IViewModel<Metafile?>.TrySetModel(Metafile? model) => ((IViewModel<Image?>)this).TrySetModel(model);
 
