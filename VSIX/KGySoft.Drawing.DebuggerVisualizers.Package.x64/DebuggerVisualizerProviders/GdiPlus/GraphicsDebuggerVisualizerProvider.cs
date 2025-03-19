@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: ImageDebuggerVisualizerProvider.cs
+//  File: GraphicsDebuggerVisualizerProvider.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
@@ -16,7 +16,6 @@
 #region Usings
 
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -31,11 +30,11 @@ using Microsoft.VisualStudio.RpcContracts.RemoteUI;
 namespace KGySoft.Drawing.DebuggerVisualizers.Package.DebuggerVisualizerProviders.GdiPlus
 {
     [VisualStudioContribution]
-    internal class ImageDebuggerVisualizerProvider : DebuggerVisualizerProvider
+    internal class GraphicsDebuggerVisualizerProvider : DebuggerVisualizerProvider
     {
         #region Fields
 
-        private readonly DebuggerVisualizers.GdiPlus.ImageDebuggerVisualizerProviderImpl providerImpl = new();
+        private readonly DebuggerVisualizers.GdiPlus.GraphicsDebuggerVisualizerProviderImpl providerImpl = new();
 
         #endregion
 
@@ -43,12 +42,10 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package.DebuggerVisualizerProvider
 
         public override DebuggerVisualizerProviderConfiguration DebuggerVisualizerProviderConfiguration
             // => providerImpl.DebuggerVisualizerProviderConfiguration; // ISSUE: CEE0005 - Could not evaluate compile-time constant
-            => new(new VisualizerTargetType("%DebuggerVisualizerProviders.GdiPlus.BitmapDebuggerVisualizerProvider.Name%", typeof(Bitmap)),
-                new VisualizerTargetType("%DebuggerVisualizerProviders.GdiPlus.MetafileDebuggerVisualizerProvider.Name%", typeof(Metafile)),
-                new VisualizerTargetType("%DebuggerVisualizerProviders.GdiPlus.ImageDebuggerVisualizerProvider.Name%", typeof(Image).AssemblyQualifiedName!))
+            => new("%DebuggerVisualizerProviders.GdiPlus.GraphicsDebuggerVisualizerProvider.Name%", typeof(Graphics))
             {
                 Style = VisualizerStyle.ToolWindow,
-                VisualizerObjectSourceType = new VisualizerObjectSourceType(typeof(ImageSerializer))
+                VisualizerObjectSourceType = new VisualizerObjectSourceType(typeof(GraphicsSerializer))
             };
 
         #endregion
