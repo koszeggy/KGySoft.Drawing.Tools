@@ -28,11 +28,11 @@ using KGySoft.Drawing.ImagingTools.Model;
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal class GraphicsVisualizerViewModel : ImageVisualizerViewModel
+    internal class GraphicsVisualizerViewModel : ImageVisualizerViewModel, IViewModel<GraphicsInfo?>
     {
         #region Properties
 
-        internal GraphicsInfo? GraphicsInfo { get => Get<GraphicsInfo?>(); init => Set(value); }
+        internal GraphicsInfo? GraphicsInfo { get => Get<GraphicsInfo?>(); set => Set(value); }
         internal bool Crop { get => Get<bool>(); set => Set(value); }
         internal bool HighlightVisibleClip { get => Get(true); set => Set(value); }
         internal Action<Graphics, Rectangle>? DrawFocusRectangleCallback { get => Get<Action<Graphics, Rectangle>?>(); set => Set(value); }
@@ -61,8 +61,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
         {
             base.OnPropertyChanged(e);
-            if (e.PropertyName.In(nameof(GraphicsInfo), nameof(GraphicsInfo)))
+            if (e.PropertyName == nameof(GraphicsInfo))
+            {
+                (e.OldValue as GraphicsInfo)?.Dispose(); // disposing the previous GraphicsInfo replaced by TrySetModel
                 UpdateImageAndCommands();
+            }
         }
 
         protected override void UpdateInfo()
@@ -177,6 +180,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             Image = (Image)backingImage.Clone();
         }
+
+        #endregion
+
+        #region Explicitly Implemented Interface Methods
+
+        GraphicsInfo? IViewModel<GraphicsInfo?>.GetEditedModel() => null; // not editable
+        bool IViewModel<GraphicsInfo?>.TrySetModel(GraphicsInfo? model) => TryInvokeSync(() => GraphicsInfo = model);
 
         #endregion
 

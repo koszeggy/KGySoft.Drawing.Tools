@@ -1,6 +1,6 @@
-﻿namespace KGySoft.Drawing.ImagingTools.View.Forms
+﻿namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    partial class GraphicsVisualizerForm
+    partial class GraphicsVisualizerControl
     {
         /// <summary>
         /// Required designer variable.
@@ -17,12 +17,10 @@
         {
             this.SuspendLayout();
             // 
-            // GraphicsDebuggerVisualizerForm
+            // GraphicsDebuggerVisualizerControl
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.ClientSize = new System.Drawing.Size(334, 316);
-            this.Location = new System.Drawing.Point(0, 0);
-            this.Name = "GraphicsVisualizerForm";
+            this.Size = new System.Drawing.Size(334, 316);
+            this.Name = "GraphicsDebuggerVisualizerControl";
             this.ResumeLayout(false);
             this.PerformLayout();
 

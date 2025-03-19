@@ -19,6 +19,12 @@ API changes:
   ! New ChangesApplied event and TrySetModel method. Breaking change only if you implemented this interface,
     which is normally not needed.
 
+* KGySoft.Drawing.ImagingTools.View namespace:
+----------------------------------------------
+* ViewFactory class:
+  * The return type of the FromGraphics(GraphicsInfo) method has been changed to IViewModel<GraphicsInfo> from
+    IViewModel. This is a compatible change because IVIewModel<TModel> is a more specific type than IViewModel.
+
 + KGySoft.Drawing.DebuggerVisualizers.dll
 =========================================
 

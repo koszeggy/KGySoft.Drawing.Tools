@@ -1,9 +1,9 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: GraphicsVisualizerForm.cs
+//  File: GraphicsVisualizerControl.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -22,9 +22,9 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
 
-namespace KGySoft.Drawing.ImagingTools.View.Forms
+namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    internal partial class GraphicsVisualizerForm : ImageVisualizerForm
+    internal partial class GraphicsVisualizerControl : ImageVisualizerControl
     {
         #region Fields
 
@@ -35,7 +35,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Properties
 
-        private new GraphicsVisualizerViewModel ViewModel => (GraphicsVisualizerViewModel)base.ViewModel;
+        private new GraphicsVisualizerViewModel ViewModel => (GraphicsVisualizerViewModel)base.ViewModel!;
 
         #endregion
 
@@ -43,8 +43,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Internal Constructors
 
-        internal GraphicsVisualizerForm(GraphicsVisualizerViewModel viewModel)
-            : base(viewModel)
+        internal GraphicsVisualizerControl(GraphicsVisualizerViewModel viewModel) : base(viewModel)
         {
             InitializeComponent();
 
@@ -70,7 +69,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Constructors
 
-        private GraphicsVisualizerForm() : this(null!)
+        private GraphicsVisualizerControl() : this(null!)
         {
             // this ctor is just for the designer
         }

@@ -220,7 +220,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// </summary>
         /// <param name="graphicsInfo">The debug information for a <see cref="Graphics"/>.</param>
         /// <returns>An <see cref="IViewModel"/> instance that represents a view model for a <see cref="Graphics"/>.</returns>
-        public static IViewModel FromGraphics(GraphicsInfo? graphicsInfo) => new GraphicsVisualizerViewModel { GraphicsInfo = graphicsInfo };
+        public static IViewModel<GraphicsInfo?> FromGraphics(GraphicsInfo? graphicsInfo) => new GraphicsVisualizerViewModel { GraphicsInfo = graphicsInfo };
 
         /// <summary>
         /// Creates a view model for counting colors of a <see cref="Bitmap"/>.
