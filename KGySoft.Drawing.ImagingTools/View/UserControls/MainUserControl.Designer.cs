@@ -1,6 +1,6 @@
 ﻿namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    partial class GraphicsVisualizerControl
+    partial class MainUserControl
     {
         /// <summary>
         /// Required designer variable.
@@ -17,13 +17,12 @@
         {
             this.SuspendLayout();
             // 
-            // GraphicsVisualizerControl
+            // AppMainControl
             // 
-            this.Size = new System.Drawing.Size(334, 316);
-            this.Name = "GraphicsVisualizerControl";
+            this.Size = new System.Drawing.Size(484, 311);
+            this.Name = "MainUserControl";
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
 
         #endregion

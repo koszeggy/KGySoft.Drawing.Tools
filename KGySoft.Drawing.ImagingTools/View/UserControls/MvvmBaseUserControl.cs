@@ -65,7 +65,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         internal CommandBindingsCollection CommandBindings { get; } = new WinFormsCommandBindingsCollection();
         internal virtual ParentViewProperties? ParentViewProperties => null;
         internal virtual Action<MvvmParentForm>? ParentViewPropertyBindingsInitializer => null;
-        //internal virtual Action<MvvmParentForm>? ParentViewCommandBindingsInitializer => null; // TODO: remove if not needed
+        internal virtual Action<MvvmParentForm>? ParentViewCommandBindingsInitializer => null;
 
         #endregion
 

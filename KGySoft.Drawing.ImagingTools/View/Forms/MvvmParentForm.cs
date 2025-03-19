@@ -26,7 +26,7 @@ using KGySoft.Drawing.ImagingTools.View.UserControls;
 
 namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
-    internal sealed class MvvmParentForm : BaseForm
+    internal class MvvmParentForm : BaseForm
     {
         #region Fields
 
@@ -41,7 +41,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Properties
 
+        #region Internal Properties
+        
         internal bool IsRtlChanging { get; private set; }
+
+        #endregion
+
+        #region Protected Properties
+
+        protected MvvmBaseUserControl MvvmChild => mvvmChild;
+
+        #endregion
 
         #endregion
 
@@ -120,6 +130,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
+        protected virtual void ApplyStringResources() => this.ApplyStringResources(null);
+
+        protected virtual void ApplyBindings()
+        {
+            InitPropertyBindings();
+            InitCommandBindings();
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (IsDisposed)
@@ -142,7 +160,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             mvvmChild.Dock = DockStyle.Fill;
             Controls.Add(mvvmChild);
             ParentViewProperties properties = mvvmChild.ParentViewProperties ?? throw new InvalidOperationException(Res.InternalError($"{mvvmChild.Name} should override ParentViewProperties"));
-            Name = properties.Name;
+            string childName = mvvmChild.Name;
+            Name = childName.EndsWith("Control", StringComparison.Ordinal) ? $"{childName.Substring(0, childName.Length - 7)}Form" : childName;
             FormBorderStyle = properties.BorderStyle;
             Icon = properties.Icon;
             AcceptButton = properties.AcceptButton;
@@ -152,8 +171,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 MinimizeBox = MaximizeBox = false;
             if (!properties.MinimumSize.IsEmpty)
                 MinimumSize = properties.MinimumSize;
-            //if (!properties.MaximumSize.IsEmpty) // TODO: remove if not needed
-            //    MaximumSize = properties.MaximumSize;
+            if (!properties.MaximumSize.IsEmpty)
+                MaximumSize = properties.MaximumSize;
             if (properties.ClosingCallback is FormClosingEventHandler handler)
                 FormClosing += handler; // removed in base.Dispose
             ClientSize = clientSize;
@@ -161,14 +180,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
             // removed in BaseUserControl.Dispose
             mvvmChild.ViewModelChanged += (_, _) => ApplyBindings();
-        }
-
-        private void ApplyStringResources() => this.ApplyStringResources(null);
-
-        private void ApplyBindings()
-        {
-            InitPropertyBindings();
-            InitCommandBindings();
         }
 
         private void InitPropertyBindings()
@@ -181,8 +192,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             mvvmChild.CommandBindings.Add(OnDisplayLanguageChangedCommand)
                 .AddSource(typeof(Res), nameof(Res.DisplayLanguageChanged));
 
-            // TODO: remove if not needed
-            //mvvmChild.ParentViewCommandBindingsInitializer?.Invoke(this);
+            mvvmChild.ParentViewCommandBindingsInitializer?.Invoke(this);
         }
 
         private void ApplyRightToLeft()

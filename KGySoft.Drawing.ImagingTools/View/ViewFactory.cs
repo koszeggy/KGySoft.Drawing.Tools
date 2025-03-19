@@ -47,7 +47,7 @@ namespace KGySoft.Drawing.ImagingTools.View
 
             return viewModel switch
             {
-                DefaultViewModel defaultViewModel => new AppMainForm(defaultViewModel),
+                DefaultViewModel defaultViewModel => new MainUserControl(defaultViewModel),
                 GraphicsVisualizerViewModel graphicsVisualizerViewModel => new GraphicsVisualizerControl(graphicsVisualizerViewModel),
                 ImageVisualizerViewModel imageVisualizerViewModel => new ImageVisualizerControl(imageVisualizerViewModel), // also for BitmapData and CustomBitmap
                 PaletteVisualizerViewModel paletteVisualizerViewModel => new PaletteVisualizerForm(paletteVisualizerViewModel), // also for custom palette
@@ -105,8 +105,9 @@ namespace KGySoft.Drawing.ImagingTools.View
             if (mvvmControl.ParentForm is MvvmParentForm parent)
                 return parent;
 
-            // Custom parent: not creating a parent form
-            return mvvmControl.Parent != null ? null : new MvvmParentForm(mvvmControl);
+            return mvvmControl.Parent != null ? null // Custom parent: not creating a parent form
+                : mvvmControl is MainUserControl mainUserControl ? new AppMainForm(mainUserControl)
+                : new MvvmParentForm(mvvmControl);
         }
 
         #endregion

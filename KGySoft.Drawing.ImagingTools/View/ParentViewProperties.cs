@@ -29,13 +29,12 @@ namespace KGySoft.Drawing.ImagingTools.View
     {
         #region Properties
 
-        internal string? Name { get; set; }
         internal FormBorderStyle BorderStyle { get; set; } = FormBorderStyle.Sizable;
         internal Icon? Icon { get; set; }
         internal IButtonControl? AcceptButton { get; set; }
         internal IButtonControl? CancelButton { get; set; }
         internal Size MinimumSize { get; set; }
-        //internal Size MaximumSize { get; set; } // TODO: remove if not needed
+        internal Size MaximumSize { get; set; }
         internal FormClosingEventHandler? ClosingCallback { get; set; }
         internal Func<MvvmParentForm, Keys, bool>? ProcessKeyCallback { get; set; }
 

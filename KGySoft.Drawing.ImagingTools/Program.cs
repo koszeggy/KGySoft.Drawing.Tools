@@ -42,7 +42,6 @@ namespace KGySoft.Drawing.ImagingTools
             //ViewModelFactory.CreateAdjustColorSpace()
             //ViewModelFactory.CreateAdjustContrast()
             //ViewModelFactory.CreateAdjustGamma()
-            //ViewModelFactory.CreateDefault()
             //ViewModelFactory.CreateDownloadResources()
             //ViewModelFactory.CreateEditResources()
             //ViewModelFactory.CreateLanguageSettings()
@@ -50,7 +49,6 @@ namespace KGySoft.Drawing.ImagingTools
             //ViewModelFactory.CreateResizeBitmap()
             //ViewModelFactory.CreateAdjustColorSpace();
             //ViewModelFactory.FromBitmapData()
-            //ViewModelFactory.FromCommandLineArguments()
             //ViewModelFactory.FromCustomBitmap()
             //ViewModelFactory.FromCustomColor()
             //ViewModelFactory.FromCustomPalette()
@@ -60,18 +58,18 @@ namespace KGySoft.Drawing.ImagingTools
             //using IView view = ViewFactory.CreateView(viewModel);
             //Application.Run(ViewFactory.TryGetForm(view));
 
-            using var bmp = new System.Drawing.Bitmap(100, 100);
-            ((System.Drawing.Bitmap)bmp).Clear(System.Drawing.Color.AliceBlue);
-            using var g = System.Drawing.Graphics.FromImage(bmp);
+            //using var bmp = new System.Drawing.Bitmap(100, 100);
+            //((System.Drawing.Bitmap)bmp).Clear(System.Drawing.Color.AliceBlue);
+            //using var g = System.Drawing.Graphics.FromImage(bmp);
 
-            using (IViewModel viewModel = ViewModelFactory.FromGraphics(g))
+            using (IViewModel viewModel = ViewModelFactory.CreateDefault())
             {
                 using IView view = ViewFactory.CreateView(viewModel);
                 Application.Run(ViewFactory.TryGetForm(view));
             }
 
             // WPF test
-            using (IViewModel viewModel = ViewModelFactory.FromGraphics(g))
+            using (IViewModel viewModel = ViewModelFactory.CreateDefault())
             {
                 using IView view = ViewFactory.CreateView(viewModel);
                 System.Windows.Application app = new();

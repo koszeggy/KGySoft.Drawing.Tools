@@ -54,7 +54,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         internal override ParentViewProperties ParentViewProperties => parentProperties ??= new ParentViewProperties
         {
-            Name = "ColorVisualizerForm",
             BorderStyle = FormBorderStyle.SizableToolWindow,
             MinimumSize = new Size(260, 234),
             Icon = Properties.Resources.Palette,

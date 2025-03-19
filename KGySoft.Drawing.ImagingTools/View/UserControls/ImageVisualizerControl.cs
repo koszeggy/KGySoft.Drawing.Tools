@@ -51,7 +51,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         internal override ParentViewProperties ParentViewProperties => parentProperties ??= new ParentViewProperties
         {
-            Name = "ImageVisualizerForm",
             BorderStyle = FormBorderStyle.SizableToolWindow,
             Icon = Properties.Resources.ImagingTools,
             MinimumSize = new Size(200, 200),
@@ -297,7 +296,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         private void InitParentViewPropertyBindings(MvvmParentForm parent)
         {
             // VM.TitleCaption -> Text
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.TitleCaption), nameof(Text), parent);
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.TitleCaption), nameof(parent.Text), parent);
         }
 
         private void InitCommandBindings()

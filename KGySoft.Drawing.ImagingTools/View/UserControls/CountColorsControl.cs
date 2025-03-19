@@ -37,7 +37,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         internal override ParentViewProperties ParentViewProperties => parentProperties ??= new ParentViewProperties
         {
-            Name = "CountColorsForm",
             BorderStyle = FormBorderStyle.FixedDialog,
             Icon = Properties.Resources.Palette,
             AcceptButton = btnClose,
