@@ -1,6 +1,6 @@
-﻿namespace KGySoft.Drawing.ImagingTools.View.Forms
+﻿namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    partial class TransformBitmapFormBase
+    partial class TransformBitmapControlBase
     {
         /// <summary>
         /// Required designer variable.
@@ -56,21 +56,16 @@
             this.pnlSettings.Size = new System.Drawing.Size(242, 56);
             this.pnlSettings.TabIndex = 0;
             // 
-            // TransformBitmapFormBase
+            // TransformBitmapControlBase
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(248, 211);
+            this.Size = new System.Drawing.Size(248, 211);
             this.Controls.Add(this.previewImage);
             this.Controls.Add(this.pnlSettings);
             this.Controls.Add(this.okCancelButtons);
             this.Controls.Add(this.progress);
-            this.MinimizeBox = false;
-            this.Name = "TransformBitmapFormBase";
+            this.Name = "TransformBitmapControlBase";
             this.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
-            this.Text = "TransformBitmapFormBase";
             this.ResumeLayout(false);
-
         }
 
         #endregion

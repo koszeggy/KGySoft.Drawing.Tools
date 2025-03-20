@@ -1,6 +1,6 @@
-﻿namespace KGySoft.Drawing.ImagingTools.View.Forms
+﻿namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    partial class ResizeBitmapForm
+    internal partial class ResizeBitmapControl
     {
         /// <summary>
         /// Required designer variable.
@@ -285,13 +285,8 @@
             // 
             // ResizeBitmapForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(334, 291);
-            this.Location = new System.Drawing.Point(0, 0);
-            this.MinimumSize = new System.Drawing.Size(350, 330);
-            this.Name = "ResizeBitmapForm";
-            this.Text = "ResizeBitmapForm";
+            this.Size = new System.Drawing.Size(334, 291);
+            this.Name = "ResizeBitmapControl";
             this.pnlSettings.ResumeLayout(false);
             this.tblNewSize.ResumeLayout(false);
             this.tblNewSize.PerformLayout();

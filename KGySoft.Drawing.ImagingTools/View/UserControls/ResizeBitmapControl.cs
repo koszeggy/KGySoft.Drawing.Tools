@@ -1,9 +1,9 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: ResizeBitmapForm.cs
+//  File: ResizeBitmapControl.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -24,13 +24,13 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
 
-namespace KGySoft.Drawing.ImagingTools.View.Forms
+namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    internal partial class ResizeBitmapForm : TransformBitmapFormBase
+    internal partial class ResizeBitmapControl : TransformBitmapControlBase
     {
         #region Properties
 
-        private new ResizeBitmapViewModel ViewModel => (ResizeBitmapViewModel)base.ViewModel;
+        private new ResizeBitmapViewModel ViewModel => (ResizeBitmapViewModel)base.ViewModel!;
 
         #endregion
 
@@ -38,19 +38,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Internal Constructors
 
-        internal ResizeBitmapForm(ResizeBitmapViewModel viewModel)
+        internal ResizeBitmapControl(ResizeBitmapViewModel viewModel)
             : base(viewModel)
         {
             InitializeComponent();
-            ValidationMapping[nameof(viewModel.Width)] = lblWidthPercent;
-            ValidationMapping[nameof(viewModel.Height)] = lblHeightPercent;
         }
 
         #endregion
 
         #region Private Constructors
 
-        private ResizeBitmapForm() : this(null!)
+        private ResizeBitmapControl() : this(null!)
         {
             // this ctor is just for the designer
         }
@@ -63,6 +61,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Protected Methods
 
+        protected override void InitParentProperties(ParentViewProperties properties)
+        {
+            base.InitParentProperties(properties);
+            properties.MinimumSize = new Size(350, 330);
+            properties.Icon = Properties.Resources.Resize;
+        }
+
         protected override void OnLoad(EventArgs e)
         {
             // Fixing high DPI appearance on Mono
@@ -70,13 +75,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             if (OSUtils.IsMono && (scale = this.GetScale()) != new PointF(1f, 1f))
                 tblNewSize.ColumnStyles[0].Width = (int)(100 * scale.X);
 
-            base.OnLoad(e);
-        }
+            if (!IsLoaded)
+            {
+                ValidationMapping[nameof(ViewModel.Width)] = lblWidthPercent;
+                ValidationMapping[nameof(ViewModel.Height)] = lblHeightPercent;
+            }
 
-        protected override void ApplyResources()
-        {
-            Icon = Properties.Resources.Resize;
-            base.ApplyResources();
+            base.OnLoad(e);
         }
 
         protected override void ApplyViewModel()
@@ -87,6 +92,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected override void Dispose(bool disposing)
         {
+            if (IsDisposed)
+                return;
+
             if (disposing)
                 components?.Dispose();
             base.Dispose(disposing);

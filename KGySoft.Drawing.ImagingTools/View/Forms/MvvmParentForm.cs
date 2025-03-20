@@ -62,10 +62,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.mvvmChild = mvvmChild;
             handleCreated = new ManualResetEventSlim();
             ApplyRightToLeft();
-            AutoScaleMode = AutoScaleMode.Font;
-            RightToLeftLayout = true;
-            StartPosition = OSUtils.IsMono && OSUtils.IsWindows ? FormStartPosition.WindowsDefaultLocation : FormStartPosition.CenterParent;
             InitializeForm();
+            StartPosition = OSUtils.IsMono && OSUtils.IsWindows ? FormStartPosition.WindowsDefaultLocation : FormStartPosition.CenterParent;
         }
 
         #endregion
@@ -167,6 +165,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             AcceptButton = properties.AcceptButton;
             CancelButton = properties.CancelButton;
             processKeyCallback = properties.ProcessKeyCallback;
+            if (properties.HideMinimizeButton)
+                MinimizeBox = false;
             if (properties.BorderStyle is FormBorderStyle.FixedDialog)
                 MinimizeBox = MaximizeBox = false;
             if (!properties.MinimumSize.IsEmpty)
@@ -176,6 +176,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             if (properties.ClosingCallback is FormClosingEventHandler handler)
                 FormClosing += handler; // removed in base.Dispose
             ClientSize = clientSize;
+            AutoScaleMode = AutoScaleMode.Font;
+            RightToLeftLayout = true;
             ResumeLayout();
 
             // removed in BaseUserControl.Dispose

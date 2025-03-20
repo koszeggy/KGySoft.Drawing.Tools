@@ -1,9 +1,9 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: AdjustContrastForm.cs
+//  File: AdjustGammaControl.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -19,15 +19,15 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
 
-namespace KGySoft.Drawing.ImagingTools.View.Forms
+namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    internal partial class AdjustContrastForm : AdjustColorsFormBase
+    internal sealed partial class AdjustGammaControl : AdjustColorsControlBase
     {
         #region Constructors
 
         #region Internal Constructors
 
-        internal AdjustContrastForm(AdjustContrastViewModel viewModel)
+        internal AdjustGammaControl(AdjustGammaViewModel viewModel)
             : base(viewModel)
         {
             InitializeComponent();
@@ -37,7 +37,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Constructors
 
-        private AdjustContrastForm() : this(null!)
+        private AdjustGammaControl() : this(null!)
         {
             // this ctor is just for the designer
         }

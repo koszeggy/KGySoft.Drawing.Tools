@@ -30,6 +30,7 @@ namespace KGySoft.Drawing.ImagingTools.View
         #region Properties
 
         internal FormBorderStyle BorderStyle { get; set; } = FormBorderStyle.Sizable;
+        internal bool HideMinimizeButton { get; set; }
         internal Icon? Icon { get; set; }
         internal IButtonControl? AcceptButton { get; set; }
         internal IButtonControl? CancelButton { get; set; }

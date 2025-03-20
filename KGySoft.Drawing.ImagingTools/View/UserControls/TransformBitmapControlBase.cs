@@ -1,9 +1,9 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: TransformBitmapFormBase.cs
+//  File: TransformBitmapControlBase.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -15,19 +15,48 @@
 
 #region Usings
 
+using System;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
 
-namespace KGySoft.Drawing.ImagingTools.View.Forms
+namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    internal partial class TransformBitmapFormBase : MvvmBaseForm
+    internal partial class TransformBitmapControlBase : MvvmBaseUserControl
     {
+        #region Fields
+
+        private ParentViewProperties? parentProperties;
+
+        #endregion
+
         #region Properties
 
-        private new TransformBitmapViewModelBase ViewModel => (TransformBitmapViewModelBase)base.ViewModel;
+        #region Internal Properties
+
+        internal override ParentViewProperties ParentViewProperties
+        {
+            get
+            {
+                if (parentProperties == null)
+                {
+                    parentProperties = new ParentViewProperties();
+                    InitParentProperties(parentProperties);
+                }
+
+                return parentProperties;
+            }
+        }
+
+        #endregion
+
+        #region Private Properties
+
+        private new TransformBitmapViewModelBase ViewModel => (TransformBitmapViewModelBase)base.ViewModel!;
+
+        #endregion
 
         #endregion
 
@@ -35,22 +64,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Protected Constructors
 
-        protected TransformBitmapFormBase(TransformBitmapViewModelBase viewModel)
+        protected TransformBitmapControlBase(TransformBitmapViewModelBase viewModel)
             : base(viewModel)
         {
             InitializeComponent();
-            AcceptButton = okCancelButtons.OKButton;
-            CancelButton = okCancelButtons.CancelButton;
-
-            ErrorProvider.SetIconAlignment(previewImage.ImageViewer, ErrorIconAlignment.MiddleLeft);
-            ValidationMapping[nameof(viewModel.PreviewImageViewModel.PreviewImage)] = previewImage.ImageViewer;
         }
 
         #endregion
 
         #region Private Constructors
 
-        private TransformBitmapFormBase() : this(null!)
+        private TransformBitmapControlBase() : this(null!)
         {
             // this ctor is just for the designer
         }
@@ -62,6 +86,30 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         #region Methods
 
         #region Protected Methods
+
+        protected virtual void InitParentProperties(ParentViewProperties properties)
+        {
+            properties.HideMinimizeButton = true;
+            properties.AcceptButton = okCancelButtons.OKButton;
+            properties.CancelButton = okCancelButtons.CancelButton;
+            properties.ClosingCallback = (sender, e) =>
+            {
+                // if user (or system) closes the window without pressing cancel we need to execute the cancel command
+                if (((Form)sender).DialogResult != DialogResult.OK && e.CloseReason != CloseReason.None)
+                    okCancelButtons.CancelButton.PerformClick();
+            };
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            if (!IsLoaded)
+            {
+                ErrorProvider.SetIconAlignment(previewImage.ImageViewer, ErrorIconAlignment.MiddleLeft);
+                ValidationMapping[nameof(ViewModel.PreviewImageViewModel.PreviewImage)] = previewImage.ImageViewer;
+            }
+
+            base.OnLoad(e);
+        }
 
         protected override void ApplyViewModel()
         {
@@ -82,16 +130,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             }
         }
 
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            // if user (or system) closes the window without pressing cancel we need to execute the cancel command
-            if (DialogResult != DialogResult.OK && e.CloseReason != CloseReason.None)
-                okCancelButtons.CancelButton.PerformClick();
-            base.OnFormClosing(e);
-        }
-
         protected override void Dispose(bool disposing)
         {
+            if (IsDisposed)
+                return;
+
             if (disposing)
                 components?.Dispose();
             base.Dispose(disposing);

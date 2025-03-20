@@ -1,6 +1,6 @@
-﻿namespace KGySoft.Drawing.ImagingTools.View.Forms
+﻿namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    partial class AdjustColorsFormBase
+    internal partial class AdjustColorsControlBase
     {
         /// <summary>
         /// Required designer variable.
@@ -118,14 +118,10 @@
             this.chbRed.Text = "chbRed";
             this.chbRed.UseVisualStyleBackColor = true;
             // 
-            // AdjustColorsFormBase
+            // AdjustColorsControlBase
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(248, 211);
-            this.MinimumSize = new System.Drawing.Size(250, 250);
-            this.Name = "AdjustColorsFormBase";
-            this.Text = "AdjustColorsFormBase";
+            this.Size = new System.Drawing.Size(248, 211);
+            this.Name = "AdjustColorsControlBase";
             this.pnlSettings.ResumeLayout(false);
             this.pnlSettings.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar)).EndInit();

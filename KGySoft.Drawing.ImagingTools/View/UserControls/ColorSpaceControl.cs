@@ -1,9 +1,9 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: ColorSpaceForm.cs
+//  File: ColorSpaceControl.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -15,6 +15,8 @@
 
 #region Usings
 
+using System;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -22,13 +24,13 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
 
-namespace KGySoft.Drawing.ImagingTools.View.Forms
+namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    internal sealed partial class ColorSpaceForm : TransformBitmapFormBase
+    internal sealed partial class ColorSpaceControl : TransformBitmapControlBase
     {
         #region Properties
 
-        private new ColorSpaceViewModel ViewModel => (ColorSpaceViewModel)base.ViewModel;
+        private new ColorSpaceViewModel ViewModel => (ColorSpaceViewModel)base.ViewModel!;
 
         #endregion
 
@@ -36,32 +38,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Internal Constructors
 
-        internal ColorSpaceForm(ColorSpaceViewModel viewModel)
+        internal ColorSpaceControl(ColorSpaceViewModel viewModel)
             : base(viewModel)
         {
             InitializeComponent();
-
-            // Mono/Windows: exiting because ToolTips throw an exception if set for an embedded control and
-            // since they don't appear for negative padding there is simply no place for them.
-            if (OSUtils.IsMono && OSUtils.IsWindows)
-                return;
-
-            ValidationMapping[nameof(viewModel.PixelFormat)] = gbPixelFormat.CheckBox;
-            ValidationMapping[nameof(viewModel.QuantizerSelectorViewModel.Quantizer)] = gbQuantizer.CheckBox;
-            ValidationMapping[nameof(viewModel.DithererSelectorViewModel.Ditherer)] = gbDitherer.CheckBox;
-            foreach (Control control in ValidationMapping.Values.Where(c => c is CheckBox))
-            {
-                ErrorProvider.SetIconAlignment(control, ErrorIconAlignment.TopRight);
-                WarningProvider.SetIconAlignment(control, ErrorIconAlignment.TopRight);
-                InfoProvider.SetIconAlignment(control, ErrorIconAlignment.TopRight);
-            }
         }
 
         #endregion
 
         #region Private Constructors
 
-        private ColorSpaceForm() : this(null!)
+        private ColorSpaceControl() : this(null!)
         {
             // this ctor is just for the designer
         }
@@ -74,10 +61,31 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Protected Methods
 
-        protected override void ApplyResources()
+        protected override void InitParentProperties(ParentViewProperties properties)
         {
-            Icon = Properties.Resources.Quantize;
-            base.ApplyResources();
+            base.InitParentProperties(properties);
+            properties.MinimumSize = new Size(400, 460);
+            properties.Icon = Properties.Resources.Quantize;
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            // Mono/Windows: ignoring because ToolTips throw an exception if set for an embedded control and
+            // since they don't appear for negative padding there is simply no place for them.
+            if (!IsLoaded && !(OSUtils.IsMono && OSUtils.IsWindows))
+            {
+                ValidationMapping[nameof(ViewModel.PixelFormat)] = gbPixelFormat.CheckBox;
+                ValidationMapping[nameof(ViewModel.QuantizerSelectorViewModel.Quantizer)] = gbQuantizer.CheckBox;
+                ValidationMapping[nameof(ViewModel.DithererSelectorViewModel.Ditherer)] = gbDitherer.CheckBox;
+                foreach (Control control in ValidationMapping.Values.Where(c => c is CheckBox))
+                {
+                    ErrorProvider.SetIconAlignment(control, ErrorIconAlignment.TopRight);
+                    WarningProvider.SetIconAlignment(control, ErrorIconAlignment.TopRight);
+                    InfoProvider.SetIconAlignment(control, ErrorIconAlignment.TopRight);
+                }
+            }
+
+            base.OnLoad(e);
         }
 
         protected override void ApplyViewModel()
@@ -89,6 +97,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected override void Dispose(bool disposing)
         {
+            if (IsDisposed)
+                return;
+
             if (disposing)
                 components?.Dispose();
             base.Dispose(disposing);

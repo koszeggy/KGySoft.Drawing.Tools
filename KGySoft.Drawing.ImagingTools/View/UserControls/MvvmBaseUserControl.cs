@@ -87,6 +87,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             }
         }
 
+        protected bool IsLoaded => isLoaded;
         protected ErrorProvider ErrorProvider => errorProvider ??= CreateProvider(ValidationSeverity.Error);
         protected ErrorProvider WarningProvider => warningProvider ??= CreateProvider(ValidationSeverity.Warning);
         protected ErrorProvider InfoProvider => infoProvider ??= CreateProvider(ValidationSeverity.Information);

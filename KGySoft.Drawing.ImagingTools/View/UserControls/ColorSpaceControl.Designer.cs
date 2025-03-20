@@ -1,6 +1,6 @@
-﻿namespace KGySoft.Drawing.ImagingTools.View.Forms
+﻿namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    partial class ColorSpaceForm
+    partial class ColorSpaceControl
     {
         /// <summary>
         /// Required designer variable.
@@ -97,15 +97,10 @@
             this.gbDitherer.TabStop = false;
             this.gbDitherer.Text = "gbDitherer";
             // 
-            // ColorSpaceForm
+            // ColorSpaceControl
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(384, 421);
-            this.Location = new System.Drawing.Point(0, 0);
-            this.MinimumSize = new System.Drawing.Size(400, 460);
-            this.Name = "ColorSpaceForm";
-            this.Text = "ColorSpaceForm";
+            this.Size = new System.Drawing.Size(384, 421);
+            this.Name = "ColorSpaceControl";
             this.pnlSettings.ResumeLayout(false);
             this.gbPixelFormat.ResumeLayout(false);
             this.gbPixelFormat.PerformLayout();

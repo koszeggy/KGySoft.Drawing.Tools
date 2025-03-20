@@ -72,6 +72,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         protected override void Dispose(bool disposing)
         {
+            if (IsDisposed)
+                return;
+
             if (disposing)
                 components?.Dispose();
             base.Dispose(disposing);

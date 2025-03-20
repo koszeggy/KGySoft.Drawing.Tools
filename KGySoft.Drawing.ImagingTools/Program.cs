@@ -19,6 +19,8 @@ using System;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.View;
+using KGySoft.Drawing.ImagingTools.View.Forms;
+using KGySoft.Drawing.ImagingTools.View.UserControls;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
@@ -39,42 +41,38 @@ namespace KGySoft.Drawing.ImagingTools
             Application.SetCompatibleTextRenderingDefault(false);
 
             //ViewModelFactory.CreateAdjustBrightness()
-            //ViewModelFactory.CreateAdjustColorSpace()
             //ViewModelFactory.CreateAdjustContrast()
             //ViewModelFactory.CreateAdjustGamma()
             //ViewModelFactory.CreateDownloadResources()
             //ViewModelFactory.CreateEditResources()
             //ViewModelFactory.CreateLanguageSettings()
             //ViewModelFactory.CreateManageInstallations()
-            //ViewModelFactory.CreateResizeBitmap()
-            //ViewModelFactory.CreateAdjustColorSpace();
             //ViewModelFactory.FromBitmapData()
             //ViewModelFactory.FromCustomBitmap()
             //ViewModelFactory.FromCustomColor()
             //ViewModelFactory.FromCustomPalette()
             //ViewModelFactory.FromPalette()
 
-            //using IViewModel viewModel = ViewModelFactory.FromCommandLineArguments(args);
-            //using IView view = ViewFactory.CreateView(viewModel);
-            //Application.Run(ViewFactory.TryGetForm(view));
+            using IViewModel viewModel = ViewModelFactory.FromCommandLineArguments(args);
+            using IView view = ViewFactory.CreateView(viewModel);
+            Application.Run(ViewFactory.TryGetForm(view));
 
             //using var bmp = new System.Drawing.Bitmap(100, 100);
-            //((System.Drawing.Bitmap)bmp).Clear(System.Drawing.Color.AliceBlue);
-            //using var g = System.Drawing.Graphics.FromImage(bmp);
+            //bmp.Clear(System.Drawing.Color.AliceBlue);
 
-            using (IViewModel viewModel = ViewModelFactory.CreateDefault())
-            {
-                using IView view = ViewFactory.CreateView(viewModel);
-                Application.Run(ViewFactory.TryGetForm(view));
-            }
+            //using (IViewModel viewModel = ViewModelFactory.CreateAdjustBrightness(bmp))
+            //{
+            //    using IView view = ViewFactory.CreateView(viewModel);
+            //    Application.Run(ViewFactory.TryGetForm(view));
+            //}
 
-            // WPF test
-            using (IViewModel viewModel = ViewModelFactory.CreateDefault())
-            {
-                using IView view = ViewFactory.CreateView(viewModel);
-                System.Windows.Application app = new();
-                app.Run(new System.Windows.Window { Content = new System.Windows.Forms.Integration.WindowsFormsHost { Child = (Control)view } });
-            }
+            //// WPF test
+            //using (IViewModel viewModel = ViewModelFactory.CreateAdjustBrightness(bmp))
+            //{
+            //    using IView view = ViewFactory.CreateView(viewModel);
+            //    System.Windows.Application app = new();
+            //    app.Run(new System.Windows.Window { Content = new System.Windows.Forms.Integration.WindowsFormsHost { Child = (Control)view } });
+            //}
         }
 
         #endregion

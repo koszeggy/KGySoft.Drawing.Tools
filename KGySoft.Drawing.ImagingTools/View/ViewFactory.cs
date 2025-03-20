@@ -53,12 +53,12 @@ namespace KGySoft.Drawing.ImagingTools.View
                 PaletteVisualizerViewModel paletteVisualizerViewModel => new PaletteVisualizerForm(paletteVisualizerViewModel), // also for custom palette
                 ColorVisualizerViewModel colorVisualizerViewModel => new ColorVisualizerControl(colorVisualizerViewModel), // also for custom color
                 ManageInstallationsViewModel manageInstallationsViewModel => new ManageInstallationsForm(manageInstallationsViewModel),
-                ResizeBitmapViewModel resizeBitmapViewModel => new ResizeBitmapForm(resizeBitmapViewModel),
-                ColorSpaceViewModel colorSpaceViewModel => new ColorSpaceForm(colorSpaceViewModel),
+                ResizeBitmapViewModel resizeBitmapViewModel => new ResizeBitmapControl(resizeBitmapViewModel),
+                ColorSpaceViewModel colorSpaceViewModel => new ColorSpaceControl(colorSpaceViewModel),
                 CountColorsViewModel countColorsViewModel => new CountColorsControl(countColorsViewModel),
-                AdjustBrightnessViewModel adjustBrightnessViewModel => new AdjustBrightnessForm(adjustBrightnessViewModel),
-                AdjustContrastViewModel adjustContrastViewModel => new AdjustContrastForm(adjustContrastViewModel),
-                AdjustGammaViewModel adjustGammaViewModel => new AdjustGammaForm(adjustGammaViewModel),
+                AdjustBrightnessViewModel adjustBrightnessViewModel => new AdjustBrightnessControl(adjustBrightnessViewModel),
+                AdjustContrastViewModel adjustContrastViewModel => new AdjustContrastControl(adjustContrastViewModel),
+                AdjustGammaViewModel adjustGammaViewModel => new AdjustGammaControl(adjustGammaViewModel),
                 LanguageSettingsViewModel languageSettingsViewModel => new LanguageSettingsForm(languageSettingsViewModel),
                 EditResourcesViewModel editResourcesViewModel => new EditResourcesForm(editResourcesViewModel),
                 DownloadResourcesViewModel downloadResourcesViewModel => new DownloadResourcesForm(downloadResourcesViewModel),

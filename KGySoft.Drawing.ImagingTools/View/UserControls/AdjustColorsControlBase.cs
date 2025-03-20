@@ -1,9 +1,9 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: AdjustColorsFormBase.cs
+//  File: AdjustColorsControlBase.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -23,13 +23,13 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
 
-namespace KGySoft.Drawing.ImagingTools.View.Forms
+namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    internal partial class AdjustColorsFormBase : TransformBitmapFormBase
+    internal partial class AdjustColorsControlBase : TransformBitmapControlBase
     {
         #region Properties
 
-        private new AdjustColorsViewModelBase ViewModel => (AdjustColorsViewModelBase)base.ViewModel;
+        private new AdjustColorsViewModelBase ViewModel => (AdjustColorsViewModelBase)base.ViewModel!;
 
         #endregion
 
@@ -37,7 +37,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Protected Constructors
 
-        protected AdjustColorsFormBase(AdjustColorsViewModelBase viewModel)
+        protected AdjustColorsControlBase(AdjustColorsViewModelBase viewModel)
             : base(viewModel)
         {
             InitializeComponent();
@@ -47,7 +47,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Constructors
 
-        private AdjustColorsFormBase() : this(null!)
+        private AdjustColorsControlBase() : this(null!)
         {
             // this ctor is just for the designer
         }
@@ -59,6 +59,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         #region Methods
 
         #region Protected Methods
+
+        protected override void InitParentProperties(ParentViewProperties properties)
+        {
+            base.InitParentProperties(properties);
+            properties.MinimumSize = new Size(250, 250);
+            properties.Icon = Properties.Resources.Colors;
+        }
 
         protected override void OnLoad(EventArgs e)
         {
@@ -74,12 +81,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             base.OnLoad(e);
         }
 
-        protected override void ApplyResources()
-        {
-            Icon = Properties.Resources.Colors;
-            base.ApplyResources();
-        }
-
         protected override void ApplyViewModel()
         {
             if (OSUtils.IsMono)
@@ -91,6 +92,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected override void Dispose(bool disposing)
         {
+            if (IsDisposed)
+                return;
+
             if (disposing)
                 components?.Dispose();
             base.Dispose(disposing);
