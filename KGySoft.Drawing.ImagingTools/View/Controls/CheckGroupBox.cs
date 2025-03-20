@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: CheckGroupBox.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -131,6 +131,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             e.Control.Parent = contentPanel;
         }
 
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            ResetCheckBoxLocation();
+        }
+
         protected virtual void OnCheckedChanged(EventArgs e) => (Events[nameof(CheckedChanged)] as EventHandler)?.Invoke(this, e);
 
         protected override void OnSizeChanged(EventArgs e)
@@ -164,9 +170,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         #region Private Methods
 
         private void ResetCheckBoxLocation()
-            => checkBox.Left = RightToLeft == RightToLeft.No
+        {
+            // Skipping if the handle is not created yet (GetScale uses the Handle).
+            // Without this, the focus rectangle may not be rendered when pressing TAB, and not even the ShowFocusCues is called.
+            // Can happen if the CheckBox is unchecked and the GroupBox is inside a user control.
+            if (!IsHandleCreated)
+                return;
+
+            checkBox.Left = RightToLeft == RightToLeft.No
                 ? (int)(10 * this.GetScale().X)
                 : Width - checkBox.Width - (int)(10 * this.GetScale().X);
+        }
 
         #endregion
 
