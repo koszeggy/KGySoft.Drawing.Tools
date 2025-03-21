@@ -2,7 +2,7 @@
 #region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: ImageDebuggerVisualizerProviderImpl.cs
+//  File: IconDebuggerVisualizerProviderImpl.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
@@ -17,7 +17,6 @@
 #region Usings
 
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -36,22 +35,20 @@ using Microsoft.VisualStudio.Shell;
 namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus
 {
     /// <summary>
-    /// Provides the implementation of a debugger visualizer extension for the <see cref="Image"/>, <see cref="Bitmap"/> and <see cref="Metafile"/> classes.
+    /// Provides the implementation of a debugger visualizer extension for the <see cref="Icon"/> class.
     /// </summary>
-    public class ImageDebuggerVisualizerProviderImpl : IDebuggerVisualizerProvider
+    public class IconDebuggerVisualizerProviderImpl : IDebuggerVisualizerProvider
     {
         #region Properties
 
         /// <summary>
-        /// Gets the configuration of the image debugger visualizer provider.
+        /// Gets the configuration of the color debugger visualizer provider.
         /// </summary>
-        public DebuggerVisualizerProviderConfiguration DebuggerVisualizerProviderConfiguration => new(
-            new VisualizerTargetType("KGy SOFT Image Debugger Visualizer", typeof(Image).AssemblyQualifiedName!),
-            new VisualizerTargetType("KGy SOFT Bitmap Debugger Visualizer", typeof(Bitmap)),
-            new VisualizerTargetType("KGy SOFT Metafile Debugger Visualizer", typeof(Metafile)))
+        public DebuggerVisualizerProviderConfiguration DebuggerVisualizerProviderConfiguration
+            => new("KGy SOFT Icon Debugger Visualizer", typeof(Icon))
         {
             Style = VisualizerStyle.ToolWindow,
-            VisualizerObjectSourceType = new VisualizerObjectSourceType(typeof(ImageSerializer))
+            VisualizerObjectSourceType = new VisualizerObjectSourceType(typeof(IconSerializer))
         };
 
         #endregion
@@ -59,7 +56,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus
         #region Methods
 
         /// <summary>
-        /// Gets the view of the image debugger visualizer.
+        /// Gets the view of the color debugger visualizer.
         /// </summary>
         /// <param name="visualizerTarget">The <see cref="VisualizerTarget" /> that provides information about the target process and object.</param>
         /// <param name="cancellationToken">Cancellation token for the async call.</param>
@@ -68,9 +65,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
             var result = new VisualizerExtensionWpfAdapter<ImageInfo>(visualizerTarget,
-                visualizerTarget.TargetTypeFullName == typeof(Bitmap).FullName ? (info, vt) => ViewModelFactory.FromBitmap(info, !vt.IsTargetReplaceable)
-                : visualizerTarget.TargetTypeFullName == typeof(Metafile).FullName ? (info, vt) => ViewModelFactory.FromMetafile(info, !vt.IsTargetReplaceable)
-                : (info, vt) => ViewModelFactory.FromImage(info, !vt.IsTargetReplaceable),
+                (i, vt) => ViewModelFactory.FromIcon(i, !vt.IsTargetReplaceable),
                 SerializationHelper.DeserializeImageInfo,
                 SerializationHelper.SerializeReplacementImageInfo);
             await result.InitializeAsync(true);
