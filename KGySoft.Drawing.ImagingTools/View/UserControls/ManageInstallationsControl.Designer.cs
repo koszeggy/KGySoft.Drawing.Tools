@@ -1,8 +1,8 @@
 ﻿using System.Windows.Forms;
 
-namespace KGySoft.Drawing.ImagingTools.View.Forms
+namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    partial class ManageInstallationsForm
+    partial class ManageInstallationsControl
     {
         /// <summary>
         /// Required designer variable.
@@ -186,18 +186,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // 
             // ManageInstallationsForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(404, 211);
+            this.Size = new System.Drawing.Size(404, 211);
             this.Controls.Add(this.gbInstallation);
             this.Controls.Add(this.gbVisualStudioVersions);
             this.Controls.Add(this.gbAvailableVersion);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "ManageInstallationsForm";
+            this.Name = "ManageInstallationsControl";
             this.Padding = new System.Windows.Forms.Padding(3);
-            this.Text = "ManageInstallationsForm";
             this.gbInstallation.ResumeLayout(false);
             this.gbInstallation.PerformLayout();
             this.pnlStatus.ResumeLayout(false);
@@ -207,7 +201,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.gbVisualStudioVersions.ResumeLayout(false);
             this.gbAvailableVersion.ResumeLayout(false);
             this.ResumeLayout(false);
-
         }
 
         #endregion

@@ -1,9 +1,9 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: ManageInstallationsForm.cs
+//  File: ManageInstallationsControl.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -18,26 +18,47 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
 
-namespace KGySoft.Drawing.ImagingTools.View.Forms
+namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    internal partial class ManageInstallationsForm : MvvmBaseForm
+    internal partial class ManageInstallationsControl : MvvmBaseUserControl
     {
+        #region Fields
+
+        private ParentViewProperties? parentProperties;
+
+        #endregion
+
         #region Properties
 
-        private new ManageInstallationsViewModel ViewModel => (ManageInstallationsViewModel)base.ViewModel;
+        #region Internal Properties
 
+        internal override ParentViewProperties ParentViewProperties => parentProperties ??= new ParentViewProperties
+        {
+            BorderStyle = FormBorderStyle.FixedDialog,
+            Icon = Properties.Resources.Settings
+        };
+
+        #endregion
+
+        #region Private Properties
+
+        private new ManageInstallationsViewModel ViewModel => (ManageInstallationsViewModel)base.ViewModel!;
+
+        #endregion
+        
         #endregion
 
         #region Constructors
 
         #region Internal Constructors
 
-        internal ManageInstallationsForm(ManageInstallationsViewModel viewModel)
+        internal ManageInstallationsControl(ManageInstallationsViewModel viewModel)
             : base(viewModel)
         {
             InitializeComponent();
@@ -49,7 +70,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Constructors
 
-        private ManageInstallationsForm() : this(null!)
+        private ManageInstallationsControl() : this(null!)
         {
             // this ctor is just for the designer
         }
@@ -77,12 +98,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             base.OnLoad(e);
         }
 
-        protected override void ApplyResources()
-        {
-            base.ApplyResources();
-            Icon = Properties.Resources.Settings;
-        }
-
         protected override void ApplyViewModel()
         {
             InitViewModelDependencies();
@@ -93,8 +108,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected override void Dispose(bool disposing)
         {
+            if (IsDisposed)
+                return;
+
             if (disposing)
                 components?.Dispose();
+
+            parentProperties = null;
             base.Dispose(disposing);
         }
 

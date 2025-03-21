@@ -41,7 +41,6 @@ namespace KGySoft.Drawing.ImagingTools
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            //ViewModelFactory.CreateManageInstallations()
             //ViewModelFactory.FromBitmapData()
             //ViewModelFactory.FromCustomBitmap()
             //ViewModelFactory.FromCustomColor()
@@ -55,14 +54,14 @@ namespace KGySoft.Drawing.ImagingTools
             //using var bmp = new System.Drawing.Bitmap(100, 100);
             //bmp.Clear(System.Drawing.Color.AliceBlue);
 
-            //using (IViewModel viewModel = ViewModelFactory.CreateLanguageSettings())
+            //using (IViewModel viewModel = ViewModelFactory.CreateManageInstallations())
             //{
             //    using IView view = ViewFactory.CreateView(viewModel);
             //    Application.Run(ViewFactory.TryGetForm(view));
             //}
 
             //// WPF test
-            //using (IViewModel viewModel = ViewModelFactory.CreateLanguageSettings())
+            //using (IViewModel viewModel = ViewModelFactory.CreateManageInstallations())
             //{
             //    using IView view = ViewFactory.CreateView(viewModel);
             //    System.Windows.Application app = new();
