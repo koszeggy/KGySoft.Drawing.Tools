@@ -1,7 +1,8 @@
 {
-  "DebuggerVisualizerProviders.GdiPlus.ColorDebuggerVisualizerProvider.Name": "KGy SOFT Color Debugger Visualizer",
   "DebuggerVisualizerProviders.GdiPlus.BitmapDebuggerVisualizerProvider.Name": "KGy SOFT Bitmap Debugger Visualizer",
   "DebuggerVisualizerProviders.GdiPlus.MetafileDebuggerVisualizerProvider.Name": "KGy SOFT Metafile Debugger Visualizer",
   "DebuggerVisualizerProviders.GdiPlus.ImageDebuggerVisualizerProvider.Name": "KGy SOFT Image Debugger Visualizer",
-  "DebuggerVisualizerProviders.GdiPlus.GraphicsDebuggerVisualizerProvider.Name": "KGy SOFT Graphics Debugger Visualizer"
+  "DebuggerVisualizerProviders.GdiPlus.GraphicsDebuggerVisualizerProvider.Name": "KGy SOFT Graphics Debugger Visualizer",
+  "DebuggerVisualizerProviders.GdiPlus.ColorDebuggerVisualizerProvider.Name": "KGy SOFT Color Debugger Visualizer",
+  "DebuggerVisualizerProviders.GdiPlus.ColorPaletteDebuggerVisualizerProvider.Name": "KGy SOFT ColorPalette Debugger Visualizer"
 }

@@ -72,10 +72,10 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         private new PaletteVisualizerViewModel ViewModel => (PaletteVisualizerViewModel)base.ViewModel!;
 
         #endregion
-        
+
         #endregion
 
-#region Constructors
+        #region Constructors
 
         #region Internal Constructors
 
@@ -153,6 +153,10 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
             // VM.IsModified -> OKButton.Enabled
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsModified), nameof(okCancelButtons.OKButton.Enabled), okCancelButtons.OKButton);
+
+            bool isInForm = ParentForm != null;
+            okCancelButtons.DefaultButtonsVisible = isInForm;
+            okCancelButtons.ApplyButtonVisible = !isInForm;
         }
 
         private void InitParentViewPropertyBindings(MvvmParentForm parent)
@@ -163,8 +167,13 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private void InitCommandBindings()
         {
+            // CancelButton.Click -> OnCancelCommand
             CommandBindings.Add(OnCancelCommand)
                 .AddSource(okCancelButtons.CancelButton, nameof(okCancelButtons.CancelButton.Click));
+
+            // ApplyButton.Click -> VM.ApplyChangesCommand
+            CommandBindings.Add(ViewModel.ApplyChangesCommand, ViewModel.ApplyChangesCommandCommandState)
+                .AddSource(okCancelButtons.ApplyButton, nameof(okCancelButtons.ApplyButton.Click));
         }
 
         #endregion
