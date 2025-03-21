@@ -1,9 +1,9 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: PaletteVisualizerForm.cs
+//  File: PaletteVisualizerControl.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -19,37 +19,77 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
+using KGySoft.Drawing.ImagingTools.View.Forms;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
 
-namespace KGySoft.Drawing.ImagingTools.View.Forms
+namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    internal partial class PaletteVisualizerForm : MvvmBaseForm
+    internal partial class PaletteVisualizerControl : MvvmBaseUserControl
     {
-        #region Properties
+        #region Fields
 
-        private new PaletteVisualizerViewModel ViewModel => (PaletteVisualizerViewModel)base.ViewModel;
+        private ParentViewProperties? parentProperties;
 
         #endregion
 
-        #region Constructors
+        #region Properties
+
+        #region Internal Properties
+
+        internal override ParentViewProperties ParentViewProperties => parentProperties ??= new ParentViewProperties
+        {
+            BorderStyle = FormBorderStyle.SizableToolWindow,
+            Icon = Properties.Resources.Palette,
+            MinimumSize = new Size(255, 335),
+            MaximumSize = new Size(280, Int16.MaxValue),
+            AcceptButton = okCancelButtons.OKButton,
+            CancelButton = okCancelButtons.CancelButton,
+            ClosingCallback = (sender, _) =>
+            {
+                if (((Form)sender).DialogResult != DialogResult.OK)
+                    ViewModel.SetModified(false);
+            },
+            ProcessKeyCallback = (parent, key) =>
+            {
+                if (key == Keys.Escape && ViewModel.ReadOnly) // if not ReadOnly, use the Cancel button
+                {
+                    parent.DialogResult = DialogResult.Cancel;
+                    return true;
+                }
+
+                return false;
+            }
+        };
+
+        internal override Action<MvvmParentForm> ParentViewPropertyBindingsInitializer => InitParentViewPropertyBindings;
+
+        #endregion
+
+        #region Private Properties
+
+        private new PaletteVisualizerViewModel ViewModel => (PaletteVisualizerViewModel)base.ViewModel!;
+
+        #endregion
+        
+        #endregion
+
+#region Constructors
 
         #region Internal Constructors
 
-        internal PaletteVisualizerForm(PaletteVisualizerViewModel viewModel)
+        internal PaletteVisualizerControl(PaletteVisualizerViewModel viewModel)
             : base(viewModel)
         {
             InitializeComponent();
-            AcceptButton = okCancelButtons.OKButton;
-            CancelButton = okCancelButtons.CancelButton;
         }
 
         #endregion
 
         #region Private Constructors
 
-        private PaletteVisualizerForm() : this(null!)
+        private PaletteVisualizerControl() : this(null!)
         {
             // this ctor is just for the designer
         }
@@ -66,19 +106,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             // Fixing high DPI appearance on Mono
             PointF scale;
-            if (OSUtils.IsMono && (scale = this.GetScale()) != new PointF(1f, 1f))
+            if (OSUtils.IsMono && (scale = this.GetScale()) != new PointF(1f, 1f) && ParentForm is MvvmParentForm parent)
             {
-                MinimumSize = new Size(255, 335).Scale(scale);
-                MaximumSize = new Size((int)(280 * scale.X), Int16.MaxValue);
+                parent.MinimumSize = new Size(255, 335).Scale(scale);
+                parent.MaximumSize = new Size((int)(280 * scale.X), Int16.MaxValue);
             }
 
             base.OnLoad(e);
-        }
-
-        protected override void ApplyResources()
-        {
-            base.ApplyResources();
-            Icon = Properties.Resources.Palette;
         }
 
         protected override void ApplyViewModel()
@@ -88,30 +122,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             base.ApplyViewModel();
         }
 
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            if (DialogResult != DialogResult.OK)
-                ViewModel.SetModified(false);
-            base.OnFormClosing(e);
-        }
-
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        {
-            switch (keyData)
-            {
-                case Keys.Escape when ViewModel.ReadOnly: // if not ReadOnly, use the Cancel button
-                    DialogResult = DialogResult.Cancel;
-                    return true;
-
-                default:
-                    return base.ProcessCmdKey(ref msg, keyData);
-            }
-        }
-
         protected override void Dispose(bool disposing)
         {
+            if (IsDisposed)
+                return;
+
             if (disposing)
                 components?.Dispose();
+            parentProperties = null;
             base.Dispose(disposing);
         }
 
@@ -127,9 +145,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // VM.Palette -> pnlPalette.Palette
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Palette), nameof(pnlPalette.Palette), pnlPalette);
 
-            // VM.TitleCaption -> Text
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.TitleCaption), nameof(Text), this);
-
             // VM.SelectedColorViewModel -> colorVisualizerControl.ViewModel
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SelectedColorViewModel), nameof(colorVisualizerControl.ViewModel), colorVisualizerControl);
 
@@ -138,6 +153,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
             // VM.IsModified -> OKButton.Enabled
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsModified), nameof(okCancelButtons.OKButton.Enabled), okCancelButtons.OKButton);
+        }
+
+        private void InitParentViewPropertyBindings(MvvmParentForm parent)
+        {
+            // VM.TitleCaption -> Text
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.TitleCaption), nameof(parent.Text), parent);
         }
 
         private void InitCommandBindings()

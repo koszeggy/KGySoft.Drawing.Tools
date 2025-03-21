@@ -16,12 +16,9 @@
 #region Usings
 
 using System;
-using System.Globalization;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.View;
-using KGySoft.Drawing.ImagingTools.View.Forms;
-using KGySoft.Drawing.ImagingTools.View.UserControls;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
@@ -45,23 +42,22 @@ namespace KGySoft.Drawing.ImagingTools
             //ViewModelFactory.FromCustomBitmap()
             //ViewModelFactory.FromCustomColor()
             //ViewModelFactory.FromCustomPalette()
-            //ViewModelFactory.FromPalette()
 
             using IViewModel viewModel = ViewModelFactory.FromCommandLineArguments(args);
             using IView view = ViewFactory.CreateView(viewModel);
             Application.Run(ViewFactory.TryGetForm(view));
 
-            //using var bmp = new System.Drawing.Bitmap(100, 100);
+            //using var bmp = new System.Drawing.Bitmap(100, 100, System.Drawing.Imaging.PixelFormat.Format8bppIndexed);
             //bmp.Clear(System.Drawing.Color.AliceBlue);
 
-            //using (IViewModel viewModel = ViewModelFactory.CreateManageInstallations())
+            //using (IViewModel viewModel = ViewModelFactory.FromPalette(bmp.Palette, false))
             //{
             //    using IView view = ViewFactory.CreateView(viewModel);
             //    Application.Run(ViewFactory.TryGetForm(view));
             //}
 
             //// WPF test
-            //using (IViewModel viewModel = ViewModelFactory.CreateManageInstallations())
+            //using (IViewModel viewModel = ViewModelFactory.FromPalette(bmp.Palette, false))
             //{
             //    using IView view = ViewFactory.CreateView(viewModel);
             //    System.Windows.Application app = new();

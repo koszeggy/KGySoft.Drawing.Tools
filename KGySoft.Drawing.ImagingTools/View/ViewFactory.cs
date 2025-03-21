@@ -50,7 +50,7 @@ namespace KGySoft.Drawing.ImagingTools.View
                 DefaultViewModel defaultViewModel => new MainUserControl(defaultViewModel),
                 GraphicsVisualizerViewModel graphicsVisualizerViewModel => new GraphicsVisualizerControl(graphicsVisualizerViewModel),
                 ImageVisualizerViewModel imageVisualizerViewModel => new ImageVisualizerControl(imageVisualizerViewModel), // also for BitmapData and CustomBitmap
-                PaletteVisualizerViewModel paletteVisualizerViewModel => new PaletteVisualizerForm(paletteVisualizerViewModel), // also for custom palette
+                PaletteVisualizerViewModel paletteVisualizerViewModel => new PaletteVisualizerControl(paletteVisualizerViewModel), // also for custom palette
                 ColorVisualizerViewModel colorVisualizerViewModel => new ColorVisualizerControl(colorVisualizerViewModel), // also for custom color
                 ManageInstallationsViewModel manageInstallationsViewModel => new ManageInstallationsControl(manageInstallationsViewModel),
                 ResizeBitmapViewModel resizeBitmapViewModel => new ResizeBitmapControl(resizeBitmapViewModel),

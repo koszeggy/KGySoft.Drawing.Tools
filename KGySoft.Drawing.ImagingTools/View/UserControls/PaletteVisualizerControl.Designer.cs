@@ -1,9 +1,9 @@
 ﻿using KGySoft.Drawing.ImagingTools.View.Controls;
 using KGySoft.Drawing.ImagingTools.View.UserControls;
 
-namespace KGySoft.Drawing.ImagingTools.View.Forms
+namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    partial class PaletteVisualizerForm
+    partial class PaletteVisualizerControl
     {
         /// <summary>
         /// Required designer variable.
@@ -74,18 +74,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.okCancelButtons.Size = new System.Drawing.Size(241, 35);
             this.okCancelButtons.TabIndex = 2;
             // 
-            // PaletteVisualizerForm
+            // PaletteVisualizerControl
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(247, 490);
+            this.Size = new System.Drawing.Size(247, 490);
             this.Controls.Add(this.gbPalette);
             this.Controls.Add(this.gbSelectedColor);
             this.Controls.Add(this.okCancelButtons);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
-            this.MaximumSize = new System.Drawing.Size(280, 32767);
-            this.MinimumSize = new System.Drawing.Size(255, 335);
-            this.Name = "PaletteVisualizerForm";
+            this.Name = "PaletteVisualizerControl";
             this.Padding = new System.Windows.Forms.Padding(3);
             this.gbPalette.ResumeLayout(false);
             this.gbSelectedColor.ResumeLayout(false);

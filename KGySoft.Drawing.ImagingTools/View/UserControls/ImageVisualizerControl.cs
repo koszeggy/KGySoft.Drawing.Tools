@@ -238,6 +238,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             ViewModel.SelectFileToOpenCallback = SelectFileToOpen;
             ViewModel.SelectFileToSaveCallback = SelectFileToSave;
             ViewModel.ApplyViewSizeCallback = ApplySize;
+            ViewModel.UpdatePreviewImageCallback = () => imageViewer.UpdateImage();
             ViewModel.GetCompoundViewIconCallback = GetCompoundViewIcon;
         }
 
