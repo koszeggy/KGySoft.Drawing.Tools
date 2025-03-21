@@ -3,7 +3,8 @@
   "DebuggerVisualizerProviders.GdiPlus.MetafileDebuggerVisualizerProvider.Name": "KGy SOFT Metafile Debugger Visualizer",
   "DebuggerVisualizerProviders.GdiPlus.ImageDebuggerVisualizerProvider.Name": "KGy SOFT Image Debugger Visualizer",
   "DebuggerVisualizerProviders.GdiPlus.IconDebuggerVisualizerProvider.Name": "KGy SOFT Icon Debugger Visualizer",
-  "DebuggerVisualizerProviders.GdiPlus.GraphicsDebuggerVisualizerProvider.Name": "KGy SOFT Graphics Debugger Visualizer",
   "DebuggerVisualizerProviders.GdiPlus.ColorDebuggerVisualizerProvider.Name": "KGy SOFT Color Debugger Visualizer",
-  "DebuggerVisualizerProviders.GdiPlus.ColorPaletteDebuggerVisualizerProvider.Name": "KGy SOFT ColorPalette Debugger Visualizer"
+  "DebuggerVisualizerProviders.GdiPlus.ColorPaletteDebuggerVisualizerProvider.Name": "KGy SOFT ColorPalette Debugger Visualizer",
+  "DebuggerVisualizerProviders.GdiPlus.GraphicsDebuggerVisualizerProvider.Name": "KGy SOFT Graphics Debugger Visualizer",
+  "DebuggerVisualizerProviders.GdiPlus.BitmapDataDebuggerVisualizerProvider.Name": "KGy SOFT BitmapData Debugger Visualizer"
 }
