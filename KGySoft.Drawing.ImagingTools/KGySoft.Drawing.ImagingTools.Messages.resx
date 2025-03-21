@@ -522,9 +522,6 @@ Do you want to overwrite them?</value>
     <value>One or more selected items are for a different Imaging Tools version.
 Are you sure you want to continue?</value>
   </data>
-  <data name="InfoMessage_PaletteEmpty" xml:space="preserve">
-    <value>The palette contains no colors. Click OK to exit.</value>
-  </data>
   <data name="InfoMessage_QuantizerMayHaveNoEffect" xml:space="preserve">
     <value>The selected quantizer uses more colors than the original image.
 It is possible that is has no effect.</value>

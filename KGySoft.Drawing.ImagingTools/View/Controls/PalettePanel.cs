@@ -80,8 +80,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 palette = value;
                 if (ColorCount == 0)
                     timerSelection.Enabled = false;
-                if (value != null)
-                    SelectedColorIndex = 0;
+                SelectedColorIndex = value is { Count: > 0 } ? 0 : -1;
                 ResetLayout();
             }
         }

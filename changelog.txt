@@ -24,6 +24,7 @@ API changes:
 * ViewFactory class:
   * The return type of the FromGraphics(GraphicsInfo) method has been changed to IViewModel<GraphicsInfo> from
     IViewModel. This is a compatible change because IVIewModel<TModel> is a more specific type than IViewModel.
+  * Opening a view for an empty palette no longer closes the view immediately.
 
 + KGySoft.Drawing.DebuggerVisualizers.dll
 =========================================

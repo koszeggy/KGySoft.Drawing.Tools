@@ -149,7 +149,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             Color color = Color;
             TitleCaption = Res.TitleColor(color.Name);
             var sb = new StringBuilder();
-            if (SelectedIndex is int index)
+            if (SelectedIndex is int index and > 0)
                 sb.AppendLine(Res.InfoSelectedIndex(index));
 
             sb.Append(Res.InfoColor(color.ToArgb(), GetKnownColor(color), GetSystemColors(color), color.GetHue(), color.GetSaturation() * 100f, color.GetBrightness() * 100f));

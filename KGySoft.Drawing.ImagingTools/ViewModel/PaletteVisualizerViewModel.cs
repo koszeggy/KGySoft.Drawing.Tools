@@ -71,11 +71,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             base.ViewLoaded();
             if (Palette.Length == 0)
-            {
                 ReadOnly = true;
-                ShowInfo(Res.InfoMessagePaletteEmpty);
-                CloseViewCallback?.Invoke();
-            }
         }
 
         #endregion
@@ -96,16 +92,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 case nameof(Palette):
                     var palette = (IList<Color>)e.NewValue!;
                     Count = palette.Count;
-                    if (palette.Count == 0)
-                        return;
-
-                    SelectedColorIndex = 0;
+                    if (palette.Count > 0)
+                        SelectedColorIndex = 0;
                     break;
 
                 case nameof(SelectedColorIndex):
                     int index = (int)e.NewValue!;
-                    if (Count == 0)
-                        break;
                     SelectedColorViewModel = GetSelectedColorViewModel(index);
                     break;
 
@@ -129,7 +121,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         protected virtual ColorVisualizerViewModel GetSelectedColorViewModel(int index) => new ColorVisualizerViewModel
         {
             SelectedIndex = index,
-            Color = Palette[index],
+            Color = (uint)index < (uint)Count ? Palette[index] : default,
             ReadOnly = ReadOnly,
         };
 

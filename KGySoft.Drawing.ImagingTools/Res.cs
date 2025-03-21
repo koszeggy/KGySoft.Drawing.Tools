@@ -316,9 +316,6 @@ namespace KGySoft.Drawing.ImagingTools
         /// Are you sure you want to continue?</summary>
         internal static string ConfirmMessageResourceVersionMismatch => Get("ConfirmMessage_ResourceVersionMismatch");
 
-        /// <summary>The palette contains no colors. Click OK to exit.</summary>
-        internal static string InfoMessagePaletteEmpty => Get("InfoMessage_PaletteEmpty");
-
         /// <summary>The selected quantizer uses more colors than the original image.
         /// It is possible that is has no effect.</summary>
         internal static string InfoMessageQuantizerMayHaveNoEffect => Get("InfoMessage_QuantizerMayHaveNoEffect");
