@@ -32,12 +32,14 @@ API changes:
 ! ViewModelFactory class:
   ! The return value of the FromPalette(ColorPalette, bool) method has been changed to IViewModel<ColorPalette> from
     IViewModel<Color[]>. The FromPalette(Color[], bool) overload still returns IViewModel<Color[]>.
+  * The return type of the FromGraphics(GraphicsInfo) method has been changed to IViewModel<GraphicsInfo> from
+    IViewModel. This is a compatible change because IVIewModel<TModel> is a more specific type than IViewModel.
+  * The return type of the FromBitmapData(BitmapDataInfo) method has been changed to IViewModel<BitmapDataInfo> from
+    IViewModel. This is a compatible change because IVIewModel<TModel> is a more specific type than IViewModel.
 
 * KGySoft.Drawing.ImagingTools.View namespace:
 ----------------------------------------------
 * ViewFactory class:
-  * The return type of the FromGraphics(GraphicsInfo) method has been changed to IViewModel<GraphicsInfo> from
-    IViewModel. This is a compatible change because IVIewModel<TModel> is a more specific type than IViewModel.
   * Opening a view for an empty palette no longer closes the view immediately.
 
 

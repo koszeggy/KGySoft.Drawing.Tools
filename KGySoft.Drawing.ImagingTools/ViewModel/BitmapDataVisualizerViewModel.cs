@@ -25,13 +25,19 @@ using KGySoft.Drawing.ImagingTools.Model;
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal class BitmapDataVisualizerViewModel : ImageVisualizerViewModel
+    internal class BitmapDataVisualizerViewModel : ImageVisualizerViewModel, IViewModel<BitmapDataInfo?>
     {
+        #region Fields
+
+        private PixelFormat lastPixelFormat;
+
+        #endregion
+
         #region Properties
 
         #region Internal Properties
 
-        internal BitmapDataInfo? BitmapDataInfo { get => Get<BitmapDataInfo?>(); init => Set(value); }
+        internal BitmapDataInfo? BitmapDataInfo { get => Get<BitmapDataInfo?>(); set => Set(value); }
 
         #endregion
 
@@ -54,6 +60,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Methods
 
+        #region Protected Methods
+
         protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
         {
             base.OnPropertyChanged(e);
@@ -61,8 +69,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             {
                 var bitmapDataInfo = (BitmapDataInfo?)e.NewValue;
                 Image = bitmapDataInfo?.BackingImage;
-                if ((bitmapDataInfo?.BitmapData?.PixelFormat ?? PixelFormat.Format32bppArgb).ToBitsPerPixel() <= 8)
+                var pixelFormat = bitmapDataInfo?.BitmapData?.PixelFormat ?? PixelFormat.Format32bppArgb;
+                if (pixelFormat != lastPixelFormat && pixelFormat.ToBitsPerPixel() <= 8)
                     SetNotification(Res.NotificationPaletteCannotBeRestoredId);
+                lastPixelFormat = pixelFormat;
             }
         }
 
@@ -89,6 +99,15 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 BitmapDataInfo?.Dispose();
             base.Dispose(disposing);
         }
+
+        #region Explicitly Implemented Interface Methods
+
+        BitmapDataInfo? IViewModel<BitmapDataInfo?>.GetEditedModel() => null; // not editable
+        bool IViewModel<BitmapDataInfo?>.TrySetModel(BitmapDataInfo? model) => TryInvokeSync(() => BitmapDataInfo = model);
+
+        #endregion
+
+        #endregion
 
         #endregion
     }

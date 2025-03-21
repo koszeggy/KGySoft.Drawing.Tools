@@ -197,7 +197,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// </summary>
         /// <param name="bitmapDataInfo">The debug information for a <see cref="BitmapData"/>.</param>
         /// <returns>An <see cref="IViewModel"/> instance that represents a view model for a <see cref="BitmapData"/>.</returns>
-        public static IViewModel FromBitmapData(BitmapDataInfo? bitmapDataInfo) => new BitmapDataVisualizerViewModel { BitmapDataInfo = bitmapDataInfo };
+        public static IViewModel<BitmapDataInfo> FromBitmapData(BitmapDataInfo? bitmapDataInfo) => new BitmapDataVisualizerViewModel { BitmapDataInfo = bitmapDataInfo };
 
         /// <summary>
         /// Creates a view model for a <see cref="CustomBitmapInfo"/> from arbitrary debug information.
