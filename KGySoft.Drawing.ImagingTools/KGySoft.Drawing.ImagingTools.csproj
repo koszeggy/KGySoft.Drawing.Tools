@@ -18,9 +18,6 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Nullable>enable</Nullable>
 
-    <!--TODO: delete-->
-    <UseWPF>true</UseWPF>
-
     <!--Suppressions
         - WFAC010: Remove high DPI settings from app.manifest and configure via Application.SetHighDpiMode - as targeting many frameworks handling it manually everywhere is intended. Otherwise, it would cause conflicts, eg. scaling sizes multiple times, etc. -->
     <NoWarn>$(NoWarn);WFAC010</NoWarn>

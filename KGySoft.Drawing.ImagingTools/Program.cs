@@ -38,31 +38,9 @@ namespace KGySoft.Drawing.ImagingTools
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            //ViewModelFactory.FromBitmapData()
-            //ViewModelFactory.FromCustomBitmap()
-            //ViewModelFactory.FromCustomColor()
-            //ViewModelFactory.FromCustomPalette()
-
             using IViewModel viewModel = ViewModelFactory.FromCommandLineArguments(args);
             using IView view = ViewFactory.CreateView(viewModel);
             Application.Run(ViewFactory.TryGetForm(view));
-
-            //using var bmp = new System.Drawing.Bitmap(100, 100, System.Drawing.Imaging.PixelFormat.Format8bppIndexed);
-            //bmp.Clear(System.Drawing.Color.AliceBlue);
-
-            //using (IViewModel viewModel = ViewModelFactory.FromPalette(bmp.Palette, false))
-            //{
-            //    using IView view = ViewFactory.CreateView(viewModel);
-            //    Application.Run(ViewFactory.TryGetForm(view));
-            //}
-
-            //// WPF test
-            //using (IViewModel viewModel = ViewModelFactory.FromPalette(bmp.Palette, false))
-            //{
-            //    using IView view = ViewFactory.CreateView(viewModel);
-            //    System.Windows.Application app = new();
-            //    app.Run(new System.Windows.Window { Content = new System.Windows.Forms.Integration.WindowsFormsHost { Child = (Control)view } });
-            //}
         }
 
         #endregion
