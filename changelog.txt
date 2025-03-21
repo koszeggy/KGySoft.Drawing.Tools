@@ -9,6 +9,17 @@
 ! v5.0.0:
 ~~~~~~~~~
 
+! KGySoft.Drawing.DebuggerVisualizers.Package.x64.dll
+=====================================================
+! The extension requires Visual Studio 2022 version 17.9 Preview 1 or higher. To install the debugger visualizers
+  for Visual Studio 2022 version 17.8 or lower, use the installer of the ImagingTools application.
+! The debugger visualizers now support Visual Studio 2022 extension-based visualizers. They are displayed in a tool
+  window instead of the classic dialogs. The tool window can remain open while stepping through the code, and can be
+  docked in the Visual Studio IDE. If you prefer the classic dialog, you can still use the ImagingTools application
+  to install the debugger visualizers manually. See the documentation for more information:
+  https://github.com/koszeggy/KGySoft.Drawing.Tools/blob/master/README.md#manual-install
+
+
 ! KGySoft.Drawing.ImagingTools.exe
 ==================================
 API changes:
@@ -28,6 +39,7 @@ API changes:
   * The return type of the FromGraphics(GraphicsInfo) method has been changed to IViewModel<GraphicsInfo> from
     IViewModel. This is a compatible change because IVIewModel<TModel> is a more specific type than IViewModel.
   * Opening a view for an empty palette no longer closes the view immediately.
+
 
 + KGySoft.Drawing.DebuggerVisualizers.dll
 =========================================
@@ -52,6 +64,7 @@ API changes:
 -----------------------------------------------------
 + New VisualizerExtensionWpfAdapter<TModel> class (.NET Framework 4.7.2 only)
 
+
 + KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll
 =================================================
 
@@ -65,9 +78,10 @@ API changes:
 
 + KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization namespace:
 ----------------------------------------------------------------------
-+ The ColorSerializer class has been made public.
 + The ImageSerializer class has been made public.
 + The GraphicsSerializer class has been made public.
++ The ColorSerializer class has been made public.
++ The ColorPaletteSerializer class has been made public.
 
 
 ~~~~~~~~~

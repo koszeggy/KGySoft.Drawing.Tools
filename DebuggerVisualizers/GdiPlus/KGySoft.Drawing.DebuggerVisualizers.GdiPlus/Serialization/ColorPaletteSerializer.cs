@@ -19,15 +19,18 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing.Imaging;
 using System.IO;
 
-using Microsoft.VisualStudio.DebuggerVisualizers;
+using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 
 #endregion
 
 namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization
 {
+    /// <summary>
+    /// Provides serialization for the <see cref="ColorPalette"/> type.
+    /// </summary>
     [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses",
         Justification = "False alarm, instantiated by VS debugger visualizers")]
-    internal class ColorPaletteSerializer : VisualizerObjectSource
+    public class ColorPaletteSerializer : SerializerBase
     {
         #region Methods
 

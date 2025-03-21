@@ -18,6 +18,8 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 
 using KGySoft.Reflection;
 
@@ -47,6 +49,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization
 
         internal void Write(BinaryWriter bw)
         {
+            // 1.) Entries
             Color[] entries = Palette.Entries;
             bw.Write(entries.Length);
             foreach (Color entry in entries)
@@ -54,6 +57,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization
                 bw.Write(entry.IsKnownColor);
                 bw.Write(entry.IsKnownColor ? (int)entry.ToKnownColor() : entry.ToArgb());
             }
+
+            // 2.) Flags
+            bw.Write(Palette.Flags);
         }
 
         #endregion
@@ -62,8 +68,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization
 
         private void ReadFrom(BinaryReader br)
         {
+            // 1.) Entries
             int len = br.ReadInt32();
-
             Palette = (ColorPalette)Reflector.CreateInstance(typeof(ColorPalette), len);
             Color[] entries = Palette.Entries;
             for (int i = 0; i < len; i++)
@@ -72,6 +78,14 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization
                     ? Color.FromKnownColor((KnownColor)br.ReadInt32())
                     : Color.FromArgb(br.ReadInt32());
             }
+
+            // 2.) Flags
+            int flags = br.ReadInt32();
+            FieldInfo? flagsField = typeof(ColorPalette).GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
+                .FirstOrDefault(f => f.FieldType == typeof(int));
+
+            if (flagsField != null)
+                FieldAccessor.GetAccessor(flagsField).SetInstanceValue(Palette, flags);
         }
 
         #endregion
