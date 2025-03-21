@@ -79,14 +79,16 @@ API changes:
 + New ColorDebuggerVisualizerProviderImpl class (.NET Framework 4.7.2 only)
 + New ColorPaletteDebuggerVisualizerProviderImpl class (.NET Framework 4.7.2 only)
 + New GraphicsDebuggerVisualizerProviderImpl class (.NET Framework 4.7.2 only)
++ New BitmapDataDebuggerVisualizerProviderImpl class (.NET Framework 4.7.2 only)
 
 + KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization namespace:
 ----------------------------------------------------------------------
 + The ImageSerializer class has been made public.
 + The IconSerializer class has been made public.
-+ The GraphicsSerializer class has been made public.
 + The ColorSerializer class has been made public.
 + The ColorPaletteSerializer class has been made public.
++ The GraphicsSerializer class has been made public.
++ The BitmapDataSerializer class has been made public.
 
 
 ~~~~~~~~~

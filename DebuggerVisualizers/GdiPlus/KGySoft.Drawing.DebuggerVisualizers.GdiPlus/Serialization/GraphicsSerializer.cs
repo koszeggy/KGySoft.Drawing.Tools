@@ -25,7 +25,7 @@ using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization
 {
     /// <summary>
-    /// Provides serialization for the <see cref="Image"/> type.
+    /// Provides serialization for the <see cref="Graphics"/> type.
     /// </summary>
     public class GraphicsSerializer : SerializerBase
     {
