@@ -1,9 +1,9 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: LanguageSettingsForm.cs
+//  File: LanguageSettingsControl.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -21,17 +21,49 @@ using System.Globalization;
 using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
+using KGySoft.Drawing.ImagingTools.View.Forms;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
 
-namespace KGySoft.Drawing.ImagingTools.View.Forms
+namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    internal partial class LanguageSettingsForm : MvvmBaseForm
+    internal partial class LanguageSettingsControl : MvvmBaseUserControl
     {
+        #region Fields
+
+        private ParentViewProperties? parentProperties;
+        private ICommandBinding? saveCommandBinding;
+
+        #endregion
+
         #region Properties
 
-        private new LanguageSettingsViewModel ViewModel => (LanguageSettingsViewModel)base.ViewModel;
+        #region Internal Properties
+
+        internal override ParentViewProperties ParentViewProperties => parentProperties ??= new ParentViewProperties
+        {
+            BorderStyle = FormBorderStyle.FixedDialog,
+            Icon = Properties.Resources.Language,
+            AcceptButton = okCancelApplyButtons.OKButton,
+            CancelButton = okCancelApplyButtons.CancelButton,
+            ClosingCallback = (sender, e) =>
+            {
+                // if user (or system) closes the window without pressing cancel we need to execute the cancel command
+                if (((Form)sender).DialogResult != DialogResult.OK && e.CloseReason != CloseReason.None)
+                    okCancelApplyButtons.CancelButton.PerformClick();
+            }
+        };
+
+        internal override Action<MvvmParentForm> ParentViewCommandBindingsInitializer => InitParentViewCommandBindings;
+
+        #endregion
+
+        #region Private Properties
+
+        private new LanguageSettingsViewModel ViewModel => (LanguageSettingsViewModel)base.ViewModel!;
+
+        #endregion
 
         #endregion
 
@@ -39,27 +71,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Internal Constructors
 
-        internal LanguageSettingsForm(LanguageSettingsViewModel viewModel) : base(viewModel)
+        internal LanguageSettingsControl(LanguageSettingsViewModel viewModel) : base(viewModel)
         {
             InitializeComponent();
             btnEditResources.Height = cmbLanguages.Height + 2; // helps aligning better for higher DPIs
-            AcceptButton = okCancelApplyButtons.OKButton;
-            CancelButton = okCancelApplyButtons.CancelButton;
-
-            // Mono/Windows: exiting because ToolTips throw an exception if set for an embedded control and
-            // since they don't appear for negative padding there is simply no place for them.
-            if (OSUtils.IsMono && OSUtils.IsWindows)
-                return;
-
-            ValidationMapping[nameof(viewModel.ResourceCustomPath)] = gbResxResourcesPath.CheckBox;
-            ErrorProvider.SetIconAlignment(gbResxResourcesPath.CheckBox, ErrorIconAlignment.TopRight);
         }
 
         #endregion
 
         #region Private Constructors
 
-        private LanguageSettingsForm() : this(null!)
+        private LanguageSettingsControl() : this(null!)
         {
             // this ctor is just for the designer
         }
@@ -94,21 +116,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 btnDownloadResources.Height = (int)(23 * scale.Y);
             }
 
+            // Mono/Windows: ignoring because ToolTips throw an exception if set for an embedded control and
+            // since they don't appear for negative padding there is simply no place for them.
+            if (!IsLoaded && !(OSUtils.IsMono && OSUtils.IsWindows))
+            {
+                ValidationMapping[nameof(ViewModel.ResourceCustomPath)] = gbResxResourcesPath.CheckBox;
+                ErrorProvider.SetIconAlignment(gbResxResourcesPath.CheckBox, ErrorIconAlignment.TopRight);
+            }
+
             base.OnLoad(e);
-        }
-
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            // if user (or system) closes the window without pressing cancel we need to execute the cancel command
-            if (DialogResult != DialogResult.OK && e.CloseReason != CloseReason.None)
-                okCancelApplyButtons.CancelButton.PerformClick();
-            base.OnFormClosing(e);
-        }
-
-        protected override void ApplyResources()
-        {
-            base.ApplyResources();
-            Icon = Properties.Resources.Language;
         }
 
         protected override void ApplyViewModel()
@@ -117,6 +133,19 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             InitCommandBindings();
             InitPropertyBindings();
             base.ApplyViewModel();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (IsDisposed)
+                return;
+
+            if (disposing)
+                components?.Dispose();
+
+            saveCommandBinding = null;
+            parentProperties = null;
+            base.Dispose(disposing);
         }
 
         #endregion
@@ -160,9 +189,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.Add(ViewModel.CancelCommand)
                 .AddSource(okCancelApplyButtons.CancelButton, nameof(okCancelApplyButtons.CancelButton.Click));
 
-            CommandBindings.Add(ViewModel.SaveConfigCommand)
-                .AddSource(okCancelApplyButtons.OKButton, nameof(okCancelApplyButtons.OKButton.Click))
-                .Executed += (_, args) => DialogResult = args.State[LanguageSettingsViewModel.StateSaveExecutedWithError] is true ? DialogResult.None : DialogResult.OK;
+            saveCommandBinding = CommandBindings.Add(ViewModel.SaveConfigCommand)
+                .AddSource(okCancelApplyButtons.OKButton, nameof(okCancelApplyButtons.OKButton.Click));
 
             CommandBindings.Add(ViewModel.ApplyCommand, ViewModel.ApplyCommandState)
                 .AddSource(okCancelApplyButtons.ApplyButton, nameof(okCancelApplyButtons.ApplyButton.Click));
@@ -186,6 +214,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.Add(ValidationResultsChangedCommand)
                 .AddSource(ViewModel, nameof(ViewModel.ValidationResultsChanged))
                 .WithParameter(() => ViewModel.ValidationResults);
+        }
+
+        private void InitParentViewCommandBindings(MvvmParentForm parent)
+        {
+            // preventing closing the form if the command has executed with errors
+            if (saveCommandBinding is ICommandBinding binding)
+                binding.Executed += (_, args) => parent.DialogResult = args.State[LanguageSettingsViewModel.StateSaveExecutedWithError] is true ? DialogResult.None : DialogResult.OK;
         }
 
         #endregion

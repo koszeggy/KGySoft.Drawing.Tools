@@ -1,25 +1,11 @@
-﻿
-namespace KGySoft.Drawing.ImagingTools.View.Forms
+﻿namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    partial class LanguageSettingsForm
+    partial class LanguageSettingsControl
     {
         /// <summary>
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
-
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
 
         #region Windows Form Designer generated code
 
@@ -186,19 +172,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.chbUseOSLanguage.Text = "chbUseOSLanguage";
             this.chbUseOSLanguage.UseVisualStyleBackColor = true;
             // 
-            // LanguageSettingsForm
+            // LanguageSettingsControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(334, 220);
+            this.Size = new System.Drawing.Size(334, 220);
             this.Controls.Add(this.gbAllowResxResources);
             this.Controls.Add(this.okCancelApplyButtons);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "LanguageSettingsForm";
+            this.Name = "LanguageSettingsControl";
             this.Padding = new System.Windows.Forms.Padding(3);
-            this.Text = "LanguageSettingsForm";
             this.gbAllowResxResources.ResumeLayout(false);
             this.gbAllowResxResources.PerformLayout();
             this.gbDisplayLanguage.ResumeLayout(false);
