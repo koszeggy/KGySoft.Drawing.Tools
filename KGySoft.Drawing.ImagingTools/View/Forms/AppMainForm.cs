@@ -27,7 +27,7 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
-    internal partial class AppMainForm : MvvmParentForm
+    internal sealed partial class AppMainForm : MvvmParentForm
     {
         #region Properties
 
@@ -54,23 +54,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Constructors
 
-        #region Internal Constructors
-
         internal AppMainForm(MainUserControl mvvmChild) : base(mvvmChild)
         {
             InitializeComponent();
         }
-
-        #endregion
-
-        #region Private Constructors
-
-        private AppMainForm() : this(null!)
-        {
-            // this ctor is just for the designer
-        }
-
-        #endregion
 
         #endregion
 

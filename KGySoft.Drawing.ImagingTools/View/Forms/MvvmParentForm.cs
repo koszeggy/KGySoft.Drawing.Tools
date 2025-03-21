@@ -21,6 +21,7 @@ using System.Threading;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.View.UserControls;
+using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
 
@@ -57,6 +58,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Constructors
 
+        #region Internal Constructors
+
         internal MvvmParentForm(MvvmBaseUserControl mvvmChild)
         {
             this.mvvmChild = mvvmChild;
@@ -65,6 +68,18 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             InitializeForm();
             StartPosition = OSUtils.IsMono && OSUtils.IsWindows ? FormStartPosition.WindowsDefaultLocation : FormStartPosition.CenterParent;
         }
+
+        #endregion
+
+        #region Private Constructors
+
+        private MvvmParentForm()
+            : this((MvvmBaseUserControl)ViewFactory.CreateView(ViewModelFactory.CreateDefault()))
+        {
+            // this ctor is just for the designer when opening the derived main form
+        }
+
+        #endregion
 
         #endregion
 

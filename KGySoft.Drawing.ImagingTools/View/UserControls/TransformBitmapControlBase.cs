@@ -137,6 +137,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
             if (disposing)
                 components?.Dispose();
+
+            parentProperties = null;
             base.Dispose(disposing);
         }
 
