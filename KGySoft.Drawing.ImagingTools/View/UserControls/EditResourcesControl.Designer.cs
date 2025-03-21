@@ -1,25 +1,11 @@
-﻿
-namespace KGySoft.Drawing.ImagingTools.View.Forms
+﻿namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    partial class EditResourcesForm
+    internal partial class EditResourcesControl
     {
         /// <summary>
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
-
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
 
         #region Windows Form Designer generated code
 
@@ -259,21 +245,18 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.okCancelApplyButtons.Size = new System.Drawing.Size(578, 35);
             this.okCancelApplyButtons.TabIndex = 1;
             // 
-            // EditResourcesForm
+            // EditResourcesControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(584, 311);
+            this.Size = new System.Drawing.Size(584, 311);
             this.Controls.Add(this.gbResourceEntries);
             this.Controls.Add(this.gbResourceFile);
             this.Controls.Add(this.splitterEditResources);
             this.Controls.Add(this.pnlEditResourceEntry);
             this.Controls.Add(this.okCancelApplyButtons);
-            this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(300, 300);
-            this.Name = "EditResourcesForm";
+            this.Name = "EditResourcesControl";
             this.Padding = new System.Windows.Forms.Padding(3);
-            this.Text = "EditResourcesForm";
             this.gbResourceEntries.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.gridResources)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource)).EndInit();
@@ -286,7 +269,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             this.gbTranslatedText.ResumeLayout(false);
             this.gbTranslatedText.PerformLayout();
             this.ResumeLayout(false);
-
         }
 
         #endregion

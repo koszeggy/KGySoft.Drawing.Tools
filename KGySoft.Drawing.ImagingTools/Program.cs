@@ -16,6 +16,7 @@
 #region Usings
 
 using System;
+using System.Globalization;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.View;
@@ -40,7 +41,6 @@ namespace KGySoft.Drawing.ImagingTools
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            //ViewModelFactory.CreateEditResources()
             //ViewModelFactory.CreateLanguageSettings()
             //ViewModelFactory.CreateManageInstallations()
             //ViewModelFactory.FromBitmapData()
@@ -56,14 +56,14 @@ namespace KGySoft.Drawing.ImagingTools
             //using var bmp = new System.Drawing.Bitmap(100, 100);
             //bmp.Clear(System.Drawing.Color.AliceBlue);
 
-            //using (IViewModel viewModel = ViewModelFactory.CreateDownloadResources())
+            //using (IViewModel viewModel = ViewModelFactory.CreateEditResources(CultureInfo.CurrentCulture.Parent))
             //{
             //    using IView view = ViewFactory.CreateView(viewModel);
             //    Application.Run(ViewFactory.TryGetForm(view));
             //}
 
             //// WPF test
-            //using (IViewModel viewModel = ViewModelFactory.CreateDownloadResources())
+            //using (IViewModel viewModel = ViewModelFactory.CreateEditResources(CultureInfo.CurrentCulture.Parent))
             //{
             //    using IView view = ViewFactory.CreateView(viewModel);
             //    System.Windows.Application app = new();

@@ -1,9 +1,9 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: EditResourcesForm.cs
+//  File: EditResourcesControl.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -15,21 +15,58 @@
 
 #region Usings
 
+using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 
+using KGySoft.ComponentModel;
 using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.Drawing.ImagingTools.View.Forms;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
 
-namespace KGySoft.Drawing.ImagingTools.View.Forms
+namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    internal partial class EditResourcesForm : MvvmBaseForm
+    internal partial class EditResourcesControl : MvvmBaseUserControl
     {
+        #region Fields
+
+        private ParentViewProperties? parentProperties;
+        private ICommandBinding? saveCommandBinding;
+
+        #endregion
+
         #region Properties
 
-        private new EditResourcesViewModel ViewModel => (EditResourcesViewModel)base.ViewModel;
+        #region Internal Properties
+
+        internal override ParentViewProperties ParentViewProperties => parentProperties ??= new ParentViewProperties
+        {
+            Icon = Properties.Resources.Language,
+            HideMinimizeButton = true,
+            MinimumSize = new Size(300, 300),
+            ClosingCallback = (_,_) =>
+            {
+                if (gridResources.IsCurrentCellInEditMode)
+                {
+                    gridResources.CancelEdit();
+                    gridResources.EndEdit();
+                }
+            }
+        };
+
+        internal override Action<MvvmParentForm> ParentViewPropertyBindingsInitializer => InitParentViewPropertyBindings;
+        internal override Action<MvvmParentForm> ParentViewCommandBindingsInitializer => InitParentViewCommandBindings;
+
+        #endregion
+
+        #region Private Properties
+
+        private new EditResourcesViewModel ViewModel => (EditResourcesViewModel)base.ViewModel!;
+
+        #endregion
 
         #endregion
 
@@ -37,16 +74,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Internal Constructors
 
-        internal EditResourcesForm(EditResourcesViewModel viewModel) : base(viewModel)
+        internal EditResourcesControl(EditResourcesViewModel viewModel) : base(viewModel)
         {
             // Note: Not setting Accept/CancelButton because they would be very annoying during the editing
             InitializeComponent();
             cmbResourceFiles.ValueMember = nameof(KeyValuePair<LocalizableLibraries, string>.Key);
             cmbResourceFiles.DisplayMember = nameof(KeyValuePair<LocalizableLibraries, string>.Value);
-            ErrorProvider.SetIconAlignment(gbTranslatedText, ErrorIconAlignment.MiddleLeft);
-            WarningProvider.SetIconAlignment(gbTranslatedText, ErrorIconAlignment.MiddleLeft);
-            ValidationMapping[nameof(ResourceEntry.TranslatedText)] = gbTranslatedText;
-            
+
             // For Linux/Mono adding an empty column in the middle so the error provider icon will not appear in a new row
             if (!OSUtils.IsWindows)
             {
@@ -60,7 +94,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Constructors
 
-        private EditResourcesForm() : this(null!)
+        private EditResourcesControl() : this(null!)
         {
             // this ctor is just for the designer
         }
@@ -73,10 +107,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Protected Methods
 
-        protected override void ApplyResources()
+        protected override void OnLoad(EventArgs e)
         {
-            base.ApplyResources();
-            Icon = Properties.Resources.Language;
+            if (!IsLoaded)
+            {
+                ErrorProvider.SetIconAlignment(gbTranslatedText, ErrorIconAlignment.MiddleLeft);
+                WarningProvider.SetIconAlignment(gbTranslatedText, ErrorIconAlignment.MiddleLeft);
+                ValidationMapping[nameof(ResourceEntry.TranslatedText)] = gbTranslatedText;
+            }
+
+            base.OnLoad(e);
         }
 
         protected override void ApplyViewModel()
@@ -86,15 +126,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             base.ApplyViewModel();
         }
 
-        protected override void OnFormClosing(FormClosingEventArgs e)
+        protected override void Dispose(bool disposing)
         {
-            if (gridResources.IsCurrentCellInEditMode)
-            {
-                gridResources.CancelEdit();
-                gridResources.EndEdit();
-            }
+            if (IsDisposed)
+                return;
 
-            base.OnFormClosing(e);
+            if (disposing)
+                components?.Dispose();
+
+            parentProperties = null;
+            saveCommandBinding = null;
+            base.Dispose(disposing);
         }
 
         #endregion
@@ -105,9 +147,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             // VM.ResourceFiles -> cmbResourceFiles.DataSource
             cmbResourceFiles.DataSource = ViewModel.ResourceFiles;
-
-            // VM.TitleCaption -> Text
-            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.TitleCaption), this, nameof(Text));
 
             // VM.SelectedLibrary <-> cmbResourceFiles.SelectedValue
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.SelectedLibrary), cmbResourceFiles, nameof(cmbResourceFiles.SelectedValue));
@@ -125,16 +164,22 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             txtTranslatedText.DataBindings.Add(nameof(txtTranslatedText.Text), bindingSource, nameof(ResourceEntry.TranslatedText), false, DataSourceUpdateMode.OnValidation);
         }
 
+        private void InitParentViewPropertyBindings(MvvmParentForm parent)
+        {
+            // VM.TitleCaption -> parent.Text
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.TitleCaption), nameof(Text), parent);
+        }
+
         private void InitCommandBindings()
         {
             // ApplyButton.Click -> ViewModel.ApplyResourcesCommand
             CommandBindings.Add(ViewModel.ApplyResourcesCommand, ViewModel.ApplyResourcesCommandState)
                 .AddSource(okCancelApplyButtons.ApplyButton, nameof(okCancelApplyButtons.ApplyButton.Click));
 
-            // OKButton.Click -> ViewModel.SaveResourcesCommand, and preventing closing the form if the command has executed with errors
-            CommandBindings.Add(ViewModel.SaveResourcesCommand)
-                .AddSource(okCancelApplyButtons.OKButton, nameof(okCancelApplyButtons.OKButton.Click))
-                .Executed += (_, args) => DialogResult = args.State[EditResourcesViewModel.StateSaveExecutedWithError] is true ? DialogResult.None : DialogResult.OK;
+            // OKButton.Click -> ViewModel.SaveResourcesCommand
+            saveCommandBinding = CommandBindings.Add(ViewModel.SaveResourcesCommand)
+                .AddSource(okCancelApplyButtons.OKButton, nameof(okCancelApplyButtons.OKButton.Click));
+                //.Executed += (_, args) => DialogResult = args.State[EditResourcesViewModel.StateSaveExecutedWithError] is true ? DialogResult.None : DialogResult.OK;
 
             // CancelButton.Click -> ViewModel.CancelResourcesCommand
             CommandBindings.Add(ViewModel.CancelEditCommand)
@@ -144,6 +189,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             CommandBindings.Add(ValidationResultsChangedCommand)
                 .AddSource(bindingSource, nameof(bindingSource.CurrentItemChanged))
                 .WithParameter(() => (bindingSource.Current as ResourceEntry)?.ValidationResults);
+        }
+
+        private void InitParentViewCommandBindings(MvvmParentForm parent)
+        {
+            // preventing closing the form if the command has executed with errors
+            if (saveCommandBinding is ICommandBinding binding)
+                binding.Executed += (_, args) => parent.DialogResult = args.State[EditResourcesViewModel.StateSaveExecutedWithError] is true ? DialogResult.None : DialogResult.OK;
         }
 
         #endregion
