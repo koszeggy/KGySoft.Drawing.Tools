@@ -1,7 +1,6 @@
-﻿
-namespace KGySoft.Drawing.ImagingTools.View.Forms
+﻿namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    partial class DownloadResourcesForm
+    internal partial class DownloadResourcesControl
     {
         /// <summary>
         /// Required designer variable.
@@ -109,17 +108,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // 
             // DownloadResourcesForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(364, 226);
+            this.Size = new System.Drawing.Size(364, 226);
             this.Controls.Add(this.gridDownloadableResources);
             this.Controls.Add(this.okCancelButtons);
             this.Controls.Add(this.progress);
-            this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(350, 250);
-            this.Name = "DownloadResourcesForm";
+            this.Name = "DownloadResourcesControl";
             this.Padding = new System.Windows.Forms.Padding(3);
-            this.Text = "DownloadResourcesForm";
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridDownloadableResources)).EndInit();
             this.ResumeLayout(false);

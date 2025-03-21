@@ -1,9 +1,9 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: DownloadResourcesForm.cs
+//  File: DownloadResourcesControl.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -15,19 +15,44 @@
 
 #region Usings
 
+using System.Drawing;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
 
-namespace KGySoft.Drawing.ImagingTools.View.Forms
+namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    internal partial class DownloadResourcesForm : MvvmBaseForm
+    internal partial class DownloadResourcesControl : MvvmBaseUserControl
     {
+        #region Fields
+
+        private ParentViewProperties? parentProperties;
+
+        #endregion
+
         #region Properties
 
-        private new DownloadResourcesViewModel ViewModel => (DownloadResourcesViewModel)base.ViewModel;
+        #region Internal Properties
+
+        internal override ParentViewProperties ParentViewProperties => parentProperties ??= new ParentViewProperties
+        {
+            AcceptButton = okCancelButtons.OKButton,
+            CancelButton = okCancelButtons.CancelButton,
+            Icon = Properties.Resources.Language,
+            ClosingCallback = (_,_) => ViewModel.CancelIfRunning(),
+            HideMinimizeButton = true,
+            MinimumSize = new Size(350, 250)
+        };
+
+        #endregion
+
+        #region Private Properties
+
+        private new DownloadResourcesViewModel ViewModel => (DownloadResourcesViewModel)base.ViewModel!;
+
+        #endregion
 
         #endregion
 
@@ -35,20 +60,18 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Internal Constructors
 
-        internal DownloadResourcesForm(DownloadResourcesViewModel viewModel) : base(viewModel)
+        internal DownloadResourcesControl(DownloadResourcesViewModel viewModel) : base(viewModel)
         {
             InitializeComponent();
             okCancelButtons.OKButton.Name = okCancelButtons.OKButton.Text = @"btnDownload";
             okCancelButtons.OKButton.DialogResult = DialogResult.None;
-            AcceptButton = okCancelButtons.OKButton;
-            CancelButton = okCancelButtons.CancelButton;
         }
 
         #endregion
 
         #region Private Constructors
 
-        private DownloadResourcesForm() : this(null!)
+        private DownloadResourcesControl() : this(null!)
         {
             // this ctor is just for the designer
         }
@@ -61,12 +84,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Protected Methods
 
-        protected override void ApplyResources()
-        {
-            Icon = Properties.Resources.Language;
-            base.ApplyResources();
-        }
-
         protected override void ApplyViewModel()
         {
             InitCommandBindings();
@@ -74,17 +91,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             base.ApplyViewModel();
         }
 
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            ViewModel.CancelIfRunning();
-            base.OnFormClosing(e);
-        }
-
         protected override void Dispose(bool disposing)
         {
+            if (IsDisposed)
+                return;
+
+            ViewModel.CancelIfRunning();
             if (disposing)
                 components?.Dispose();
 
+            parentProperties = null;
             base.Dispose(disposing);
         }
 
