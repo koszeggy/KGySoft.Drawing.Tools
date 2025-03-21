@@ -55,7 +55,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test
 
         #region Internal Methods
 
-        internal static bool ShowLegacyVisualizer(DebuggerVisualizerAttribute attr, object targetObject, bool isReplaceable, out object? replacementObject)
+        internal static bool ShowClassicVisualizer(DebuggerVisualizerAttribute attr, object targetObject, bool isReplaceable, out object? replacementObject)
         {
             var windowService = new TestWindowService();
             var objectProvider = new TestObjectProvider(targetObject) { IsObjectReplaceable = isReplaceable };

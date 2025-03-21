@@ -57,7 +57,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.ViewModel
             new HashSet<string> { nameof(FileAsImage), nameof(FileAsBitmap), nameof(FileAsMetafile),nameof(FileAsIcon) },
         };
 
-        private static readonly Dictionary<Type, DebuggerVisualizerAttribute> legacyDebuggerVisualizers = GdiPlusDebuggerHelper.GetDebuggerVisualizers();
+        private static readonly Dictionary<Type, DebuggerVisualizerAttribute> classicDebuggerVisualizers = GdiPlusDebuggerHelper.GetDebuggerVisualizers();
 
 #if NET472_OR_GREATER
         private static readonly Dictionary<Type, IDebuggerVisualizerProvider> debuggerVisualizerProviders = GdiPlusDebuggerHelper.GetDebuggerVisualizerProviders();
@@ -107,7 +107,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.ViewModel
         internal Func<Rectangle>? GetClipCallback { get => Get<Func<Rectangle>?>(); set => Set(value); }
 
         internal ICommand DirectViewCommand => Get(() => new SimpleCommand(OnViewDirectCommand));
-        internal ICommand LegacyDebugCommand => Get(() => new SimpleCommand(OnLegacyDebugCommand));
+        internal ICommand ClassicDebugCommand => Get(() => new SimpleCommand(OnClassicDebugCommand));
         internal ICommand ExtensionDebugCommand => Get(() => new SimpleCommand(OnExtensionDebugCommand));
 
         private object? TestObject { get => Get<object?>(); set => Set(value); }
@@ -475,7 +475,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.ViewModel
             }
         }
 
-        private void OnLegacyDebugCommand()
+        private void OnClassicDebugCommand()
         {
             object? testObject = TestObject;
             if (testObject == null)
@@ -484,7 +484,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.ViewModel
             Type targetType = testObject is Image && (!ImageFromFile && AsImage || ImageFromFile && FileAsImage)
                 ? typeof(Image)
                 : testObject.GetType();
-            DebuggerVisualizerAttribute? attr = legacyDebuggerVisualizers.GetValueOrDefault(targetType);
+            DebuggerVisualizerAttribute? attr = classicDebuggerVisualizers.GetValueOrDefault(targetType);
             if (attr == null)
             {
                 ErrorCallback?.Invoke($"No debugger visualizer found for type {targetType}");
@@ -493,7 +493,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.ViewModel
 
             try
             {
-                if (DebuggerVisualizerHelper.ShowLegacyVisualizer(attr, testObject, !AsReadOnly, out object? replacementObject))
+                if (DebuggerVisualizerHelper.ShowClassicVisualizer(attr, testObject, !AsReadOnly, out object? replacementObject))
                     TestObject = replacementObject;
             }
             catch (Exception e) when (e is not StackOverflowException)

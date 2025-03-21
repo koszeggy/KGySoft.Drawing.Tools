@@ -72,14 +72,14 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
             commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.PixelFormatEnabled), nameof(cmbPixelFormat.Enabled), cmbPixelFormat);
             commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.ImageFromFile), nameof(gbFile.Enabled), gbFile);
             commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.AsReadOnlyEnabled), nameof(chbAsReadOnly.Enabled), chbAsReadOnly);
-            commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.CanDebug), nameof(Button.Enabled), btnViewDirect, btnViewByLegacyDebugger, btnViewByExtensionDebugger);
+            commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.CanDebug), nameof(Button.Enabled), btnViewDirect, btnViewByClassicDebugger, btnViewByExtensionDebugger);
             commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.PreviewImage), nameof(pictureBox.Image), pictureBox);
 
             commandBindings.Add<EventArgs>(OnSelectFileCommand)
                 .AddSource(txtFile, nameof(txtFile.Click))
                 .AddSource(txtFile, nameof(txtFile.DoubleClick));
             commandBindings.Add(viewModel.DirectViewCommand).AddSource(btnViewDirect, nameof(btnViewDirect.Click));
-            commandBindings.Add(viewModel.LegacyDebugCommand).AddSource(btnViewByLegacyDebugger, nameof(btnViewByLegacyDebugger.Click));
+            commandBindings.Add(viewModel.ClassicDebugCommand).AddSource(btnViewByClassicDebugger, nameof(btnViewByClassicDebugger.Click));
             commandBindings.Add(viewModel.ExtensionDebugCommand).AddSource(btnViewByExtensionDebugger, nameof(btnViewByExtensionDebugger.Click));
 
             viewModel.GetHwndCallback = () => Handle;

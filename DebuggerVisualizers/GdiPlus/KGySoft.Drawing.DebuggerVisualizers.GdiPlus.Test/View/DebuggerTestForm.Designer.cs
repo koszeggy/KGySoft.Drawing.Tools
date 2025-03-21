@@ -18,7 +18,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
         private void InitializeComponent()
         {
             this.btnViewDirect = new System.Windows.Forms.Button();
-            this.btnViewByLegacyDebugger = new System.Windows.Forms.Button();
+            this.btnViewByClassicDebugger = new System.Windows.Forms.Button();
             this.txtFile = new System.Windows.Forms.TextBox();
             this.rbFromFile = new System.Windows.Forms.RadioButton();
             this.rbManagedIcon = new System.Windows.Forms.RadioButton();
@@ -57,16 +57,16 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
             this.btnViewDirect.Text = "View Directly";
             this.btnViewDirect.UseVisualStyleBackColor = true;
             // 
-            // btnViewByLegacyDebugger
+            // btnViewByClassicDebugger
             // 
-            this.btnViewByLegacyDebugger.Dock = System.Windows.Forms.DockStyle.Top;
-            this.btnViewByLegacyDebugger.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnViewByLegacyDebugger.Location = new System.Drawing.Point(0, 371);
-            this.btnViewByLegacyDebugger.Name = "btnViewByLegacyDebugger";
-            this.btnViewByLegacyDebugger.Size = new System.Drawing.Size(196, 24);
-            this.btnViewByLegacyDebugger.TabIndex = 15;
-            this.btnViewByLegacyDebugger.Text = "View by Legacy Debugger";
-            this.btnViewByLegacyDebugger.UseVisualStyleBackColor = true;
+            this.btnViewByClassicDebugger.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnViewByClassicDebugger.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btnViewByClassicDebugger.Location = new System.Drawing.Point(0, 371);
+            this.btnViewByClassicDebugger.Name = "btnViewByClassicDebugger";
+            this.btnViewByClassicDebugger.Size = new System.Drawing.Size(196, 24);
+            this.btnViewByClassicDebugger.TabIndex = 15;
+            this.btnViewByClassicDebugger.Text = "View by Classic Debugger";
+            this.btnViewByClassicDebugger.UseVisualStyleBackColor = true;
             // 
             // txtFile
             // 
@@ -154,7 +154,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
             // panelControls
             // 
             this.panelControls.Controls.Add(this.btnViewByExtensionDebugger);
-            this.panelControls.Controls.Add(this.btnViewByLegacyDebugger);
+            this.panelControls.Controls.Add(this.btnViewByClassicDebugger);
             this.panelControls.Controls.Add(this.btnViewDirect);
             this.panelControls.Controls.Add(this.chbAsReadOnly);
             this.panelControls.Controls.Add(this.gbFile);
@@ -380,7 +380,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
         private RadioButton rbManagedIcon;
         private RadioButton rbFromFile;
         private TextBox txtFile;
-        private Button btnViewByLegacyDebugger;
+        private Button btnViewByClassicDebugger;
         private Button btnViewDirect;
         private PictureBox pictureBox;
         private Panel panelControls;
