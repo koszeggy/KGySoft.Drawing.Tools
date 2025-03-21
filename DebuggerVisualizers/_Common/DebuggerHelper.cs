@@ -53,11 +53,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <returns>An <see cref="Image"/> that is returned by the debugger. If <paramref name="isReplaceable"/> is <see langword="false"/>, then this will be always the original <paramref name="image"/>.</returns>
         public static Image? DebugImage(Image? image, bool isReplaceable = true, IntPtr ownerWindowHandle = default)
         {
-            using (IViewModel<Image?> vm = ViewModelFactory.FromImage(image, !isReplaceable))
-            {
-                ViewFactory.ShowDialog(vm, ownerWindowHandle);
-                return vm.IsModified ? vm.GetEditedModel() : image;
-            }
+            using IViewModel<Image?> vm = ViewModelFactory.FromImage(image, !isReplaceable);
+            ViewFactory.ShowDialog(vm, ownerWindowHandle);
+            return vm.IsModified ? vm.GetEditedModel() : image;
         }
 
         /// <summary>
@@ -71,11 +69,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <returns>A <see cref="Bitmap"/> that is returned by the debugger. If <paramref name="isReplaceable"/> is <see langword="false"/>, then this will be always the original <paramref name="bitmap"/>.</returns>
         public static Bitmap? DebugBitmap(Bitmap? bitmap, bool isReplaceable = true, IntPtr ownerWindowHandle = default)
         {
-            using (IViewModel<Bitmap?> vm = ViewModelFactory.FromBitmap(bitmap, !isReplaceable))
-            {
-                ViewFactory.ShowDialog(vm, ownerWindowHandle);
-                return vm.IsModified ? vm.GetEditedModel() : bitmap;
-            }
+            using IViewModel<Bitmap?> vm = ViewModelFactory.FromBitmap(bitmap, !isReplaceable);
+            ViewFactory.ShowDialog(vm, ownerWindowHandle);
+            return vm.IsModified ? vm.GetEditedModel() : bitmap;
         }
 
         /// <summary>
@@ -89,11 +85,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <returns>A <see cref="Metafile"/> that is returned by the debugger. If <paramref name="isReplaceable"/> is <see langword="false"/>, then this will be always the original <paramref name="metafile"/>.</returns>
         public static Metafile? DebugMetafile(Metafile? metafile, bool isReplaceable = true, IntPtr ownerWindowHandle = default)
         {
-            using (IViewModel<Metafile?> vm = ViewModelFactory.FromMetafile(metafile, !isReplaceable))
-            {
-                ViewFactory.ShowDialog(vm, ownerWindowHandle);
-                return vm.IsModified ? vm.GetEditedModel() : metafile;
-            }
+            using IViewModel<Metafile?> vm = ViewModelFactory.FromMetafile(metafile, !isReplaceable);
+            ViewFactory.ShowDialog(vm, ownerWindowHandle);
+            return vm.IsModified ? vm.GetEditedModel() : metafile;
         }
 
         /// <summary>
@@ -107,11 +101,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <returns>An <see cref="Icon"/> that is returned by the debugger. If <paramref name="isReplaceable"/> is <see langword="false"/>, then this will be always the original <paramref name="icon"/>.</returns>
         public static Icon? DebugIcon(Icon? icon, bool isReplaceable = true, IntPtr ownerWindowHandle = default)
         {
-            using (IViewModel<Icon?> vm = ViewModelFactory.FromIcon(icon, !isReplaceable))
-            {
-                ViewFactory.ShowDialog(vm, ownerWindowHandle);
-                return vm.IsModified ? vm.GetEditedModel() : icon;
-            }
+            using IViewModel<Icon?> vm = ViewModelFactory.FromIcon(icon, !isReplaceable);
+            ViewFactory.ShowDialog(vm, ownerWindowHandle);
+            return vm.IsModified ? vm.GetEditedModel() : icon;
         }
 
         /// <summary>
@@ -124,8 +116,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         {
             if (bitmapData == null)
                 throw new ArgumentNullException(nameof(bitmapData), PublicResources.ArgumentNull);
-            using (IViewModel vm = ViewModelFactory.FromBitmapData(bitmapData))
-                ViewFactory.ShowDialog(vm, ownerWindowHandle);
+            using IViewModel vm = ViewModelFactory.FromBitmapData(bitmapData);
+            ViewFactory.ShowDialog(vm, ownerWindowHandle);
         }
 
         /// <summary>
@@ -138,8 +130,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         {
             if (customBitmapInfo == null)
                 throw new ArgumentNullException(nameof(customBitmapInfo), PublicResources.ArgumentNull);
-            using (IViewModel vm = ViewModelFactory.FromCustomBitmap(customBitmapInfo))
-                ViewFactory.ShowDialog(vm, ownerWindowHandle);
+            using IViewModel vm = ViewModelFactory.FromCustomBitmap(customBitmapInfo);
+            ViewFactory.ShowDialog(vm, ownerWindowHandle);
         }
 
         /// <summary>
@@ -152,8 +144,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         {
             if (graphics == null)
                 throw new ArgumentNullException(nameof(graphics), PublicResources.ArgumentNull);
-            using (IViewModel vm = ViewModelFactory.FromGraphics(graphics))
-                ViewFactory.ShowDialog(vm, ownerWindowHandle);
+            using IViewModel vm = ViewModelFactory.FromGraphics(graphics);
+            ViewFactory.ShowDialog(vm, ownerWindowHandle);
         }
 
         /// <summary>
@@ -168,18 +160,12 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         {
             if (palette == null)
                 throw new ArgumentNullException(nameof(palette), PublicResources.ArgumentNull);
-            using (IViewModel<Color[]> vm = ViewModelFactory.FromPalette(palette, !isReplaceable))
-            {
-                ViewFactory.ShowDialog(vm, ownerWindowHandle);
-                if (!isReplaceable || !vm.IsModified)
-                    return null;
-                Color[] result = vm.GetEditedModel();
+            using IViewModel<ColorPalette> vm = ViewModelFactory.FromPalette(palette, !isReplaceable);
+            ViewFactory.ShowDialog(vm, ownerWindowHandle);
+            if (isReplaceable && vm.IsModified)
+                return vm.GetEditedModel();
 
-                // TODO: if length can change use the code from OnShowPaletteCommand
-                Debug.Assert(result.Length == palette.Entries.Length, "Palette length is not expected to be changed");
-                result.CopyTo(palette.Entries, 0);
-                return palette;
-            }
+            return null;
         }
 
         /// <summary>
@@ -207,12 +193,10 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <returns>A non-<see langword="null"/>&#160;instance, when the color has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
         public static Color? DebugColor(Color color, bool isReplaceable = true, IntPtr ownerWindowHandle = default)
         {
-            using (IViewModel<Color> vm = ViewModelFactory.FromColor(color, !isReplaceable))
-            {
-                ViewFactory.ShowDialog(vm, ownerWindowHandle);
-                if (isReplaceable && vm.IsModified)
-                    return vm.GetEditedModel();
-            }
+            using IViewModel<Color> vm = ViewModelFactory.FromColor(color, !isReplaceable);
+            ViewFactory.ShowDialog(vm, ownerWindowHandle);
+            if (isReplaceable && vm.IsModified)
+                return vm.GetEditedModel();
 
             return null;
         }

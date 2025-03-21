@@ -38,7 +38,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Internal Properties
 
         // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract - not cloning if value is null
-        internal Color[] Palette { get => Get<Color[]>(); init => Set(value?.Clone() ?? throw new ArgumentNullException(nameof(value), PublicResources.ArgumentNull)); }
+        internal Color[] Palette { get => Get<Color[]>(); set => Set(value?.Clone() ?? throw new ArgumentNullException(nameof(value), PublicResources.ArgumentNull)); }
         internal int Count { get => Get<int>(); private set => Set(value); }
         internal bool ReadOnly { get => Get<bool>(); set => Set(value); }
         internal int SelectedColorIndex { get => Get(-1); set => Set(value); }
@@ -62,6 +62,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Public Methods
 
         public override Color[] GetEditedModel() => Palette;
+        public override bool TrySetModel(Color[] model) => TryInvokeSync(() => Palette = model);
 
         #endregion
 
@@ -92,8 +93,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 case nameof(Palette):
                     var palette = (IList<Color>)e.NewValue!;
                     Count = palette.Count;
-                    if (palette.Count > 0)
-                        SelectedColorIndex = 0;
+                    SelectedColorIndex = palette.Count > 0 ? 0 : -1;
                     break;
 
                 case nameof(SelectedColorIndex):

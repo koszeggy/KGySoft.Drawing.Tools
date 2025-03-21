@@ -18,6 +18,9 @@ API changes:
 ! IViewModel<TModel> interface:
   ! New ChangesApplied event and TrySetModel method. Breaking change only if you implemented this interface,
     which is normally not needed.
+! ViewModelFactory class:
+  ! The return value of the FromPalette(ColorPalette, bool) method has been changed to IViewModel<ColorPalette> from
+    IViewModel<Color[]>. The FromPalette(Color[], bool) overload still returns IViewModel<Color[]>.
 
 * KGySoft.Drawing.ImagingTools.View namespace:
 ----------------------------------------------
