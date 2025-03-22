@@ -17,15 +17,14 @@
 
 using System.IO;
 
+using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 using KGySoft.Drawing.Imaging;
-
-using Microsoft.VisualStudio.DebuggerVisualizers;
 
 #endregion
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
 {
-    internal sealed class Color32Serializer : VisualizerObjectSource
+    internal sealed class Color32Serializer : SerializerBase
     {
         #region Methods
 
