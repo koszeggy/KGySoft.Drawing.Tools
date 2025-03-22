@@ -17,18 +17,23 @@
 
 using System.IO;
 
+using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 using KGySoft.Drawing.Imaging;
-
-using Microsoft.VisualStudio.DebuggerVisualizers;
 
 #endregion
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
 {
-    internal sealed class ReadableBitmapDataSerializer : VisualizerObjectSource
+    /// <summary>
+    /// Provides serialization for the <see cref="IReadableBitmapData"/> type.
+    /// </summary>
+    public sealed class ReadableBitmapDataSerializer : SerializerBase
     {
         #region Methods
 
+        /// <summary>
+        /// Called when the object to be debugged is about to be serialized.
+        /// </summary>
         public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeCustomBitmapInfo((IReadableBitmapData)target, outgoingData);
 
         #endregion

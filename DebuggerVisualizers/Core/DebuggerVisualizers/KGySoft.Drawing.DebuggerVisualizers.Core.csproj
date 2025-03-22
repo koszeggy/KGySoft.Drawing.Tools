@@ -42,9 +42,6 @@
     <ProjectReference Include="..\..\_Common\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.csproj" />
     <ProjectReference Include="..\..\..\KGySoft.Drawing.ImagingTools\KGySoft.Drawing.ImagingTools.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DebuggerVisualizerProviders\" />
-  </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy bin\$(ConfigurationName)\$(TargetFramework)\$(TargetFileName) ..\..\..\KGySoft.Drawing.ImagingTools\bin\$(ConfigurationName)\$(TargetFramework)\ /Y" />
