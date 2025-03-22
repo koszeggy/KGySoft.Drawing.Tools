@@ -27,31 +27,32 @@ using KGySoft.Drawing.ImagingTools.Model;
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal sealed class CustomBitmapVisualizerViewModel : ImageVisualizerViewModel
+    internal sealed class CustomBitmapVisualizerViewModel : ImageVisualizerViewModel, IViewModel<CustomBitmapInfo?>
     {
         #region Fields
 
-        private readonly CustomBitmapInfo bitmapInfo;
+        private CustomBitmapInfo? bitmapInfo;
 
         #endregion
 
         #region Constructors
 
-        internal CustomBitmapVisualizerViewModel(CustomBitmapInfo bitmapInfo)
+        internal CustomBitmapVisualizerViewModel(CustomBitmapInfo? bitmapInfo)
             : base(AllowedImageTypes.Bitmap)
         {
-            this.bitmapInfo = bitmapInfo;
-            Image = bitmapInfo.BitmapData?.ToBitmap();
             ReadOnly = true;
+            ResetBitmapInfo(bitmapInfo);
         }
 
         #endregion
 
         #region Methods
 
+        #region Protected Methods
+
         protected override void UpdateInfo()
         {
-            IReadableBitmapData? bitmapData = bitmapInfo.BitmapData;
+            IReadableBitmapData? bitmapData = bitmapInfo?.BitmapData;
 
             if (bitmapData == null)
             {
@@ -72,11 +73,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             InfoText = sb.ToString();
         }
 
-        protected override bool IsPaletteAvailable() => bitmapInfo.CustomPalette != null || base.IsPaletteAvailable();
+        protected override bool IsPaletteAvailable() => bitmapInfo?.CustomPalette != null || base.IsPaletteAvailable();
 
         protected override void ShowPalette()
         {
-            if (bitmapInfo.CustomPalette == null)
+            if (bitmapInfo?.CustomPalette == null)
             {
                 base.ShowPalette();
                 return;
@@ -92,10 +93,30 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 return;
 
             if (disposing)
-                bitmapInfo.Dispose();
+                bitmapInfo?.Dispose();
             
+            bitmapInfo = null;
             base.Dispose(disposing);
         }
+
+        #endregion
+
+        #region Private Methods
+
+        private void ResetBitmapInfo(CustomBitmapInfo? model)
+        {
+            bitmapInfo = model;
+            Image = model?.BitmapData?.ToBitmap();
+        }
+
+        #endregion
+
+        #region Explicitly Implemented Interface Methods
+
+        CustomBitmapInfo? IViewModel<CustomBitmapInfo?>.GetEditedModel() => null; // not editable
+        bool IViewModel<CustomBitmapInfo?>.TrySetModel(CustomBitmapInfo? model) => TryInvokeSync(() => ResetBitmapInfo(model));
+
+        #endregion
 
         #endregion
     }

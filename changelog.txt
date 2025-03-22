@@ -36,6 +36,8 @@ API changes:
     IViewModel. This is a compatible change because IVIewModel<TModel> is a more specific type than IViewModel.
   * The return type of the FromBitmapData(BitmapDataInfo) method has been changed to IViewModel<BitmapDataInfo> from
     IViewModel. This is a compatible change because IVIewModel<TModel> is a more specific type than IViewModel.
+  * The return type of the FromCustomBitmap method has been changed to IViewModel<CustomBitmapInfo> from
+    IViewModel. This is a compatible change because IVIewModel<TModel> is a more specific type than IViewModel.
 
 * KGySoft.Drawing.ImagingTools.View namespace:
 ----------------------------------------------
