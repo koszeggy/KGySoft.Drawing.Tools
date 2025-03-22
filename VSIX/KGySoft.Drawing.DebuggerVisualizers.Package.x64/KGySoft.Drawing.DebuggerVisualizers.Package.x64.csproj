@@ -16,6 +16,10 @@
     <DefineConstants>$(DefineConstants);VS2022_OR_GREATER</DefineConstants>
     <UseWPF>true</UseWPF>
     <VssdkCompatibleExtension>true</VssdkCompatibleExtension>
+
+    <!--Suppressions
+        - VSTHRD010: Accessing "..." should only be done on the main thread. Await JoinableTaskFactory.SwitchToMainThreadAsync() first. - false alarm, the callers always switch to the main thread. -->
+    <NoWarn>$(NoWarn);VSTHRD010</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,12 +30,14 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\DebuggerVisualizers\GdiPlus\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.csproj" />
+    <ProjectReference Include="..\..\DebuggerVisualizers\Core\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include=".vsextension\string-resources.json" />
     <Content Include="..\..\DebuggerVisualizers\_Common\DebuggerVisualizers\bin\$(Configuration)\net472\KGySoft.Drawing.DebuggerVisualizers.dll" Link="netstandard2.0\KGySoft.Drawing.DebuggerVisualizers.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\DebuggerVisualizers\GdiPlus\DebuggerVisualizers\bin\$(Configuration)\net472\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll" Link="netstandard2.0\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\DebuggerVisualizers\Core\DebuggerVisualizers\bin\$(Configuration)\net472\KGySoft.Drawing.DebuggerVisualizers.Core.dll" Link="netstandard2.0\KGySoft.Drawing.DebuggerVisualizers.Core.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\KGySoft.Drawing.ImagingTools\bin\$(Configuration)\net462\KGySoft.Drawing.ImagingTools.exe" Link="netstandard2.0\KGySoft.Drawing.ImagingTools.exe" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\KGySoft.Drawing.ImagingTools\bin\$(Configuration)\net462\KGySoft.CoreLibraries.dll" Link="netstandard2.0\KGySoft.CoreLibraries.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\KGySoft.Drawing.ImagingTools\bin\$(Configuration)\net462\KGySoft.Drawing.dll" Link="netstandard2.0\KGySoft.Drawing.dll" CopyToOutputDirectory="PreserveNewest" />

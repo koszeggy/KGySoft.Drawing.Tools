@@ -6,5 +6,7 @@
   "DebuggerVisualizerProviders.GdiPlus.ColorDebuggerVisualizerProvider.Name": "KGy SOFT Color Debugger Visualizer",
   "DebuggerVisualizerProviders.GdiPlus.ColorPaletteDebuggerVisualizerProvider.Name": "KGy SOFT ColorPalette Debugger Visualizer",
   "DebuggerVisualizerProviders.GdiPlus.GraphicsDebuggerVisualizerProvider.Name": "KGy SOFT Graphics Debugger Visualizer",
-  "DebuggerVisualizerProviders.GdiPlus.BitmapDataDebuggerVisualizerProvider.Name": "KGy SOFT BitmapData Debugger Visualizer"
+  "DebuggerVisualizerProviders.GdiPlus.BitmapDataDebuggerVisualizerProvider.Name": "KGy SOFT BitmapData Debugger Visualizer",
+
+  "DebuggerVisualizerProviders.Core.ReadableBitmapDataDebuggerVisualizerProvider.Name": "KGy SOFT IReadableBitmapData Debugger Visualizer"
 }

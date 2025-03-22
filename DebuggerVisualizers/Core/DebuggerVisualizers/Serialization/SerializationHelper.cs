@@ -15,11 +15,12 @@
 
 #region Usings
 
-using System.Drawing;
+using System;
 using System.IO;
 
 using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.Reflection;
 
 #endregion
 
@@ -32,6 +33,38 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
             using var imageInfo =  new ReadableBitmapDataSerializationInfo(bitmapData);
             using BinaryWriter writer = outgoingData.InitSerializationWriter();
             imageInfo.Write(writer);
+        }
+
+        internal static void SerializeCustomBitmapInfoSafe(object bitmapData, Stream outgoingData)
+        {
+            // This method is called when the target is an IReadableBitmapData, but its assembly version is different from ours,
+            // so casting it to IReadableBitmapData would fail. Here we create a clone of the target and serialize that instead.
+            IReadableBitmapData clone;
+
+            try
+            {
+                using var ms = new MemoryStream();
+                using (BinaryWriter writer = ms.InitSerializationWriter())
+                {
+                    // Invoking BitmapDataExtensions.Save(bitmapData, stream) in the target's assembly
+                    Type bitmapDataExtensions = Reflector.ResolveType(bitmapData.GetType().Assembly, typeof(BitmapDataExtensions).FullName!, ResolveTypeOptions.ThrowError)!;
+                    Reflector.InvokeMethod(bitmapDataExtensions, nameof(BitmapDataExtensions.Save), bitmapData, writer.BaseStream);
+                    writer.Flush();
+                }
+
+                ms.Position = 0;
+
+                // Deserializing the bitmap data with the correct assembly identity, 
+                using (BinaryReader reader = ms.InitSerializationReader())
+                    clone = BitmapDataFactory.Load(reader.BaseStream);
+            }
+            catch (Exception e)
+            {
+                throw new ArgumentException(PublicResources.NotAnInstanceOfType(typeof(IReadableBitmapData)), nameof(bitmapData), e);
+            }
+
+            using (clone)
+                SerializeCustomBitmapInfo(clone, outgoingData);
         }
 
         internal static CustomBitmapInfo DeserializeCustomBitmapInfo(Stream stream)

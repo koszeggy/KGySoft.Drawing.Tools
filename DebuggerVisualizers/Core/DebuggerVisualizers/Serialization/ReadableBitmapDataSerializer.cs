@@ -15,6 +15,7 @@
 
 #region Usings
 
+using System;
 using System.IO;
 
 using KGySoft.Drawing.DebuggerVisualizers.Serialization;
@@ -34,7 +35,18 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
         /// <summary>
         /// Called when the object to be debugged is about to be serialized.
         /// </summary>
-        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeCustomBitmapInfo((IReadableBitmapData)target, outgoingData);
+        public override void GetData(object target, Stream outgoingData)
+        {
+            try
+            {
+                SerializationHelper.SerializeCustomBitmapInfo((IReadableBitmapData)target, outgoingData);
+            }
+            catch (InvalidCastException)
+            {
+                // happens in .NET Framework when the target's assembly version is different from the referenced one used in this serializer
+                SerializationHelper.SerializeCustomBitmapInfoSafe(target, outgoingData);
+            }
+        }
 
         #endregion
     }
