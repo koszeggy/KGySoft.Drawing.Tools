@@ -16,7 +16,6 @@
 #region Usings
 
 using System.Diagnostics;
-using System.Drawing;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -76,32 +75,32 @@ using KGySoft.Drawing.Imaging;
     Description = "KGy SOFT Palette Debugger Visualizer")]
 
 // Color32
-[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(Color32Serializer),
+[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
     Target = typeof(Color32),
     Description = "KGy SOFT Color32 Debugger Visualizer")]
 
 // PColor32
-[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(PColor32Serializer),
+[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
     Target = typeof(PColor32),
     Description = "KGy SOFT PColor32 Debugger Visualizer")]
 
 // Color64
-[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(Color64Serializer),
+[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
     Target = typeof(Color64),
     Description = "KGy SOFT Color64 Debugger Visualizer")]
 
 // PColor64
-[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(PColor64Serializer),
+[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
     Target = typeof(PColor64),
     Description = "KGy SOFT PColor64 Debugger Visualizer")]
 
 // ColorF
-[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorFSerializer),
+[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
     Target = typeof(ColorF),
     Description = "KGy SOFT ColorF Debugger Visualizer")]
 
 // PColorF
-[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(PColorFSerializer),
+[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
     Target = typeof(PColorF),
     Description = "KGy SOFT PColorF Debugger Visualizer")]
 

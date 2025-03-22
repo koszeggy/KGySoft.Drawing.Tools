@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: PColorFSerializer.cs
+//  File: ColorSerializer.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
@@ -17,19 +17,25 @@
 
 using System.IO;
 
+using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 using KGySoft.Drawing.Imaging;
-
-using Microsoft.VisualStudio.DebuggerVisualizers;
 
 #endregion
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
 {
-    internal sealed class PColorFSerializer : VisualizerObjectSource
+    /// <summary>
+    /// Provides serialization for the <see cref="Color32"/>, <see cref="PColor32"/>,
+    /// <see cref="Color64"/>, <see cref="PColor64"/>, <see cref="ColorF"/> and <see cref="PColorF"/> types.
+    /// </summary>
+    public sealed class ColorSerializer : SerializerBase
     {
         #region Methods
 
-        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeCustomColorInfo((PColorF)target, outgoingData);
+        /// <summary>
+        /// Called when the object to be debugged is about to be serialized.
+        /// </summary>
+        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeCustomColorInfo(target, outgoingData);
 
         #endregion
     }

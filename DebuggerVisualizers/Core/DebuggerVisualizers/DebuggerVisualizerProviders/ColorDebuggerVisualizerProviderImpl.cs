@@ -37,7 +37,8 @@ using Microsoft.VisualStudio.Shell;
 namespace KGySoft.Drawing.DebuggerVisualizers.Core.DebuggerVisualizerProviders
 {
     /// <summary>
-    /// Provides the implementation of a debugger visualizer extension for the <see cref="Color32"/> struct.
+    /// Provides the implementation of a debugger visualizer extension for the <see cref="Color32"/>, <see cref="PColor32"/>,
+    /// <see cref="Color64"/>, <see cref="PColor64"/>, <see cref="ColorF"/> and <see cref="PColorF"/> types.
     /// </summary>
     public class ColorDebuggerVisualizerProviderImpl : IDebuggerVisualizerProvider
     {
@@ -46,11 +47,16 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.DebuggerVisualizerProviders
         /// <summary>
         /// Gets the configuration of the image debugger visualizer provider.
         /// </summary>
-        public DebuggerVisualizerProviderConfiguration DebuggerVisualizerProviderConfiguration
-            => new("KGy SOFT Color32 Debugger Visualizer", typeof(Color32))
+        public DebuggerVisualizerProviderConfiguration DebuggerVisualizerProviderConfiguration => new(
+            new VisualizerTargetType("KGy SOFT Color32 Debugger Visualizer", typeof(Color32)),
+            new VisualizerTargetType("KGy SOFT PColor32 Debugger Visualizer", typeof(PColor32)),
+            new VisualizerTargetType("KGy SOFT Color64 Debugger Visualizer", typeof(Color64)),
+            new VisualizerTargetType("KGy SOFT PColor64 Debugger Visualizer", typeof(PColor64)),
+            new VisualizerTargetType("KGy SOFT ColorF Debugger Visualizer", typeof(ColorF)),
+            new VisualizerTargetType("KGy SOFT PColorF Debugger Visualizer", typeof(PColorF)))
         {
             Style = VisualizerStyle.ToolWindow,
-            VisualizerObjectSourceType = new VisualizerObjectSourceType(typeof(Color32Serializer))
+            VisualizerObjectSourceType = new VisualizerObjectSourceType(typeof(ColorSerializer))
         };
 
         #endregion
