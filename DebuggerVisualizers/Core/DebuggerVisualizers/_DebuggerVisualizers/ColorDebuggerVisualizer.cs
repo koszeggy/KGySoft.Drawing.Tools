@@ -21,7 +21,7 @@ using Microsoft.VisualStudio.DebuggerVisualizers;
 
 #endregion
 
-namespace KGySoft.Drawing.DebuggerVisualizers.Core.DebuggerVisualizers
+namespace KGySoft.Drawing.DebuggerVisualizers.Core
 {
     internal sealed class ColorDebuggerVisualizer : DialogDebuggerVisualizer
     {

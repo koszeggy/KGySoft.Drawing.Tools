@@ -19,7 +19,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-using KGySoft.Drawing.DebuggerVisualizers.Core.DebuggerVisualizers;
+using KGySoft.Drawing.DebuggerVisualizers.Core;
 using KGySoft.Drawing.DebuggerVisualizers.Core.Serialization;
 using KGySoft.Drawing.Imaging;
 

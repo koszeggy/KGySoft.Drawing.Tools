@@ -2,7 +2,7 @@
 #region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: ColorDebuggerVisualizerProviderImpl.cs
+//  File: ReadableBitmapDataDebuggerVisualizerProviderImpl.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
@@ -23,7 +23,6 @@ using System.Threading.Tasks;
 
 using KGySoft.Drawing.DebuggerVisualizers.Core.Serialization;
 using KGySoft.Drawing.DebuggerVisualizers.View;
-using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
@@ -34,29 +33,23 @@ using Microsoft.VisualStudio.Shell;
 
 #endregion
 
-namespace KGySoft.Drawing.DebuggerVisualizers.Core.DebuggerVisualizerProviders
+namespace KGySoft.Drawing.DebuggerVisualizers.Core
 {
     /// <summary>
-    /// Provides the implementation of a debugger visualizer extension for the <see cref="Color32"/>, <see cref="PColor32"/>,
-    /// <see cref="Color64"/>, <see cref="PColor64"/>, <see cref="ColorF"/> and <see cref="PColorF"/> types.
+    /// Provides the implementation of a debugger visualizer extension for the <see cref="Image"/>, <see cref="Bitmap"/> and <see cref="Metafile"/> classes.
     /// </summary>
-    public class ColorDebuggerVisualizerProviderImpl : IDebuggerVisualizerProvider
+    public class ReadableBitmapDataDebuggerVisualizerProviderImpl : IDebuggerVisualizerProvider
     {
         #region Properties
 
         /// <summary>
         /// Gets the configuration of the image debugger visualizer provider.
         /// </summary>
-        public DebuggerVisualizerProviderConfiguration DebuggerVisualizerProviderConfiguration => new(
-            new VisualizerTargetType("KGy SOFT Color32 Debugger Visualizer", typeof(Color32)),
-            new VisualizerTargetType("KGy SOFT PColor32 Debugger Visualizer", typeof(PColor32)),
-            new VisualizerTargetType("KGy SOFT Color64 Debugger Visualizer", typeof(Color64)),
-            new VisualizerTargetType("KGy SOFT PColor64 Debugger Visualizer", typeof(PColor64)),
-            new VisualizerTargetType("KGy SOFT ColorF Debugger Visualizer", typeof(ColorF)),
-            new VisualizerTargetType("KGy SOFT PColorF Debugger Visualizer", typeof(PColorF)))
+        public DebuggerVisualizerProviderConfiguration DebuggerVisualizerProviderConfiguration
+            => new("KGy SOFT IReadableBitmapData Debugger Visualizer", "KGySoft.Drawing.Imaging.BitmapDataBase, KGySoft.Drawing.Core")
         {
             Style = VisualizerStyle.ToolWindow,
-            VisualizerObjectSourceType = new VisualizerObjectSourceType(typeof(ColorSerializer))
+            VisualizerObjectSourceType = new VisualizerObjectSourceType(typeof(ReadableBitmapDataSerializer))
         };
 
         #endregion
@@ -72,9 +65,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.DebuggerVisualizerProviders
         public async Task<IRemoteUserControl> CreateVisualizerAsync(VisualizerTarget visualizerTarget, CancellationToken cancellationToken)
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-            var result = new VisualizerExtensionWpfAdapter<CustomColorInfo?>(visualizerTarget,
-                (info, _) => ViewModelFactory.FromCustomColor(info),
-                SerializationHelper.DeserializeCustomColorInfo, null);
+            var result = new VisualizerExtensionWpfAdapter<CustomBitmapInfo?>(visualizerTarget,
+                (info, _) => ViewModelFactory.FromCustomBitmap(info),
+                SerializationHelper.DeserializeCustomBitmapInfo, null);
             await result.InitializeAsync(true);
             return new WpfControlWrapper(result);
         }

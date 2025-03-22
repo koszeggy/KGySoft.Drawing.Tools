@@ -18,7 +18,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-using KGySoft.Drawing.DebuggerVisualizers.Core.DebuggerVisualizerProviders;
+using KGySoft.Drawing.DebuggerVisualizers.Core;
 using KGySoft.Drawing.DebuggerVisualizers.Core.Serialization;
 using KGySoft.Drawing.Imaging;
 
