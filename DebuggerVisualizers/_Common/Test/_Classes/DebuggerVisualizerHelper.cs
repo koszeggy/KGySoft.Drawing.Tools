@@ -39,7 +39,7 @@ using Microsoft.VisualStudio.Threading;
 
 #endregion
 
-namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test
+namespace KGySoft.Drawing.DebuggerVisualizers.Test
 {
     internal static class DebuggerVisualizerHelper
     {

@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: TestObjectProvider.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -33,7 +33,7 @@ using Microsoft.VisualStudio.DebuggerVisualizers;
 
 #endregion
 
-namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test
+namespace KGySoft.Drawing.DebuggerVisualizers.Test
 {
     internal class TestObjectProvider : IVisualizerObjectProvider
     {
@@ -41,7 +41,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test
 
         #region Public Properties
 
-        public bool IsObjectReplaceable => false;
+        public bool IsObjectReplaceable { get; set; }
         public bool IsBinaryFormatterSupported => false;
 
         #endregion
@@ -84,7 +84,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test
 
         public void ReplaceObject(object newObject)
         {
-            Object = newObject.DeepClone(null);
+            Object = newObject.DeepClone();
             ObjectReplaced = true;
         }
 

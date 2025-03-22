@@ -20,6 +20,7 @@ using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.DebuggerVisualizers.Core.Test.ViewModel;
+using KGySoft.Drawing.DebuggerVisualizers.Test;
 
 #endregion
 

@@ -76,7 +76,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             return ThreadHelper.JoinableTaskFactory.RunAsync<object?>(async () =>
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                Services.AsyncServiceProvider = pServiceProvider;
                 Services.ShellService = await GetServiceAsync<IVsShell>(pServiceProvider, typeof(SVsShell));
                 Services.MenuCommandService = await GetServiceAsync<IMenuCommandService>(pServiceProvider, typeof(IMenuCommandService));
                 Services.InfoBarUIFactory = await GetServiceAsync<IVsInfoBarUIFactory>(pServiceProvider, typeof(SVsInfoBarUIFactory));

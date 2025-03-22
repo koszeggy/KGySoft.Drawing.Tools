@@ -27,7 +27,7 @@ using Microsoft.VisualStudio.RpcContracts.DebuggerVisualizers;
 
 #endregion
 
-namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test
+namespace KGySoft.Drawing.DebuggerVisualizers.Test
 {
     internal class TestVisualizerTarget : IVisualizerTarget
     {

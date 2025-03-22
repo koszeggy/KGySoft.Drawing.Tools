@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>7b54bde4-0768-457b-8536-5c8e346044f5</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>KGySoft.Drawing.DebuggerVisualizers.Test</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)_Classes\DebuggerVisualizerHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)_Classes\OSUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)_Classes\TestObjectProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)_Classes\TestVisualizerTarget.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)_Classes\TestWindowService.cs" />
+  </ItemGroup>
+</Project>

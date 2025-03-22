@@ -26,6 +26,7 @@ using System.Linq;
 
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
+using KGySoft.Drawing.DebuggerVisualizers.Test;
 using KGySoft.Drawing.Imaging;
 
 #endregion

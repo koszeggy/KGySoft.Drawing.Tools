@@ -25,13 +25,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\DebuggerVisualizers\GdiPlus\KGySoft.Drawing.DebuggerVisualizers.GdiPlus\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.csproj" />
+    <ProjectReference Include="..\..\DebuggerVisualizers\GdiPlus\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include=".vsextension\string-resources.json" />
-    <Content Include="..\..\DebuggerVisualizers\GdiPlus\KGySoft.Drawing.DebuggerVisualizers.GdiPlus\bin\$(Configuration)\net472\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll" Link="netstandard2.0\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="..\..\DebuggerVisualizers\_Common\bin\$(Configuration)\net472\KGySoft.Drawing.DebuggerVisualizers.dll" Link="netstandard2.0\KGySoft.Drawing.DebuggerVisualizers.dll" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\DebuggerVisualizers\_Common\DebuggerVisualizers\bin\$(Configuration)\net472\KGySoft.Drawing.DebuggerVisualizers.dll" Link="netstandard2.0\KGySoft.Drawing.DebuggerVisualizers.dll" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\DebuggerVisualizers\GdiPlus\DebuggerVisualizers\bin\$(Configuration)\net472\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll" Link="netstandard2.0\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\KGySoft.Drawing.ImagingTools\bin\$(Configuration)\net462\KGySoft.Drawing.ImagingTools.exe" Link="netstandard2.0\KGySoft.Drawing.ImagingTools.exe" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\KGySoft.Drawing.ImagingTools\bin\$(Configuration)\net462\KGySoft.CoreLibraries.dll" Link="netstandard2.0\KGySoft.CoreLibraries.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\KGySoft.Drawing.ImagingTools\bin\$(Configuration)\net462\KGySoft.Drawing.dll" Link="netstandard2.0\KGySoft.Drawing.dll" CopyToOutputDirectory="PreserveNewest" />

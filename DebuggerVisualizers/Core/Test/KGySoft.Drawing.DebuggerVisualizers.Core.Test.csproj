@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <TargetFrameworks>net35;net40;net45;net462;net6.0-windows</TargetFrameworks>
-    <!--<TargetFrameworks>net462</TargetFrameworks>-->
+    <!--<TargetFrameworks>net35;net40;net45;net462;net472;net6.0-windows</TargetFrameworks>-->
+    <TargetFrameworks>net462</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>KGySoft.Drawing.DebuggerVisualizers.Core.Test</RootNamespace>
     <SignAssembly>true</SignAssembly>
@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\_Common\KGySoft.Drawing.DebuggerVisualizers.csproj" />
+    <ProjectReference Include="..\..\_Common\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.csproj" />
     <ProjectReference Include="..\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.Core.csproj" />
     <ProjectReference Include="..\..\..\KGySoft.Drawing.ImagingTools\KGySoft.Drawing.ImagingTools.csproj" />
   </ItemGroup>
@@ -47,10 +47,11 @@
     </Reference>
   </ItemGroup>
 
-  <!-- Despite of the CopyLocal above, it is copied only if KGySoft.Drawing.DebuggerVisualizers references the actual library, which is
+  <!-- Despite the CopyLocal above, it is copied only if KGySoft.Drawing.DebuggerVisualizers references the actual library, which is
        the case only when targeting .NET 5 or above -->
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy ..\..\_ref\Microsoft.VisualStudio.DebuggerVisualizers.dll bin\$(ConfigurationName)\$(TargetFramework)\ /Y" />
   </Target>
+  <Import Project="..\..\_Common\Test\KGySoft.Drawing.DebuggerVisualizers.Test.projitems" Label="Shared" />
 
 </Project>

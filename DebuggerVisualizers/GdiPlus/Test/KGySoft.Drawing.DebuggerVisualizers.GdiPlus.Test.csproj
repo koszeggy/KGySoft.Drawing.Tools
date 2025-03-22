@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\KGySoft.Drawing.DebuggerVisualizers.GdiPlus\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.csproj" />
+    <ProjectReference Include="..\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='net35' OR '$(TargetFramework)'=='net40' OR '$(TargetFramework)'=='net45'">
@@ -53,5 +53,6 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy ..\..\_ref\Microsoft.VisualStudio.DebuggerVisualizers.dll bin\$(ConfigurationName)\$(TargetFramework)\ /Y" />
   </Target>
+  <Import Project="..\..\_Common\Test\KGySoft.Drawing.DebuggerVisualizers.Test.projitems" Label="Shared" />
 
 </Project>

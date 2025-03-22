@@ -82,7 +82,7 @@
       <Project>{017fa50b-2f4a-4598-a838-d7fd5c71ee0e}</Project>
       <Name>KGySoft.Drawing.DebuggerVisualizers.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\DebuggerVisualizers\GdiPlus\KGySoft.Drawing.DebuggerVisualizers.GdiPlus\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.csproj">
+    <ProjectReference Include="..\..\DebuggerVisualizers\GdiPlus\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.csproj">
       <Project>{6fda8750-e12b-4db0-8208-b0014d399f2d}</Project>
       <Name>KGySoft.Drawing.DebuggerVisualizers.GdiPlus</Name>
     </ProjectReference>
@@ -90,11 +90,11 @@
       <Project>{0b4ce14a-370e-478d-9f0d-689210925a6c}</Project>
       <Name>KGySoft.Drawing.DebuggerVisualizers.SkiaSharp</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\DebuggerVisualizers\Wpf\KGySoft.Drawing.DebuggerVisualizers.Wpf\KGySoft.Drawing.DebuggerVisualizers.Wpf.csproj">
+    <ProjectReference Include="..\..\DebuggerVisualizers\Wpf\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.Wpf.csproj">
       <Project>{01a30abc-de70-4679-b9f9-c0fd0646c44e}</Project>
       <Name>KGySoft.Drawing.DebuggerVisualizers.Wpf</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\DebuggerVisualizers\_Common\KGySoft.Drawing.DebuggerVisualizers.csproj">
+    <ProjectReference Include="..\..\DebuggerVisualizers\_Common\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.csproj">
       <Project>{65bedd4f-6bd0-44cb-9e61-99feb6a600f0}</Project>
       <Name>KGySoft.Drawing.DebuggerVisualizers</Name>
     </ProjectReference>

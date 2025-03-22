@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net35;net40;net45;net462;net6.0-windows</TargetFrameworks>
-    <!--<TargetFrameworks>net462</TargetFrameworks>-->
+    <!--<TargetFrameworks>net35;net40;net45;net462;net6.0-windows</TargetFrameworks>-->
+    <TargetFrameworks>net462</TargetFrameworks>
     <OutputType>WinExe</OutputType>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
@@ -17,8 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\_Common\KGySoft.Drawing.DebuggerVisualizers.csproj" />
-    <ProjectReference Include="..\KGySoft.Drawing.DebuggerVisualizers.Wpf\KGySoft.Drawing.DebuggerVisualizers.Wpf.csproj" />
+    <ProjectReference Include="..\..\_Common\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.csproj" />
+    <ProjectReference Include="..\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.Wpf.csproj" />
     <ProjectReference Include="..\..\..\KGySoft.Drawing.ImagingTools\KGySoft.Drawing.ImagingTools.csproj" />
   </ItemGroup>
 
