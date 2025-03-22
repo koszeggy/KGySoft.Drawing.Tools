@@ -41,7 +41,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.View
     /// Represents a WPF adapter that provides a <see cref="UIElement"/> host for a debugger visualizer that can be
     /// created from an <see cref="IViewModel{TModel}"/> implementation by the <see cref="ViewFactory"/> class.
     /// </summary>
-    /// <typeparam name="TModel">The type of the debugged object.</typeparam>
+    /// <typeparam name="TModel">The model type of the debugged object.</typeparam>
     public class VisualizerExtensionWpfAdapter<TModel> : WindowsFormsHost // TODO: Grid or DockPanel with the WindowsFormsHost and a ProgressBar/Notification area
     {
         #region Fields
@@ -94,13 +94,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers.View
             // Attempting to initialize the view model even without an explicit Available notification.
             // This should always work for a ModalDialog visualizer, but usually works also for ToolWindows.
             // Early initialization allows creating the embedded view before the WPF window is shown.
-            await VisualizerTargetOnStateChanged(this, VisualizerTargetStateNotification.Available);
+            await VisualizerTargetOnStateChangedAsync(this, VisualizerTargetStateNotification.Available);
             if (isToolWindowHost)
             {
                 // If the initialization was successful, then we can suppress the first Available notification.
                 if (viewModel != null)
                     suppressNextAvailable = true;
-                visualizerTarget.StateChanged += VisualizerTargetOnStateChanged;
+                visualizerTarget.StateChanged += VisualizerTargetOnStateChangedAsync;
             }
         }
 
@@ -118,7 +118,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.View
             serialize = null;
             deserialize = null!;
             viewModelFactory = null!;
-            visualizerTarget.StateChanged -= VisualizerTargetOnStateChanged;
+            visualizerTarget.StateChanged -= VisualizerTargetOnStateChangedAsync;
             if (viewModel is IViewModel<TModel> vm)
                 vm.ChangesApplied -= ViewModel_ChangesApplied;
 
@@ -138,7 +138,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.View
 
         #region Private Methods
 
-        private async Task VisualizerTargetOnStateChanged(object? sender, VisualizerTargetStateNotification args)
+        private async Task VisualizerTargetOnStateChangedAsync(object? sender, VisualizerTargetStateNotification args)
         {
             IViewModel<TModel>? vm = viewModel;
             ReadOnlySequence<byte> data;
@@ -226,6 +226,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.View
         #region Event handlers
 
         [SuppressMessage("ReSharper", "AsyncVoidMethod", Justification = "False alarm, event handler")]
+        [SuppressMessage("VS2022", "VSTHRD100:Avoid \"async void\" methods, because any exceptions not handled by the method will crash the process", Justification = "False alarm, event handler")]
         private async void ViewModel_ChangesApplied(object sender, EventArgs e)
         {
             if (serialize == null)

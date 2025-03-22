@@ -205,6 +205,11 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         }
 
 #if NET472_OR_GREATER
+        /// <summary>
+        /// Gets a <see cref="Stream"/> that reads from the specified <see cref="ReadOnlySequence{T}"/>.
+        /// </summary>
+        /// <param name="readOnlySequence">The <see cref="ReadOnlySequence{T}"/> to get as a stream.</param>
+        /// <returns>A <see cref="Stream"/> that reads from the specified <see cref="ReadOnlySequence{T}"/>.</returns>
         public static Stream AsStream(this ReadOnlySequence<byte> readOnlySequence)
         {
             // TODO: try to get actual array, and use ToArray as a fallback only
