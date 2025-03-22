@@ -8,5 +8,11 @@
   "DebuggerVisualizerProviders.GdiPlus.GraphicsDebuggerVisualizerProvider.Name": "KGy SOFT Graphics Debugger Visualizer",
   "DebuggerVisualizerProviders.GdiPlus.BitmapDataDebuggerVisualizerProvider.Name": "KGy SOFT BitmapData Debugger Visualizer",
 
-  "DebuggerVisualizerProviders.Core.ReadableBitmapDataDebuggerVisualizerProvider.Name": "KGy SOFT IReadableBitmapData Debugger Visualizer"
+  "DebuggerVisualizerProviders.Core.ReadableBitmapDataDebuggerVisualizerProvider.Name": "KGy SOFT IReadableBitmapData Debugger Visualizer",
+  "DebuggerVisualizerProviders.Core.Color32DebuggerVisualizerProvider.Name": "KGy SOFT Color32 Debugger Visualizer",
+  "DebuggerVisualizerProviders.Core.PColor32DebuggerVisualizerProvider.Name": "KGy SOFT PColor32 Debugger Visualizer",
+  "DebuggerVisualizerProviders.Core.Color64DebuggerVisualizerProvider.Name": "KGy SOFT Color64 Debugger Visualizer",
+  "DebuggerVisualizerProviders.Core.PColor64DebuggerVisualizerProvider.Name": "KGy SOFT PColor64 Debugger Visualizer",
+  "DebuggerVisualizerProviders.Core.ColorFDebuggerVisualizerProvider.Name": "KGy SOFT ColorF Debugger Visualizer",
+  "DebuggerVisualizerProviders.Core.PColorFDebuggerVisualizerProvider.Name": "KGy SOFT PColorF Debugger Visualizer"
 }
