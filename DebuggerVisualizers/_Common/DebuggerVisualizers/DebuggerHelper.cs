@@ -26,6 +26,7 @@ using System.Reflection;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.ImagingTools.View;
 using KGySoft.Drawing.ImagingTools.ViewModel;
+using KGySoft.Reflection;
 
 #if NET472_OR_GREATER
 using Microsoft.VisualStudio.Extensibility.DebuggerVisualizers;
@@ -222,7 +223,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <returns>The debugger visualizers of the specified assembly.</returns>
         public static Dictionary<Type, DebuggerVisualizerAttribute> GetDebuggerVisualizers(Assembly assembly)
             => Attribute.GetCustomAttributes(assembly ?? throw new ArgumentNullException(nameof(assembly), PublicResources.ArgumentNull), typeof(DebuggerVisualizerAttribute))
-                .Cast<DebuggerVisualizerAttribute>().ToDictionary(a => a.Target!);
+                .Cast<DebuggerVisualizerAttribute>().ToDictionary(a => a.Target ?? Reflector.ResolveType(a.TargetTypeName!, ResolveTypeOptions.AllowPartialAssemblyMatch)!);
 
 #if NET472_OR_GREATER
         /// <summary>

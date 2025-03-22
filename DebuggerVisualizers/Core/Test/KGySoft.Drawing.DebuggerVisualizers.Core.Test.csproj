@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <!--<TargetFrameworks>net35;net40;net45;net462;net472;net6.0-windows</TargetFrameworks>-->
-    <TargetFrameworks>net462</TargetFrameworks>
+    <TargetFrameworks>net472</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>KGySoft.Drawing.DebuggerVisualizers.Core.Test</RootNamespace>
     <SignAssembly>true</SignAssembly>
@@ -12,13 +12,15 @@
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Authors>György Kőszeg</Authors>
     <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF Condition="'$(TargetFramework)'=='net472'">true</UseWPF>
     <OutputType>WinExe</OutputType>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Nullable>enable</Nullable>
 
     <!--Suppressions
-        - WFAC010: Remove high DPI settings from app.manifest and configure via Application.SetHighDpiMode - as targeting many frameworks handling it manually everywhere is intended. Otherwise, it would cause conflicts, eg. scaling sizes multiple times, etc. -->
-    <NoWarn>$(NoWarn);WFAC010</NoWarn>
+        - WFAC010: Remove high DPI settings from app.manifest and configure via Application.SetHighDpiMode - as targeting many frameworks handling it manually everywhere is intended. Otherwise, it would cause conflicts, eg. scaling sizes multiple times, etc.
+        - VSSDK005: Use the ThreadHelper.JoinableTaskContext singleton rather than instantiating your own to avoid deadlocks. - false alarm, in the testing environment we don't have an actual Visual Studio instance -->
+    <NoWarn>$(NoWarn);WFAC010;VSSDK005</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,10 +31,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\_Common\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.csproj" />
     <ProjectReference Include="..\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.Core.csproj" />
-    <ProjectReference Include="..\..\..\KGySoft.Drawing.ImagingTools\KGySoft.Drawing.ImagingTools.csproj" />
   </ItemGroup>
+  <Import Project="..\..\_Common\Test\KGySoft.Drawing.DebuggerVisualizers.Test.projitems" Label="Shared" />
 
   <ItemGroup Condition="'$(TargetFramework)'=='net35' OR '$(TargetFramework)'=='net40' OR '$(TargetFramework)'=='net45'">
     <Reference Include="System.Windows.Forms" />
@@ -52,6 +53,5 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy ..\..\_ref\Microsoft.VisualStudio.DebuggerVisualizers.dll bin\$(ConfigurationName)\$(TargetFramework)\ /Y" />
   </Target>
-  <Import Project="..\..\_Common\Test\KGySoft.Drawing.DebuggerVisualizers.Test.projitems" Label="Shared" />
 
 </Project>

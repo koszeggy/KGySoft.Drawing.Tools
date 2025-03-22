@@ -30,8 +30,6 @@ using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Reflection;
 
-using Microsoft.VisualStudio.DebuggerVisualizers;
-
 #endregion
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.ViewModel
@@ -47,9 +45,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.ViewModel
         #region Fields
 
         #region Static Fields
-        
+
         private static readonly HashSet<string>[] radioGroups =
-{
+        [
             [
                 nameof(ManagedBitmapData),
                 nameof(Palette),
@@ -61,10 +59,14 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.ViewModel
                 nameof(PColorF),
                 nameof(BitmapDataFromFile)
             ],
-            [nameof(FileAsNative), nameof(FileAsManaged)],
-        };
+            [nameof(FileAsNative), nameof(FileAsManaged)]
+        ];
 
-        private static readonly Dictionary<Type, DebuggerVisualizerAttribute> debuggerVisualizers = CoreDebuggerHelper.GetDebuggerVisualizers();
+        private static readonly Dictionary<Type, DebuggerVisualizerAttribute> classicDebuggerVisualizers = CoreDebuggerHelper.GetDebuggerVisualizers();
+
+#if NET472_OR_GREATER
+        private static readonly Dictionary<Type, IDebuggerVisualizerProvider> debuggerVisualizerProviders = CoreDebuggerHelper.GetDebuggerVisualizerProviders();
+#endif
 
         private static Palette? palette16Bpp;
 
@@ -148,8 +150,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.ViewModel
         internal Action<string>? ErrorCallback { get => Get<Action<string>?>(); set => Set(value); }
         internal Func<IntPtr>? GetHwndCallback { get => Get<Func<IntPtr>?>(); set => Set(value); }
 
-        internal ICommand DebugCommand => Get(() => new SimpleCommand(OnDebugCommand));
         internal ICommand DirectViewCommand => Get(() => new SimpleCommand(OnViewDirectCommand));
+        internal ICommand ClassicDebugCommand => Get(() => new SimpleCommand(OnClassicDebugCommand));
+        internal ICommand ExtensionDebugCommand => Get(() => new SimpleCommand(OnExtensionDebugCommand));
 
         private object? TestObject { get => Get<object?>(); set => Set(value); }
 
@@ -562,7 +565,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.ViewModel
             }
         }
 
-        private void OnDebugCommand()
+        private void OnClassicDebugCommand()
         {
             object? testObject = TestObject;
             if (testObject == null)
@@ -571,10 +574,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.ViewModel
             Type targetType = testObject switch
             {
                 IReadableBitmapData => Reflector.ResolveType("KGySoft.Drawing.Imaging.BitmapDataBase")!,
-                //IPalette => typeof(IPalette),
                 _ => testObject.GetType()
             };
-            DebuggerVisualizerAttribute? attr = debuggerVisualizers.GetValueOrDefault(targetType);
+            DebuggerVisualizerAttribute? attr = classicDebuggerVisualizers.GetValueOrDefault(targetType);
             if (attr == null)
             {
                 ErrorCallback?.Invoke($"No debugger visualizer found for type {targetType}");
@@ -583,13 +585,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.ViewModel
 
             try
             {
-                var windowService = new TestWindowService();
-                var objectProvider = new TestObjectProvider(testObject);
-                DialogDebuggerVisualizer debugger = (DialogDebuggerVisualizer)Reflector.CreateInstance(Reflector.ResolveType(attr.VisualizerTypeName)!);
-                objectProvider.Serializer = (VisualizerObjectSource)Reflector.CreateInstance(Reflector.ResolveType(attr.VisualizerObjectSourceTypeName!)!);
-                Reflector.InvokeMethod(debugger, "Show", windowService, objectProvider);
-                if (objectProvider.ObjectReplaced)
-                    TestObject = objectProvider.Object;
+                if (DebuggerVisualizerHelper.ShowClassicVisualizer(attr, testObject, default, out object? replacementObject))
+                    TestObject = replacementObject;
             }
             catch (Exception e) when (e is not StackOverflowException)
             {
@@ -597,8 +594,39 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.ViewModel
             }
         }
 
-        #endregion
+        private void OnExtensionDebugCommand()
+        {
+            object? testObject = TestObject;
+            if (testObject == null)
+                return;
 
+#if NET472_OR_GREATER
+            Type targetType = testObject switch
+            {
+                IReadableBitmapData => Reflector.ResolveType("KGySoft.Drawing.Imaging.BitmapDataBase")!,
+                _ => testObject.GetType()
+            };
+            IDebuggerVisualizerProvider? provider = debuggerVisualizerProviders.GetValueOrDefault(targetType);
+            if (provider == null)
+            {
+                ErrorCallback?.Invoke($"No debugger visualizer extension found for type {targetType}");
+                return;
+            }
+
+            try
+            {
+                DebuggerVisualizerHelper.ShowExtensionVisualizer(provider, testObject, default, o => TestObject = o);
+            }
+            catch (Exception e) when (e is not StackOverflowException)
+            {
+                ErrorCallback?.Invoke($"Failed to debug object: {e.Message}");
+            }
+#else
+            ErrorCallback?.Invoke($"Debugger visualizer extensions are supported only in .NET Framework 4.7.2 and above.");
+#endif
+        }
+
+        #endregion
 
         #endregion
 

@@ -65,14 +65,15 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.View
 
             commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.PixelFormatEnabled), nameof(cmbPixelFormat.Enabled), cmbPixelFormat);
             commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.BitmapDataFromFile), nameof(gbFile.Enabled), gbFile);
-            commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.CanDebug), nameof(Button.Enabled), btnViewDirect, btnViewByDebugger);
+            commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.CanDebug), nameof(Button.Enabled), btnViewDirect, btnViewByClassicDebugger);
             commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.PreviewImage), nameof(pbPreview.Image), pbPreview);
 
             commandBindings.Add<EventArgs>(OnSelectFileCommand)
                 .AddSource(txtFile, nameof(txtFile.Click))
                 .AddSource(txtFile, nameof(txtFile.DoubleClick));
             commandBindings.Add(viewModel.DirectViewCommand).AddSource(btnViewDirect, nameof(btnViewDirect.Click));
-            commandBindings.Add(viewModel.DebugCommand).AddSource(btnViewByDebugger, nameof(btnViewByDebugger.Click));
+            commandBindings.Add(viewModel.ClassicDebugCommand).AddSource(btnViewByClassicDebugger, nameof(btnViewByClassicDebugger.Click));
+            commandBindings.Add(viewModel.ExtensionDebugCommand).AddSource(btnViewByExtensionDebugger, nameof(btnViewByExtensionDebugger.Click));
 
             viewModel.GetHwndCallback = () => Handle;
 

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <!--<TargetFrameworks>net35;net40;net45;net462;net472;net6.0-windows</TargetFrameworks>-->
-    <TargetFrameworks>net462</TargetFrameworks>
+    <TargetFrameworks>net472</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>KGySoft.Drawing.DebuggerVisualizers.Core</RootNamespace>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
@@ -25,6 +25,11 @@
     </PackageReference>
   </ItemGroup>
 
+  <!-- .NET Framework 4.7.2 only references (to support modern visualizer extensions) -->
+  <ItemGroup Condition="'$(TargetFramework)'=='net472'">
+    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.6.36389" />
+  </ItemGroup>
+
   <!-- .NET only references (note: doesn't really make sense but allows testing from KGySoft.Drawing.DebuggerVisualizers.Core.Test) -->
   <ItemGroup Condition="'$(TargetFramework)'=='net6.0-windows'">
     <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers">
@@ -36,6 +41,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\_Common\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.csproj" />
     <ProjectReference Include="..\..\..\KGySoft.Drawing.ImagingTools\KGySoft.Drawing.ImagingTools.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DebuggerVisualizerProviders\" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

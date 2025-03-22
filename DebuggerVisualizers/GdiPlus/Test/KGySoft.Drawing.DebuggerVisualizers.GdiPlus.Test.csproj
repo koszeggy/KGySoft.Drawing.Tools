@@ -20,7 +20,7 @@
     <!--Suppressions
         - WFAC010: Remove high DPI settings from app.manifest and configure via Application.SetHighDpiMode - as targeting many frameworks handling it manually everywhere is intended. Otherwise, it would cause conflicts, eg. scaling sizes multiple times, etc.
         - VSTHRD002: Synchronously waiting on tasks or awaiters may cause deadlocks. Use await or JoinableTaskFactory.Run instead.
-        - VSSDK005: Use the ThreadHelper.JoinableTaskContext singleton rather than instantiating your own to avoid deadlocks. -->
+        - VSSDK005: Use the ThreadHelper.JoinableTaskContext singleton rather than instantiating your own to avoid deadlocks. - false alarm, in the testing environment we don't have an actual Visual Studio instance -->
     <NoWarn>$(NoWarn);WFAC010;VSSDK005;VSTHRD002</NoWarn>
   </PropertyGroup>
 
@@ -34,6 +34,7 @@
   <ItemGroup>
     <ProjectReference Include="..\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.csproj" />
   </ItemGroup>
+  <Import Project="..\..\_Common\Test\KGySoft.Drawing.DebuggerVisualizers.Test.projitems" Label="Shared" />
 
   <ItemGroup Condition="'$(TargetFramework)'=='net35' OR '$(TargetFramework)'=='net40' OR '$(TargetFramework)'=='net45'">
     <Reference Include="System.Windows.Forms" />
@@ -53,6 +54,5 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy ..\..\_ref\Microsoft.VisualStudio.DebuggerVisualizers.dll bin\$(ConfigurationName)\$(TargetFramework)\ /Y" />
   </Target>
-  <Import Project="..\..\_Common\Test\KGySoft.Drawing.DebuggerVisualizers.Test.projitems" Label="Shared" />
 
 </Project>

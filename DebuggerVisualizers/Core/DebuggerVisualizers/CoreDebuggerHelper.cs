@@ -18,9 +18,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-
-using KGySoft.Reflection;
 
 #endregion
 
@@ -37,9 +34,15 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core
         /// Gets the debugger visualizers of this assembly.
         /// </summary>
         /// <returns>The debugger visualizers of this assembly.</returns>
-        public static Dictionary<Type, DebuggerVisualizerAttribute> GetDebuggerVisualizers()
-            => Attribute.GetCustomAttributes(typeof(CoreDebuggerHelper).Assembly, typeof(DebuggerVisualizerAttribute))
-                .Cast<DebuggerVisualizerAttribute>().ToDictionary(a => a.Target ?? Reflector.ResolveType(a.TargetTypeName!, ResolveTypeOptions.AllowPartialAssemblyMatch)!);
+        public static Dictionary<Type, DebuggerVisualizerAttribute> GetDebuggerVisualizers() => DebuggerHelper.GetDebuggerVisualizers(typeof(CoreDebuggerHelper).Assembly);
+
+#if NET472_OR_GREATER
+        /// <summary>
+        /// Gets the debugger visualizer providers of this assembly.
+        /// </summary>
+        /// <returns>The debugger visualizer providers of this assembly.</returns>
+        public static Dictionary<Type, IDebuggerVisualizerProvider> GetDebuggerVisualizerProviders() => DebuggerHelper.GetDebuggerVisualizerProviders(typeof(CoreDebuggerHelper).Assembly);
+#endif
 
         #endregion
     }
