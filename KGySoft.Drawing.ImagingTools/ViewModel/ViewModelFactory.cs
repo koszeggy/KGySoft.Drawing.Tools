@@ -173,8 +173,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// </summary>
         /// <param name="customColorInfo">The debug information for a custom color.</param>
         /// <returns>An <see cref="IViewModel"/> instance that represents a view model for a <see cref="CustomColorInfo"/>.</returns>
-        public static IViewModel FromCustomColor(CustomColorInfo? customColorInfo)
-            => new CustomColorVisualizerViewModel(customColorInfo ?? throw new ArgumentNullException(nameof(customColorInfo), PublicResources.ArgumentNull));
+        public static IViewModel<CustomColorInfo?> FromCustomColor(CustomColorInfo? customColorInfo)
+            => new CustomColorVisualizerViewModel(customColorInfo);
 
         /// <summary>
         /// Creates a view model for managing debugger visualizer installations.
