@@ -45,7 +45,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal CustomColorVisualizerViewModel(CustomColorInfo? colorInfo)
         {
-            this.colorInfo = colorInfo;
             ReadOnly = true;
             ResetColorInfo(colorInfo);
         }
@@ -94,7 +93,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void ResetColorInfo(CustomColorInfo? model)
         {
             colorInfo = model;
-            Type = colorInfo?.Type ?? PublicResources.Null;
+            Type = colorInfo?.Type;
             Color = colorInfo?.DisplayColor.ToColor() ?? default;
             CustomColorComponents = colorInfo?.CustomColorComponents;
         }

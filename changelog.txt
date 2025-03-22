@@ -40,6 +40,8 @@ API changes:
     IViewModel. This is a compatible change because IVIewModel<TModel> is a more specific type than IViewModel.
   * The return type of the FromCustomColor method has been changed to IViewModel<CustomColorInfo> from
     IViewModel. This is a compatible change because IVIewModel<TModel> is a more specific type than IViewModel.
+  * The return type of the FromCustomPalette method has been changed to IViewModel<CustomPaletteInfo> from
+    IViewModel. This is a compatible change because IVIewModel<TModel> is a more specific type than IViewModel.
 
 * KGySoft.Drawing.ImagingTools.View namespace:
 ----------------------------------------------
@@ -93,6 +95,22 @@ API changes:
 + The ColorPaletteSerializer class has been made public.
 + The GraphicsSerializer class has been made public.
 + The BitmapDataSerializer class has been made public.
+
+
++ KGySoft.Drawing.DebuggerVisualizers.Core.dll
+==============================================
+
++ KGySoft.Drawing.DebuggerVisualizers.Core namespace:
+-----------------------------------------------------
++ CoreDebuggerHelper class:
+  + New GetDebuggerVisualizerProviders method (.NET Framework 4.7.2 only)
++ New ReadableBitmapDataDebuggerVisualizerProviderImpl class (.NET Framework 4.7.2 only)
++ New ColorDebuggerVisualizerProviderImpl class (.NET Framework 4.7.2 only)
+
++ KGySoft.Drawing.DebuggerVisualizers.Core.Serialization namespace:
+-------------------------------------------------------------------
++ The ReadableBitmapDataSerializer class has been made public.
++ New ColorSerializer class.
 
 
 ~~~~~~~~~

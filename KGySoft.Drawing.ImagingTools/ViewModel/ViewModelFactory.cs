@@ -157,8 +157,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// </summary>
         /// <param name="customPaletteInfo">The debug information for a custom palette.</param>
         /// <returns>An <see cref="IViewModel"/> instance that represents a view model for a palette.</returns>
-        public static IViewModel FromCustomPalette(CustomPaletteInfo customPaletteInfo)
-            => new CustomPaletteVisualizerViewModel(customPaletteInfo ?? throw new ArgumentNullException(nameof(customPaletteInfo), PublicResources.ArgumentNull));
+        public static IViewModel<CustomPaletteInfo?> FromCustomPalette(CustomPaletteInfo? customPaletteInfo)
+            => new CustomPaletteVisualizerViewModel(customPaletteInfo);
 
         /// <summary>
         /// Creates a view model from a <see cref="Color"/>.
