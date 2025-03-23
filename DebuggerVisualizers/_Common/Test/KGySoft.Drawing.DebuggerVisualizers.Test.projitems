@@ -14,5 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)_Classes\TestObjectProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)_Classes\TestVisualizerTarget.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)_Classes\TestWindowService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)_Extensions\BindingBaseExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)_MarkupExtensions\EventToKGyCommandExtension.cs" />
   </ItemGroup>
 </Project>

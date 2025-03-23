@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: WpfDebuggerHelper.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -35,10 +35,17 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf
         /// Gets the debugger visualizers of this assembly.
         /// </summary>
         /// <returns>The debugger visualizers of this assembly.</returns>
-        public static Dictionary<Type, DebuggerVisualizerAttribute> GetDebuggerVisualizers()
-            => Attribute.GetCustomAttributes(typeof(WpfDebuggerHelper).Assembly, typeof(DebuggerVisualizerAttribute))
-                .Cast<DebuggerVisualizerAttribute>().ToDictionary(a => a.Target!);
+        public static Dictionary<Type, DebuggerVisualizerAttribute> GetDebuggerVisualizers() => DebuggerHelper.GetDebuggerVisualizers(typeof(WpfDebuggerHelper).Assembly);
 
         #endregion
+
+#if NET472_OR_GREATER
+        /// <summary>
+        /// Gets the debugger visualizer providers of this assembly.
+        /// </summary>
+        /// <returns>The debugger visualizer providers of this assembly.</returns>
+        public static Dictionary<Type, IDebuggerVisualizerProvider> GetDebuggerVisualizerProviders() => DebuggerHelper.GetDebuggerVisualizerProviders(typeof(WpfDebuggerHelper).Assembly);
+#endif
+
     }
 }

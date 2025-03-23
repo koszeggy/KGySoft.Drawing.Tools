@@ -1,9 +1,10 @@
-﻿#region Copyright
+﻿#if WPF
+#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
 //  File: BindingBaseExtensions.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -20,7 +21,7 @@ using System.Windows.Data;
 
 #endregion
 
-namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Test
+namespace KGySoft.Drawing.DebuggerVisualizers.Test
 {
     internal static class BindingBaseExtensions
     {
@@ -46,3 +47,4 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Test
         #endregion
     }
 }
+#endif

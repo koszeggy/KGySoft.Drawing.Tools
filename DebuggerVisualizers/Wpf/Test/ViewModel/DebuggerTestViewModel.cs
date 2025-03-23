@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: DebuggerTestViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -14,6 +14,8 @@
 #endregion
 
 #region Usings
+
+using System.IO;
 
 #region Used Namespaces
 
@@ -27,14 +29,13 @@ using System.Windows.Media.Imaging;
 
 using KGySoft.ComponentModel;
 #if NETFRAMEWORK
-using KGySoft.CoreLibraries; 
+using KGySoft.CoreLibraries;
 #endif
+using KGySoft.Drawing.DebuggerVisualizers.Test;
 using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.Wpf;
 using KGySoft.Reflection;
-
-using Microsoft.VisualStudio.DebuggerVisualizers;
 
 #endregion
 
@@ -64,6 +65,10 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Test.ViewModel
 
         private static readonly Dictionary<Type, DebuggerVisualizerAttribute> debuggerVisualizers = WpfDebuggerHelper.GetDebuggerVisualizers();
 
+#if NET472_OR_GREATER
+        private static readonly Dictionary<Type, IDebuggerVisualizerProvider> debuggerVisualizerProviders = WpfDebuggerHelper.GetDebuggerVisualizerProviders();
+#endif
+
         #endregion
 
         #region Properties
@@ -85,7 +90,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Test.ViewModel
         public bool SingleColorFromProfile { get => Get<bool>(); set => Set(value); }
 
         public ICommand DirectViewCommand => Get(() => new SimpleCommand(OnViewDirectCommand));
-        public ICommand DebugCommand => Get(() => new SimpleCommand(OnDebugCommand));
+        public ICommand ClassicDebugCommand => Get(() => new SimpleCommand(OnClassicDebugCommand));
+        public ICommand ExtensionDebugCommand => Get(() => new SimpleCommand(OnExtensionDebugCommand));
 
         public ICommandState DebugCommandState => Get(() => new CommandState { Enabled = false });
 
@@ -246,7 +252,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Test.ViewModel
                     return Color.FromScRgb(1f, 0f, 1f, 0f);
 
                 if (SingleColorFromProfile)
-                    return Color.FromValues([0f, 0f, 1f], new Uri("C:\\Windows\\System32\\spool\\drivers\\color\\AdobeRGB1998.icc"));
+                    return Color.FromValues([0f, 0f, 1f], new Uri(Path.Combine(Files.GetExecutingPath(), "Resources\\AdobeRGB1998.icc")));
 
                 // TODO
                 //if (ImageFromFile)
@@ -353,7 +359,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Test.ViewModel
             }
         }
 
-        private void OnDebugCommand()
+        private void OnClassicDebugCommand()
         {
             object? testObject = TestObject;
             if (testObject == null)
@@ -371,18 +377,43 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Test.ViewModel
 
             try
             {
-                var windowService = new TestWindowService();
-                var objectProvider = new TestObjectProvider(testObject);
-                DialogDebuggerVisualizer debugger = (DialogDebuggerVisualizer)Reflector.CreateInstance(Reflector.ResolveType(attr.VisualizerTypeName)!);
-                objectProvider.Serializer = (VisualizerObjectSource)Reflector.CreateInstance(Reflector.ResolveType(attr.VisualizerObjectSourceTypeName!)!);
-                Reflector.InvokeMethod(debugger, "Show", windowService, objectProvider);
-                if (objectProvider.ObjectReplaced)
-                    TestObject = objectProvider.Object;
+                if (DebuggerVisualizerHelper.ShowClassicVisualizer(attr, testObject, default, out object? replacementObject))
+                    TestObject = replacementObject;
             }
             catch (Exception e) when (e is not StackOverflowException)
             {
                 ErrorCallback?.Invoke($"Failed to debug object: {e.Message}");
             }
+        }
+
+        private void OnExtensionDebugCommand()
+        {
+            object? testObject = TestObject;
+            if (testObject == null)
+                return;
+
+#if NET472_OR_GREATER
+            Type targetType = testObject is ImageSource
+                ? typeof(ImageSource)
+                : testObject.GetType();
+            IDebuggerVisualizerProvider? provider = debuggerVisualizerProviders.GetValueOrDefault(targetType);
+            if (provider == null)
+            {
+                ErrorCallback?.Invoke($"No debugger visualizer extension found for type {targetType}");
+                return;
+            }
+
+            try
+            {
+                DebuggerVisualizerHelper.ShowExtensionVisualizer(provider, testObject, default, o => TestObject = o);
+            }
+            catch (Exception e) when (e is not StackOverflowException)
+            {
+                ErrorCallback?.Invoke($"Failed to debug object: {e.Message}");
+            }
+#else
+            ErrorCallback?.Invoke("Debugger visualizer extensions are supported only in .NET Framework 4.7.2 and above.");
+#endif
         }
 
         #endregion

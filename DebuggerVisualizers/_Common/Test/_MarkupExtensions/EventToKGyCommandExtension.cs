@@ -1,9 +1,10 @@
-﻿#region Copyright
+﻿#if WPF
+#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
 //  File: EventToCommandExtension.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -27,7 +28,7 @@ using KGySoft.Reflection;
 
 #endregion
 
-namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Test.View
+namespace KGySoft.Drawing.DebuggerVisualizers.Test
 {
     /// <summary>
     /// A markup extension for binding events to <see cref="ICommand"/> instances in XAML.
@@ -208,3 +209,4 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Test.View
         #endregion
     }
 }
+#endif

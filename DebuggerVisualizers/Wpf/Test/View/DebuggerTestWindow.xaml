@@ -5,7 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:KGySoft.Drawing.DebuggerVisualizers.Wpf.Test.ViewModel"
-        xmlns:v="clr-namespace:KGySoft.Drawing.DebuggerVisualizers.Wpf.Test.View"
+        xmlns:t="clr-namespace:KGySoft.Drawing.DebuggerVisualizers.Test"
         mc:Ignorable="d"
         Title="Debugger Visualizer Test"
         SizeToContent="Width">
@@ -34,8 +34,9 @@
             <RadioButton IsChecked="{Binding SingleColorLinear}">Single Color (Linear)</RadioButton>
             <RadioButton IsChecked="{Binding SingleColorFromProfile}">Single Color (From Profile)</RadioButton>
 
-            <Button Click="{v:EventToCommand Command={Binding DirectViewCommand}, State={Binding DebugCommandState}}">View Directly</Button>
-            <Button Click="{v:EventToCommand Command={Binding DebugCommand}, State={Binding DebugCommandState}}">View by Debugger</Button>
+            <Button Click="{t:EventToCommand Command={Binding DirectViewCommand}, State={Binding DebugCommandState}}">View Directly</Button>
+            <Button Click="{t:EventToCommand Command={Binding ClassicDebugCommand}, State={Binding DebugCommandState}}">View by Classic Debugger</Button>
+            <Button Click="{t:EventToCommand Command={Binding ExtensionDebugCommand}, State={Binding DebugCommandState}}">View by Extension Debugger</Button>
         </StackPanel>
 
         <!--Preview Image-->
