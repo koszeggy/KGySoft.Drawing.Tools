@@ -2,7 +2,7 @@
 #region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: ColorDebuggerVisualizerProviderImpl.cs
+//  File: SkiaBitmapDebuggerVisualizerProviderImpl.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
@@ -20,8 +20,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
+using KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization;
 using KGySoft.Drawing.DebuggerVisualizers.View;
-using KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
@@ -30,25 +30,31 @@ using Microsoft.VisualStudio.Extensibility.VSSdkCompatibility;
 using Microsoft.VisualStudio.RpcContracts.RemoteUI;
 using Microsoft.VisualStudio.Shell;
 
+using SkiaSharp;
+
 #endregion
 
-namespace KGySoft.Drawing.DebuggerVisualizers.Wpf
+namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp
 {
     /// <summary>
-    /// Provides the implementation of a debugger visualizer extension for the <see cref="Color"/> class.
+    /// Provides the implementation of a debugger visualizer extension for the <see cref="SKBitmap"/>, <see cref="SKPixmap"/>,
+    /// <see cref="SKImage"/> and <see cref="SKSurface"/> classes.
     /// </summary>
-    public class ColorDebuggerVisualizerProviderImpl : IDebuggerVisualizerProvider
+    public class SkiaBitmapDebuggerVisualizerProviderImpl : IDebuggerVisualizerProvider
     {
         #region Properties
 
         /// <summary>
-        /// Gets the configuration of the color debugger visualizer provider.
+        /// Gets the configuration of the bitmap debugger visualizer provider.
         /// </summary>
-        public DebuggerVisualizerProviderConfiguration DebuggerVisualizerProviderConfiguration
-            => new("KGy SOFT Color Debugger Visualizer", typeof(Color))
+        public DebuggerVisualizerProviderConfiguration DebuggerVisualizerProviderConfiguration => new(
+            new VisualizerTargetType("KGy SOFT SKBitmap Debugger Visualizer", typeof(SKBitmap)),
+            new VisualizerTargetType("KGy SOFT SKPixmap Debugger Visualizer", typeof(SKPixmap)),
+            new VisualizerTargetType("KGy SOFT SKImage Debugger Visualizer", typeof(SKImage)),
+            new VisualizerTargetType("KGy SOFT SKSurface Debugger Visualizer", typeof(SKSurface)))
         {
             Style = VisualizerStyle.ToolWindow,
-            VisualizerObjectSourceType = new VisualizerObjectSourceType(typeof(ColorSerializer))
+            VisualizerObjectSourceType = new VisualizerObjectSourceType(typeof(SkiaBitmapSerializer))
         };
 
         #endregion
@@ -56,7 +62,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf
         #region Methods
 
         /// <summary>
-        /// Gets the view of the color debugger visualizer.
+        /// Gets the view of the image debugger visualizer.
         /// </summary>
         /// <param name="visualizerTarget">The <see cref="VisualizerTarget" /> that provides information about the target process and object.</param>
         /// <param name="cancellationToken">Cancellation token for the async call.</param>
@@ -64,9 +70,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf
         public async Task<IRemoteUserControl> CreateVisualizerAsync(VisualizerTarget visualizerTarget, CancellationToken cancellationToken)
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-            var result = new VisualizerExtensionWpfAdapter<CustomColorInfo?>(visualizerTarget,
-                (info, _) => ViewModelFactory.FromCustomColor(info),
-                SerializationHelper.DeserializeCustomColorInfo, null);
+            var result = new VisualizerExtensionWpfAdapter<CustomBitmapInfo?>(visualizerTarget,
+                (info, _) => ViewModelFactory.FromCustomBitmap(info),
+                SerializationHelper.DeserializeCustomBitmapInfo, null);
             await result.InitializeAsync(true);
             return new WpfControlWrapper(result);
         }

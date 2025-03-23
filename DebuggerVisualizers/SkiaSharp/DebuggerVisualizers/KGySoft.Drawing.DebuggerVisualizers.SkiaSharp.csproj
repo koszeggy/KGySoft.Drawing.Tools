@@ -13,6 +13,8 @@
     <PackageLicenseFile>..\..\..\LICENSE</PackageLicenseFile>
     <Authors>György Kőszeg</Authors>
     <Nullable>enable</Nullable>
+    <UseWPF Condition="'$(TargetFramework)'=='net472'">true</UseWPF>
+    <UseWindowsForms Condition="'$(TargetFramework)'=='net472'">true</UseWindowsForms>
   </PropertyGroup>
 
   <!-- Common NuGet references -->

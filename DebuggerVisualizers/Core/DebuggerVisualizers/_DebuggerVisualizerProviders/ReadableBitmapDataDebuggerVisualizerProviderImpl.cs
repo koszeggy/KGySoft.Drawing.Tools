@@ -42,7 +42,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core
         #region Properties
 
         /// <summary>
-        /// Gets the configuration of the image debugger visualizer provider.
+        /// Gets the configuration of the bitmap data debugger visualizer provider.
         /// </summary>
         public DebuggerVisualizerProviderConfiguration DebuggerVisualizerProviderConfiguration
             => new("KGy SOFT IReadableBitmapData Debugger Visualizer", "KGySoft.Drawing.Imaging.BitmapDataBase, KGySoft.Drawing.Core")
@@ -56,7 +56,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core
         #region Methods
 
         /// <summary>
-        /// Gets the view of the image debugger visualizer.
+        /// Gets the view of the bitmap data debugger visualizer.
         /// </summary>
         /// <param name="visualizerTarget">The <see cref="VisualizerTarget" /> that provides information about the target process and object.</param>
         /// <param name="cancellationToken">Cancellation token for the async call.</param>

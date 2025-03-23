@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: SKBitmapSerializer.cs
+//  File: SkiaCustomBitmapDebuggerVisualizer.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
@@ -15,24 +15,24 @@
 
 #region Usings
 
-using System.IO;
+using KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization;
+using KGySoft.Drawing.ImagingTools.Model;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;
 
-using SkiaSharp;
-
 #endregion
 
-namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization
+namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp
 {
-    internal sealed class SKBitmapSerializer : VisualizerObjectSource
+    internal sealed class SkiaCustomBitmapDebuggerVisualizer : DialogDebuggerVisualizer
     {
         #region Methods
 
-        /// <summary>
-        /// Called when the object to be debugged is about to be serialized
-        /// </summary>
-        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeCustomBitmapInfo((SKBitmap)target, outgoingData);
+        protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
+        {
+            using CustomBitmapInfo bitmapInfo = SerializationHelper.DeserializeCustomBitmapInfo(objectProvider.GetData());
+            DebuggerHelper.DebugCustomBitmap(bitmapInfo);
+        }
 
         #endregion
     }

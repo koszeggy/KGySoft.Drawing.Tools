@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: SKSurface.cs
+//  File: SkiaBitmapSerializer.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
@@ -17,7 +17,7 @@
 
 using System.IO;
 
-using Microsoft.VisualStudio.DebuggerVisualizers;
+using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 
 using SkiaSharp;
 
@@ -25,14 +25,17 @@ using SkiaSharp;
 
 namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization
 {
-    internal sealed class SKSurfaceSerializer : VisualizerObjectSource
+    /// <summary>
+    /// Provides serialization for the <see cref="SKBitmap"/>, <see cref="SKPixmap"/>, <see cref="SKImage"/> and <see cref="SKSurface"/> types.
+    /// </summary>
+    public sealed class SkiaBitmapSerializer : SerializerBase
     {
         #region Methods
 
         /// <summary>
-        /// Called when the object to be debugged is about to be serialized
+        /// Called when the object to be debugged is about to be serialized.
         /// </summary>
-        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeCustomBitmapInfo((SKSurface)target, outgoingData);
+        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeCustomBitmapInfo(target, outgoingData);
 
         #endregion
     }

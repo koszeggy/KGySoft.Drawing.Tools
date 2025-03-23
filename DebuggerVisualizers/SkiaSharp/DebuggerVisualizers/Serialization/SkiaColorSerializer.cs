@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: SKColorFSerializer.cs
+//  File: SkiaColorSerializer.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
@@ -18,7 +18,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
-using Microsoft.VisualStudio.DebuggerVisualizers;
+using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 
 using SkiaSharp;
 
@@ -26,16 +26,24 @@ using SkiaSharp;
 
 namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization
 {
+    /// <summary>
+    /// Provides serialization for the <see cref="SKColor"/>, <see cref="SKPMColor"/> and <see cref="SKColorF"/> types.
+    /// </summary>
     [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses",
         Justification = "False alarm, instantiated by VS debugger visualizers")]
-    internal sealed class SKColorFSerializer : VisualizerObjectSource
+    public sealed class SkiaColorSerializer : SerializerBase
     {
         #region Methods
 
         /// <summary>
-        /// Called when the object to be debugged is about to be serialized
+        /// Called when the object to be debugged is about to be serialized.
         /// </summary>
-        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeCustomColorInfo((SKColorF)target, outgoingData);
+        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeCustomColorInfo(target, outgoingData);
+
+        ///// <summary>
+        ///// Called when the debugged object has been replaced
+        ///// </summary>
+        //public override object CreateReplacementObject(object target, Stream incomingData) => SerializationHelper.DeserializeSKColor(incomingData);
 
         #endregion
     }

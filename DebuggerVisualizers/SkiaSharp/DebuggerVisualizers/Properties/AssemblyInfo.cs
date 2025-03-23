@@ -19,7 +19,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-using KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.DebuggerVisualizers;
+using KGySoft.Drawing.DebuggerVisualizers.SkiaSharp;
 using KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization;
 
 using SkiaSharp;
@@ -66,37 +66,37 @@ using SkiaSharp;
 [assembly: AssemblyInformationalVersion("4.0.0")]
 
 // SKBitmap
-[assembly: DebuggerVisualizer(typeof(SkiaCustomBitmapDebuggerVisualizer), typeof(SKBitmapSerializer),
+[assembly: DebuggerVisualizer(typeof(SkiaCustomBitmapDebuggerVisualizer), typeof(SkiaBitmapSerializer),
     Target = typeof(SKBitmap),
     Description = "KGy SOFT SKBitmap Debugger Visualizer")]
 
 // SKPixmap
-[assembly: DebuggerVisualizer(typeof(SkiaCustomBitmapDebuggerVisualizer), typeof(SKPixmapSerializer),
+[assembly: DebuggerVisualizer(typeof(SkiaCustomBitmapDebuggerVisualizer), typeof(SkiaBitmapSerializer),
     Target = typeof(SKPixmap),
     Description = "KGy SOFT SKPixmap Debugger Visualizer")]
 
 // SKImage
-[assembly: DebuggerVisualizer(typeof(SkiaCustomBitmapDebuggerVisualizer), typeof(SKImageSerializer),
+[assembly: DebuggerVisualizer(typeof(SkiaCustomBitmapDebuggerVisualizer), typeof(SkiaBitmapSerializer),
     Target = typeof(SKImage),
     Description = "KGy SOFT SKImage Debugger Visualizer")]
 
 // SKSurface
-[assembly: DebuggerVisualizer(typeof(SkiaCustomBitmapDebuggerVisualizer), typeof(SKSurfaceSerializer),
+[assembly: DebuggerVisualizer(typeof(SkiaCustomBitmapDebuggerVisualizer), typeof(SkiaBitmapSerializer),
     Target = typeof(SKSurface),
     Description = "KGy SOFT SKSurface Debugger Visualizer")]
 
 // SKColor
-[assembly: DebuggerVisualizer(typeof(SkiaCustomColorDebuggerVisualizer), typeof(SKColorSerializer),
+[assembly: DebuggerVisualizer(typeof(SkiaCustomColorDebuggerVisualizer), typeof(SkiaColorSerializer),
     Target = typeof(SKColor),
     Description = "KGy SOFT SKColor Debugger Visualizer")]
 
 // SKPMColor
-[assembly: DebuggerVisualizer(typeof(SkiaCustomColorDebuggerVisualizer), typeof(SKPMColorSerializer),
+[assembly: DebuggerVisualizer(typeof(SkiaCustomColorDebuggerVisualizer), typeof(SkiaColorSerializer),
     Target = typeof(SKPMColor),
     Description = "KGy SOFT SKPMColor Debugger Visualizer")]
 
 // SKColorF
-[assembly: DebuggerVisualizer(typeof(SkiaCustomColorDebuggerVisualizer), typeof(SKColorFSerializer),
+[assembly: DebuggerVisualizer(typeof(SkiaCustomColorDebuggerVisualizer), typeof(SkiaColorSerializer),
     Target = typeof(SKColorF),
     Description = "KGy SOFT SKColorF Debugger Visualizer")]
 

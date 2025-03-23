@@ -43,7 +43,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core
         #region Properties
 
         /// <summary>
-        /// Gets the configuration of the image debugger visualizer provider.
+        /// Gets the configuration of the color debugger visualizer provider.
         /// </summary>
         public DebuggerVisualizerProviderConfiguration DebuggerVisualizerProviderConfiguration => new(
             new VisualizerTargetType("KGy SOFT Color32 Debugger Visualizer", typeof(Color32)),
@@ -62,7 +62,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core
         #region Methods
 
         /// <summary>
-        /// Gets the view of the image debugger visualizer.
+        /// Gets the view of the color debugger visualizer.
         /// </summary>
         /// <param name="visualizerTarget">The <see cref="VisualizerTarget" /> that provides information about the target process and object.</param>
         /// <param name="cancellationToken">Cancellation token for the async call.</param>

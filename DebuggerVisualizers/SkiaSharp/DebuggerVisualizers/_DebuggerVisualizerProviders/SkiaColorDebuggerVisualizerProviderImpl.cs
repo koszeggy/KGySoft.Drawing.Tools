@@ -2,7 +2,7 @@
 #region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: ColorDebuggerVisualizerProviderImpl.cs
+//  File: SkiaColorDebuggerVisualizerProviderImpl.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
@@ -20,8 +20,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
+using KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization;
 using KGySoft.Drawing.DebuggerVisualizers.View;
-using KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
@@ -30,25 +30,30 @@ using Microsoft.VisualStudio.Extensibility.VSSdkCompatibility;
 using Microsoft.VisualStudio.RpcContracts.RemoteUI;
 using Microsoft.VisualStudio.Shell;
 
+using SkiaSharp;
+
 #endregion
 
-namespace KGySoft.Drawing.DebuggerVisualizers.Wpf
+namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp
 {
     /// <summary>
-    /// Provides the implementation of a debugger visualizer extension for the <see cref="Color"/> class.
+    /// Provides the implementation of a debugger visualizer extension for the <see cref="SKColor"/>,
+    /// <see cref="SKPMColor"/> and <see cref="SKColorF"/> structs.
     /// </summary>
-    public class ColorDebuggerVisualizerProviderImpl : IDebuggerVisualizerProvider
+    public class SkiaColorDebuggerVisualizerProviderImpl : IDebuggerVisualizerProvider
     {
         #region Properties
 
         /// <summary>
         /// Gets the configuration of the color debugger visualizer provider.
         /// </summary>
-        public DebuggerVisualizerProviderConfiguration DebuggerVisualizerProviderConfiguration
-            => new("KGy SOFT Color Debugger Visualizer", typeof(Color))
+        public DebuggerVisualizerProviderConfiguration DebuggerVisualizerProviderConfiguration => new(
+            new VisualizerTargetType("KGy SOFT SKColor Debugger Visualizer", typeof(SKColor)),
+            new VisualizerTargetType("KGy SOFT SKPMColor Debugger Visualizer", typeof(SKPMColor)),
+            new VisualizerTargetType("KGy SOFT SKColorF Debugger Visualizer", typeof(SKColorF)))
         {
             Style = VisualizerStyle.ToolWindow,
-            VisualizerObjectSourceType = new VisualizerObjectSourceType(typeof(ColorSerializer))
+            VisualizerObjectSourceType = new VisualizerObjectSourceType(typeof(SkiaColorSerializer))
         };
 
         #endregion

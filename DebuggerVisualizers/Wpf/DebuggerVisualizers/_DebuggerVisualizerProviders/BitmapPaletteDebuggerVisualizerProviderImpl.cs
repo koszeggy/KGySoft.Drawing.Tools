@@ -42,7 +42,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf
         #region Properties
 
         /// <summary>
-        /// Gets the configuration of the image debugger visualizer provider.
+        /// Gets the configuration of the palette debugger visualizer provider.
         /// </summary>
         public DebuggerVisualizerProviderConfiguration DebuggerVisualizerProviderConfiguration
             => new("KGy SOFT BitmapPalette Debugger Visualizer", typeof(BitmapPalette))
@@ -56,7 +56,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf
         #region Methods
 
         /// <summary>
-        /// Gets the view of the image debugger visualizer.
+        /// Gets the view of the palette debugger visualizer.
         /// </summary>
         /// <param name="visualizerTarget">The <see cref="VisualizerTarget" /> that provides information about the target process and object.</param>
         /// <param name="cancellationToken">Cancellation token for the async call.</param>
