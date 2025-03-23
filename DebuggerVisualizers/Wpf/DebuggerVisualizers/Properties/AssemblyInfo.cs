@@ -21,7 +21,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-using KGySoft.Drawing.DebuggerVisualizers.Wpf.DebuggerVisualizers;
+using KGySoft.Drawing.DebuggerVisualizers.Wpf;
 using KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization;
 
 #endregion

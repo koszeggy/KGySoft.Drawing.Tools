@@ -13,6 +13,7 @@
     <PackageLicenseFile>..\..\..\LICENSE</PackageLicenseFile>
     <Authors>György Kőszeg</Authors>
     <UseWPF>true</UseWPF>
+    <UseWindowsForms Condition="'$(TargetFramework)'=='net472'">true</UseWindowsForms>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 

@@ -18,18 +18,21 @@
 using System.IO;
 using System.Windows.Media;
 
-using Microsoft.VisualStudio.DebuggerVisualizers;
+using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 
 #endregion
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization
 {
-    internal class ImageSourceSerializer : VisualizerObjectSource
+    /// <summary>
+    /// Provides serialization for the <see cref="ImageSource"/> type.
+    /// </summary>
+    public class ImageSourceSerializer : SerializerBase
     {
         #region Methods
 
         /// <summary>
-        /// Called when the object to be debugged is about to be serialized
+        /// Called when the object to be debugged is about to be serialized.
         /// </summary>
         public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeCustomBitmapInfo((ImageSource)target, outgoingData);
 

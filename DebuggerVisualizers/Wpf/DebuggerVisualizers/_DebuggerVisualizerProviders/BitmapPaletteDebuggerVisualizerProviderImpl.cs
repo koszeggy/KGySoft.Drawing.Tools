@@ -2,7 +2,7 @@
 #region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: ReadableBitmapDataDebuggerVisualizerProviderImpl.cs
+//  File: BitmapPaletteDebuggerVisualizerProviderImpl.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
@@ -18,10 +18,10 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 
-using KGySoft.Drawing.DebuggerVisualizers.Core.Serialization;
 using KGySoft.Drawing.DebuggerVisualizers.View;
-using KGySoft.Drawing.Imaging;
+using KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
@@ -32,12 +32,12 @@ using Microsoft.VisualStudio.Shell;
 
 #endregion
 
-namespace KGySoft.Drawing.DebuggerVisualizers.Core
+namespace KGySoft.Drawing.DebuggerVisualizers.Wpf
 {
     /// <summary>
-    /// Provides the implementation of a debugger visualizer extension for the <see cref="IReadableBitmapData"/> instances.
+    /// Provides the implementation of a debugger visualizer extension for the <see cref="BitmapPalette"/> class.
     /// </summary>
-    public class ReadableBitmapDataDebuggerVisualizerProviderImpl : IDebuggerVisualizerProvider
+    public class BitmapPaletteDebuggerVisualizerProviderImpl : IDebuggerVisualizerProvider
     {
         #region Properties
 
@@ -45,10 +45,10 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core
         /// Gets the configuration of the image debugger visualizer provider.
         /// </summary>
         public DebuggerVisualizerProviderConfiguration DebuggerVisualizerProviderConfiguration
-            => new("KGy SOFT IReadableBitmapData Debugger Visualizer", "KGySoft.Drawing.Imaging.BitmapDataBase, KGySoft.Drawing.Core")
+            => new("KGy SOFT BitmapPalette Debugger Visualizer", typeof(BitmapPalette))
         {
             Style = VisualizerStyle.ToolWindow,
-            VisualizerObjectSourceType = new VisualizerObjectSourceType(typeof(ReadableBitmapDataSerializer))
+            VisualizerObjectSourceType = new VisualizerObjectSourceType(typeof(BitmapPaletteSerializer))
         };
 
         #endregion
@@ -64,9 +64,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core
         public async Task<IRemoteUserControl> CreateVisualizerAsync(VisualizerTarget visualizerTarget, CancellationToken cancellationToken)
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-            var result = new VisualizerExtensionWpfAdapter<CustomBitmapInfo?>(visualizerTarget,
-                (info, _) => ViewModelFactory.FromCustomBitmap(info),
-                SerializationHelper.DeserializeCustomBitmapInfo, null);
+            var result = new VisualizerExtensionWpfAdapter<CustomPaletteInfo?>(visualizerTarget,
+                (info, _) => ViewModelFactory.FromCustomPalette(info),
+                SerializationHelper.DeserializeCustomPaletteInfo, null);
             await result.InitializeAsync(true);
             return new WpfControlWrapper(result);
         }

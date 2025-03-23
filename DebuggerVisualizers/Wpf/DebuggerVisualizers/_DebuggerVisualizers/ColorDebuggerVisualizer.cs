@@ -23,7 +23,7 @@ using Microsoft.VisualStudio.DebuggerVisualizers;
 
 #endregion
 
-namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.DebuggerVisualizers
+namespace KGySoft.Drawing.DebuggerVisualizers.Wpf
 {
     [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses",
         Justification = "False alarm, instantiated by VS debugger visualizers")]

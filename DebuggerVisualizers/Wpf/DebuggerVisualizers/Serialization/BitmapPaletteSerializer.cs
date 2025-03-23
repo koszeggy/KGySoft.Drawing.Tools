@@ -19,18 +19,24 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Windows.Media.Imaging;
 
-using Microsoft.VisualStudio.DebuggerVisualizers;
+using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 
 #endregion
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization
 {
+    /// <summary>
+    /// Provides serialization for the <see cref="BitmapPalette"/> type.
+    /// </summary>
     [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses",
         Justification = "False alarm, instantiated by VS debugger visualizers")]
-    internal class BitmapPaletteSerializer : VisualizerObjectSource
+    public class BitmapPaletteSerializer : SerializerBase
     {
         #region Methods
 
+        /// <summary>
+        /// Called when the object to be debugged is about to be serialized.
+        /// </summary>
         public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeCustomPaletteInfo((BitmapPalette)target, outgoingData);
 
         #endregion

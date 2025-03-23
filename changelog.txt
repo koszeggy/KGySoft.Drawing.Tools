@@ -97,6 +97,24 @@ API changes:
 + The BitmapDataSerializer class has been made public.
 
 
++ KGySoft.Drawing.DebuggerVisualizers.Wpf.dll
+=============================================
+
++ KGySoft.Drawing.DebuggerVisualizers.Wpf namespace:
+----------------------------------------------------
++ WpfDebuggerHelper class:
+  + New GetDebuggerVisualizerProviders method (.NET Framework 4.7.2 only)
++ New ImageSourceDebuggerVisualizerProviderImpl class (.NET Framework 4.7.2 only)
++ New ColorDebuggerVisualizerProviderImpl class (.NET Framework 4.7.2 only)
++ New BitmapPaletteDebuggerVisualizerProviderImpl class (.NET Framework 4.7.2 only)
+
++ KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization namespace:
+----------------------------------------------------------------------
++ The ImageSourceSerializer class has been made public.
++ The ColorSerializer class has been made public.
++ The BitmapPaletteSerializer class has been made public.
+
+
 + KGySoft.Drawing.DebuggerVisualizers.Core.dll
 ==============================================
 

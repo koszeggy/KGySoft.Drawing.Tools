@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: BitmapPaletteDebuggerVisualizer.cs
+//  File: ImageSourceDebuggerVisualizer.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
@@ -15,24 +15,24 @@
 
 #region Usings
 
-using System.Diagnostics.CodeAnalysis;
-
 using KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization;
+using KGySoft.Drawing.ImagingTools.Model;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;
 
 #endregion
 
-namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.DebuggerVisualizers
+namespace KGySoft.Drawing.DebuggerVisualizers.Wpf
 {
-    [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses",
-        Justification = "False alarm, instantiated by VS debugger visualizers")]
-    internal class BitmapPaletteDebuggerVisualizer : DialogDebuggerVisualizer
+    internal class ImageSourceDebuggerVisualizer : DialogDebuggerVisualizer
     {
         #region Methods
 
         protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
-            => DebuggerHelper.DebugCustomPalette(SerializationHelper.DeserializeCustomPaletteInfo(objectProvider.GetData()));
+        {
+            using CustomBitmapInfo bitmapInfo = SerializationHelper.DeserializeCustomBitmapInfo(objectProvider.GetData());
+            DebuggerHelper.DebugCustomBitmap(bitmapInfo);
+        }
 
         #endregion
     }
