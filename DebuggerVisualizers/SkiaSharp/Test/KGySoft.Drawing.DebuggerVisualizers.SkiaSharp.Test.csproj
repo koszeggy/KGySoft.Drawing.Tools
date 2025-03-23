@@ -2,11 +2,17 @@
 
   <PropertyGroup>
     <!--<TargetFrameworks>net462;net472;net6.0-windows</TargetFrameworks>-->
-    <TargetFrameworks>net462</TargetFrameworks>
+    <TargetFrameworks>net472</TargetFrameworks>
     <OutputType>WinExe</OutputType>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <LangVersion>latest</LangVersion>
+    <DefineConstants>$(DefineConstants);WPF</DefineConstants>
+
+    <!--Suppressions
+        - VSTHRD002: Synchronously waiting on tasks or awaiters may cause deadlocks. Use await or JoinableTaskFactory.Run instead.
+        - VSSDK005: Use the ThreadHelper.JoinableTaskContext singleton rather than instantiating your own to avoid deadlocks. - false alarm, in the testing environment we don't have an actual Visual Studio instance -->
+    <NoWarn>$(NoWarn);VSSDK005;VSTHRD002</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,14 +24,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\_Common\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.csproj" />
     <ProjectReference Include="..\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.csproj" />
-    <ProjectReference Include="..\..\..\KGySoft.Drawing.ImagingTools\KGySoft.Drawing.ImagingTools.csproj" />
   </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)'=='net462'">
-    <Reference Include="System.Windows.Forms" />
-  </ItemGroup>
+  <Import Project="..\..\_Common\Test\KGySoft.Drawing.DebuggerVisualizers.Test.projitems" Label="Shared" />
 
   <!-- Note: Package reference to Microsoft.VisualStudio.DebuggerVisualizers does not work here because it is not copied and contains no implementation anyway.
        And VSSDK.DebuggerVisualizers cannot be used anymore for VS2022 if VSIX is also installed because it causes InvalidCastException -->
@@ -36,7 +37,7 @@
     </Reference>
   </ItemGroup>
 
-  <!-- Despite of the CopyLocal above, it is copied only if KGySoft.Drawing.DebuggerVisualizers references the actual library, which is
+  <!-- Despite the CopyLocal above, it is copied only if KGySoft.Drawing.DebuggerVisualizers references the actual library, which is
        the case only when targeting .NET 5 or above -->
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy ..\..\_ref\Microsoft.VisualStudio.DebuggerVisualizers.dll bin\$(ConfigurationName)\$(TargetFramework)\ /Y" />

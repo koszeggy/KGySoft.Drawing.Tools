@@ -206,7 +206,7 @@ Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		VSIX\KGySoft.Drawing.DebuggerVisualizers.Package\KGySoft.Drawing.DebuggerVisualizers.Package.projitems*{6c5b3a51-884f-456b-8e36-071813d2d5ec}*SharedItemsImports = 4
 		DebuggerVisualizers\_Common\Test\KGySoft.Drawing.DebuggerVisualizers.Test.projitems*{7b54bde4-0768-457b-8536-5c8e346044f5}*SharedItemsImports = 13
-		DebuggerVisualizers\_Common\Test\KGySoft.Drawing.DebuggerVisualizers.Test.projitems*{82f140d9-ed5d-4e64-a8e4-8f556fb88ac8}*SharedItemsImports = 5
 		DebuggerVisualizers\_Common\Test\KGySoft.Drawing.DebuggerVisualizers.Test.projitems*{868382c1-9c39-4793-94cd-802d00e78b94}*SharedItemsImports = 5
+		DebuggerVisualizers\_Common\Test\KGySoft.Drawing.DebuggerVisualizers.Test.projitems*{d2374de6-aeba-41ac-81e2-20f0afe96956}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal
