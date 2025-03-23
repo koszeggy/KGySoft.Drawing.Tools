@@ -16,6 +16,7 @@
 #region Usings
 
 using System;
+using System.Collections;
 using System.IO;
 
 using KGySoft.Drawing.Imaging;
@@ -55,7 +56,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
                 }
                 catch (Exception e)
                 {
-                    throw new ArgumentException(PublicResources.NotAnInstanceOfType(typeof(IReadableBitmapData)), nameof(bitmapData), e);
+                    throw new ArgumentException(PublicResources.NotAnInstanceOfType(typeof(IReadableBitmapData)), nameof(target), e);
                 }
             }
 
@@ -73,8 +74,26 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
             return new ReadableBitmapDataSerializationInfo(reader).BitmapInfo!;
         }
 
-        internal static void SerializeCustomPaletteInfo(IPalette palette, Stream outgoingData)
+        internal static void SerializeCustomPaletteInfo(object target, Stream outgoingData)
         {
+            if (target is not Palette palette)
+            {
+                // This part is reached when debugging a .NET Framework project, and the target's assembly version is different from ours,
+                // so casting it to Palette would fail. Here we create a clone of the target and serialize that instead.
+                try
+                {
+                    IList origEntries = (IList)Reflector.InvokeMethod(target, nameof(Palette.GetEntries))!;
+                    var newEntries = new Color32[origEntries.Count];
+                    for (int i = 0; i < origEntries.Count; i++)
+                        newEntries[i] = Color32.FromArgb((int)Reflector.InvokeMethod(origEntries[i], nameof(Color32.ToArgb))!);
+                    palette = new Palette(newEntries);
+                }
+                catch (Exception e)
+                {
+                    throw new ArgumentException(PublicResources.NotAnInstanceOfType(typeof(Palette)), nameof(target), e);
+                }
+            }
+
             using BinaryWriter writer = outgoingData.InitSerializationWriter();
             new PaletteSerializationInfo(palette).Write(writer);
         }
@@ -85,12 +104,12 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
             return new PaletteSerializationInfo(reader).PaletteInfo!;
         }
 
-        internal static void SerializeCustomColorInfo(object color, Stream outgoingData)
+        internal static void SerializeCustomColorInfo(object target, Stream outgoingData)
         {
             using BinaryWriter writer = outgoingData.InitSerializationWriter();
             ColorSerializationInfo result;
 
-            switch (color)
+            switch (target)
             {
                 case Color32 c32:
                     result = new ColorSerializationInfo(c32);
@@ -116,8 +135,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
                     try
                     {
                         // Serializing the color as a byte array and deserializing it with the correct assembly identity.
-                        byte[] bytes = BinarySerializer.SerializeValueType((ValueType)color);
-                        result = color.GetType().Name switch
+                        byte[] bytes = BinarySerializer.SerializeValueType((ValueType)target);
+                        result = target.GetType().Name switch
                         {
                             nameof(Color32) => new ColorSerializationInfo(BinarySerializer.DeserializeValueType<Color32>(bytes)),
                             nameof(PColor32) => new ColorSerializationInfo(BinarySerializer.DeserializeValueType<PColor32>(bytes)),
@@ -130,11 +149,10 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
                     }
                     catch (Exception e) when (e is not ArgumentException)
                     {
-                        throw new ArgumentException(PublicResources.NotAnInstanceOfType(typeof(Color32)), e);
+                        throw new ArgumentException(PublicResources.NotAnInstanceOfType(typeof(Color32)), nameof(target), e);
                     }
 
                     break;
-
             }
 
             result.Write(writer);

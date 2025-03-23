@@ -17,19 +17,24 @@
 
 using System.IO;
 
+using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 using KGySoft.Drawing.Imaging;
-
-using Microsoft.VisualStudio.DebuggerVisualizers;
 
 #endregion
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
 {
-    internal sealed class PaletteSerializer : VisualizerObjectSource
+    /// <summary>
+    /// Provides serialization for the <see cref="Palette"/> type.
+    /// </summary>
+    public sealed class PaletteSerializer : SerializerBase
     {
         #region Methods
 
-        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeCustomPaletteInfo((IPalette)target, outgoingData);
+        /// <summary>
+        /// Called when the object to be debugged is about to be serialized.
+        /// </summary>
+        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeCustomPaletteInfo(target, outgoingData);
 
         #endregion
     }

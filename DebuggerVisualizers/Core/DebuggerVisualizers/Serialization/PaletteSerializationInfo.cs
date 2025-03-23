@@ -29,7 +29,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
     {
         #region Constructors
 
-        internal PaletteSerializationInfo(IPalette palette) => PaletteInfo = GetPaletteInfo(palette);
+        internal PaletteSerializationInfo(Palette palette) => PaletteInfo = GetPaletteInfo(palette);
 
         internal PaletteSerializationInfo(BinaryReader reader)
             : base(reader)
@@ -40,7 +40,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
 
         #region Methods
 
-        internal static CustomPaletteInfo? GetPaletteInfo(IPalette? palette)
+        internal static CustomPaletteInfo? GetPaletteInfo(Palette? palette)
         {
             if (palette == null)
                 return null;

@@ -16,8 +16,6 @@
 
 #region Usings
 
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -37,7 +35,7 @@ using Microsoft.VisualStudio.Shell;
 namespace KGySoft.Drawing.DebuggerVisualizers.Core
 {
     /// <summary>
-    /// Provides the implementation of a debugger visualizer extension for the <see cref="Image"/>, <see cref="Bitmap"/> and <see cref="Metafile"/> classes.
+    /// Provides the implementation of a debugger visualizer extension for the <see cref="Palette"/> class.
     /// </summary>
     public class PaletteDebuggerVisualizerProviderImpl : IDebuggerVisualizerProvider
     {

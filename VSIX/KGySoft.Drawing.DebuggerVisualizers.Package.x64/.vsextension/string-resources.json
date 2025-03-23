@@ -14,5 +14,6 @@
   "DebuggerVisualizerProviders.Core.Color64DebuggerVisualizerProvider.Name": "KGy SOFT Color64 Debugger Visualizer",
   "DebuggerVisualizerProviders.Core.PColor64DebuggerVisualizerProvider.Name": "KGy SOFT PColor64 Debugger Visualizer",
   "DebuggerVisualizerProviders.Core.ColorFDebuggerVisualizerProvider.Name": "KGy SOFT ColorF Debugger Visualizer",
-  "DebuggerVisualizerProviders.Core.PColorFDebuggerVisualizerProvider.Name": "KGy SOFT PColorF Debugger Visualizer"
+  "DebuggerVisualizerProviders.Core.PColorFDebuggerVisualizerProvider.Name": "KGy SOFT PColorF Debugger Visualizer",
+  "DebuggerVisualizerProviders.Core.PaletteDebuggerVisualizerProvider.Name": "KGy SOFT Palette Debugger Visualizer"
 }
