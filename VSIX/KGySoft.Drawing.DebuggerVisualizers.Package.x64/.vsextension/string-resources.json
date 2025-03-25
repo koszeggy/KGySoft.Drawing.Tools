@@ -19,5 +19,13 @@
 
   "DebuggerVisualizerProviders.Wpf.ImageSourceDebuggerVisualizerProvider.Name": "KGy SOFT ImageSource Debugger Visualizer",
   "DebuggerVisualizerProviders.Wpf.ColorDebuggerVisualizerProvider.Name": "KGy SOFT Color Debugger Visualizer",
-  "DebuggerVisualizerProviders.Wpf.BitmapPaletteDebuggerVisualizerProvider.Name": "KGy SOFT BitmapPalette Debugger Visualizer"
+  "DebuggerVisualizerProviders.Wpf.BitmapPaletteDebuggerVisualizerProvider.Name": "KGy SOFT BitmapPalette Debugger Visualizer",
+
+  "DebuggerVisualizerProviders.SkiaSharp.SKBitmapDebuggerVisualizerProvider.Name": "KGy SOFT SKBitmap Debugger Visualizer",
+  "DebuggerVisualizerProviders.SkiaSharp.SKPixmapDebuggerVisualizerProvider.Name": "KGy SOFT SKPixmap Debugger Visualizer",
+  "DebuggerVisualizerProviders.SkiaSharp.SKImageDebuggerVisualizerProvider.Name": "KGy SOFT SKImage Debugger Visualizer",
+  "DebuggerVisualizerProviders.SkiaSharp.SKSurfaceDebuggerVisualizerProvider.Name": "KGy SOFT SKSurface Debugger Visualizer",
+  "DebuggerVisualizerProviders.SkiaSharp.SKColorDebuggerVisualizerProvider.Name": "KGy SOFT SKColor Debugger Visualizer",
+  "DebuggerVisualizerProviders.SkiaSharp.SKPMColorDebuggerVisualizerProvider.Name": "KGy SOFT SKPMColor Debugger Visualizer",
+  "DebuggerVisualizerProviders.SkiaSharp.SKColorFDebuggerVisualizerProvider.Name": "KGy SOFT SKColorF Debugger Visualizer"
 }

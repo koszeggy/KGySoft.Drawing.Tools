@@ -12,8 +12,6 @@
     <PackageLicenseFile>..\..\LICENSE</PackageLicenseFile>
     <Authors>György Kőszeg</Authors>
     <Nullable>enable</Nullable>
-
-    <DefineConstants>$(DefineConstants);VS2022_OR_GREATER</DefineConstants>
     <UseWPF>true</UseWPF>
     <VssdkCompatibleExtension>true</VssdkCompatibleExtension>
 
@@ -31,6 +29,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\DebuggerVisualizers\GdiPlus\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.csproj" />
     <ProjectReference Include="..\..\DebuggerVisualizers\Wpf\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.Wpf.csproj" />
+    <ProjectReference Include="..\..\DebuggerVisualizers\SkiaSharp\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.csproj" />
     <ProjectReference Include="..\..\DebuggerVisualizers\Core\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.Core.csproj" />
   </ItemGroup>
 
@@ -40,6 +39,9 @@
     <Content Include="..\..\DebuggerVisualizers\GdiPlus\DebuggerVisualizers\bin\$(Configuration)\net472\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll" Link="netstandard2.0\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\DebuggerVisualizers\Wpf\DebuggerVisualizers\bin\$(Configuration)\net472\KGySoft.Drawing.DebuggerVisualizers.Wpf.dll" Link="netstandard2.0\KGySoft.Drawing.DebuggerVisualizers.Wpf.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\DebuggerVisualizers\Wpf\DebuggerVisualizers\bin\$(Configuration)\net472\KGySoft.Drawing.Wpf.dll" Link="netstandard2.0\KGySoft.Drawing.Wpf.dll" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\DebuggerVisualizers\SkiaSharp\DebuggerVisualizers\bin\$(Configuration)\net472\KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.dll" Link="netstandard2.0\KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.dll" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\DebuggerVisualizers\SkiaSharp\DebuggerVisualizers\bin\$(Configuration)\net472\KGySoft.Drawing.SkiaSharp.dll" Link="netstandard2.0\KGySoft.Drawing.SkiaSharp.dll" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\DebuggerVisualizers\SkiaSharp\DebuggerVisualizers\bin\$(Configuration)\net472\SkiaSharp.dll" Link="netstandard2.0\SkiaSharp.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\DebuggerVisualizers\Core\DebuggerVisualizers\bin\$(Configuration)\net472\KGySoft.Drawing.DebuggerVisualizers.Core.dll" Link="netstandard2.0\KGySoft.Drawing.DebuggerVisualizers.Core.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\KGySoft.Drawing.ImagingTools\bin\$(Configuration)\net462\KGySoft.Drawing.ImagingTools.exe" Link="netstandard2.0\KGySoft.Drawing.ImagingTools.exe" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\KGySoft.Drawing.ImagingTools\bin\$(Configuration)\net462\KGySoft.CoreLibraries.dll" Link="netstandard2.0\KGySoft.CoreLibraries.dll" CopyToOutputDirectory="PreserveNewest" />
