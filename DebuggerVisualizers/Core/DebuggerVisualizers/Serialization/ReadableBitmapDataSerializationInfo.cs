@@ -30,9 +30,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
     {
         #region Constructors
         
-        internal ReadableBitmapDataSerializationInfo(IReadableBitmapData bitmapData)
+        internal ReadableBitmapDataSerializationInfo(IReadableBitmapData bitmapData, bool disposeBitmapData)
         {
-            BitmapInfo = new CustomBitmapInfo(false)
+            BitmapInfo = new CustomBitmapInfo(disposeBitmapData)
             {
                 ShowPixelSize = true,
                 Type = bitmapData.GetType().GetName(TypeNameKind.ShortName),

@@ -60,12 +60,14 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
                 }
             }
 
-            using var imageInfo =  new ReadableBitmapDataSerializationInfo(bitmapData);
+            using var imageInfo = new ReadableBitmapDataSerializationInfo(bitmapData, !ReferenceEquals(target, bitmapData));
+#if DEBUG
+            if (!ReferenceEquals(target, bitmapData))
+                imageInfo.BitmapInfo!.CustomAttributes["KGySoft.Drawing.Core version mismatch"] = $"{target.GetType().Assembly} vs. {typeof(IReadWriteBitmapData).Assembly}";
+#endif
             using (BinaryWriter writer = outgoingData.InitSerializationWriter())
                 imageInfo.Write(writer);
 
-            if (!ReferenceEquals(target, bitmapData))
-                bitmapData.Dispose();
         }
 
         internal static CustomBitmapInfo DeserializeCustomBitmapInfo(Stream stream)
@@ -94,8 +96,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
                 }
             }
 
+            var info = new PaletteSerializationInfo(palette);
+#if DEBUG
+            if (!ReferenceEquals(target, palette))
+                info.PaletteInfo!.CustomAttributes["KGySoft.Drawing.Core version mismatch"] = $"{target.GetType().Assembly} vs. {typeof(Palette).Assembly}";
+#endif
             using BinaryWriter writer = outgoingData.InitSerializationWriter();
-            new PaletteSerializationInfo(palette).Write(writer);
+            info.Write(writer);
         }
 
         internal static CustomPaletteInfo DeserializeCustomPaletteInfo(Stream stream)
@@ -107,27 +114,27 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
         internal static void SerializeCustomColorInfo(object target, Stream outgoingData)
         {
             using BinaryWriter writer = outgoingData.InitSerializationWriter();
-            ColorSerializationInfo result;
+            ColorSerializationInfo info;
 
             switch (target)
             {
                 case Color32 c32:
-                    result = new ColorSerializationInfo(c32);
+                    info = new ColorSerializationInfo(c32);
                     break;
                 case PColor32 pc32:
-                    result = new ColorSerializationInfo(pc32);
+                    info = new ColorSerializationInfo(pc32);
                     break;
                 case Color64 c64:
-                    result = new ColorSerializationInfo(c64);
+                    info = new ColorSerializationInfo(c64);
                     break;
                 case PColor64 pc64:
-                    result = new ColorSerializationInfo(pc64);
+                    info = new ColorSerializationInfo(pc64);
                     break;
                 case ColorF cf:
-                    result = new ColorSerializationInfo(cf);
+                    info = new ColorSerializationInfo(cf);
                     break;
                 case PColorF pcf:
-                    result = new ColorSerializationInfo(pcf);
+                    info = new ColorSerializationInfo(pcf);
                     break;
 
                 default:
@@ -136,7 +143,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
                     {
                         // Serializing the color as a byte array and deserializing it with the correct assembly identity.
                         byte[] bytes = BinarySerializer.SerializeValueType((ValueType)target);
-                        result = target.GetType().Name switch
+                        info = target.GetType().Name switch
                         {
                             nameof(Color32) => new ColorSerializationInfo(BinarySerializer.DeserializeValueType<Color32>(bytes)),
                             nameof(PColor32) => new ColorSerializationInfo(BinarySerializer.DeserializeValueType<PColor32>(bytes)),
@@ -146,6 +153,11 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
                             nameof(PColorF) => new ColorSerializationInfo(BinarySerializer.DeserializeValueType<PColorF>(bytes)),
                             _ => throw new ArgumentException(PublicResources.NotAnInstanceOfType(typeof(Color32)))
                         };
+
+#if DEBUG
+                        info.ColorInfo!.CustomAttributes["KGySoft.Drawing.Core version mismatch"] = $"{target.GetType().Assembly} vs. {typeof(Color32).Assembly}";
+#endif
+
                     }
                     catch (Exception e) when (e is not ArgumentException)
                     {
@@ -155,7 +167,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
                     break;
             }
 
-            result.Write(writer);
+            info.Write(writer);
         }
 
         internal static CustomColorInfo DeserializeCustomColorInfo(Stream stream)
