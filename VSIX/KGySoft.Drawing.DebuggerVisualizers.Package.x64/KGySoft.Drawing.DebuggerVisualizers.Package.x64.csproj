@@ -43,10 +43,10 @@
     <Content Include="..\..\DebuggerVisualizers\SkiaSharp\DebuggerVisualizers\bin\$(Configuration)\net472\KGySoft.Drawing.SkiaSharp.dll" Link="netstandard2.0\KGySoft.Drawing.SkiaSharp.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\DebuggerVisualizers\SkiaSharp\DebuggerVisualizers\bin\$(Configuration)\net472\SkiaSharp.dll" Link="netstandard2.0\SkiaSharp.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\DebuggerVisualizers\Core\DebuggerVisualizers\bin\$(Configuration)\net472\KGySoft.Drawing.DebuggerVisualizers.Core.dll" Link="netstandard2.0\KGySoft.Drawing.DebuggerVisualizers.Core.dll" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="..\..\KGySoft.Drawing.ImagingTools\bin\$(Configuration)\net462\KGySoft.Drawing.ImagingTools.exe" Link="netstandard2.0\KGySoft.Drawing.ImagingTools.exe" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="..\..\KGySoft.Drawing.ImagingTools\bin\$(Configuration)\net462\KGySoft.CoreLibraries.dll" Link="netstandard2.0\KGySoft.CoreLibraries.dll" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="..\..\KGySoft.Drawing.ImagingTools\bin\$(Configuration)\net462\KGySoft.Drawing.dll" Link="netstandard2.0\KGySoft.Drawing.dll" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="..\..\KGySoft.Drawing.ImagingTools\bin\$(Configuration)\net462\KGySoft.Drawing.Core.dll" Link="netstandard2.0\KGySoft.Drawing.Core.dll" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\KGySoft.Drawing.ImagingTools\bin\$(Configuration)\net472\KGySoft.Drawing.ImagingTools.exe" Link="netstandard2.0\KGySoft.Drawing.ImagingTools.exe" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\KGySoft.Drawing.ImagingTools\bin\$(Configuration)\net472\KGySoft.CoreLibraries.dll" Link="netstandard2.0\KGySoft.CoreLibraries.dll" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\KGySoft.Drawing.ImagingTools\bin\$(Configuration)\net472\KGySoft.Drawing.dll" Link="netstandard2.0\KGySoft.Drawing.dll" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\KGySoft.Drawing.ImagingTools\bin\$(Configuration)\net472\KGySoft.Drawing.Core.dll" Link="netstandard2.0\KGySoft.Drawing.Core.dll" CopyToOutputDirectory="PreserveNewest" />
 
     <Content Include="..\..\LICENSE" Link="LICENSE" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\_SharedResources\Preview.png" Link="Resources\Preview.png" CopyToOutputDirectory="PreserveNewest" />

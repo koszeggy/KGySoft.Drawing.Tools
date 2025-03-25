@@ -66,43 +66,91 @@ using KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization;
 [assembly: AssemblyInformationalVersion("4.0.0")]
 
 // Image
-[assembly: DebuggerVisualizer(typeof(ImageDebuggerVisualizer), typeof(ImageSerializer),
+[
+    assembly: DebuggerVisualizer(typeof(ImageDebuggerVisualizer), typeof(ImageSerializer),
     Target = typeof(Image),
-    Description = "KGy SOFT Image Debugger Visualizer")]
+#if NET472_OR_GREATER
+    Description = "KGy SOFT Image Debugger Visualizer (Classic)")
+#else
+    Description = "KGy SOFT Image Debugger Visualizer")
+#endif
+]
 
 // Bitmap
-[assembly: DebuggerVisualizer(typeof(BitmapDebuggerVisualizer), typeof(ImageSerializer),
+[
+    assembly: DebuggerVisualizer(typeof(BitmapDebuggerVisualizer), typeof(ImageSerializer),
     Target = typeof(Bitmap),
-    Description = "KGy SOFT Bitmap Debugger Visualizer")]
+#if NET472_OR_GREATER
+    Description = "KGy SOFT Bitmap Debugger Visualizer (Classic)")
+#else
+    Description = "KGy SOFT Bitmap Debugger Visualizer")
+#endif
+]
 
 // Metafile
-[assembly: DebuggerVisualizer(typeof(MetafileDebuggerVisualizer), typeof(ImageSerializer),
+[
+    assembly: DebuggerVisualizer(typeof(MetafileDebuggerVisualizer), typeof(ImageSerializer),
     Target = typeof(Metafile),
-    Description = "KGy SOFT Metafile Debugger Visualizer")]
+#if NET472_OR_GREATER
+    Description = "KGy SOFT Metafile Debugger Visualizer (Classic)")
+#else
+    Description = "KGy SOFT Metafile Debugger Visualizer")
+#endif
+]
 
 // Icon
-[assembly: DebuggerVisualizer(typeof(IconDebuggerVisualizer), typeof(IconSerializer),
+[
+    assembly: DebuggerVisualizer(typeof(IconDebuggerVisualizer), typeof(IconSerializer),
     Target = typeof(Icon),
-    Description = "KGy SOFT Icon Debugger Visualizer")]
+#if NET472_OR_GREATER
+    Description = "KGy SOFT Icon Debugger Visualizer (Classic)")
+#else
+    Description = "KGy SOFT Icon Debugger Visualizer")
+#endif
+]
 
 // Graphics
-[assembly: DebuggerVisualizer(typeof(GraphicsDebuggerVisualizer), typeof(GraphicsSerializer),
+[
+    assembly: DebuggerVisualizer(typeof(GraphicsDebuggerVisualizer), typeof(GraphicsSerializer),
     Target = typeof(Graphics),
-    Description = "KGy SOFT Graphics Debugger Visualizer")]
+#if NET472_OR_GREATER
+    Description = "KGy SOFT Graphics Debugger Visualizer (Classic)")
+#else
+    Description = "KGy SOFT Graphics Debugger Visualizer")
+#endif
+]
 
 // BitmapData
-[assembly: DebuggerVisualizer(typeof(BitmapDataDebuggerVisualizer), typeof(BitmapDataSerializer),
+[
+    assembly: DebuggerVisualizer(typeof(BitmapDataDebuggerVisualizer), typeof(BitmapDataSerializer),
     Target = typeof(BitmapData),
-    Description = "KGy SOFT BitmapData Debugger Visualizer")]
+#if NET472_OR_GREATER
+    Description = "KGy SOFT BitmapData Debugger Visualizer (Classic)")
+#else
+    Description = "KGy SOFT BitmapData Debugger Visualizer")
+#endif
+]
 
-// Color palette
-[assembly: DebuggerVisualizer(typeof(ColorPaletteDebuggerVisualizer), typeof(ColorPaletteSerializer),
+// ColorPalette
+[
+    assembly: DebuggerVisualizer(typeof(ColorPaletteDebuggerVisualizer), typeof(ColorPaletteSerializer),
     Target = typeof(ColorPalette),
-    Description = "KGy SOFT Color Palette Debugger Visualizer")]
+#if NET472_OR_GREATER
+    Description = "KGy SOFT ColorPalette Debugger Visualizer (Classic)")
+#else
+    Description = "KGy SOFT ColorPalette Debugger Visualizer")
+#endif
+]
 
 // Color
-[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
+[
+    assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
     Target = typeof(Color),
-    Description = "KGy SOFT Color Debugger Visualizer")]
+#if NET472_OR_GREATER
+    Description = "KGy SOFT Color Debugger Visualizer (Classic)")
+#else
+    Description = "KGy SOFT Color Debugger Visualizer")
+#endif
+]
 
 #endregion

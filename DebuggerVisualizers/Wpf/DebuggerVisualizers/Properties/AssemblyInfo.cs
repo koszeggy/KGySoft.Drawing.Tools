@@ -66,18 +66,36 @@ using KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization;
 [assembly: AssemblyInformationalVersion("4.0.0")]
 
 // ImageSource
-[assembly: DebuggerVisualizer(typeof(ImageSourceDebuggerVisualizer), typeof(ImageSourceSerializer),
+[
+    assembly: DebuggerVisualizer(typeof(ImageSourceDebuggerVisualizer), typeof(ImageSourceSerializer),
     Target = typeof(ImageSource),
-    Description = "KGy SOFT ImageSource Debugger Visualizer")]
+#if NET472_OR_GREATER
+    Description = "KGy SOFT ImageSource Debugger Visualizer (Classic)")
+#else
+    Description = "KGy SOFT ImageSource Debugger Visualizer")
+#endif
+]
 
 // Color
-[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
+[
+    assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
     Target = typeof(Color),
-    Description = "KGy SOFT Color Debugger Visualizer")]
+#if NET472_OR_GREATER
+    Description = "KGy SOFT Color Debugger Visualizer (Classic)")
+#else
+    Description = "KGy SOFT Color Debugger Visualizer")
+#endif
+]
 
 // BitmapPalette
-[assembly: DebuggerVisualizer(typeof(BitmapPaletteDebuggerVisualizer), typeof(BitmapPaletteSerializer),
+[
+    assembly: DebuggerVisualizer(typeof(BitmapPaletteDebuggerVisualizer), typeof(BitmapPaletteSerializer),
     Target = typeof(BitmapPalette),
-    Description = "KGy SOFT BitmapPalette Debugger Visualizer")]
+#if NET472_OR_GREATER
+    Description = "KGy SOFT BitmapPalette Debugger Visualizer (Classic)")
+#else
+    Description = "KGy SOFT BitmapPalette Debugger Visualizer")
+#endif
+]
 
 #endregion

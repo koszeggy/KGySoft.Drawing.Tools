@@ -63,9 +63,11 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             Services.InfoBarUIFactory = await GlobalProvider.GetGlobalServiceAsync(typeof(SVsInfoBarUIFactory)) as IVsInfoBarUIFactory;
             Services.DTE = await GlobalProvider.GetGlobalServiceAsync(typeof(DTE)) as DTE;
 
-            // TODO: check legacy visualizers installation. If old version found, choose [Upgrade|Uninstall|Don't ask again]
+            // TODO: check legacy visualizers installation. If old version found, just delete it from the Documents\VisualStudio 2022\Visualizers folder
+#if DEBUG
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            Notifications.Info("Hello from Extension");
+            Notifications.Info("Debugging Visualizer Extensions"); 
+#endif
 
             await base.OnInitializedAsync(extensibility, cancellationToken);
         }

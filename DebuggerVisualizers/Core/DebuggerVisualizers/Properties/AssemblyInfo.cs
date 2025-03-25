@@ -64,44 +64,92 @@ using KGySoft.Drawing.Imaging;
 [assembly: AssemblyFileVersion("4.0.0")]
 [assembly: AssemblyInformationalVersion("4.0.0")]
 
-// BitmapData
-[assembly: DebuggerVisualizer(typeof(ReadableBitmapDataDebuggerVisualizer), typeof(ReadableBitmapDataSerializer),
+// BitmapDataBase (IReadableBitmapData)
+[
+    assembly: DebuggerVisualizer(typeof(ReadableBitmapDataDebuggerVisualizer), typeof(ReadableBitmapDataSerializer),
     TargetTypeName = "KGySoft.Drawing.Imaging.BitmapDataBase, KGySoft.Drawing.Core",
-    Description = "KGy SOFT BitmapDataBase Debugger Visualizer")]
+#if NET472_OR_GREATER
+    Description = "KGy SOFT IReadableBitmapData Debugger Visualizer (Classic)")
+#else
+    Description = "KGy SOFT IReadableBitmapData Debugger Visualizer")
+#endif
+]
 
 // Palette
-[assembly: DebuggerVisualizer(typeof(PaletteDebuggerVisualizer), typeof(PaletteSerializer),
+[
+    assembly: DebuggerVisualizer(typeof(PaletteDebuggerVisualizer), typeof(PaletteSerializer),
     Target = typeof(Palette),
-    Description = "KGy SOFT Palette Debugger Visualizer")]
+#if NET472_OR_GREATER
+    Description = "KGy SOFT Palette Debugger Visualizer (Classic)")
+#else
+    Description = "KGy SOFT Palette Debugger Visualizer")
+#endif
+]
 
 // Color32
-[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
+[
+    assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
     Target = typeof(Color32),
-    Description = "KGy SOFT Color32 Debugger Visualizer")]
+#if NET472_OR_GREATER
+    Description = "KGy SOFT Color32 Debugger Visualizer (Classic)")
+#else
+    Description = "KGy SOFT Color32 Debugger Visualizer")
+#endif
+]
 
 // PColor32
-[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
+[
+    assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
     Target = typeof(PColor32),
-    Description = "KGy SOFT PColor32 Debugger Visualizer")]
+#if NET472_OR_GREATER
+    Description = "KGy SOFT PColor32 Debugger Visualizer (Classic)")
+#else
+    Description = "KGy SOFT PColor32 Debugger Visualizer")
+#endif
+]
 
 // Color64
-[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
+[
+    assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
     Target = typeof(Color64),
-    Description = "KGy SOFT Color64 Debugger Visualizer")]
+#if NET472_OR_GREATER
+    Description = "KGy SOFT Color64 Debugger Visualizer (Classic)")
+#else
+    Description = "KGy SOFT Color64 Debugger Visualizer")
+#endif
+]
 
 // PColor64
-[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
+[
+    assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
     Target = typeof(PColor64),
-    Description = "KGy SOFT PColor64 Debugger Visualizer")]
+#if NET472_OR_GREATER
+    Description = "KGy SOFT PColor64 Debugger Visualizer (Classic)")
+#else
+    Description = "KGy SOFT PColor64 Debugger Visualizer")
+#endif
+]
 
 // ColorF
-[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
+[
+    assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
     Target = typeof(ColorF),
-    Description = "KGy SOFT ColorF Debugger Visualizer")]
+#if NET472_OR_GREATER
+    Description = "KGy SOFT ColorF Debugger Visualizer (Classic)")
+#else
+    Description = "KGy SOFT ColorF Debugger Visualizer")
+#endif
+]
 
 // PColorF
-[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
+[
+    assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
     Target = typeof(PColorF),
-    Description = "KGy SOFT PColorF Debugger Visualizer")]
+#if NET472_OR_GREATER
+    Description = "KGy SOFT PColorF Debugger Visualizer (Classic)")
+#else
+    Description = "KGy SOFT PColorF Debugger Visualizer")
+#endif
+]
 
 #endregion
