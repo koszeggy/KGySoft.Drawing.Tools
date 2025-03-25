@@ -118,7 +118,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
                 new CustomPaletteSerializationInfo { PaletteInfo = BitmapInfo.CustomPalette }.Write(writer);
 
             // 4. BitmapData
-            BitmapInfo.BitmapData!.Save(writer.BaseStream);
+            writer.Write(BitmapInfo.BitmapData != null);
+            BitmapInfo.BitmapData?.Save(writer.BaseStream);
         }
 
         #endregion
@@ -159,7 +160,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
                 BitmapInfo.CustomPalette = new CustomPaletteSerializationInfo(br).PaletteInfo;
 
             // 4. BitmapData
-            BitmapInfo.BitmapData = BitmapDataFactory.Load(br.BaseStream);
+            if (br.ReadBoolean())
+                BitmapInfo.BitmapData = BitmapDataFactory.Load(br.BaseStream);
         }
         
         #endregion

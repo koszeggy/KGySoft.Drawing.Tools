@@ -16,6 +16,7 @@
 #region Usings
 
 using System;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 
@@ -52,17 +53,16 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         protected override void UpdateInfo()
         {
-            IReadableBitmapData? bitmapData = bitmapInfo?.BitmapData;
-
-            if (bitmapData == null)
+            if (bitmapInfo == null)
             {
                 TitleCaption = Res.TitleNoImage;
                 InfoText = null;
                 return;
             }
 
-            string type = bitmapInfo!.Type ?? bitmapData.GetType().Name;
-            TitleCaption = $"{Res.TitleType(type)}{(bitmapInfo.ShowPixelSize ? $"{Res.TextSeparator}{Res.TitleSize(bitmapData.Size)}" : String.Empty)}";
+            IReadableBitmapData? bitmapData = bitmapInfo.BitmapData;
+            string type = bitmapInfo.Type ?? bitmapData?.GetType().Name ?? PublicResources.Null;
+            TitleCaption = $"{Res.TitleType(type)}{(bitmapInfo.ShowPixelSize ? $"{Res.TextSeparator}{Res.TitleSize(bitmapData?.Size ?? Size.Empty)}" : String.Empty)}";
             var sb = new StringBuilder(Res.TitleType(type));
             if (bitmapInfo.CustomAttributes.Count > 0)
             {
