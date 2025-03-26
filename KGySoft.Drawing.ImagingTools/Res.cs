@@ -301,6 +301,15 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Are you sure you want to overwrite this installation?</summary>
         internal static string ConfirmMessageOverwriteInstallation => Get("ConfirmMessage_OverwriteInstallation");
 
+        /// <summary>For Visual Studio 2022 version 17.9 Preview 1 or higher it is not required to install the classic visualizers on this path if you use the KGy SOFT Image DebuggerVisualizers x64 package from Visual Studio Marketplace. The package offers modern non-dialog visualizers that can remain open while stepping through the code.
+        ///
+        /// Do you really want to install the classic visualizers on this path?
+        ///
+        /// Yes: Install the classic visualizers.
+        /// No: Close the Manage Installations dialog and navigate to the Visual Studio Marketplace.
+        /// Cancel: Do nothing.</summary>
+        internal static string ConfirmMessageInstallClassicVisualizers => Get("ConfirmMessage_InstallClassicVisualizers");
+
         /// <summary>Are you sure you want to remove this installation?</summary>
         internal static string ConfirmMessageRemoveInstallation => Get("ConfirmMessage_RemoveInstallation");
 

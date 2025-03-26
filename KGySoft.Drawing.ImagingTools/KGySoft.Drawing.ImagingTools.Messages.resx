@@ -493,6 +493,15 @@ so partial transparent pixels will be blended with back color.</value>
   <data name="ConfirmMessage_OverwriteInstallation" xml:space="preserve">
     <value>Are you sure you want to overwrite this installation?</value>
   </data>
+  <data name="ConfirmMessage_InstallClassicVisualizers" xml:space="preserve">
+    <value>For Visual Studio 2022 version 17.9 Preview 1 or higher it is not required to install the classic visualizers on this path if you use the KGy SOFT Image DebuggerVisualizers x64 package from Visual Studio Marketplace. The package offers modern non-dialog visualizers that can remain open while stepping through the code.
+
+Do you really want to install the classic visualizers on this path?
+
+Yes: Install the classic visualizers.
+No: Close the Manage Installations dialog and navigate to the Visual Studio Marketplace.
+Cancel: Do nothing.</value>
+  </data>
   <data name="ConfirmMessage_SaveFileExtensionFormat" xml:space="preserve">
     <value>The extension of the provided filename '{0}' does not match to the selected format ({1}).
 
@@ -686,6 +695,9 @@ Harmonizing visual elements for all possible environments is never a trivial tas
   <data name="miManageInstallations.Text" xml:space="preserve">
     <value>Manage Debugger Visualizer Installations...</value>
   </data>
+  <data name="miManageClassicInstallations.Text" xml:space="preserve">
+    <value>Manage Classic Debugger Visualizer Installations...</value>
+  </data>
   <data name="miLanguageSettings.Text" xml:space="preserve">
     <value>Language Settings...</value>
   </data>
@@ -718,6 +730,9 @@ Harmonizing visual elements for all possible environments is never a trivial tas
   </data>
   <data name="ManageInstallationsForm.Text" xml:space="preserve">
     <value>Debugger Visualizer Installations</value>
+  </data>
+  <data name="ManageClassicInstallationsForm.Text" xml:space="preserve">
+    <value>Classic Debugger Visualizer Installations</value>
   </data>
   <data name="gbAvailableVersion.Text" xml:space="preserve">
     <value>Installable Version:</value>

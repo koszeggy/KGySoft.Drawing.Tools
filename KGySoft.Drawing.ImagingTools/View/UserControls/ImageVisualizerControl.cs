@@ -92,6 +92,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         internal ImageVisualizerControl(ImageVisualizerViewModel viewModel) : base(viewModel)
         {
             InitializeComponent();
+#if NET472_OR_GREATER
+            miManageInstallations.Name = "miManageClassicInstallations"; // so a different text will be picked from the resources
+#endif
         }
 
         #endregion

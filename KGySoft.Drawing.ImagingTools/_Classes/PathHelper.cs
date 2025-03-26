@@ -15,6 +15,7 @@
 
 #region Usings
 
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -33,6 +34,8 @@ namespace KGySoft.Drawing.ImagingTools
         #region Methods
 
         internal static bool HasInvalidChars(string? path) => path?.IndexOfAny(invalidPathChars) >= 0;
+
+        internal static void OpenUrl(string url) => Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
 
         #endregion
     }

@@ -64,6 +64,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             InitializeComponent();
             cmbInstallations.ValueMember = nameof(KeyValuePair<string, string>.Key);
             cmbInstallations.DisplayMember = nameof(KeyValuePair<string, string>.Value);
+#if NET472_OR_GREATER
+            Name = "ManageClassicInstallationsControl"; // so a different title will be picked from the resources
+#endif
         }
 
         #endregion

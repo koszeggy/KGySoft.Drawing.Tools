@@ -109,7 +109,7 @@ namespace KGySoft.Drawing.ImagingTools
             allowHttps &= OSUtils.IsWindows8OrLater;
 #endif
 
-            // To be able to resolve UserSettingsGroup of with other framework version
+            // To be able to resolve UserSettingsGroup with other framework version
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 #if NET35
             // To prevent serializing CultureInfo by DisplayName instead of Name

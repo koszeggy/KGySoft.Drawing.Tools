@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 
@@ -210,12 +211,45 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnInstallCommand()
         {
+            #region Local Methods
+
+            int? TryGetVisualStudioVersion()
+            {
+                string selected = SelectedInstallation;
+                if (selected.Length == 0)
+                    return null;
+
+                string? name = Installations.FirstOrDefault(i => i.Key == selected).Value;
+                if (name?.StartsWith(visualStudioName) != true)
+                    return null;
+
+                if (Int32.TryParse(name.Substring(name.Length - 4, 4), NumberStyles.None, CultureInfo.InvariantCulture, out int ver))
+                    return ver;
+                return null;
+            }
+
+            #endregion
+
             if (currentStatus.Installed && !Confirm(Res.ConfirmMessageOverwriteInstallation, currentStatus.Version != null && InstallationManager.AvailableVersion.Version > currentStatus.Version))
                 return;
 #if NETCOREAPP
             if (!Confirm(Res.ConfirmMessageNetCoreVersion, false))
                 return;
 #endif
+            if (TryGetVisualStudioVersion() >= 2022)
+            {
+                switch (CancellableConfirm(Res.ConfirmMessageInstallClassicVisualizers))
+                {
+                    case null:
+                        return;
+                    case true:
+                        break;
+                    case false:
+                        PathHelper.OpenUrl(@"https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64");
+                        CloseViewCallback?.Invoke();
+                        return;
+                }
+            }
 
             InstallationManager.Install(currentStatus.Path, out string? error, out string? warning);
             if (error != null)
