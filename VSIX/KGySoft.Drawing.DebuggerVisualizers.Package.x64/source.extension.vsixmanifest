@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-	<Identity Id="9029031a-4b33-48a7-ae94-138c537ee202" Version="4.0.0" Language="en-US" Publisher="KGy SOFT" />
+	<Identity Id="9029031a-4b33-48a7-ae94-138c537ee202" Version="5.0.0" Language="en-US" Publisher="KGy SOFT" />
     <DisplayName>KGy SOFT Image DebuggerVisualizers x64</DisplayName>
     <Description xml:space="preserve">Debugger visualizers for GDI+, WPF, SkiaSharp and KGy SOFT types like Bitmap, BitmapSource, SKBitmap, Metafile, ImageSource, SKImage, Icon, Graphics, SKSurface, BitmapData, SKPixmap, WriteableBitmap, ColorPalette, BitmapPalette and more.</Description>
     <MoreInfo>https://github.com/koszeggy/KGySoft.Drawing.Tools</MoreInfo>
@@ -11,10 +11,10 @@
     <PreviewImage>Resources\Preview.png</PreviewImage>
   </Metadata>
   <Installation ExtensionType="VSSDK+VisualStudio.Extensibility">
-    <InstallationTarget Id="Microsoft.VisualStudio.IntegratedShell" Version="[17.0,18.0)" >
+    <InstallationTarget Id="Microsoft.VisualStudio.IntegratedShell" Version="[17.9,18.0)" >
       <ProductArchitecture>amd64</ProductArchitecture>
     </InstallationTarget>
-    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 18.0)">
+    <InstallationTarget Id="Microsoft.VisualStudio.IntegratedShell" Version="[17.9,18.0)" >
       <ProductArchitecture>arm64</ProductArchitecture>
     </InstallationTarget>
   </Installation>

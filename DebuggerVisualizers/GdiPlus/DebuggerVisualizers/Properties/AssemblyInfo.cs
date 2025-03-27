@@ -61,9 +61,9 @@ using KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("4.0.0")]
-[assembly: AssemblyFileVersion("4.0.0")]
-[assembly: AssemblyInformationalVersion("4.0.0")]
+[assembly: AssemblyVersion("5.0.0")]
+[assembly: AssemblyFileVersion("5.0.0")]
+[assembly: AssemblyInformationalVersion("5.0.0")]
 
 // Image
 [
