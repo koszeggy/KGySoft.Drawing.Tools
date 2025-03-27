@@ -156,7 +156,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <param name="isReplaceable">Indicates whether the palette is replaceable.</param>
         /// <param name="ownerWindowHandle">If specified, then the created dialog will be owned by the window that has specified handle. This parameter is optional.
         /// <br/>Default value: <see cref="IntPtr.Zero">IntPtr.Zero</see>.</param>
-        /// <returns>A non-<see langword="null"/>&#160;instance, when the palette has been edited; otherwise, <see langword="null"/>.</returns>
+        /// <returns>A non-<see langword="null"/>instance, when the palette has been edited; otherwise, <see langword="null"/>.</returns>
         public static ColorPalette? DebugPalette(ColorPalette palette, bool isReplaceable, IntPtr ownerWindowHandle = default)
         {
             if (palette == null)
@@ -191,7 +191,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// <br/>Default value: <see langword="true"/>.</param>
         /// <param name="ownerWindowHandle">If specified, then the created dialog will be owned by the window that has specified handle. This parameter is optional.
         /// <br/>Default value: <see cref="IntPtr.Zero">IntPtr.Zero</see>.</param>
-        /// <returns>A non-<see langword="null"/>&#160;instance, when the color has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
+        /// <returns>A non-<see langword="null"/>instance, when the color has been edited and should be serialized back; otherwise, <see langword="null"/>.</returns>
         public static Color? DebugColor(Color color, bool isReplaceable = true, IntPtr ownerWindowHandle = default)
         {
             using IViewModel<Color> vm = ViewModelFactory.FromColor(color, !isReplaceable);

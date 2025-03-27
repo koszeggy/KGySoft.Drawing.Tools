@@ -132,19 +132,19 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         /// <summary>
         /// Gets the version of an identified debugger visualizer installation.
-        /// Can return <see langword="null"/>&#160;even if <see cref="Installed"/> is <see langword="true"/>, if the installed version could not be determined.
+        /// Can return <see langword="null"/>even if <see cref="Installed"/> is <see langword="true"/>, if the installed version could not be determined.
         /// </summary>
         public Version? Version { get; private set; }
 
         /// <summary>
         /// Gets the runtime version of an identified debugger visualizer installation.
-        /// Can return <see langword="null"/>&#160;even if <see cref="Installed"/> is <see langword="true"/>, if the runtime version could not be determined.
+        /// Can return <see langword="null"/>even if <see cref="Installed"/> is <see langword="true"/>, if the runtime version could not be determined.
         /// </summary>
         public string? RuntimeVersion { get; private set; }
 
         /// <summary>
         /// Gets the target framework of an identified debugger visualizer installation.
-        /// Can return <see langword="null"/>&#160;even if <see cref="Installed"/> is <see langword="true"/>, if the assembly does no contain target framework information
+        /// Can return <see langword="null"/>even if <see cref="Installed"/> is <see langword="true"/>, if the assembly does not contain target framework information
         /// (typically .NET 3.5 version).
         /// </summary>
         // ReSharper disable once UnassignedGetOnlyAutoProperty
