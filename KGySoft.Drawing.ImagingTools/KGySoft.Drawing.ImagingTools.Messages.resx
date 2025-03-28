@@ -1120,6 +1120,12 @@ Newly generated resources will contain English texts prefixed with "[T]". You ca
   <data name="btnDownloadResources.Text" xml:space="preserve">
     <value>&amp;Download Resources...</value>
   </data>
+  <data name="chbHideDependencies.Text" xml:space="preserve">
+    <value>Hide Dependencies</value>
+  </data>
+  <data name="chbHideDependencies.ToolTipText" xml:space="preserve">
+    <value>When checked, hides the resources of the dependent libraries. A localization is allowed to contain the resources of the Imaging Tools application only.</value>
+  </data>
   <data name="gbResourceFile.Text" xml:space="preserve">
     <value>Resource File</value>
   </data>

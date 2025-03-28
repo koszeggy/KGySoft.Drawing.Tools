@@ -46,7 +46,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             Icon = Properties.Resources.Language,
             HideMinimizeButton = true,
-            MinimumSize = new Size(300, 300),
+            MinimumSize = new Size(300, 340),
             ClosingCallback = (_,_) =>
             {
                 if (gridResources.IsCurrentCellInEditMode)
@@ -145,8 +145,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private void InitPropertyBindings()
         {
+            // VM.HideDependentResources <-> chbHideDependencies.Checked
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.HideDependentResources), chbHideDependencies, nameof(chbHideDependencies.Checked));
+
             // VM.ResourceFiles -> cmbResourceFiles.DataSource
-            cmbResourceFiles.DataSource = ViewModel.ResourceFiles;
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.ResourceFiles), nameof(cmbResourceFiles.DataSource), cmbResourceFiles);
 
             // VM.SelectedLibrary <-> cmbResourceFiles.SelectedValue
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.SelectedLibrary), cmbResourceFiles, nameof(cmbResourceFiles.SelectedValue));

@@ -22,7 +22,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
@@ -85,7 +84,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Properties
 
-        internal KeyValuePair<LocalizableLibraries, string>[] ResourceFiles { get; } // get only because never changes
+        internal bool HideDependentResources { get => Get(true); set => Set(value); }
+        internal KeyValuePair<LocalizableLibraries, string>[] ResourceFiles { get => Get<KeyValuePair<LocalizableLibraries, string>[]>(); set => Set(value); }
         internal string TitleCaption { get => Get<string>(); set => Set(value); }
         internal LocalizableLibraries SelectedLibrary { get => Get<LocalizableLibraries>(); set => Set(value); }
         internal string Filter { get => Get<string>(""); set => Set(value); }
@@ -112,13 +112,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             // The default language is used as the invariant resource set.
             // The invariant file name is preferred, unless only the language-specific file exists.
             useInvariant = Equals(culture, Res.DefaultLanguage) && !File.Exists(ToFileNameWithPath(LocalizableLibraries.ImagingTools));
-            resources = new Dictionary<LocalizableLibraries, (IList<ResourceEntry>, bool)>(3, EnumComparer<LocalizableLibraries>.Comparer);
+            resources = new Dictionary<LocalizableLibraries, (IList<ResourceEntry>, bool)>(4, EnumComparer<LocalizableLibraries>.Comparer);
             Filter = String.Empty;
-            ResourceFiles = Enum<LocalizableLibraries>.GetFlags().Select(lib => new KeyValuePair<LocalizableLibraries, string>(lib, ToFileName(lib))).ToArray();
+            ResetResourceFiles();
             ApplyResourcesCommandState.Enabled = hasPendingChanges || !Equals(Res.DisplayLanguage, culture);
             UpdateTitle();
             initializing = false;
-
             SelectedLibrary = LocalizableLibraries.ImagingTools;
         }
 
@@ -145,8 +144,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             base.OnPropertyChanged(e);
             if (initializing)
                 return;
+
             switch (e.PropertyName)
             {
+                case nameof(HideDependentResources):
+                    ResetResourceFiles();
+                    break;
+
                 case nameof(SelectedLibrary):
                 case nameof(Filter):
                     ApplySelection();
@@ -178,6 +182,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #endregion
 
         #region Private Methods
+
+        private void ResetResourceFiles()
+        {
+            IEnumerable<LocalizableLibraries> libraries = HideDependentResources ? [LocalizableLibraries.ImagingTools] : Enum<LocalizableLibraries>.GetFlags();
+            ResourceFiles = libraries.Select(lib => new KeyValuePair<LocalizableLibraries, string>(lib, ToFileName(lib))).ToArray();
+            if (!initializing)
+                SelectedLibrary = LocalizableLibraries.ImagingTools;
+        }
 
         private void UpdateTitle() => TitleCaption = Res.TitleEditResources($"{culture.EnglishName} ({culture.NativeName})");
 
@@ -279,6 +291,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             FilteredSet = newSet;
         }
 
+        [SuppressMessage("ReSharper", "UsingStatementResourceInitialization", Justification = "False alarm, the initialized properties don't throw exceptions here.")]
         private bool TryReadResources(LocalizableLibraries library, [MaybeNullWhen(false)]out IList<ResourceEntry> set, [MaybeNullWhen(true)]out Exception error)
         {
             try
