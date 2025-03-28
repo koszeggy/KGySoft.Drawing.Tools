@@ -122,7 +122,13 @@
       <Version>12.0.4</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="Microsoft.VisualStudio\Imaging\KnownMonikers.cs" />
     <Compile Include="Microsoft.VisualStudio\Shell\InfoBarActionItem.cs" />
@@ -130,6 +136,13 @@
     <Compile Include="Microsoft.VisualStudio\Shell\InfoBarHyperLink.cs" />
     <Compile Include="Microsoft.VisualStudio\Shell\InfoBarModel.cs" />
     <Compile Include="Microsoft.VisualStudio\Shell\InfoBarTextSpan.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Res.cs" />
     <Compile Include="_Attributes\PackageRegistrationAsyncAttribute.cs" />
     <Compile Include="_Attributes\ProvideAutoLoadAsyncAttribute.cs" />
     <Compile Include="_Classes\DebuggerVisualizersPackage.cs" />

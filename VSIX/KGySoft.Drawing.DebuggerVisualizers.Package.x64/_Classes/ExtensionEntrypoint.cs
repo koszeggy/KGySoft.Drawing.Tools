@@ -17,11 +17,20 @@
 
 #region Used Namespaces
 
+using System;
+using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
 using EnvDTE;
 
+using KGySoft.ComponentModel;
+using KGySoft.CoreLibraries;
+using KGySoft.Drawing.ImagingTools;
+using KGySoft.Drawing.ImagingTools.Model;
+
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -31,6 +40,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 #region Used Aliases
 
 using GlobalProvider = Microsoft.VisualStudio.Shell.ServiceProvider;
+using Process = System.Diagnostics.Process;
 
 #endregion
 
@@ -38,11 +48,17 @@ using GlobalProvider = Microsoft.VisualStudio.Shell.ServiceProvider;
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
+    #region Usings
+
+    using Resources = Properties.Resources;
+
+    #endregion
+
     /// <summary>
     /// Extension entrypoint for the VisualStudio.Extensibility extension.
     /// </summary>
     [VisualStudioContribution]
-    internal class ExtensionEntrypoint : Microsoft.VisualStudio.Extensibility.Extension
+    internal class ExtensionEntrypoint : Extension
     {
         #region Properties
 
@@ -56,6 +72,80 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
         #region Methods
 
+        #region Static Methods
+
+        private static void CheckInstallations()
+        {
+            #region Local Methods
+
+            // ReSharper disable RedundantDelegateCreation - not redundant for the x64 build where the implicit delegate creation would create Func<>
+            static IVsInfoBarTextSpan[] GetReleaseNotesSpan() =>
+            [
+                new InfoBarTextSpan("\t"), new InfoBarHyperlink(Resources.InfoMessage_ChangeLog,
+                    new Action(() => Process.Start(new ProcessStartInfo("https://github.com/koszeggy/KGySoft.Drawing.Tools/blob/master/changelog.txt") { UseShellExecute = true })))
+            ];
+
+            static IVsInfoBarActionItem[] GetOpenImagingToolsButton() =>
+            [
+                new InfoBarButton(Resources.InfoMessage_OpenImagingTools,
+                    new Action(ExecuteImagingToolsCommand.ExecuteImagingTools))
+            ];
+            // ReSharper restore RedundantDelegateCreation
+
+            #endregion
+
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            Version currentVersion = new(Ids.PackageVersion);
+            Version? lastVersion = null;
+            if (Configuration.LastVersion is string { Length: > 0 } ver)
+                Version.TryParse(ver, out lastVersion);
+
+            // Displaying notification about the new version
+            if (lastVersion is null || lastVersion < currentVersion)
+            {
+                Notifications.Info(lastVersion is null ? Res.InfoMessagePackageInstalled(currentVersion) : Res.InfoMessagePackageUpgraded(lastVersion, currentVersion),
+                    GetReleaseNotesSpan(), GetOpenImagingToolsButton());
+                Configuration.LastVersion = Ids.PackageVersion;
+                Configuration.SaveConfig();
+            }
+
+            if (Services.ShellService == null)
+            {
+                Notifications.Error(Resources.ErrorMessage_ShellServiceUnavailable);
+                return;
+            }
+
+            // Checking and handling the installation of the classic visualizers
+            Services.ShellService.GetProperty((int)__VSSPROPID2.VSSPROPID_VisualStudioDir, out object documentsDirObj);
+            string documentsDir = documentsDirObj.ToString();
+            string targetPath = Path.Combine(documentsDir, "Visualizers");
+            InstallationInfo installedVersion = InstallationManager.GetInstallationInfo(targetPath);
+
+            // Not installed: great, not needed for VS2022 and later
+            if (!installedVersion.Installed)
+                return;
+
+            InstallationInfo availableVersion = InstallationManager.AvailableVersion;
+            if (installedVersion.Version != null && installedVersion.Version >= availableVersion.Version)
+                return;
+
+            // Old version found (or version cannot be determined): taking it as an upgrade, trying to uninstall silently
+            InstallationManager.Uninstall(targetPath, out string? error);
+            if (error != null)
+                Notifications.Error(Res.ErrorMessageFailedToUninstallClassic(targetPath, error));
+        }
+
+        #endregion
+
+        #region Instance Methods
+
+        protected override void InitializeServices(IServiceCollection serviceCollection)
+        {
+            typeof(Version).RegisterTypeConverter<VersionConverter>();
+            base.InitializeServices(serviceCollection);
+        }
+
         protected override async Task OnInitializedAsync(VisualStudioExtensibility extensibility, CancellationToken cancellationToken)
         {
             Services.ServiceProvider = GlobalProvider.GlobalProvider;
@@ -63,14 +153,16 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             Services.InfoBarUIFactory = await GlobalProvider.GetGlobalServiceAsync(typeof(SVsInfoBarUIFactory)) as IVsInfoBarUIFactory;
             Services.DTE = await GlobalProvider.GetGlobalServiceAsync(typeof(DTE)) as DTE;
 
-            // TODO: check legacy visualizers installation. If old version found, just delete it from the Documents\VisualStudio 2022\Visualizers folder
-#if DEBUG
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+#if DEBUG
             Notifications.Info("Debugging Visualizer Extensions"); 
 #endif
+            CheckInstallations();
 
             await base.OnInitializedAsync(extensibility, cancellationToken);
         }
+        
+        #endregion
 
         #endregion
     }

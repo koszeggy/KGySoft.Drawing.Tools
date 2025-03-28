@@ -17,7 +17,6 @@
 
 using System;
 using System.ComponentModel.Design;
-using System.Diagnostics.CodeAnalysis;
 
 using KGySoft.Drawing.ImagingTools.View;
 using KGySoft.Drawing.ImagingTools.ViewModel;
@@ -55,9 +54,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
         #region Event handlers
 
-#if VS2022_OR_GREATER
-        [SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "False alarm, SwitchToMainThreadAsync is called from caller")]
-#endif
         private static void OnExecuteManageDebuggerVisualizerInstallationsCommand(object sender, EventArgs e)
         {
             try

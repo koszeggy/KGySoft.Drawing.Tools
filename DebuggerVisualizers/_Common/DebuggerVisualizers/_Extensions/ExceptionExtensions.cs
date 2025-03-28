@@ -25,7 +25,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
     {
         #region Methods
 
-        internal static bool IsCritical(this Exception e) => e is OutOfMemoryException or StackOverflowException;
+        internal static bool IsCritical(this Exception e) => e is OutOfMemoryException or StackOverflowException or AccessViolationException;
 
         #endregion
     }

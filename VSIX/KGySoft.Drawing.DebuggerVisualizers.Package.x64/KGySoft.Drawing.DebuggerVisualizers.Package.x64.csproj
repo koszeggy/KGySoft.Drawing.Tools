@@ -20,21 +20,28 @@
     <NoWarn>$(NoWarn);VSTHRD010</NoWarn>
   </PropertyGroup>
 
+  <!--Package references-->
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Extensibility.Sdk" Version="17.9.2092" />
     <PackageReference Include="Microsoft.VisualStudio.Extensibility.Build" Version="17.9.2092" />
     <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.6.36389" ExcludeAssets="runtime" />
   </ItemGroup>
 
+  <!--Project references-->
   <ItemGroup>
     <ProjectReference Include="..\..\DebuggerVisualizers\GdiPlus\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.csproj" />
     <ProjectReference Include="..\..\DebuggerVisualizers\Wpf\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.Wpf.csproj" />
     <ProjectReference Include="..\..\DebuggerVisualizers\SkiaSharp\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.csproj" />
     <ProjectReference Include="..\..\DebuggerVisualizers\Core\DebuggerVisualizers\KGySoft.Drawing.DebuggerVisualizers.Core.csproj" />
   </ItemGroup>
+  <Import Project="..\KGySoft.Drawing.DebuggerVisualizers.Package\KGySoft.Drawing.DebuggerVisualizers.Package.projitems" Label="Shared" />
 
+  <!--Linked files-->
   <ItemGroup>
+    <!--Extension string resources-->
     <Content Include=".vsextension\string-resources.json" />
+
+    <!--Assembly dependencies-->
     <Content Include="..\..\DebuggerVisualizers\_Common\DebuggerVisualizers\bin\$(Configuration)\net472\KGySoft.Drawing.DebuggerVisualizers.dll" Link="netstandard2.0\KGySoft.Drawing.DebuggerVisualizers.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\DebuggerVisualizers\GdiPlus\DebuggerVisualizers\bin\$(Configuration)\net472\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll" Link="netstandard2.0\KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\DebuggerVisualizers\Wpf\DebuggerVisualizers\bin\$(Configuration)\net472\KGySoft.Drawing.DebuggerVisualizers.Wpf.dll" Link="netstandard2.0\KGySoft.Drawing.DebuggerVisualizers.Wpf.dll" CopyToOutputDirectory="PreserveNewest" />
@@ -48,11 +55,34 @@
     <Content Include="..\..\KGySoft.Drawing.ImagingTools\bin\$(Configuration)\net472\KGySoft.Drawing.dll" Link="netstandard2.0\KGySoft.Drawing.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\KGySoft.Drawing.ImagingTools\bin\$(Configuration)\net472\KGySoft.Drawing.Core.dll" Link="netstandard2.0\KGySoft.Drawing.Core.dll" CopyToOutputDirectory="PreserveNewest" />
 
+    <!--Further VSIX content-->
     <Content Include="..\..\LICENSE" Link="LICENSE" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\_SharedResources\Preview.png" Link="Resources\Preview.png" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\_SharedResources\ImageDebuggerVisualizers.ico" Link="Resources\ImageDebuggerVisualizers.ico" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
-  <Import Project="..\KGySoft.Drawing.DebuggerVisualizers.Package\KGySoft.Drawing.DebuggerVisualizers.Package.projitems" Label="Shared" />
+  <ItemGroup>
+    <!--Traditional resources (non-extension strings, package icon)-->
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
 
+    <!--Settings-->
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>

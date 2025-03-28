@@ -15,13 +15,19 @@
   for Visual Studio 2022 version 17.8 or lower, use the installer of the ImagingTools application.
 ! The debugger visualizers now support Visual Studio 2022 extension-based visualizers. They are displayed in a tool
   window instead of the classic dialogs. The tool window can remain open while stepping through the code, and can be
-  docked in the Visual Studio IDE. If you prefer the classic dialog, you can still use the ImagingTools application
-  to install the debugger visualizers manually. See the documentation for more information:
-  https://github.com/koszeggy/KGySoft.Drawing.Tools/blob/master/README.md#manual-install
+  docked in the Visual Studio IDE. If you prefer the classic dialog, you can still can select them from the
+  drop-down menu next to the magnifying glass icon in the debugger.
+! The startup code now removes the old debugger visualizers from the Documents\Visual Studio 2022\Visualizers folder
+  to avoid conflicts with the new extension-based visualizers. Though if you install them manually, they will be
+  preserved if the version number is 5.0.0 or higher.
 
 
 ! KGySoft.Drawing.ImagingTools.exe
 ==================================
+* Debugger Visualizer Installations dialog:
+  * Installing the classic debugger visualizer for Visual Studio 2022 or higher asks for confirmation because the
+    extension-based visualizers from Visual Studio Marketplace are recommended.
+
 API changes:
 
 ! KGySoft.Drawing.ImagingTools.ViewModel namespace:

@@ -49,9 +49,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Update="View\UserControls\CountColorsControl.cs">
-      <SubType>Form</SubType>
-    </Compile>
 
     <!--Settings-->
     <None Update="Properties\Settings.settings">

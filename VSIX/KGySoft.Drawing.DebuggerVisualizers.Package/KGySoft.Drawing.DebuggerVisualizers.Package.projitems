@@ -10,19 +10,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)GlobalSuppressions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Properties\AssemblyInfo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Properties\Resources.Designer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Res.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)_Classes\Ids.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)_Classes\Services.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)_Classes\Notifications.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)_Classes\ViewHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)_Extensions\ExceptionExtensions.cs" />
     <None Include="$(MSBuildThisFileDirectory)readme.md" />
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Properties\Resources.resx">
-      <MergeWithCTO>true</MergeWithCTO>
-      <SubType>Designer</SubType>
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
 </Project>

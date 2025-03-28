@@ -25,7 +25,7 @@ using KGySoft.Drawing.DebuggerVisualizers.Package;
 #region Assembly Attributes
 
 [assembly: AssemblyTitle("KGySoft.Drawing.DebuggerVisualizers.Package")]
-[assembly: AssemblyDescription("VSIX package for KGy SOFT Drawing Debugger Visualizers")]
+[assembly: AssemblyDescription("VSIX package for KGy SOFT Image Debugger Visualizers")]
 #if DEBUG
 [assembly: AssemblyConfiguration("Debug")]
 #else

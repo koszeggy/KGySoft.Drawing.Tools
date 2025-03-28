@@ -61,16 +61,16 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to KGy SOFT Drawing DebuggerVisualizers.
+        ///   Looks up a localized string similar to KGy SOFT Image DebuggerVisualizers.
         /// </summary>
         internal static string _110 {
             get {
                 return ResourceManager.GetString("110", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Debugger visualizers for GDI+, WPF, SkiaSharp and KGy SOFT types like Bitmap, BitmapSource, SKBitmap, Metafile, ImageSource, SKIm..
+        ///   Looks up a localized string similar to Debugger visualizers for GDI+, WPF, SkiaSharp and KGy SOFT types like Bitmap, BitmapSource, SKBitmap, Metafile, ImageSource, SKImage, Icon, Graphics, SKSurface, BitmapData, SKPixmap, WriteableBitmap, ColorPalette, BitmapPalette and more..
         /// </summary>
         internal static string _112 {
             get {
@@ -89,7 +89,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to install debugger the visualizers to {0}: {1}
+        ///   Looks up a localized string similar to Failed to install the debugger visualizers to {0}: {1}
         ///
         ///Make sure every running debugger is closed. Installing will be tried again on restarting Visual Studio..
         /// </summary>
@@ -100,7 +100,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Shell service could not be obtained. Installation of the debugger visualizers cannot be checked..
+        ///   Looks up a localized string similar to Shell service could not be obtained. Installation status of the debugger visualizers cannot be checked..
         /// </summary>
         internal static string ErrorMessage_ShellServiceUnavailable {
             get {
@@ -116,51 +116,49 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package.Properties {
                 return ResourceManager.GetString("ErrorMessage_UnexpectedErrorFormat", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to KGy SOFT Imaging Tools v{0} and the debugger visualizers have been installed to {1}.
+        ///   Looks up a localized string similar to Change log.
+        /// </summary>
+        internal static string InfoMessage_ChangeLog {
+            get {
+                return ResourceManager.GetString("InfoMessage_ChangeLog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to KGy SOFT Imaging Tools v{0} and the debugger visualizers have been installed to {1}..
         /// </summary>
         internal static string InfoMessage_InstallationFinishedFormat {
             get {
                 return ResourceManager.GetString("InfoMessage_InstallationFinishedFormat", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to KGy SOFT Imaging Tools v{0} and the debugger visualizers have been upgraded to version {1} at {2}.
+        ///   Looks up a localized string similar to KGy SOFT Imaging Tools v{0} and the debugger visualizers have been upgraded to version {1} at {2}..
         /// </summary>
         internal static string InfoMessage_InstallationUpgradedFormat {
             get {
                 return ResourceManager.GetString("InfoMessage_InstallationUpgradedFormat", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to The installation KGy SOFT Imaging Tools v{0} and the debugger visualizers finished with a warning: {1}.
+        ///   Looks up a localized string similar to Open Imaging Tools.
+        /// </summary>
+        internal static string InfoMessage_OpenImagingTools {
+            get {
+                return ResourceManager.GetString("InfoMessage_OpenImagingTools", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The installation KGy SOFT Imaging Tools v{0} and the debugger visualizers finished with a warning: {1}..
         /// </summary>
         internal static string WarningMessage_InstallationFinishedWithWarningFormat {
             get {
                 return ResourceManager.GetString("WarningMessage_InstallationFinishedWithWarningFormat", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Change log
-        /// </summary>
-        internal static string InfoMessage_ChangeLog
-        {
-            get {
-                return ResourceManager.GetString("InfoMessage_ChangeLog", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Open Imaging Tools
-        /// </summary>
-        internal static string InfoMessage_OpenImagingTools
-        {
-            get {
-                return ResourceManager.GetString("InfoMessage_OpenImagingTools", resourceCulture);
             }
         }
     }
