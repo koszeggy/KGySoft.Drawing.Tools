@@ -16,13 +16,14 @@
             this.toolTip.InitialDelay = 500;
             this.toolTip.ReshowDelay = 100;
             // 
-            // MvvmBaseForm
+            // MvvmBaseUserControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 261);
             this.Name = "MvvmBaseUserControl";
+            this.Size = new System.Drawing.Size(284, 261);
             this.ResumeLayout(false);
+
         }
     }
 }
