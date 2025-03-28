@@ -453,6 +453,8 @@
             // ImageVisualizerControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.Controls.Add(this.imageViewer);
             this.Controls.Add(this.lblNotification);
             this.Controls.Add(this.splitter);

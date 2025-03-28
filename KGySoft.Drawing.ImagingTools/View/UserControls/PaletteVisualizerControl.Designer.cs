@@ -76,6 +76,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             // PaletteVisualizerControl
             // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Size = new System.Drawing.Size(247, 490);
             this.Controls.Add(this.gbPalette);
             this.Controls.Add(this.gbSelectedColor);

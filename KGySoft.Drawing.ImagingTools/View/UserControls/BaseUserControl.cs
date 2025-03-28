@@ -15,6 +15,7 @@
 
 #region Usings
 
+using System.ComponentModel;
 using System.Windows.Forms;
 
 #endregion

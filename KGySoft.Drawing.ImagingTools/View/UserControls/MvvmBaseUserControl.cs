@@ -171,10 +171,10 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             if (isLoaded)
                 return;
 
-            // Null VM occurs in design mode but DesignMode is false for grandchild forms
             isLoaded = true;
             ApplyResources();
 
+            // Null VM occurs in design mode
             if (viewModel != null)
                 ApplyViewModel();
         }

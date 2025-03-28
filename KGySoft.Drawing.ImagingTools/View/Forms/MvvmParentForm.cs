@@ -66,6 +66,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             handleCreated = new ManualResetEventSlim();
             ApplyRightToLeft();
             InitializeForm();
+
+            // In .NET Framework the DefaultFont is always MS Sans Serif, 8.25pt, instead of the actual system font for controls.
+            // Note that we should set the Font for the Form only, because setting it also for the user controls would cause double scaling.
+            // Not setting it for the user controls is alright even when docking them into a WPF host, because its default font is correct.
+            // Also note that setting it in BaseForm would sometimes cause wrong scaling when opening a view from Visual Studio.
+            if (!IsDesignMode && !OSUtils.IsMono && SystemFonts.MessageBoxFont is Font font)
+                base.Font = font;
+
             StartPosition = OSUtils.IsMono && OSUtils.IsWindows ? FormStartPosition.WindowsDefaultLocation : FormStartPosition.CenterParent;
         }
 
@@ -99,7 +107,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             base.OnLoad(e);
 
             // Loaded can be true if handle was recreated
-            if (isLoaded || DesignMode)
+            if (isLoaded || IsDesignMode)
             {
                 if (!IsRtlChanging)
                     return;

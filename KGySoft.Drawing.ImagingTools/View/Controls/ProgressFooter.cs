@@ -16,6 +16,7 @@
 #region Usings
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Windows.Forms;
@@ -127,7 +128,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             Controls.AddRange(new Control[] { pbProgress, lblProgress });
             timer = new Timer { Interval = 30 };
 
-            if (DesignMode)
+            // DesignMode is false in the constructor
+            if (LicenseManager.UsageMode == LicenseUsageMode.Designtime)
                 return;
 
             ProgressVisible = false;

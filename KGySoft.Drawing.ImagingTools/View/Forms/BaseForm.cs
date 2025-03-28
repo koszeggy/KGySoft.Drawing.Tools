@@ -17,16 +17,19 @@
 
 #if !NET5_0_OR_GREATER
 using System;
+#endif
+using System.ComponentModel;
+#if !NET5_0_OR_GREATER
 using System.Security;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.Drawing;
 using System.Reflection;
-
-using KGySoft.Drawing.ImagingTools.WinApi;
 #endif
 using System.Windows.Forms;
 
+#if !NET5_0_OR_GREATER
+using KGySoft.Drawing.ImagingTools.WinApi;
+#endif
 #if NETFRAMEWORK
 using KGySoft.Reflection;
 #endif
@@ -52,6 +55,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Properties
 
+        #region Protected Properties
+        
+        protected bool IsDesignMode => DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime;
+
+        #endregion
+
+        #region Private Properties
+
 #if !NET5_0_OR_GREATER
         private BitVector32 FormState
         {
@@ -68,6 +79,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             }
         }
 #endif
+
+        #endregion
 
         #endregion
 

@@ -58,6 +58,8 @@
             // 
             // TransformBitmapControlBase
             // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Size = new System.Drawing.Size(248, 211);
             this.Controls.Add(this.previewImage);
             this.Controls.Add(this.pnlSettings);

@@ -26,6 +26,8 @@
 ==================================
 * UI changes:
 
+* The default font is adjusted to the current OS theme. For example, on Windows 11, the default font is Segoe UI
+  rather than MS Sans Serif (affects .NET Framework builds).
 * Debugger Visualizer Installations dialog:
   * Installing the classic debugger visualizer for Visual Studio 2022 or higher asks for confirmation because the
     extension-based visualizers from Visual Studio Marketplace are recommended.
