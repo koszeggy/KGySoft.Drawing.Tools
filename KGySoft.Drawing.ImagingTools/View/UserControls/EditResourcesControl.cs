@@ -46,7 +46,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             Icon = Properties.Resources.Language,
             HideMinimizeButton = true,
-            MinimumSize = new Size(300, 340),
+            MinimumSize = new Size(300, 350),
             ClosingCallback = (_,_) =>
             {
                 if (gridResources.IsCurrentCellInEditMode)

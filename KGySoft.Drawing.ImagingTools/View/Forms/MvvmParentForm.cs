@@ -195,8 +195,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 MinimizeBox = MaximizeBox = false;
             if (!properties.MinimumSize.IsEmpty)
                 MinimumSize = properties.MinimumSize;
-            if (!properties.MaximumSize.IsEmpty)
-                MaximumSize = properties.MaximumSize;
             if (properties.ClosingCallback is FormClosingEventHandler handler)
                 FormClosing += handler; // removed in base.Dispose
             ClientSize = clientSize;

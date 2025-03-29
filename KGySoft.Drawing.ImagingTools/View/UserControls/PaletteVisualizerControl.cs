@@ -43,12 +43,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             BorderStyle = FormBorderStyle.SizableToolWindow,
             Icon = Properties.Resources.Palette,
             MinimumSize = new Size(255, 335),
-            MaximumSize = new Size(280, Int16.MaxValue),
             AcceptButton = okCancelButtons.OKButton,
             CancelButton = okCancelButtons.CancelButton,
             ClosingCallback = (sender, _) =>
             {
-                if (((Form)sender).DialogResult != DialogResult.OK)
+                if ((sender as Form)?.DialogResult != DialogResult.OK)
                     ViewModel.SetModified(false);
             },
             ProcessKeyCallback = (parent, key) =>

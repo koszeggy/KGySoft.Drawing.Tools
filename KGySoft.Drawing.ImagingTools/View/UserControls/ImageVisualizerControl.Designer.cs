@@ -67,12 +67,12 @@
             this.txtInfo.BackColor = System.Drawing.SystemColors.Control;
             this.txtInfo.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.txtInfo.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.txtInfo.Location = new System.Drawing.Point(0, 195);
+            this.txtInfo.Location = new System.Drawing.Point(0, 163);
             this.txtInfo.Multiline = true;
             this.txtInfo.Name = "txtInfo";
             this.txtInfo.ReadOnly = true;
             this.txtInfo.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtInfo.Size = new System.Drawing.Size(338, 123);
+            this.txtInfo.Size = new System.Drawing.Size(364, 118);
             this.txtInfo.TabIndex = 6;
             this.txtInfo.TabStop = false;
             this.txtInfo.WordWrap = false;
@@ -243,9 +243,9 @@
             // 
             this.buttons.BackColor = System.Drawing.Color.Transparent;
             this.buttons.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.buttons.Location = new System.Drawing.Point(0, 318);
+            this.buttons.Location = new System.Drawing.Point(0, 281);
             this.buttons.Name = "buttons";
-            this.buttons.Size = new System.Drawing.Size(338, 35);
+            this.buttons.Size = new System.Drawing.Size(364, 35);
             this.buttons.TabIndex = 11;
             // 
             // miResizeBitmap
@@ -260,7 +260,7 @@
             this.imageViewer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.imageViewer.Location = new System.Drawing.Point(0, 49);
             this.imageViewer.Name = "imageViewer";
-            this.imageViewer.Size = new System.Drawing.Size(338, 143);
+            this.imageViewer.Size = new System.Drawing.Size(364, 111);
             this.imageViewer.TabIndex = 7;
             this.imageViewer.TabStop = false;
             // 
@@ -275,18 +275,18 @@
             this.lblNotification.Location = new System.Drawing.Point(0, 25);
             this.lblNotification.Name = "lblNotification";
             this.lblNotification.Padding = new System.Windows.Forms.Padding(3, 3, 20, 3);
-            this.lblNotification.Size = new System.Drawing.Size(338, 24);
+            this.lblNotification.Size = new System.Drawing.Size(364, 24);
             this.lblNotification.TabIndex = 10;
             this.lblNotification.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // splitter
             // 
             this.splitter.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.splitter.Location = new System.Drawing.Point(0, 192);
+            this.splitter.Location = new System.Drawing.Point(0, 160);
             this.splitter.MinExtra = 16;
             this.splitter.MinSize = 50;
             this.splitter.Name = "splitter";
-            this.splitter.Size = new System.Drawing.Size(338, 3);
+            this.splitter.Size = new System.Drawing.Size(364, 3);
             this.splitter.TabIndex = 9;
             this.splitter.TabStop = false;
             // 
@@ -311,7 +311,7 @@
             this.btnConfiguration});
             this.tsMenu.Location = new System.Drawing.Point(0, 0);
             this.tsMenu.Name = "tsMenu";
-            this.tsMenu.Size = new System.Drawing.Size(338, 25);
+            this.tsMenu.Size = new System.Drawing.Size(364, 25);
             this.tsMenu.TabIndex = 8;
             // 
             // btnZoom
@@ -454,7 +454,6 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.Controls.Add(this.imageViewer);
             this.Controls.Add(this.lblNotification);
             this.Controls.Add(this.splitter);

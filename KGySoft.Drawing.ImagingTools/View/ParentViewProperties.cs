@@ -35,7 +35,6 @@ namespace KGySoft.Drawing.ImagingTools.View
         internal IButtonControl? AcceptButton { get; set; }
         internal IButtonControl? CancelButton { get; set; }
         internal Size MinimumSize { get; set; }
-        internal Size MaximumSize { get; set; }
         internal FormClosingEventHandler? ClosingCallback { get; set; }
         internal Func<MvvmParentForm, Keys, bool>? ProcessKeyCallback { get; set; }
 

@@ -271,7 +271,7 @@
             this.Controls.Add(this.okCancelApplyButtons);
             this.Name = "EditResourcesControl";
             this.Padding = new System.Windows.Forms.Padding(3);
-            this.Size = new System.Drawing.Size(584, 311);
+            this.Size = new System.Drawing.Size(585, 350);
             this.gbResourceEntries.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.gridResources)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource)).EndInit();
