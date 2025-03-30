@@ -41,7 +41,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Properties
 
-        public override string Text
+        public override string? Text
         {
             get => base.Text;
             set
@@ -63,7 +63,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 {
                     float scale;
                     using (Graphics g = CreateGraphics())
-                        scale = (float)Math.Round(Math.Max(g.DpiX, g.DpiY) / 96, 2);
+                        scale = (float)Math.Round(g.GetScale().X, 2);
                     if (scale > 1)
                     {
                         // the temp bitmap is not used for anything - it just makes value to the best fitting size
