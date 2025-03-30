@@ -39,6 +39,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         private static readonly Color selectionFrameColor = Color.FromArgb(0, 204, 255);
         private static readonly Color selectionFrameColorAlternative = Color.DarkBlue;
+        private static readonly Point distanceUnit = new(13, 13);
+        private static readonly Point paddingUnit = new(2, 2);
 
         #endregion
 
@@ -52,6 +54,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         private int visibleRowCount;
         private int counter;
         private PointF scale = new PointF(1f, 1f);
+        private Point scaledDistance = distanceUnit;
+        private Point scaledPadding = paddingUnit;
         private int scrollFraction;
         private bool isRightToLeft;
 
@@ -188,7 +192,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            PointF currentScale = e.Graphics.GetScale();
+            var clientSize = ClientSize;
+            float minScale = Math.Min(clientSize.Width / 240f, clientSize.Height / (distanceUnit.Y + paddingUnit.Y * 2f));
+            float actualScale = Math.Max(minScale, Math.Min(minScale, clientSize.Height / 240f));
+            var currentScale = new PointF(actualScale, actualScale); //e.Graphics.GetScale();
             if (currentScale != scale)
             {
                 scale = currentScale;
@@ -274,7 +281,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (isRightToLeft)
             {
                 location.X -= scrollbarWidth;
-                location.X = (int)MathF.Round(((13 << 4) + 2) * scale.X) - location.X;
+                location.X = (scaledDistance.X << 4) + scaledPadding.X * 2 - location.X;
             }
             
             // same as before (using the raw location because GetColorRect translates it)
@@ -282,11 +289,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 return;
 
             // out of range
-            if (!Rectangle.Round(new RectangleF(2 * scale.X, 2 * scale.Y, (13 << 4) * scale.X, 13 * visibleRowCount * scale.Y)).Contains(location))
+            if (!new Rectangle(scaledPadding.X, scaledPadding.Y, scaledDistance.X << 4, scaledDistance.Y << 4).Contains(location))
                 return;
 
-            int x = ((int)(location.X / scale.X) - 2) / 13;
-            int y = ((int)(location.Y / scale.Y) - 2) / 13;
+            int x = (location.X - scaledPadding.X) / scaledDistance.X;
+            int y = (location.Y - scaledPadding.Y) / scaledDistance.Y;
             int index = firstVisibleColor + (y << 4) + x;
 
             if (index >= ColorCount)
@@ -356,7 +363,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             else if (newValue > sbPalette.Maximum - sbPalette.LargeChange + 1)
                 newValue = sbPalette.Maximum - sbPalette.LargeChange + 1;
 
-            sbPalette.Value = newValue;
+            sbPalette.Value = Math.Min(Math.Max(newValue, sbPalette.Minimum),sbPalette.Maximum);
         }
 
         protected override void OnSizeChanged(EventArgs e)
@@ -388,8 +395,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             Invalidate();
 
+            scaledDistance = new Point((int)(scale.X * 13), (int)(scale.Y * 13));
+            scaledPadding = new Point((int)(scale.X * 2), (int)(scale.Y * 2));
+
             // calculating visible rows
-            int maxRows = ((int)(Height / scale.Y) - 5) / 13;
+            int maxRows = (ClientSize.Height - scaledPadding.Y * 2) / scaledDistance.Y;
             if (maxRows == visibleRowCount)
                 return;
 
@@ -418,18 +428,19 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         private Rectangle GetColorRect(int index)
         {
-            float left = index % 16;
+            var unit = new Size((int)(scale.X * 13), (int)(scale.Y * 13));
+            int left = index & 15;
             if (isRightToLeft)
-                left = 15 - left; 
-            left = (2 + left * 13) * scale.X;
+                left = 15 - left;
+            left = left * unit.Width + (int)(scale.X * 2);
             if (isRightToLeft)
                 left += scrollbarWidth;
 
-            //float left = (2 + (index % 16) * 13) * scale.X;
-            float top = (2 + ((index - firstVisibleColor) >> 4) * 13) * scale.Y;
+            int top = (index - firstVisibleColor) >> 4;
+            top = top * unit.Height + (int)(scale.Y * 2);
 
             // ReSharper disable once CompareOfFloatsByEqualityOperator - intended
-            return new Rectangle(left % 1 == 0 ? (int)left : (int)left + 1, top % 1 == 0 ? (int)top : (int)top + 1, (int)(13 * scale.X), (int)(13 * scale.Y));
+            return new Rectangle(left, top, (int)(13 * scale.X), (int)(13 * scale.Y));
         }
 
         private bool IsSelectedColorVisible()

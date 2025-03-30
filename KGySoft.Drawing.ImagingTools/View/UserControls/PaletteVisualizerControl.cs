@@ -42,7 +42,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             BorderStyle = FormBorderStyle.SizableToolWindow,
             Icon = Properties.Resources.Palette,
-            MinimumSize = new Size(255, 335),
+            MinimumSize = new Size(240, 335),
             AcceptButton = okCancelButtons.OKButton,
             CancelButton = okCancelButtons.CancelButton,
             ClosingCallback = (sender, _) =>
