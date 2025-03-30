@@ -75,7 +75,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.View
             this.viewModelFactory = viewModelFactory;
             this.deserialize = deserialize;
             this.serialize = serialize;
-            Unloaded += WpfVisualizerAdapter_Unloaded;
         }
 
         #endregion
@@ -102,6 +101,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.View
                     suppressNextAvailable = true;
                 visualizerTarget.StateChanged += VisualizerTargetOnStateChangedAsync;
             }
+            else
+                Unloaded += WpfVisualizerAdapter_Unloaded;
+
         }
 
         #endregion
