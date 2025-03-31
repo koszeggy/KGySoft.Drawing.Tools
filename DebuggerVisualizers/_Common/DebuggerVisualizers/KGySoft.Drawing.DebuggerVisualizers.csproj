@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <!--<TargetFrameworks>net35;net40;net45;net462;net472;net6.0-windows</TargetFrameworks>-->
-    <TargetFrameworks>net462;net472</TargetFrameworks>
+    <TargetFrameworks>net472</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>KGySoft.Drawing.DebuggerVisualizers</RootNamespace>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
@@ -16,6 +16,11 @@
     <UseWPF Condition="'$(TargetFramework)'=='net472'">true</UseWPF>
     <UseWindowsForms Condition="'$(TargetFramework)'=='net472'">true</UseWindowsForms>
   </PropertyGroup>
+
+  <!-- Project references -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\KGySoft.Drawing.ImagingTools\KGySoft.Drawing.ImagingTools.csproj" />
+  </ItemGroup>
 
   <!-- Common NuGet references -->
   <ItemGroup>
@@ -49,9 +54,13 @@
     </Reference>
   </ItemGroup>
 
-  <!-- Project references -->
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\KGySoft.Drawing.ImagingTools\KGySoft.Drawing.ImagingTools.csproj" />
+  <!-- Excluding the WPF adapter fo non-net472 targets -->
+  <ItemGroup Condition="'$(TargetFramework)'!='net472'">
+    <Page Remove="View\VisualizerAdapterControl.xaml" />
+    <None Include="View\VisualizerAdapterControl.xaml" />
+    <None Update="View\VisualizerAdapterControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

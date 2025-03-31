@@ -24,9 +24,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
-using System.Windows.Forms.Integration;
 
 using KGySoft.ComponentModel;
+using KGySoft.Drawing.ImagingTools;
 using KGySoft.Drawing.ImagingTools.View;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
@@ -42,7 +42,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.View
     /// created from an <see cref="IViewModel{TModel}"/> implementation by the <see cref="ViewFactory"/> class.
     /// </summary>
     /// <typeparam name="TModel">The model type of the debugged object.</typeparam>
-    public class VisualizerExtensionWpfAdapter<TModel> : WindowsFormsHost // TODO: Grid or DockPanel with the WindowsFormsHost and a ProgressBar/Notification area
+    public class VisualizerExtensionWpfAdapter<TModel> : VisualizerExtensionWpfAdapterBase
     {
         #region Fields
 
@@ -53,7 +53,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.View
         private Action<TModel, Stream>? serialize;
         private IViewModel<TModel>? viewModel;
         private TModel? lastAppliedModel;
-        private bool isDisposed;
         private bool suppressNextAvailable;
         private bool isMessagingAvailable;
 
@@ -113,10 +112,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.View
         /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
-            if (isDisposed)
+            if (IsDisposed)
                 return;
 
-            isDisposed = true;
             serialize = null;
             deserialize = null!;
             viewModelFactory = null!;
@@ -149,6 +147,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.View
             switch (args)
             {
                 case VisualizerTargetStateNotification.Available:
+                    SetNotification(null);
                     isMessagingAvailable = !ReferenceEquals(sender, this);
 
                     // ViewModel is already initialized
@@ -165,29 +164,28 @@ namespace KGySoft.Drawing.DebuggerVisualizers.View
                         goto case VisualizerTargetStateNotification.ValueUpdated;
                     }
 
+                    IView? view = null;
                     try
                     {
                         data = await visualizerTarget.ObjectSource.RequestDataAsync(default(ReadOnlySequence<byte>), CancellationToken.None) ?? default;
+                        using (Stream stream = data.AsStream())
+                            model = deserialize.Invoke(stream);
+
+                        viewModel = viewModelFactory.Invoke(model, visualizerTarget);
+                        view = ViewFactory.CreateView(viewModel);
+                        host.Child = (Control)view;
                     }
-                    catch (VisualizerTargetUnavailableException)
+                    catch (Exception e)
                     {
-                        // Failed to get the model data. Waiting for the next Available notification. Until then, we display a progress bar.
-                        Child ??= new ProgressBar { Style = ProgressBarStyle.Marquee };
+                        view?.Dispose();
+                        viewModel?.Dispose();
+                        viewModel = null;
+
+                        // Failed to get the model data. Waiting for the next Available notification.
+                        SetNotification(Res.ErrorMessageDebuggerVisualizerCannotLoad(e.Message));
                         return;
                     }
 
-                    using (Stream stream = data.AsStream())
-                        model = deserialize.Invoke(stream);
-
-                    viewModel = viewModelFactory.Invoke(model, visualizerTarget);
-                    IView view = ViewFactory.CreateView(viewModel);
-                    if (Child != null)
-                    {
-                        Child.Dispose();
-                        Child = null;
-                    }
-
-                    Child = (Control)view;
                     if (serialize != null)
                         viewModel.ChangesApplied += ViewModel_ChangesApplied;
                     break;
@@ -202,23 +200,22 @@ namespace KGySoft.Drawing.DebuggerVisualizers.View
                         goto case VisualizerTargetStateNotification.Available;
 
                     isMessagingAvailable = true;
+                    SetNotification(null);
                     try
                     {
                         data = await visualizerTarget.ObjectSource.RequestDataAsync(default(ReadOnlySequence<byte>), CancellationToken.None) ?? default;
+                        using (Stream stream = data.AsStream())
+                            model = deserialize.Invoke(stream);
+
+                        // Failed to update the view model: discarding the newly deserialized model
+                        if (!vm.TrySetModel(model))
+                            (model as IDisposable)?.Dispose();
                     }
-                    catch (VisualizerTargetUnavailableException)
+                    catch (Exception e)
                     {
-                        // Ignoring the exception if the target is not available.
-                        // It can happen when the debugged process is paused during the request.
-                        return;
+                        SetNotification(Res.WarningMessageDebuggerVisualizerCannotUpdate(e.Message), ValidationSeverity.Warning);
                     }
 
-                    using (Stream stream = data.AsStream())
-                        model = deserialize.Invoke(stream);
-
-                    // Failed to update the view model: just discarding the newly deserialize model
-                    if (!vm.TrySetModel(model))
-                        (model as IDisposable)?.Dispose();
                     break;
             }
         }
@@ -239,10 +236,11 @@ namespace KGySoft.Drawing.DebuggerVisualizers.View
                 // If messaging is not available, then we just ignore the changes and reset the modified state of the view model.
                 // This can happen when the debugged process is paused during the request.
                 (viewModel as ObservableObjectBase)?.SetModified(true);
-                // TODO: Display a notification that the changes could not be applied.
+                SetNotification(Res.WarningMessageDebuggerVisualizerApplyNotAvailable, ValidationSeverity.Warning);
                 return;
             }
 
+            SetNotification(null);
             TModel editedModel = viewModel!.GetEditedModel();
             if (!ReferenceEquals(editedModel, lastAppliedModel))
                 (lastAppliedModel as IDisposable)?.Dispose();
@@ -255,11 +253,11 @@ namespace KGySoft.Drawing.DebuggerVisualizers.View
                 serialize.Invoke(editedModel, ms);
                 await visualizerTarget.ObjectSource.ReplaceTargetObjectAsync(ms.AsReadOnlySequence(), CancellationToken.None);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 // Failed to replace the target object. We just ignore this exception and trying to reset the modified state of the view model.
                 (viewModel as ObservableObjectBase)?.SetModified(true);
-                // TODO: Display a notification about the error
+                SetNotification(Res.ErrorMessageDebuggerVisualizerCannotApply(ex.Message));
             }
         }
 

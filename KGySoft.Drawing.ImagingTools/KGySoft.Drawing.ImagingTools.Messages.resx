@@ -590,6 +590,18 @@ Now imagine every combination of target platforms (from .NET Framework 3.5 to .N
 
 Harmonizing visual elements for all possible environments is never a trivial task, but OMG, the ToolStrip wasn't a cakewalk. Would you believe that each and every combination had at least one rendering issue? My custom-zoomable ImageViewer control with the asynchronously generated resized interpolated images on multiple cores was an easy-peasy compared to that...</value>
   </data>
+  <data name="WarningMessage_DebuggerVisualizerApplyNotAvailable" xml:space="preserve">
+    <value>Applying changes was attempted in a state when messaging was not available. Try again later.</value>
+  </data>
+  <data name="ErrorMessage_DebuggerVisualizerCannotLoadFormat" xml:space="preserve">
+    <value>Could not load the debugger visualizer due to an error: {0}</value>
+  </data>
+  <data name="ErrorMessage_DebuggerVisualizerCannotApplyFormat" xml:space="preserve">
+    <value>Could not apply the changes due to an error: {0}</value>
+  </data>
+  <data name="WarningMessage_DebuggerVisualizerCannotUpdateFormat" xml:space="preserve">
+    <value>Failed to update the debugger visualizer: {0}</value>
+  </data>
   <data name="Installations_NotAvailable" xml:space="preserve">
     <value>N/A (KGySoft.Drawing.DebuggerVisualizers.dll is missing)</value>
   </data>

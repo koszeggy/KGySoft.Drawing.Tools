@@ -349,6 +349,13 @@ namespace KGySoft.Drawing.ImagingTools
         /// Harmonizing visual elements for all possible environments is never a trivial task, but OMG, the ToolStrip wasn't a cakewalk. Would you believe that each and every combination had at least one rendering issue? My custom-zoomable ImageViewer control with the asynchronously generated resized interpolated images on multiple cores was an easy-peasy compared to that...</summary>
         internal static string InfoMessageEasterEgg => Get("InfoMessage_EasterEgg");
 
+#if NET472_OR_GREATER
+        /// <summary>
+        /// Applying changes was attempted in a state when messaging was not available. Try again later.
+        /// </summary>
+        internal static string WarningMessageDebuggerVisualizerApplyNotAvailable => Get("WarningMessage_DebuggerVisualizerApplyNotAvailable");
+#endif
+
         #endregion
 
         #region Installations
@@ -765,6 +772,24 @@ namespace KGySoft.Drawing.ImagingTools
         /// Copyright © {2} KGy SOFT. All rights reserved.
         /// </summary>
         internal static string InfoMessageAbout(Version version, string platform, int year) => Get("InfoMessage_About", version, platform, year);
+
+#if NET472_OR_GREATER
+        /// <summary>
+        /// Could not load the debugger visualizer due to an error: {0}
+        /// </summary>
+        internal static string ErrorMessageDebuggerVisualizerCannotLoad(string message) => Get("ErrorMessage_DebuggerVisualizerCannotLoadFormat", message);
+
+        /// <summary>
+        /// Could not apply the changes due to an error: {0}
+        /// </summary>
+        internal static string ErrorMessageDebuggerVisualizerCannotApply(string message) => Get("ErrorMessage_DebuggerVisualizerCannotApplyFormat", message);
+
+        /// <summary>
+        /// Failed to update the debugger visualizer: {0}
+        /// </summary>
+        internal static string WarningMessageDebuggerVisualizerCannotUpdate(string message) => Get("WarningMessage_DebuggerVisualizerCannotUpdateFormat", message);
+
+#endif
 
         #endregion
 
