@@ -349,7 +349,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 if (alphaPattern == null)
                     CreateAlphaPattern();
 
-                Size size = pnlColor.Size;
+                Size size = ((Control)sender!).Size;
                 e.Graphics.DrawImage(alphaPattern!, new Rectangle(Point.Empty, size), 0, 0 , size.Width, size.Height, GraphicsUnit.Pixel, attrTiles);
             }
 

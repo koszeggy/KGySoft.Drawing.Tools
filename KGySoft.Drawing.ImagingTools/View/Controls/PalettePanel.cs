@@ -193,9 +193,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         protected override void OnPaint(PaintEventArgs e)
         {
             var clientSize = ClientSize;
-            float minScale = Math.Min(clientSize.Width / 240f, clientSize.Height / (distanceUnit.Y + paddingUnit.Y * 2f));
-            float actualScale = Math.Max(minScale, Math.Min(minScale, clientSize.Height / 240f));
-            var currentScale = new PointF(actualScale, actualScale); //e.Graphics.GetScale();
+            float minScale = e.Graphics.GetScale().X;
+            float maxScale = Math.Max(Math.Min(clientSize.Width / 240f, clientSize.Height / (distanceUnit.Y + paddingUnit.Y * 2f)), 0.25f);
+            int colorRows = Math.Min(16, (int)Math.Ceiling(palette!.Count / 16d));
+            float actualScale = maxScale <= minScale
+                ? maxScale
+                : Math.Min(maxScale, Math.Max(minScale, clientSize.Height / (distanceUnit.Y * colorRows + paddingUnit.Y * 2f)));
+            var currentScale = new PointF(actualScale, actualScale);
             if (currentScale != scale)
             {
                 scale = currentScale;
@@ -289,7 +293,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 return;
 
             // out of range
-            if (!new Rectangle(scaledPadding.X, scaledPadding.Y, scaledDistance.X << 4, scaledDistance.Y << 4).Contains(location))
+            if (!new Rectangle(scaledPadding.X, scaledPadding.Y, scaledDistance.X << 4, scaledDistance.Y * visibleRowCount).Contains(location))
                 return;
 
             int x = (location.X - scaledPadding.X) / scaledDistance.X;
@@ -401,10 +405,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             // calculating visible rows
             int maxRows = (ClientSize.Height - scaledPadding.Y * 2) / scaledDistance.Y;
             if (maxRows == visibleRowCount)
+            {
+                timerSelection.Enabled = IsSelectedColorVisible();
                 return;
+            }
 
             visibleRowCount = maxRows;
-            int colorRows = (int)Math.Ceiling((double)palette!.Count / 16);
+            int colorRows = (int)Math.Ceiling(palette!.Count / 16d);
             if (visibleRowCount >= colorRows)
             {
                 // scrollbar is not needed
@@ -444,7 +451,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         }
 
         private bool IsSelectedColorVisible()
-            => selectedColorIndex >= firstVisibleColor
+            => !scaledPadding.IsEmpty && selectedColorIndex >= firstVisibleColor
                 && selectedColorIndex < firstVisibleColor + (visibleRowCount << 4);
 
         private void OnSelectedColorIndexChanged(EventArgs e) => Events.GetHandler<EventHandler>(nameof(SelectedColorIndexChanged))?.Invoke(this, e);

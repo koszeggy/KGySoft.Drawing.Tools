@@ -106,8 +106,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Static Methods
 
-        private static string GetKnownColor(Color color) => KnownColors.GetValueOrDefault(color.ToArgb(), "–")!;
-        private static string GetSystemColors(Color color) => SystemColors.GetValueOrDefault(color.ToArgb(), "–")!;
+        private static string GetKnownColor(Color color) => KnownColors.GetValueOrDefault(color.ToArgb(), "–");
+        private static string GetSystemColors(Color color) => SystemColors.GetValueOrDefault(color.ToArgb(), "–");
 
         #endregion
 
