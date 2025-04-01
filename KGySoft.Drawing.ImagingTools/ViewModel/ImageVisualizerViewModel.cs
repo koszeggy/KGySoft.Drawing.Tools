@@ -84,20 +84,20 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal Image? Image
         {
             get => imageInfo.GetCreateImage();
-            set => SetImageInfo(new ImageInfo(value));
+            set => SetImageInfo(new ImageInfo(value), true);
         }
 
         internal Icon? Icon
         {
             get => imageInfo.Icon;
-            set => SetImageInfo(new ImageInfo(value));
+            set => SetImageInfo(new ImageInfo(value), true);
         }
 
         [AllowNull]
         internal ImageInfo ImageInfo
         {
             get => imageInfo;
-            set => SetImageInfo(value ?? new ImageInfo(ImageInfoType.None));
+            set => SetImageInfo(value ?? new ImageInfo(ImageInfoType.None), true);
         }
 
         internal Image? PreviewImage { get => Get<Image?>(); set => Set(value); }
@@ -250,7 +250,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             return imageTypes == AllowedImageTypes.Icon ? imageInfo.AsIcon() : imageInfo.AsImage();
         }
 
-        public override bool TrySetModel(ImageInfo model) => TryInvokeSync(() => ImageInfo = model);
+        public override bool TrySetModel(ImageInfo model) => TryInvokeSync(() => SetImageInfo(model, false));
 
         #endregion
 
@@ -258,7 +258,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal override void ViewLoaded()
         {
-            InitAutoZoom(true);
+            InitAutoZoom(true, true);
             if (deferUpdateInfo)
             {
                 if (SetCompoundViewCommandState.GetValueOrDefault<bool>(stateVisible))
@@ -289,6 +289,26 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     UpdateMultiResImage();
                     return;
             }
+        }
+
+        protected void SetImageInfo(ImageInfo value, bool resetPreview)
+        {
+            ValidateImageInfo(value);
+
+            currentResolution = Size.Empty;
+            if (!keepAliveImageInfo)
+                imageInfo.Dispose();
+            imageInfo = value;
+            keepAliveImageInfo = false;
+            SetModified(false);
+            if (resetPreview)
+                PreviewImage = null;
+            InitAutoZoom(false, resetPreview);
+
+            if (value.HasFrames)
+                InitMultiImage();
+            else
+                InitSingleImage();
         }
 
         protected virtual void UpdateInfo()
@@ -471,27 +491,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Private Methods
 
-        private void SetImageInfo(ImageInfo value)
-        {
-            ValidateImageInfo(value);
-
-            currentResolution = Size.Empty;
-            if (!keepAliveImageInfo)
-                imageInfo.Dispose();
-            imageInfo = value;
-            keepAliveImageInfo = false;
-            SetModified(false);
-            PreviewImage = null;
-            InitAutoZoom(false);
-
-            if (value.HasFrames)
-                InitMultiImage();
-            else
-                InitSingleImage();
-        }
-
         private void ValidateImageInfo(ImageInfo value)
         {
+            if (value == null)
+                throw new ArgumentNullException(PublicResources.ArgumentNull, nameof(value));
+
             // validating the image info itself
             if (!value.IsValid)
             {
@@ -1012,7 +1016,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             SaveFileFilterIndex = (filter.Split('|').IndexOf(item => item.Contains("*." + ext, StringComparison.OrdinalIgnoreCase)) >> 1) + 1;
         }
 
-        private void InitAutoZoom(bool viewLoading)
+        private void InitAutoZoom(bool viewLoading, bool resetZoom)
         {
             UpdateSmoothZoomingTooltip();
             if (imageInfo.Type == ImageInfoType.None)
@@ -1026,14 +1030,15 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             // metafile: we always turn on auto zoom and preserve current smooth zooming
             if (imageInfo.IsMetafile)
             {
-                AutoZoom = true;
+                if (resetZoom)
+                    AutoZoom = true;
                 return;
             }
 
             // if we are just opening a new image we don't auto toggle AutoZoom and SmoothZooming anymore
             if (!viewLoading)
             {
-                if (!AutoZoom)
+                if (!AutoZoom && resetZoom)
                     Zoom = 1f;
                 return;
             }
@@ -1166,8 +1171,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         Icon? IViewModel<Icon?>.GetEditedModel() => Icon?.Clone() as Icon;
         Bitmap? IViewModel<Bitmap?>.GetEditedModel() => Image?.Clone() as Bitmap;
         Metafile? IViewModel<Metafile?>.GetEditedModel() => Image?.Clone() as Metafile;
-        bool IViewModel<Image?>.TrySetModel(Image? model) => TryInvokeSync(() => Image = model);
-        bool IViewModel<Icon?>.TrySetModel(Icon? model) => TryInvokeSync(() => Icon = model);
+        bool IViewModel<Image?>.TrySetModel(Image? model) => TryInvokeSync(() => SetImageInfo(new ImageInfo(model), false));
+        bool IViewModel<Icon?>.TrySetModel(Icon? model) => TryInvokeSync(() => SetImageInfo(new ImageInfo(model), false));
         bool IViewModel<Bitmap?>.TrySetModel(Bitmap? model) => ((IViewModel<Image?>)this).TrySetModel(model);
         bool IViewModel<Metafile?>.TrySetModel(Metafile? model) => ((IViewModel<Image?>)this).TrySetModel(model);
 

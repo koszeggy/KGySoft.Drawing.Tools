@@ -61,7 +61,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             CancelButton = buttons.CancelButton,
             ClosingCallback = (sender, _) =>
             {
-                if (((MvvmParentForm)sender).DialogResult != DialogResult.OK)
+                if (((MvvmParentForm)sender!).DialogResult != DialogResult.OK)
                     ViewModel!.SetModified(false);
             },
             ProcessKeyCallback = (parent, key) =>

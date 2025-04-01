@@ -42,7 +42,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             : base(AllowedImageTypes.Bitmap)
         {
             ReadOnly = true;
-            ResetBitmapInfo(bitmapInfo);
+            ResetBitmapInfo(bitmapInfo, true);
         }
 
         #endregion
@@ -103,10 +103,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Private Methods
 
-        private void ResetBitmapInfo(CustomBitmapInfo? model)
+        private void ResetBitmapInfo(CustomBitmapInfo? model, bool resetPreview)
         {
             bitmapInfo = model;
-            Image = model?.BitmapData?.ToBitmap();
+            SetImageInfo(new ImageInfo(model?.BitmapData?.ToBitmap()), resetPreview);
         }
 
         #endregion
@@ -114,7 +114,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Explicitly Implemented Interface Methods
 
         CustomBitmapInfo? IViewModel<CustomBitmapInfo?>.GetEditedModel() => null; // not editable
-        bool IViewModel<CustomBitmapInfo?>.TrySetModel(CustomBitmapInfo? model) => TryInvokeSync(() => ResetBitmapInfo(model));
+        bool IViewModel<CustomBitmapInfo?>.TrySetModel(CustomBitmapInfo? model) => TryInvokeSync(() => ResetBitmapInfo(model, false));
 
         #endregion
 

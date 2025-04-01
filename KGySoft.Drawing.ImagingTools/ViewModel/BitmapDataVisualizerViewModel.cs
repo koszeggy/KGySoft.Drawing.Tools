@@ -30,30 +30,23 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Fields
 
         private PixelFormat lastPixelFormat;
+        private BitmapDataInfo? bitmapDataInfo;
 
         #endregion
 
         #region Properties
 
-        #region Internal Properties
-
-        internal BitmapDataInfo? BitmapDataInfo { get => Get<BitmapDataInfo?>(); set => Set(value); }
-
-        #endregion
-
-        #region Protected Properties
-
         protected override bool IsPaletteReadOnly => false;
-
-        #endregion
 
         #endregion
 
         #region Constructors
 
-        internal BitmapDataVisualizerViewModel() : base(AllowedImageTypes.Bitmap)
+        internal BitmapDataVisualizerViewModel(BitmapDataInfo? bitmapDataInfo)
+            : base(AllowedImageTypes.Bitmap)
         {
             ReadOnly = true;
+            ResetBitmapDataInfo(bitmapDataInfo, true);
         }
 
         #endregion
@@ -62,23 +55,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Protected Methods
 
-        protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
-        {
-            base.OnPropertyChanged(e);
-            if (e.PropertyName == nameof(BitmapDataInfo))
-            {
-                var bitmapDataInfo = (BitmapDataInfo?)e.NewValue;
-                Image = bitmapDataInfo?.BackingImage;
-                var pixelFormat = bitmapDataInfo?.BitmapData?.PixelFormat ?? PixelFormat.Format32bppArgb;
-                if (pixelFormat != lastPixelFormat && pixelFormat.ToBitsPerPixel() <= 8)
-                    SetNotification(Res.NotificationPaletteCannotBeRestoredId);
-                lastPixelFormat = pixelFormat;
-            }
-        }
-
         protected override void UpdateInfo()
         {
-            BitmapDataInfo? bitmapDataInfo = BitmapDataInfo;
             BitmapData? bitmapData = bitmapDataInfo?.BitmapData;
 
             if (bitmapDataInfo?.BackingImage == null || bitmapData == null)
@@ -96,16 +74,31 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-                BitmapDataInfo?.Dispose();
+                bitmapDataInfo?.Dispose();
             base.Dispose(disposing);
         }
+
+        #endregion
+
+        #region Private Methods
+
+        private void ResetBitmapDataInfo(BitmapDataInfo? model, bool resetPreview)
+        {
+            bitmapDataInfo?.Dispose();
+            bitmapDataInfo = model;
+            SetImageInfo(new ImageInfo(bitmapDataInfo?.BackingImage), resetPreview);
+            var pixelFormat = bitmapDataInfo?.BitmapData?.PixelFormat ?? PixelFormat.Format32bppArgb;
+            if (pixelFormat != lastPixelFormat && pixelFormat.ToBitsPerPixel() <= 8)
+                SetNotification(Res.NotificationPaletteCannotBeRestoredId);
+            lastPixelFormat = pixelFormat;
+        }
+
+        #endregion
 
         #region Explicitly Implemented Interface Methods
 
         BitmapDataInfo? IViewModel<BitmapDataInfo?>.GetEditedModel() => null; // not editable
-        bool IViewModel<BitmapDataInfo?>.TrySetModel(BitmapDataInfo? model) => TryInvokeSync(() => BitmapDataInfo = model);
-
-        #endregion
+        bool IViewModel<BitmapDataInfo?>.TrySetModel(BitmapDataInfo? model) => TryInvokeSync(() => ResetBitmapDataInfo(model, false));
 
         #endregion
 

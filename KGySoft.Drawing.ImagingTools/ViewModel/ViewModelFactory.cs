@@ -190,14 +190,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// <param name="bitmapData">The bitmap data.</param>
         /// <returns>An <see cref="IViewModel"/> instance that represents a view model for a <see cref="BitmapData"/>.</returns>
         public static IViewModel FromBitmapData(BitmapData? bitmapData)
-            => new BitmapDataVisualizerViewModel { BitmapDataInfo = bitmapData == null ? null : new BitmapDataInfo(bitmapData) };
+            => new BitmapDataVisualizerViewModel(bitmapData == null ? null : new BitmapDataInfo(bitmapData));
 
         /// <summary>
         /// Creates a view model for a <see cref="BitmapData"/> from arbitrary debug information.
         /// </summary>
         /// <param name="bitmapDataInfo">The debug information for a <see cref="BitmapData"/>.</param>
         /// <returns>An <see cref="IViewModel"/> instance that represents a view model for a <see cref="BitmapData"/>.</returns>
-        public static IViewModel<BitmapDataInfo?> FromBitmapData(BitmapDataInfo? bitmapDataInfo) => new BitmapDataVisualizerViewModel { BitmapDataInfo = bitmapDataInfo };
+        public static IViewModel<BitmapDataInfo?> FromBitmapData(BitmapDataInfo? bitmapDataInfo) => new BitmapDataVisualizerViewModel(bitmapDataInfo);
 
         /// <summary>
         /// Creates a view model for a <see cref="CustomBitmapInfo"/> from arbitrary debug information.
@@ -212,14 +212,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// <param name="graphics">The graphics.</param>
         /// <returns>An <see cref="IViewModel"/> instance that represents a view model for a <see cref="Graphics"/>.</returns>
         public static IViewModel FromGraphics(Graphics? graphics)
-            => new GraphicsVisualizerViewModel { GraphicsInfo = graphics == null ? null : new GraphicsInfo(graphics) };
+            => new GraphicsVisualizerViewModel(graphics == null ? null : new GraphicsInfo(graphics));
 
         /// <summary>
         /// Creates a view model for a <see cref="Graphics"/> from arbitrary debug information.
         /// </summary>
         /// <param name="graphicsInfo">The debug information for a <see cref="Graphics"/>.</param>
         /// <returns>An <see cref="IViewModel"/> instance that represents a view model for a <see cref="Graphics"/>.</returns>
-        public static IViewModel<GraphicsInfo?> FromGraphics(GraphicsInfo? graphicsInfo) => new GraphicsVisualizerViewModel { GraphicsInfo = graphicsInfo };
+        public static IViewModel<GraphicsInfo?> FromGraphics(GraphicsInfo? graphicsInfo) => new GraphicsVisualizerViewModel(graphicsInfo);
 
         /// <summary>
         /// Creates a view model for counting colors of a <see cref="Bitmap"/>.
