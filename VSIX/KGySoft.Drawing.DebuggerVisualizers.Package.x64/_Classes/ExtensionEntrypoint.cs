@@ -32,6 +32,7 @@ using KGySoft.Drawing.ImagingTools.Model;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.Extensibility;
+using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -152,16 +153,24 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             Services.ShellService = await GlobalProvider.GetGlobalServiceAsync(typeof(SVsShell)) as IVsShell;
             Services.InfoBarUIFactory = await GlobalProvider.GetGlobalServiceAsync(typeof(SVsInfoBarUIFactory)) as IVsInfoBarUIFactory;
             Services.DTE = await GlobalProvider.GetGlobalServiceAsync(typeof(DTE)) as DTE;
+            //Services.UIShell = await GlobalProvider.GetGlobalServiceAsync(typeof(SVsUIShell)) as IVsUIShell5;
 
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 #if DEBUG
             Notifications.Info("Debugging Visualizer Extensions"); 
 #endif
             CheckInstallations();
+            InitTheme();
 
             await base.OnInitializedAsync(extensibility, cancellationToken);
         }
-        
+
+        private static void InitTheme()
+        {
+            //ThemeColors.Control = VSColorTheme.GetThemedColor(CommonControlsColors.ButtonBrushKey);
+            //ThemeColors.ControlText = VSColorTheme.GetThemedColor(CommonControlsColors.ButtonTextBrushKey);
+        }
+
         #endregion
 
         #endregion

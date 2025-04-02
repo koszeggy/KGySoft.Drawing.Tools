@@ -179,6 +179,34 @@ namespace KGySoft.Drawing.ImagingTools.View
             FixItems(toolStrip.Items, replacementColor);
         }
 
+        internal static void ApplyTheme(this Control control, bool recursion = true)
+        {
+            switch (control)
+            {
+                case Button button:
+                    bool isSet = ThemeColors.IsSet(nameof(ThemeColors.Control));
+                    if (isSet)
+                    {
+                        button.FlatStyle = FlatStyle.Standard;
+                        button.BackColor = ThemeColors.Control;
+                        button.ForeColor = ThemeColors.ControlText;
+                        break;
+                    }
+
+                    button.FlatStyle = FlatStyle.System;
+                    button.BackColor = default;
+                    button.ForeColor = default;
+                    button.UseVisualStyleBackColor = true;
+                    break;
+            }
+            
+            if (!recursion)
+                return;
+
+            foreach (Control child in control.Controls)
+                child.ApplyTheme();
+        }
+
         #endregion
     }
 }

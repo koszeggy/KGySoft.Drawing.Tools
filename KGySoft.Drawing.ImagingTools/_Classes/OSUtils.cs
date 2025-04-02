@@ -102,6 +102,7 @@ namespace KGySoft.Drawing.ImagingTools
                 isWin11OrLater = osVer.Version >= new Version(10, 0, 22000);
 #else
                 // .NET Framework never returns a higher version than Windows 8, so we need to access the Registry
+                // NOTE: This could be fixed by an app.manifest file with supportedOS element, but it would only when ImagingTools is executed directly.
                 const string path = @"SOFTWARE\Microsoft\Windows NT\CurrentVersion";
                 const string key = "CurrentBuild";
                 try
