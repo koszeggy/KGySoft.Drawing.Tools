@@ -15,8 +15,11 @@
 
 #region Usings
 
+using System;
 using System.ComponentModel;
 using System.Windows.Forms;
+
+using KGySoft.Drawing.ImagingTools.View.Forms;
 
 #endregion
 
@@ -24,14 +27,61 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
     internal class BaseUserControl : UserControl
     {
+        #region Properties
+
+        protected bool IsDesignMode => DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime;
+
+        #endregion
+
+        #region Constructors
+
+        protected BaseUserControl()
+        {
+            ThemeColors.ThemeChanged += ThemeColors_ThemeChanged;
+        }
+
+        #endregion
+
         #region Methods
+
+        #region Protected Methods
+
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            if (IsDesignMode)
+                return;
+
+            ApplyTheme();
+        }
+
+        protected virtual void ApplyTheme()
+        {
+            // Applying the theme to the child controls only if the parent is not a BaseForm, because BaseForm would apply it automatically
+            if (ParentForm is not BaseForm)
+                this.ApplyThemeRecursively();
+        }
 
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
+            ThemeColors.ThemeChanged -= ThemeColors_ThemeChanged;
             if (disposing)
                 Events.Dispose();
         }
+
+        #endregion
+
+        #region Event Handlers
+
+        private void ThemeColors_ThemeChanged(object? sender, EventArgs e)
+        {
+            if (!IsHandleCreated)
+                return;
+            ApplyTheme();
+        }
+
+        #endregion
 
         #endregion
     }

@@ -17,6 +17,7 @@
 
 using System;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
@@ -215,6 +216,13 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 default:
                     return base.ProcessCmdKey(ref msg, keyData);
             }
+        }
+
+        protected override void ApplyTheme()
+        {
+            base.ApplyTheme();
+            if (miBackColorDefault.Image != null || miBackColor.DropDownItems.Cast<ToolStripMenuItem>().All(mi => mi.Image == null))
+                imageViewer.BackColor = ThemeColors.Control;
         }
 
         protected override void Dispose(bool disposing)
@@ -462,7 +470,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 item.Image = item == sender ? Images.Check : null;
 
             if (sender == miBackColorDefault)
-                imageViewer.BackColor = SystemColors.Control;
+                imageViewer.BackColor = ThemeColors.Control;
             else if (sender == miBackColorWhite)
                 imageViewer.BackColor = Color.White;
             else

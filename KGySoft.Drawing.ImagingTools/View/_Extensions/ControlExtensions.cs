@@ -20,6 +20,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.View.UserControls;
+using KGySoft.Drawing.ImagingTools.WinApi;
 using KGySoft.Reflection;
 
 #endregion
@@ -179,32 +180,102 @@ namespace KGySoft.Drawing.ImagingTools.View
             FixItems(toolStrip.Items, replacementColor);
         }
 
-        internal static void ApplyTheme(this Control control, bool recursion = true)
+        internal static void ApplyThemeRecursively(this Control control)
         {
+            // special handling for controls by type
             switch (control)
             {
-                case Button button:
-                    bool isSet = ThemeColors.IsSet(nameof(ThemeColors.Control));
-                    if (isSet)
+                case Form form:
+                    // skipping everything if the theme has never changed
+                    if (!ThemeColors.IsThemeEverChanged)
+                        return;
+
+                    // setting the caption theme
+                    if (ThemeColors.IsBaseThemeEverChanged && OSUtils.IsWindows10OrLater)
                     {
-                        button.FlatStyle = FlatStyle.Standard;
-                        button.BackColor = ThemeColors.Control;
-                        button.ForeColor = ThemeColors.ControlText;
-                        break;
+                        try
+                        {
+                            User32.SetCaptionTheme(form.Handle, ThemeColors.IsDarkBaseTheme);
+                        }
+                        catch (Exception e) when (!e.IsCritical())
+                        {
+                        }
                     }
 
-                    button.FlatStyle = FlatStyle.System;
-                    button.BackColor = default;
-                    button.ForeColor = default;
-                    button.UseVisualStyleBackColor = true;
+                    // setting the form's background and foreground color
+                    form.BackColor = ThemeColors.Control;
+                    form.ForeColor = ThemeColors.ControlText;
+                    break;
+
+                case TextBoxBase textBox:
+                    textBox.ApplyVisualStyleTheme();
+                    if (textBox.ReadOnly)
+                    {
+                        textBox.BackColor = ThemeColors.Control;
+                        textBox.ForeColor = ThemeColors.ControlText;
+                    }
+                    else
+                    {
+                        textBox.BackColor = ThemeColors.Window;
+                        textBox.ForeColor = ThemeColors.WindowText;
+                    }
                     break;
             }
-            
-            if (!recursion)
-                return;
+
+
+            //#if !NET9_0_OR_GREATER
+            //            if (OSUtils.IsSystemDarkTheme)
+            //                UxTheme.SetWindowTheme(control.Handle, "DarkMode_Explorer", null);
+            //#endif
+
+            //switch (control)
+            //{
+            //    case Button button:
+            //        bool isSet = ThemeColors.IsSet(nameof(ThemeColors.Control));
+            //        if (isSet)
+            //        {
+            //            button.FlatStyle = FlatStyle.Flat;
+            //            button.BackColor = ThemeColors.Control;
+            //            button.ForeColor = ThemeColors.ControlText;
+            //            break;
+            //        }
+
+            //        button.FlatStyle = FlatStyle.System;
+            //        button.BackColor = default;
+            //        button.ForeColor = default;
+            //        button.UseVisualStyleBackColor = true;
+            //        break;
+            //}
+
+            //if (!recursion)
+            //    return;
 
             foreach (Control child in control.Controls)
-                child.ApplyTheme();
+                child.ApplyThemeRecursively();
+        }
+
+        internal static void ApplyVisualStyleTheme(this Control control)
+        {
+            if (!OSUtils.IsWindows10OrLater || !Application.RenderWithVisualStyles)
+                return;
+
+            const string darkTheme = "DarkMode_Explorer";
+            const string lightTheme = "Explorer";
+            const string textBoxTheme = "CFD";
+
+            switch (control)
+            {
+                case TextBoxBase { Multiline: false }:
+                    IntPtr handle = control.Handle;
+                    UxTheme.SetWindowTheme(handle, textBoxTheme, null);
+                    UxTheme.SetWindowDarkMode(handle, ThemeColors.IsDarkBaseTheme);
+                    User32.SendMessage(handle, Constants.WM_THEMECHANGED, IntPtr.Zero, IntPtr.Zero);
+                    break;
+
+                case TextBoxBase { Multiline: true }:
+                    UxTheme.SetWindowTheme(control.Handle, ThemeColors.IsDarkBaseTheme ? darkTheme : lightTheme, null);
+                    break;
+            }
         }
 
         #endregion

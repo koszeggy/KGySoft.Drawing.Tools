@@ -45,7 +45,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         private ViewModelBase? viewModel;
         private MvvmParentForm? mvvmParent;
         private bool isLoaded;
-        private bool themeApplied;
 
         #endregion
 
@@ -174,7 +173,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
             isLoaded = true;
             ApplyResources();
-            ApplyTheme();
 
             // Null VM occurs in design mode
             if (viewModel != null)
@@ -238,18 +236,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         #endregion
 
         #region Private Methods
-
-        // TODO: to protected virtual if needed
-        private void ApplyTheme()
-        {
-            // Once the theme is applied, we must reapply it when the theme is changed, even if theming is disabled,
-            // because we must restore also the FlatStyles
-            //if (!themeApplied && !ThemeColors.IsThemingEnabled)
-                return;
-
-            //themeApplied = true;
-            //this.ApplyTheme(true);
-        }
 
         private void InitPropertyBindings()
         {

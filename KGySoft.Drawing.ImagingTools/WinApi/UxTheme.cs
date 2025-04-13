@@ -45,6 +45,13 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             internal extern static int SetWindowTheme(IntPtr hWnd, string? pszSubAppName, string? pszSubIdList);
 
             /// <summary>
+            /// Non-documented API, ordinal 133
+            /// Applies the specified mode for the control represented by the specified window handle. Affects TextBox and ComboBox controls when their theme application name is set to "CFD".
+            /// </summary>
+            [DllImport("uxtheme.dll", EntryPoint = "#133", SetLastError = true)]
+            internal static extern bool SetWindowDarkMode(IntPtr hWnd, bool isDarkModeAllowed);
+
+            /// <summary>
             /// Non-documented API, ordinal 135
             /// Sets the preferred application mode (light or dark) for the current process. Affects the background color of the context menus.
             /// </summary>
@@ -70,11 +77,30 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
 
         #region Methods
 
-        internal static void SetWindowTheme(IntPtr hwnd, string? subAppName, string? subIdList)
+        internal static void SetWindowTheme(IntPtr hWnd, string? subAppName, string? subIdList)
         {
             if (!OSUtils.IsVistaOrLater)
                 return;
-            NativeMethods.SetWindowTheme(hwnd, subAppName, subIdList);
+            try
+            {
+                NativeMethods.SetWindowTheme(hWnd, subAppName, subIdList);
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+            }
+        }
+
+        internal static void SetWindowDarkMode(IntPtr hWnd, bool isDarkModeAllowed)
+        {
+            if (!OSUtils.IsWindows10OrLater)
+                return;
+            try
+            {
+                NativeMethods.SetWindowDarkMode(hWnd, isDarkModeAllowed);
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+            }
         }
 
         internal static void SetPreferredAppMode(DefaultTheme theme)

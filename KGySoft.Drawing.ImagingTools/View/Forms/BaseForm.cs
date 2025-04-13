@@ -25,7 +25,10 @@ using System.Reflection;
 #endif
 using System.Windows.Forms;
 
+#if !NET5_0_OR_GREATER
 using KGySoft.Drawing.ImagingTools.WinApi;
+#endif
+
 #if NETFRAMEWORK
 using KGySoft.Reflection;
 #endif
@@ -118,10 +121,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         protected override void OnHandleCreated(EventArgs e)
         {
             base.OnHandleCreated(e);
-            if (!ThemeColors.IsThemingEverChanged || IsDesignMode || !OSUtils.IsWindows10OrLater)
+            if (IsDesignMode)
                 return;
 
-            SetCaptionTheme();
+            this.ApplyThemeRecursively();
         }
 
 #if !NET5_0_OR_GREATER
@@ -188,26 +191,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         }
 #endif
 
-        private void SetCaptionTheme()
-        {
-            Debug.Assert(OSUtils.IsWindows10OrLater);
-
-            try
-            {
-                User32.SetCaptionTheme(Handle, ThemeColors.IsDarkBaseTheme);
-            }
-            catch (Exception e) when (!e.IsCritical())
-            {
-            }
-        }
-
         #endregion
 
         #region Event Handlers
 
-        private void ThemeColors_ThemeChanged(object sender, EventArgs e)
+        private void ThemeColors_ThemeChanged(object? sender, EventArgs e)
         {
-            SetCaptionTheme();
+            if (!IsHandleCreated)
+                return;
+            this.ApplyThemeRecursively();
         }
 
         #endregion

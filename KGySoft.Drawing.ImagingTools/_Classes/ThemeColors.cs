@@ -18,7 +18,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
@@ -40,11 +39,28 @@ namespace KGySoft.Drawing.ImagingTools
     {
         #region Fields
 
+        private static readonly Color[] defaultThemeColors =
+        [
+            SystemColors.Control,
+            SystemColors.ControlText,
+            SystemColors.Window,
+            SystemColors.WindowText,
+        ];
+
+        private static readonly Color[] darkThemeColors =
+        [
+            Color.FromArgb((unchecked((int)0xFF373737))), // Control
+            Color.FromArgb((unchecked((int)0xFFFFFFFF))), // ControlText
+            Color.FromArgb((unchecked((int)0xFF323232))), // Window
+            Color.FromArgb((unchecked((int)0xFFF0F0F0))), // WindowText
+        ];
+
         private static /*volatile*/ bool isDarkBaseTheme;
         private static /*volatile*/ bool isBaseThemeEverChanged;
+        private static /*volatile*/ bool isCustomThemeEverChanged;
         private static bool? isDarkSystemTheme;
         private static DefaultTheme currentBaseTheme;
-        private static ThreadSafeDictionary<string, Color>? customColors;
+        private static ThreadSafeDictionary<ThemeColor, Color>? customColors;
         private static EventHandler? themeChangedHandler;
 
         #endregion
@@ -67,16 +83,19 @@ namespace KGySoft.Drawing.ImagingTools
         /// Gets whether theming is enabled. Theming is enabled if high contrast mode is disabled,
         /// and either at least one color is defined in the current theme or the current base theme is dark.
         /// </summary>
-        public static bool IsThemingEnabled => !SystemInformation.HighContrast && (isDarkBaseTheme || customColors is { IsEmpty: false });
+        public static bool IsThemingEnabled => (isDarkBaseTheme || customColors is { IsEmpty: false }) && !SystemInformation.HighContrast;
 
-        public static Color Control { get => Get(SystemColors.Control); set => Set(value); }
-        public static Color ControlText { get => Get(SystemColors.ControlText); set => Set(value); }
+        public static Color Control { get => Get(ThemeColor.Control); set => Set(ThemeColor.Control, value); }
+        public static Color ControlText { get => Get(ThemeColor.ControlText); set => Set(ThemeColor.ControlText, value); }
+        public static Color Window { get => Get(ThemeColor.Window); set => Set(ThemeColor.Window, value); }
+        public static Color WindowText { get => Get(ThemeColor.WindowText); set => Set(ThemeColor.WindowText, value); }
 
         #endregion
 
         #region Internal Properties
 
-        internal static bool IsThemingEverChanged => isBaseThemeEverChanged;
+        internal static bool IsBaseThemeEverChanged => isBaseThemeEverChanged;
+        internal static bool IsThemeEverChanged => isBaseThemeEverChanged || isCustomThemeEverChanged;
         internal static bool IsDarkBaseTheme => isDarkBaseTheme;
 
         #endregion
@@ -109,17 +128,17 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static ThreadSafeDictionary<string, Color> CurrentTheme
+        private static ThreadSafeDictionary<ThemeColor, Color> CurrentTheme
         {
             get
             {
-                ThreadSafeDictionary<string, Color>? result = customColors;
+                ThreadSafeDictionary<ThemeColor, Color>? result = customColors;
                 if (result != null)
                     return result;
 
                 // Note: currentTheme can be set by ResetTheme (even to null), so it can happen that between the previous null check and this one
                 // the currentTheme is already set. In such cases, we return the already set value.
-                result = new ThreadSafeDictionary<string, Color>();
+                result = new ThreadSafeDictionary<ThemeColor, Color>();
                 return Interlocked.CompareExchange(ref customColors, result, null) ?? result;
             }
         }
@@ -159,10 +178,10 @@ namespace KGySoft.Drawing.ImagingTools
             if (!OSUtils.IsWindows10OrLater)
                 return;
 
-            bool isNewThemeDark = theme == DefaultTheme.Dark || theme == DefaultTheme.System && IsDarkSystemTheme;
+            bool isNewThemeDark = (theme == DefaultTheme.Dark || theme == DefaultTheme.System && IsDarkSystemTheme) && Application.RenderWithVisualStyles;
             bool defaultColorsChanged = isNewThemeDark != isDarkBaseTheme;
             currentBaseTheme = theme;
-            isBaseThemeEverChanged = defaultColorsChanged;
+            isBaseThemeEverChanged |= defaultColorsChanged;
             isDarkBaseTheme = isNewThemeDark;
 
             // TODO: remove .NET 9
@@ -187,9 +206,9 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Public Methods
 
-        public static void ResetCustomColors(IDictionary<string, Color>? theme = null) => DoResetCustomColors(theme, false);
+        public static void ResetCustomColors(IDictionary<ThemeColor, Color>? theme = null) => DoResetCustomColors(theme, false);
 
-        public static bool IsSet(string key) => customColors?.ContainsKey(key) == true;
+        public static bool IsSet(ThemeColor key) => customColors?.ContainsKey(key) == true;
 
         #endregion
 
@@ -202,45 +221,42 @@ namespace KGySoft.Drawing.ImagingTools
             try
             {
                 UxTheme.SetPreferredAppMode(theme);
+                UxTheme.FlushMenuThemes();
             }
             catch (Exception e) when (!e.IsCritical())
             {
-                return;
             }
-
-            //// Title bars of all already existing windows - TODO
-            //bool isDarkTheme = isDarkBaseTheme;
-            //foreach (Form form in Application.OpenForms)
-            //{
-            //    try
-            //    {
-            //        //User32.SetControlText();
-            //    }
-            //    catch (Exception e) when (!e.IsCritical())
-            //    {
-            //        continue;
-            //    }
-            //}
         } 
 #endif
 
-        private static void DoResetCustomColors(IDictionary<string, Color>? theme, bool defaultColorsChanged)
+        private static void DoResetCustomColors(IDictionary<ThemeColor, Color>? theme, bool defaultColorsChanged)
         {
             if (theme is null || theme.Count == 0)
             {
                 if (Interlocked.Exchange(ref customColors, null) != null || defaultColorsChanged)
+                {
+                    isCustomThemeEverChanged = true;
                     OnThemeChanged(EventArgs.Empty);
+                }
+
                 return;
             }
 
-            Interlocked.Exchange(ref customColors, new ThreadSafeDictionary<string, Color>(theme));
+            isCustomThemeEverChanged = true;
+            Interlocked.Exchange(ref customColors, new ThreadSafeDictionary<ThemeColor, Color>(theme));
             OnThemeChanged(EventArgs.Empty);
         }
 
-        private static Color Get(Color defaultColor, [CallerMemberName] string key = null!)
-            => customColors is { } theme ? theme.GetValueOrDefault(key, defaultColor) : defaultColor;
+        private static Color Get(ThemeColor key)
+        {
+            if (customColors?.TryGetValue(key, out Color result) == true)
+                return result;
 
-        private static void Set(Color color, [CallerMemberName] string key = null!)
+            Debug.Assert(key.IsDefined() && (int)key < defaultThemeColors.Length && (int)key < darkThemeColors.Length);
+            return isDarkBaseTheme ? darkThemeColors[(int)key] : defaultThemeColors[(int)key];
+        }
+
+        private static void Set(ThemeColor key, Color color)
         {
             bool isChanged = true;
             CurrentTheme.AddOrUpdate(key, color,
@@ -251,7 +267,10 @@ namespace KGySoft.Drawing.ImagingTools
                 });
 
             if (isChanged)
+            {
+                isCustomThemeEverChanged = true;
                 OnThemeChanged(EventArgs.Empty);
+            }
         }
 
         private static void OnThemeChanged(EventArgs e) => themeChangedHandler?.Invoke(null, e);
@@ -264,11 +283,12 @@ namespace KGySoft.Drawing.ImagingTools
         {
             switch (e.Category)
             {
-                case UserPreferenceCategory.Color or UserPreferenceCategory.VisualStyle:
-                    OnThemeChanged(EventArgs.Empty);
-                    break;
+                //// TODO: is this needed?
+                //case UserPreferenceCategory.Color or UserPreferenceCategory.VisualStyle:
+                //    OnThemeChanged(EventArgs.Empty);
+                //    break;
 
-                case UserPreferenceCategory.General:
+                case UserPreferenceCategory.General: // Light/dark change
                     isDarkSystemTheme = null;
                     if (currentBaseTheme == DefaultTheme.System)
                         SetBaseTheme(DefaultTheme.System, false);
