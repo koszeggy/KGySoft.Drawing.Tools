@@ -140,6 +140,56 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             [return: MarshalAs(UnmanagedType.Bool)]
             internal static extern bool SetWindowText(IntPtr hWnd, string lpString);
 
+            /// <summary>
+            /// Sets the current value of a specified Desktop Window Manager (DWM) attribute applied to a window.
+            /// </summary>
+            /// <param name="hwnd">An HWND specifying the handle to the window for which the attribute value is to be set.</param>
+            /// <param name="data">A pointer to a WINDOWCOMPOSITIONATTRIBDATA structure describing which attribute to set and its new value.</param>
+            /// <returns>TRUE if the function succeeds; otherwise, FALSE.</returns>
+            [DllImport("user32.dll")]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            internal static extern bool SetWindowCompositionAttribute(IntPtr hwnd, ref WINDOWCOMPOSITIONATTRIBDATA data);
+
+            /// <summary>
+            /// Adds a new entry or changes an existing entry in the property list of the specified window.
+            /// The function adds a new entry to the list if the specified character string does not exist already in the list.
+            /// The new entry contains the string and the handle. Otherwise, the function replaces the string's current handle with the specified handle.
+            /// </summary>
+            /// <param name="hWnd">A handle to the window whose property list receives the new entry.</param>
+            /// <param name="lpString">A null-terminated string or an atom that identifies a string.
+            /// If this parameter is an atom, it must be a global atom created by a previous call to the GlobalAddAtom function.
+            /// The atom must be placed in the low-order word of lpString; the high-order word must be zero.</param>
+            /// <param name="propertyValue">A handle to the data to be copied to the property list. The data handle can identify any value useful to the application.</param>
+            /// <returns></returns>
+            [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            internal static extern bool SetProp(IntPtr hWnd, string lpString, IntPtr propertyValue);
+
+            /// <summary>
+            /// Retrieves a handle to the foreground window (the window with which the user is currently working).
+            /// The system assigns a slightly higher priority to the thread that creates the foreground window than it does to other threads.
+            /// </summary>
+            /// <returns>The return value is a handle to the foreground window. The foreground window can be NULL in certain circumstances, such as when a window is losing activation.</returns>
+            [DllImport("user32.dll")]
+            internal static extern IntPtr GetForegroundWindow();
+
+            /// <summary>
+            /// Sends the specified message to a window or windows.
+            /// The SendMessage function calls the window procedure for the specified window and does not return until the window procedure has processed the message.
+            /// To send a message and return immediately, use the SendMessageCallback or SendNotifyMessage function.
+            /// To post a message to a thread's message queue and return immediately, use the PostMessage or PostThreadMessage function.
+            /// </summary>
+            /// <param name="hWnd">A handle to the window whose window procedure will receive the message. If this parameter is HWND_BROADCAST ((HWND)0xffff),
+            /// the message is sent to all top-level windows in the system, including disabled or invisible unowned windows, overlapped windows, and pop-up windows;
+            /// but the message is not sent to child windows.
+            /// Message sending is subject to UIPI. The thread of a process can send messages only to message queues of threads in processes of lesser or equal integrity level.</param>
+            /// <param name="msg">The message to be sent.</param>
+            /// <param name="wParam">Additional message-specific information.</param>
+            /// <param name="lParam">Additional message-specific information.</param>
+            /// <returns>The return value specifies the result of the message processing; it depends on the message sent.</returns>
+            [DllImport("user32.dll", SetLastError = true)]
+            internal static extern uint SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+
             #endregion
         }
 
@@ -183,6 +233,48 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
         internal static int GetDialogControlId(IntPtr handle) => NativeMethods.GetDlgCtrlID(handle);
 
         internal static void SetControlText(IntPtr handle, string text) => NativeMethods.SetWindowText(handle, text);
+
+        internal static void SetCaptionTheme(IntPtr handle, bool isDarkTheme)
+        {
+            if (!OSUtils.IsWindows10OrLater)
+                return;
+
+            // Windows 10 1903 or later
+            if (OSUtils.IsWindows10Build1903OrLater)
+            {
+                int attributeValueBufferSize = sizeof(int);
+                IntPtr attributeValueBuffer = Marshal.AllocHGlobal(attributeValueBufferSize);
+                Marshal.WriteInt32(attributeValueBuffer, isDarkTheme ? 1 : 0);
+
+                try
+                {
+                    WINDOWCOMPOSITIONATTRIBDATA windowCompositionAttributeData = new()
+                    {
+                        Attrib = WINDOWCOMPOSITIONATTRIB.WCA_USE_DARK_MODE_COLORS,
+                        pvData = attributeValueBuffer,
+                        cbData = (uint)attributeValueBufferSize
+                    };
+
+                    NativeMethods.SetWindowCompositionAttribute(handle, ref windowCompositionAttributeData);
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(attributeValueBuffer);
+                }
+            }
+            // Windows 10 1809 only
+            else
+                NativeMethods.SetProp(handle, "UseImmersiveDarkModeColors", new IntPtr(isDarkTheme ? 1 : 0));
+
+            if (OSUtils.IsWindows11OrLater)
+                return;
+
+            // Invalidating the caption area to force the system to redraw it. Needed when the theme is changed and the window is already visible.
+            // In Windows 11 this is not needed anymore. If we still do it, the caption area is changed immediately, without the fade effect.
+            bool isActivated = handle == NativeMethods.GetForegroundWindow();
+            NativeMethods.SendMessage(handle, Constants.WM_NCACTIVATE, new IntPtr(isActivated ? 0 : 1), IntPtr.Zero);
+            NativeMethods.SendMessage(handle, Constants.WM_NCACTIVATE, new IntPtr(isActivated ? 1 : 0), IntPtr.Zero);
+        }
 
         #endregion
     }

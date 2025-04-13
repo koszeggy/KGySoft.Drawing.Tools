@@ -37,10 +37,11 @@ namespace KGySoft.Drawing.ImagingTools
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            ThemeColors.SetBaseTheme(DefaultTheme.System);
 
             using IViewModel viewModel = ViewModelFactory.FromCommandLineArguments(args);
             using IView view = ViewFactory.CreateView(viewModel);
-            Application.Run(ViewFactory.TryGetForm(view));
+            Application.Run(ViewFactory.TryGetForm(view)!);
         }
 
         #endregion

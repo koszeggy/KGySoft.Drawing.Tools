@@ -16,6 +16,7 @@
 #region Usings
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.View.Forms;
@@ -97,6 +98,7 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         #region Internal Methods
 
+        [SuppressMessage("ReSharper", "SuspiciousTypeConversion.Global", Justification = "A public interface can be implemented by anyone")]
         internal static Form? TryGetForm(IView view)
         {
             if (view is not MvvmBaseUserControl mvvmControl)

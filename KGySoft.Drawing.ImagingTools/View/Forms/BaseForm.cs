@@ -15,9 +15,7 @@
 
 #region Usings
 
-#if !NET5_0_OR_GREATER
 using System;
-#endif
 using System.ComponentModel;
 #if !NET5_0_OR_GREATER
 using System.Security;
@@ -27,9 +25,7 @@ using System.Reflection;
 #endif
 using System.Windows.Forms;
 
-#if !NET5_0_OR_GREATER
 using KGySoft.Drawing.ImagingTools.WinApi;
-#endif
 #if NETFRAMEWORK
 using KGySoft.Reflection;
 #endif
@@ -39,7 +35,7 @@ using KGySoft.Reflection;
 namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
     /// <summary>
-    /// Copied from the KGySoft.Controls project for the resizing issue fix but used also for common DPI handling.
+    /// Copied from the KGySoft.Controls project for the resizing issue fix but used also for common DPI handling and theming.
     /// </summary>
     internal class BaseForm : Form
     {
@@ -86,6 +82,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Constructors
 
+        #region Static Constructors
+
         static BaseForm()
         {
 #if NETFRAMEWORK
@@ -96,15 +94,35 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // Turning off WinForms auto resize logic to prevent interferences.
             // Occurs when executed as visualizer debugger and devenv.exe.config contains some random DpiAwareness
             Reflector.TrySetField(dpiHelper, "isInitialized", true);
-            Reflector.TrySetField(dpiHelper, "enableHighDpi", false); 
+            Reflector.TrySetField(dpiHelper, "enableHighDpi", false);
 #endif
         }
+
+        #endregion
+
+        #region Instance Constructors
+
+        protected BaseForm()
+        {
+            ThemeColors.ThemeChanged += ThemeColors_ThemeChanged;
+        }
+
+        #endregion
 
         #endregion
 
         #region Methods
 
         #region Protected Methods
+
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            if (!ThemeColors.IsThemingEverChanged || IsDesignMode || !OSUtils.IsWindows10OrLater)
+                return;
+
+            SetCaptionTheme();
+        }
 
 #if !NET5_0_OR_GREATER
         protected override void WndProc(ref Message m)
@@ -130,6 +148,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
+            ThemeColors.ThemeChanged -= ThemeColors_ThemeChanged;
             if (disposing)
                 Events.Dispose();
         }
@@ -168,6 +187,28 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             }
         }
 #endif
+
+        private void SetCaptionTheme()
+        {
+            Debug.Assert(OSUtils.IsWindows10OrLater);
+
+            try
+            {
+                User32.SetCaptionTheme(Handle, ThemeColors.IsDarkBaseTheme);
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+            }
+        }
+
+        #endregion
+
+        #region Event Handlers
+
+        private void ThemeColors_ThemeChanged(object sender, EventArgs e)
+        {
+            SetCaptionTheme();
+        }
 
         #endregion
 

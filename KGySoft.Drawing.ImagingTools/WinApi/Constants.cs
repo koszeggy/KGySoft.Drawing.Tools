@@ -34,6 +34,7 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
 #if !NET5_0_OR_GREATER
         internal const int WM_NCHITTEST = 0x0084;
 #endif
+        internal const int WM_NCACTIVATE = 0x0086;
 
         internal const int IDOK = 1;
         internal const int IDCANCEL = 2;
