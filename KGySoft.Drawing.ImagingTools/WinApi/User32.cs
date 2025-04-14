@@ -17,6 +17,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 #if !NET5_0_OR_GREATER
 using System.Drawing;
 #endif
@@ -35,6 +36,7 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
     {
         #region NativeMethods class
 
+        [SuppressMessage("ReSharper", "MemberHidesStaticFromOuterClass", Justification = "Outer class methods are never called from here.")]
         private static class NativeMethods
         {
             #region Methods
@@ -190,6 +192,89 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             [DllImport("user32.dll", SetLastError = true)]
             internal static extern uint SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
 
+            /// <summary>
+            /// The GetWindowDC function retrieves the device context (DC) for the entire window, including title bar, menus, and scroll bars.
+            /// A window device context permits painting anywhere in a window, because the origin of the device context is the upper-left corner of the window instead of the client area.
+            /// GetWindowDC assigns default attributes to the window device context each time it retrieves the device context. Previous attributes are lost. 
+            /// </summary>
+            /// <param name="hWnd">Handle to the window with a device context that is to be retrieved. If this value is NULL, GetWindowDC retrieves the device context for the entire screen.</param>
+            /// <returns>If the function succeeds, the return value is a handle to a device context for the specified window.
+            /// If the function fails, the return value is NULL, indicating an error or an invalid hWnd parameter. 
+            /// </returns>
+            [DllImport("user32.dll")]
+            internal extern static IntPtr GetWindowDC(IntPtr hWnd);
+
+            /// <summary>
+            /// The ReleaseDC function releases a device context (DC), freeing it for use by other applications. The effect of the ReleaseDC function depends on the type of DC. It frees only common and window DCs. It has no effect on class or private DCs.
+            /// </summary>
+            /// <param name="hWnd">A handle to the window whose DC is to be released.</param>
+            /// <param name="hDC">A handle to the DC to be released.</param>
+            /// <returns>The return value indicates whether the DC was released. If the DC was released, the return value is 1.
+            /// If the DC was not released, the return value is zero.</returns>
+            /// <remarks>
+            /// The application must call the ReleaseDC function for each call to the GetWindowDC function and for each call to the GetDC function that retrieves a common DC.
+            /// An application cannot use the ReleaseDC function to release a DC that was created by calling the CreateDC function; instead, it must use the DeleteDC function. ReleaseDC must be called from the same thread that called GetDC.</remarks>
+            [DllImport("user32.dll")]
+            internal static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC);
+
+            /// <summary>
+            /// Changes the size, position, and Z order of a child, pop-up, or top-level window.
+            /// These windows are ordered according to their appearance on the screen.
+            /// The topmost window receives the highest rank and is the first window in the Z order.
+            /// </summary>
+            /// <param name="hWnd">A handle to the window.</param>
+            /// <param name="hWndInsertAfter">A handle to the window to precede the positioned window in the Z order. This parameter must be a window handle or one of the following values.
+            /// HWND_BOTTOM
+            /// Places the window at the bottom of the Z order. If the hWnd parameter identifies a topmost window, the window loses its topmost status and is placed at the bottom of all other windows.
+            /// HWND_NOTOPMOST
+            /// Places the window above all non-topmost windows (that is, behind all topmost windows). This flag has no effect if the window is already a non-topmost window.
+            /// HWND_TOP
+            /// Places the window at the top of the Z order.
+            /// HWND_TOPMOST
+            /// Places the window above all non-topmost windows. The window maintains its topmost position even when it is deactivated.
+            /// </param>
+            /// <param name="X">Specifies the new position of the left side of the window, in client coordinates.</param>
+            /// <param name="Y">Specifies the new position of the top of the window, in client coordinates.</param>
+            /// <param name="cx">Specifies the new width of the window, in pixels.</param>
+            /// <param name="cy">Specifies the new height of the window, in pixels.</param>
+            /// <param name="uFlags">Specifies the window sizing and positioning flags. This parameter can be a combination of the following values. 
+            /// <para>SWP_ASYNCWINDOWPOS:
+            /// If the calling thread and the thread that owns the window are attached to different input queues, the system posts the request to the thread that owns the window. This prevents the calling thread from blocking its execution while other threads process the request. </para>
+            /// <para>SWP_DEFERERASE:
+            /// Prevents generation of the WM_SYNCPAINT message. </para>
+            /// <para>SWP_DRAWFRAME:
+            /// Draws a frame (defined in the window's class description) around the window.</para>
+            /// <para>SWP_FRAMECHANGED:
+            /// Applies new frame styles set using the SetWindowLong function. Sends a WM_NCCALCSIZE message to the window, even if the window's size is not being changed. If this flag is not specified, WM_NCCALCSIZE is sent only when the window's size is being changed.</para>
+            /// <para>SWP_HIDEWINDOW:
+            /// Hides the window.</para>
+            /// <para>SWP_NOACTIVATE:
+            /// Does not activate the window. If this flag is not set, the window is activated and moved to the top of either the topmost or non-topmost group (depending on the setting of the hWndInsertAfter parameter).</para>
+            /// <para>SWP_NOCOPYBITS:
+            /// Discards the entire contents of the client area. If this flag is not specified, the valid contents of the client area are saved and copied back into the client area after the window is sized or repositioned.</para>
+            /// <para>SWP_NOMOVE:
+            /// Retains the current position (ignores X and Y parameters).</para>
+            /// <para>SWP_NOOWNERZORDER:
+            /// Does not change the owner window's position in the Z order.</para>
+            /// <para>SWP_NOREDRAW:
+            /// Does not redraw changes. If this flag is set, no repainting of any kind occurs. This applies to the client area, the nonclient area (including the title bar and scroll bars), and any part of the parent window uncovered as a result of the window being moved. When this flag is set, the application must explicitly invalidate or redraw any parts of the window and parent window that need redrawing.</para>
+            /// <para>SWP_NOREPOSITION:
+            /// Same as the SWP_NOOWNERZORDER flag.</para>
+            /// <para>SWP_NOSENDCHANGING:
+            /// Prevents the window from receiving the WM_WINDOWPOSCHANGING message.</para>
+            /// <para>SWP_NOSIZE:
+            /// Retains the current size (ignores the cx and cy parameters).</para>
+            /// <para>SWP_NOZORDER:
+            /// Retains the current Z order (ignores the hWndInsertAfter parameter).</para>
+            /// <para>SWP_SHOWWINDOW
+            /// Displays the window.</para>
+            /// </param>
+            /// <returns>If the function succeeds, the return value is nonzero.
+            /// If the function fails, the return value is zero. To get extended error information, call GetLastError.
+            /// </returns>
+            [DllImport("user32.dll")]
+            internal static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+
             #endregion
         }
 
@@ -275,6 +360,15 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             NativeMethods.SendMessage(handle, Constants.WM_NCACTIVATE, new IntPtr(isActivated ? 0 : 1), IntPtr.Zero);
             NativeMethods.SendMessage(handle, Constants.WM_NCACTIVATE, new IntPtr(isActivated ? 1 : 0), IntPtr.Zero);
         }
+
+        internal static uint SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam) => NativeMethods.SendMessage(hWnd, msg, wParam, lParam);
+
+        internal static IntPtr GetWindowDC(IntPtr hWnd) => NativeMethods.GetWindowDC(hWnd);
+
+        internal static bool ReleaseDC(IntPtr hWnd, IntPtr hDC) => NativeMethods.ReleaseDC(hWnd, hDC);
+
+        internal static bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags)
+            => NativeMethods.SetWindowPos(hWnd, hWndInsertAfter, X, Y, cx, cy, uFlags);
 
         #endregion
     }

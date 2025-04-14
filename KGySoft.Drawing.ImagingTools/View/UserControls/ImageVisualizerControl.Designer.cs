@@ -10,7 +10,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.txtInfo = new System.Windows.Forms.TextBox();
+            this.txtInfo = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox();
             this.miColorSpace = new System.Windows.Forms.ToolStripMenuItem();
             this.miAdjustColors = new System.Windows.Forms.ToolStripMenuItem();
             this.miBrightness = new System.Windows.Forms.ToolStripMenuItem();
@@ -64,9 +64,7 @@
             // 
             // txtInfo
             // 
-            this.txtInfo.BackColor = System.Drawing.SystemColors.Control;
             this.txtInfo.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.txtInfo.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtInfo.Location = new System.Drawing.Point(0, 163);
             this.txtInfo.Multiline = true;
             this.txtInfo.Name = "txtInfo";
@@ -469,7 +467,7 @@
 
         }
 
-        protected System.Windows.Forms.TextBox txtInfo;
+        protected KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox txtInfo;
         private System.Windows.Forms.ToolStripMenuItem miColorSpace;
         private System.Windows.Forms.ToolStripMenuItem miAdjustColors;
         private System.Windows.Forms.ToolStripMenuItem miBrightness;

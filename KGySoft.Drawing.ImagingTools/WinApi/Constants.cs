@@ -29,12 +29,21 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
 
         internal const int MA_ACTIVATEANDEAT = 2;
         internal const int MA_ACTIVATE = 1;
-
-        internal const int WH_CALLWNDPROCRET = 12;
 #if !NET5_0_OR_GREATER
         internal const int WM_NCHITTEST = 0x0084;
 #endif
+        internal const int WM_NCPAINT = 0x0085;
         internal const int WM_NCACTIVATE = 0x0086;
+        internal const int WM_THEMECHANGED = 0x031A;
+
+        internal const int SWP_NOSIZE = 0x0001;
+        internal const int SWP_NOMOVE = 0x0002;
+        internal const int SWP_NOZORDER = 0x0004;
+        internal const int SWP_NOACTIVATE = 0x0010;
+        internal const int SWP_FRAMECHANGED = 0x0020;  // The frame changed: send
+        internal const int SWP_DRAWFRAME = SWP_FRAMECHANGED;
+
+        internal const int WH_CALLWNDPROCRET = 12;
 
         internal const int IDOK = 1;
         internal const int IDCANCEL = 2;

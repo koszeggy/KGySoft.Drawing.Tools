@@ -32,9 +32,9 @@
             this.splitterEditResources = new System.Windows.Forms.Splitter();
             this.pnlEditResourceEntry = new System.Windows.Forms.TableLayoutPanel();
             this.gbOriginalText = new System.Windows.Forms.GroupBox();
-            this.txtOriginalText = new System.Windows.Forms.TextBox();
+            this.txtOriginalText = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox();
             this.gbTranslatedText = new System.Windows.Forms.GroupBox();
-            this.txtTranslatedText = new System.Windows.Forms.TextBox();
+            this.txtTranslatedText = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox();
             this.okCancelApplyButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
             this.gbResourceEntries.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridResources)).BeginInit();
@@ -297,8 +297,8 @@
         private System.Windows.Forms.GroupBox gbOriginalText;
         private System.Windows.Forms.GroupBox gbTranslatedText;
         private System.Windows.Forms.Splitter splitterEditResources;
-        private System.Windows.Forms.TextBox txtOriginalText;
-        private System.Windows.Forms.TextBox txtTranslatedText;
+        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox txtOriginalText;
+        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox txtTranslatedText;
         private System.Windows.Forms.BindingSource bindingSource;
         private System.Windows.Forms.GroupBox gbResourceFile;
         private System.Windows.Forms.ComboBox cmbResourceFiles;
