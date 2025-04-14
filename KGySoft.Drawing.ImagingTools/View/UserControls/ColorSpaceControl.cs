@@ -69,6 +69,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             properties.Icon = Properties.Resources.Quantize;
         }
 
+        protected override void ApplyTheme()
+        {
+            base.ApplyTheme();
+            pnlSettings.BackColor = ThemeColors.Control;
+        }
+
         protected override void OnLoad(EventArgs e)
         {
             // Mono/Windows: ignoring because ToolTips throw an exception if set for an embedded control and

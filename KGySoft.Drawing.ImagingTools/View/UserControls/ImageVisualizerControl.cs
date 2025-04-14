@@ -17,6 +17,7 @@
 
 using System;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
@@ -222,6 +223,16 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         protected override void ApplyTheme()
         {
             base.ApplyTheme();
+
+            // opened as a debugger visualizer: background color is Transparent to make the resize grip visible, which affects the BackColor of the splitter and the image viewer
+            if (this is not MainUserControl)
+            {
+                // occurs when opening the dialog for the first time, before initializing the "checked" state
+                if (miBackColor.DropDownItems.Cast<ToolStripMenuItem>().All(mi => mi.Image == null))
+                    imageViewer.BackColor = ThemeColors.Control;
+
+                splitter.BackColor = ThemeColors.Control;
+            }
 
             if (miBackColorDefault.Image != null)
                 imageViewer.BackColor = ThemeColors.Control;

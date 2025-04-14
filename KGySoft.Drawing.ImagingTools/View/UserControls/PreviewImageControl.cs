@@ -111,6 +111,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             base.ApplyViewModel();
         }
 
+        protected override void ApplyTheme()
+        {
+            base.ApplyTheme();
+            ivPreview.BackColor = ThemeColors.Control;
+        }
+
         #endregion
 
         #region Private Methods

@@ -221,7 +221,18 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     continue;
 
                 // background
-                e.Graphics.FillRectangle(SystemBrushes.Control, rect);
+                Color backColor = BackColor;
+                bool isControlBrush = backColor == SystemColors.Control;
+                var backBrush = isControlBrush ? SystemBrushes.Control : new SolidBrush(backColor);
+                try
+                {
+                    e.Graphics.FillRectangle(backBrush, rect);
+                }
+                finally
+                {
+                    if (!isControlBrush)
+                        backBrush.Dispose();
+                }
                 
                 // selection frame
                 if (i == selectedColorIndex)
