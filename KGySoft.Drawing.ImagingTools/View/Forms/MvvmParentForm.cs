@@ -179,7 +179,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             SuspendLayout();
             Size clientSize = mvvmChild.Size;
             mvvmChild.Dock = DockStyle.Fill;
-            mvvmChild.BackColor = Color.Transparent; // so the resize grip remains visible
             Controls.Add(mvvmChild);
             ParentViewProperties properties = mvvmChild.ParentViewProperties ?? throw new InvalidOperationException(Res.InternalError($"{mvvmChild.Name} should override ParentViewProperties"));
             string childName = mvvmChild.Name;

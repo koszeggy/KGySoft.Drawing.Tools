@@ -1,4 +1,6 @@
-﻿namespace KGySoft.Drawing.ImagingTools.View.UserControls
+﻿using System.Drawing;
+
+namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
     internal partial class ResizeBitmapControl
     {
@@ -283,12 +285,12 @@
             this.cmbScalingMode.Size = new System.Drawing.Size(218, 21);
             this.cmbScalingMode.TabIndex = 10;
             // 
-            // ResizeBitmapForm
+            // ResizeBitmapControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Size = new System.Drawing.Size(334, 291);
             this.Name = "ResizeBitmapControl";
+            this.Size = new System.Drawing.Size(334, 291);
             this.pnlSettings.ResumeLayout(false);
             this.tblNewSize.ResumeLayout(false);
             this.tblNewSize.PerformLayout();

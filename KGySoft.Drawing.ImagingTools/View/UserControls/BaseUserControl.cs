@@ -27,6 +27,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
     internal class BaseUserControl : UserControl
     {
+        #region Fields
+
+        private bool themeApplied;
+
+        #endregion
+
         #region Properties
 
         protected bool IsDesignMode => DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime;
@@ -52,14 +58,21 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             if (IsDesignMode)
                 return;
 
-            ApplyTheme();
+            if (ThemeColors.IsThemeEverChanged)
+                ApplyTheme();
         }
 
         protected virtual void ApplyTheme()
         {
+            if (themeApplied)
+                return;
+
             // Applying the theme to the child controls only if the parent is not a BaseForm, because BaseForm would apply it automatically
             if (ParentForm is not BaseForm)
+            {
+                themeApplied = true;
                 this.ApplyThemeRecursively();
+            }
         }
 
         protected override void Dispose(bool disposing)
@@ -76,8 +89,10 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private void ThemeColors_ThemeChanged(object? sender, EventArgs e)
         {
+            themeApplied = false;
             if (!IsHandleCreated)
                 return;
+
             ApplyTheme();
         }
 

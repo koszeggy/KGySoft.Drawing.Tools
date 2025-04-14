@@ -17,7 +17,6 @@
 
 using System;
 using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
@@ -93,6 +92,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         internal ImageVisualizerControl(ImageVisualizerViewModel viewModel) : base(viewModel)
         {
             InitializeComponent();
+            if (this is not MainUserControl)
+                BackColor = Color.Transparent; // to make the resize grip in the parent form visible
 #if NET472_OR_GREATER
             miManageInstallations.Name = "miManageClassicInstallations"; // so a different text will be picked from the resources
 #endif
@@ -221,7 +222,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         protected override void ApplyTheme()
         {
             base.ApplyTheme();
-            if (miBackColorDefault.Image != null || miBackColor.DropDownItems.Cast<ToolStripMenuItem>().All(mi => mi.Image == null))
+
+            if (miBackColorDefault.Image != null)
                 imageViewer.BackColor = ThemeColors.Control;
         }
 

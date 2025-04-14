@@ -78,6 +78,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             // Note: Not setting Accept/CancelButton because they would be very annoying during the editing
             InitializeComponent();
+            BackColor = Color.Transparent; // to make the resize grip in the parent form visible
             cmbResourceFiles.ValueMember = nameof(KeyValuePair<LocalizableLibraries, string>.Key);
             cmbResourceFiles.DisplayMember = nameof(KeyValuePair<LocalizableLibraries, string>.Value);
 

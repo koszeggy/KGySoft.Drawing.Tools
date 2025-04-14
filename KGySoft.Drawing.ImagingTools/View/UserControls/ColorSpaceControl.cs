@@ -42,6 +42,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             : base(viewModel)
         {
             InitializeComponent();
+            BackColor = Color.Transparent; // to make the resize grip in the parent form visible
         }
 
         #endregion

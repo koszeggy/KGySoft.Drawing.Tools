@@ -63,6 +63,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         internal DownloadResourcesControl(DownloadResourcesViewModel viewModel) : base(viewModel)
         {
             InitializeComponent();
+            BackColor = Color.Transparent; // to make the resize grip in the parent form visible
             okCancelButtons.OKButton.Name = okCancelButtons.OKButton.Text = @"btnDownload";
             okCancelButtons.OKButton.DialogResult = DialogResult.None;
         }

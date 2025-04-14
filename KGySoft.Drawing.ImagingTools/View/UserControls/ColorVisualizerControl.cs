@@ -98,6 +98,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         public ColorVisualizerControl(ColorVisualizerViewModel? viewModel) : base(viewModel)
         {
             InitializeComponent();
+            BackColor = Color.Transparent; // to make the resize grip in the parent form visible
             btnSelectColor.Image = Images.Palette;
             pnlColor.SetDoubleBuffered(true);
             tbAlpha.SetDoubleBuffered(true);
