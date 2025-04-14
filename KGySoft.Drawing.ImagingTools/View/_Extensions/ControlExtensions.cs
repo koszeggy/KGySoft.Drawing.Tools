@@ -220,6 +220,11 @@ namespace KGySoft.Drawing.ImagingTools.View
                         textBox.ForeColor = ThemeColors.WindowText;
                     }
                     break;
+
+                case Button button:
+                    // TODO: Set FlatStyle to Flat if custom colors are set; otherwise, set it to System and call ApplyVisualStyleTheme
+                    button.ApplyVisualStyleTheme();
+                    break;
             }
 
 
