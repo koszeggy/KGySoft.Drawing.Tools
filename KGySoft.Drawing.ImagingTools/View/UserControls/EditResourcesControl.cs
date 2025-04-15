@@ -79,8 +79,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // Note: Not setting Accept/CancelButton because they would be very annoying during the editing
             InitializeComponent();
             BackColor = Color.Transparent; // to make the resize grip in the parent form visible
-            cmbResourceFiles.ValueMember = nameof(KeyValuePair<LocalizableLibraries, string>.Key);
-            cmbResourceFiles.DisplayMember = nameof(KeyValuePair<LocalizableLibraries, string>.Value);
 
             // For Linux/Mono adding an empty column in the middle so the error provider icon will not appear in a new row
             if (!OSUtils.IsWindows)
@@ -150,6 +148,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.HideDependentResources), chbHideDependencies, nameof(chbHideDependencies.Checked));
 
             // VM.ResourceFiles -> cmbResourceFiles.DataSource
+            cmbResourceFiles.ValueMember = nameof(KeyValuePair<LocalizableLibraries, string>.Key);
+            cmbResourceFiles.DisplayMember = nameof(KeyValuePair<LocalizableLibraries, string>.Value);
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.ResourceFiles), nameof(cmbResourceFiles.DataSource), cmbResourceFiles);
 
             // VM.SelectedLibrary <-> cmbResourceFiles.SelectedValue

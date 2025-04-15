@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <!--<TargetFrameworks>net35;net40;net45;net462;net472;net6.0-windows</TargetFrameworks>-->
-    <TargetFrameworks>net462;net472</TargetFrameworks>
+    <TargetFrameworks>net472;net9.0-windows</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>KGySoft.Drawing.ImagingTools</RootNamespace>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
@@ -19,8 +19,11 @@
     <Nullable>enable</Nullable>
 
     <!--Suppressions
-        - WFAC010: Remove high DPI settings from app.manifest and configure via Application.SetHighDpiMode - as targeting many frameworks handling it manually everywhere is intended. Otherwise, it would cause conflicts, e.g. scaling sizes multiple times, etc. -->
-    <NoWarn>$(NoWarn);WFAC010</NoWarn>
+        - WFAC010: Remove high DPI settings from app.manifest and configure via Application.SetHighDpiMode - as targeting many frameworks handling it manually everywhere is intended. Otherwise, it would cause conflicts, e.g. scaling sizes multiple times, etc.
+        - WFO1000: Property does not configure the code serialization for its property content. - false alarm, every custom control in this project is internal
+        - WFO5001: Suppression of experimental features
+        -->
+    <NoWarn>$(NoWarn);WFAC010;WFO1000;WFO5001</NoWarn>
   </PropertyGroup>
 
   <!--Common package references-->

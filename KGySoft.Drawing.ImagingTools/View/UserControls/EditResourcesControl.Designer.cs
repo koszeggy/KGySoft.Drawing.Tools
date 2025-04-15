@@ -28,7 +28,7 @@
             this.lblFilter = new System.Windows.Forms.Label();
             this.gbResourceFile = new System.Windows.Forms.GroupBox();
             this.cmbResourceFiles = new System.Windows.Forms.ComboBox();
-            this.chbHideDependencies = new KGySoft.Drawing.ImagingTools.View.Controls.ScalingCheckBox();
+            this.chbHideDependencies = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
             this.splitterEditResources = new System.Windows.Forms.Splitter();
             this.pnlEditResourceEntry = new System.Windows.Forms.TableLayoutPanel();
             this.gbOriginalText = new System.Windows.Forms.GroupBox();
@@ -308,6 +308,6 @@
         private Controls.AutoMirrorPanel pnlFilter;
         private System.Windows.Forms.TextBox txtFilter;
         private System.Windows.Forms.Label lblFilter;
-        private Controls.ScalingCheckBox chbHideDependencies;
+        private Controls.AdvancedCheckBox chbHideDependencies;
     }
 }

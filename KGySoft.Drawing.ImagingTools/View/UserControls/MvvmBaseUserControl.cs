@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Threading;
 using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
@@ -33,9 +32,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
     internal partial class MvvmBaseUserControl : BaseUserControl, IView
     {
         #region Fields
-
-        private readonly int threadId;
-        private readonly ManualResetEventSlim handleCreated;
 
         private ErrorProvider? warningProvider;
         private ErrorProvider? infoProvider;
@@ -106,8 +102,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         /// </summary>
         protected MvvmBaseUserControl()
         {
-            threadId = Thread.CurrentThread.ManagedThreadId;
-            handleCreated = new ManualResetEventSlim();
             ApplyRightToLeft();
             InitializeComponent();
 
@@ -131,35 +125,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         #endregion
 
         #region Methods
-
-        #region Internal Methods
-
-        internal void InvokeIfRequired(Action action)
-        {
-            if (Disposing || IsDisposed)
-                return;
-
-            try
-            {
-                // no invoke is required (not using InvokeRequired because that may return false if handle is not created yet)
-                if (threadId == Thread.CurrentThread.ManagedThreadId)
-                {
-                    action.Invoke();
-                    return;
-                }
-
-                if (!handleCreated.IsSet)
-                    handleCreated.Wait();
-
-                Invoke(action);
-            }
-            catch (ObjectDisposedException)
-            {
-                // it can happen that actual Invoke is started to execute only after querying isClosing and when Disposing and IsDisposed both return false
-            }
-        }
-
-        #endregion
 
         #region Protected Methods
 
@@ -204,12 +169,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             viewModel.ViewLoaded();
         }
 
-        protected override void OnHandleCreated(EventArgs e)
-        {
-            base.OnHandleCreated(e);
-            handleCreated.Set();
-        }
-
         protected override void OnParentChanged(EventArgs e)
         {
             base.OnParentChanged(e);
@@ -227,7 +186,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             {
                 components?.Dispose();
                 CommandBindings.Dispose();
-                handleCreated.Dispose();
             }
 
             base.Dispose(disposing);

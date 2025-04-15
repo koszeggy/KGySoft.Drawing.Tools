@@ -39,5 +39,10 @@ namespace KGySoft.Drawing.ImagingTools
         /// Represents the foreground color of the client are of a window.
         /// </summary>
         WindowText,
+
+        /// <summary>
+        /// Represents the foreground color of a group box.
+        /// </summary>
+        GroupBoxText,
     }
 }

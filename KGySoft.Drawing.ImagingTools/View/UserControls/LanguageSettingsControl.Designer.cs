@@ -25,8 +25,8 @@
             this.cmbLanguages = new System.Windows.Forms.ComboBox();
             this.gbResxResourcesPath = new KGySoft.Drawing.ImagingTools.View.Controls.CheckGroupBox();
             this.txtResxResourcesPath = new Controls.AdvancedTextBox();
-            this.chbExistingResourcesOnly = new System.Windows.Forms.CheckBox();
-            this.chbUseOSLanguage = new System.Windows.Forms.CheckBox();
+            this.chbExistingResourcesOnly = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
+            this.chbUseOSLanguage = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.gbAllowResxResources.SuspendLayout();
             this.gbDisplayLanguage.SuspendLayout();
@@ -196,10 +196,10 @@
 
         private UserControls.OkCancelButtons okCancelApplyButtons;
         private KGySoft.Drawing.ImagingTools.View.Controls.CheckGroupBox gbAllowResxResources;
-        private System.Windows.Forms.CheckBox chbExistingResourcesOnly;
+        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox chbExistingResourcesOnly;
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.GroupBox gbDisplayLanguage;
-        private System.Windows.Forms.CheckBox chbUseOSLanguage;
+        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox chbUseOSLanguage;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Button btnEditResources;
         private System.Windows.Forms.ComboBox cmbLanguages;

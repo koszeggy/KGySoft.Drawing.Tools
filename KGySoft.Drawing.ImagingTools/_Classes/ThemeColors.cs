@@ -21,6 +21,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 
 using KGySoft.Collections;
 using KGySoft.CoreLibraries;
@@ -45,6 +46,7 @@ namespace KGySoft.Drawing.ImagingTools
             SystemColors.ControlText,
             SystemColors.Window,
             SystemColors.WindowText,
+            SystemColors.ControlText // with visual styles: VisualStyleRenderer(VisualStyleElement.Button.GroupBox.Normal).GetColor(ColorProperty.TextColor)
         ];
 
         private static readonly Color[] darkThemeColors =
@@ -53,6 +55,7 @@ namespace KGySoft.Drawing.ImagingTools
             Color.FromArgb((unchecked((int)0xFFFFFFFF))), // ControlText
             Color.FromArgb((unchecked((int)0xFF323232))), // Window
             Color.FromArgb((unchecked((int)0xFFF0F0F0))), // WindowText
+            Color.FromArgb((unchecked((int)0xFFFFFFFF))), // GroupBoxText
         ];
 
         private static /*volatile*/ bool isDarkBaseTheme;
@@ -85,10 +88,11 @@ namespace KGySoft.Drawing.ImagingTools
         /// </summary>
         public static bool IsThemingEnabled => (isDarkBaseTheme || customColors is { IsEmpty: false }) && !SystemInformation.HighContrast;
 
-        public static Color Control { get => Get(ThemeColor.Control); set => Set(ThemeColor.Control, value); }
-        public static Color ControlText { get => Get(ThemeColor.ControlText); set => Set(ThemeColor.ControlText, value); }
-        public static Color Window { get => Get(ThemeColor.Window); set => Set(ThemeColor.Window, value); }
-        public static Color WindowText { get => Get(ThemeColor.WindowText); set => Set(ThemeColor.WindowText, value); }
+        public static Color Control => Get(ThemeColor.Control);
+        public static Color ControlText => Get(ThemeColor.ControlText);
+        public static Color Window => Get(ThemeColor.Window);
+        public static Color WindowText => Get(ThemeColor.WindowText);
+        public static Color GroupBoxText => Get(ThemeColor.GroupBoxText); // Special handling!
 
         #endregion
 
@@ -187,13 +191,15 @@ namespace KGySoft.Drawing.ImagingTools
             // TODO: remove .NET 9
             //// NOTE: Not using the built-in dark mode support even if available, because it is not quite the same as ours.
             //// E.g.: TextBox borders, ToolStrip, etc
-#if NET9_0_OR_GREATER
-                if (defaultColorsChanged)
-                    Application.SetColorMode((SystemColorMode)theme);
-#else
+            //#if NET9_0_OR_GREATER
+            //                if (defaultColorsChanged)
+            //                    Application.SetColorMode((SystemColorMode)theme);
+            //            isDarkBaseTheme = false;
+            //                return;
+            //#else
             if (defaultColorsChanged)
                 InitializeBaseTheme(theme);
-#endif
+            //#endif
             if (resetCustomColors)
                 DoResetCustomColors(null, defaultColorsChanged);
             else if (defaultColorsChanged)
@@ -214,7 +220,6 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Private Methods
 
-#if !NET9_0_OR_GREATER
         private static void InitializeBaseTheme(DefaultTheme theme)
         {
             // Context menus of the current process
@@ -227,7 +232,6 @@ namespace KGySoft.Drawing.ImagingTools
             {
             }
         } 
-#endif
 
         private static void DoResetCustomColors(IDictionary<ThemeColor, Color>? theme, bool defaultColorsChanged)
         {
@@ -253,25 +257,30 @@ namespace KGySoft.Drawing.ImagingTools
                 return result;
 
             Debug.Assert(key.IsDefined() && (int)key < defaultThemeColors.Length && (int)key < darkThemeColors.Length);
+
+            // Special handling for GroupBoxText: it may be different when visual styles are enabled (e.g. Windows XP)
+            if (key == ThemeColor.GroupBoxText && !isDarkBaseTheme && Application.RenderWithVisualStyles)
+                return new VisualStyleRenderer(VisualStyleElement.Button.GroupBox.Normal).GetColor(ColorProperty.TextColor);
+
             return isDarkBaseTheme ? darkThemeColors[(int)key] : defaultThemeColors[(int)key];
         }
 
-        private static void Set(ThemeColor key, Color color)
-        {
-            bool isChanged = true;
-            CurrentTheme.AddOrUpdate(key, color,
-                (_, c) =>
-                {
-                    isChanged = c != color;
-                    return color;
-                });
+        //private static void Set(ThemeColor key, Color color)
+        //{
+        //    bool isChanged = true;
+        //    CurrentTheme.AddOrUpdate(key, color,
+        //        (_, c) =>
+        //        {
+        //            isChanged = c != color;
+        //            return color;
+        //        });
 
-            if (isChanged)
-            {
-                isCustomThemeEverChanged = true;
-                OnThemeChanged(EventArgs.Empty);
-            }
-        }
+        //    if (isChanged)
+        //    {
+        //        isCustomThemeEverChanged = true;
+        //        OnThemeChanged(EventArgs.Empty);
+        //    }
+        //}
 
         private static void OnThemeChanged(EventArgs e) => themeChangedHandler?.Invoke(null, e);
 

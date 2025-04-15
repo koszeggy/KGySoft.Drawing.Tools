@@ -47,6 +47,8 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         #region Methods
 
+        #region Internal Methods
+
         /// <summary>
         /// Sets the double buffering state of a control
         /// </summary>
@@ -182,6 +184,10 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         internal static void ApplyThemeRecursively(this Control control)
         {
+//#if NET9_0_OR_GREATER
+//            return;
+//#endif
+
             // special handling for controls by type
             switch (control)
             {
@@ -225,6 +231,12 @@ namespace KGySoft.Drawing.ImagingTools.View
                     // TODO: Set FlatStyle to Flat if custom colors are set; otherwise, set it to System and call ApplyVisualStyleTheme
                     button.ApplyVisualStyleTheme();
                     break;
+
+                case ButtonBase buttonBase and (CheckBox or RadioButton):
+                    // ISSUE: The text of FlatStyle.System appearance is always black with visual styles, even in dark mode. TODO: Use KGySoft.WinForms.Controls.AdvancedCheckBox/RadioButton
+                    //buttonBase.FlatStyle = ThemeColors.IsDarkBaseTheme ? FlatStyle.Standard : FlatStyle.System;
+                    buttonBase.ApplyVisualStyleTheme();
+                    break;
             }
 
 
@@ -259,7 +271,11 @@ namespace KGySoft.Drawing.ImagingTools.View
                 child.ApplyThemeRecursively();
         }
 
-        internal static void ApplyVisualStyleTheme(this Control control)
+        #endregion
+        
+        #region Private Methods
+        
+        private static void ApplyVisualStyleTheme(this Control control)
         {
             if (!OSUtils.IsWindows10OrLater || !Application.RenderWithVisualStyles)
                 return;
@@ -280,8 +296,14 @@ namespace KGySoft.Drawing.ImagingTools.View
                 case TextBoxBase { Multiline: true }:
                     UxTheme.SetWindowTheme(control.Handle, ThemeColors.IsDarkBaseTheme ? darkTheme : lightTheme, null);
                     break;
+
+                case ButtonBase:
+                    UxTheme.SetWindowTheme(control.Handle, ThemeColors.IsDarkBaseTheme ? darkTheme : null, null);
+                    break;
             }
         }
+
+        #endregion
 
         #endregion
     }

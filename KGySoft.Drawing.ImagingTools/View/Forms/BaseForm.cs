@@ -23,6 +23,7 @@ using System.Collections.Specialized;
 using System.Drawing;
 using System.Reflection;
 #endif
+using System.Threading;
 using System.Windows.Forms;
 
 #if !NET5_0_OR_GREATER
@@ -44,6 +45,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
     {
         #region Fields
 
+        private readonly int threadId;
+        private readonly ManualResetEventSlim handleCreated;
+
 #if !NET5_0_OR_GREATER
         private static BitVector32.Section formStateRenderSizeGrip;
         private static BitVector32 formStateFallback = default;
@@ -55,7 +59,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         #region Properties
 
         #region Protected Properties
-        
+
         protected bool IsDesignMode => DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime;
 
         #endregion
@@ -107,6 +111,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected BaseForm()
         {
+            threadId = Thread.CurrentThread.ManagedThreadId;
+            handleCreated = new ManualResetEventSlim();
             ThemeColors.ThemeChanged += ThemeColors_ThemeChanged;
         }
 
@@ -124,6 +130,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             if (IsDesignMode)
                 return;
 
+            handleCreated.Set();
             this.ApplyThemeRecursively();
         }
 
@@ -148,12 +155,40 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         }
 #endif
 
+        protected void InvokeIfRequired(Action action)
+        {
+            if (Disposing || IsDisposed)
+                return;
+
+            try
+            {
+                // no invoke is required (not using InvokeRequired because that may return false if handle is not created yet)
+                if (threadId == Thread.CurrentThread.ManagedThreadId)
+                {
+                    action.Invoke();
+                    return;
+                }
+
+                if (!handleCreated.IsSet)
+                    handleCreated.Wait();
+
+                Invoke(action);
+            }
+            catch (ObjectDisposedException)
+            {
+                // it can happen that actual Invoke is started to execute only after querying isClosing and when Disposing and IsDisposed both return false
+            }
+        }
+
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
             ThemeColors.ThemeChanged -= ThemeColors_ThemeChanged;
             if (disposing)
+            {
+                handleCreated.Dispose();
                 Events.Dispose();
+            }
         }
 
         #endregion
@@ -199,7 +234,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             if (!IsHandleCreated)
                 return;
-            this.ApplyThemeRecursively();
+
+            InvokeIfRequired(this.ApplyThemeRecursively);
         }
 
         #endregion

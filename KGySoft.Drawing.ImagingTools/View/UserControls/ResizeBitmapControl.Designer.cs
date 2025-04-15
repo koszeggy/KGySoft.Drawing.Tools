@@ -18,7 +18,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         private void InitializeComponent()
         {
             this.tblNewSize = new System.Windows.Forms.TableLayoutPanel();
-            this.chbMaintainAspectRatio = new System.Windows.Forms.CheckBox();
+            this.chbMaintainAspectRatio = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
             this.lblScalingMode = new System.Windows.Forms.Label();
             this.pnlHeightPx = new KGySoft.Drawing.ImagingTools.View.Controls.AutoMirrorPanel();
             this.lblHeightPx = new System.Windows.Forms.Label();
@@ -327,6 +327,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         private System.Windows.Forms.TextBox txtWidthPx;
         private System.Windows.Forms.Label lblScalingMode;
         private System.Windows.Forms.ComboBox cmbScalingMode;
-        private System.Windows.Forms.CheckBox chbMaintainAspectRatio;
+        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox chbMaintainAspectRatio;
     }
 }

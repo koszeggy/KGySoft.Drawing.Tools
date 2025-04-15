@@ -19,9 +19,9 @@
             this.btnReset = new System.Windows.Forms.Button();
             this.lblValue = new System.Windows.Forms.Label();
             this.pnlCheckBoxes = new System.Windows.Forms.TableLayoutPanel();
-            this.chbBlue = new System.Windows.Forms.CheckBox();
-            this.chbGreen = new System.Windows.Forms.CheckBox();
-            this.chbRed = new System.Windows.Forms.CheckBox();
+            this.chbBlue = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
+            this.chbGreen = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
+            this.chbRed = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
             this.pnlSettings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar)).BeginInit();
             this.pnlCheckBoxes.SuspendLayout();
@@ -140,8 +140,8 @@
         private System.Windows.Forms.Button btnReset;
         private System.Windows.Forms.Label lblValue;
         private System.Windows.Forms.TableLayoutPanel pnlCheckBoxes;
-        private System.Windows.Forms.CheckBox chbBlue;
-        private System.Windows.Forms.CheckBox chbGreen;
-        private System.Windows.Forms.CheckBox chbRed;
+        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox chbBlue;
+        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox chbGreen;
+        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox chbRed;
     }
 }

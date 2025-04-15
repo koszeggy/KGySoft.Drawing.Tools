@@ -62,8 +62,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             : base(viewModel)
         {
             InitializeComponent();
-            cmbInstallations.ValueMember = nameof(KeyValuePair<string, string>.Key);
-            cmbInstallations.DisplayMember = nameof(KeyValuePair<string, string>.Value);
 #if NET472_OR_GREATER
             Name = "ManageClassicInstallationsControl"; // so a different title will be picked from the resources
 #endif
@@ -136,6 +134,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.Installations), nameof(cmbInstallations.DataSource), cmbInstallations);
 
             // VM.SelectedInstallation <-> cmbInstallations.SelectedValue
+            cmbInstallations.ValueMember = nameof(KeyValuePair<string, string>.Key);
+            cmbInstallations.DisplayMember = nameof(KeyValuePair<string, string>.Value);
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.SelectedInstallation), cmbInstallations, nameof(cmbInstallations.SelectedValue));
 
             // VM.CurrentPath <-> tbPath.Text

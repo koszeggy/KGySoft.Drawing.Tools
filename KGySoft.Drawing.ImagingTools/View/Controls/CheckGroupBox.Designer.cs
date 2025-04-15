@@ -14,7 +14,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.checkBox = new KGySoft.Drawing.ImagingTools.View.Controls.ScalingCheckBox();
+            this.checkBox = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
             this.contentPanel = new System.Windows.Forms.Panel();
             this.SuspendLayout();
             // 
@@ -41,7 +41,7 @@
         }
         #endregion
 
-        private ScalingCheckBox checkBox;
+        private AdvancedCheckBox checkBox;
         private System.Windows.Forms.Panel contentPanel;
     }
 }
