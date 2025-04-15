@@ -29,8 +29,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.pnlWidthPx = new KGySoft.Drawing.ImagingTools.View.Controls.AutoMirrorPanel();
             this.lblWidthPx = new System.Windows.Forms.Label();
             this.txtWidthPx = new System.Windows.Forms.TextBox();
-            this.rbByPixels = new System.Windows.Forms.RadioButton();
-            this.rbByPercentage = new System.Windows.Forms.RadioButton();
+            this.rbByPixels = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedRadioButton();
+            this.rbByPercentage = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedRadioButton();
             this.pnlWidthPercent = new KGySoft.Drawing.ImagingTools.View.Controls.AutoMirrorPanel();
             this.lblWidthPercent = new System.Windows.Forms.Label();
             this.txtWidthPercent = new System.Windows.Forms.TextBox();
@@ -309,8 +309,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         #endregion
 
         private System.Windows.Forms.TableLayoutPanel tblNewSize;
-        private System.Windows.Forms.RadioButton rbByPixels;
-        private System.Windows.Forms.RadioButton rbByPercentage;
+        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedRadioButton rbByPixels;
+        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedRadioButton rbByPercentage;
         private Controls.AutoMirrorPanel pnlWidthPercent;
         private System.Windows.Forms.Label lblWidthPercent;
         private System.Windows.Forms.TextBox txtWidthPercent;
