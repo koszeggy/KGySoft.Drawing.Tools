@@ -31,14 +31,24 @@ namespace KGySoft.Drawing.ImagingTools
         ControlText,
 
         /// <summary>
-        /// Represents the background color of the client are of a window.
+        /// Represents the foreground color of a disabled control.
+        /// </summary>
+        ControlTextDisabled,
+
+        /// <summary>
+        /// Represents the background color of the client area of a window.
         /// </summary>
         Window,
 
         /// <summary>
-        /// Represents the foreground color of the client are of a window.
+        /// Represents the foreground color of the client area of a window.
         /// </summary>
         WindowText,
+
+        /// <summary>
+        /// Represents the foreground color of the client area of a window when it is disabled.
+        /// </summary>
+        WindowTextDisabled,
 
         /// <summary>
         /// Represents the foreground color of a group box.

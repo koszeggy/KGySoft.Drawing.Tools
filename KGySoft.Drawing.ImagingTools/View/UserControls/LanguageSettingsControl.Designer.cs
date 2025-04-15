@@ -18,7 +18,7 @@
             this.components = new System.ComponentModel.Container();
             this.okCancelApplyButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
             this.gbAllowResxResources = new KGySoft.Drawing.ImagingTools.View.Controls.CheckGroupBox();
-            this.gbDisplayLanguage = new System.Windows.Forms.GroupBox();
+            this.gbDisplayLanguage = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedGroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.btnDownloadResources = new System.Windows.Forms.Button();
             this.btnEditResources = new System.Windows.Forms.Button();
@@ -198,7 +198,7 @@
         private KGySoft.Drawing.ImagingTools.View.Controls.CheckGroupBox gbAllowResxResources;
         private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox chbExistingResourcesOnly;
         private System.Windows.Forms.ToolTip toolTip;
-        private System.Windows.Forms.GroupBox gbDisplayLanguage;
+        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedGroupBox gbDisplayLanguage;
         private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox chbUseOSLanguage;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Button btnEditResources;

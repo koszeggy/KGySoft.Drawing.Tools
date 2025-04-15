@@ -17,6 +17,7 @@
     <OutputType>WinExe</OutputType>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
     <!--Suppressions
         - WFAC010: Remove high DPI settings from app.manifest and configure via Application.SetHighDpiMode - as targeting many frameworks handling it manually everywhere is intended. Otherwise, it would cause conflicts, e.g. scaling sizes multiple times, etc.

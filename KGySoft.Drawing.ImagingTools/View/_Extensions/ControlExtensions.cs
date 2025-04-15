@@ -243,6 +243,10 @@ namespace KGySoft.Drawing.ImagingTools.View
                     comboBox.ForeColor = ThemeColors.WindowText;
                     comboBox.ApplyVisualStyleTheme();
                     break;
+
+                case GroupBox groupBox:
+                    groupBox.ForeColor = ThemeColors.GroupBoxText;
+                    break;
             }
 
 

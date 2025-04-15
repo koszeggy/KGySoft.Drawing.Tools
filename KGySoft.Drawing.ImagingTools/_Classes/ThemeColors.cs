@@ -44,17 +44,21 @@ namespace KGySoft.Drawing.ImagingTools
         [
             SystemColors.Control,
             SystemColors.ControlText,
+            SystemColors.ControlDarkDark,
             SystemColors.Window,
             SystemColors.WindowText,
-            SystemColors.ControlText // with visual styles: VisualStyleRenderer(VisualStyleElement.Button.GroupBox.Normal).GetColor(ColorProperty.TextColor)
+            SystemColors.GrayText,
+            SystemColors.ControlText, // with visual styles: VisualStyleRenderer(VisualStyleElement.Button.GroupBox.Normal).GetColor(ColorProperty.TextColor)
         ];
 
         private static readonly Color[] darkThemeColors =
         [
             Color.FromArgb((unchecked((int)0xFF373737))), // Control
             Color.FromArgb((unchecked((int)0xFFFFFFFF))), // ControlText
+            Color.FromArgb((unchecked((int)0xFFCCCCCC))), // ControlTextDisabled // e.g. disabled CheckBox with FlatStyle.System
             Color.FromArgb((unchecked((int)0xFF323232))), // Window
             Color.FromArgb((unchecked((int)0xFFF0F0F0))), // WindowText
+            Color.FromArgb((unchecked((int)0xFF6D6D6D))), // WindowTextDisabled // e.g. disabled TextBox
             Color.FromArgb((unchecked((int)0xFFFFFFFF))), // GroupBoxText
         ];
 
@@ -90,8 +94,10 @@ namespace KGySoft.Drawing.ImagingTools
 
         public static Color Control => Get(ThemeColor.Control);
         public static Color ControlText => Get(ThemeColor.ControlText);
+        public static Color ControlTextDisabled => Get(ThemeColor.ControlTextDisabled);
         public static Color Window => Get(ThemeColor.Window);
         public static Color WindowText => Get(ThemeColor.WindowText);
+        public static Color WindowTextDisabled => Get(ThemeColor.WindowTextDisabled);
         public static Color GroupBoxText => Get(ThemeColor.GroupBoxText); // Special handling!
 
         #endregion
@@ -265,6 +271,7 @@ namespace KGySoft.Drawing.ImagingTools
             return isDarkBaseTheme ? darkThemeColors[(int)key] : defaultThemeColors[(int)key];
         }
 
+        // TODO: remove
         //private static void Set(ThemeColor key, Color color)
         //{
         //    bool isChanged = true;
