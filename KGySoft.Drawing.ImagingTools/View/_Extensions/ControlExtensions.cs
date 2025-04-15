@@ -237,13 +237,14 @@ namespace KGySoft.Drawing.ImagingTools.View
                     //buttonBase.FlatStyle = ThemeColors.IsDarkBaseTheme ? FlatStyle.Standard : FlatStyle.System;
                     buttonBase.ApplyVisualStyleTheme();
                     break;
+
+                case ComboBox comboBox:
+                    comboBox.BackColor = ThemeColors.Window;
+                    comboBox.ForeColor = ThemeColors.WindowText;
+                    comboBox.ApplyVisualStyleTheme();
+                    break;
             }
 
-
-            //#if !NET9_0_OR_GREATER
-            //            if (OSUtils.IsSystemDarkTheme)
-            //                UxTheme.SetWindowTheme(control.Handle, "DarkMode_Explorer", null);
-            //#endif
 
             //switch (control)
             //{
@@ -263,9 +264,6 @@ namespace KGySoft.Drawing.ImagingTools.View
             //        button.UseVisualStyleBackColor = true;
             //        break;
             //}
-
-            //if (!recursion)
-            //    return;
 
             foreach (Control child in control.Controls)
                 child.ApplyThemeRecursively();
@@ -299,6 +297,22 @@ namespace KGySoft.Drawing.ImagingTools.View
 
                 case ButtonBase:
                     UxTheme.SetWindowTheme(control.Handle, ThemeColors.IsDarkBaseTheme ? darkTheme : null, null);
+                    break;
+
+                case ComboBox:
+                    handle = control.Handle;
+                    UxTheme.SetWindowTheme(handle, textBoxTheme, null);
+                    UxTheme.SetWindowDarkMode(handle, ThemeColors.IsDarkBaseTheme);
+                    User32.SendMessage(handle, Constants.WM_THEMECHANGED, IntPtr.Zero, IntPtr.Zero);
+
+                    // The scrollbar of the drop-down area
+                    unsafe
+                    {
+                        COMBOBOXINFO cInfo = default;
+                        cInfo.cbSize = (uint)sizeof(COMBOBOXINFO);
+                        if (User32.GetComboBoxInfo(handle, ref cInfo))
+                            UxTheme.SetWindowTheme(cInfo.hwndList, ThemeColors.IsDarkBaseTheme ? darkTheme : null, null); 
+                    }
                     break;
             }
         }

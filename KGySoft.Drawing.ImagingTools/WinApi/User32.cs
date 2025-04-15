@@ -270,10 +270,20 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             /// Displays the window.</para>
             /// </param>
             /// <returns>If the function succeeds, the return value is nonzero.
-            /// If the function fails, the return value is zero. To get extended error information, call GetLastError.
-            /// </returns>
+            /// If the function fails, the return value is zero. To get extended error information, call GetLastError.</returns>
             [DllImport("user32.dll")]
             internal static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+
+            /// <summary>
+            /// Retrieves information about the specified combo box.
+            /// </summary>
+            /// <param name="hwndCombo">A handle to the combo box.</param>
+            /// <param name="pcbi">A pointer to a COMBOBOXINFO structure that receives the information. You must set COMBOBOXINFO.cbSize before calling this function.</param>
+            /// <returns>If the function succeeds, the return value is nonzero.
+            /// If the function fails, the return value is zero. To get extended error information, call GetLastError.</returns>
+            [DllImport("user32.dll")]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            internal static extern bool GetComboBoxInfo(IntPtr hwndCombo, ref COMBOBOXINFO pcbi);
 
             #endregion
         }
@@ -369,6 +379,18 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
 
         internal static bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags)
             => NativeMethods.SetWindowPos(hWnd, hWndInsertAfter, X, Y, cx, cy, uFlags);
+
+        internal static bool GetComboBoxInfo(IntPtr hwndCombo, ref COMBOBOXINFO pcbi)
+        {
+            try
+            {
+                return NativeMethods.GetComboBoxInfo(hwndCombo, ref pcbi);
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                return false;
+            }
+        }
 
         #endregion
     }
