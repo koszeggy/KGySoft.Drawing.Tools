@@ -36,23 +36,43 @@ namespace KGySoft.Drawing.ImagingTools
         ControlTextDisabled,
 
         /// <summary>
-        /// Represents the background color of the client area of a window.
+        /// Represents the background color of an input window area.
         /// </summary>
         Window,
 
         /// <summary>
-        /// Represents the foreground color of the client area of a window.
+        /// Represents the foreground color of an input window area.
         /// </summary>
         WindowText,
 
         /// <summary>
-        /// Represents the foreground color of the client area of a window when it is disabled.
+        /// Represents the foreground color of an input window area when it is disabled.
         /// </summary>
         WindowTextDisabled,
+
+        /// <summary>
+        /// Represents the alternating background color of an input window area.
+        /// </summary>
+        WindowAlternate,
+
+        /// <summary>
+        /// Represents the alternating foreground color of an input window area.
+        /// </summary>
+        WindowTextAlternate,
 
         /// <summary>
         /// Represents the foreground color of a group box.
         /// </summary>
         GroupBoxText,
+
+        /// <summary>
+        /// Represents the color of grid lines.
+        /// </summary>
+        GridLine,
+
+        /// <summary>
+        /// Represents the color of unoccupied workspace area.
+        /// </summary>
+        Workspace,
     }
 }

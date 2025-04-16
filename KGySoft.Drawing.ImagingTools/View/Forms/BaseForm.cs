@@ -131,7 +131,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 return;
 
             handleCreated.Set();
-            this.ApplyThemeRecursively();
+            this.ApplyTheme();
         }
 
 #if !NET5_0_OR_GREATER
@@ -235,7 +235,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             if (!IsHandleCreated)
                 return;
 
-            InvokeIfRequired(this.ApplyThemeRecursively);
+            InvokeIfRequired(this.ApplyTheme);
         }
 
         #endregion

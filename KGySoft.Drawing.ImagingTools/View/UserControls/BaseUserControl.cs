@@ -107,7 +107,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             if (ParentForm is not BaseForm)
             {
                 themeApplied = true;
-                this.ApplyThemeRecursively();
+                ControlExtensions.ApplyTheme(this);
             }
         }
 

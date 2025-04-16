@@ -16,7 +16,6 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.gbResourceEntries = new System.Windows.Forms.GroupBox();
             this.gridResources = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedDataGridView();
             this.colResourceKey = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -69,13 +68,6 @@
             this.colOriginalText,
             this.colTranslatedText});
             this.gridResources.DataSource = this.bindingSource;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.gridResources.DefaultCellStyle = dataGridViewCellStyle3;
             this.gridResources.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gridResources.Location = new System.Drawing.Point(3, 40);
             this.gridResources.MultiSelect = false;

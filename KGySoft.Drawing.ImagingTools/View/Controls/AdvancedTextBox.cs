@@ -63,7 +63,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         goto default;
 
                     base.WndProc(ref m);
-                    PaintDarkNCArea();
+                    PaintDarkNCArea(m.WParam);
                     break;
 
                 default:
@@ -76,24 +76,21 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         protected override void OnSizeChanged(EventArgs e)
         {
             base.OnSizeChanged(e);
-            if (ThemeColors.IsDarkBaseTheme && Multiline)
-                InvalidateNC();
+            InvalidateNC();
         }
 
         protected override void OnMouseEnter(EventArgs e)
         {
             base.OnMouseEnter(e);
             isHovered = true;
-            if (ThemeColors.IsDarkBaseTheme && Multiline)
-                InvalidateNC();
+            InvalidateNC();
         }
 
         protected override void OnMouseLeave(EventArgs e)
         {
             base.OnMouseLeave(e);
             isHovered = false;
-            if (ThemeColors.IsDarkBaseTheme && Multiline)
-                InvalidateNC();
+            InvalidateNC();
         }
 
         #endregion
@@ -102,19 +99,18 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         private void InvalidateNC()
         {
-            User32.SetWindowPos(Handle, IntPtr.Zero, 0, 0, 0, 0,
-                Constants.SWP_NOMOVE | Constants.SWP_NOSIZE | Constants.SWP_NOZORDER |
-                Constants.SWP_NOACTIVATE | Constants.SWP_DRAWFRAME);
+            if (ThemeColors.IsDarkBaseTheme && Multiline)
+                User32.InvalidateNC(Handle);
         }
 
-        private void PaintDarkNCArea()
+        private void PaintDarkNCArea(IntPtr hRgn)
         {
             var hWnd = Handle;
-            var hDC = User32.GetWindowDC(hWnd);
+            IntPtr hDC = User32.GetNonClientDC(hWnd, hRgn);
             try
             {
                 using var g = Graphics.FromHdc(hDC);
-                using var pen = new Pen(Color.FromArgb(unchecked((int)(isHovered ? 0xFFC8C8C8 : 0xFF9B9B9B))));
+                using var pen = new Pen(isHovered ? ThemeColors.FixedSingleBorder : ThemeColors.FixedSingleBorderInactive);
                 var rect = new Rectangle(0, 0, Width - 1, Height - 1);
                 g.DrawRectangle(pen, rect);
                 rect.Inflate(-1, -1);
@@ -123,8 +119,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             }
             finally
             {
-                User32.ReleaseDC(hWnd, hDC);
+                if (hRgn == (IntPtr)1)
+                    User32.ReleaseDC(hWnd, hDC);
             }
+
+            // Invalidating the ClientArea because sometimes the NC repaint corrupts the content
+            Invalidate();
         }
 
         #endregion

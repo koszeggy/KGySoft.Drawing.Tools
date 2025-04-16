@@ -44,11 +44,15 @@ namespace KGySoft.Drawing.ImagingTools
         [
             SystemColors.Control,
             SystemColors.ControlText,
-            SystemColors.ControlDarkDark,
+            SystemColors.ControlDarkDark, // ControlTextDisabled
             SystemColors.Window,
             SystemColors.WindowText,
-            SystemColors.GrayText,
-            SystemColors.ControlText, // with visual styles: VisualStyleRenderer(VisualStyleElement.Button.GroupBox.Normal).GetColor(ColorProperty.TextColor)
+            SystemColors.GrayText, // WindowTextDisabled
+            SystemColors.ControlLight, // WindowAlternate
+            SystemColors.ControlText, // WindowTextAlternate
+            SystemColors.ControlText, // GroupBoxText - NOTE: with visual styles enabled it's returned by VisualStyleRenderer
+            SystemColors.WindowFrame, // GridLine
+            SystemColors.AppWorkspace, // Workspace
         ];
 
         private static readonly Color[] darkThemeColors =
@@ -59,7 +63,11 @@ namespace KGySoft.Drawing.ImagingTools
             Color.FromArgb((unchecked((int)0xFF323232))), // Window
             Color.FromArgb((unchecked((int)0xFFF0F0F0))), // WindowText
             Color.FromArgb((unchecked((int)0xFF6D6D6D))), // WindowTextDisabled // e.g. disabled TextBox
+            Color.FromArgb((unchecked((int)0xFF464646))), // WindowAlternate // e.g. in DataGridView
+            Color.FromArgb((unchecked((int)0xFFFFFFFF))), // WindowTextAlternate // e.g. in DataGridView
             Color.FromArgb((unchecked((int)0xFFFFFFFF))), // GroupBoxText
+            Color.FromArgb((unchecked((int)0xFF646464))), // GridLine - .NET 9: FF282828 (WindowFrame)
+            Color.FromArgb((unchecked((int)0xFF3C3C3C))), // Workspace - .NET 9: FF464646 (ControlDark)
         ];
 
         private static /*volatile*/ bool isDarkBaseTheme;
@@ -98,11 +106,19 @@ namespace KGySoft.Drawing.ImagingTools
         public static Color Window => Get(ThemeColor.Window);
         public static Color WindowText => Get(ThemeColor.WindowText);
         public static Color WindowTextDisabled => Get(ThemeColor.WindowTextDisabled);
+        public static Color WindowAlternate => Get(ThemeColor.WindowAlternate);
+        public static Color WindowTextAlternate => Get(ThemeColor.WindowTextAlternate);
         public static Color GroupBoxText => Get(ThemeColor.GroupBoxText); // Special handling!
+        public static Color GridLine => Get(ThemeColor.GridLine);
+        public static Color Workspace => Get(ThemeColor.Workspace);
 
         #endregion
 
         #region Internal Properties
+
+        // These are not public theme colors because they match the fix theme of a TextBox/ComboBox that cannot be changed. Used only in dark mode.
+        internal static Color FixedSingleBorder => Color.FromArgb(unchecked((int)(0xFFC8C8C8)));
+        internal static Color FixedSingleBorderInactive => Color.FromArgb(unchecked((int)(0xFF9B9B9B)));
 
         internal static bool IsBaseThemeEverChanged => isBaseThemeEverChanged;
         internal static bool IsThemeEverChanged => isBaseThemeEverChanged || isCustomThemeEverChanged;
@@ -159,6 +175,7 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Constructors
 
+#if !SYSTEM_THEMING
         static ThemeColors()
         {
             try
@@ -170,6 +187,7 @@ namespace KGySoft.Drawing.ImagingTools
             {
             }
         }
+#endif
 
         #endregion
 
@@ -191,25 +209,23 @@ namespace KGySoft.Drawing.ImagingTools
             bool isNewThemeDark = (theme == DefaultTheme.Dark || theme == DefaultTheme.System && IsDarkSystemTheme) && Application.RenderWithVisualStyles;
             bool defaultColorsChanged = isNewThemeDark != isDarkBaseTheme;
             currentBaseTheme = theme;
-            isBaseThemeEverChanged |= defaultColorsChanged;
-            isDarkBaseTheme = isNewThemeDark;
 
             // TODO: remove .NET 9
-            //// NOTE: Not using the built-in dark mode support even if available, because it is not quite the same as ours.
-            //// E.g.: TextBox borders, ToolStrip, etc
-            //#if NET9_0_OR_GREATER
-            //                if (defaultColorsChanged)
-            //                    Application.SetColorMode((SystemColorMode)theme);
-            //            isDarkBaseTheme = false;
-            //                return;
-            //#else
+            // NOTE: Not using the built-in dark mode support even if available, because it is not quite the same as ours.
+            // E.g.: TextBox borders, ToolStrip, etc
+#if NET9_0_OR_GREATER && SYSTEM_THEMING
+            if (defaultColorsChanged)
+                Application.SetColorMode((SystemColorMode)theme);
+#else
+            isDarkBaseTheme = isNewThemeDark;
+            isBaseThemeEverChanged |= defaultColorsChanged;
             if (defaultColorsChanged)
                 InitializeBaseTheme(theme);
-            //#endif
             if (resetCustomColors)
                 DoResetCustomColors(null, defaultColorsChanged);
             else if (defaultColorsChanged)
                 OnThemeChanged(EventArgs.Empty);
+#endif
         }
 
         #endregion
@@ -271,7 +287,7 @@ namespace KGySoft.Drawing.ImagingTools
             return isDarkBaseTheme ? darkThemeColors[(int)key] : defaultThemeColors[(int)key];
         }
 
-        // TODO: remove
+        // TODO: remove. WHen done, customColors can be a simple Dictionary because always replaced at once
         //private static void Set(ThemeColor key, Color color)
         //{
         //    bool isChanged = true;
@@ -295,6 +311,7 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Event Handlers
 
+#if !SYSTEM_THEMING
         private static void SystemEvents_UserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
         {
             switch (e.Category)
@@ -311,6 +328,7 @@ namespace KGySoft.Drawing.ImagingTools
                     break;
             }
         }
+#endif
 
         #endregion
 

@@ -159,7 +159,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (AutoSize)
                 PerformLayout();
             if (ThemeColors.IsDarkBaseTheme)
-                this.ApplyThemeRecursively();
+                this.ApplyTheme();
         }
 
         #endregion

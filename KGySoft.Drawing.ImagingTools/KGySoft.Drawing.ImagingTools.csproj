@@ -19,6 +19,9 @@
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
+    <!--To check .NET 9+ built-in theming -->
+    <!--<DefineConstants>$(DefineConstants);SYSTEM_THEMING</DefineConstants>-->
+
     <!--Suppressions
         - WFAC010: Remove high DPI settings from app.manifest and configure via Application.SetHighDpiMode - as targeting many frameworks handling it manually everywhere is intended. Otherwise, it would cause conflicts, e.g. scaling sizes multiple times, etc.
         - WFO1000: Property does not configure the code serialization for its property content. - false alarm, every custom control in this project is internal

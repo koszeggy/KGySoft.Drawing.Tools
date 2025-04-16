@@ -19,6 +19,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
+using KGySoft.Drawing.ImagingTools.View.Controls;
 using KGySoft.Drawing.ImagingTools.View.UserControls;
 using KGySoft.Drawing.ImagingTools.WinApi;
 using KGySoft.Reflection;
@@ -182,11 +183,11 @@ namespace KGySoft.Drawing.ImagingTools.View
             FixItems(toolStrip.Items, replacementColor);
         }
 
-        internal static void ApplyThemeRecursively(this Control control)
+        internal static void ApplyTheme(this Control control)
         {
-//#if NET9_0_OR_GREATER
-//            return;
-//#endif
+#if NET9_0_OR_GREATER && SYSTEM_THEMING
+            return;
+#endif
 
             // special handling for controls by type
             switch (control)
@@ -247,6 +248,14 @@ namespace KGySoft.Drawing.ImagingTools.View
                 case GroupBox groupBox:
                     groupBox.ForeColor = ThemeColors.GroupBoxText;
                     break;
+
+                case AdvancedDataGridView dataGridView:
+                    dataGridView.ApplyTheme();
+                    break;
+
+                case ScrollBar scrollBar:
+                    scrollBar.ApplyVisualStyleTheme();
+                    break;
             }
 
 
@@ -270,7 +279,7 @@ namespace KGySoft.Drawing.ImagingTools.View
             //}
 
             foreach (Control child in control.Controls)
-                child.ApplyThemeRecursively();
+                child.ApplyTheme();
         }
 
         #endregion
@@ -299,7 +308,7 @@ namespace KGySoft.Drawing.ImagingTools.View
                     UxTheme.SetWindowTheme(control.Handle, ThemeColors.IsDarkBaseTheme ? darkTheme : lightTheme, null);
                     break;
 
-                case ButtonBase:
+                case ButtonBase or ScrollBar:
                     UxTheme.SetWindowTheme(control.Handle, ThemeColors.IsDarkBaseTheme ? darkTheme : null, null);
                     break;
 

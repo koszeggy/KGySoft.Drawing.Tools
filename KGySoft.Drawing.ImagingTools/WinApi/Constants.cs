@@ -32,6 +32,7 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
 #if !NET5_0_OR_GREATER
         internal const int WM_NCHITTEST = 0x0084;
 #endif
+        internal const int WM_NCCALCSIZE = 0x0083;
         internal const int WM_NCPAINT = 0x0085;
         internal const int WM_NCACTIVATE = 0x0086;
         internal const int WM_THEMECHANGED = 0x031A;
@@ -42,6 +43,9 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
         internal const int SWP_NOACTIVATE = 0x0010;
         internal const int SWP_FRAMECHANGED = 0x0020;  // The frame changed: send
         internal const int SWP_DRAWFRAME = SWP_FRAMECHANGED;
+
+        internal const int DCX_WINDOW = 0x00000001;
+        internal const int DCX_USESTYLE = 0x00010000;
 
         internal const int WH_CALLWNDPROCRET = 12;
 

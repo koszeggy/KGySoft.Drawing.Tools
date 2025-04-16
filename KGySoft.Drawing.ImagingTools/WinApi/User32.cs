@@ -205,6 +205,20 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             internal extern static IntPtr GetWindowDC(IntPtr hWnd);
 
             /// <summary>
+            /// The GetDCEx function retrieves a handle to a device context (DC) for the client area of a specified window or for the entire screen.
+            /// You can use the returned handle in subsequent GDI functions to draw in the DC. The device context is an opaque data structure, whose values are used internally by GDI.
+            /// This function is an extension to the GetDC function, which gives an application more control over how and whether clipping occurs in the client area.
+            /// </summary>
+            /// <param name="hWnd">A handle to the window whose DC is to be retrieved. If this value is NULL, GetDCEx retrieves the DC for the entire screen.</param>
+            /// <param name="hrgnClip">A clipping region that may be combined with the visible region of the DC. If the value of flags is DCX_INTERSECTRGN or DCX_EXCLUDERGN,
+            /// then the operating system assumes ownership of the region and will automatically delete it when it is no longer needed.
+            /// In this case, the application should not use or delete the region after a successful call to GetDCEx.</param>
+            /// <param name="flags">Specifies how the DC is created.</param>
+            /// <returns></returns>
+            [DllImport("user32.dll")]
+            internal extern static IntPtr GetDCEx(IntPtr hWnd, IntPtr hrgnClip, uint flags);
+
+            /// <summary>
             /// The ReleaseDC function releases a device context (DC), freeing it for use by other applications. The effect of the ReleaseDC function depends on the type of DC. It frees only common and window DCs. It has no effect on class or private DCs.
             /// </summary>
             /// <param name="hWnd">A handle to the window whose DC is to be released.</param>
@@ -373,12 +387,21 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
 
         internal static uint SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam) => NativeMethods.SendMessage(hWnd, msg, wParam, lParam);
 
-        internal static IntPtr GetWindowDC(IntPtr hWnd) => NativeMethods.GetWindowDC(hWnd);
+        /// <summary>
+        /// Gets the device context (DC) for the entire window, including the non-client area.
+        /// If the <paramref name="hrgn"/> parameter is 1 (from msg.WParam), the returned DC must be released with <see cref="ReleaseDC"/>.
+        /// </summary>
+        internal static IntPtr GetNonClientDC(IntPtr hWnd, IntPtr hrgn)
+            => hrgn == (IntPtr)1 ? NativeMethods.GetWindowDC(hWnd) : NativeMethods.GetDCEx(hWnd, hrgn, Constants.DCX_WINDOW | Constants.DCX_USESTYLE);
 
         internal static bool ReleaseDC(IntPtr hWnd, IntPtr hDC) => NativeMethods.ReleaseDC(hWnd, hDC);
 
-        internal static bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags)
-            => NativeMethods.SetWindowPos(hWnd, hWndInsertAfter, X, Y, cx, cy, uFlags);
+        internal static void InvalidateNC(IntPtr handle)
+        {
+            // We could also use RedrawWindow(handle, IntPtr.Zero, Constants.RDW_FRAME | Constants.RDW_INVALIDATE | Constants.RDW_UPDATENOW) but it's not calling WM_NCCALCSIZE
+            NativeMethods.SetWindowPos(handle, IntPtr.Zero, 0, 0, 0, 0,
+                Constants.SWP_NOMOVE | Constants.SWP_NOSIZE | Constants.SWP_NOZORDER | Constants.SWP_NOACTIVATE | Constants.SWP_DRAWFRAME);
+        }
 
         internal static bool GetComboBoxInfo(IntPtr hwndCombo, ref COMBOBOXINFO pcbi)
         {

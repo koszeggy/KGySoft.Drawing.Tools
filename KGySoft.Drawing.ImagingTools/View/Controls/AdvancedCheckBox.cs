@@ -89,7 +89,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             base.FlatStyle = FlatStyle.System;
             ResumeLayout();
             if (ThemeColors.IsDarkBaseTheme)
-                this.ApplyThemeRecursively();
+                this.ApplyTheme();
             return result;
         }
 
@@ -198,7 +198,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (AutoSize)
                 PerformLayout();
             if (ThemeColors.IsDarkBaseTheme)
-                this.ApplyThemeRecursively();
+                this.ApplyTheme();
         }
 
         #endregion
