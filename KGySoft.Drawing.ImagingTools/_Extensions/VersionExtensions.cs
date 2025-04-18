@@ -37,6 +37,29 @@ namespace KGySoft.Drawing.ImagingTools
                 && (version.Revision == other.Revision || version.Revision <= 0 && other.Revision <= 0);
         }
 
+        internal static bool TryParse(string? versionString, out Version? version)
+        {
+            if (string.IsNullOrEmpty(versionString))
+            {
+                version = null;
+                return false;
+            }
+#if NET35
+            try
+            {
+                version = new Version(versionString);
+                return true;
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                version = null;
+                return false;
+            }
+#else
+            return Version.TryParse(versionString, out version);
+#endif
+        }
+
         #endregion
     }
 }

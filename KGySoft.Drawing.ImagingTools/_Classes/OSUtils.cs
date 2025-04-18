@@ -118,7 +118,7 @@ namespace KGySoft.Drawing.ImagingTools
                     using RegistryKey? reg = Registry.LocalMachine.OpenSubKey(path);
                     if (reg == null)
                         windowsVersion = osVer.Version;
-                    else if (reg.GetValue(keyLcuVer) is string versionString && Version.TryParse(versionString, out Version? version))
+                    else if (reg.GetValue(keyLcuVer) is string versionString && VersionExtensions.TryParse(versionString, out Version? version))
                         windowsVersion = version;
                     else if (reg.GetValue(keyBuild) is string build && Int32.TryParse(build, out int buildNumber))
                         windowsVersion = new Version(reg.GetValue(keyMajor, defaultMajor) is int major ? major : defaultMajor,
@@ -134,7 +134,6 @@ namespace KGySoft.Drawing.ImagingTools
             }
 #endif
             return windowsVersion;
-
         }
 
         #endregion
