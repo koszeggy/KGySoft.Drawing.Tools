@@ -13,6 +13,12 @@
 
 #endregion
 
+#region Usings
+
+using System.Windows.Forms;
+
+#endregion
+
 namespace KGySoft.Drawing.ImagingTools
 {
     /// <summary>
@@ -34,6 +40,11 @@ namespace KGySoft.Drawing.ImagingTools
         /// Represents the foreground color of a disabled control.
         /// </summary>
         ControlTextDisabled,
+
+        /// <summary>
+        /// Represents the highlight color of a control text. This is typically drawn below the actual text to create a 3D effect.
+        /// </summary>
+        ControlHighlight,
 
         /// <summary>
         /// Represents the background color of an input window area.
@@ -74,5 +85,173 @@ namespace KGySoft.Drawing.ImagingTools
         /// Represents the color of unoccupied workspace area.
         /// </summary>
         Workspace,
+
+        /// <summary>
+        /// Represents the starting color of the gradient in a <see cref="ToolStrip"/> background.
+        /// </summary>
+        ToolStripGradientBegin,
+
+        /// <summary>
+        /// Represents the middle color of the gradient in a <see cref="ToolStrip"/> background.
+        /// </summary>
+        ToolStripGradientMiddle,
+
+        /// <summary>
+        /// Represents the end color of the gradient in a <see cref="ToolStrip"/> background.
+        /// </summary>
+        ToolStripGradientEnd,
+
+        /// <summary>
+        /// Represents the bottom-edge border color of a <see cref="ToolStrip"/> control.
+        /// </summary>
+        ToolStripBorderBottom,
+
+        /// <summary>
+        /// Represents the solid background color of a dropped-down <see cref="ToolStrip"/> control.
+        /// </summary>
+        ToolStripDropDownBackground,
+
+        /// <summary>
+        /// Represents the solid highlight color of a <see cref="ToolStripButton"/> or <see cref="ToolStripMenuItem"/> when it is selected.
+        /// Used then visual styles are not enabled.
+        /// </summary>
+        ToolStripButtonSelectedHighlight,
+
+        /// <summary>
+        /// Represents the solid highlight color of a <see cref="ToolStripButton"/> when it is pressed.
+        /// Used then visual styles are not enabled.
+        /// </summary>
+        ToolStripButtonPressedHighlight,
+
+        /// <summary>
+        /// Represents the solid highlight color of a <see cref="ToolStripButton"/> when it is checked.
+        /// Used then visual styles are not enabled, or when the color of <see cref="ToolStripButtonCheckedGradientBegin"/> or <see cref="ToolStripButtonCheckedGradientEnd"/> is empty.
+        /// </summary>
+        ToolStripButtonCheckedHighlight,
+
+        /// <summary>
+        /// Represents the border color of a <see cref="ToolStripButton"/> when it is selected.
+        /// </summary>
+        ToolStripButtonSelectedBorder,
+
+        /// <summary>
+        /// Represents the border color of a <see cref="ToolStripMenuItem"/> when it is selected.
+        /// </summary>
+        ToolStripMenuItemBorder,
+
+        /// <summary>
+        /// Represents the border color of a <see cref="ToolStrip"/> menu when it is dropped down.
+        /// </summary>
+        ToolStripMenuBorder,
+
+        /// <summary>
+        /// Represents the starting color of the gradient of a <see cref="ToolStripMenuItem"/> when it is selected.
+        /// </summary>
+        ToolStripMenuItemSelectedGradientBegin,
+
+        /// <summary>
+        /// Represents the end color of the gradient of a <see cref="ToolStripMenuItem"/> when it is selected.
+        /// </summary>
+        ToolStripMenuItemSelectedGradientEnd,
+
+        /// <summary>
+        /// Represents the starting color of the gradient of a top-level <see cref="ToolStripMenuItem"/> when it is pressed.
+        /// </summary>
+        ToolStripMenuItemPressedGradientBegin,
+
+        /// <summary>
+        /// Represents the end color of the gradient of a top-level <see cref="ToolStripMenuItem"/> when it is pressed.
+        /// </summary>
+        ToolStripMenuItemPressedGradientEnd,
+
+        /// <summary>
+        /// Represents the starting color of the gradient of a <see cref="ToolStripButton"/> when it is selected.
+        /// </summary>
+        ToolStripButtonSelectedGradientBegin,
+
+        /// <summary>
+        /// Represents the middle color of the gradient of a <see cref="ToolStripButton"/> when it is selected.
+        /// </summary>
+        ToolStripButtonSelectedGradientMiddle,
+
+        /// <summary>
+        /// Represents the end color of the gradient of a <see cref="ToolStripButton"/> when it is selected.
+        /// </summary>
+        ToolStripButtonSelectedGradientEnd,
+
+        /// <summary>
+        /// Represents the starting color of the gradient of a <see cref="ToolStripButton"/> when it is pressed.
+        /// </summary>
+        ToolStripButtonPressedGradientBegin,
+
+        /// <summary>
+        /// Represents the middle color of the gradient of a <see cref="ToolStripButton"/> when it is pressed.
+        /// </summary>
+        ToolStripButtonPressedGradientMiddle,
+
+        /// <summary>
+        /// Represents the end color of the gradient of a <see cref="ToolStripButton"/> when it is pressed.
+        /// </summary>
+        ToolStripButtonPressedGradientEnd,
+
+        /// <summary>
+        /// Represents the starting color of the gradient of a <see cref="ToolStripButton"/> when it is checked.
+        /// </summary>
+        ToolStripButtonCheckedGradientBegin,
+
+        /// <summary>
+        /// Represents the end color of the gradient of a <see cref="ToolStripButton"/> when it is checked.
+        /// </summary>
+        ToolStripButtonCheckedGradientEnd,
+
+        /// <summary>
+        /// Represents the starting color of the gradient in a <see cref="ToolStripOverflowButton"/>.
+        /// </summary>
+        ToolStripOverflowButtonGradientBegin,
+
+        /// <summary>
+        /// Represents the middle color of the gradient in a <see cref="ToolStripOverflowButton"/>.
+        /// </summary>
+        ToolStripOverflowButtonGradientMiddle,
+
+        /// <summary>
+        /// Represents the end color of the gradient in a <see cref="ToolStripOverflowButton"/>.
+        /// </summary>
+        ToolStripOverflowButtonGradientEnd,
+
+        /// <summary>
+        /// Represents the starting color of the gradient used in the image margin of <see cref="ToolStripDropDownMenu"/>.
+        /// </summary>
+        ToolStripImageMarginGradientBegin,
+
+        /// <summary>
+        /// Represents the middle color of the gradient used in the image margin of <see cref="ToolStripDropDownMenu"/>.
+        /// </summary>
+        ToolStripImageMarginGradientMiddle,
+
+        /// <summary>
+        /// Represents the end color of the gradient used in the image margin of <see cref="ToolStripDropDownMenu"/>.
+        /// </summary>
+        ToolStripImageMarginGradientEnd,
+
+        /// <summary>
+        /// Represents the color of the shadow effect on a tool strip grip.
+        /// </summary>
+        ToolStripGripDark,
+
+        /// <summary>
+        /// Represents the color of the highlight effect on a tool strip grip.
+        /// </summary>
+        ToolStripGripLight,
+
+        /// <summary>
+        /// Represents the color of the shadow effect on a <see cref="ToolStripSeparator"/>.
+        /// </summary>
+        ToolStripSeparatorDark,
+
+        /// <summary>
+        /// Represents the color of the highlight effect on a <see cref="ToolStripSeparator"/>.
+        /// </summary>
+        ToolStripSeparatorLight,
     }
 }

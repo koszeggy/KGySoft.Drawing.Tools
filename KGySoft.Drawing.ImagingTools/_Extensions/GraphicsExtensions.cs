@@ -34,6 +34,7 @@ namespace KGySoft.Drawing.ImagingTools
         }
 
         internal static Size ScaleSize(this Graphics graphics, Size size) => size.Scale(graphics.GetScale());
+        internal static int ScaleWidth(this Graphics graphics, int width) => width.Scale(graphics.GetScale().X);
 
         #endregion
     }

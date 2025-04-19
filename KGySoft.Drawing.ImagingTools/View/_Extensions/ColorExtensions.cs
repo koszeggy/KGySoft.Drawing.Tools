@@ -15,6 +15,7 @@
 
 #region Usings
 
+using System;
 using System.Drawing;
 
 using KGySoft.Collections;
@@ -33,7 +34,7 @@ namespace KGySoft.Drawing.ImagingTools.View
             EnsureCapacity = true,
         };
 
-        private static readonly Cache<int, Brush> brushCache = new(c => new SolidBrush(Color.FromArgb(c)), 4)
+        private static readonly Cache<int, Brush> brushCache = new(c => new SolidBrush(Color.FromArgb(c)), 8)
         {
             DisposeDroppedValues = true,
             EnsureCapacity = true,
@@ -43,6 +44,24 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         #region Methods
 
+        internal static void ClearCaches()
+        {
+            #region Local Methods
+            
+            static void Clear(ICache cache)
+            {
+                var values = cache.Values;
+                cache.Clear();
+                foreach (var value in values)
+                    (value as IDisposable)?.Dispose();
+            }
+
+            #endregion
+
+            Clear(penCache);
+            Clear(brushCache);
+        }
+
         internal static Pen GetPen(this Color color) => color.IsSystemColor
             ? SystemPens.FromSystemColor(color)
             : penCache[color.ToArgb()];
@@ -50,6 +69,10 @@ namespace KGySoft.Drawing.ImagingTools.View
         internal static Brush GetBrush(this Color color) => color.IsSystemColor
             ? SystemBrushes.FromSystemColor(color)
             : brushCache[color.ToArgb()];
+
+        internal static Color ToThemeColor(this Color color) => color.IsSystemColor
+            ? ThemeColors.FromKnownColor(color.ToKnownColor())
+            : color;
 
         #endregion
     }
