@@ -29,7 +29,6 @@
             this.progress.Name = "progress";
             this.progress.Size = new System.Drawing.Size(242, 22);
             this.progress.TabIndex = 3;
-            this.progress.Text = "drawingProgressStatusStrip1";
             // 
             // okCancelButtons
             // 

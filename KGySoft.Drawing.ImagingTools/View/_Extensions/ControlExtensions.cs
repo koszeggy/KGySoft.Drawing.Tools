@@ -146,43 +146,6 @@ namespace KGySoft.Drawing.ImagingTools.View
             }
         }
 
-        internal static void FixAppearance(this ToolStrip toolStrip)
-        {
-            static void FixItems(ToolStripItemCollection items, Color? replacementColor)
-            {
-                foreach (ToolStripItem item in items)
-                {
-                    // fixing closing menu due to the appearing tool tip (only on Mono/Windows)
-                    if (OSUtils.IsWindows && item is ToolStripDropDownButton or ToolStripSplitButton)
-                    {
-                        item.AutoToolTip = false;
-                        item.ToolTipText = null;
-                    }
-
-                    // fixing menu color
-                    if (replacementColor.HasValue)
-                    {
-                        if ((item is ToolStripMenuItem || item is ToolStripLabel || item is ToolStripSeparator || item is ToolStripProgressBar) && item.BackColor.ToArgb() == replacementColor.Value.ToArgb())
-                            item.BackColor = replacementColor.Value;
-                    }
-
-                    // to children
-                    if (item is ToolStripDropDownItem dropDownItem)
-                        FixItems(dropDownItem.DropDownItems, replacementColor);
-                }
-            }
-
-            if (!OSUtils.IsMono)
-                return;
-
-            // fixing "dark on dark" menu issue on Mono/Linux
-            Color? replacementColor = OSUtils.IsLinux && !SystemInformation.HighContrast ? Color.FromArgb(ProfessionalColors.MenuStripGradientBegin.ToArgb()) : null;
-            if (replacementColor.HasValue)
-                toolStrip.BackColor = replacementColor.Value;
-
-            FixItems(toolStrip.Items, replacementColor);
-        }
-
         internal static void ApplyTheme(this Control control)
         {
 #if NET9_0_OR_GREATER && SYSTEM_THEMING

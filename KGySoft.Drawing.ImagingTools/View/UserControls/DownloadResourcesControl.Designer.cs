@@ -104,7 +104,6 @@
             this.progress.Name = "progress";
             this.progress.Size = new System.Drawing.Size(358, 22);
             this.progress.TabIndex = 2;
-            this.progress.Text = "drawingProgressStatusStrip1";
             // 
             // DownloadResourcesControl
             // 

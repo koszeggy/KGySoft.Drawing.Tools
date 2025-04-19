@@ -61,7 +61,6 @@
             this.progress.Name = "progress";
             this.progress.Size = new System.Drawing.Size(275, 22);
             this.progress.TabIndex = 5;
-            this.progress.Text = "drawingProgressStatusStrip1";
             // 
             // CountColorsControl
             // 

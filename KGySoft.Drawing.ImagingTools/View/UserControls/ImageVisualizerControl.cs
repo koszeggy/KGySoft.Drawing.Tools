@@ -69,7 +69,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             },
             ClosingCallback = (sender, _) =>
             {
-                if (((MvvmParentForm)sender).DialogResult == DialogResult.Cancel)
+                if (((MvvmParentForm)sender!).DialogResult == DialogResult.Cancel)
                     ViewModel.SetModified(false);
             }
         };
@@ -138,12 +138,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         #region Instance Methods
 
         #region Protected Methods
-
-        protected override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);
-            tsMenu.FixAppearance();
-        }
 
         protected override void ApplyResources()
         {
