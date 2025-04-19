@@ -900,7 +900,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 toolTip.AutoPopDelay = Int16.MaxValue;
             }
 
-            // Effectively used only when RTL is true because OwnerDraw is enabled only in that case
             toolTip.Draw += ToolTip_Draw;
         }
 
@@ -915,6 +914,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         #endregion
 
         #region Instance Methods
+
+        #region Internal Methods
+
+        // Needed only for the tooltip, as every other rendering applies the theme colors automatically
+        internal void ApplyTheme() => ResetToolTipAppearance();
+
+        #endregion
+
+        #region Protected Methods
 
         protected override void WndProc(ref Message m)
         {
@@ -953,14 +961,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         protected override void OnRightToLeftChanged(EventArgs e)
         {
             base.OnRightToLeftChanged(e);
-            bool isRtl = RightToLeft == RightToLeft.Yes;
-            if (toolTip != null)
-                toolTip.OwnerDraw = isRtl;
 
+            ResetToolTipAppearance();
             DockStyle dock = Dock;
             if (dock is not (DockStyle.Left or DockStyle.Right))
                 return;
 
+            bool isRtl = RightToLeft == RightToLeft.Yes;
             if (isRtl ^ dock == explicitDock)
                 return;
             isAdjustingRtl = true;
@@ -980,6 +987,20 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             base.Dispose(disposing);
         }
+
+        #endregion
+
+        #region Private Methods
+
+        private void ResetToolTipAppearance()
+        {
+            if (toolTip is not ToolTip instance)
+                return;
+            instance.OwnerDraw = RightToLeft == RightToLeft.Yes
+                || ThemeColors.IsSet(ThemeColor.ToolTip) || ThemeColors.IsSet(ThemeColor.ToolTipBorder) || ThemeColors.IsSet(ThemeColor.ToolTipText);
+        }
+
+        #endregion
 
         #endregion
 

@@ -87,6 +87,21 @@ namespace KGySoft.Drawing.ImagingTools
         Workspace,
 
         /// <summary>
+        /// Represents the background color of a tool tip.
+        /// </summary>
+        ToolTip,
+
+        /// <summary>
+        /// Represents the foreground color of a tool tip.
+        /// </summary>
+        ToolTipText,
+
+        /// <summary>
+        /// Represents the border color of a tool tip.
+        /// </summary>
+        ToolTipBorder,
+
+        /// <summary>
         /// Represents the starting color of the gradient in a <see cref="ToolStrip"/> background.
         /// </summary>
         ToolStripGradientBegin,

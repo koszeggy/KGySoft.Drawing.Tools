@@ -61,6 +61,9 @@ namespace KGySoft.Drawing.ImagingTools
             SystemColors.ControlText, // GroupBoxText - NOTE: with visual styles enabled it's returned by VisualStyleRenderer
             SystemColors.WindowFrame, // GridLine
             SystemColors.AppWorkspace, // Workspace
+            SystemColors.Info, // ToolTip - NOTE: with visual styles enabled it is Window in Windows Vista and later
+            SystemColors.InfoText, // ToolTipText - NOTE: with visual styles enabled it is WindowText in Windows Vista and later
+            SystemColors.WindowFrame, // ToolTipBorder - NOTE: with visual styles enabled it is WindowText in Windows Vista and later
             ProfessionalColors.ToolStripGradientBegin,
             ProfessionalColors.ToolStripGradientMiddle,
             ProfessionalColors.ToolStripGradientEnd, // ButtonFace
@@ -114,6 +117,9 @@ namespace KGySoft.Drawing.ImagingTools
             Color.FromArgb((unchecked((int)0xFFFFFFFF))), // GroupBoxText
             Color.FromArgb((unchecked((int)0xFF646464))), // GridLine - .NET 9: FF282828 (WindowFrame)
             Color.FromArgb((unchecked((int)0xFF3C3C3C))), // Workspace - .NET 9: FF464646 (ControlDark)
+            Color.FromArgb((unchecked((int)0xFF50503C))), // ToolTip
+            Color.FromArgb((unchecked((int)0xFFBEBEBE))), // ToolTipText
+            Color.FromArgb((unchecked((int)0xFF646464))), // ToolTipBorder (WindowFrame)
             Color.FromArgb((unchecked((int)0xFF333333))), // ToolStripGradientBegin (GetAlphaBlendedColorHighRes(null, buttonFace, window, 23))
             Color.FromArgb((unchecked((int)0xFF353535))), // ToolStripGradientMiddle (GetAlphaBlendedColorHighRes(null, buttonFace, window, 50))
             Color.FromArgb((unchecked((int)0xFF373737))), // ToolStripGradientEnd (ButtonFace, which is same as Control with regular themes)
@@ -149,9 +155,11 @@ namespace KGySoft.Drawing.ImagingTools
             Color.FromArgb((unchecked((int)0xFF101010))), // ToolStripSeparatorLight (ButtonHighlight)
         ];
 
-        private static /*volatile*/ bool isDarkBaseTheme;
-        private static /*volatile*/ bool isBaseThemeEverChanged;
-        private static /*volatile*/ bool isCustomThemeEverChanged;
+        private static volatile bool isDarkBaseTheme;
+        private static volatile bool isBaseThemeEverChanged;
+        private static volatile bool isCustomThemeEverChanged;
+        private static volatile bool useVisualStyles;
+        private static volatile bool isHighContrast;
         private static bool? isDarkSystemTheme;
         private static DefaultTheme currentBaseTheme;
         private static ThreadSafeDictionary<ThemeColor, Color>? customColors;
@@ -191,6 +199,9 @@ namespace KGySoft.Drawing.ImagingTools
         public static Color GroupBoxText => Get(ThemeColor.GroupBoxText); // Special handling!
         public static Color GridLine => Get(ThemeColor.GridLine);
         public static Color Workspace => Get(ThemeColor.Workspace);
+        public static Color ToolTip => Get(ThemeColor.ToolTip); // Special handling!
+        public static Color ToolTipText => Get(ThemeColor.ToolTipText); // Special handling!
+        public static Color ToolTipBorder => Get(ThemeColor.ToolTipBorder); // Special handling!
         public static Color ToolStripGradientBegin => Get(ThemeColor.ToolStripGradientBegin);
         public static Color ToolStripGradientMiddle => Get(ThemeColor.ToolStripGradientMiddle);
         public static Color ToolStripGradientEnd => Get(ThemeColor.ToolStripGradientEnd);
@@ -231,7 +242,8 @@ namespace KGySoft.Drawing.ImagingTools
 
         internal static ProfessionalColorTable ColorTable { get; } = new ThemeColorTable();
 
-        // These are not public theme colors because they match the fix theme of a TextBox/ComboBox that cannot be changed. Used only in dark mode.
+        // These are not configurable theme colors because they match the fix theme of a TextBox/ComboBox that cannot be changed. Used only in dark mode.
+        // TODO: is it possible to retrieve them by VisualStyleRenderer (like the GroupBox color)? If so, they can be configurable after all.
         internal static Color FixedSingleBorder => Color.FromArgb(unchecked((int)(0xFFC8C8C8)));
         internal static Color FixedSingleBorderInactive => Color.FromArgb(unchecked((int)(0xFF9B9B9B)));
 
@@ -290,11 +302,12 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Constructors
 
-#if !SYSTEM_THEMING
         static ThemeColors()
         {
             try
             {
+                useVisualStyles = Application.RenderWithVisualStyles;
+                isHighContrast = SystemInformation.HighContrast;
                 if (OSUtils.IsWindows)
                     SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
             }
@@ -302,7 +315,6 @@ namespace KGySoft.Drawing.ImagingTools
             {
             }
         }
-#endif
 
         #endregion
 
@@ -348,9 +360,14 @@ namespace KGySoft.Drawing.ImagingTools
 
         public static void ResetCustomColors(IDictionary<ThemeColor, Color>? theme = null) => DoResetCustomColors(theme, false);
 
-        public static bool IsSet(ThemeColor key) => customColors?.ContainsKey(key) == true;
+        #endregion
 
-        public static Color FromKnownColor(KnownColor color)
+        #region Internal Methods
+        
+        internal static bool IsSet(ThemeColor key, bool includingDefaultDarkTheme = true)
+            => includingDefaultDarkTheme && isDarkBaseTheme || customColors?.ContainsKey(key) == true;
+
+        internal static Color FromKnownColor(KnownColor color)
         {
             ThemeColor themeColor = color switch
             {
@@ -398,6 +415,7 @@ namespace KGySoft.Drawing.ImagingTools
 
         #endregion
 
+
         #region Private Methods
 
         private static void InitializeBaseTheme(DefaultTheme theme)
@@ -438,14 +456,26 @@ namespace KGySoft.Drawing.ImagingTools
 
             Debug.Assert(key.IsDefined() && (int)key < defaultThemeColors.Length && (int)key < darkThemeColors.Length);
 
-            // Special handling for GroupBoxText: it may be different when visual styles are enabled (e.g. Windows XP)
-            if (key == ThemeColor.GroupBoxText && !isDarkBaseTheme && Application.RenderWithVisualStyles)
-                return new VisualStyleRenderer(VisualStyleElement.Button.GroupBox.Normal).GetColor(ColorProperty.TextColor);
+            // Special handling for some cases that may be different when visual styles are enabled
+            if (!isDarkBaseTheme && useVisualStyles && !isHighContrast)
+            {
+                switch (key)
+                {
+                    case ThemeColor.GroupBoxText: // may be different on Windows XP
+                        return new VisualStyleRenderer(VisualStyleElement.Button.GroupBox.Normal).GetColor(ColorProperty.TextColor);
+                    case ThemeColor.ToolTip when OSUtils.IsVistaOrLater:
+                        return Color.FromArgb((unchecked((int)0xFFF9F9F9)));
+                    case ThemeColor.ToolTipText when OSUtils.IsVistaOrLater:
+                        return Color.FromArgb((unchecked((int)0xFF575757)));
+                    case ThemeColor.ToolTipBorder when OSUtils.IsVistaOrLater:
+                        return Color.FromArgb((unchecked((int)0xFFE5E5E5)));
+                }
+            }
 
             return isDarkBaseTheme ? darkThemeColors[(int)key] : defaultThemeColors[(int)key];
         }
 
-        // TODO: remove. WHen done, customColors can be a simple Dictionary because always replaced at once
+        // TODO: remove. When done, customColors can be a simple Dictionary because always replaced at once
         //private static void Set(ThemeColor key, Color color)
         //{
         //    bool isChanged = true;
@@ -473,24 +503,17 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Event Handlers
 
-#if !SYSTEM_THEMING
         private static void SystemEvents_UserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
         {
-            switch (e.Category)
+            if (e.Category == UserPreferenceCategory.General)
             {
-                //// TODO: is this needed?
-                //case UserPreferenceCategory.Color or UserPreferenceCategory.VisualStyle:
-                //    OnThemeChanged(EventArgs.Empty);
-                //    break;
-
-                case UserPreferenceCategory.General: // Light/dark change
-                    isDarkSystemTheme = null;
-                    if (currentBaseTheme == DefaultTheme.System)
-                        SetBaseTheme(DefaultTheme.System, false);
-                    break;
+                useVisualStyles = Application.RenderWithVisualStyles;
+                isHighContrast = SystemInformation.HighContrast;
+                isDarkSystemTheme = null;
+                if (currentBaseTheme == DefaultTheme.System)
+                    SetBaseTheme(DefaultTheme.System, false);
             }
         }
-#endif
 
         #endregion
 

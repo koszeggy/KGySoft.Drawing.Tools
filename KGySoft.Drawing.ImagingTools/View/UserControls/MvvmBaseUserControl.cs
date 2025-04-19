@@ -144,6 +144,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 ApplyViewModel();
         }
 
+        protected override void ApplyTheme()
+        {
+            base.ApplyTheme();
+            toolTip.ResetAppearance();
+        }
+
         protected virtual void ApplyResources() => ApplyStringResources();
 
         protected virtual void ApplyStringResources() => this.ApplyStringResources(toolTip);
@@ -229,6 +235,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             RightToLeft rtl = Res.DisplayLanguage.TextInfo.IsRightToLeft ? RightToLeft.Yes : RightToLeft.No;
             RightToLeft = rtl;
+            toolTip?.ResetAppearance();
         }
 
         private void OnViewModelChanged(EventArgs e)

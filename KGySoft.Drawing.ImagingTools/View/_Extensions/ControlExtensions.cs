@@ -219,8 +219,11 @@ namespace KGySoft.Drawing.ImagingTools.View
                 case ScrollBar scrollBar:
                     scrollBar.ApplyVisualStyleTheme();
                     break;
-            }
 
+                case AdvancedToolStrip toolStrip:
+                    toolStrip.ApplyTheme();
+                    break;
+            }
 
             //switch (control)
             //{

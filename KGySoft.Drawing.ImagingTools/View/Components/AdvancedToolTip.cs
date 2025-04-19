@@ -47,14 +47,18 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
 
         #region Instance Methods
 
+        #region Internal Methods
+
+        internal void ResetAppearance() => OwnerDraw = Res.DisplayLanguage.TextInfo.IsRightToLeft
+            || ThemeColors.IsSet(ThemeColor.ToolTip) || ThemeColors.IsSet(ThemeColor.ToolTipBorder) || ThemeColors.IsSet(ThemeColor.ToolTipText);
+
+        #endregion
+
+        #region Protected Methods
+
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                Draw -= AdvancedToolTip_Draw;
-                Res.DisplayLanguageChanged -= Res_DisplayLanguageChanged;
-            }
-
+            Draw -= AdvancedToolTip_Draw;
             base.Dispose(disposing);
         }
 
@@ -64,18 +68,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
 
         private void Initialize()
         {
-            Res.DisplayLanguageChanged += Res_DisplayLanguageChanged;
             Draw += AdvancedToolTip_Draw;
-            ResetOwnerDraw();
+            ResetAppearance();
         }
 
-        private void ResetOwnerDraw() => OwnerDraw = Res.DisplayLanguage.TextInfo.IsRightToLeft;
-
         #endregion
-
-        #region Event Handlers
-
-        private void Res_DisplayLanguageChanged(object? sender, EventArgs e) => ResetOwnerDraw();
 
         #endregion
 

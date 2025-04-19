@@ -28,10 +28,14 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         internal static void DrawToolTipAdvanced(this DrawToolTipEventArgs e)
         {
-            // Same as DrawBackground but will not recreate the brush again and again
-            // Note: the background color of this tool tip may differ from default ToolTip but will be the same as the ones on Close/Minimize/Maximize buttons
-            e.Graphics.FillRectangle(SystemBrushes.Info, e.Bounds);
-            e.DrawBorder();
+            Color backColor = ThemeColors.ToolTip;
+            Color foreColor = ThemeColors.ToolTipText;
+            Color frameColor = ThemeColors.ToolTipBorder;
+            e = new DrawToolTipEventArgs(e.Graphics, e.AssociatedWindow, e.AssociatedControl, e.Bounds, e.ToolTipText, backColor, foreColor, e.Font);
+            e.DrawBackground();
+
+            // cannot use e.DrawBorder() here, because it hard-codes the border color to SystemColors.WindowFrame
+            ControlPaint.DrawBorder(e.Graphics, e.Bounds, frameColor, ButtonBorderStyle.Solid);
 
             var flags = TextFormatFlags.HidePrefix | TextFormatFlags.VerticalCenter | TextFormatFlags.LeftAndRightPadding;
             if (Res.DisplayLanguage.TextInfo.IsRightToLeft)

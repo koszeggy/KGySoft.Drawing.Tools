@@ -371,7 +371,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
-            if (!ThemeColors.IsDarkBaseTheme && !ThemeColors.IsSet(ThemeColor.Workspace))
+            if (!ThemeColors.IsSet(ThemeColor.Workspace))
                 return;
 
             if (!HorizontalScrollBar.Visible || !VerticalScrollBar.Visible)
