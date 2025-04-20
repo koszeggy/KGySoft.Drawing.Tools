@@ -93,6 +93,22 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             InvalidateNC();
         }
 
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+
+            // To auto apply the theme for the scrollbars. May occur after RTL change, which recreates the handle.
+            if (ThemeColors.IsThemeEverChanged && Multiline)
+                this.ApplyTheme();
+        }
+
+        protected override void OnEnabledChanged(EventArgs e)
+        {
+            base.OnEnabledChanged(e);
+            if (ThemeColors.IsThemeEverChanged)
+                this.ApplyTheme();
+        }
+
         #endregion
 
         #region Private Methods

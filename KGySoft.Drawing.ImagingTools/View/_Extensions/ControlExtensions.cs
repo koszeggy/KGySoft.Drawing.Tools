@@ -179,7 +179,12 @@ namespace KGySoft.Drawing.ImagingTools.View
 
                 case TextBoxBase textBox:
                     textBox.ApplyVisualStyleTheme();
-                    if (textBox.ReadOnly)
+                    if (!textBox.Enabled)
+                    {
+                        textBox.BackColor = ThemeColors.Control;
+                        textBox.ForeColor = ThemeColors.ControlTextDisabled;
+                    }
+                    else if (textBox.ReadOnly)
                     {
                         textBox.BackColor = ThemeColors.Control;
                         textBox.ForeColor = ThemeColors.ControlText;
