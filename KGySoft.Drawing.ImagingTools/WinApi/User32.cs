@@ -18,9 +18,7 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-#if !NET5_0_OR_GREATER
 using System.Drawing;
-#endif
 using System.Runtime.InteropServices;
 using System.Security;
 #if !NET5_0_OR_GREATER
@@ -190,7 +188,7 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             /// <param name="lParam">Additional message-specific information.</param>
             /// <returns>The return value specifies the result of the message processing; it depends on the message sent.</returns>
             [DllImport("user32.dll", SetLastError = true)]
-            internal static extern uint SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+            internal static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
 
             /// <summary>
             /// The GetWindowDC function retrieves the device context (DC) for the entire window, including title bar, menus, and scroll bars.
@@ -299,6 +297,19 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             [return: MarshalAs(UnmanagedType.Bool)]
             internal static extern bool GetComboBoxInfo(IntPtr hwndCombo, ref COMBOBOXINFO pcbi);
 
+            /// <summary>
+            ///Retrieves the coordinates of a window's client area. The client coordinates specify the upper-left and lower-right corners of the client area.
+            /// Because client coordinates are relative to the upper-left corner of a window's client area, the coordinates of the upper-left corner are (0,0).
+            /// </summary>
+            /// <param name="hWnd">A handle to the window whose client coordinates are to be retrieved.</param>
+            /// <param name="lpRect">[out] A pointer to a RECT structure that receives the client coordinates. The left and top members are zero. The right and bottom members contain the width and height of the window.</param>
+            /// <returns>If the function succeeds, the return value is nonzero.
+            /// If the function fails, the return value is zero. To get extended error information, call GetLastError.
+            /// </returns>
+            [DllImport("user32.dll")]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            internal static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
+
             #endregion
         }
 
@@ -385,7 +396,7 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             NativeMethods.SendMessage(handle, Constants.WM_NCACTIVATE, new IntPtr(isActivated ? 1 : 0), IntPtr.Zero);
         }
 
-        internal static uint SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam) => NativeMethods.SendMessage(hWnd, msg, wParam, lParam);
+        internal static IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam) => NativeMethods.SendMessage(hWnd, msg, wParam, lParam);
 
         /// <summary>
         /// Gets the device context (DC) for the entire window, including the non-client area.
@@ -414,6 +425,9 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
                 return false;
             }
         }
+
+        internal static Rectangle GetClientRect(IntPtr hWnd)
+            => NativeMethods.GetClientRect(hWnd, out RECT result) ? result.ToRectangle() : Rectangle.Empty;
 
         #endregion
     }

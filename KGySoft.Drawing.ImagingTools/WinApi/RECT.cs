@@ -15,6 +15,7 @@
 
 #region Usings
 
+using System.Drawing;
 using System.Runtime.InteropServices;
 
 #endregion
@@ -30,6 +31,11 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
         internal int Top;
         internal int Right;
         internal int Bottom;
+
+        #endregion
+
+        #region Methods
+        internal Rectangle ToRectangle() => Rectangle.FromLTRB(Left, Top, Right, Bottom);
 
         #endregion
     }

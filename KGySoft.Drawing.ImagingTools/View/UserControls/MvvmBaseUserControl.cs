@@ -22,6 +22,7 @@ using System.Linq;
 using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
+using KGySoft.Drawing.ImagingTools.View.Components;
 using KGySoft.Drawing.ImagingTools.View.Forms;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
@@ -33,9 +34,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
     {
         #region Fields
 
-        private ErrorProvider? warningProvider;
-        private ErrorProvider? infoProvider;
-        private ErrorProvider? errorProvider;
+        private AdvancedErrorProvider? warningProvider;
+        private AdvancedErrorProvider? infoProvider;
+        private AdvancedErrorProvider? errorProvider;
         private ICommand? validationResultsChangesCommand;
 
         private ViewModelBase? viewModel;
@@ -84,9 +85,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         }
 
         protected bool IsLoaded => isLoaded;
-        protected ErrorProvider ErrorProvider => errorProvider ??= CreateProvider(ValidationSeverity.Error);
-        protected ErrorProvider WarningProvider => warningProvider ??= CreateProvider(ValidationSeverity.Warning);
-        protected ErrorProvider InfoProvider => infoProvider ??= CreateProvider(ValidationSeverity.Information);
+        protected AdvancedErrorProvider ErrorProvider => errorProvider ??= CreateProvider(ValidationSeverity.Error);
+        protected AdvancedErrorProvider WarningProvider => warningProvider ??= CreateProvider(ValidationSeverity.Warning);
+        protected AdvancedErrorProvider InfoProvider => infoProvider ??= CreateProvider(ValidationSeverity.Information);
 
         protected Dictionary<string, Control> ValidationMapping { get; } = new Dictionary<string, Control>();
         protected ICommand ValidationResultsChangedCommand => validationResultsChangesCommand ??= new SimpleCommand<ValidationResultsCollection>(OnValidationResultsChangedCommand);
@@ -148,6 +149,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             base.ApplyTheme();
             toolTip.ResetAppearance();
+            errorProvider?.ResetAppearance();
+            warningProvider?.ResetAppearance();
+            infoProvider?.ResetAppearance();
         }
 
         protected virtual void ApplyResources() => ApplyStringResources();
@@ -217,7 +221,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 .AddSource(typeof(Res), nameof(Res.DisplayLanguageChanged));
         }
 
-        private ErrorProvider CreateProvider(ValidationSeverity level) => new ErrorProvider(components)
+        private AdvancedErrorProvider CreateProvider(ValidationSeverity level) => new AdvancedErrorProvider(components)
         {
             ContainerControl = this,
             Icon = level switch

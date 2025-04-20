@@ -26,9 +26,7 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
         internal const int WM_MOUSEACTIVATE = 0x021;
         internal const int WM_INITDIALOG = 0x0110;
         internal const int WM_MOUSEHWHEEL = 0x020E;
-
-        internal const int MA_ACTIVATEANDEAT = 2;
-        internal const int MA_ACTIVATE = 1;
+        internal const int WM_GETFONT = 0x0031;
 #if !NET5_0_OR_GREATER
         internal const int WM_NCHITTEST = 0x0084;
 #endif
@@ -36,6 +34,9 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
         internal const int WM_NCPAINT = 0x0085;
         internal const int WM_NCACTIVATE = 0x0086;
         internal const int WM_THEMECHANGED = 0x031A;
+
+        internal const int MA_ACTIVATEANDEAT = 2;
+        internal const int MA_ACTIVATE = 1;
 
         internal const int SWP_NOSIZE = 0x0001;
         internal const int SWP_NOMOVE = 0x0002;
