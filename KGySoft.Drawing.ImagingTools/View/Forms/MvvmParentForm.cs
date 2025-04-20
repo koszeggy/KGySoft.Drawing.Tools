@@ -135,7 +135,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // and if we cancel the closing here, then a dialog may turn a non-modal form. Reopen as a dialog is handled in IView.ShowDialog
             if (IsRtlChanging)
             {
-                if (DialogResult == DialogResult.OK)
+                if (DialogResult != DialogResult.Retry)
                     IsRtlChanging = false;
                 else
                     location = Location;
@@ -228,6 +228,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 IsRtlChanging = true;
 
             RightToLeft = rtl;
+
+            // Modal forms on Windows: when changing RTL, the DialogResult is set to Cancel in older framework targets, causing the dialog to close.
+            // To make it work the same way on all platforms, we set it to Retry, signaling the check in OnClosing that the dialog should be reopened.
+            // Without the reopening, the dialog would turn into a non-modal form, allowing the user to interact with the caller form.
+            if (Modal && !OSUtils.IsMono && OSUtils.IsWindows)
+                DialogResult = DialogResult.Retry;
         }
 
         #endregion
