@@ -16,7 +16,7 @@
 #region Usings
 
 using System;
-using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 
@@ -50,7 +50,9 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         public string Key { get; }
         public string OriginalText { get; }
-        public string TranslatedText { get => Get<string>(); init => Set(value); }
+
+        [AllowNull] // The WinForms binding may assign null in place of an empty string
+        public string TranslatedText { get => Get<string>(); init => Set(value ?? String.Empty); }
 
         #endregion
 

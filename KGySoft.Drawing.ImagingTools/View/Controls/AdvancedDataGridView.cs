@@ -19,10 +19,17 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
+#if NETFRAMEWORK
+using KGySoft.CoreLibraries;
+#endif
+using KGySoft.Drawing.ImagingTools.View.Components;
 using KGySoft.Drawing.ImagingTools.WinApi;
+using KGySoft.Reflection;
 
 #endregion
 
@@ -48,6 +55,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
     {
         #region Fields
 
+        #region Static Fields
+
+        private static FieldAccessor? toolTipControlField;
+        private static FieldAccessor? toolTipControlToolTipField;
+
+        private static bool toolAccessorsInitialized;
+
+        #endregion
+
+        #region Instance Fields
+
         private readonly DataGridViewCellStyle defaultDefaultCellStyle;
         private readonly DataGridViewCellStyle defaultHeadersDefaultCellStyle;
         private readonly DataGridViewCellStyle defaultAlternatingRowsDefaultCellStyle;
@@ -64,6 +82,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         private Bitmap? errorIcon;
         private Bitmap? warningIcon;
         private Bitmap? infoIcon;
+
+        #endregion
 
         #endregion
 
@@ -178,6 +198,75 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         private Bitmap WarningIcon => warningIcon ??= Icons.SystemWarning.ToScaledBitmap(this.GetScale());
         private Bitmap InfoIcon => infoIcon ??= Icons.SystemInformation.ToScaledBitmap(this.GetScale());
 
+        private AdvancedToolTip? ToolTip
+        {
+            get
+            {
+                // Mono has a ToolTip tooltip_window field
+                if (OSUtils.IsMono)
+                {
+                    if (!toolAccessorsInitialized)
+                    {
+                        try
+                        {
+                            FieldInfo? field = typeof(DataGridView).GetFields(BindingFlags.Instance | BindingFlags.NonPublic).FirstOrDefault(f => f.Name.Contains("tooltip_window", StringComparison.Ordinal));
+                            if (field is not null)
+                            {
+                                toolTipControlField = FieldAccessor.GetAccessor(field);
+                                toolTipControlField.Set(this, CreateAdvancedToolTip());
+                            }
+                        }
+                        catch (Exception e) when (!e.IsCritical())
+                        {
+                            toolTipControlField = null;
+                        }
+                        finally
+                        {
+                            toolAccessorsInitialized = true;
+                        }
+                    }
+
+                    return toolTipControlField?.GetInstanceValue<DataGridView, ToolTip>(this) as AdvancedToolTip;
+                }
+
+                // Assuming Windows implementation here: DataGridView.*toolTipControl*.*toolTip*
+                if (!toolAccessorsInitialized)
+                {
+                    try
+                    {
+                        FieldInfo? field = typeof(DataGridView).GetFields(BindingFlags.Instance | BindingFlags.NonPublic).FirstOrDefault(f => f.Name.Contains("toolTipControl", StringComparison.Ordinal));
+                        if (field is not null)
+                        {
+                            toolTipControlField = FieldAccessor.GetAccessor(field);
+                            var toolTipControl = toolTipControlField.Get(this);
+                            if (toolTipControl != null)
+                            {
+                                FieldInfo? toolTipField = toolTipControl.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic).FirstOrDefault(f => f.Name.Contains("toolTip", StringComparison.OrdinalIgnoreCase));
+                                if (toolTipField is not null)
+                                {
+                                    toolTipControlToolTipField = FieldAccessor.GetAccessor(toolTipField);
+                                    toolTipControlToolTipField.Set(toolTipControl, CreateAdvancedToolTip());
+                                }
+                                else
+                                    toolTipControlField = null;
+                            }
+                        }
+                    }
+                    catch (Exception e) when (!e.IsCritical())
+                    {
+                        toolTipControlField = null;
+                        toolTipControlToolTipField = null;
+                    }
+                    finally
+                    {
+                        toolAccessorsInitialized = true;
+                    }
+                }
+
+                return toolTipControlToolTipField?.Get(toolTipControlField?.Get(this)) as AdvancedToolTip;
+            }
+        }
+
         #endregion
 
         #endregion
@@ -211,11 +300,28 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             RowHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
             ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
             base.BackgroundColor = ThemeColors.Workspace;
+
+            ToolTip?.ResetAppearance();
         }
 
         #endregion
 
         #region Methods
+
+        #region Static Methods
+
+        private static AdvancedToolTip CreateAdvancedToolTip() => new()
+        {
+            ShowAlways = true,
+            InitialDelay = 0,
+            UseFading = false,
+            UseAnimation = false,
+            AutoPopDelay = 0,
+        };
+
+        #endregion
+
+        #region Instance Methods
 
         #region Internal Methods
 
@@ -259,6 +365,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             HorizontalScrollBar.ApplyTheme();
             VerticalScrollBar.ApplyTheme();
+            ToolTip?.ResetAppearance();
         }
 
         #endregion
@@ -301,6 +408,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         {
             base.OnRightToLeftChanged(e);
             isRightToLeft = RightToLeft == RightToLeft.Yes;
+            ToolTip?.ResetAppearance();
         }
 
         protected override void OnCellPainting(DataGridViewCellPaintingEventArgs e)
@@ -350,7 +458,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         rect->Left += 1;
                         rect->Right -= 1;
                         rect->Top += 1;
-                        rect->Bottom -= 1; 
+                        rect->Bottom -= 1;
                     }
 
                     break;
@@ -486,13 +594,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             try
             {
                 using var g = Graphics.FromHdc(hDC);
-                using var pen = new Pen(ThemeColors.FixedSingleBorder); 
+                using var pen = new Pen(ThemeColors.FixedSingleBorder);
                 var rect = new Rectangle(0, 0, Width - 1, Height - 1);
                 g.DrawRectangle(pen, rect);
             }
             finally
             {
-                if (hRgn == (IntPtr)1)
+                if (hRgn == new IntPtr(1))
                     User32.ReleaseDC(hWnd, hDC);
             }
         }
@@ -503,6 +611,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         private bool ShouldSerializeRowHeadersDefaultCellStyle() => isCustomRowHeadersDefaultCellStyle;
         private bool ShouldSerializeGridColor() => isCustomGridColor;
         private bool ShouldSerializeBackgroundColor() => isCustomBackgroundColor;
+
+        #endregion
 
         #endregion
 
