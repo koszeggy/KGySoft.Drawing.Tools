@@ -280,6 +280,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 // Base default uses Window back color with ControlText fore color. Most cases it's not an issue unless Window/Control colors are close to inverted.
                 BackColor = ThemeColors.Window,
                 ForeColor = ThemeColors.WindowText,
+                SelectionBackColor = ThemeColors.Highlight,
+                SelectionForeColor = ThemeColors.HighlightText,
             };
 
             base.ColumnHeadersDefaultCellStyle = base.RowHeadersDefaultCellStyle = defaultHeadersDefaultCellStyle = new DataGridViewCellStyle

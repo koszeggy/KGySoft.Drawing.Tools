@@ -23,7 +23,6 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 
-using KGySoft.Collections;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.View;
 using KGySoft.Drawing.ImagingTools.WinApi;
@@ -58,6 +57,8 @@ namespace KGySoft.Drawing.ImagingTools
             SystemColors.GrayText, // WindowTextDisabled
             SystemColors.ControlLight, // WindowAlternate
             SystemColors.ControlText, // WindowTextAlternate
+            SystemColors.Highlight,
+            SystemColors.HighlightText,
             SystemColors.ControlText, // GroupBoxText - NOTE: with visual styles enabled it's returned by VisualStyleRenderer
             SystemColors.WindowFrame, // GridLine
             SystemColors.AppWorkspace, // Workspace
@@ -74,23 +75,32 @@ namespace KGySoft.Drawing.ImagingTools
             ProfessionalColors.ButtonCheckedHighlight, // ToolStripButtonCheckedHighlight
 #if NET35
             SystemColors.Highlight, // ToolStripButtonSelectedBorder - In .NET Framework 3.5 ButtonSelectedBorder returns ButtonCheckedGradientBegin
+            SystemColors.Highlight, // ToolStripButtonPressedBorder - In .NET Framework 3.5 ButtonSelectedBorder returns ButtonCheckedGradientBegin
+            SystemColors.Highlight, // ToolStripButtonCheckedBorder - In .NET Framework 3.5 ButtonSelectedBorder returns ButtonCheckedGradientBegin
 #else
             ProfessionalColors.ButtonSelectedBorder, // ToolStripButtonSelectedBorder (Highlight)  
+            ProfessionalColors.ButtonSelectedBorder, // ToolStripButtonPressedBorder (Highlight)  
+            ProfessionalColors.ButtonSelectedBorder, // ToolStripButtonCheckedBorder (Highlight)  
 #endif
-            ProfessionalColors.MenuItemBorder, // ToolStripMenuItemBorder (Highlight)
+            ProfessionalColors.MenuItemBorder, // ToolStripMenuItemSelectedBorder (Highlight)
+            ProfessionalColors.MenuItemBorder, // ToolStripMenuItemOpenedBorder (Highlight)
+            ProfessionalColors.MenuItemBorder, // ToolStripMenuItemDisabledBorder (Highlight)
+            Color.Empty, // ToolStripMenuItemDisabledBackground
             ProfessionalColors.MenuBorder, // ToolStripMenuBorder
             ProfessionalColors.MenuItemSelectedGradientBegin, // ToolStripMenuItemSelectedGradientBegin
             ProfessionalColors.MenuItemSelectedGradientEnd, // ToolStripMenuItemSelectedGradientEnd
             ProfessionalColors.MenuItemPressedGradientBegin, // ToolStripMenuItemPressedGradientBegin
             ProfessionalColors.MenuItemPressedGradientEnd, // ToolStripMenuItemPressedGradientEnd
+            ProfessionalColors.MenuItemSelectedGradientBegin, // ToolStripMenuItemOpenedGradientBegin
+            ProfessionalColors.MenuItemSelectedGradientEnd, // ToolStripMenuItemOpenedGradientEnd
             ProfessionalColors.ButtonSelectedGradientBegin, // ToolStripButtonSelectedGradientBegin
             ProfessionalColors.ButtonSelectedGradientMiddle, // ToolStripButtonSelectedGradientMiddle
             ProfessionalColors.ButtonSelectedGradientEnd, // ToolStripButtonSelectedGradientEnd
             ProfessionalColors.ButtonPressedGradientBegin, // ToolStripButtonPressedGradientBegin
             ProfessionalColors.ButtonPressedGradientMiddle, // ToolStripButtonPressedGradientMiddle
             ProfessionalColors.ButtonPressedGradientEnd, // ToolStripButtonPressedGradientEnd
-            ProfessionalColors.ButtonCheckedGradientBegin, // ToolStripButtonCheckedGradientBegin (Empty -> ButtonCheckedHighlight)
-            ProfessionalColors.ButtonCheckedGradientEnd, // ToolStripButtonCheckedGradientEnd (Empty)
+            ProfessionalColors.ButtonCheckedHighlight, // ToolStripButtonCheckedGradientBegin (Original: Empty)
+            ProfessionalColors.ButtonCheckedHighlight, // ToolStripButtonCheckedGradientEnd (Original: Empty)
             ProfessionalColors.OverflowButtonGradientBegin, // ToolStripOverflowButtonGradientBegin
             ProfessionalColors.OverflowButtonGradientMiddle, // ToolStripOverflowButtonGradientMiddle
             ProfessionalColors.OverflowButtonGradientEnd, // ToolStripOverflowButtonGradientEnd (ButtonShadow)
@@ -105,54 +115,182 @@ namespace KGySoft.Drawing.ImagingTools
 
         private static readonly Color[] darkThemeColors =
         [
-            Color.FromArgb((unchecked((int)0xFF373737))), // Control
+            // Explorer / Gray Window / Gray Highlight / Context menu-like gray ToolStrip menu items
+            Color.FromArgb((unchecked((int)0xFF383838))), // Control
             Color.FromArgb((unchecked((int)0xFFFFFFFF))), // ControlText
-            Color.FromArgb((unchecked((int)0xFFCCCCCC))), // ControlTextDisabled // e.g. disabled CheckBox with FlatStyle.System
-            Color.FromArgb((unchecked((int)0xFF101010))), // ControlHighlight // e.g. highlight text on a control or a ToolStripOverflowButton
-            Color.FromArgb((unchecked((int)0xFF323232))), // Window
-            Color.FromArgb((unchecked((int)0xFFF0F0F0))), // WindowText
+            Color.FromArgb((unchecked((int)0xFF797979))), // ControlTextDisabled // ToolStrip menu item text
+            Color.FromArgb((unchecked((int)0xFF101010))), // ControlHighlight (.NET 9 ButtonHighlight) // e.g. highlight text on a control or a ToolStripOverflowButton
+            Color.FromArgb((unchecked((int)0xFF383838))), // Window
+            Color.FromArgb((unchecked((int)0xFFFFFFFF))), // WindowText
             Color.FromArgb((unchecked((int)0xFF6D6D6D))), // WindowTextDisabled // e.g. disabled TextBox
-            Color.FromArgb((unchecked((int)0xFF464646))), // WindowAlternate // e.g. in DataGridView
+            Color.FromArgb((unchecked((int)0xFF191919))), // WindowAlternate // e.g. in DataGridView
             Color.FromArgb((unchecked((int)0xFFFFFFFF))), // WindowTextAlternate // e.g. in DataGridView
+            Color.FromArgb((unchecked((int)0xFF505050))), // Highlight
+            Color.FromArgb((unchecked((int)0xFFDEDEDE))), // HighlightText
             Color.FromArgb((unchecked((int)0xFFFFFFFF))), // GroupBoxText
-            Color.FromArgb((unchecked((int)0xFF646464))), // GridLine - .NET 9: FF282828 (WindowFrame)
-            Color.FromArgb((unchecked((int)0xFF3C3C3C))), // Workspace - .NET 9: FF464646 (ControlDark)
-            Color.FromArgb((unchecked((int)0xFF50503C))), // ToolTip
-            Color.FromArgb((unchecked((int)0xFFBEBEBE))), // ToolTipText
-            Color.FromArgb((unchecked((int)0xFF646464))), // ToolTipBorder (WindowFrame)
-            Color.FromArgb((unchecked((int)0xFF333333))), // ToolStripGradientBegin (GetAlphaBlendedColorHighRes(null, buttonFace, window, 23))
-            Color.FromArgb((unchecked((int)0xFF353535))), // ToolStripGradientMiddle (GetAlphaBlendedColorHighRes(null, buttonFace, window, 50))
-            Color.FromArgb((unchecked((int)0xFF373737))), // ToolStripGradientEnd (ButtonFace, which is same as Control with regular themes)
-            Color.FromArgb((unchecked((int)0xFF363636))), // ToolStripBorderBottom (GetAlphaBlendedColorHighRes(null, window, buttonFace, 165))
-            Color.FromArgb((unchecked((int)0xFF333333))), // ToolStripDropDownBackground (GetAlphaBlendedColorHighRes(null, buttonFace, window, 143))
-            Color.FromArgb((unchecked((int)0xFF2E3F56))), // ToolStripButtonSelectedHighlight (GetAlphaBlendedColor(screen, SystemColors.Window, GetAlphaBlendedColor(screen, SystemColors.Highlight, SystemColors.Window, 80), 20))
-            Color.FromArgb((unchecked((int)0xFF2C4A73))), // ToolStripButtonPressedHighlight (GetAlphaBlendedColor(screen, SystemColors.Window, GetAlphaBlendedColor(screen, SystemColors.Highlight, SystemColors.Window, 160), 50))
-            Color.FromArgb((unchecked((int)0xFF2E3F56))), // ToolStripButtonCheckedHighlight (ToolStripButtonSelectedHighlight)
-            Color.FromArgb((unchecked((int)0xFF2864B4))), // ToolStripButtonSelectedBorder (Highlight)
-            Color.FromArgb((unchecked((int)0xFF2864B4))), // ToolStripMenuItemBorder (Highlight)
-            Color.FromArgb((unchecked((int)0xFF6B6B6B))), // ToolStripMenuBorder (GetAlphaBlendedColorHighRes(null, controlText, buttonShadow, 20))
-            Color.FromArgb((unchecked((int)0xFF2F4159))), // ToolStripMenuItemSelectedGradientBegin (GetAlphaBlendedColorHighRes(null, highlight, window, 30))
-            Color.FromArgb((unchecked((int)0xFF2F4159))), // ToolStripMenuItemSelectedGradientEnd (GetAlphaBlendedColorHighRes(null, highlight, window, 30))
-            Color.FromArgb((unchecked((int)0xFF333333))), // ToolStripMenuItemPressedGradientBegin (GetAlphaBlendedColorHighRes(null, buttonFace, window, 23))
-            Color.FromArgb((unchecked((int)0xFF353535))), // ToolStripMenuItemPressedGradientEnd (GetAlphaBlendedColorHighRes(null, buttonFace, window, 50))
-            Color.FromArgb((unchecked((int)0xFF2F4159))), // ToolStripButtonSelectedGradientBegin (GetAlphaBlendedColorHighRes(null, highlight, window, 30))
-            Color.FromArgb((unchecked((int)0xFF2F4159))), // ToolStripButtonSelectedGradientMiddle (ToolStripButtonSelectedGradientBegin)
-            Color.FromArgb((unchecked((int)0xFF2F4159))), // ToolStripButtonSelectedGradientEnd (ToolStripButtonSelectedGradientBegin)
-            Color.FromArgb((unchecked((int)0xFF2D4B73))), // ToolStripButtonPressedGradientBegin (GetAlphaBlendedColorHighRes(null, highlight, window, 50))
-            Color.FromArgb((unchecked((int)0xFF2D4B73))), // ToolStripButtonPressedGradientMiddle (ToolStripButtonPressedGradientBegin)
-            Color.FromArgb((unchecked((int)0xFF2D4B73))), // ToolStripButtonPressedGradientEnd (ToolStripButtonPressedGradientBegin)
-            Color.Empty, // ToolStripButtonCheckedGradientBegin (Empty -> ToolStripButtonCheckedHighlight)
-            Color.Empty, // ToolStripButtonCheckedGradientEnd (Empty -> ToolStripButtonCheckedHighlight)
-            Color.FromArgb((unchecked((int)0xFF363636))), // ToolStripOverflowButtonGradientBegin (GetAlphaBlendedColorHighRes(null, buttonFace, window, 70))
-            Color.FromArgb((unchecked((int)0xFF373737))), // ToolStripOverflowButtonGradientMiddle (GetAlphaBlendedColorHighRes(null, buttonFace, window, 90))
-            Color.FromArgb((unchecked((int)0xFF464646))), // ToolStripOverflowButtonGradientEnd (ButtonShadow)
-            Color.FromArgb((unchecked((int)0xFF333333))), // ToolStripImageMarginGradientBegin (GetAlphaBlendedColorHighRes(null, buttonFace, window, 23))
-            Color.FromArgb((unchecked((int)0xFF353535))), // ToolStripImageMarginGradientMiddle (GetAlphaBlendedColorHighRes(null, buttonFace, window, 50))
-            Color.FromArgb((unchecked((int)0xFF373737))), // ToolStripImageMarginGradientEnd (Control)
-            Color.FromArgb((unchecked((int)0xFF414141))), // ToolStripGripDark (GetAlphaBlendedColorHighRes(null, buttonShadow, window, 75))
-            Color.FromArgb((unchecked((int)0xFF323232))), // ToolStripGripLight (Window)
-            Color.FromArgb((unchecked((int)0xFF404040))), // ToolStripSeparatorDark (GetAlphaBlendedColorHighRes(null, buttonShadow, window, 70))
-            Color.FromArgb((unchecked((int)0xFF101010))), // ToolStripSeparatorLight (ButtonHighlight)
+            Color.FromArgb((unchecked((int)0xFF636363))), // GridLine (in Explorer, only the headers have visible grid line)
+            Color.FromArgb((unchecked((int)0xFF3C3C3C))), // Workspace (custom, there is no such color in Explorer)
+            Color.FromArgb((unchecked((int)0xFF2B2B2B))), // ToolTip
+            Color.FromArgb((unchecked((int)0xFFFFFFFF))), // ToolTipText
+            Color.FromArgb((unchecked((int)0xFF767676))), // ToolTipBorder
+            Color.FromArgb((unchecked((int)0xFF202020))), // ToolStripGradientBegin
+            Color.FromArgb((unchecked((int)0xFF202020))), // ToolStripGradientMiddle
+            Color.FromArgb((unchecked((int)0xFF202020))), // ToolStripGradientEnd
+            Color.FromArgb((unchecked((int)0xFF202020))), // ToolStripBorderBottom
+            Color.FromArgb((unchecked((int)0xFF2C2C2C))), // ToolStripDropDownBackground
+            Color.FromArgb((unchecked((int)0xFF4D4D4D))), // ToolStripButtonSelectedHighlight
+            Color.FromArgb((unchecked((int)0xFF666666))), // ToolStripButtonPressedHighlight
+            Color.FromArgb((unchecked((int)0xFF4D4D4D))), // ToolStripButtonCheckedHighlight
+            Color.FromArgb((unchecked((int)0xFF636363))), // ToolStripButtonSelectedBorder (GridLine)
+            Color.FromArgb((unchecked((int)0xFFC3C3C3))), // ToolStripButtonPressedBorder
+            Color.FromArgb((unchecked((int)0xFFC3C3C3))), // ToolStripButtonCheckedBorder
+            Color.FromArgb((unchecked((int)0xFF2C2C2C))), // ToolStripMenuItemSelectedBorder
+            Color.FromArgb((unchecked((int)0xFF2C2C2C))), // ToolStripMenuItemOpenedBorder
+            Color.FromArgb((unchecked((int)0xFF2C2C2C))), // ToolStripMenuItemDisabledBorder
+            Color.FromArgb((unchecked((int)0xFF353535))), // ToolStripMenuItemDisabledBackground
+            Color.FromArgb((unchecked((int)0xFF3E3E3E))), // ToolStripMenuBorder
+            Color.FromArgb((unchecked((int)0xFF353535))), // ToolStripMenuItemSelectedGradientBegin
+            Color.FromArgb((unchecked((int)0xFF353535))), // ToolStripMenuItemSelectedGradientEnd
+            Color.FromArgb((unchecked((int)0xFF202020))), // ToolStripMenuItemPressedGradientBegin
+            Color.FromArgb((unchecked((int)0xFF202020))), // ToolStripMenuItemPressedGradientEnd
+            Color.FromArgb((unchecked((int)0xFF353535))), // ToolStripMenuItemOpenedGradientBegin
+            Color.FromArgb((unchecked((int)0xFF353535))), // ToolStripMenuItemOpenedGradientEnd
+            Color.FromArgb((unchecked((int)0xFF4D4D4D))), // ToolStripButtonSelectedGradientBegin
+            Color.FromArgb((unchecked((int)0xFF4D4D4D))), // ToolStripButtonSelectedGradientMiddle
+            Color.FromArgb((unchecked((int)0xFF4D4D4D))), // ToolStripButtonSelectedGradientEnd
+            Color.FromArgb((unchecked((int)0xFF666666))), // ToolStripButtonPressedGradientBegin
+            Color.FromArgb((unchecked((int)0xFF666666))), // ToolStripButtonPressedGradientMiddle
+            Color.FromArgb((unchecked((int)0xFF666666))), // ToolStripButtonPressedGradientEnd
+            Color.FromArgb((unchecked((int)0xFF4D4D4D))), // ToolStripButtonCheckedGradientBegin
+            Color.FromArgb((unchecked((int)0xFF4D4D4D))), // ToolStripButtonCheckedGradientEnd
+            Color.FromArgb((unchecked((int)0xFF202020))), // ToolStripOverflowButtonGradientBegin
+            Color.FromArgb((unchecked((int)0xFF202020))), // ToolStripOverflowButtonGradientMiddle
+            Color.FromArgb((unchecked((int)0xFF202020))), // ToolStripOverflowButtonGradientEnd
+            Color.FromArgb((unchecked((int)0xFF2C2C2C))), // ToolStripImageMarginGradientBegin
+            Color.FromArgb((unchecked((int)0xFF2C2C2C))), // ToolStripImageMarginGradientMiddle
+            Color.FromArgb((unchecked((int)0xFF2C2C2C))), // ToolStripImageMarginGradientEnd
+            Color.FromArgb((unchecked((int)0xFF383838))), // ToolStripGripDark
+            Color.FromArgb((unchecked((int)0xFF2C2C2C))), // ToolStripGripLight
+            Color.FromArgb((unchecked((int)0xFF3E3E3E))), // ToolStripSeparatorDark
+            Color.FromArgb((unchecked((int)0xFF2C2C2C))), // ToolStripSeparatorLight
+
+            //// Explorer / Gray Window / TextBox highlight / Files ListView-like dark ToolStrip menu items
+            //Color.FromArgb((unchecked((int)0xFF383838))), // Control
+            //Color.FromArgb((unchecked((int)0xFFFFFFFF))), // ControlText
+            //Color.FromArgb((unchecked((int)0xFF6D6D6D))), // ControlTextDisabled // now the same as WindowTextDisabled, though this differs from e.g. disabled CheckBox with FlatStyle.System
+            //Color.FromArgb((unchecked((int)0xFF101010))), // ControlHighlight (.NET 9 ButtonHighlight) // e.g. highlight text on a control or a ToolStripOverflowButton
+            //Color.FromArgb((unchecked((int)0xFF383838))), // Window
+            //Color.FromArgb((unchecked((int)0xFFFFFFFF))), // WindowText
+            //Color.FromArgb((unchecked((int)0xFF6D6D6D))), // WindowTextDisabled // e.g. disabled TextBox
+            //Color.FromArgb((unchecked((int)0xFF464646))), // WindowAlternate (.NET 9 ButtonShadow) // e.g. in DataGridView
+            //Color.FromArgb((unchecked((int)0xFFFFFFFF))), // WindowTextAlternate // e.g. in DataGridView
+            //Color.FromArgb((unchecked((int)0xFF0078D7))), // Highlight
+            //Color.FromArgb((unchecked((int)0xFFFFFFFF))), // HighlightText
+            //Color.FromArgb((unchecked((int)0xFFFFFFFF))), // GroupBoxText
+            //Color.FromArgb((unchecked((int)0xFF636363))), // GridLine (in Explorer, only the headers have visible grid line)
+            //Color.FromArgb((unchecked((int)0xFF3C3C3C))), // Workspace (custom, there is no such color in Explorer)
+            //Color.FromArgb((unchecked((int)0xFF2B2B2B))), // ToolTip
+            //Color.FromArgb((unchecked((int)0xFFFFFFFF))), // ToolTipText
+            //Color.FromArgb((unchecked((int)0xFF767676))), // ToolTipBorder
+            //Color.FromArgb((unchecked((int)0xFF202020))), // ToolStripGradientBegin
+            //Color.FromArgb((unchecked((int)0xFF202020))), // ToolStripGradientMiddle
+            //Color.FromArgb((unchecked((int)0xFF202020))), // ToolStripGradientEnd
+            //Color.FromArgb((unchecked((int)0xFF202020))), // ToolStripBorderBottom
+            //Color.FromArgb((unchecked((int)0xFF191919))), // ToolStripDropDownBackground
+            //Color.FromArgb((unchecked((int)0xFF4D4D4D))), // ToolStripButtonSelectedHighlight
+            //Color.FromArgb((unchecked((int)0xFF666666))), // ToolStripButtonPressedHighlight
+            //Color.FromArgb((unchecked((int)0xFF4D4D4D))), // ToolStripButtonCheckedHighlight (ToolStripButtonSelectedHighlight)
+            //Color.FromArgb((unchecked((int)0xFF636363))), // ToolStripButtonSelectedBorder
+            //Color.FromArgb((unchecked((int)0xFFC3C3C3))), // ToolStripButtonPressedBorder
+            //Color.FromArgb((unchecked((int)0xFFC3C3C3))), // ToolStripButtonCheckedBorder
+            //Color.FromArgb((unchecked((int)0xFF505050))), // ToolStripMenuItemSelectedBorder
+            //Color.FromArgb((unchecked((int)0xFFC3C3C3))), // ToolStripMenuItemOpenedBorder
+            //Color.FromArgb((unchecked((int)0xFF505050))), // ToolStripMenuItemDisabledBorder
+            //Color.Empty, // ToolStripMenuItemDisabledBackground
+            //Color.FromArgb((unchecked((int)0xFFC3C3C3))), // ToolStripMenuBorder
+            //Color.FromArgb((unchecked((int)0xFF505050))), // ToolStripMenuItemSelectedGradientBegin
+            //Color.FromArgb((unchecked((int)0xFF505050))), // ToolStripMenuItemSelectedGradientEnd
+            //Color.FromArgb((unchecked((int)0xFF202020))), // ToolStripMenuItemPressedGradientBegin
+            //Color.FromArgb((unchecked((int)0xFF202020))), // ToolStripMenuItemPressedGradientEnd
+            //Color.FromArgb((unchecked((int)0xFF505050))), // ToolStripMenuItemOpenedGradientBegin
+            //Color.FromArgb((unchecked((int)0xFF505050))), // ToolStripMenuItemOpenedGradientEnd
+            //Color.FromArgb((unchecked((int)0xFF4D4D4D))), // ToolStripButtonSelectedGradientBegin
+            //Color.FromArgb((unchecked((int)0xFF4D4D4D))), // ToolStripButtonSelectedGradientMiddle
+            //Color.FromArgb((unchecked((int)0xFF4D4D4D))), // ToolStripButtonSelectedGradientEnd
+            //Color.FromArgb((unchecked((int)0xFF666666))), // ToolStripButtonPressedGradientBegin
+            //Color.FromArgb((unchecked((int)0xFF666666))), // ToolStripButtonPressedGradientMiddle
+            //Color.FromArgb((unchecked((int)0xFF666666))), // ToolStripButtonPressedGradientEnd
+            //Color.FromArgb((unchecked((int)0xFF4D4D4D))), // ToolStripButtonCheckedGradientBegin
+            //Color.FromArgb((unchecked((int)0xFF4D4D4D))), // ToolStripButtonCheckedGradientEnd
+            //Color.FromArgb((unchecked((int)0xFF202020))), // ToolStripOverflowButtonGradientBegin
+            //Color.FromArgb((unchecked((int)0xFF202020))), // ToolStripOverflowButtonGradientMiddle
+            //Color.FromArgb((unchecked((int)0xFF202020))), // ToolStripOverflowButtonGradientEnd
+            //Color.FromArgb((unchecked((int)0xFF191919))), // ToolStripImageMarginGradientBegin
+            //Color.FromArgb((unchecked((int)0xFF191919))), // ToolStripImageMarginGradientMiddle
+            //Color.FromArgb((unchecked((int)0xFF191919))), // ToolStripImageMarginGradientEnd
+            //Color.FromArgb((unchecked((int)0xFF383838))), // ToolStripGripDark
+            //Color.FromArgb((unchecked((int)0xFF2C2C2C))), // ToolStripGripLight
+            //Color.FromArgb((unchecked((int)0xFF383838))), // ToolStripSeparatorDark
+            //Color.FromArgb((unchecked((int)0xFF2C2C2C))), // ToolStripSeparatorLight
+
+            //// .NET 9's dark theme by its AlternateSystemColors
+            //Color.FromArgb((unchecked((int)0xFF202020))), // Control
+            //Color.FromArgb((unchecked((int)0xFFFFFFFF))), // ControlText
+            //Color.FromArgb((unchecked((int)0xFF969696))), // ControlTextDisabled (GrayText) // note though that a disabled CheckBox with FlatStyle.System is 0xFFCCCCCC, for example
+            //Color.FromArgb((unchecked((int)0xFF101010))), // ControlHighlight (ButtonHighlight) // e.g. highlight text on a control or a ToolStripOverflowButton
+            //Color.FromArgb((unchecked((int)0xFF323232))), // Window
+            //Color.FromArgb((unchecked((int)0xFFF0F0F0))), // WindowText
+            //Color.FromArgb((unchecked((int)0xFF969696))), // WindowTextDisabled (GrayText) // note though a disabled TextBox is 0xFF6D6D6D, for example
+            //Color.FromArgb((unchecked((int)0xFF464646))), // WindowAlternate (ButtonShadow) // e.g. in DataGridView
+            //Color.FromArgb((unchecked((int)0xFFFFFFFF))), // WindowTextAlternate // e.g. in DataGridView
+            //Color.FromArgb((unchecked((int)0xFF2864B4))), // Highlight
+            //Color.FromArgb((unchecked((int)0xFF000000))), // HighlightText
+            //Color.FromArgb((unchecked((int)0xFFFFFFFF))), // GroupBoxText
+            //Color.FromArgb((unchecked((int)0xFF282828))), // GridLine (WindowFrame)
+            //Color.FromArgb((unchecked((int)0xFF3C3C3C))), // Workspace (AppWorkspace)
+            //Color.FromArgb((unchecked((int)0xFF50503C))), // ToolTip (Info)
+            //Color.FromArgb((unchecked((int)0xFFBEBEBE))), // ToolTipText (InfoText)
+            //Color.FromArgb((unchecked((int)0xFF282828))), // ToolTipBorder (WindowFrame)
+            //Color.FromArgb((unchecked((int)0xFF2E2E2E))), // ToolStripGradientBegin (GetAlphaBlendedColorHighRes(null, buttonFace, window, 23))
+            //Color.FromArgb((unchecked((int)0xFF292929))), // ToolStripGradientMiddle (GetAlphaBlendedColorHighRes(null, buttonFace, window, 50))
+            //Color.FromArgb((unchecked((int)0xFF202020))), // ToolStripGradientEnd (Control)
+            //Color.FromArgb((unchecked((int)0xFF232323))), // ToolStripBorderBottom (GetAlphaBlendedColorHighRes(null, window, buttonFace, 165))
+            //Color.FromArgb((unchecked((int)0xFF2F2F2F))), // ToolStripDropDownBackground (GetAlphaBlendedColorHighRes(null, buttonFace, window, 143))
+            //Color.FromArgb((unchecked((int)0xFF2E3F56))), // ToolStripButtonSelectedHighlight (GetAlphaBlendedColor(screen, SystemColors.Window, GetAlphaBlendedColor(screen, SystemColors.Highlight, SystemColors.Window, 80), 20))
+            //Color.FromArgb((unchecked((int)0xFF2C4A73))), // ToolStripButtonPressedHighlight (GetAlphaBlendedColor(screen, SystemColors.Window, GetAlphaBlendedColor(screen, SystemColors.Highlight, SystemColors.Window, 160), 50))
+            //Color.FromArgb((unchecked((int)0xFF2E3F56))), // ToolStripButtonCheckedHighlight (ToolStripButtonSelectedHighlight)
+            //Color.FromArgb((unchecked((int)0xFF2864B4))), // ToolStripButtonSelectedBorder (Highlight)
+            //Color.FromArgb((unchecked((int)0xFF2864B4))), // ToolStripButtonPressedBorder (Highlight)
+            //Color.FromArgb((unchecked((int)0xFF2864B4))), // ToolStripButtonCheckedBorder (Highlight)
+            //Color.FromArgb((unchecked((int)0xFF2864B4))), // ToolStripMenuItemSelectedBorder (Highlight)
+            //Color.FromArgb((unchecked((int)0xFF2864B4))), // ToolStripMenuItemOpenedBorder (Highlight)
+            //Color.FromArgb((unchecked((int)0xFF2864B4))), // ToolStripMenuItemDisabledBorder (Highlight)
+            //Color.Empty, //ToolStripMenuItemDisabledBackground
+            //Color.FromArgb((unchecked((int)0xFF6B6B6B))), // ToolStripMenuBorder (GetAlphaBlendedColorHighRes(null, controlText, buttonShadow, 20))
+            //Color.FromArgb((unchecked((int)0xFF2F4159))), // ToolStripMenuItemSelectedGradientBegin (GetAlphaBlendedColorHighRes(null, highlight, window, 30))
+            //Color.FromArgb((unchecked((int)0xFF2F4159))), // ToolStripMenuItemSelectedGradientEnd (ToolStripMenuItemSelectedGradientBegin)
+            //Color.FromArgb((unchecked((int)0xFF2E2E2E))), // ToolStripMenuItemPressedGradientBegin (GetAlphaBlendedColorHighRes(null, buttonFace, window, 23))
+            //Color.FromArgb((unchecked((int)0xFF292929))), // ToolStripMenuItemPressedGradientEnd (GetAlphaBlendedColorHighRes(null, buttonFace, window, 50))
+            //Color.FromArgb((unchecked((int)0xFF2F4159))), // ToolStripMenuItemOpenedGradientBegin (ToolStripMenuItemSelectedGradientBegin)
+            //Color.FromArgb((unchecked((int)0xFF2F4159))), // ToolStripMenuItemOpenedGradientEnd (ToolStripMenuItemSelectedGradientBegin)
+            //Color.FromArgb((unchecked((int)0xFF2F4159))), // ToolStripButtonSelectedGradientBegin (ToolStripMenuItemSelectedGradientBegin)
+            //Color.FromArgb((unchecked((int)0xFF2F4159))), // ToolStripButtonSelectedGradientMiddle (ToolStripMenuItemSelectedGradientBegin)
+            //Color.FromArgb((unchecked((int)0xFF2F4159))), // ToolStripButtonSelectedGradientEnd (ToolStripMenuItemSelectedGradientBegin)
+            //Color.FromArgb((unchecked((int)0xFF2D4B73))), // ToolStripButtonPressedGradientBegin (GetAlphaBlendedColorHighRes(null, highlight, window, 50))
+            //Color.FromArgb((unchecked((int)0xFF2D4B73))), // ToolStripButtonPressedGradientMiddle (ToolStripButtonPressedGradientBegin)
+            //Color.FromArgb((unchecked((int)0xFF2D4B73))), // ToolStripButtonPressedGradientEnd (ToolStripButtonPressedGradientBegin)
+            //Color.FromArgb((unchecked((int)0xFF2E3F56))), // ToolStripButtonCheckedGradientBegin (ToolStripButtonCheckedHighlight)
+            //Color.FromArgb((unchecked((int)0xFF2E3F56))), // ToolStripButtonCheckedGradientEnd (ToolStripButtonCheckedHighlight)
+            //Color.FromArgb((unchecked((int)0xFF252525))), // ToolStripOverflowButtonGradientBegin (GetAlphaBlendedColorHighRes(null, buttonFace, window, 70))
+            //Color.FromArgb((unchecked((int)0xFF222222))), // ToolStripOverflowButtonGradientMiddle (GetAlphaBlendedColorHighRes(null, buttonFace, window, 90))
+            //Color.FromArgb((unchecked((int)0xFF464646))), // ToolStripOverflowButtonGradientEnd (ButtonShadow)
+            //Color.FromArgb((unchecked((int)0xFF2E2E2E))), // ToolStripImageMarginGradientBegin (GetAlphaBlendedColorHighRes(null, buttonFace, window, 23))
+            //Color.FromArgb((unchecked((int)0xFF292929))), // ToolStripImageMarginGradientMiddle (GetAlphaBlendedColorHighRes(null, buttonFace, window, 50))
+            //Color.FromArgb((unchecked((int)0xFF202020))), // ToolStripImageMarginGradientEnd (Control)
+            //Color.FromArgb((unchecked((int)0xFF414141))), // ToolStripGripDark (GetAlphaBlendedColorHighRes(null, buttonShadow, window, 75))
+            //Color.FromArgb((unchecked((int)0xFF323232))), // ToolStripGripLight (Window)
+            //Color.FromArgb((unchecked((int)0xFF404040))), // ToolStripSeparatorDark (GetAlphaBlendedColorHighRes(null, buttonShadow, window, 70))
+            //Color.FromArgb((unchecked((int)0xFF101010))), // ToolStripSeparatorLight (ButtonHighlight)
         ];
 
         private static volatile bool isDarkBaseTheme;
@@ -162,7 +300,7 @@ namespace KGySoft.Drawing.ImagingTools
         private static volatile bool isHighContrast;
         private static bool? isDarkSystemTheme;
         private static DefaultTheme currentBaseTheme;
-        private static ThreadSafeDictionary<ThemeColor, Color>? customColors;
+        private static Dictionary<ThemeColor, Color>? customColors; // changed to a simple dictionary because it is always replaced with a new one
         private static EventHandler? themeChangedHandler;
 
         #endregion
@@ -185,60 +323,69 @@ namespace KGySoft.Drawing.ImagingTools
         /// Gets whether theming is enabled. Theming is enabled if high contrast mode is disabled,
         /// and either at least one color is defined in the current theme or the current base theme is dark.
         /// </summary>
-        public static bool IsThemingEnabled => (isDarkBaseTheme || customColors is { IsEmpty: false }) && !SystemInformation.HighContrast;
-
-        public static Color Control => Get(ThemeColor.Control);
-        public static Color ControlText => Get(ThemeColor.ControlText);
-        public static Color ControlTextDisabled => Get(ThemeColor.ControlTextDisabled);
-        public static Color ControlHighlight => Get(ThemeColor.ControlHighlight);
-        public static Color Window => Get(ThemeColor.Window);
-        public static Color WindowText => Get(ThemeColor.WindowText);
-        public static Color WindowTextDisabled => Get(ThemeColor.WindowTextDisabled);
-        public static Color WindowAlternate => Get(ThemeColor.WindowAlternate);
-        public static Color WindowTextAlternate => Get(ThemeColor.WindowTextAlternate);
-        public static Color GroupBoxText => Get(ThemeColor.GroupBoxText); // Special handling!
-        public static Color GridLine => Get(ThemeColor.GridLine);
-        public static Color Workspace => Get(ThemeColor.Workspace);
-        public static Color ToolTip => Get(ThemeColor.ToolTip); // Special handling!
-        public static Color ToolTipText => Get(ThemeColor.ToolTipText); // Special handling!
-        public static Color ToolTipBorder => Get(ThemeColor.ToolTipBorder); // Special handling!
-        public static Color ToolStripGradientBegin => Get(ThemeColor.ToolStripGradientBegin);
-        public static Color ToolStripGradientMiddle => Get(ThemeColor.ToolStripGradientMiddle);
-        public static Color ToolStripGradientEnd => Get(ThemeColor.ToolStripGradientEnd);
-        public static Color ToolStripBorderBottom => Get(ThemeColor.ToolStripBorderBottom);
-        public static Color ToolStripDropDownBackground => Get(ThemeColor.ToolStripDropDownBackground);
-        public static Color ToolStripButtonSelectedHighlight => Get(ThemeColor.ToolStripButtonSelectedHighlight);
-        public static Color ToolStripButtonPressedHighlight => Get(ThemeColor.ToolStripButtonPressedHighlight);
-        public static Color ToolStripButtonCheckedHighlight => Get(ThemeColor.ToolStripButtonCheckedHighlight);
-        public static Color ToolStripButtonSelectedBorder => Get(ThemeColor.ToolStripButtonSelectedBorder);
-        public static Color ToolStripMenuItemBorder => Get(ThemeColor.ToolStripMenuItemBorder);
-        public static Color ToolStripMenuBorder => Get(ThemeColor.ToolStripMenuBorder);
-        public static Color ToolStripMenuItemSelectedGradientBegin => Get(ThemeColor.ToolStripMenuItemSelectedGradientBegin);
-        public static Color ToolStripMenuItemSelectedGradientEnd => Get(ThemeColor.ToolStripMenuItemSelectedGradientEnd);
-        public static Color ToolStripMenuItemPressedGradientBegin => Get(ThemeColor.ToolStripMenuItemPressedGradientBegin);
-        public static Color ToolStripMenuItemPressedGradientEnd => Get(ThemeColor.ToolStripMenuItemPressedGradientEnd);
-        public static Color ToolStripButtonSelectedGradientBegin => Get(ThemeColor.ToolStripButtonSelectedGradientBegin);
-        public static Color ToolStripButtonSelectedGradientMiddle => Get(ThemeColor.ToolStripButtonSelectedGradientMiddle);
-        public static Color ToolStripButtonSelectedGradientEnd => Get(ThemeColor.ToolStripButtonSelectedGradientEnd);
-        public static Color ToolStripButtonPressedGradientBegin => Get(ThemeColor.ToolStripButtonPressedGradientBegin);
-        public static Color ToolStripButtonPressedGradientMiddle => Get(ThemeColor.ToolStripButtonPressedGradientMiddle);
-        public static Color ToolStripButtonPressedGradientEnd => Get(ThemeColor.ToolStripButtonPressedGradientEnd);
-        public static Color ToolStripButtonCheckedGradientBegin => Get(ThemeColor.ToolStripButtonCheckedGradientBegin);
-        public static Color ToolStripButtonCheckedGradientEnd => Get(ThemeColor.ToolStripButtonCheckedGradientEnd);
-        public static Color ToolStripOverflowButtonGradientBegin => Get(ThemeColor.ToolStripOverflowButtonGradientBegin);
-        public static Color ToolStripOverflowButtonGradientMiddle => Get(ThemeColor.ToolStripOverflowButtonGradientMiddle);
-        public static Color ToolStripOverflowButtonGradientEnd => Get(ThemeColor.ToolStripOverflowButtonGradientEnd);
-        public static Color ToolStripImageMarginGradientBegin => Get(ThemeColor.ToolStripImageMarginGradientBegin);
-        public static Color ToolStripImageMarginGradientMiddle => Get(ThemeColor.ToolStripImageMarginGradientMiddle);
-        public static Color ToolStripImageMarginGradientEnd => Get(ThemeColor.ToolStripImageMarginGradientEnd);
-        public static Color ToolStripGripDark => Get(ThemeColor.ToolStripGripDark);
-        public static Color ToolStripGripLight => Get(ThemeColor.ToolStripGripLight);
-        public static Color ToolStripSeparatorDark => Get(ThemeColor.ToolStripSeparatorDark);
-        public static Color ToolStripSeparatorLight => Get(ThemeColor.ToolStripSeparatorLight);
+        public static bool IsThemingEnabled => (isDarkBaseTheme || customColors is { Count: > 0 }) && !isHighContrast;
 
         #endregion
 
         #region Internal Properties
+
+        internal static Color Control => Get(ThemeColor.Control);
+        internal static Color ControlText => Get(ThemeColor.ControlText);
+        internal static Color ControlTextDisabled => Get(ThemeColor.ControlTextDisabled);
+        internal static Color ControlHighlight => Get(ThemeColor.ControlHighlight);
+        internal static Color Window => Get(ThemeColor.Window);
+        internal static Color WindowText => Get(ThemeColor.WindowText);
+        internal static Color WindowTextDisabled => Get(ThemeColor.WindowTextDisabled);
+        internal static Color WindowAlternate => Get(ThemeColor.WindowAlternate);
+        internal static Color WindowTextAlternate => Get(ThemeColor.WindowTextAlternate);
+        internal static Color Highlight => Get(ThemeColor.Highlight);
+        internal static Color HighlightText => Get(ThemeColor.HighlightText);
+        internal static Color GroupBoxText => Get(ThemeColor.GroupBoxText); // Special handling!
+        internal static Color GridLine => Get(ThemeColor.GridLine);
+        internal static Color Workspace => Get(ThemeColor.Workspace);
+        internal static Color ToolTip => Get(ThemeColor.ToolTip); // Special handling!
+        internal static Color ToolTipText => Get(ThemeColor.ToolTipText); // Special handling!
+        internal static Color ToolTipBorder => Get(ThemeColor.ToolTipBorder); // Special handling!
+        internal static Color ToolStripGradientBegin => Get(ThemeColor.ToolStripGradientBegin);
+        internal static Color ToolStripGradientMiddle => Get(ThemeColor.ToolStripGradientMiddle);
+        internal static Color ToolStripGradientEnd => Get(ThemeColor.ToolStripGradientEnd);
+        internal static Color ToolStripBorderBottom => Get(ThemeColor.ToolStripBorderBottom);
+        internal static Color ToolStripDropDownBackground => Get(ThemeColor.ToolStripDropDownBackground);
+        internal static Color ToolStripButtonSelectedHighlight => Get(ThemeColor.ToolStripButtonSelectedHighlight);
+        internal static Color ToolStripButtonPressedHighlight => Get(ThemeColor.ToolStripButtonPressedHighlight);
+        internal static Color ToolStripButtonCheckedHighlight => Get(ThemeColor.ToolStripButtonCheckedHighlight);
+        internal static Color ToolStripButtonSelectedBorder => Get(ThemeColor.ToolStripButtonSelectedBorder);
+        internal static Color ToolStripButtonPressedBorder => Get(ThemeColor.ToolStripButtonPressedBorder);
+        internal static Color ToolStripButtonCheckedBorder => Get(ThemeColor.ToolStripButtonCheckedBorder);
+        internal static Color ToolStripMenuItemSelectedBorder => Get(ThemeColor.ToolStripMenuItemSelectedBorder);
+        internal static Color ToolStripMenuItemOpenedBorder => Get(ThemeColor.ToolStripMenuItemOpenedBorder);
+        internal static Color ToolStripMenuItemDisabledBorder => Get(ThemeColor.ToolStripMenuItemDisabledBorder);
+        internal static Color ToolStripMenuItemDisabledBackground => Get(ThemeColor.ToolStripMenuItemDisabledBackground);
+        internal static Color ToolStripMenuBorder => Get(ThemeColor.ToolStripMenuBorder);
+        internal static Color ToolStripMenuItemSelectedGradientBegin => Get(ThemeColor.ToolStripMenuItemSelectedGradientBegin);
+        internal static Color ToolStripMenuItemSelectedGradientEnd => Get(ThemeColor.ToolStripMenuItemSelectedGradientEnd);
+        internal static Color ToolStripMenuItemPressedGradientBegin => Get(ThemeColor.ToolStripMenuItemPressedGradientBegin);
+        internal static Color ToolStripMenuItemPressedGradientEnd => Get(ThemeColor.ToolStripMenuItemPressedGradientEnd);
+        internal static Color ToolStripMenuItemOpenedGradientBegin => Get(ThemeColor.ToolStripMenuItemOpenedGradientBegin);
+        internal static Color ToolStripMenuItemOpenedGradientEnd => Get(ThemeColor.ToolStripMenuItemOpenedGradientEnd);
+        internal static Color ToolStripButtonSelectedGradientBegin => Get(ThemeColor.ToolStripButtonSelectedGradientBegin);
+        internal static Color ToolStripButtonSelectedGradientMiddle => Get(ThemeColor.ToolStripButtonSelectedGradientMiddle);
+        internal static Color ToolStripButtonSelectedGradientEnd => Get(ThemeColor.ToolStripButtonSelectedGradientEnd);
+        internal static Color ToolStripButtonPressedGradientBegin => Get(ThemeColor.ToolStripButtonPressedGradientBegin);
+        internal static Color ToolStripButtonPressedGradientMiddle => Get(ThemeColor.ToolStripButtonPressedGradientMiddle);
+        internal static Color ToolStripButtonPressedGradientEnd => Get(ThemeColor.ToolStripButtonPressedGradientEnd);
+        internal static Color ToolStripButtonCheckedGradientBegin => Get(ThemeColor.ToolStripButtonCheckedGradientBegin);
+        internal static Color ToolStripButtonCheckedGradientEnd => Get(ThemeColor.ToolStripButtonCheckedGradientEnd);
+        internal static Color ToolStripOverflowButtonGradientBegin => Get(ThemeColor.ToolStripOverflowButtonGradientBegin);
+        internal static Color ToolStripOverflowButtonGradientMiddle => Get(ThemeColor.ToolStripOverflowButtonGradientMiddle);
+        internal static Color ToolStripOverflowButtonGradientEnd => Get(ThemeColor.ToolStripOverflowButtonGradientEnd);
+        internal static Color ToolStripImageMarginGradientBegin => Get(ThemeColor.ToolStripImageMarginGradientBegin);
+        internal static Color ToolStripImageMarginGradientMiddle => Get(ThemeColor.ToolStripImageMarginGradientMiddle);
+        internal static Color ToolStripImageMarginGradientEnd => Get(ThemeColor.ToolStripImageMarginGradientEnd);
+        internal static Color ToolStripGripDark => Get(ThemeColor.ToolStripGripDark);
+        internal static Color ToolStripGripLight => Get(ThemeColor.ToolStripGripLight);
+        internal static Color ToolStripSeparatorDark => Get(ThemeColor.ToolStripSeparatorDark);
+        internal static Color ToolStripSeparatorLight => Get(ThemeColor.ToolStripSeparatorLight);
 
         internal static ProfessionalColorTable ColorTable { get; } = new ThemeColorTable();
 
@@ -281,17 +428,17 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static ThreadSafeDictionary<ThemeColor, Color> CurrentTheme
+        private static Dictionary<ThemeColor, Color> CurrentTheme
         {
             get
             {
-                ThreadSafeDictionary<ThemeColor, Color>? result = customColors;
+                Dictionary<ThemeColor, Color>? result = customColors;
                 if (result != null)
                     return result;
 
                 // Note: currentTheme can be set by ResetTheme (even to null), so it can happen that between the previous null check and this one
                 // the currentTheme is already set. In such cases, we return the already set value.
-                result = new ThreadSafeDictionary<ThemeColor, Color>();
+                result = new Dictionary<ThemeColor, Color>();
                 return Interlocked.CompareExchange(ref customColors, result, null) ?? result;
             }
         }
@@ -384,19 +531,19 @@ namespace KGySoft.Drawing.ImagingTools
                 KnownColor.ControlText => ThemeColor.ControlText,
                 //KnownColor.Desktop => unknownColor,
                 KnownColor.GrayText => ThemeColor.ControlTextDisabled,
-                //KnownColor.Highlight => unknownColor,
-                //KnownColor.HighlightText => unknownColor,
+                KnownColor.Highlight => ThemeColor.Highlight,
+                KnownColor.HighlightText => ThemeColor.HighlightText,
                 //KnownColor.HotTrack => unknownColor,
                 //KnownColor.InactiveBorder => unknownColor,
                 //KnownColor.InactiveCaption => unknownColor,
                 //KnownColor.InactiveCaptionText => unknownColor,
-                //KnownColor.Info => unknownColor,
-                //KnownColor.InfoText => unknownColor,
+                KnownColor.Info => ThemeColor.ToolTip,
+                KnownColor.InfoText => ThemeColor.ToolTipText,
                 //KnownColor.Menu => unknownColor,
                 //KnownColor.MenuText => unknownColor,
                 //KnownColor.ScrollBar => unknownColor,
                 KnownColor.Window => ThemeColor.Window,
-                //KnownColor.WindowFrame => unknownColor,
+                KnownColor.WindowFrame => ThemeColor.GridLine,
                 KnownColor.WindowText => ThemeColor.WindowText,
                 //KnownColor.ButtonFace => unknownColor,
                 KnownColor.ButtonHighlight => ThemeColor.ControlHighlight,
@@ -445,7 +592,7 @@ namespace KGySoft.Drawing.ImagingTools
             }
 
             isCustomThemeEverChanged = true;
-            Interlocked.Exchange(ref customColors, new ThreadSafeDictionary<ThemeColor, Color>(theme));
+            Interlocked.Exchange(ref customColors, new Dictionary<ThemeColor, Color>(theme));
             OnThemeChanged(EventArgs.Empty);
         }
 
@@ -463,35 +610,29 @@ namespace KGySoft.Drawing.ImagingTools
                 {
                     case ThemeColor.GroupBoxText: // may be different on Windows XP
                         return new VisualStyleRenderer(VisualStyleElement.Button.GroupBox.Normal).GetColor(ColorProperty.TextColor);
-                    case ThemeColor.ToolTip when OSUtils.IsVistaOrLater:
-                        return Color.FromArgb((unchecked((int)0xFFF9F9F9)));
-                    case ThemeColor.ToolTipText when OSUtils.IsVistaOrLater:
-                        return Color.FromArgb((unchecked((int)0xFF575757)));
-                    case ThemeColor.ToolTipBorder when OSUtils.IsVistaOrLater:
-                        return Color.FromArgb((unchecked((int)0xFFE5E5E5)));
+                    case ThemeColor.ToolTip:
+                        if (OSUtils.IsWindows11OrLater)
+                            return Color.FromArgb((unchecked((int)0xFFF9F9F9)));
+                        if (OSUtils.IsWindows10OrLater)
+                            return Color.FromArgb((unchecked((int)0xFFFFFFFF)));
+                        if (OSUtils.IsVistaOrLater)
+                            return Color.FromArgb((unchecked((int)0xFFF3F4F8))); // actually a gradient from white to 0xE4E5F0, this is the middle
+                        break;
+                    case ThemeColor.ToolTipText:
+                        if (OSUtils.IsVistaOrLater)
+                            return Color.FromArgb((unchecked((int)0xFF575757)));
+                        break;
+                    case ThemeColor.ToolTipBorder:
+                        if (OSUtils.IsWindows11OrLater)
+                            return Color.FromArgb((unchecked((int)0xFFE5E5E5)));
+                        if (OSUtils.IsVistaOrLater)
+                            return Color.FromArgb((unchecked((int)0xFF767676)));
+                        break;
                 }
             }
 
             return isDarkBaseTheme ? darkThemeColors[(int)key] : defaultThemeColors[(int)key];
         }
-
-        // TODO: remove. When done, customColors can be a simple Dictionary because always replaced at once
-        //private static void Set(ThemeColor key, Color color)
-        //{
-        //    bool isChanged = true;
-        //    CurrentTheme.AddOrUpdate(key, color,
-        //        (_, c) =>
-        //        {
-        //            isChanged = c != color;
-        //            return color;
-        //        });
-
-        //    if (isChanged)
-        //    {
-        //        isCustomThemeEverChanged = true;
-        //        OnThemeChanged(EventArgs.Empty);
-        //    }
-        //}
 
         private static void OnThemeChanged(EventArgs e)
         {

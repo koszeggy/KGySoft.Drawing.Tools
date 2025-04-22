@@ -18,6 +18,8 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.Drawing.Text;
 using System.Windows.Forms;
 
 using KGySoft.Collections;
@@ -40,13 +42,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
     internal class AdvancedToolStrip : ToolStrip
     {
         #region AdvancedToolStripRenderer class
+#if !SYSTEM_THEMING
 
         private sealed class AdvancedToolStripRenderer : ToolStripProfessionalRenderer
         {
             #region ButtonStyle enum
 
             [Flags]
-            private enum ButtonStyle : byte
+            private enum ButtonStyle
             {
                 None,
                 Selected = 1,
@@ -203,13 +206,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 if (direction is ArrowDirection.Right)
                     g.DrawLine(color.GetPen(), arrowRect.X, middle.Y - offset.Height, arrowRect.X, middle.Y + offset.Height);
                 else
-                    g.DrawLine(color.GetPen(), middle.X + offset.Width *2 , middle.Y - offset.Height, middle.X + offset.Width*2, middle.Y + offset.Height);
+                    g.DrawLine(color.GetPen(), middle.X + offset.Width * 2, middle.Y - offset.Height, middle.X + offset.Width * 2, middle.Y + offset.Height);
             }
 
             private static void DrawThemedButtonBackground(Graphics g, ProfessionalColorTable colorTable, Rectangle bounds, ButtonStyle style)
             {
                 #region Local Methods
-                
+
                 static void RenderWithVisualStyles(Graphics g, ProfessionalColorTable colorTable, Rectangle bounds, ButtonStyle style)
                 {
                     Color backgroundStart;
@@ -226,8 +229,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     }
                     else if ((style & ButtonStyle.Checked) != 0)
                     {
-                        backgroundStart = colorTable.ButtonCheckedGradientBegin is { IsEmpty: false } c1 ? c1 : colorTable.ButtonCheckedHighlight;
-                        backgroundEnd = colorTable.ButtonCheckedGradientEnd is { IsEmpty: false } c2 ? c2 : colorTable.ButtonCheckedHighlight;
+                        backgroundStart = colorTable.ButtonCheckedGradientBegin;
+                        backgroundEnd = colorTable.ButtonCheckedGradientEnd;
                     }
                     else
                         return;
@@ -241,7 +244,18 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         : (style & ButtonStyle.Selected) != 0 ? colorTable.ButtonSelectedHighlight
                         : (style & ButtonStyle.Checked) != 0 ? colorTable.ButtonCheckedHighlight
                         : Color.Empty;
-                    g.FillRectangle(backColor.GetBrush(), bounds);
+                    if (!backColor.IsEmpty)
+                        g.FillRectangle(backColor.GetBrush(), bounds);
+                }
+
+                static void RenderBorder(Graphics g, ProfessionalColorTable colorTable, Rectangle bounds, ButtonStyle style)
+                {
+                    Color color = (style & ButtonStyle.Checked) != 0 ? ThemeColors.ToolStripButtonCheckedBorder
+                        : (style & ButtonStyle.Pressed) != 0 ? ThemeColors.ToolStripButtonPressedBorder
+                        : (style & ButtonStyle.Selected) != 0 ? colorTable.ButtonSelectedBorder
+                        : Color.Empty;
+                    if (!color.IsEmpty)
+                        g.DrawRectangle(color.GetPen(), bounds.X, bounds.Y, bounds.Width - 1, bounds.Height - 1);
                 }
 
                 #endregion
@@ -259,7 +273,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     RenderWithVisualStyles(g, colorTable, bounds, style);
                 else
                     RenderBasicTheme(g, colorTable, bounds, style);
-                g.DrawRectangle(colorTable.ButtonSelectedBorder.GetPen(), bounds.X, bounds.Y, bounds.Width - 1, bounds.Height - 1);
+
+                RenderBorder(g, colorTable, bounds, style);
             }
 
             private static void DrawHighContrastButtonBackground(Graphics g, Rectangle bounds, ButtonStyle style)
@@ -358,7 +373,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 Color color = !e.Item.Enabled ? SystemInformation.HighContrast ? SystemColors.GrayText : ThemeColors.ControlTextDisabled
                     : SystemInformation.HighContrast ? e.Item.Selected && !e.Item.Pressed ? SystemColors.HighlightText : SystemColors.ControlText
                     : ThemeColors.ControlText;
-                
+
                 DrawArrow(e.Graphics, color, bounds, e.Direction);
             }
 
@@ -367,7 +382,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             /// - [HighContrast]: Not drawing the highlighted background if the menu item is disabled (this is already fixed in Core)
             /// - [HighContrast]: Fixed bounds of highlight rectangle (it was good in .NET Framework but is wrong in Core)
             /// - [Themed]: Background image is omitted
-            /// - [Themed]: Using colorTable.MenuItemBorder instead of SystemColors.Highlight even when visual styles are not enabled (they are usually the same anyway)
+            /// - [Themed]: Using colorTable.MenuItemBorder (ToolStripMenuItemSelectedBorder) and ThemeColors.ToolStripMenuItemOpenedBorder
+            ///   instead of SystemColors.Highlight even when visual styles are not enabled (they are usually the same anyway)
+            /// - [Themed]: Allowing different colors for disabled, selected and pressed menu items (i.e. when submenu items are opened)
+            /// - [Themed]: Not using ButtonSelectedHighlight instead of MenuItemSelectedGradientBegin/End when visual styles are not enabled
             /// </summary>
             protected override void OnRenderMenuItemBackground(ToolStripItemRenderEventArgs e)
             {
@@ -393,26 +411,34 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     int scaledSize = g.ScaleWidth(referenceMenuItemPaddingWidth);
                     bounds.X += scaledSize + 1;
                     bounds.Width -= scaledSize * 2 + 1;
-
-                    if (item.Selected)
+                    Color backgroundStart;
+                    Color backgroundEnd;
+                    if (!item.Selected)
+                        backgroundStart = backgroundEnd = item.Owner is not null && item.BackColor != item.Owner.BackColor ? item.BackColor : Color.Empty;
+                    else if (!item.Enabled)
+                        backgroundStart = backgroundEnd = ThemeColors.ToolStripMenuItemDisabledBackground;
+                    else if (item.Pressed)
                     {
-                        if (item.Enabled)
-                        {
-                            if (Application.RenderWithVisualStyles)
-                                FillBackground(g, bounds, colorTable.MenuItemSelectedGradientBegin, colorTable.MenuItemSelectedGradientEnd);
-                            else
-                                g.FillRectangle(colorTable.ButtonSelectedHighlight.GetBrush(), bounds);
-                        }
-
-                        // Draw selection border - always drawn regardless of Enabled.
-                        g.DrawRectangle(colorTable.MenuItemBorder.GetPen(), bounds.X, bounds.Y, bounds.Width - 1, bounds.Height - 1);
+                        backgroundStart = ThemeColors.ToolStripMenuItemOpenedGradientBegin;
+                        backgroundEnd = ThemeColors.ToolStripMenuItemOpenedGradientEnd;
                     }
-                    else if (item.Owner is not null && item.BackColor != item.Owner.BackColor)
-                        g.FillRectangle(item.BackColor.GetBrush(), bounds);
+                    else
+                    {
+                        backgroundStart = colorTable.MenuItemSelectedGradientBegin;
+                        backgroundEnd = colorTable.MenuItemSelectedGradientEnd;
+                    }
+
+                    FillBackground(g, bounds, backgroundStart, backgroundEnd);
+
+                    Color borderColor = !item.Selected ? Color.Empty
+                        : !item.Enabled ? ThemeColors.ToolStripMenuItemDisabledBorder
+                        : item.Pressed ? ThemeColors.ToolStripMenuItemOpenedBorder
+                        : colorTable.MenuItemBorder;
+                    if (!borderColor.IsEmpty)
+                        g.DrawRectangle(borderColor.GetPen(), bounds.X, bounds.Y, bounds.Width - 1, bounds.Height - 1);
                 }
 
                 #endregion
-
 
                 if (e.Item is not ToolStripMenuItem || !e.Item.IsOnDropDown)
                 {
@@ -430,25 +456,42 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             /// Changes to original:
             /// - When a menu item is selected, then not using its possible custom colors
             /// - [HighContrast]: Fixing text color on highlighted menu items
-            /// - Theme colors
+            /// - Theme colors, including disabled text color
             /// </summary>
             protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e)
             {
-                if (e.Item is ToolStripMenuItem mi)
+                if (e.Item is not ToolStripMenuItem mi)
                 {
-                    e.TextColor = !mi.Enabled ? SystemInformation.HighContrast ? SystemColors.GrayText : ThemeColors.ControlTextDisabled
-                        : SystemInformation.HighContrast ? mi.Selected || mi.Pressed ? SystemColors.HighlightText : SystemColors.ControlText
-                        : mi.Selected || mi.Pressed ? ThemeColors.ControlText
-                        : e.Item.ForeColor.ToThemeColor();
+                    base.OnRenderItemText(e);
+                    return;
                 }
 
-                base.OnRenderItemText(e);
+                Rectangle textRect = e.TextRectangle;
+                Color textColor = !mi.Enabled ? SystemInformation.HighContrast ? SystemColors.GrayText : ThemeColors.ControlTextDisabled
+                    : SystemInformation.HighContrast ? mi.Selected || mi.Pressed ? SystemColors.HighlightText : SystemColors.ControlText
+                    : mi.Selected || mi.Pressed ? ThemeColors.ControlText
+                    : e.Item.ForeColor.ToThemeColor();
+
+                if (e.TextDirection == ToolStripTextDirection.Horizontal || textRect.Width == 0 || textRect.Height == 0)
+                {
+                    TextRenderer.DrawText(e.Graphics, e.Text, e.TextFont, textRect, textColor, e.TextFormat);
+                    return;
+                }
+
+                Size textSize = new(textRect.Height, textRect.Width);
+                using Bitmap textBmp = new(textSize.Width, textSize.Height, PixelFormat.Format32bppPArgb);
+                using Graphics textGraphics = Graphics.FromImage(textBmp);
+                textGraphics.TextRenderingHint = TextRenderingHint.AntiAlias;
+                TextRenderer.DrawText(textGraphics, e.Text, e.TextFont, new Rectangle(Point.Empty, textSize), textColor, e.TextFormat);
+                textBmp.RotateFlip((e.TextDirection == ToolStripTextDirection.Vertical90) ? RotateFlipType.Rotate90FlipNone : RotateFlipType.Rotate270FlipNone);
+                e.Graphics.DrawImage(textBmp, textRect);
             }
 
             /// <summary>
             /// Changes to original:
             /// - Background image is omitted
-            /// - Not selected checked background uses fallback color if current theme has transparent checked background
+            /// - Even with default theme colors, the checked background is not transparent
+            /// - More theme colors than in original, e.g. allowing different border colors for selected, pressed and checked
             /// - [HighContrast]: Not drawing border if button is pressed and checked (this is how the .NET Core version also works)
             /// </summary>
             protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
@@ -852,6 +895,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             #endregion
         }
 
+#endif
         #endregion
 
         #region Constants
@@ -885,7 +929,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         public AdvancedToolStrip()
         {
             ImageScalingSize = this.ScaleSize(referenceImageSize);
+#if !SYSTEM_THEMING
             Renderer = new AdvancedToolStripRenderer();
+#endif
             toolTip = Reflector.TryGetProperty(this, nameof(ToolTip), out object? result) ? (ToolTip)result!
                 : Reflector.TryGetField(this, "tooltip_window", out result) ? (ToolTip)result!
                 : null;

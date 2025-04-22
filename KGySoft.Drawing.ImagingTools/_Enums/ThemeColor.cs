@@ -72,6 +72,16 @@ namespace KGySoft.Drawing.ImagingTools
         WindowTextAlternate,
 
         /// <summary>
+        /// Represents the background color of a highlighted element.
+        /// </summary>
+        Highlight,
+
+        /// <summary>
+        /// Represents the foreground color of a highlighted element.
+        /// </summary>
+        HighlightText,
+
+        /// <summary>
         /// Represents the foreground color of a group box.
         /// </summary>
         GroupBoxText,
@@ -127,7 +137,7 @@ namespace KGySoft.Drawing.ImagingTools
         ToolStripDropDownBackground,
 
         /// <summary>
-        /// Represents the solid highlight color of a <see cref="ToolStripButton"/> or <see cref="ToolStripMenuItem"/> when it is selected.
+        /// Represents the solid highlight color of a <see cref="ToolStripButton"/> when it is selected.
         /// Used then visual styles are not enabled.
         /// </summary>
         ToolStripButtonSelectedHighlight,
@@ -140,7 +150,7 @@ namespace KGySoft.Drawing.ImagingTools
 
         /// <summary>
         /// Represents the solid highlight color of a <see cref="ToolStripButton"/> when it is checked.
-        /// Used then visual styles are not enabled, or when the color of <see cref="ToolStripButtonCheckedGradientBegin"/> or <see cref="ToolStripButtonCheckedGradientEnd"/> is empty.
+        /// Used then visual styles are not enabled.
         /// </summary>
         ToolStripButtonCheckedHighlight,
 
@@ -150,12 +160,37 @@ namespace KGySoft.Drawing.ImagingTools
         ToolStripButtonSelectedBorder,
 
         /// <summary>
-        /// Represents the border color of a <see cref="ToolStripMenuItem"/> when it is selected.
+        /// Represents the border color of a <see cref="ToolStripButton"/> when it is pressed.
         /// </summary>
-        ToolStripMenuItemBorder,
+        ToolStripButtonPressedBorder,
 
         /// <summary>
-        /// Represents the border color of a <see cref="ToolStrip"/> menu when it is dropped down.
+        /// Represents the border color of a <see cref="ToolStripButton"/> when it is checked.
+        /// </summary>
+        ToolStripButtonCheckedBorder,
+
+        /// <summary>
+        /// Represents the border color of a <see cref="ToolStripMenuItem"/> when it is selected.
+        /// </summary>
+        ToolStripMenuItemSelectedBorder,
+
+        /// <summary>
+        /// Represents the border color of a <see cref="ToolStripMenuItem"/> when its submenu items are opened.
+        /// </summary>
+        ToolStripMenuItemOpenedBorder,
+
+        /// <summary>
+        /// Represents the border color of a <see cref="ToolStripMenuItem"/> when it is disabled.
+        /// </summary>
+        ToolStripMenuItemDisabledBorder,
+
+        /// <summary>
+        /// Represents the background color of a <see cref="ToolStripMenuItem"/> when it is disabled.
+        /// </summary>
+        ToolStripMenuItemDisabledBackground,
+
+        /// <summary>
+        /// Represents the border color of a top-level <see cref="ToolStrip"/> menu item when it is dropped down.
         /// </summary>
         ToolStripMenuBorder,
 
@@ -178,6 +213,16 @@ namespace KGySoft.Drawing.ImagingTools
         /// Represents the end color of the gradient of a top-level <see cref="ToolStripMenuItem"/> when it is pressed.
         /// </summary>
         ToolStripMenuItemPressedGradientEnd,
+
+        /// <summary>
+        /// Represents the starting color of the gradient of a <see cref="ToolStripMenuItem"/> when its submenu items are opened.
+        /// </summary>
+        ToolStripMenuItemOpenedGradientBegin,
+
+        /// <summary>
+        /// Represents the end color of the gradient of a <see cref="ToolStripMenuItem"/> when its submenu items are opened.
+        /// </summary>
+        ToolStripMenuItemOpenedGradientEnd,
 
         /// <summary>
         /// Represents the starting color of the gradient of a <see cref="ToolStripButton"/> when it is selected.

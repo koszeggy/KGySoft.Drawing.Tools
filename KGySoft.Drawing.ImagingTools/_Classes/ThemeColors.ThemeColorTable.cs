@@ -63,7 +63,7 @@ namespace KGySoft.Drawing.ImagingTools
             //public override Color MenuStripGradientBegin => Color.Magenta; // FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzBegin); // Used in MenuStrip only
             //public override Color MenuStripGradientEnd => Color.Magenta; // FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzEnd); // Used in MenuStrip only
             //public override Color MenuItemSelected => Color.Magenta; // FromKnownColor(KnownColors.msocbvcrCBCtlBkgdMouseOver); // Used only by .NET Framework in the base OnRenderMenuItemBackground. Core and the AdvancedToolStrip uses MenuItemSelectedGradientBegin/End instead
-            public override Color MenuItemBorder => ToolStripMenuItemBorder; // FromKnownColor(KnownColors.msocbvcrCBCtlBdrSelected);
+            public override Color MenuItemBorder => ToolStripMenuItemSelectedBorder; // FromKnownColor(KnownColors.msocbvcrCBCtlBdrSelected);
             public override Color MenuBorder => ToolStripMenuBorder; // FromKnownColor(KnownColors.msocbvcrCBMenuBdrOuter);
             public override Color MenuItemSelectedGradientBegin => ToolStripMenuItemSelectedGradientBegin; // FromKnownColor(KnownColors.msocbvcrCBGradMouseOverBegin);
             public override Color MenuItemSelectedGradientEnd => ToolStripMenuItemSelectedGradientEnd; // FromKnownColor(KnownColors.msocbvcrCBGradMouseOverEnd);

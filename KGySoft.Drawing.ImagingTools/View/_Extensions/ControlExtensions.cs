@@ -225,29 +225,12 @@ namespace KGySoft.Drawing.ImagingTools.View
                     scrollBar.ApplyVisualStyleTheme();
                     break;
 
+#if !SYSTEM_THEMING
                 case AdvancedToolStrip toolStrip:
                     toolStrip.ApplyTheme();
                     break;
+#endif
             }
-
-            //switch (control)
-            //{
-            //    case Button button:
-            //        bool isSet = ThemeColors.IsSet(nameof(ThemeColors.Control));
-            //        if (isSet)
-            //        {
-            //            button.FlatStyle = FlatStyle.Flat;
-            //            button.BackColor = ThemeColors.Control;
-            //            button.ForeColor = ThemeColors.ControlText;
-            //            break;
-            //        }
-
-            //        button.FlatStyle = FlatStyle.System;
-            //        button.BackColor = default;
-            //        button.ForeColor = default;
-            //        button.UseVisualStyleBackColor = true;
-            //        break;
-            //}
 
             foreach (Control child in control.Controls)
                 child.ApplyTheme();

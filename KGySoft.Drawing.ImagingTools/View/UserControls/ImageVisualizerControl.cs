@@ -228,6 +228,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 splitter.BackColor = ThemeColors.Control;
             }
 
+            miBackColorDefault.BackColor = ThemeColors.Control;
+            miBackColorDefault.ForeColor = ThemeColors.ControlText;
             if (miBackColorDefault.Image != null)
                 imageViewer.BackColor = ThemeColors.Control;
         }
