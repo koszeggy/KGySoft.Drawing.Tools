@@ -14,6 +14,7 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <VssdkCompatibleExtension>true</VssdkCompatibleExtension>
+    <DefineConstants>$(DefineConstants);VS2022_OR_GREATER</DefineConstants>
 
     <!--Suppressions
         - VSTHRD010: Accessing "..." should only be done on the main thread. Await JoinableTaskFactory.SwitchToMainThreadAsync() first. - false alarm, the callers always switch to the main thread. -->

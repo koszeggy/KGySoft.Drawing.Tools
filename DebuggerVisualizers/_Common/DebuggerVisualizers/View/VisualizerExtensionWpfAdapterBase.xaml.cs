@@ -1,4 +1,5 @@
-﻿#region Copyright
+﻿#if NET472_OR_GREATER
+#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
 //  File: VisualizerExtensionWpfAdapterBase.cs
@@ -134,3 +135,4 @@ namespace KGySoft.Drawing.DebuggerVisualizers.View
         #endregion
     }
 }
+#endif
