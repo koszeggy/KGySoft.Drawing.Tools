@@ -25,6 +25,7 @@ using KGySoft.ComponentModel;
 using KGySoft.Drawing.ImagingTools.View.Components;
 using KGySoft.Drawing.ImagingTools.View.Forms;
 using KGySoft.Drawing.ImagingTools.ViewModel;
+using KGySoft.Drawing.ImagingTools.WinApi;
 
 #endregion
 
@@ -302,6 +303,10 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             do
             {
                 parent.ShowDialog(ownerHandle == IntPtr.Zero ? null : new OwnerWindowHandle(ownerHandle));
+
+                // the handle of the owner may change, too
+                if (parent.IsRtlChanging && !User32.IsWindow(ownerHandle))
+                    ownerHandle = IntPtr.Zero;
             } while (parent.IsRtlChanging);
         }
 

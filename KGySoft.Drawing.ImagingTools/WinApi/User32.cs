@@ -310,6 +310,16 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             [return: MarshalAs(UnmanagedType.Bool)]
             internal static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
 
+            /// <summary>
+            /// Determines whether the specified window handle identifies an existing window.
+            /// </summary>
+            /// <param name="hWnd">A handle to the window to be tested.</param>
+            /// <returns>If the window handle identifies an existing window, the return value is nonzero.
+            /// If the window handle does not identify an existing window, the return value is zero.</returns>
+            [DllImport("user32.dll")]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            internal static extern bool IsWindow(IntPtr hWnd);
+
             #endregion
         }
 
@@ -428,6 +438,8 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
 
         internal static Rectangle GetClientRect(IntPtr hWnd)
             => NativeMethods.GetClientRect(hWnd, out RECT result) ? result.ToRectangle() : Rectangle.Empty;
+
+        internal static bool IsWindow(IntPtr hWnd) => hWnd != IntPtr.Zero && NativeMethods.IsWindow(hWnd);
 
         #endregion
     }
