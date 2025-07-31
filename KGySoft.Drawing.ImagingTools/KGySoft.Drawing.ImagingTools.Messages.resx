@@ -234,25 +234,25 @@
   <data name="Text_Downloading" xml:space="preserve">
     <value>Downloading...</value>
   </data>
-  <data name="TooltipText_CompoundAnimation" xml:space="preserve">
+  <data name="ToolTipText_CompoundAnimation" xml:space="preserve">
     <value>Toggles whether the animation is handled as a single image.
 • When checked, animation will play and saving as GIF saves the whole animation.
 • When not checked, frame navigation will be enabled and saving saves only the selected frame.</value>
   </data>
-  <data name="TooltipText_CompoundMultiSize" xml:space="preserve">
+  <data name="ToolTipText_CompoundMultiSize" xml:space="preserve">
     <value>Toggles whether the icon is handled as a multi-resolution image.
 • When checked, always the best fitting image is displayed and saving as Icon saves every image.
 • When not checked, icon images can be explored by navigation and saving saves the selected image only.</value>
   </data>
-  <data name="TooltipText_CompoundMultiPage" xml:space="preserve">
+  <data name="ToolTipText_CompoundMultiPage" xml:space="preserve">
     <value>Toggles whether the pages are handled as a compound image.
 • When checked, saving as TIFF saves every page.
 • When not checked, saving saves always the selected page only.</value>
   </data>
-  <data name="TooltipText_SmoothMetafile" xml:space="preserve">
+  <data name="ToolTipText_SmoothMetafile" xml:space="preserve">
     <value>Smoothing Edges (Alt+S)</value>
   </data>
-  <data name="TooltipText_SmoothBitmap" xml:space="preserve">
+  <data name="ToolTipText_SmoothBitmap" xml:space="preserve">
     <value>Smoothing Resized Image (Alt+S)</value>
   </data>
   <data name="Text_Auto" xml:space="preserve">
@@ -530,6 +530,10 @@ Do you want to overwrite them?</value>
   <data name="ConfirmMessage_ResourceVersionMismatch" xml:space="preserve">
     <value>One or more selected items are for a different Imaging Tools version.
 Are you sure you want to continue?</value>
+  </data>
+  <data name="ConfirmMessage_ResourceUnknownLibraries" xml:space="preserve">
+    <value>One or more selected items contain resources for unknown libraries. This may occur if a selected item is for a newer Imaging Tools version.
+Are you sure you want to continue? If so, the resources for the unknown libraries will be skipped.</value>
   </data>
   <data name="InfoMessage_QuantizerMayHaveNoEffect" xml:space="preserve">
     <value>The selected quantizer uses more colors than the original image.

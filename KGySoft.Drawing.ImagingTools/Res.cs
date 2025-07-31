@@ -17,7 +17,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -207,23 +206,23 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Toggles whether the animation is handled as a single image.
         /// • When checked, animation will play and saving as GIF saves the whole animation.
         /// • When not checked, frame navigation will be enabled and saving saves only the selected frame.</summary>
-        internal static string TooltipTextCompoundAnimation => Get("TooltipText_CompoundAnimation");
+        internal static string ToolTipTextCompoundAnimation => Get("ToolTipText_CompoundAnimation");
 
         /// <summary>Toggles whether the icon is handled as a multi-resolution image.
         /// • When checked, always the best fitting image is displayed and saving as Icon saves every image.
         /// • When not checked, icon images can be explored by navigation and saving saves the selected image only.</summary>
-        internal static string TooltipTextCompoundMultiSize => Get("TooltipText_CompoundMultiSize");
+        internal static string ToolTipTextCompoundMultiSize => Get("ToolTipText_CompoundMultiSize");
 
         /// <summary>Toggles whether the pages are handled as a compound image.
         /// • When checked, saving as TIFF saves every page.
         /// • When not checked, saving saves always the selected page only.</summary>
-        internal static string TooltipTextCompoundMultiPage => Get("TooltipText_CompoundMultiPage");
+        internal static string ToolTipTextCompoundMultiPage => Get("ToolTipText_CompoundMultiPage");
 
         /// <summary>Smoothing Edges (Alt+S)</summary>
-        internal static string TooltipTextSmoothMetafile => Get("TooltipText_SmoothMetafile");
+        internal static string ToolTipTextSmoothMetafile => Get("ToolTipText_SmoothMetafile");
 
         /// <summary>Smooth Zooming (Alt+S)</summary>
-        internal static string TooltipTextSmoothBitmap => Get("TooltipText_SmoothBitmap");
+        internal static string ToolTipTextSmoothBitmap => Get("ToolTipText_SmoothBitmap");
 
         /// <summary>Auto</summary>
         internal static string TextAuto => Get("Text_Auto");
@@ -324,6 +323,10 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>One or more selected items are for a different Imaging Tools version.
         /// Are you sure you want to continue?</summary>
         internal static string ConfirmMessageResourceVersionMismatch => Get("ConfirmMessage_ResourceVersionMismatch");
+
+        /// <summary>One or more selected items contain resources for unknown libraries. This may occur if a selected item is for a newer Imaging Tools version.
+        /// Are you sure you want to continue? If so, the resources for the unknown libraries will be skipped.</summary>
+        internal static string ConfirmMessageResourceUnknownLibraries => Get("ConfirmMessage_ResourceUnknownLibraries");
 
         /// <summary>The selected quantizer uses more colors than the original image.
         /// It is possible that is has no effect.</summary>

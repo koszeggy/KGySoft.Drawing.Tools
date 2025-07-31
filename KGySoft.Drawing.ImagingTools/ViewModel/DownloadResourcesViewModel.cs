@@ -98,7 +98,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             #region Constructors
 
-            public DownloadInfo(LocalizationInfo info, LocalizableLibraries library)
+            private DownloadInfo(LocalizationInfo info, LocalizableLibraries library)
             {
                 Info = info;
                 FileName = info.CultureName == Res.DefaultLanguage.Name
@@ -106,6 +106,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     : $"{ResHelper.GetBaseName(library)}.{info.CultureName}.resx";
                 remotePath = $"{info.CultureName}_{info.Author}_{info.ImagingToolsVersion}";
             }
+
+            #endregion
+
+            #region Methods
+
+            internal static DownloadInfo? GetDownloadInfo(LocalizationInfo info, LocalizableLibraries library)
+                // Non-defined library can occur if we attempt to download a resource set that is not supported by the current version of Imaging Tools.
+                => !library.IsDefined() ? null : new DownloadInfo(info, library);
 
             #endregion
         }
@@ -421,6 +429,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             var existingFiles = new List<string>();
             bool ignoreVersionMismatch = false;
             Version selfVersion = InstallationManager.ImagingToolsVersion;
+            bool unsupportedLibrary = false;
 
             foreach (DownloadableResourceItem item in Items!)
             {
@@ -438,12 +447,21 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 LocalizationInfo info = item.Info;
                 foreach (LocalizableLibraries lib in info.ResourceSets.GetFlags(false))
                 {
-                    var file = new DownloadInfo(info, lib);
+                    DownloadInfo? file = DownloadInfo.GetDownloadInfo(info, lib);
+                    if (file == null)
+                    {
+                        unsupportedLibrary = true;
+                        continue;
+                    }
+
                     toDownload.Add(file);
                     if (File.Exists(file.LocalPath))
                         existingFiles.Add(file.FileName);
                 }
             }
+
+            if (unsupportedLibrary && !Confirm(Res.ConfirmMessageResourceUnknownLibraries, false))
+                return;
 
             bool overwrite = false;
             if (existingFiles.Count > 0)
