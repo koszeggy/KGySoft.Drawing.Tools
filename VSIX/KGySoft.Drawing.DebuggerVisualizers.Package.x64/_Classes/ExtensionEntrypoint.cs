@@ -160,16 +160,27 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             Notifications.Info("Debugging Visualizer Extensions"); 
 #endif
             CheckInstallations();
-            InitTheme();
+            VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
+            ResetTheme();
 
             await base.OnInitializedAsync(extensibility, cancellationToken);
         }
 
-        private static void InitTheme()
+        protected override void Dispose(bool disposing)
         {
+            VSColorTheme.ThemeChanged -= VSColorTheme_ThemeChanged;
+            base.Dispose(disposing);
+        }
+
+        private static void ResetTheme()
+        {
+            // This is how we could set all theme colors one by one. But for now, just setting the base theme.
             //ThemeColors.Control = VSColorTheme.GetThemedColor(CommonControlsColors.ButtonBrushKey);
             //ThemeColors.ControlText = VSColorTheme.GetThemedColor(CommonControlsColors.ButtonTextBrushKey);
+            ThemeColors.SetBaseTheme(VSColorTheme.GetThemedColor(CommonControlsColors.ButtonBrushKey).GetBrightness() < 0.5f ? DefaultTheme.Dark : DefaultTheme.Classic);
         }
+
+        private static void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e) => ResetTheme();
 
         #endregion
 
