@@ -26,7 +26,9 @@
             this.txtFilter = new System.Windows.Forms.TextBox();
             this.lblFilter = new System.Windows.Forms.Label();
             this.gbResourceFile = new System.Windows.Forms.GroupBox();
+            this.pnlResourceFile = new System.Windows.Forms.Panel();
             this.cmbResourceFiles = new System.Windows.Forms.ComboBox();
+            this.btnGoToFile = new System.Windows.Forms.Button();
             this.chbHideDependencies = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
             this.splitterEditResources = new System.Windows.Forms.Splitter();
             this.pnlEditResourceEntry = new System.Windows.Forms.TableLayoutPanel();
@@ -40,6 +42,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource)).BeginInit();
             this.pnlFilter.SuspendLayout();
             this.gbResourceFile.SuspendLayout();
+            this.pnlResourceFile.SuspendLayout();
             this.pnlEditResourceEntry.SuspendLayout();
             this.gbOriginalText.SuspendLayout();
             this.gbTranslatedText.SuspendLayout();
@@ -50,9 +53,9 @@
             this.gbResourceEntries.Controls.Add(this.gridResources);
             this.gbResourceEntries.Controls.Add(this.pnlFilter);
             this.gbResourceEntries.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.gbResourceEntries.Location = new System.Drawing.Point(3, 67);
+            this.gbResourceEntries.Location = new System.Drawing.Point(3, 60);
             this.gbResourceEntries.Name = "gbResourceEntries";
-            this.gbResourceEntries.Size = new System.Drawing.Size(578, 99);
+            this.gbResourceEntries.Size = new System.Drawing.Size(579, 145);
             this.gbResourceEntries.TabIndex = 1;
             this.gbResourceEntries.TabStop = false;
             this.gbResourceEntries.Text = "gbResourceEntries";
@@ -72,7 +75,7 @@
             this.gridResources.Location = new System.Drawing.Point(3, 40);
             this.gridResources.MultiSelect = false;
             this.gridResources.Name = "gridResources";
-            this.gridResources.Size = new System.Drawing.Size(572, 56);
+            this.gridResources.Size = new System.Drawing.Size(573, 102);
             this.gridResources.TabIndex = 3;
             // 
             // colResourceKey
@@ -109,7 +112,7 @@
             this.pnlFilter.Location = new System.Drawing.Point(3, 16);
             this.pnlFilter.Name = "pnlFilter";
             this.pnlFilter.Padding = new System.Windows.Forms.Padding(0, 2, 0, 2);
-            this.pnlFilter.Size = new System.Drawing.Size(572, 24);
+            this.pnlFilter.Size = new System.Drawing.Size(573, 24);
             this.pnlFilter.TabIndex = 4;
             // 
             // txtFilter
@@ -117,7 +120,7 @@
             this.txtFilter.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtFilter.Location = new System.Drawing.Point(39, 2);
             this.txtFilter.Name = "txtFilter";
-            this.txtFilter.Size = new System.Drawing.Size(533, 20);
+            this.txtFilter.Size = new System.Drawing.Size(534, 20);
             this.txtFilter.TabIndex = 1;
             // 
             // lblFilter
@@ -133,15 +136,25 @@
             // 
             // gbResourceFile
             // 
-            this.gbResourceFile.Controls.Add(this.cmbResourceFiles);
+            this.gbResourceFile.Controls.Add(this.pnlResourceFile);
             this.gbResourceFile.Controls.Add(this.chbHideDependencies);
             this.gbResourceFile.Dock = System.Windows.Forms.DockStyle.Top;
             this.gbResourceFile.Location = new System.Drawing.Point(3, 3);
             this.gbResourceFile.Name = "gbResourceFile";
-            this.gbResourceFile.Size = new System.Drawing.Size(578, 64);
+            this.gbResourceFile.Size = new System.Drawing.Size(579, 57);
             this.gbResourceFile.TabIndex = 0;
             this.gbResourceFile.TabStop = false;
             this.gbResourceFile.Text = "gbResourceFile";
+            // 
+            // pnlResourceFile
+            // 
+            this.pnlResourceFile.Controls.Add(this.cmbResourceFiles);
+            this.pnlResourceFile.Controls.Add(this.btnGoToFile);
+            this.pnlResourceFile.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlResourceFile.Location = new System.Drawing.Point(3, 33);
+            this.pnlResourceFile.Name = "pnlResourceFile";
+            this.pnlResourceFile.Size = new System.Drawing.Size(573, 21);
+            this.pnlResourceFile.TabIndex = 1;
             // 
             // cmbResourceFiles
             // 
@@ -149,10 +162,20 @@
             this.cmbResourceFiles.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbResourceFiles.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.cmbResourceFiles.FormattingEnabled = true;
-            this.cmbResourceFiles.Location = new System.Drawing.Point(3, 33);
+            this.cmbResourceFiles.Location = new System.Drawing.Point(0, 0);
             this.cmbResourceFiles.Name = "cmbResourceFiles";
-            this.cmbResourceFiles.Size = new System.Drawing.Size(572, 21);
-            this.cmbResourceFiles.TabIndex = 1;
+            this.cmbResourceFiles.Size = new System.Drawing.Size(552, 21);
+            this.cmbResourceFiles.TabIndex = 0;
+            // 
+            // btnGoToFile
+            // 
+            this.btnGoToFile.Dock = System.Windows.Forms.DockStyle.Right;
+            this.btnGoToFile.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnGoToFile.Location = new System.Drawing.Point(552, 0);
+            this.btnGoToFile.Name = "btnGoToFile";
+            this.btnGoToFile.Size = new System.Drawing.Size(21, 21);
+            this.btnGoToFile.TabIndex = 1;
+            this.btnGoToFile.UseVisualStyleBackColor = true;
             // 
             // chbHideDependencies
             // 
@@ -163,7 +186,7 @@
             this.chbHideDependencies.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.chbHideDependencies.Location = new System.Drawing.Point(3, 16);
             this.chbHideDependencies.Name = "chbHideDependencies";
-            this.chbHideDependencies.Size = new System.Drawing.Size(572, 17);
+            this.chbHideDependencies.Size = new System.Drawing.Size(573, 17);
             this.chbHideDependencies.TabIndex = 0;
             this.chbHideDependencies.Text = "chbHideDependencies";
             this.chbHideDependencies.UseVisualStyleBackColor = true;
@@ -171,11 +194,11 @@
             // splitterEditResources
             // 
             this.splitterEditResources.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.splitterEditResources.Location = new System.Drawing.Point(3, 166);
+            this.splitterEditResources.Location = new System.Drawing.Point(3, 205);
             this.splitterEditResources.MinExtra = 50;
             this.splitterEditResources.MinSize = 50;
             this.splitterEditResources.Name = "splitterEditResources";
-            this.splitterEditResources.Size = new System.Drawing.Size(578, 3);
+            this.splitterEditResources.Size = new System.Drawing.Size(579, 3);
             this.splitterEditResources.TabIndex = 2;
             this.splitterEditResources.TabStop = false;
             // 
@@ -187,11 +210,11 @@
             this.pnlEditResourceEntry.Controls.Add(this.gbOriginalText, 0, 0);
             this.pnlEditResourceEntry.Controls.Add(this.gbTranslatedText, 1, 0);
             this.pnlEditResourceEntry.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlEditResourceEntry.Location = new System.Drawing.Point(3, 169);
+            this.pnlEditResourceEntry.Location = new System.Drawing.Point(3, 208);
             this.pnlEditResourceEntry.Name = "pnlEditResourceEntry";
             this.pnlEditResourceEntry.RowCount = 1;
             this.pnlEditResourceEntry.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.pnlEditResourceEntry.Size = new System.Drawing.Size(578, 104);
+            this.pnlEditResourceEntry.Size = new System.Drawing.Size(579, 104);
             this.pnlEditResourceEntry.TabIndex = 3;
             // 
             // gbOriginalText
@@ -225,7 +248,7 @@
             this.gbTranslatedText.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gbTranslatedText.Location = new System.Drawing.Point(292, 3);
             this.gbTranslatedText.Name = "gbTranslatedText";
-            this.gbTranslatedText.Size = new System.Drawing.Size(283, 98);
+            this.gbTranslatedText.Size = new System.Drawing.Size(284, 98);
             this.gbTranslatedText.TabIndex = 1;
             this.gbTranslatedText.TabStop = false;
             this.gbTranslatedText.Text = "gbTranslatedText";
@@ -238,7 +261,7 @@
             this.txtTranslatedText.Multiline = true;
             this.txtTranslatedText.Name = "txtTranslatedText";
             this.txtTranslatedText.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtTranslatedText.Size = new System.Drawing.Size(277, 79);
+            this.txtTranslatedText.Size = new System.Drawing.Size(278, 79);
             this.txtTranslatedText.TabIndex = 1;
             this.txtTranslatedText.WordWrap = false;
             // 
@@ -247,9 +270,9 @@
             this.okCancelApplyButtons.ApplyButtonVisible = true;
             this.okCancelApplyButtons.BackColor = System.Drawing.Color.Transparent;
             this.okCancelApplyButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.okCancelApplyButtons.Location = new System.Drawing.Point(3, 273);
+            this.okCancelApplyButtons.Location = new System.Drawing.Point(3, 312);
             this.okCancelApplyButtons.Name = "okCancelApplyButtons";
-            this.okCancelApplyButtons.Size = new System.Drawing.Size(578, 35);
+            this.okCancelApplyButtons.Size = new System.Drawing.Size(579, 35);
             this.okCancelApplyButtons.TabIndex = 4;
             // 
             // EditResourcesControl
@@ -271,6 +294,7 @@
             this.pnlFilter.PerformLayout();
             this.gbResourceFile.ResumeLayout(false);
             this.gbResourceFile.PerformLayout();
+            this.pnlResourceFile.ResumeLayout(false);
             this.pnlEditResourceEntry.ResumeLayout(false);
             this.gbOriginalText.ResumeLayout(false);
             this.gbOriginalText.PerformLayout();
@@ -301,5 +325,7 @@
         private System.Windows.Forms.TextBox txtFilter;
         private System.Windows.Forms.Label lblFilter;
         private Controls.AdvancedCheckBox chbHideDependencies;
+        private System.Windows.Forms.Panel pnlResourceFile;
+        private System.Windows.Forms.Button btnGoToFile;
     }
 }

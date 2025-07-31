@@ -94,6 +94,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommand ApplyResourcesCommand => Get(() => new SimpleCommand(OnApplyResourcesCommand));
         internal ICommand SaveResourcesCommand => Get(() => new SimpleCommand(OnSaveResourcesCommand));
         internal ICommand CancelEditCommand => Get(() => new SimpleCommand(OnCancelEditCommand));
+        internal ICommand OpenResourcesFolderCommand => Get(() => new SimpleCommand(() => PathHelper.OpenUrl(Res.ResourcesDir)));
 
         internal ICommandState ApplyResourcesCommandState => Get(() => new CommandState());
 
@@ -134,7 +135,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             base.ViewLoaded();
 
             // Marking VM modified immediately if apply is enabled and the display language is edited.
-            // Thus exiting by save (OK) will apply the pending changes (eg. path change for display language) without performing any actual change.
+            // Thus exiting by save (OK) will apply the pending changes (e.g. path change for display language) without performing any actual change.
             if (createdWithPendingChanges && Equals(Res.DisplayLanguage, culture))
                 SetModified(true);
         }

@@ -113,9 +113,16 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 ErrorProvider.SetIconAlignment(gbTranslatedText, ErrorIconAlignment.MiddleLeft);
                 WarningProvider.SetIconAlignment(gbTranslatedText, ErrorIconAlignment.MiddleLeft);
                 ValidationMapping[nameof(ResourceEntry.TranslatedText)] = gbTranslatedText;
+                pnlResourceFile.Height = cmbResourceFiles.Height;
             }
 
             base.OnLoad(e);
+        }
+
+        protected override void ApplyResources()
+        {
+            base.ApplyResources();
+            btnGoToFile.Image = Images.Open;
         }
 
         protected override void ApplyTheme()
@@ -182,6 +189,10 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private void InitCommandBindings()
         {
+            // btnGoToFile.Click -> ViewModel.OpenResourcesFolderCommand
+            CommandBindings.Add(ViewModel.OpenResourcesFolderCommand)
+                .AddSource(btnGoToFile, nameof(btnGoToFile.Click));
+
             // ApplyButton.Click -> ViewModel.ApplyResourcesCommand
             CommandBindings.Add(ViewModel.ApplyResourcesCommand, ViewModel.ApplyResourcesCommandState)
                 .AddSource(okCancelApplyButtons.ApplyButton, nameof(okCancelApplyButtons.ApplyButton.Click));
