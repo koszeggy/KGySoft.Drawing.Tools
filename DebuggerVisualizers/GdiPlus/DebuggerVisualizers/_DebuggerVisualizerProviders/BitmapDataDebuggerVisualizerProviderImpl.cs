@@ -57,7 +57,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus
         #region Methods
 
         /// <summary>
-        /// Gets the view of the graphics debugger visualizer.
+        /// Gets the view of the BitmapData debugger visualizer.
         /// </summary>
         /// <param name="visualizerTarget">The <see cref="VisualizerTarget" /> that provides information about the target process and object.</param>
         /// <param name="cancellationToken">Cancellation token for the async call.</param>

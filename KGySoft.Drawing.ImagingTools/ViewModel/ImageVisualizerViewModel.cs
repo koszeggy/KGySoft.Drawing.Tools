@@ -531,9 +531,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void UpdateCompoundToolTip() => SetCompoundViewCommandState[stateToolTipText] = imageInfo.Type switch
         {
-            ImageInfoType.Pages => Res.TooltipTextCompoundMultiPage,
-            ImageInfoType.Animation => Res.TooltipTextCompoundAnimation,
-            _ => Res.TooltipTextCompoundMultiSize
+            ImageInfoType.Pages => Res.ToolTipTextCompoundMultiPage,
+            ImageInfoType.Animation => Res.ToolTipTextCompoundAnimation,
+            _ => Res.ToolTipTextCompoundMultiSize
         };
 
         private ImageInfoBase GetCurrentImageInfo()
@@ -1158,8 +1158,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void UpdateSmoothZoomingTooltip()
             => SetSmoothZoomingCommandState[stateToolTipText] =
                 imageInfo.Type == ImageInfoType.None ? null
-                : imageInfo.IsMetafile ? Res.TooltipTextSmoothMetafile
-                : Res.TooltipTextSmoothBitmap;
+                : imageInfo.IsMetafile ? Res.ToolTipTextSmoothMetafile
+                : Res.ToolTipTextSmoothBitmap;
 
         private void UpdateNotification() => Notification = notificationId == null ? null : Res.Get(notificationId);
 
