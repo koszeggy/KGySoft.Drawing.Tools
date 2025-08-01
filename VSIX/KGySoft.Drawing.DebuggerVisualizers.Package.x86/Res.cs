@@ -28,6 +28,11 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
     #endregion
 
+    /// <summary>
+    /// Contains the x86 package specific resources. Unlike the x64 version, this does not use the <see cref="DebuggerHelper"/>
+    /// class to get the resources from the Imaging Tools assembly, because classic debugger visualizers are under a different path
+    /// than the VSIX package (%Documents%\Visual Studio [version]\Visualizers) so downloading resources for Imaging Tools would not affect the localization of this package.
+    /// </summary>
     internal static class Res
     {
         #region Constants

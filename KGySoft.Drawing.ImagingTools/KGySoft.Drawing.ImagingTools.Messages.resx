@@ -448,6 +448,17 @@ Either select at least '{1}' or reduce the number of colors to {2}.</value>
   <data name="ErrorMessage_CannotApplyLanguageSettingsFormat" xml:space="preserve">
     <value>Language settings cannot be applied: {0}</value>
   </data>
+  <data name="ErrorMessage_FailedToUninstallClassicFormat" xml:space="preserve">
+    <value>Failed to uninstall the classic visualizers from {0}: {1}
+
+Make sure every running debugger is closed. Removal will be tried again on restarting Visual Studio.</value>
+  </data>
+  <data name="ErrorMessage_UnexpectedErrorFormat" xml:space="preserve">
+    <value>Unexpected error occurred: {0}</value>
+  </data>
+  <data name="ErrorMessage_ShellServiceUnavailable" xml:space="preserve">
+    <value>Shell service could not be obtained. Installation status of the classic debugger visualizers cannot be checked.</value>
+  </data>
   <data name="WarningMessage_CouldNotCreateNetCoreDirectoryFormat" xml:space="preserve">
     <value>Could not create directory {0}: {1}
 
@@ -593,6 +604,18 @@ Copyright © {2} KGy SOFT. All rights reserved.</value>
 Now imagine every combination of target platforms (from .NET Framework 3.5 to .NET 5), operating systems (from Windows XP to Linux/Mono), different DPI settings, enabled/disabled visual styles and high contrast mode, right-to-left layout...
 
 Harmonizing visual elements for all possible environments is never a trivial task, but OMG, the ToolStrip wasn't a cakewalk. Would you believe that each and every combination had at least one rendering issue? My custom-zoomable ImageViewer control with the asynchronously generated resized interpolated images on multiple cores was an easy-peasy compared to that...</value>
+  </data>
+  <data name="InfoMessage_PackageInstalledFormat" xml:space="preserve">
+    <value>KGy SOFT Imaging Tools v{0} and the debugger visualizers have been installed.</value>
+  </data>
+  <data name="InfoMessage_PackageUpgradedFormat" xml:space="preserve">
+    <value>KGy SOFT Imaging Tools v{0} and the debugger visualizers have been upgraded to version v{1}.</value>
+  </data>
+  <data name="InfoMessage_ChangeLog" xml:space="preserve">
+    <value>Change log</value>
+  </data>
+  <data name="InfoMessage_OpenImagingTools" xml:space="preserve">
+    <value>Open Imaging Tools</value>
   </data>
   <data name="WarningMessage_DebuggerVisualizerApplyNotAvailable" xml:space="preserve">
     <value>Applying changes was attempted in a state when messaging was not available. Try again later.</value>

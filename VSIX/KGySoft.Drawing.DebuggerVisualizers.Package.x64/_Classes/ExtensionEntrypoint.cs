@@ -49,12 +49,6 @@ using Process = System.Diagnostics.Process;
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
-    #region Usings
-
-    using Resources = Properties.Resources;
-
-    #endregion
-
     /// <summary>
     /// Extension entrypoint for the VisualStudio.Extensibility extension.
     /// </summary>
@@ -75,6 +69,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
         #region Static Methods
 
+        #region Private Methods
+
         private static void CheckInstallations()
         {
             #region Local Methods
@@ -82,13 +78,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             // ReSharper disable RedundantDelegateCreation - not redundant for the x64 build where the implicit delegate creation would create Func<>
             static IVsInfoBarTextSpan[] GetReleaseNotesSpan() =>
             [
-                new InfoBarTextSpan("\t"), new InfoBarHyperlink(Resources.InfoMessage_ChangeLog,
+                new InfoBarTextSpan("\t"), new InfoBarHyperlink(Res.InfoMessageChangeLog,
                     new Action(() => Process.Start(new ProcessStartInfo("https://github.com/koszeggy/KGySoft.Drawing.Tools/blob/master/changelog.txt") { UseShellExecute = true })))
             ];
 
             static IVsInfoBarActionItem[] GetOpenImagingToolsButton() =>
             [
-                new InfoBarButton(Resources.InfoMessage_OpenImagingTools,
+                new InfoBarButton(Res.InfoMessageOpenImagingTools,
                     new Action(ExecuteImagingToolsCommand.ExecuteImagingTools))
             ];
             // ReSharper restore RedundantDelegateCreation
@@ -113,7 +109,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
             if (Services.ShellService == null)
             {
-                Notifications.Error(Resources.ErrorMessage_ShellServiceUnavailable);
+                Notifications.Error(Res.ErrorMessageShellServiceUnavailable);
                 return;
             }
 
@@ -136,6 +132,22 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             if (error != null)
                 Notifications.Error(Res.ErrorMessageFailedToUninstallClassic(targetPath, error));
         }
+
+        private static void ResetTheme()
+        {
+            // This is how we could set all theme colors one by one. But for now, just setting the base theme.
+            //ThemeColors.Control = VSColorTheme.GetThemedColor(CommonControlsColors.ButtonBrushKey);
+            //ThemeColors.ControlText = VSColorTheme.GetThemedColor(CommonControlsColors.ButtonTextBrushKey);
+            ThemeColors.SetBaseTheme(VSColorTheme.GetThemedColor(CommonControlsColors.ButtonBrushKey).GetBrightness() < 0.5f ? DefaultTheme.Dark : DefaultTheme.Classic);
+        }
+
+        #endregion
+
+        #region Event Handlers
+
+        private static void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e) => ResetTheme();
+
+        #endregion
 
         #endregion
 
@@ -171,16 +183,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             VSColorTheme.ThemeChanged -= VSColorTheme_ThemeChanged;
             base.Dispose(disposing);
         }
-
-        private static void ResetTheme()
-        {
-            // This is how we could set all theme colors one by one. But for now, just setting the base theme.
-            //ThemeColors.Control = VSColorTheme.GetThemedColor(CommonControlsColors.ButtonBrushKey);
-            //ThemeColors.ControlText = VSColorTheme.GetThemedColor(CommonControlsColors.ButtonTextBrushKey);
-            ThemeColors.SetBaseTheme(VSColorTheme.GetThemedColor(CommonControlsColors.ButtonBrushKey).GetBrightness() < 0.5f ? DefaultTheme.Dark : DefaultTheme.Classic);
-        }
-
-        private static void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e) => ResetTheme();
 
         #endregion
 

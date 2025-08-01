@@ -56,9 +56,9 @@
 
   <!-- Excluding the WPF adapter for non-net472 targets -->
   <ItemGroup Condition="'$(TargetFramework)'!='net472'">
-    <Page Remove="View\VisualizerAdapterControl.xaml" />
-    <None Include="View\VisualizerAdapterControl.xaml" />
-    <None Update="View\VisualizerAdapterControl.xaml">
+    <Page Remove="View\VisualizerExtensionWpfAdapterBase.xaml" />
+    <None Include="View\VisualizerExtensionWpfAdapterBase.xaml" />
+    <None Update="View\VisualizerExtensionWpfAdapterBase.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
   </ItemGroup>

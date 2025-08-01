@@ -28,12 +28,15 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
     #endregion
 
+    /// <summary>
+    /// Contains the x64 package specific resources. Unlike in the x86 version, we get the general string resources from
+    /// Imaging Tools using the <see cref="DebuggerHelper"/> class. Only the package specific known resources are taken from this assembly.
+    /// </summary>
     internal static class Res
     {
         #region Constants
 
         private const string unavailableResource = "Resource ID not found: {0}";
-        private const string invalidResource = "Resource text is not valid for {0} arguments: {1}";
 
         #endregion
 
@@ -42,6 +45,15 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         /// <summary>KGy SOFT Image DebuggerVisualizers</summary>
         internal static string TitleMessageDialog => Get(Ids.ResourceTitle);
 
+        /// <summary>Change log</summary>
+        internal static string InfoMessageChangeLog => DebuggerHelper.GetStringResource("InfoMessage_ChangeLog");
+
+        /// <summary>Open Imaging Tools</summary>
+        internal static string InfoMessageOpenImagingTools => DebuggerHelper.GetStringResource("InfoMessage_OpenImagingTools");
+
+        /// <summary>Shell service could not be obtained. Installation status of the classic debugger visualizers cannot be checked.</summary>
+        internal static string ErrorMessageShellServiceUnavailable => DebuggerHelper.GetStringResource("ErrorMessage_ShellServiceUnavailable");
+
         #endregion
 
         #region Methods
@@ -49,46 +61,24 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         #region Internal Methods
 
         /// <summary>KGy SOFT Imaging Tools v{0} and the debugger visualizers have been installed.</summary>
-        internal static string InfoMessagePackageInstalled(Version version) => Get(Resources.InfoMessage_PackageInstalledFormat, version);
+        internal static string InfoMessagePackageInstalled(Version version) => DebuggerHelper.GetStringResource("InfoMessage_PackageInstalledFormat", version);
 
         /// <summary>KGy SOFT Imaging Tools v{0} and the debugger visualizers have been upgraded to version v{1}.</summary>
-        internal static string InfoMessagePackageUpgraded(Version lastVersion, Version currentVersion) => Get(Resources.InfoMessage_PackageUpgradedFormat, lastVersion, currentVersion);
+        internal static string InfoMessagePackageUpgraded(Version lastVersion, Version currentVersion) => DebuggerHelper.GetStringResource("InfoMessage_PackageUpgradedFormat", lastVersion, currentVersion);
 
         /// <summary>Failed to uninstall the classic visualizers from {0}: {1}
         ///
         /// Make sure every running debugger is closed. Removal will be tried again on restarting Visual Studio.</summary>
-        internal static string ErrorMessageFailedToUninstallClassic(string targetPath, string message) => Get(Resources.ErrorMessage_FailedToUninstallClassicFormat, targetPath, message);
+        internal static string ErrorMessageFailedToUninstallClassic(string targetPath, string message) => DebuggerHelper.GetStringResource("ErrorMessage_FailedToUninstallClassicFormat", targetPath, message);
 
         /// <summary>Unexpected error occurred: {0}</summary>
-        internal static string ErrorMessageUnexpectedError(string message) => Get(Resources.ErrorMessage_UnexpectedErrorFormat, message);
+        internal static string ErrorMessageUnexpectedError(string message) => DebuggerHelper.GetStringResource("ErrorMessage_UnexpectedErrorFormat", message);
 
         #endregion
 
         #region Private Methods
 
         private static string Get(string id) => Resources.ResourceManager.GetString(id) ?? String.Format(CultureInfo.InvariantCulture, unavailableResource, id);
-
-        private static string Get(string format, params object?[]? args) => args == null ? format : SafeFormat(format, args);
-
-        private static string SafeFormat(string format, object?[] args)
-        {
-            try
-            {
-                int i = Array.IndexOf(args, null);
-                if (i >= 0)
-                {
-                    string nullRef = PublicResources.Null;
-                    for (; i < args.Length; i++)
-                        args[i] ??= nullRef;
-                }
-
-                return String.Format(LanguageSettings.FormattingLanguage, format, args);
-            }
-            catch (FormatException)
-            {
-                return String.Format(CultureInfo.InvariantCulture, invalidResource, args.Length, format);
-            }
-        }
 
         #endregion
 

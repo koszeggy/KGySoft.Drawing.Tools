@@ -260,6 +260,21 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         }
 #endif
 
+        /// <summary>
+        /// Retrieves a localized string resource based on the specified resource identifier and formats it with the
+        /// provided arguments. The result string is taken from the resources of the <c>KGySoft.Drawing.ImagingTools</c> assembly.
+        /// </summary>
+        /// <param name="resourceId">The identifier of the string resource to retrieve. Cannot be <see langword="null"/>.</param>
+        /// <param name="args">An optional array of objects to format the string resource with. Can be <see langword="null"/> or empty.</param>
+        /// <returns>The localized string resource, formatted with the provided arguments if applicable.</returns>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="resourceId"/> is <see langword="null"/>.</exception>
+        public static string GetStringResource(string resourceId, params object?[] args)
+        {
+            if (resourceId == null)
+                throw new ArgumentNullException(nameof(resourceId), PublicResources.ArgumentNull);
+            return ImagingTools.Res.Get(resourceId, args);
+        }
+
         #endregion
     }
 }
