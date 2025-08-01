@@ -1125,24 +1125,18 @@ Using a specific seed disables parallel processing, which impacts performance on
   <data name="LanguageSettingsForm.Text" xml:space="preserve">
     <value>Language Settings</value>
   </data>
-  <data name="gbAllowResxResources.Text" xml:space="preserve">
-    <value>Allow using resource files</value>
-  </data>
-  <data name="gbAllowResxResources.ToolTipText" xml:space="preserve">
-    <value>When checked, allows using resources from .resx files directly</value>
-  </data>
   <data name="chbUseOSLanguage.Text" xml:space="preserve">
     <value>Use Operating System Language</value>
   </data>
   <data name="chbUseOSLanguage.ToolTipText" xml:space="preserve">
     <value>When checked, uses the language of the operating system. The possibly non-existing resources will be automatically generated.</value>
   </data>
-  <data name="chbExistingResourcesOnly.Text" xml:space="preserve">
-    <value>List Languages Only With Existing Resources</value>
+  <data name="chbAllowAnyLanguage.Text" xml:space="preserve">
+    <value>Allow Selecting Any Language</value>
   </data>
-  <data name="chbExistingResourcesOnly.ToolTipText" xml:space="preserve">
-    <value>When checked, enlists languages only with existing resource files. Uncheck to allow generating resources for any language.
-Newly generated resources will contain English texts prefixed with "[T]". You can then edit the resources to translate these texts. </value>
+  <data name="chbAllowAnyLanguage.ToolTipText" xml:space="preserve">
+    <value>Check to allow selecting languages with no existing localization. Can be used to generate new localizations for any language.
+Newly generated resources will contain English texts prefixed with "[T]". You can then edit the resources to translate these texts.</value>
   </data>
   <data name="gbResxResourcesPath.Text" xml:space="preserve">
     <value>Custom Resources Path</value>

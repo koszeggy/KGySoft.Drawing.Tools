@@ -192,7 +192,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 SelectedLibrary = LocalizableLibraries.ImagingTools;
         }
 
-        private void UpdateTitle() => TitleCaption = Res.TitleEditResources($"{culture.EnglishName} ({culture.NativeName})");
+        private void UpdateTitle() => TitleCaption = Res.TitleEditResources($"{culture.NativeName} ({culture.EnglishName})");
 
         private string ToFileName(LocalizableLibraries library) => useInvariant
             ? ResHelper.GetBaseName(library) + ".resx"

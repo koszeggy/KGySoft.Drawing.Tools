@@ -44,7 +44,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         // on-the-fly but this will never happen unless using this class from API. Subscribing language change from every item
         // just for updating the possible unsupported cultures is not worth it.
         public string Language => language ??= ResHelper.TryGetCulture(CultureName, out CultureInfo? culture)
-            ? $"{culture.EnglishName} ({culture.NativeName})"
+            ? $"{culture.NativeName} ({culture.EnglishName})"
             : Res.TextUnsupportedCulture(CultureName);
 
         public string? Author => Info.Author;

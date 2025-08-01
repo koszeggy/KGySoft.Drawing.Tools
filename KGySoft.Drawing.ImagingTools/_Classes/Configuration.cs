@@ -83,7 +83,6 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Internal Properties
         
-        internal static bool AllowResXResources { get => GetFromSettings<bool>(); set => SetInSettings(value); }
         internal static bool UseOSLanguage { get => GetFromSettings<bool>(); set => SetInSettings(value); }
         internal static CultureInfo DisplayLanguage { get => GetFromSettings<CultureInfo>() ?? Res.DefaultLanguage; set => SetInSettings(value); }
         internal static string? ResXResourcesCustomPath { get => GetFromSettings<string?>(); set => SetInSettings(value); }

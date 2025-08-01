@@ -405,16 +405,13 @@ namespace KGySoft.Drawing.ImagingTools
                 }
             }
 
-            bool allowResXResources = Configuration.AllowResXResources;
-            displayLanguage = allowResXResources
-                ? Configuration.UseOSLanguage ? OSLanguage : Configuration.DisplayLanguage // here, allowing specific languages, too
-                : DefaultLanguage;
-
+            // here, allowing specific (non-neutral) languages, too
+            displayLanguage = Configuration.UseOSLanguage ? OSLanguage : Configuration.DisplayLanguage;
             if (Equals(displayLanguage, CultureInfo.InvariantCulture) || (!Equals(displayLanguage, DefaultLanguage) && !ResHelper.GetAvailableLanguages().Contains(displayLanguage)))
                 displayLanguage = DefaultLanguage;
             DisplayLanguage = displayLanguage;
 
-            LanguageSettings.DynamicResourceManagersSource = allowResXResources ? ResourceManagerSources.CompiledAndResX : ResourceManagerSources.CompiledOnly;
+            LanguageSettings.DynamicResourceManagersSource = ResourceManagerSources.CompiledAndResX;
         }
 
         #endregion

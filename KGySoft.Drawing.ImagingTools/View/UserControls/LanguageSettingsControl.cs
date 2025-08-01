@@ -97,7 +97,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         private static void OnFormatCultureCommand(ICommandSource<ListControlConvertEventArgs> source)
         {
             var culture = (CultureInfo)source.EventArgs.ListItem!;
-            source.EventArgs.Value = $"{culture.EnglishName} ({culture.NativeName})";
+            source.EventArgs.Value = $"{culture.NativeName} ({culture.EnglishName})";
         }
 
         #endregion
@@ -156,14 +156,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private void InitPropertyBindings()
         {
-            // VM.AllowResXResources <-> gbAllowResxResources.Checked
-            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.AllowResXResources), gbAllowResxResources, nameof(gbAllowResxResources.Checked));
-
             // VM.UseOSLanguage <-> chbUseOSLanguage.Checked
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.UseOSLanguage), chbUseOSLanguage, nameof(chbUseOSLanguage.Checked));
 
-            // VM.ExistingLanguagesOnly <-> chbExistingResourcesOnly.Checked
-            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.ExistingLanguagesOnly), chbExistingResourcesOnly, nameof(chbExistingResourcesOnly.Checked));
+            // VM.AllowAnyLanguage <-> chbAllowAnyLanguage.Checked
+            CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.AllowAnyLanguage), chbAllowAnyLanguage, nameof(chbAllowAnyLanguage.Checked));
 
             // VM.UseOSLanguage -> !cmbLanguages.Enabled
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.UseOSLanguage), nameof(cmbLanguages.Enabled), b => !((bool)b!), cmbLanguages);
@@ -195,7 +192,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             CommandBindings.Add(ViewModel.ApplyCommand, ViewModel.ApplyCommandState)
                 .AddSource(okCancelApplyButtons.ApplyButton, nameof(okCancelApplyButtons.ApplyButton.Click));
 
-            CommandBindings.Add(ViewModel.EditResourcesCommand, ViewModel.EditResourcesCommandState)
+            CommandBindings.Add(ViewModel.EditResourcesCommand)
                 .AddSource(btnEditResources, nameof(btnEditResources.Click));
 
             CommandBindings.Add(ViewModel.DownloadResourcesCommand)

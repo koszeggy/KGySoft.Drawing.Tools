@@ -2,9 +2,6 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="KGySoft.Drawing.ImagingTools.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="AllowResXResources" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
     <Setting Name="UseOSLanguage" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
