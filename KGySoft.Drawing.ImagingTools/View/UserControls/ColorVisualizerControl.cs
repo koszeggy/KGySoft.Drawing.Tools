@@ -355,8 +355,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             }
 
             Color backColor = sender == pnlAlpha ? Color.FromArgb(color.A, Color.White) : color;
-            using (Brush b = new SolidBrush(backColor))
-                e.Graphics.FillRectangle(b, e.ClipRectangle);
+            e.Graphics.FillRectangle(backColor.GetBrush(), e.ClipRectangle);
         }
 
 #pragma warning restore IDE1006 // Naming Styles

@@ -16,9 +16,11 @@
 #region Usings
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 using KGySoft.Collections;
+using KGySoft.CoreLibraries;
 
 #endregion
 
@@ -28,17 +30,18 @@ namespace KGySoft.Drawing.ImagingTools.View
     {
         #region Fields
 
-        private static readonly Cache<int, Pen> penCache = new(c => new Pen(Color.FromArgb(c)), 4)
+        // The caches need to be thread-safe because there can be multiple UI threads. Using AsThreadSafe instead of GetThreadSafeAccessor because of clearing.
+        private static readonly LockingDictionary<int, Pen> penCache = new Cache<int, Pen>(c => new Pen(Color.FromArgb(c)), 16)
         {
             DisposeDroppedValues = true,
             EnsureCapacity = true,
-        };
+        }.AsThreadSafe();
 
-        private static readonly Cache<int, Brush> brushCache = new(c => new SolidBrush(Color.FromArgb(c)), 8)
+        private static readonly LockingDictionary<int, Brush> brushCache = new Cache<int, Brush>(c => new SolidBrush(Color.FromArgb(c)), 16)
         {
             DisposeDroppedValues = true,
             EnsureCapacity = true,
-        };
+        }.AsThreadSafe();
 
         #endregion
 
@@ -48,9 +51,9 @@ namespace KGySoft.Drawing.ImagingTools.View
         {
             #region Local Methods
             
-            static void Clear(ICache cache)
+            static void Clear<TKey, TValue>(LockingDictionary<TKey, TValue> cache) where TKey : notnull
             {
-                var values = cache.Values;
+                ICollection<TValue> values = cache.Values;
                 cache.Clear();
                 foreach (var value in values)
                     (value as IDisposable)?.Dispose();

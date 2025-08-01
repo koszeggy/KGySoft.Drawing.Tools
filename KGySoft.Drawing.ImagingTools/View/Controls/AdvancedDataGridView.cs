@@ -492,8 +492,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 VerticalScrollBar.Width,
                 HorizontalScrollBar.Height);
 
-            using Brush brush = new SolidBrush(ThemeColors.Workspace);
-            e.Graphics.FillRectangle(brush, rect);
+            e.Graphics.FillRectangle(ThemeColors.Workspace.GetBrush(), rect);
         }
 
         protected override void Dispose(bool disposing)
@@ -596,9 +595,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             try
             {
                 using var g = Graphics.FromHdc(hDC);
-                using var pen = new Pen(ThemeColors.FixedSingleBorder);
                 var rect = new Rectangle(0, 0, Width - 1, Height - 1);
-                g.DrawRectangle(pen, rect);
+                g.DrawRectangle(ThemeColors.FixedSingleBorder.GetPen(), rect);
             }
             finally
             {

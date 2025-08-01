@@ -126,12 +126,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             try
             {
                 using var g = Graphics.FromHdc(hDC);
-                using var pen = new Pen(isHovered ? ThemeColors.FixedSingleBorder : ThemeColors.FixedSingleBorderInactive);
+                Color color = isHovered ? ThemeColors.FixedSingleBorder : ThemeColors.FixedSingleBorderInactive;
                 var rect = new Rectangle(0, 0, Width - 1, Height - 1);
-                g.DrawRectangle(pen, rect);
+                g.DrawRectangle(color.GetPen(), rect);
                 rect.Inflate(-1, -1);
-                pen.Color = Color.FromArgb(unchecked((int)0xFF383838));
-                g.DrawRectangle(pen, rect);
+                color = Color.FromArgb(unchecked((int)0xFF383838));
+                g.DrawRectangle(color.GetPen(), rect);
             }
             finally
             {

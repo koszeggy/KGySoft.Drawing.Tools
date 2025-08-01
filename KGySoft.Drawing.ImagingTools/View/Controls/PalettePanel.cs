@@ -221,18 +221,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     continue;
 
                 // background
-                Color backColor = BackColor;
-                bool isControlBrush = backColor == SystemColors.Control;
-                var backBrush = isControlBrush ? SystemBrushes.Control : new SolidBrush(backColor);
-                try
-                {
-                    e.Graphics.FillRectangle(backBrush, rect);
-                }
-                finally
-                {
-                    if (!isControlBrush)
-                        backBrush.Dispose();
-                }
+                e.Graphics.FillRectangle(BackColor.GetBrush(), rect);
                 
                 // selection frame
                 if (i == selectedColorIndex)
@@ -246,7 +235,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
                     // Using wider pen fails even with Inset alignment with every possible PixelOffsetMode. So using a 1 width pen and drawing possible more rectangles
                     int penWidth = Math.Max((int)scale.X, 1);
-                    using (Pen pen = new Pen(Color.FromArgb(r, g, b)))
+                    Pen pen = Color.FromArgb(r, g, b).GetPen();
                     {
                         for (int x = 0; x < penWidth; x++)
                             e.Graphics.DrawRectangle(pen, rectSelection.Left + x, rectSelection.Top + x, rectSelection.Width - 1 - (x << 1), rectSelection.Height - 1 - (x << 1));
@@ -279,8 +268,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 }
 
                 // color
-                using (Brush b = new SolidBrush(c))
-                    e.Graphics.FillRectangle(b, rect);
+                e.Graphics.FillRectangle(c.GetBrush(), rect);
             }
         }
 

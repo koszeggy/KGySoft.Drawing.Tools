@@ -22,6 +22,7 @@ using System.Text;
 
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.Drawing.ImagingTools.View;
 
 #endregion
 
@@ -163,15 +164,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 var newImage = new Bitmap(backingImage);
                 using (Graphics g = Graphics.FromImage(newImage))
                 {
-                    using (Brush b = new SolidBrush(Color.FromArgb(128, Color.Black)))
-                    {
-                        g.FillRectangle(b, 0, 0, newImage.Width, visibleRect.Top);
-                        g.FillRectangle(b, 0, visibleRect.Bottom, newImage.Width, newImage.Height - visibleRect.Bottom);
-                        g.FillRectangle(b, 0, visibleRect.Top, visibleRect.Left, visibleRect.Height);
-                        g.FillRectangle(b, visibleRect.Right, visibleRect.Top, newImage.Width - visibleRect.Height, visibleRect.Height);
-                        visibleRect.Inflate(1, 1);
-                        DrawFocusRectangleCallback?.Invoke(g, visibleRect);
-                    }
+                    Brush b = Color.FromArgb(128, Color.Black).GetBrush();
+                    g.FillRectangle(b, 0, 0, newImage.Width, visibleRect.Top);
+                    g.FillRectangle(b, 0, visibleRect.Bottom, newImage.Width, newImage.Height - visibleRect.Bottom);
+                    g.FillRectangle(b, 0, visibleRect.Top, visibleRect.Left, visibleRect.Height);
+                    g.FillRectangle(b, visibleRect.Right, visibleRect.Top, newImage.Width - visibleRect.Height, visibleRect.Height);
+                    visibleRect.Inflate(1, 1);
+                    DrawFocusRectangleCallback?.Invoke(g, visibleRect);
                 }
 
                 SetImageInfo(new ImageInfo(newImage), resetPreview);
