@@ -29,6 +29,7 @@ using EnvDTE;
 using KGySoft.Drawing.ImagingTools;
 using KGySoft.Drawing.ImagingTools.Model;
 
+using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -65,6 +66,30 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         #endregion
 
         #region Methods
+
+        #region Static Methods
+
+        #region Private Methods
+
+        private static void ResetTheme()
+        {
+            // Unlike in the x64 package, here we cannot use CommonControlsColors, because that's in a package that older versions of Visual Studio cannot reference.
+            // Note that this won't work the classic debugger visualizers, only for the ImagingTools instances opened by the package commands.
+            ThemeColors.SetBaseTheme(VSColorTheme.GetThemedColor(EnvironmentColors.SystemButtonFaceBrushKey).GetBrightness() < 0.5f ? DefaultTheme.Dark : DefaultTheme.Classic);
+        }
+
+        #endregion
+
+        #region Event Handlers
+
+        private static void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e) => ResetTheme();
+
+        #endregion
+
+        #endregion
+
+
+        #region Instance Methods
 
         #region Public Methods
 
@@ -117,6 +142,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
                 return;
             ExecuteImagingToolsCommand.DestroyCommand();
             ManageDebuggerVisualizerInstallationsCommand.DestroyCommand();
+            VSColorTheme.ThemeChanged -= VSColorTheme_ThemeChanged;
         }
 
         #endregion
@@ -145,6 +171,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             initialized = true;
             InstallIfNeeded();
             InitCommands();
+            VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
+            ResetTheme();
         }
 
         private void InstallIfNeeded()
@@ -206,6 +234,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             Services.MenuCommandService.AddCommand(ExecuteImagingToolsCommand.GetCreateCommand());
             Services.MenuCommandService.AddCommand(ManageDebuggerVisualizerInstallationsCommand.GetCreateCommand());
         }
+
+        #endregion
 
         #endregion
 
