@@ -33,7 +33,7 @@
   <!--Common package references-->
   <ItemGroup>
     <!--IMPRTANT: Make sure this references the same KGySoft.Drawing.Core version as every other specific drawing package in the debugger visualizers; otherwise, classic visualizers may fail to load due to version mismatch-->
-    <PackageReference Include="KGySoft.Drawing" Version="9.1.0" />
+    <PackageReference Include="KGySoft.Drawing" Version="9.2.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
