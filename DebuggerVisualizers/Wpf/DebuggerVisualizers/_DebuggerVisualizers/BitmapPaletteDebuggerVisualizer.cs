@@ -1,4 +1,5 @@
-﻿#region Copyright
+﻿#if NETFRAMEWORK && !NET472_OR_GREATER
+#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
 //  File: BitmapPaletteDebuggerVisualizer.cs
@@ -15,11 +16,22 @@
 
 #region Usings
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Windows.Media.Imaging;
 
+using KGySoft.Drawing.DebuggerVisualizers.Wpf;
 using KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;
+
+#endregion
+
+#region Attributes
+
+[assembly: DebuggerVisualizer(typeof(BitmapPaletteDebuggerVisualizer), typeof(BitmapPaletteSerializer),
+    Target = typeof(BitmapPalette),
+    Description = "KGy SOFT BitmapPalette Debugger Visualizer")]
 
 #endregion
 
@@ -37,3 +49,4 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf
         #endregion
     }
 }
+#endif

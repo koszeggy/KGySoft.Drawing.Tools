@@ -15,14 +15,8 @@
 
 #region Usings
 
-using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
-
-using KGySoft.Drawing.DebuggerVisualizers.SkiaSharp;
-using KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization;
-
-using SkiaSharp;
 
 #endregion
 
@@ -64,82 +58,5 @@ using SkiaSharp;
 [assembly: AssemblyVersion("5.0.0")]
 [assembly: AssemblyFileVersion("5.0.0")]
 [assembly: AssemblyInformationalVersion("5.0.0")]
-
-// SKBitmap
-[
-    assembly: DebuggerVisualizer(typeof(SkiaCustomBitmapDebuggerVisualizer), typeof(SkiaBitmapSerializer),
-    Target = typeof(SKBitmap),
-#if NET472_OR_GREATER
-    Description = "KGy SOFT SKBitmap Debugger Visualizer (Classic)")
-#else
-    Description = "KGy SOFT SKBitmap Debugger Visualizer") 
-#endif
-]
-
-// SKPixmap
-[
-    assembly: DebuggerVisualizer(typeof(SkiaCustomBitmapDebuggerVisualizer), typeof(SkiaBitmapSerializer),
-    Target = typeof(SKPixmap),
-#if NET472_OR_GREATER
-    Description = "KGy SOFT SKPixmap Debugger Visualizer (Classic)")
-#else
-    Description = "KGy SOFT SKPixmap Debugger Visualizer")
-#endif
-]
-
-// SKImage
-[
-    assembly: DebuggerVisualizer(typeof(SkiaCustomBitmapDebuggerVisualizer), typeof(SkiaBitmapSerializer),
-    Target = typeof(SKImage),
-#if NET472_OR_GREATER
-    Description = "KGy SOFT SKImage Debugger Visualizer (Classic)")
-#else
-    Description = "KGy SOFT SKImage Debugger Visualizer")
-#endif
-]
-
-// SKSurface
-[
-    assembly: DebuggerVisualizer(typeof(SkiaCustomBitmapDebuggerVisualizer), typeof(SkiaBitmapSerializer),
-    Target = typeof(SKSurface),
-#if NET472_OR_GREATER
-    Description = "KGy SOFT SKSurface Debugger Visualizer (Classic)")
-#else
-    Description = "KGy SOFT SKSurface Debugger Visualizer")
-#endif
-]
-
-// SKColor
-[
-    assembly: DebuggerVisualizer(typeof(SkiaCustomColorDebuggerVisualizer), typeof(SkiaColorSerializer),
-    Target = typeof(SKColor),
-#if NET472_OR_GREATER
-    Description = "KGy SOFT SKColor Debugger Visualizer (Classic)")
-#else
-    Description = "KGy SOFT SKColor Debugger Visualizer") 
-#endif
-]
-
-// SKPMColor
-[
-    assembly: DebuggerVisualizer(typeof(SkiaCustomColorDebuggerVisualizer), typeof(SkiaColorSerializer),
-    Target = typeof(SKPMColor),
-#if NET472_OR_GREATER
-    Description = "KGy SOFT SKPMColor Debugger Visualizer (Classic)")
-#else
-    Description = "KGy SOFT SKPMColor Debugger Visualizer")
-#endif
-]
-
-// SKColorF
-[
-    assembly: DebuggerVisualizer(typeof(SkiaCustomColorDebuggerVisualizer), typeof(SkiaColorSerializer),
-    Target = typeof(SKColorF),
-#if NET472_OR_GREATER
-    Description = "KGy SOFT SKColorF Debugger Visualizer (Classic)")
-#else
-    Description = "KGy SOFT SKColorF Debugger Visualizer")
-#endif
-]
 
 #endregion

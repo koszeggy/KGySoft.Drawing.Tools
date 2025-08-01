@@ -164,7 +164,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
             miManageInstallations.Image = Images.Settings;
             miLanguageSettings.Image = Images.Language;
+#if NETFRAMEWORK && !NET472_OR_GREATER
             btnConfiguration.SetDefaultItem(miManageInstallations);
+#else
+            btnConfiguration.SetDefaultItem(miLanguageSettings);
+#endif
 
             miEasterEgg.Image = Images.ImagingTools;
             btnAbout.Image = miAbout.Image = Icons.SystemInformation.ToScaledBitmap();

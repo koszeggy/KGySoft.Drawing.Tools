@@ -1,4 +1,5 @@
-﻿#region Copyright
+﻿#if NETFRAMEWORK && !NET472_OR_GREATER
+#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ImageSourceDebuggerVisualizer.cs
@@ -15,10 +16,22 @@
 
 #region Usings
 
+using System.Diagnostics;
+using System.Windows.Media;
+
+using KGySoft.Drawing.DebuggerVisualizers.Wpf;
 using KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization;
 using KGySoft.Drawing.ImagingTools.Model;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;
+
+#endregion
+
+#region Attributes
+
+[assembly: DebuggerVisualizer(typeof(ImageSourceDebuggerVisualizer), typeof(ImageSourceSerializer),
+    Target = typeof(ImageSource),
+    Description = "KGy SOFT ImageSource Debugger Visualizer")]
 
 #endregion
 
@@ -37,3 +50,4 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf
         #endregion
     }
 }
+#endif

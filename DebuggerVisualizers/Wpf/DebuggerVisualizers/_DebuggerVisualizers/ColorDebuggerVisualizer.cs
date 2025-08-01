@@ -1,4 +1,5 @@
-﻿#region Copyright
+﻿#if NETFRAMEWORK && !NET472_OR_GREATER
+#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ColorDebuggerVisualizer.cs
@@ -15,11 +16,22 @@
 
 #region Usings
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Windows.Media;
 
+using KGySoft.Drawing.DebuggerVisualizers.Wpf;
 using KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;
+
+#endregion
+
+#region Attributes
+
+[assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
+    Target = typeof(Color),
+    Description = "KGy SOFT Color Debugger Visualizer")]
 
 #endregion
 
@@ -37,3 +49,4 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf
         #endregion
     }
 }
+#endif

@@ -443,7 +443,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Test.ViewModel
             DebuggerVisualizerAttribute? attr = debuggerVisualizers.GetValueOrDefault(targetType);
             if (attr == null)
             {
-                ErrorCallback?.Invoke($"No debugger visualizer found for type {targetType}");
+                ErrorCallback?.Invoke($"No debugger visualizer found for type {targetType}. Note that classic debugger visualizers are not available in .NET Framework 4.7.2 and above.");
                 return;
             }
 

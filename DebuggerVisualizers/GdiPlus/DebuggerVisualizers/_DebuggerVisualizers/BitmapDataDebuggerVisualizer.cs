@@ -1,4 +1,5 @@
-﻿#region Copyright
+﻿#if NETFRAMEWORK && !NET472_OR_GREATER
+#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
 //  File: BitmapDataDebuggerVisualizer.cs
@@ -15,12 +16,23 @@
 
 #region Usings
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing.Imaging;
 
+using KGySoft.Drawing.DebuggerVisualizers.GdiPlus;
 using KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization;
 using KGySoft.Drawing.ImagingTools.Model;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;
+
+#endregion
+
+#region Attributes
+
+[assembly: DebuggerVisualizer(typeof(BitmapDataDebuggerVisualizer), typeof(BitmapDataSerializer),
+    Target = typeof(BitmapData),
+    Description = "KGy SOFT BitmapData Debugger Visualizer")]
 
 #endregion
 
@@ -46,3 +58,4 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus
         #endregion
     }
 }
+#endif

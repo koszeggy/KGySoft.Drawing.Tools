@@ -1,4 +1,5 @@
-﻿#region Copyright
+﻿#if NETFRAMEWORK && !NET472_OR_GREATER
+#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
 //  File: SkiaCustomBitmapDebuggerVisualizer.cs
@@ -15,10 +16,35 @@
 
 #region Usings
 
+using System.Diagnostics;
+
+using KGySoft.Drawing.DebuggerVisualizers.SkiaSharp;
 using KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization;
 using KGySoft.Drawing.ImagingTools.Model;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;
+
+using SkiaSharp;
+
+#endregion
+
+#region Attributes
+
+[assembly: DebuggerVisualizer(typeof(SkiaCustomBitmapDebuggerVisualizer), typeof(SkiaBitmapSerializer),
+    Target = typeof(SKBitmap),
+    Description = "KGy SOFT SKBitmap Debugger Visualizer")]
+
+[assembly: DebuggerVisualizer(typeof(SkiaCustomBitmapDebuggerVisualizer), typeof(SkiaBitmapSerializer),
+    Target = typeof(SKPixmap),
+    Description = "KGy SOFT SKPixmap Debugger Visualizer")]
+
+[assembly: DebuggerVisualizer(typeof(SkiaCustomBitmapDebuggerVisualizer), typeof(SkiaBitmapSerializer),
+    Target = typeof(SKImage),
+    Description = "KGy SOFT SKImage Debugger Visualizer")]
+
+[assembly: DebuggerVisualizer(typeof(SkiaCustomBitmapDebuggerVisualizer), typeof(SkiaBitmapSerializer),
+    Target = typeof(SKSurface),
+    Description = "KGy SOFT SKSurface Debugger Visualizer")]
 
 #endregion
 
@@ -37,3 +63,4 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp
         #endregion
     }
 }
+#endif

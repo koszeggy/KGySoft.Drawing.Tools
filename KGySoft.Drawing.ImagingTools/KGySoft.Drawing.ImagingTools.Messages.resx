@@ -535,8 +535,15 @@ Do you want to overwrite them?</value>
   <data name="ConfirmMessage_RemoveInstallation" xml:space="preserve">
     <value>Are you sure you want to remove this installation?</value>
   </data>
-  <data name="ConfirmMessage_NetCoreVersion" xml:space="preserve">
-    <value>You are about to install the .NET Core version, which might not be supported by Visual Studio as a debugger visualizer. Are you sure?</value>
+  <data name="ConfirmMessage_NetCoreDebuggerVisualizers" xml:space="preserve">
+    <value>This is the .NET Core build of KGy SOFT Imaging Tools. To install debugger visualizers you need to use a .NET Framework build.
+    
+Do you want to visit the Visual Studio Marketplace where you can download the installer of the debugger visualizers?</value>
+  </data>
+  <data name="ConfirmMessage_Net472DebuggerVisualizers" xml:space="preserve">
+    <value>This is the .NET Framework 4.7.2 build of KGy SOFT Imaging Tools. To install the classic debugger visualizers you need to use a build targeting .NET Framework 4.6.2 or lower.
+    
+Do you want to visit the GitHub page where you can download various builds for different target platforms?</value>
   </data>
   <data name="ConfirmMessage_DiscardChanges" xml:space="preserve">
     <value>There are unsaved modifications. Are sure to discard the changes?</value>
@@ -1160,7 +1167,7 @@ Newly generated resources will contain English texts prefixed with "[T]". You ca
     <value>Hide Dependencies</value>
   </data>
   <data name="chbHideDependencies.ToolTipText" xml:space="preserve">
-    <value>When checked, hides the resources of the dependent libraries. A localization is allowed to contain the resources of the Imaging Tools application only.</value>
+    <value>When checked, hides the resources of the dependent libraries. It is allowed for a localization to contain the resources of the Imaging Tools application only.</value>
   </data>
   <data name="btnGoToFile.ToolTipText" xml:space="preserve">
     <value>Open containing folder</value>

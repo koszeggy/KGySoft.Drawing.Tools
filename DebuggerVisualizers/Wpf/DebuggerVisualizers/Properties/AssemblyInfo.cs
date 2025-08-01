@@ -15,14 +15,8 @@
 
 #region Usings
 
-using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-
-using KGySoft.Drawing.DebuggerVisualizers.Wpf;
-using KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization;
 
 #endregion
 
@@ -64,38 +58,5 @@ using KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization;
 [assembly: AssemblyVersion("5.0.0")]
 [assembly: AssemblyFileVersion("5.0.0")]
 [assembly: AssemblyInformationalVersion("5.0.0")]
-
-// ImageSource
-[
-    assembly: DebuggerVisualizer(typeof(ImageSourceDebuggerVisualizer), typeof(ImageSourceSerializer),
-    Target = typeof(ImageSource),
-#if NET472_OR_GREATER
-    Description = "KGy SOFT ImageSource Debugger Visualizer (Classic)")
-#else
-    Description = "KGy SOFT ImageSource Debugger Visualizer")
-#endif
-]
-
-// Color
-[
-    assembly: DebuggerVisualizer(typeof(ColorDebuggerVisualizer), typeof(ColorSerializer),
-    Target = typeof(Color),
-#if NET472_OR_GREATER
-    Description = "KGy SOFT Color Debugger Visualizer (Classic)")
-#else
-    Description = "KGy SOFT Color Debugger Visualizer")
-#endif
-]
-
-// BitmapPalette
-[
-    assembly: DebuggerVisualizer(typeof(BitmapPaletteDebuggerVisualizer), typeof(BitmapPaletteSerializer),
-    Target = typeof(BitmapPalette),
-#if NET472_OR_GREATER
-    Description = "KGy SOFT BitmapPalette Debugger Visualizer (Classic)")
-#else
-    Description = "KGy SOFT BitmapPalette Debugger Visualizer")
-#endif
-]
 
 #endregion

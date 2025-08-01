@@ -17,7 +17,9 @@
 
 using System;
 using System.Collections.Generic;
+#if NETFRAMEWORK && !NET472_OR_GREATER
 using System.Globalization;
+#endif
 using System.IO;
 using System.Linq;
 
@@ -38,6 +40,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private const string visualStudioName = "Visual Studio";
         private const string installDirsPattern = visualStudioName + " ????";
         private const string visualizersDir = "Visualizers";
+#if NETCOREAPP || !NET472_OR_GREATER
+        private const string urlMarketplace = "https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64";
+#endif
+#if NET472_OR_GREATER
+        private const string urlGitHubDownload = "https://github.com/koszeggy/KGySoft.Drawing.Tools#download";
+#endif
 
         #endregion
 
@@ -213,6 +221,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             #region Local Methods
 
+#if NETFRAMEWORK && !NET472_OR_GREATER
             int? TryGetVisualStudioVersion()
             {
                 string selected = SelectedInstallation;
@@ -227,15 +236,19 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     return ver;
                 return null;
             }
+#endif
 
             #endregion
 
             if (currentStatus.Installed && !Confirm(Res.ConfirmMessageOverwriteInstallation, currentStatus.Version != null && InstallationManager.AvailableVersion.Version > currentStatus.Version))
                 return;
 #if NETCOREAPP
-            if (!Confirm(Res.ConfirmMessageNetCoreVersion, false))
-                return;
-#endif
+            if (Confirm(Res.ConfirmMessageNetCoreDebuggerVisualizers))
+                PathHelper.OpenUrl(urlMarketplace);
+#elif NET472_OR_GREATER
+            if (Confirm(Res.ConfirmMessageNet472DebuggerVisualizers))
+                PathHelper.OpenUrl(urlGitHubDownload);
+#else
             if (TryGetVisualStudioVersion() >= 2022)
             {
                 switch (CancellableConfirm(Res.ConfirmMessageInstallClassicVisualizers))
@@ -245,7 +258,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     case true:
                         break;
                     case false:
-                        PathHelper.OpenUrl(@"https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64");
+                        PathHelper.OpenUrl(urlMarketplace);
                         CloseViewCallback?.Invoke();
                         return;
                 }
@@ -257,6 +270,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             else if (warning != null)
                 ShowWarning(Res.WarningMessageInstallationWarning(warning));
             UpdateStatus(currentStatus.Path);
+#endif
         }
 
         private void OnRemoveCommand()

@@ -1,4 +1,5 @@
-﻿#region Copyright
+﻿#if NETFRAMEWORK && !NET472_OR_GREATER
+#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ImageDebuggerVisualizer.cs
@@ -15,13 +16,24 @@
 
 #region Usings
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.IO;
 
+using KGySoft.Drawing.DebuggerVisualizers.GdiPlus;
 using KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization;
 using KGySoft.Drawing.ImagingTools.Model;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;
+
+#endregion
+
+#region Attributes
+
+[assembly: DebuggerVisualizer(typeof(ImageDebuggerVisualizer), typeof(ImageSerializer),
+    Target = typeof(Image),
+    Description = "KGy SOFT Image Debugger Visualizer")]
 
 #endregion
 
@@ -53,3 +65,4 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus
         #endregion
     }
 }
+#endif

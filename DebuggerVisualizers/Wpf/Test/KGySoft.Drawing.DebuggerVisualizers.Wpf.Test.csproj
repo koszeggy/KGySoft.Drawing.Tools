@@ -2,9 +2,10 @@
 
   <PropertyGroup>
     <!--<TargetFrameworks>net35;net40;net45;net462;net6.0-windows</TargetFrameworks>-->
-    <TargetFrameworks>net472</TargetFrameworks>
+    <TargetFrameworks>net462;net472</TargetFrameworks>
     <OutputType>WinExe</OutputType>
     <Nullable>enable</Nullable>
+    <UseWindowsForms Condition="'$(TargetFramework)'!='net472'">true</UseWindowsForms>
     <UseWPF>true</UseWPF>
     <LangVersion>latest</LangVersion>
     <DefineConstants>$(DefineConstants);WPF</DefineConstants>

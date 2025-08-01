@@ -1,4 +1,5 @@
-﻿#region Copyright
+﻿#if NETFRAMEWORK && !NET472_OR_GREATER
+#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ReadableBitmapDataDebuggerVisualizer.cs
@@ -15,10 +16,21 @@
 
 #region Usings
 
+using System.Diagnostics;
+
+using KGySoft.Drawing.DebuggerVisualizers.Core;
 using KGySoft.Drawing.DebuggerVisualizers.Core.Serialization;
 using KGySoft.Drawing.ImagingTools.Model;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;
+
+#endregion
+
+#region Attributes
+
+[assembly: DebuggerVisualizer(typeof(ReadableBitmapDataDebuggerVisualizer), typeof(ReadableBitmapDataSerializer),
+    TargetTypeName = "KGySoft.Drawing.Imaging.BitmapDataBase, KGySoft.Drawing.Core",
+    Description = "KGy SOFT IReadableBitmapData Debugger Visualizer")]
 
 #endregion
 
@@ -37,3 +49,4 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core
         #endregion
     }
 }
+#endif

@@ -1,4 +1,5 @@
-﻿#region Copyright
+﻿#if NETFRAMEWORK && !NET472_OR_GREATER
+#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
 //  File: SkiaCustomColorDebuggerVisualizer.cs
@@ -15,11 +16,32 @@
 
 #region Usings
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
+using KGySoft.Drawing.DebuggerVisualizers.SkiaSharp;
 using KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization;
 
 using Microsoft.VisualStudio.DebuggerVisualizers;
+
+using SkiaSharp;
+
+#endregion
+
+
+#region Attributes
+
+[assembly: DebuggerVisualizer(typeof(SkiaCustomColorDebuggerVisualizer), typeof(SkiaColorSerializer),
+    Target = typeof(SKColor),
+    Description = "KGy SOFT SKColor Debugger Visualizer")]
+
+[assembly: DebuggerVisualizer(typeof(SkiaCustomColorDebuggerVisualizer), typeof(SkiaColorSerializer),
+    Target = typeof(SKPMColor),
+    Description = "KGy SOFT SKPMColor Debugger Visualizer")]
+
+[assembly: DebuggerVisualizer(typeof(SkiaCustomColorDebuggerVisualizer), typeof(SkiaColorSerializer),
+    Target = typeof(SKColorF),
+    Description = "KGy SOFT SKColorF Debugger Visualizer")]
 
 #endregion
 
@@ -37,3 +59,4 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp
         #endregion
     }
 }
+#endif

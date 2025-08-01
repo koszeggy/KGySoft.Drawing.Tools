@@ -312,11 +312,6 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Are you sure you want to remove this installation?</summary>
         internal static string ConfirmMessageRemoveInstallation => Get("ConfirmMessage_RemoveInstallation");
 
-#if NETCOREAPP
-        /// <summary>You are about to install the .NET Core version, which might not be supported by Visual Studio as a debugger visualizer. Are you sure?</summary>
-        internal static string ConfirmMessageNetCoreVersion => Get("ConfirmMessage_NetCoreVersion"); 
-#endif
-
         /// <summary>There are unsaved modifications. Are sure to discard the changes?</summary>
         internal static string ConfirmMessageDiscardChanges => Get("ConfirmMessage_DiscardChanges");
 
@@ -327,6 +322,20 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>One or more selected items contain resources for unknown libraries. This may occur if a selected item is for a newer Imaging Tools version.
         /// Are you sure you want to continue? If so, the resources for the unknown libraries will be skipped.</summary>
         internal static string ConfirmMessageResourceUnknownLibraries => Get("ConfirmMessage_ResourceUnknownLibraries");
+
+#if NETCOREAPP
+        /// <summary>This is the .NET Core build of KGy SOFT Imaging Tools. To install debugger visualizers you need to use a .NET Framework build.
+        ///
+        /// Do you want to visit the Visual Studio Marketplace where you can download the installer of the debugger visualizers?</summary>
+        internal static string ConfirmMessageNetCoreDebuggerVisualizers => Get("ConfirmMessage_NetCoreDebuggerVisualizers");
+#endif
+
+#if NET472_OR_GREATER
+        /// <summary>This is the .NET Framework 4.7.2 build of KGy SOFT Imaging Tools. To install the classic debugger visualizers you need to use a build targeting .NET Framework 4.6.2 or lower.
+        ///
+        /// Do you want to visit the GitHub page where you can download various builds for different target platforms?</summary>
+        internal static string ConfirmMessageNet472DebuggerVisualizers => Get("ConfirmMessage_Net472DebuggerVisualizers"); 
+#endif
 
         /// <summary>The selected quantizer uses more colors than the original image.
         /// It is possible that is has no effect.</summary>
