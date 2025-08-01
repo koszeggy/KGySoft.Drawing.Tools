@@ -687,6 +687,9 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Language settings cannot be applied: {0}</summary>
         internal static string ErrorMessageCannotApplyLanguageSettings(string message) => Get("ErrorMessage_CannotApplyLanguageSettingsFormat", message);
 
+        /// <summary>Could not open folder: {0}</summary>
+        internal static string ErrorMessageCannotOpenFolder(string message) => Get("ErrorMessage_CannotOpenFolderFormat", message);
+
 #if NET45_OR_GREATER
         /// <summary>Could not create directory {0}: {1}
         ///

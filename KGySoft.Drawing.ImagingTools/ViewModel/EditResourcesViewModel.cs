@@ -94,7 +94,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommand ApplyResourcesCommand => Get(() => new SimpleCommand(OnApplyResourcesCommand));
         internal ICommand SaveResourcesCommand => Get(() => new SimpleCommand(OnSaveResourcesCommand));
         internal ICommand CancelEditCommand => Get(() => new SimpleCommand(OnCancelEditCommand));
-        internal ICommand OpenResourcesFolderCommand => Get(() => new SimpleCommand(() => PathHelper.OpenUrl(Res.ResourcesDir)));
+        internal ICommand OpenResourcesFolderCommand => Get(() => new SimpleCommand(OnOpenResourcesFolderCommand));
 
         internal ICommandState ApplyResourcesCommandState => Get(() => new CommandState());
 
@@ -448,6 +448,21 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         }
 
         private void OnCancelEditCommand() => SetModified(false);
+
+        private void OnOpenResourcesFolderCommand()
+        {
+            try
+            {
+                string dir = Res.ResourcesDir;
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+                PathHelper.OpenUrl(dir);
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                ShowError(Res.ErrorMessageCannotOpenFolder(e.Message));
+            }
+        }
 
         #endregion
 

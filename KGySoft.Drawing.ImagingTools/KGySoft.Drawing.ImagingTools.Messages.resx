@@ -448,6 +448,9 @@ Either select at least '{1}' or reduce the number of colors to {2}.</value>
   <data name="ErrorMessage_CannotApplyLanguageSettingsFormat" xml:space="preserve">
     <value>Language settings cannot be applied: {0}</value>
   </data>
+  <data name="ErrorMessage_CannotOpenFolderFormat" xml:space="preserve">
+    <value>Could not open folder: {0}</value>
+  </data>
   <data name="ErrorMessage_FailedToUninstallClassicFormat" xml:space="preserve">
     <value>Failed to uninstall the classic visualizers from {0}: {1}
 
@@ -1160,7 +1163,7 @@ Newly generated resources will contain English texts prefixed with "[T]". You ca
     <value>When checked, hides the resources of the dependent libraries. A localization is allowed to contain the resources of the Imaging Tools application only.</value>
   </data>
   <data name="btnGoToFile.ToolTipText" xml:space="preserve">
-    <value>Opens containing folder</value>
+    <value>Open containing folder</value>
   </data>
   <data name="gbResourceFile.Text" xml:space="preserve">
     <value>Resource File</value>
