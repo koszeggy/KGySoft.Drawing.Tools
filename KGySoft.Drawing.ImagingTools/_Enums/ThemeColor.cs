@@ -313,5 +313,15 @@ namespace KGySoft.Drawing.ImagingTools
         /// Represents the color of the highlight effect on a <see cref="ToolStripSeparator"/>.
         /// </summary>
         ToolStripSeparatorLight,
+
+        /// <summary>
+        /// Represents the background color of a <see cref="ProgressBar"/>.
+        /// </summary>
+        ProgressBarBackground,
+
+        /// <summary>
+        /// Represents the foreground color of a <see cref="ProgressBar"/>.
+        /// </summary>
+        ProgressBar,
     }
 }

@@ -225,6 +225,13 @@ namespace KGySoft.Drawing.ImagingTools.View
                     scrollBar.ApplyVisualStyleTheme();
                     break;
 
+                case ProgressBar progressBar:
+                    // Makes a difference only when visual styles are not enabled
+                    progressBar.BackColor = ThemeColors.ProgressBarBackground;
+                    progressBar.ForeColor = ThemeColors.ProgressBar;
+                    progressBar.ApplyVisualStyleTheme();
+                    break;
+
 #if !SYSTEM_THEMING
                 case AdvancedToolStrip toolStrip:
                     toolStrip.ApplyTheme();
@@ -242,12 +249,19 @@ namespace KGySoft.Drawing.ImagingTools.View
         
         private static void ApplyVisualStyleTheme(this Control control)
         {
-            if (!OSUtils.IsWindows10OrLater || !Application.RenderWithVisualStyles)
+            if (!OSUtils.IsWindows10OrLater) // TODO: || !VisualStyleHelper.InitializedWithVisualStyles
                 return;
 
             const string darkTheme = "DarkMode_Explorer";
             const string lightTheme = "Explorer";
             const string textBoxTheme = "CFD";
+
+            control.HandleCreated -= Control_HandleCreated;
+            control.HandleCreated += Control_HandleCreated;
+            control.Disposed -= Control_Disposed;
+            control.Disposed += Control_Disposed;
+            if (!control.IsHandleCreated || !Application.RenderWithVisualStyles)
+                return;
 
             switch (control)
             {
@@ -281,7 +295,28 @@ namespace KGySoft.Drawing.ImagingTools.View
                             UxTheme.SetWindowTheme(cInfo.hwndList, ThemeColors.IsDarkBaseTheme ? darkTheme : null, null); 
                     }
                     break;
+
+                case ProgressBar:
+                    // When dark theme is enabled, turning off visual styles for the progress bar, so custom colors can be applied.
+                    if (ThemeColors.IsDarkBaseTheme)
+                        UxTheme.SetWindowTheme(control.Handle, " ", " ");
+                    else
+                        UxTheme.SetWindowTheme(control.Handle, null, null);
+                    break;
             }
+        }
+
+        #endregion
+
+        #region Event Handlers
+
+        private static void Control_HandleCreated(object sender, EventArgs e) => ((Control)sender).ApplyVisualStyleTheme();
+
+        private static void Control_Disposed(object sender, EventArgs e)
+        {
+            Control control = (Control)sender;
+            control.HandleCreated -= Control_HandleCreated;
+            control.Disposed -= Control_Disposed;
         }
 
         #endregion

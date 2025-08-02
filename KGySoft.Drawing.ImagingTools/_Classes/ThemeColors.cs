@@ -111,6 +111,8 @@ namespace KGySoft.Drawing.ImagingTools
             ProfessionalColors.GripLight, // ToolStripGripLight (Window)
             ProfessionalColors.SeparatorDark, // ToolStripSeparatorDark
             ProfessionalColors.SeparatorLight, // ToolStripSeparatorLight (ButtonHighlight)
+            SystemColors.Control, // ProgressBarBackground (actually not applied with visual styles, default theming)
+            SystemColors.Highlight, // ProgressBar (actually not applied with visual styles, default theming)
         ];
 
         private static readonly Color[] darkThemeColors =
@@ -173,6 +175,8 @@ namespace KGySoft.Drawing.ImagingTools
             Color.FromArgb((unchecked((int)0xFF2C2C2C))), // ToolStripGripLight
             Color.FromArgb((unchecked((int)0xFF3E3E3E))), // ToolStripSeparatorDark
             Color.FromArgb((unchecked((int)0xFF2C2C2C))), // ToolStripSeparatorLight
+            Color.FromArgb((unchecked((int)0xFF707070))), // ProgressBarBackground
+            Color.FromArgb((unchecked((int)0xFF7160E8))), // ProgressBar
 
             //// Explorer / Gray Window / TextBox highlight / Files ListView-like dark ToolStrip menu items
             //Color.FromArgb((unchecked((int)0xFF383838))), // Control
@@ -232,6 +236,8 @@ namespace KGySoft.Drawing.ImagingTools
             //Color.FromArgb((unchecked((int)0xFF2C2C2C))), // ToolStripGripLight
             //Color.FromArgb((unchecked((int)0xFF383838))), // ToolStripSeparatorDark
             //Color.FromArgb((unchecked((int)0xFF2C2C2C))), // ToolStripSeparatorLight
+            //Color.FromArgb((unchecked((int)0xFF707070))), // ProgressBarBackground
+            //Color.FromArgb((unchecked((int)0xFF7160E8))), // ProgressBar
 
             //// .NET 9's dark theme by its AlternateSystemColors
             //Color.FromArgb((unchecked((int)0xFF202020))), // Control
@@ -291,6 +297,8 @@ namespace KGySoft.Drawing.ImagingTools
             //Color.FromArgb((unchecked((int)0xFF323232))), // ToolStripGripLight (Window)
             //Color.FromArgb((unchecked((int)0xFF404040))), // ToolStripSeparatorDark (GetAlphaBlendedColorHighRes(null, buttonShadow, window, 70))
             //Color.FromArgb((unchecked((int)0xFF101010))), // ToolStripSeparatorLight (ButtonHighlight)
+            //Color.FromArgb((unchecked((int)0xFF707070))), // ProgressBarBackground
+            //Color.FromArgb((unchecked((int)0xFF7160E8))), // ProgressBar
         ];
 
         private static volatile bool isDarkBaseTheme;
@@ -386,6 +394,8 @@ namespace KGySoft.Drawing.ImagingTools
         internal static Color ToolStripGripLight => Get(ThemeColor.ToolStripGripLight);
         internal static Color ToolStripSeparatorDark => Get(ThemeColor.ToolStripSeparatorDark);
         internal static Color ToolStripSeparatorLight => Get(ThemeColor.ToolStripSeparatorLight);
+        internal static Color ProgressBarBackground => Get(ThemeColor.ProgressBarBackground);
+        internal static Color ProgressBar => Get(ThemeColor.ProgressBar);
 
         internal static ProfessionalColorTable ColorTable { get; } = new ThemeColorTable();
 
