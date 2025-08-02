@@ -113,10 +113,16 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 ErrorProvider.SetIconAlignment(gbTranslatedText, ErrorIconAlignment.MiddleLeft);
                 WarningProvider.SetIconAlignment(gbTranslatedText, ErrorIconAlignment.MiddleLeft);
                 ValidationMapping[nameof(ResourceEntry.TranslatedText)] = gbTranslatedText;
-                pnlResourceFile.Height = cmbResourceFiles.Height;
             }
 
             base.OnLoad(e);
+        }
+
+        protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
+        {
+            base.ScaleControl(factor, specified);
+            if (pnlResourceFile != null)
+                pnlResourceFile.Height = cmbResourceFiles.Height;
         }
 
         protected override void ApplyResources()
