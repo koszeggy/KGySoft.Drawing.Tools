@@ -64,6 +64,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
                     base.WndProc(ref m);
                     PaintDarkNCArea(m.WParam);
+
+                    // Stopping buffered animations in dark mode to avoid flickering, which is especially apparent when it's embedded into a WPF control (modern visualizers).
+                    if (Application.RenderWithVisualStyles)
+                        UxTheme.BufferedPaintStopAllAnimations(Handle);
                     break;
 
                 default:

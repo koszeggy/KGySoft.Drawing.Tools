@@ -27,8 +27,6 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
     {
         #region Nested classes
 
-        #region NativeMethods class
-
         [SuppressMessage("ReSharper", "MemberHidesStaticFromOuterClass", Justification = "Outer class methods are never called from here.")]
         private static class NativeMethods
         {
@@ -68,10 +66,16 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             [DllImport("uxtheme.dll", EntryPoint = "#136")]
             internal static extern void FlushMenuThemes();
 
+            /// <summary>
+            /// Stops all buffered animations for the given window.
+            /// </summary>
+            /// <param name="hwnd">The handle of the window in which to stop all animations.</param>
+            /// <returns>If this function succeeds, it returns S_OK. Otherwise, it returns an HRESULT error code.</returns>
+            [DllImport("uxtheme.dll")]
+            internal static extern int BufferedPaintStopAllAnimations(IntPtr hwnd);
+
             #endregion
         }
-
-        #endregion
 
         #endregion
 
@@ -113,7 +117,14 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             NativeMethods.SetPreferredAppMode((int)theme);
         }
 
-        public static void FlushMenuThemes() => NativeMethods.FlushMenuThemes();
+        internal static void FlushMenuThemes() => NativeMethods.FlushMenuThemes();
+
+        internal static void BufferedPaintStopAllAnimations(IntPtr hwnd)
+        {
+            if (!OSUtils.IsVistaOrLater)
+                return;
+            NativeMethods.BufferedPaintStopAllAnimations(hwnd);
+        }
 
         #endregion
 
