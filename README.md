@@ -2,7 +2,7 @@
 
 # KGy SOFT Drawing Tools
 
-The KGy SOFT Drawing Tools repository contains a couple of applications and some [Debugger Visualizers](#debugger-visualizers) for several GDI+, WPF and SkiaSharp types such as `Bitmap`, `Metafile`, `Icon`, `BitmapData`, `Graphics`, `ImageSource`, `SKBitmap`, etc. (see also below). The visualizers use [KGy SOFT Imaging Tools](#kgy-soft-imaging-tools) to display these types visually, which can be executed as a standalone application as well.
+The KGy SOFT Drawing Tools repository contains the [KGy SOFT Imaging Tools](#kgy-soft-imaging-tools) application and some [Debugger Visualizers](#debugger-visualizers) for several GDI+, WPF and SkiaSharp types such as `Bitmap`, `Metafile`, `Icon`, `BitmapData`, `Graphics`, `ImageSource`, `SKBitmap`, etc. (see also below). The visualizers use [KGy SOFT Imaging Tools](#kgy-soft-imaging-tools) to display these types visually that can be executed as a standalone application as well.
 
 [![Website](https://img.shields.io/website/https/kgysoft.net/corelibraries.svg)](https://kgysoft.net/drawing)
 [![Drawing Libraries Repo](https://img.shields.io/github/repo-size/koszeggy/KGySoft.Drawing.svg?label=Drawing%20Libraries)](https://github.com/koszeggy/KGySoft.Drawing)
@@ -20,6 +20,9 @@ The KGy SOFT Drawing Tools repository contains a couple of applications and some
 
 
 ## KGy SOFT Imaging Tools
+<details>
+<summary><strong>Overview</strong></summary><p/>
+
 <p align="center">
   <img alt="KGySoft Imaging Tools on Windows 10" src="https://user-images.githubusercontent.com/27336165/124250655-5e760d80-db25-11eb-824f-195e5e1dbcbe.png"/>
   <br/><em>KGy SOFT Imaging Tools on Windows 10</em>
@@ -33,8 +36,10 @@ The Imaging Tools application makes possible to load images and icons from file,
 </p>
 
 > 💡 _Tip:_ As a developer, you can access all of these image manipulaion functions by using [KGy SOFT Drawing Libraries](https://github.com/koszeggy/KGySoft.Drawing). It supports not just `System.Drawing` types but also completely managed and technology agnostic bitmap data manipulation as well.
+</details>
 
-### Compatibility
+<details>
+<summary><strong>Compatibility</strong><a id="compatibility"/></summary><p/>
 
 KGy SOFT Imaging Tools supports a wide range of platforms. Windows is supported starting with Windows XP but by using [Mono](https://www.mono-project.com/download/stable/) you can execute it also on Linux. See the [downloads](#download) for details.
 
@@ -47,8 +52,10 @@ KGy SOFT Imaging Tools supports a wide range of platforms. Windows is supported 
   <img alt="KGy SOFT Imaging Tools on ReactOS" src="https://github.com/koszeggy/KGySoft.Drawing.Tools/assets/27336165/0eef286a-2bb6-4639-b775-b6f75c0e7fba"/>
   <br/><em>KGy SOFT Imaging Tools on ReactOS</em>
 </p>
+</details>
 
-### Localization
+<details>
+<summary><strong>Localization</strong><a id="localization"/></summary><p/>
 
 KGy SOFT Imaging Tools supports localization from .resx files. New language resources can be generated for any languages, and you can edit the texts within the application. The changes can be applied on-the-fly, without exiting the application. If you switch to a right-to-left language, then the layout is also immediately applied (at least on Windows).
 
@@ -63,11 +70,12 @@ The edited resources are saved in .resx files in the `Resources` subfolder of th
 
 > 📝 _Note:_ If you create a localization for your language feel free to [submit a new issue](https://github.com/koszeggy/KGySoft.Drawing.Tools/issues/new?assignees=&labels=&template=submit-resources.md&title=%5BRes%5D) and I will make it available for everyone. Don't forget to mention your name in the translated About menu.
 
-#### Help, my resources are gone!
-
-If you use Imaging Tools as debugger visualizers, then it can be executed from various locations. See the bottom of the [Troubleshooting](#troubleshooting) section below.
+</details>
 
 ## Debugger Visualizers
+
+<details>
+<summary><strong>Overview</strong></summary><p/>
 
 Imaging Tools is packed with several debugger visualizers for Visual Studio (compatible with all versions starting with Visual Studio 2008, and supports even .NET Core 2.1 and newer platform targets). When a type is debugged in Visual Studio and there is a debugger visualizer installed for that type, then a magnifier icon appears that you can click to open the visualizer.
 
@@ -83,8 +91,8 @@ Either click the magnifier icon or choose a debugger visualizer from the drop do
   <br/><em>Debugging a Graphics instance</em>
 </p>
 
- The debugger visualizers are invoked from different assemblies:
-- The `KGySoft.Drawing.DebuggerVisualizers.GdiPlus` assembly supports the following types:
+ #### Supported types:
+- GDI+ types:
   - `System.Drawing.Image`: If executed for a non read-only variable or member of type `Image`, then the actual value can be replaced by any `Bitmap` or `Metafile`.
    - `System.Drawing.Bitmap`: Supports multi-page, multi-resolution and animated `Bitmap` instances. The bitmap can be saved in many formats. In a non read-only context the bitmap can be replaced from file and its palette (for indexed bitmaps) can be edited.
    - `System.Drawing.Imaging.Metafile`: Unlike many other image debugger visualizers, this one does not transform the metafile into a low-resolution PNG image because it is able to serialize the actual metafile content. The metafile can be saved into EMF/WMF formats. In a non read-only context the image can be replaced from file.
@@ -93,33 +101,49 @@ Either click the magnifier icon or choose a debugger visualizer from the drop do
    - `System.Drawing.Graphics`: Supports both image and native window graphics.
    - `System.Drawing.Imaging.ColorPalette`: In a non read-only context the colors can be edited.
    - `System.Drawing.Color`: In a non read-only context the color can be replaced.
-- The `KGySoft.Drawing.DebuggerVisualizers.Wpf` assembly supports the following types (in read-only mode):
+- WPF types:
    - `System.Windows.Media.ImageSource`: All derived types are supported, including vector images (`System.Windows.Media.DrawingImage`) and bitmaps (types derived from `System.Windows.Media.Imaging.BitmapSource` such as `BitmapFrame`, `BitmapFrame`, `WriteableBitmap`, etc.). Vector images are displayed as bitmaps, adjusted to the size of the primary display.
    - `System.Windows.Media.Imaging.BitmapPalette`: Color entries can be examined individually.
    - `System.Windows.Media.Color`: sRGB, ScRGB, and colors with context profile are all supported.
-- The `KGySoft.Drawing.DebuggerVisualizers.SkiaSharp` assembly supports the following types (in read-only mode):
+- SkiaSharp types:
    - `SkiaSharp.SKBitmap`: All color/alpha types of any color space are supported
    - `SkiaSharp.SKImage`
    - `SkiaSharp.SKPixmap`
    - `SkiaSharp.SKSurface`: All back-ends are supported
    - `SkiaSharp.SKColor`
+   - `SkiaSharp.SKPMColor`
+   - `SkiaSharp.SKColorF`
+- KGy SOFT types:
+   - `KGySoft.Drawing.Imaging.IReadableBitmapData`
+   - `KGySoft.Drawing.Imaging.Palette`: Color entries can be examined individually.
+   - `KGySoft.Drawing.Imaging.Color32`
+   - `KGySoft.Drawing.Imaging.PColor32`
+   - `KGySoft.Drawing.Imaging.Color64`
+   - `KGySoft.Drawing.Imaging.PColor64`
+   - `KGySoft.Drawing.Imaging.ColorF`
+   - `KGySoft.Drawing.Imaging.PColorF`
 
 <p align="center">
   <img alt="Debugging a ColorPalette instance" src="https://user-images.githubusercontent.com/27336165/124268121-66d84380-db39-11eb-97f5-6ff569b01daa.png"/>
   <br/><em>Debugging a ColorPalette instance</em>
 </p>
 
+</details>
+
 ### Installing Debugger Visualizers
 
-#### By VSIX Installer
+<details>
+<summary><strong>By VSIX Installer</strong></summary><p/>
 
 If you use Visual Studio 2013 or newer, then you can perform the install directly from Visual Studio by the _Extensions/Manage Extensions_ (older Visual Studio versions: _Tools/Extensions and Updates..._) menu if you search for the "_KGy SOFT Image DebuggerVisualizers_" extension.
 
 Alternatively, you can download the installer package from the VisualStudio Marketplace. There are two versions available:
 * A [32-bit version](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers) for Visual Studio 2013-2019
 * And a [64-bit version](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) for Visual Studio 2022
+</details>
 
-#### Manual Install
+<details>
+<summary><strong>Manual Install</strong></summary><p/>
 
 1. [Download](#download) the binaries and extract the .7z archive to any folder.
 2. Open the folder with the extracted content. You will find five folders there:
@@ -151,7 +175,12 @@ Alternatively, you can download the installer package from the VisualStudio Mark
   <br/><em>Installation Complete</em>
 </p>
 
+</details>
+
 ### Troubleshooting
+
+<details>
+<summary><strong>Details</strong></summary><p/>
 
 If Visual Studio cannot load the visualizer or you have other debugger visualizer related problems check this table.
 
@@ -180,8 +209,12 @@ If Visual Studio cannot load the visualizer or you have other debugger visualize
 | The app looks blurry. | If you changed the DPI settins, you need to restart the application. Per-monitor DPI awareness is not supported. |
 | The visual elements are scaled incorrectly.<br/>![Incorrectly scaled image](https://user-images.githubusercontent.com/27336165/124148578-0e993700-da90-11eb-9c67-4e06e522795b.png) | May happen if you use Imaging Tools from debugger visualizers, and you have just changed the DPI settings without signing out/in. However, signing in and out is not required if you execute the app directly. |
 | I edited the language resource files but I cannot find them (or they appear to be gone) | The _Visual Studio/Tools/KGy SOFT Image Debugger Visualizers_ and clicking the magnifier icon executes the Imaging Tools from different locations. If you edit the language resources at one place they will not be automatically applied at the other place. Therefore, the saved resources might be at different possible locations:<br/>• If you execute a manually deployed version the resources will be in a `Resources` subfolder in the folder you executed the Imaging Tools from.<br/>• During debugging the tool is executed from the debugger visualizers folder: `Documents\​Visual Studio <version>\Visualizers`<br/>• If you launch the tool from the Visual Studio Tools menu, then it is located under `ProgramData\​Microsoft\​VisualStudio\​Packages\...` |
+</details>
 
 ## Download
+
+<details>
+<summary><strong>Details</strong><a id="by-vsix-installer"/></summary><p/>
 
 > 💡 _Tip:_ See [above](#by-vsix-installer) how to download the debugger visualizer installers
 
@@ -193,6 +226,7 @@ To support the widest possible range of platforms the binaries archive contains 
 * `net45`: This is the .NET Framework 4.5 build. Requires Windows Vista or later. As a debugger visualizer works both for .NET Framework 4.x and .NET Core projects (including .NET 5 and newer platforms) but does not support debugging SkiaSharp types.
 * `net462`: This is the .NET Framework 4.6.2 build. Requires Windows 7 or greater, and this is the recommended version to use as a debugger visualizer for .NET Framework 4.x and .NET Core projects (including .NET 5 and newer platforms). As a standalone application, this is also the recommended version for Linux (requires Mono).
 * `net6.0-windows`: This folder contains the .NET 6.0 build. As a standalone application this is the recommended version for Windows 7 and above. On the other hand, this one cannot be used as a debugger visualizer (even for .NET or .NET Core projects) and cannot be executed on Linux either.
+</details>
 
 ## Release Notes
 
