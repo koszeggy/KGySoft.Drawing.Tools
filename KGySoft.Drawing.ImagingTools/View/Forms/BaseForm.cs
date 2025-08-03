@@ -89,34 +89,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Constructors
 
-        #region Static Constructors
-
-        static BaseForm()
-        {
-#if NETFRAMEWORK
-            Type? dpiHelper = Reflector.ResolveType(typeof(Form).Assembly, "System.Windows.Forms.DpiHelper");
-            if (dpiHelper == null)
-                return;
-
-            // Turning off WinForms auto resize logic to prevent interferences.
-            // Occurs when executed as visualizer debugger and devenv.exe.config contains some random DpiAwareness
-            Reflector.TrySetField(dpiHelper, "isInitialized", true);
-            Reflector.TrySetField(dpiHelper, "enableHighDpi", false);
-#endif
-        }
-
-        #endregion
-
-        #region Instance Constructors
-
         protected BaseForm()
         {
             threadId = Thread.CurrentThread.ManagedThreadId;
             handleCreated = new ManualResetEventSlim();
             ThemeColors.ThemeChanged += ThemeColors_ThemeChanged;
         }
-
-        #endregion
 
         #endregion
 

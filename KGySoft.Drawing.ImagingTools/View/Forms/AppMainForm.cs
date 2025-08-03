@@ -27,7 +27,7 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
-    internal sealed partial class AppMainForm : MvvmParentForm
+    internal sealed class AppMainForm : MvvmParentForm
     {
         #region Properties
 
@@ -56,7 +56,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         internal AppMainForm(MainUserControl mvvmChild) : base(mvvmChild)
         {
-            InitializeComponent();
+            Name = "AppMainForm";
         }
 
         #endregion
@@ -87,13 +87,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             }
 
             base.OnFormClosing(e);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-                components?.Dispose();
-            base.Dispose(disposing);
         }
 
         #endregion
