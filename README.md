@@ -74,7 +74,7 @@ The edited resources are saved in .resx files in the `Resources` subfolder of th
 
 ## Debugger Visualizers
 
-<details>
+<details open>
 <summary><strong>Overview</strong></summary><p/>
 
 Imaging Tools is packed with several debugger visualizers for Visual Studio (compatible with all versions starting with Visual Studio 2008, and supports even .NET Core 2.1 and newer platform targets). When a type is debugged in Visual Studio and there is a debugger visualizer installed for that type, then a magnifier icon appears that you can click to open the visualizer.
@@ -84,14 +84,22 @@ Imaging Tools is packed with several debugger visualizers for Visual Studio (com
   <br/><em>Debugger Visualizer Usage</em>
 </p>
 
-Either click the magnifier icon or choose a debugger visualizer from the drop down list (if more visualizers are applicable).
+Either click the magnifier icon or choose a debugger visualizer from the drop down list (if more visualizers are applicable). Starting with Visual Studio 2022 version 17.9 Preview 1 a new type of visualizers are available that can remain open while stepping through the code. These debugger visualizers can be installed from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) only.
+
+<p align="center">
+  <img alt="Debugging a Graphics instance" src="https://github.com/user-attachments/assets/7659a0a1-7a66-40a1-8fd7-9222823e52f0"/>
+  <br/><em>Debugging Graphics in Visual Studio 2022</em>
+</p>
+
+For older Visual Studio versions the classic debugger visualizers are still available. They can be installed either from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers) or by [manual install](#)
 
 <p align="center">
   <img alt="Debugging a Graphics instance" src="https://user-images.githubusercontent.com/27336165/124266974-f54bc580-db37-11eb-98e1-207c48590afa.png"/>
-  <br/><em>Debugging a Graphics instance</em>
+  <br/><em>Debugging a Graphics instance by the classic debugger visualizers</em>
 </p>
+ 
+#### Supported types:
 
- #### Supported types:
 - GDI+ types:
   - `System.Drawing.Image`: If executed for a non read-only variable or member of type `Image`, then the actual value can be replaced by any `Bitmap` or `Metafile`.
    - `System.Drawing.Bitmap`: Supports multi-page, multi-resolution and animated `Bitmap` instances. The bitmap can be saved in many formats. In a non read-only context the bitmap can be replaced from file and its palette (for indexed bitmaps) can be edited.
@@ -143,7 +151,7 @@ Alternatively, you can download the installer package from the VisualStudio Mark
 </details>
 
 <details>
-<summary><strong>Manual Install</strong></summary><p/>
+<summary><strong>Manual Install</strong><a id="manual-install"/></summary><p/>
 
 1. [Download](#download) the binaries and extract the .7z archive to any folder.
 2. Open the folder with the extracted content. You will find five folders there:
