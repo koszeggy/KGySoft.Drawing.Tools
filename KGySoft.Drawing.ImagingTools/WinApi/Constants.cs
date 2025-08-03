@@ -20,6 +20,8 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
         #region Constants
         // ReSharper disable InconsistentNaming
 
+        internal const int S_OK = 0;
+
         internal const int WS_BORDER = 0x00800000;
 
         internal const int WM_PAINT = 0x0F;

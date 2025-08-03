@@ -330,7 +330,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
 
             var result = new SortableBindingList<CultureInfo>(AllowAnyLanguage ? NeutralLanguages : SelectableLanguages);
-            result.ApplySort(nameof(CultureInfo.EnglishName), ListSortDirection.Ascending);
+            result.ApplySort(nameof(CultureInfo.NativeName), ListSortDirection.Ascending);
             CultureInfo lastSelectedLanguage = CurrentLanguage;
             Languages = result;
             CurrentLanguage = result.Contains(lastSelectedLanguage) ? lastSelectedLanguage : Res.DefaultLanguage;

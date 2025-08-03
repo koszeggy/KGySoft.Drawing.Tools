@@ -1170,7 +1170,7 @@ Newly generated resources will contain English texts prefixed with "[T]". You ca
     <value>When checked, hides the resources of the dependent libraries. It is allowed for a localization to contain the resources of the Imaging Tools application only.</value>
   </data>
   <data name="btnGoToFile.ToolTipText" xml:space="preserve">
-    <value>Open containing folder</value>
+    <value>Open in containing folder</value>
   </data>
   <data name="gbResourceFile.Text" xml:space="preserve">
     <value>Resource File</value>

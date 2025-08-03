@@ -15,7 +15,6 @@
 
 #region Usings
 
-
 #region Used Namespaces
 
 using System;
@@ -31,6 +30,7 @@ using System.Resources;
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.Drawing.ImagingTools.WinApi;
 using KGySoft.Reflection;
 using KGySoft.Resources;
 
@@ -453,9 +453,18 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             try
             {
+                // is the file exists, we try to select it in Explorer
+                if (OSUtils.IsWindows && File.Exists(ToFileNameWithPath(SelectedLibrary)))
+                {
+                    if (Shell32.OpenFolderAndSelectItems(Res.ResourcesDir, ToFileName(SelectedLibrary)))
+                        return;
+                }
+
                 string dir = Res.ResourcesDir;
                 if (!Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
+
+                // otherwise, we just open the folder
                 PathHelper.OpenUrl(dir);
             }
             catch (Exception e) when (!e.IsCritical())
