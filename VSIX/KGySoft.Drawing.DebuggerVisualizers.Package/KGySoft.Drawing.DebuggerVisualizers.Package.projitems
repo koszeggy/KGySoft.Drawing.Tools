@@ -15,6 +15,5 @@
     <Compile Include="$(MSBuildThisFileDirectory)_Classes\Notifications.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)_Classes\ViewHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)_Extensions\ExceptionExtensions.cs" />
-    <None Include="$(MSBuildThisFileDirectory)readme.md" />
   </ItemGroup>
 </Project>

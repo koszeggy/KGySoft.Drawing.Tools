@@ -68,6 +68,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <None Include="readme.md" />
     <None Include="source.extension.vsixmanifest" />
     <None Include="..\..\KGySoft.snk">
       <Link>KGySoft.snk</Link>
