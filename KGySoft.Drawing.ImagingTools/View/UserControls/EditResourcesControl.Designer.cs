@@ -50,6 +50,7 @@
             // 
             // gbResourceEntries
             // 
+            this.gbResourceEntries.BackColor = System.Drawing.SystemColors.Control;
             this.gbResourceEntries.Controls.Add(this.gridResources);
             this.gbResourceEntries.Controls.Add(this.pnlFilter);
             this.gbResourceEntries.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -136,6 +137,7 @@
             // 
             // gbResourceFile
             // 
+            this.gbResourceFile.BackColor = System.Drawing.SystemColors.Control;
             this.gbResourceFile.Controls.Add(this.pnlResourceFile);
             this.gbResourceFile.Controls.Add(this.chbHideDependencies);
             this.gbResourceFile.Dock = System.Windows.Forms.DockStyle.Top;
@@ -193,6 +195,7 @@
             // 
             // splitterEditResources
             // 
+            this.splitterEditResources.BackColor = System.Drawing.SystemColors.Control;
             this.splitterEditResources.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.splitterEditResources.Location = new System.Drawing.Point(3, 205);
             this.splitterEditResources.MinExtra = 50;
@@ -204,6 +207,7 @@
             // 
             // pnlEditResourceEntry
             // 
+            this.pnlEditResourceEntry.BackColor = System.Drawing.SystemColors.Control;
             this.pnlEditResourceEntry.ColumnCount = 2;
             this.pnlEditResourceEntry.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.pnlEditResourceEntry.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));

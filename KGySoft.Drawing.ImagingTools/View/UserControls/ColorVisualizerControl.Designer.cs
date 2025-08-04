@@ -34,7 +34,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.tbAlpha = new System.Windows.Forms.TrackBar();
             this.tsMenu = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedToolStrip();
             this.btnSelectColor = new System.Windows.Forms.ToolStripButton();
-            this.txtColor = new AdvancedTextBox();
+            this.txtColor = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox();
             this.buttons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
             this.pnlControls.SuspendLayout();
             this.tblColor.SuspendLayout();
@@ -51,13 +51,14 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             // pnlControls
             // 
+            this.pnlControls.BackColor = System.Drawing.SystemColors.Control;
             this.pnlControls.Controls.Add(this.tblColor);
             this.pnlControls.Controls.Add(this.tsMenu);
             this.pnlControls.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlControls.Location = new System.Drawing.Point(0, 0);
             this.pnlControls.Name = "pnlControls";
             this.pnlControls.Padding = new System.Windows.Forms.Padding(0, 0, 0, 3);
-            this.pnlControls.Size = new System.Drawing.Size(247, 83);
+            this.pnlControls.Size = new System.Drawing.Size(244, 83);
             this.pnlControls.TabIndex = 0;
             // 
             // tblColor
@@ -84,7 +85,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.tblColor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tblColor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tblColor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tblColor.Size = new System.Drawing.Size(223, 80);
+            this.tblColor.Size = new System.Drawing.Size(220, 80);
             this.tblColor.TabIndex = 1;
             // 
             // lblRed
@@ -196,7 +197,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.pnlColor.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.pnlColor.Name = "pnlColor";
             this.tblColor.SetRowSpan(this.pnlColor, 4);
-            this.pnlColor.Size = new System.Drawing.Size(87, 78);
+            this.pnlColor.Size = new System.Drawing.Size(84, 78);
             this.pnlColor.TabIndex = 8;
             // 
             // lblAlpha
@@ -239,7 +240,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.tsMenu.Dock = System.Windows.Forms.DockStyle.Right;
             this.tsMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnSelectColor});
-            this.tsMenu.Location = new System.Drawing.Point(223, 0);
+            this.tsMenu.Location = new System.Drawing.Point(220, 0);
             this.tsMenu.Name = "tsMenu";
             this.tsMenu.Size = new System.Drawing.Size(24, 80);
             this.tsMenu.TabIndex = 1;
@@ -261,7 +262,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.txtColor.Name = "txtColor";
             this.txtColor.ReadOnly = true;
             this.txtColor.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtColor.Size = new System.Drawing.Size(247, 95);
+            this.txtColor.Size = new System.Drawing.Size(244, 103);
             this.txtColor.TabIndex = 1;
             this.txtColor.TabStop = false;
             this.txtColor.WordWrap = false;
@@ -270,9 +271,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             this.buttons.BackColor = System.Drawing.Color.Transparent;
             this.buttons.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.buttons.Location = new System.Drawing.Point(0, 178);
+            this.buttons.Location = new System.Drawing.Point(0, 186);
             this.buttons.Name = "buttons";
-            this.buttons.Size = new System.Drawing.Size(247, 35);
+            this.buttons.Size = new System.Drawing.Size(244, 35);
             this.buttons.TabIndex = 2;
             this.buttons.Visible = false;
             // 

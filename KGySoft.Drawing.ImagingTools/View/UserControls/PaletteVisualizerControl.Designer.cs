@@ -29,6 +29,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             // gbPalette
             // 
+            this.gbPalette.BackColor = System.Drawing.SystemColors.Control;
             this.gbPalette.Controls.Add(this.pnlPalette);
             this.gbPalette.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gbPalette.Location = new System.Drawing.Point(3, 3);
@@ -48,6 +49,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             // gbSelectedColor
             // 
+            this.gbSelectedColor.BackColor = System.Drawing.SystemColors.Control;
             this.gbSelectedColor.Controls.Add(this.colorVisualizerControl);
             this.gbSelectedColor.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.gbSelectedColor.Location = new System.Drawing.Point(3, 236);
@@ -59,9 +61,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             // colorVisualizerControl
             // 
+            this.colorVisualizerControl.BackColor = System.Drawing.Color.Transparent;
             this.colorVisualizerControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.colorVisualizerControl.Location = new System.Drawing.Point(3, 16);
             this.colorVisualizerControl.Name = "colorVisualizerControl";
+            this.colorVisualizerControl.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.colorVisualizerControl.Size = new System.Drawing.Size(235, 197);
             this.colorVisualizerControl.TabIndex = 0;
             // 
@@ -78,12 +82,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Size = new System.Drawing.Size(247, 490);
             this.Controls.Add(this.gbPalette);
             this.Controls.Add(this.gbSelectedColor);
             this.Controls.Add(this.okCancelButtons);
             this.Name = "PaletteVisualizerControl";
             this.Padding = new System.Windows.Forms.Padding(3);
+            this.Size = new System.Drawing.Size(247, 490);
             this.gbPalette.ResumeLayout(false);
             this.gbSelectedColor.ResumeLayout(false);
             this.ResumeLayout(false);

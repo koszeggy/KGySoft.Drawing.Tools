@@ -16,6 +16,7 @@
 #region Usings
 
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.ViewModel;
@@ -68,6 +69,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             : base(viewModel)
         {
             InitializeComponent();
+            BackColor = Color.Transparent; // to make the resize grip in the parent form visible
         }
 
         #endregion
@@ -116,6 +118,13 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             InitCommandBindings();
             InitPropertyBindings();
             base.ApplyViewModel();
+        }
+
+        protected override void ApplyTheme()
+        {
+            base.ApplyTheme();
+            previewImage.BackColor = ThemeColors.Control;
+            pnlSettings.BackColor = ThemeColors.Control;
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)

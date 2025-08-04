@@ -134,6 +134,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         protected override void ApplyTheme()
         {
             base.ApplyTheme();
+            gbResourceFile.BackColor = ThemeColors.Control;
+            gbResourceEntries.BackColor = ThemeColors.Control;
+            pnlEditResourceEntry.BackColor = ThemeColors.Control;
             splitterEditResources.BackColor = ThemeColors.Control;
         }
 

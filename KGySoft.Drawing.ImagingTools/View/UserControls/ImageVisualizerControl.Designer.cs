@@ -65,6 +65,7 @@
             // txtInfo
             // 
             this.txtInfo.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.txtInfo.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtInfo.Location = new System.Drawing.Point(0, 163);
             this.txtInfo.Multiline = true;
             this.txtInfo.Name = "txtInfo";

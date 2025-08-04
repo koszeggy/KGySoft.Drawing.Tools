@@ -118,7 +118,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         protected override void ApplyTheme()
         {
             base.ApplyTheme();
-            pnlPalette.BackColor = ThemeColors.Control;
+            gbPalette.BackColor = ThemeColors.Control;
+            gbSelectedColor.BackColor = ThemeColors.Control;
         }
 
         protected override void ApplyViewModel()

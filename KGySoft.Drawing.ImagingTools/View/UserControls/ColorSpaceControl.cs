@@ -42,7 +42,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             : base(viewModel)
         {
             InitializeComponent();
-            BackColor = Color.Transparent; // to make the resize grip in the parent form visible
         }
 
         #endregion
@@ -67,12 +66,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             base.InitParentProperties(properties);
             properties.MinimumSize = new Size(400, 460);
             properties.Icon = Properties.Resources.Quantize;
-        }
-
-        protected override void ApplyTheme()
-        {
-            base.ApplyTheme();
-            pnlSettings.BackColor = ThemeColors.Control;
         }
 
         protected override void OnLoad(EventArgs e)

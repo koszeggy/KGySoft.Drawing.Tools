@@ -106,9 +106,18 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // Applying the theme to the child controls only if the parent is not a BaseForm, because BaseForm would apply it automatically
             if (ParentForm is not BaseForm)
             {
-                themeApplied = true;
+                // not in a form at all: assuming an WPF WinFormsHost, and setting the Fore/BackColors explicitly
+                // (this will overwrite the possibly Transparent BackColor, which is alright because there will be visible no resize grip anyway)
+                if (ParentForm is null && Visible && Created)
+                {
+                    BackColor = ThemeColors.Control;
+                    ForeColor = ThemeColors.ControlText;
+                }
+
                 ControlExtensions.ApplyTheme(this);
             }
+
+            themeApplied = true;
         }
 
         protected override void Dispose(bool disposing)

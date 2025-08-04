@@ -138,6 +138,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             UpdateColor();
         }
 
+        protected override void ApplyTheme()
+        {
+            base.ApplyTheme();
+            pnlControls.BackColor = ThemeColors.Control;
+        }
+
         private void InitPropertyBindings()
         {
             ColorVisualizerViewModel vm = ViewModel!;

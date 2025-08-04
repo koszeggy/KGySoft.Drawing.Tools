@@ -67,12 +67,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             properties.Icon = Properties.Resources.Colors;
         }
 
-        protected override void ApplyTheme()
-        {
-            base.ApplyTheme();
-            trackBar.BackColor = ThemeColors.Control;
-        }
-
         protected override void OnLoad(EventArgs e)
         {
             // Fixing high DPI appearance on Mono

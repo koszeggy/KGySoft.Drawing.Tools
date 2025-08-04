@@ -41,6 +41,7 @@
             // 
             // previewImage
             // 
+            this.previewImage.BackColor = System.Drawing.SystemColors.Control;
             this.previewImage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.previewImage.Location = new System.Drawing.Point(3, 56);
             this.previewImage.Name = "previewImage";
@@ -49,6 +50,7 @@
             // 
             // pnlSettings
             // 
+            this.pnlSettings.BackColor = System.Drawing.SystemColors.Control;
             this.pnlSettings.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlSettings.Location = new System.Drawing.Point(3, 0);
             this.pnlSettings.Name = "pnlSettings";
@@ -59,14 +61,15 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Size = new System.Drawing.Size(248, 211);
             this.Controls.Add(this.previewImage);
             this.Controls.Add(this.pnlSettings);
             this.Controls.Add(this.okCancelButtons);
             this.Controls.Add(this.progress);
             this.Name = "TransformBitmapControlBase";
             this.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            this.Size = new System.Drawing.Size(248, 211);
             this.ResumeLayout(false);
+
         }
 
         #endregion
