@@ -117,7 +117,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         protected override void OnControlAdded(ControlEventArgs e)
         {
             base.OnControlAdded(e);
-            if (DesignMode || e.Control.In(checkBox, contentPanel))
+            if (DesignMode || e.Control.In(checkBox, contentPanel) || e.Control is null)
                 return;
 
             // Linux/Mono workaround: prevent disabling ErrorProvider's user control when the content is disabled
@@ -199,7 +199,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         void ICustomLocalizable.ApplyStringResources(ToolTip? toolTip)
         {
-            string? name = Name;
+            string name = Name;
             if (String.IsNullOrEmpty(name))
                 return;
 

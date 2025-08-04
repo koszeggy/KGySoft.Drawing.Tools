@@ -23,6 +23,8 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 #endregion
 
+#nullable enable
+
 namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
     /// <summary>

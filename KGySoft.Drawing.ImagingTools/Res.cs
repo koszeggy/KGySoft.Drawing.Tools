@@ -34,6 +34,14 @@ using KGySoft.Resources;
 
 #endregion
 
+#region Suppressions
+
+#if NETFRAMEWORK
+#pragma warning disable CS8603 // Possible null reference return. - String.IsNullOrEmpty is not recognized by the analyzer in older frameworks
+#endif
+
+#endregion
+
 namespace KGySoft.Drawing.ImagingTools
 {
     internal static class Res
@@ -110,7 +118,7 @@ namespace KGySoft.Drawing.ImagingTools
                     resourcesDir = Path.IsPathRooted(path) ? Path.GetFullPath(path) : Path.GetFullPath(Path.Combine(Files.GetExecutingPath(), path));
                 }
 
-                return resourcesDir!;
+                return resourcesDir;
             }
             set => resourcesDir = value;
         }
@@ -470,7 +478,7 @@ namespace KGySoft.Drawing.ImagingTools
 
         internal static string Get<TEnum>(TEnum value) where TEnum : struct, Enum => Get($"{value.GetType().Name}.{Enum<TEnum>.ToString(value)}");
 
-        internal static void ApplyStringResources(object target, string name)
+        internal static void ApplyStringResources(object target, string? name)
         {
             // Unlike ComponentResourceManager we don't go by ResourceSet because that would kill resource fallback traversal
             // so we go by localizable properties

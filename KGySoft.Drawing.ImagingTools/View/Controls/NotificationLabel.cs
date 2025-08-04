@@ -17,6 +17,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
@@ -41,7 +42,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Properties
 
-        public override string? Text
+        [AllowNull]
+        public override string Text
         {
             get => base.Text;
             set

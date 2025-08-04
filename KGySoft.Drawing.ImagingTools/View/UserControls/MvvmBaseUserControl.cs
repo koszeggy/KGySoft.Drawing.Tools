@@ -229,8 +229,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             {
                 ValidationSeverity.Error => Icons.SystemError.ToScaledIcon(this.GetScale()),
                 ValidationSeverity.Warning => Icons.SystemWarning.ToScaledIcon(this.GetScale()),
-                ValidationSeverity.Information => Icons.SystemInformation.ToScaledIcon(this.GetScale()),
-                _ => null
+                _ => Icons.SystemInformation.ToScaledIcon(this.GetScale()),
             }
         };
 

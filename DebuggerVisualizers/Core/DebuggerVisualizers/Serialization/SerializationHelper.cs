@@ -87,7 +87,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
                     IList origEntries = (IList)Reflector.InvokeMethod(target, nameof(Palette.GetEntries))!;
                     var newEntries = new Color32[origEntries.Count];
                     for (int i = 0; i < origEntries.Count; i++)
-                        newEntries[i] = Color32.FromArgb((int)Reflector.InvokeMethod(origEntries[i], nameof(Color32.ToArgb))!);
+                        newEntries[i] = Color32.FromArgb((int)Reflector.InvokeMethod(origEntries[i]!, nameof(Color32.ToArgb))!);
                     palette = new Palette(newEntries);
                 }
                 catch (Exception e)

@@ -20,6 +20,8 @@ using System.Globalization;
 
 #endregion
 
+#nullable enable
+
 namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
     #region Usings

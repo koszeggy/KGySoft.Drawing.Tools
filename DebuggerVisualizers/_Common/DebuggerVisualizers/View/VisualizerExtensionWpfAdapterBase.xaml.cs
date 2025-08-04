@@ -107,7 +107,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.View
         /// <summary>
         /// Disposes this <see cref="VisualizerExtensionWpfAdapterBase"/> instance.
         /// </summary>
-        /// <param name="disposing"><see langword="true"/>, if called by the <see cref="Dispose"/> method; otherwise, <see langword="false"/>.</param>
+        /// <param name="disposing"><see langword="true"/>, if called by the <see cref="Dispose()"/> method; otherwise, <see langword="false"/>.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (IsDisposed)

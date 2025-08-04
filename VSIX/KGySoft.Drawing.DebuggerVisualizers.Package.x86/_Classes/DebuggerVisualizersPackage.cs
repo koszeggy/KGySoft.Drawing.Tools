@@ -43,6 +43,8 @@ using Process = System.Diagnostics.Process;
 
 #endregion
 
+#nullable enable
+
 namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
     #region Usings

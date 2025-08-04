@@ -50,7 +50,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             ClosingCallback = (sender, e) =>
             {
                 // if user (or system) closes the window without pressing cancel we need to execute the cancel command
-                if (((Form)sender).DialogResult != DialogResult.OK && e.CloseReason != CloseReason.None)
+                if (((Form)sender!).DialogResult != DialogResult.OK && e.CloseReason != CloseReason.None)
                     okCancelApplyButtons.CancelButton.PerformClick();
             }
         };

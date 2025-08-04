@@ -23,6 +23,10 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
 
+#if !VS2022_OR_GREATER
+#nullable enable
+#endif
+
 namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
     internal static class ViewHelper

@@ -315,6 +315,9 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Events
 
+        /// <summary>
+        /// Occurs when the theme has changed.
+        /// </summary>
         public static event EventHandler? ThemeChanged
         {
             add => value.AddSafe(ref themeChangedHandler);
@@ -412,7 +415,7 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Private Properties
 
-        internal static bool IsDarkSystemTheme
+        private static bool IsDarkSystemTheme
         {
             get
             {
@@ -438,20 +441,21 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static Dictionary<ThemeColor, Color> CurrentTheme
-        {
-            get
-            {
-                Dictionary<ThemeColor, Color>? result = customColors;
-                if (result != null)
-                    return result;
+        // TODO
+        //private static Dictionary<ThemeColor, Color> CurrentTheme
+        //{
+        //    get
+        //    {
+        //        Dictionary<ThemeColor, Color>? result = customColors;
+        //        if (result != null)
+        //            return result;
 
-                // Note: currentTheme can be set by ResetTheme (even to null), so it can happen that between the previous null check and this one
-                // the currentTheme is already set. In such cases, we return the already set value.
-                result = new Dictionary<ThemeColor, Color>();
-                return Interlocked.CompareExchange(ref customColors, result, null) ?? result;
-            }
-        }
+        //        // Note: currentTheme can be set by ResetTheme (even to null), so it can happen that between the previous null check and this one
+        //        // the currentTheme is already set. In such cases, we return the already set value.
+        //        result = new Dictionary<ThemeColor, Color>();
+        //        return Interlocked.CompareExchange(ref customColors, result, null) ?? result;
+        //    }
+        //}
 
         #endregion
 
@@ -479,6 +483,15 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Static Methods
 
+        /// <summary>
+        /// Sets the base theme for the application.
+        /// </summary>
+        /// <param name="theme">The base theme to set. This parameter is optional.
+        /// <br/>Default value: <see cref="DefaultTheme.Classic"/>.</param>
+        /// <param name="resetCustomColors"><see langword="true"/> to reset custom colors to the default values of the specified theme;
+        /// <see langword="false"/> to keep the custom colors unchanged. This parameter is optional.
+        /// <br/>Default value: <see langword="true"/>.</param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public static void SetBaseTheme(DefaultTheme theme = DefaultTheme.Classic, bool resetCustomColors = true)
         {
             if (!theme.IsDefined())
@@ -499,7 +512,8 @@ namespace KGySoft.Drawing.ImagingTools
                 Application.SetColorMode((SystemColorMode)theme);
 #else
             isDarkBaseTheme = isNewThemeDark;
-            isBaseThemeEverChanged |= defaultColorsChanged;
+            if (defaultColorsChanged)
+                isBaseThemeEverChanged = true; // the |= operator would trigger a warning because isBaseThemeEverChanged is volatile
             if (defaultColorsChanged)
                 InitializeBaseTheme(theme);
             if (resetCustomColors)
@@ -515,6 +529,12 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Public Methods
 
+        /// <summary>
+        /// Resets the custom colors using the specified dictionary of theme colors.
+        /// </summary>
+        /// <param name="theme">An optional dictionary containing theme colors and their corresponding custom color values.
+        /// If <paramref name="theme"/> is <see langword="null"/>, the default theme colors are reset. This parameter is optional.
+        /// <br/>Default value: <see langword="null"/>.</param>
         public static void ResetCustomColors(IDictionary<ThemeColor, Color>? theme = null) => DoResetCustomColors(theme, false);
 
         #endregion

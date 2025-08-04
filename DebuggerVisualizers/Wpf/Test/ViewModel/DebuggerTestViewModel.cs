@@ -15,22 +15,19 @@
 
 #region Usings
 
-using System.IO;
-
 #region Used Namespaces
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 using KGySoft.ComponentModel;
-#if NETFRAMEWORK
 using KGySoft.CoreLibraries;
-#endif
 using KGySoft.Drawing.DebuggerVisualizers.Test;
 using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;

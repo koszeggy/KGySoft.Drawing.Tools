@@ -365,7 +365,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             /// </summary>
             protected override void OnRenderArrow(ToolStripArrowRenderEventArgs e)
             {
-                if (e.Item is ToolStripSplitButton)
+                if (e.Item is ToolStripSplitButton or null)
                     return;
                 Rectangle bounds = e.Item is ScalingToolStripDropDownButton scalingButton ? scalingButton.ArrowRectangle
                     : OSUtils.IsMono && e.Item is ToolStripMenuItem mi ? new Rectangle(e.ArrowRectangle.Left, 0, e.ArrowRectangle.Width, mi.Height)
@@ -654,7 +654,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             /// </summary>
             protected override void OnRenderItemImage(ToolStripItemImageRenderEventArgs e)
             {
-                if (e.Image == null)
+                if (e.Image == null || e.Item.Owner is null)
                     return;
                 Rectangle bounds = e.ImageRectangle;
 
@@ -747,11 +747,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     Size overflowButtonSize = e.Graphics.ScaleSize(referenceOverflowButtonSize);
 
                     Graphics g = e.Graphics;
-                    var item = (ToolStripOverflowButton)e.Item!;
+                    var item = (ToolStripOverflowButton)e.Item;
                     Rectangle overflowBoundsFill = new(Point.Empty, e.Item.Size);
                     Rectangle bounds = overflowBoundsFill;
 
-                    bool drawCurve = (e.ToolStrip.Renderer as ToolStripProfessionalRenderer)?.RoundedEdges == true && (item.GetCurrentParent() is not MenuStrip);
+                    bool drawCurve = (e.ToolStrip?.Renderer as ToolStripProfessionalRenderer)?.RoundedEdges == true && (item.GetCurrentParent() is not MenuStrip);
                     bool horizontal = e.ToolStrip?.Orientation == Orientation.Horizontal;
                     bool rightToLeft = item.RightToLeft == RightToLeft.Yes;
 
@@ -857,8 +857,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
                 #endregion
 
-                var button = (ToolStripOverflowButton)e.Item;
-
 #if NETFRAMEWORK
                 // The scaling is wrong also in Mono, but it is not possible to fix it
                 if (!OSUtils.IsMono)
@@ -866,6 +864,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     // On Windows the fix is also tricky, especially in .NET Framework 3.5 because the bounds
                     // are forcibly maxed with a constant 16, but fortunately we can exploit the fact that the
                     // Padding is respected, it's public, and it's actually not used for anything else.
+                    var button = (ToolStripOverflowButton)e.Item;
                     var scaledSize = e.Graphics.ScaleSize(referenceOverflowButtonBounds);
                     if (e.ToolStrip.Orientation == Orientation.Horizontal && scaledSize.Width > button.Width)
                     {
@@ -975,8 +974,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             base.WndProc(ref m);
 
             // ensuring that items can be clicked even if the container form is not activated
-            if (m.Msg == Constants.WM_MOUSEACTIVATE && m.Result == (IntPtr)Constants.MA_ACTIVATEANDEAT)
-                m.Result = (IntPtr)Constants.MA_ACTIVATE;
+            if (m.Msg == Constants.WM_MOUSEACTIVATE && m.Result == Constants.MA_ACTIVATEANDEAT)
+                m.Result = Constants.MA_ACTIVATE;
         }
 
         protected override void OnItemAdded(ToolStripItemEventArgs e)

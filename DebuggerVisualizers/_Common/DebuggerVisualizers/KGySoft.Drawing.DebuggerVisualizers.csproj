@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!--<TargetFrameworks>net35;net40;net45;net462;net472;net6.0-windows</TargetFrameworks>-->
-    <TargetFrameworks>net462;net472</TargetFrameworks>
+    <TargetFrameworks>net35;net40;net45;net462;net472;net9.0-windows</TargetFrameworks>
+    <!--<TargetFrameworks>net462;net472</TargetFrameworks>-->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>KGySoft.Drawing.DebuggerVisualizers</RootNamespace>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
@@ -48,7 +48,7 @@
   </ItemGroup>
 
   <!-- .NET only references (note: doesn't really make sense but allows testing from KGySoft.Drawing.DebuggerVisualizers.*.Test) -->
-  <ItemGroup Condition="'$(TargetFramework)'=='net6.0-windows'">
+  <ItemGroup Condition="'$(TargetFramework)'=='net9.0-windows'">
     <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers">
       <HintPath>..\..\_ref\Microsoft.VisualStudio.DebuggerVisualizers.dll</HintPath>
     </Reference>

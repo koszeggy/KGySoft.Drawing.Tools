@@ -29,6 +29,10 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 #endregion
 
+#if !VS2022_OR_GREATER
+#nullable enable
+#endif
+
 namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
     /// <summary>

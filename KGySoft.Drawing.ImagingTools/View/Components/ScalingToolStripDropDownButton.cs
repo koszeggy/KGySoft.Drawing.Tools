@@ -51,9 +51,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
         {
             get
             {
-                if (!arrowSize.IsEmpty)
+                if (!arrowSize.IsEmpty || Owner is null)
                     return arrowSize;
-                return arrowSize = Size.Round(Owner.ScaleSize(arrowSizeUnscaled));
+                return arrowSize = Owner.ScaleSize(arrowSizeUnscaled);
             }
         }
 
@@ -61,9 +61,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
         {
             get
             {
-                if (arrowPadding != Padding.Empty)
+                if (arrowPadding != Padding.Empty || Owner is null)
                     return arrowPadding;
-                Size scaled = Size.Round(Owner.ScaleSize(arrowPaddingUnscaled));
+                Size scaled = Owner.ScaleSize(arrowPaddingUnscaled);
                 return arrowPadding = new Padding(scaled.Width, scaled.Height, scaled.Width, scaled.Height);
             }
         }

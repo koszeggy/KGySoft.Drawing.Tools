@@ -89,7 +89,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
 
         public override Size GetPreferredSize(Size constrainingSize)
         {
-            if (Owner.Orientation == Orientation.Horizontal)
+            if (Owner == null || Owner.Orientation == Orientation.Horizontal)
                 return base.GetPreferredSize(constrainingSize);
 
             // with vertical orientation the image is too small
@@ -127,7 +127,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
         protected override void OnDropDownItemClicked(ToolStripItemClickedEventArgs e)
         {
             base.OnDropDownItemClicked(e);
-            if (autoChangeDefaultItem && DefaultItem != e.ClickedItem)
+            if (autoChangeDefaultItem && DefaultItem != e.ClickedItem && e.ClickedItem != null)
                 SetDefaultItem(e.ClickedItem);
         }
 

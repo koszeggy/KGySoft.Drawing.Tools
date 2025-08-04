@@ -1,4 +1,4 @@
-﻿#if NETFRAMEWORK && !NET472_OR_GREATER
+﻿#if NETFRAMEWORK && !NET472_OR_GREATER || NETCOREAPP && DEBUG
 #region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -27,7 +27,6 @@ using Microsoft.VisualStudio.DebuggerVisualizers;
 using SkiaSharp;
 
 #endregion
-
 
 #region Attributes
 

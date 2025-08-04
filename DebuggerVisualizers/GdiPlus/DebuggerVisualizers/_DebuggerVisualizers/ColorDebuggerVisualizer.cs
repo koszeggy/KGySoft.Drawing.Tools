@@ -1,4 +1,4 @@
-﻿#if NETFRAMEWORK && !NET472_OR_GREATER
+﻿#if NETFRAMEWORK && !NET472_OR_GREATER || NETCOREAPP && DEBUG
 #region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////

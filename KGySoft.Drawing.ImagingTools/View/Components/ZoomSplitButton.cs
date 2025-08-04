@@ -32,7 +32,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
         
         // Overridden just to prevent saving a fixed low-res image in the .resx file
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public override Image Image { get => base.Image; set => base.Image = value; }
+        public override Image? Image { get => base.Image; set => base.Image = value; }
 
         #endregion
 
@@ -95,8 +95,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
         {
             base.OnParentChanged(oldParent, newParent);
 
-            // Mono: without this the new parent's renderer will not be applied to the drop down menu strip
-            if (OSUtils.IsMono && newParent != null)
+            // Mono: without this the new parent's renderer will not be applied to the dropdown menu strip
+            if (OSUtils.IsMono && newParent != null && AutoZoomMenuItem.Owner != null)
                 AutoZoomMenuItem.Owner.Renderer = newParent.Renderer;
         }
 

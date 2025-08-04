@@ -4,6 +4,8 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 #endregion
 
+#nullable enable
+
 // ReSharper disable once CheckNamespace
 namespace Microsoft.VisualStudio.Shell
 {

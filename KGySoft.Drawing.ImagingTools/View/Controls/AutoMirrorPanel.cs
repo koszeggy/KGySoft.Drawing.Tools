@@ -51,7 +51,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             // there is no public IsLayoutSuspended property but in this project we can assume that controls are either added
             // in suspended state or before setting RightToLeft
             base.OnControlAdded(e);
-            toBeAdjusted.Add(e.Control);
+            if (e.Control != null)
+                toBeAdjusted.Add(e.Control);
         }
 
         protected override void OnLayout(LayoutEventArgs levent)

@@ -70,7 +70,6 @@ namespace KGySoft.Drawing.ImagingTools.View
         }
 
         internal static Size ScaleSize(this Control control, Size size) => size.Scale(control.GetScale());
-
         internal static int ScaleWidth(this Control control, int width) => width.Scale(control.GetScale().X);
         internal static int ScaleHeight(this Control control, int height) => height.Scale(control.GetScale().Y);
 
@@ -310,11 +309,11 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         #region Event Handlers
 
-        private static void Control_HandleCreated(object sender, EventArgs e) => ((Control)sender).ApplyVisualStyleTheme();
+        private static void Control_HandleCreated(object? sender, EventArgs e) => ((Control)sender!).ApplyVisualStyleTheme();
 
-        private static void Control_Disposed(object sender, EventArgs e)
+        private static void Control_Disposed(object? sender, EventArgs e)
         {
-            Control control = (Control)sender;
+            Control control = (Control)sender!;
             control.HandleCreated -= Control_HandleCreated;
             control.Disposed -= Control_Disposed;
         }

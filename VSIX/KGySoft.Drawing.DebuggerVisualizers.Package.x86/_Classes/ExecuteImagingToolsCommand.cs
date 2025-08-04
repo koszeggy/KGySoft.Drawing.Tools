@@ -25,6 +25,8 @@ using Microsoft.VisualStudio.Shell;
 
 #endregion
 
+#nullable enable
+
 namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
     internal static class ExecuteImagingToolsCommand
