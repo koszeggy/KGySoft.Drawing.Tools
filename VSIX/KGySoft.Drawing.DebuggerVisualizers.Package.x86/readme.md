@@ -1,20 +1,20 @@
 ## KGy SOFT Image Debugger Visualizers
 
-**VS 2022**: See the [64-bit installer](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64)
+**VS 2022**: See the [64-bit installer](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) (for version 17.9 Preview 1 or higher only; offers modern, non-dialog embeddable visualizers)
 
-**VS 2013-2019**: See the [32-bit installer](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers)
+**VS 2013-2019**: See the [32-bit installer](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers) (classic visualizers)
 
-**VS 2008-2022**: See [manual installation](https://github.com/koszeggy/KGySoft.Drawing.Tools#installing-debugger-visualizers)
+**VS 2008-2022**: See [manual installation](https://github.com/koszeggy/KGySoft.Drawing.Tools#installing-debugger-visualizers) (classic visualizers)
 
 This package provides debugger visualizers for several  GDI+, WPF, SkiaSharp and KGy SOFT image types like `Bitmap`, `BitmapSource`, `SKBitmap`, `Metafile`, `ImageSource`, `SKImage`, `Icon`, `Graphics`, `SKSurface`, `BitmapData`, `SKPixmap`, `ColorPalette`, `BitmapPalette` and more. Possible derived types such as `DrawingImage`, `BitmapFrame`, `WriteableBitmap`, etc. are also supported). For GDI+ types it also supports multi-page, multi-resolution and animated images as well as saving them in various formats.
 
 When a type is debugged in Visual Studio and there is a debugger visualizer installed for that type, then a magnifier icon appears that you can click to open the visualizer.
 
-![Debugger Visualizer Usage](https://kgysoft.net/images/DebuggerVisualizerUsage.png)
+![Debugger Visualizer Usage](https://user-images.githubusercontent.com/27336165/124266849-c7ff1780-db37-11eb-9df8-f2149430da16.png)
 
 Either click the magnifier icon or choose a debugger visualizer from the drop-down list (if more visualizers are applicable).
 
-![Debugging Graphics](https://kgysoft.net/images/DebugGraphics.png)
+![Debugging Graphics](https://user-images.githubusercontent.com/27336165/124266974-f54bc580-db37-11eb-98e1-207c48590afa.png)
 
 When debugging WPF images from the latest Visual Studio versions you need to change the default WPF Tree Visualizer to KGy SOFT ImageSource Debugger Visualizer from the drop-down menu:
 
@@ -48,17 +48,17 @@ See the [change log](https://github.com/koszeggy/KGySoft.Drawing.Tools/blob/mast
 **Q:** I get an error message when I click the magnifier icon.
 <br/>**A:** It can have several reasons. See the [Troubleshooting](https://github.com/koszeggy/KGySoft.Drawing.Tools#troubleshooting) section at the project site.
 
+**Q:** Wouldn't it be possible to leave the debugger visualizer open while stepping through the code?
+<br/>**A:** This is supported in the 64-bit version of the debugger visualizers, if you use Visual Studio 17.9 Preview 1 or later. When using older versions this is not possible due to the limitations of the classic Visual Studio debugger API.
+
 **Q:** Are WPF image types supported?
 <br/>**A:** Yes, starting with version 3.0.0 WPF `ImageSource` (and derived types), `BitmapPalette` and `Color` types are supported as well. You might need to explicitly select the correct visualizer from the drop-down menu next to the magnifier icon.
 
 **Q:** Are other 3rd party image types supported?
 <br/>**A:** Yes, starting with version 3.1.0 SkiaSharp types `SKBitmap`, `SKImage`, `SKPixmap`, `SKSurface` and `SKColor` are also supported. The infrastructure is extensible so further frameworks can be expected in future versions.
 
-**Q:** Where do I find the edited/downloaded resource files? Even my previously edited/downloaded resources have been disappeared.
-<br/>**A:** The _Visual Studio/Tools/KGy SOFT Image Debugger Visualizers_ and clicking the magnifier icon executes the Imaging Tools from different locations. If you edit the language resources at one place they will not be automatically applied at the other place. Therefore, the saved resources might be at different possible locations:
-* If you execute a manually deployed version the resources will be in a `Resources` subfolder in the folder you executed Imaging Tools from
-* During debugging the tool is executed from the debugger visualizers folder: `Documents\Visual Studio <version>\Visualizers`
-* If you launch the tool from the Visual Studio Tools menu, then it is located under `ProgramData\Microsoft\VisualStudio\Packages\...`
+**Q:** Where do I find the edited/downloaded resource files?
+<br/>**A:** From the Language Options dialog click the _Edit Resources..._ button. Starting with version 5.0.0 the Edit Resources window has an _Open in containing folder_ button that navigates to the folder where the edited resource files are stored, selecting currently edited file.
 
 **Q:** I have removed the debugger visualizer extension, and it is still working. How can I remove it completely?
 <br/>**A:** When the extension is active it copies the visualizers into the `Documents\Visual Studio <version>\Visualizers` folder if it is not there. Unlike an MSI installer the VSIX packages do not support uninstall actions so this copied content will not be removed automatically. However, the extension creates also a _KGy SOFT Image Debugger Visualizers/Manage Installations..._ menu item under the Tools menu where you can remove the installation from the Documents folder. So the proper way of a complete uninstall:

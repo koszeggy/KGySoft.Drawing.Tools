@@ -25,20 +25,26 @@
 
 ! KGySoft.Drawing.ImagingTools.exe
 ==================================
-* UI changes:
+! UI changes:
 
+! Debugger Visualizer Installations dialog:
+  ! In the .NET Core and .NET Framework 4.7.2+ builds the classic visualizers cannot be installed anymore.
+  * Installing the classic debugger visualizer for Visual Studio 2022 or higher asks for confirmation because the
+    extension-based visualizers from Visual Studio Marketplace are recommended.
+! Language Settings dialog:
+  ! It no longer has "Allow using resource files" option. Instead, the application automatically uses resource files
+    if they are available.
+  * The languages are now sorted by their native names instead of their English names.
 * Using dark mode when the Windows theme is set to dark (when executing the application on Windows 10 or higher).
 * The default font is adjusted to the current OS theme. For example, on Windows 11, the default font is Segoe UI
   rather than MS Sans Serif (affects .NET Framework builds).
 * Fixing the tool strip overflow button scaling on high DPI displays (affects .NET Framework builds).
 * Fixing the tool strip overflow button appearance in high contrast mode.
-* Debugger Visualizer Installations dialog:
-  * Installing the classic debugger visualizer for Visual Studio 2022 or higher asks for confirmation because the
-    extension-based visualizers from Visual Studio Marketplace are recommended.
 * Palette visualizer:
-  * View width is now does not have a maximum limit. The entries are scaled to fit the available width.
+  * The dialog width does not have a maximum limit anymore. The entries are scaled to fit the available width.
 + Edit Resources window:
   + New 'Hide Dependent Resources' check box.
+  + New 'Open in containing folder' button to open the folder of the selected resource.
 
 ! API changes:
 
@@ -65,6 +71,11 @@
 ----------------------------------------------
 * ViewFactory class:
   * Opening a view for an empty palette no longer closes the view immediately.
+
++ KGySoft.Drawing.ImagingTools namespace:
+-----------------------------------------
++ New ThemeColor enum
++ New ThemeColors class
 
 
 + KGySoft.Drawing.DebuggerVisualizers.dll
