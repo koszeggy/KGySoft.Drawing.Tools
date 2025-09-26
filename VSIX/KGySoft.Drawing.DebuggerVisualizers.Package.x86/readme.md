@@ -28,11 +28,6 @@ Several modifications are allowed on non-read-only images such as rotating, resi
 
 ![Debugging Palette](https://kgysoft.net/images/DebugPalette.png)
 
-## Installing Debugger Visualizers
-
-* For Visual Studio 2013 and above you can use this VSIX package (the [32-bit version](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers) for VS2013-2019 or the [64-bit version](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) for VS2022). It will install the .NET Framework 4.6.2 build, which works also for .NET Core projects.
-* For older Visual Studio versions and/or frameworks follow the [installation steps](https://github.com/koszeggy/KGySoft.Drawing.Tools#installing-debugger-visualizers) at the project site.
-
 ## Release Notes
 
 See the [change log](https://github.com/koszeggy/KGySoft.Drawing.Tools/blob/master/changelog.txt).
