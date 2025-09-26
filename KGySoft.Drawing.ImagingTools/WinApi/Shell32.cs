@@ -69,9 +69,9 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             #region Local Methods
 
             // this method runs on a pool thread
-            void DoOpenFolderAndSelectItems(object state)
+            void DoOpenFolderAndSelectItems(object? state)
             {
-                var args = (StrongBox<((string Path, string[] FileNames) Params, ManualResetEventSlim WaitHandle, int HResult)>)state;
+                var args = (StrongBox<((string Path, string[] FileNames) Params, ManualResetEventSlim WaitHandle, int HResult)>)state!;
                 IntPtr pidFolder = IntPtr.Zero;
                 IntPtr[] pidFiles = new IntPtr[fileNames.Length];
                 try
