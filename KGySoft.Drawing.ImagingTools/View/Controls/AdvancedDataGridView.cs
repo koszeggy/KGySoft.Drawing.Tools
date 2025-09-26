@@ -209,10 +209,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     {
                         try
                         {
-                            FieldInfo? field = typeof(DataGridView).GetFields(BindingFlags.Instance | BindingFlags.NonPublic).FirstOrDefault(f => f.Name.Contains("tooltip_window", StringComparison.Ordinal));
-                            if (field is not null)
+                            FieldInfo? fld = typeof(DataGridView).GetFields(BindingFlags.Instance | BindingFlags.NonPublic).FirstOrDefault(f => f.Name.Contains("tooltip_window", StringComparison.Ordinal));
+                            if (fld is not null)
                             {
-                                toolTipControlField = FieldAccessor.GetAccessor(field);
+                                toolTipControlField = FieldAccessor.GetAccessor(fld);
                                 toolTipControlField.Set(this, CreateAdvancedToolTip());
                             }
                         }
@@ -234,10 +234,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 {
                     try
                     {
-                        FieldInfo? field = typeof(DataGridView).GetFields(BindingFlags.Instance | BindingFlags.NonPublic).FirstOrDefault(f => f.Name.Contains("toolTipControl", StringComparison.Ordinal));
-                        if (field is not null)
+                        FieldInfo? fld = typeof(DataGridView).GetFields(BindingFlags.Instance | BindingFlags.NonPublic).FirstOrDefault(f => f.Name.Contains("toolTipControl", StringComparison.Ordinal));
+                        if (fld is not null)
                         {
-                            toolTipControlField = FieldAccessor.GetAccessor(field);
+                            toolTipControlField = FieldAccessor.GetAccessor(fld);
                             var toolTipControl = toolTipControlField.Get(this);
                             if (toolTipControl != null)
                             {

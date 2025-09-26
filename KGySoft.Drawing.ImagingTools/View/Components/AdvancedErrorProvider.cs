@@ -95,9 +95,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
                 {
                     try
                     {
-                        FieldInfo? field = typeof(ErrorProvider).GetFields(BindingFlags.Instance | BindingFlags.NonPublic).FirstOrDefault(f => f.Name.Contains("items", StringComparison.Ordinal));
-                        if (field != null)
-                            itemsField = FieldAccessor.GetAccessor(field);
+                        FieldInfo? fld = typeof(ErrorProvider).GetFields(BindingFlags.Instance | BindingFlags.NonPublic).FirstOrDefault(f => f.Name.Contains("items", StringComparison.Ordinal));
+                        if (fld != null)
+                            itemsField = FieldAccessor.GetAccessor(fld);
                     }
                     catch (Exception e) when (!e.IsCritical())
                     {
@@ -148,9 +148,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
                     try
                     {
                         Type? errorWindowType = typeof(ErrorProvider).GetNestedType("ErrorWindow", BindingFlags.NonPublic);
-                        FieldInfo? field = errorWindowType?.GetFields(BindingFlags.Instance | BindingFlags.NonPublic).FirstOrDefault(f => f.Name.Contains("tipWindow", StringComparison.Ordinal));
-                        if (field != null)
-                            tipWindowField = FieldAccessor.GetAccessor(field);
+                        FieldInfo? fld = errorWindowType?.GetFields(BindingFlags.Instance | BindingFlags.NonPublic).FirstOrDefault(f => f.Name.Contains("tipWindow", StringComparison.Ordinal));
+                        if (fld != null)
+                            tipWindowField = FieldAccessor.GetAccessor(fld);
                     }
                     catch (Exception e) when (!e.IsCritical())
                     {
