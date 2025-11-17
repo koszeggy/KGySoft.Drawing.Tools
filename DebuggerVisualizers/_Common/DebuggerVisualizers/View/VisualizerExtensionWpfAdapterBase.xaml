@@ -12,7 +12,7 @@
 
         <Border Name="border"
                 Grid.Row="0"
-                BorderThickness="3"
+                BorderThickness="2"
                 Visibility="{Binding Visibility, ElementName=txtNotification}">
             <TextBlock Name="txtNotification"
                    Visibility="Collapsed"
