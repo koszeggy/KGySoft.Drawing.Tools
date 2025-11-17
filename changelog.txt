@@ -6,6 +6,21 @@
 ===============================================================================
 
 ~~~~~~~~~
+* v5.1.0:
+~~~~~~~~~
+
++ KGySoft.Drawing.DebuggerVisualizers.dll
+=========================================
++ CustomBitmapSerializationInfoBase class:
+  + New AsBitmapData method
+
+- KGySoft.Drawing.DebuggerVisualizers.Wpf.dll
+=============================================
+- Fixing possible MissingMethodException when the debugged project references KGySoft.Drawing.Core as well, but with
+  a different assembly identity.
+
+
+~~~~~~~~~
 ! v5.0.0:
 ~~~~~~~~~
 

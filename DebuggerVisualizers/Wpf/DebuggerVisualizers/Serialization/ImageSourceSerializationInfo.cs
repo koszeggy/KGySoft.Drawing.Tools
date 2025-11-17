@@ -18,13 +18,16 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 using KGySoft.Drawing.DebuggerVisualizers.Serialization;
+using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.Wpf;
+using KGySoft.Reflection;
 
 #endregion
 
@@ -66,13 +69,15 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization
             BitmapInfo = new CustomBitmapInfo(true)
             {
                 Type = image.GetType().Name,
-                BitmapData = bitmapSource.GetReadableBitmapData(),
                 CustomAttributes =
                 {
                     { nameof(image.Width), $"{image.Width:#.##}" },
                     { nameof(image.Height), $"{image.Height:#.##}" },
                 }
             };
+
+            // after creating BitmapInfo so custom attributes can be accessed in GetReadableBitmapData
+            BitmapInfo.BitmapData = GetReadableBitmapData(bitmapSource);
         }
 
         internal ImageSourceSerializationInfo(BitmapSource bitmap)
@@ -82,7 +87,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization
             {
                 ShowPixelSize = true,
                 Type = bitmap.GetType().Name,
-                BitmapData = bitmap.GetReadableBitmapData(),
+                BitmapData = GetReadableBitmapData(bitmap),
                 CustomPalette = BitmapPaletteSerializationInfo.GetPaletteInfo(bitmap.Palette),
                 CustomAttributes =
                 {
@@ -96,6 +101,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization
 
             if (bitmap.Palette != null)
                 BitmapInfo.CustomAttributes[$"{nameof(bitmap.Palette)}.{nameof(bitmap.Palette.Colors)}.{nameof(bitmap.Palette.Colors.Count)}"] = $"{bitmap.Palette.Colors.Count}";
+
+            // after creating BitmapInfo so custom attributes can be accessed in GetReadableBitmapData
+            BitmapInfo.BitmapData = GetReadableBitmapData(bitmap);
         }
 
         internal ImageSourceSerializationInfo(BinaryReader reader)
@@ -106,6 +114,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization
         #endregion
 
         #region Methods
+
+        #region Static Methods
 
         private static BitmapSource ToBitmapSource(ImageSource image)
         {
@@ -130,6 +140,45 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization
             bitmap.Render(visual);
             return bitmap;
         }
+
+        #endregion
+
+        #region Instance Methods
+
+        private IReadableBitmapData GetReadableBitmapData(BitmapSource bitmap)
+        {
+            #region Local Methods
+
+            // Must not be inlined because if core versions differ, a MissingMethodException is thrown when GetReadableBitmapData is called, before reaching the try block.
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            static IReadableBitmapData GetReadableBitmapDataDirect(BitmapSource bitmap) => bitmap.GetReadableBitmapData();
+
+            #endregion
+
+            try
+            {
+                // The trivial way
+                return GetReadableBitmapDataDirect(bitmap);
+            }
+            catch (MissingMethodException e)
+            {
+                // If the debugged project uses a different version of KGySoft.Drawing.Core, a MissingMethodException can be thrown
+                // (even though the signature is the same, just because of different assembly versions).
+#if DEBUG
+                BitmapInfo?.CustomAttributes[$"{e.GetType()}"] = e.Message;
+#endif
+
+                // Creating the IReadableBitmapData by reflection. Its assembly may be different from the one referenced by this project.
+                var bitmapData = Reflector.InvokeMethod(typeof(BitmapSourceExtensions), nameof(BitmapSourceExtensions.GetReadableBitmapData), bitmap, default(Color), (byte)128)!;
+#if DEBUG
+                if (!Equals(bitmapData.GetType().Assembly, typeof(IReadableBitmapData).Assembly))
+                    BitmapInfo?.CustomAttributes["KGySoft.Drawing.Core version mismatch"] = $"{bitmapData.GetType().Assembly} vs. {typeof(IReadableBitmapData).Assembly}";
+#endif
+                return AsBitmapData(bitmapData);
+            }
+        }
+
+        #endregion
 
         #endregion
     }

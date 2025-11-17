@@ -21,6 +21,7 @@ using System.IO;
 
 using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.Reflection;
 
 #endregion
 
@@ -79,6 +80,41 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
         #endregion
 
         #region Methods
+
+        #region Static Methods
+
+        /// <summary>
+        /// Returns the given <paramref name="bitmapData"/> as an <see cref="IReadableBitmapData"/> instance.
+        /// Works even if the <paramref name="bitmapData"/> is an <see cref="IReadableBitmapData"/> with a different assembly identity.
+        /// In normal circumstances, an assembly cannot be loaded with two different assembly identities in the same AppDomain, but it still can happen with debugger visualizers.
+        /// </summary>
+        /// <param name="bitmapData">The bitmap data to cast or convert.</param>
+        /// <returns>An <see cref="IReadableBitmapData"/> instance.</returns>
+        /// <exception cref="ArgumentException"><paramref name="bitmapData"/> is not an instance of <see cref="IReadableBitmapData"/>.</exception>
+        protected static IReadableBitmapData AsBitmapData(object bitmapData)
+        {
+            if (bitmapData is IReadableBitmapData readableBitmapData)
+                return readableBitmapData;
+
+            // Assuming bitmap data of a different assembly identity: saving into a temp stream using the loaded assembly by reflection, and reloading it by the expected assembly identity.
+            // Can occur if the debugged application uses a different version of KGySoft.Drawing.Core than this visualizer.
+            using var stream = StreamExtensions.GetTempStream();
+            try
+            {
+                Reflector.InvokeMethod(Reflector.ResolveType(bitmapData.GetType().Assembly, typeof(BitmapDataExtensions).FullName!)!, nameof(BitmapDataExtensions.Save), bitmapData, stream);
+            }
+            catch (Exception e)
+            {
+                throw new ArgumentException(PublicResources.NotAnInstanceOfType(typeof(IReadableBitmapData)), nameof(bitmapData), e);
+            }
+
+            stream.Position = 0L;
+            return BitmapDataFactory.Load(stream);
+        }
+
+        #endregion
+
+        #region Instance Methods
 
         #region Public Methods
 
@@ -164,6 +200,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
                 BitmapInfo.BitmapData = BitmapDataFactory.Load(br.BaseStream);
         }
         
+        #endregion
+
         #endregion
 
         #endregion

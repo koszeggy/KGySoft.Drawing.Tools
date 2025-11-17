@@ -24,8 +24,8 @@ using System.Windows.Media;
 
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.DebuggerVisualizers.Serialization;
+using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
-using KGySoft.Drawing.Wpf;
 
 #endregion
 
@@ -52,7 +52,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization
             var result = new CustomColorInfo
             {
                 Type = setType ? nameof(Color) : null,
-                DisplayColor = color.ToColor32()
+                // Not using color.ToColor32() to prevent possible MissingMethodException if the debugged app references a different KGySoft.Drawing.Core version than the KGySoft.Drawing.Wpf package referenced by the visualizer
+                DisplayColor = new Color32(color.A, color.R, color.G, color.B) // color.ToColor32()
             };
 
             // Color from profile

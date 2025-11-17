@@ -149,6 +149,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers
 
         #region Methods
 
+        #region Public Methods
+
         /// <summary>
         /// Gets a <see cref="BinaryWriter"/> for the specified serialization stream.
         /// </summary>
@@ -237,6 +239,28 @@ namespace KGySoft.Drawing.DebuggerVisualizers
             return new ReadOnlySequence<byte>(result);
         }
 #endif
+
+        #endregion
+
+        #region Internal Methods
+
+        internal static Stream GetTempStream()
+        {
+            Stream? fileStream = null;
+            try
+            {
+                string fileName = Path.GetTempFileName();
+                fileStream = File.Create(fileName, 4096, FileOptions.DeleteOnClose);
+                return fileStream;
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                fileStream?.Dispose();
+                return new MemoryStream();
+            }
+        }
+
+        #endregion
 
         #endregion
     }
