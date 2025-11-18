@@ -19,6 +19,7 @@
 
   <!-- Common NuGet references -->
   <ItemGroup>
+    <!--Make sure this depends on the same KGySoft.Drawing.Core version as the KGySoft.Drawing.ImagingTools project-->
     <PackageReference Include="KGySoft.Drawing.Wpf" Version="9.0.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0">
       <PrivateAssets>all</PrivateAssets>

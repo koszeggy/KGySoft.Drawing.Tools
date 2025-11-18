@@ -56,7 +56,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization
                 // (even though the signature is the same, just because of different assembly versions).
                 info = new BitmapDataSerializationInfo(target);
 #if DEBUG
-                info.BitmapInfo!.CustomAttributes[$"{e.GetType()}"] = e.Message;
+                info.BitmapInfo!.CustomAttributes[$"Recovered from {e.GetType()}"] = e.Message;
 #endif
             }
 

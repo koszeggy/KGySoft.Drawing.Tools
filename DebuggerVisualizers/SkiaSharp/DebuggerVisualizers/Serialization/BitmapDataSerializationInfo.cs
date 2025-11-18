@@ -81,7 +81,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization
                 BitmapData = surface.GetReadableBitmapData(),
             };
 
-            // TODO: when https://github.com/mono/SkiaSharp/issues/2281 will be fixed: (until we could use Snapshot but it's better sparing with the allocations)
+            // TODO: when https://github.com/mono/SkiaSharp/issues/2281 will be fixed: (until then we could use Snapshot, but it's better sparing with the allocations)
             var info = surface.PeekPixels()?.Info;
             if (info != null)
                 PopulateCustomAttributes(BitmapInfo.CustomAttributes, info.Value);
@@ -97,13 +97,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization
         /// Here everything must be done by reflection, avoiding any direct cast to SkiaSharp types, including cloning into local SkiaSharp types that would
         /// access SKObject instances as the static constructor of SKObject throws an exception: SkiaSharpVersion.CheckNativeLibraryCompatible(throwIfIncompatible: true)
         /// </summary>
-        /// <param name="srcObject">An <see cref="SKBitmap"/>, <see cref="SKPixmap"/>, <see cref="SKImage"/> or <see cref="SKSurface"/> instance with a foreign
+        /// <param name="target">An <see cref="SKBitmap"/>, <see cref="SKPixmap"/>, <see cref="SKImage"/> or <see cref="SKSurface"/> instance with a foreign
         /// assembly identity, so an actual cast would end up in an <see cref="InvalidCastException"/>.</param>
-        internal BitmapDataSerializationInfo(object srcObject)
+        internal BitmapDataSerializationInfo(object target)
         {
             try
             {
-                Type srcType = srcObject.GetType();
+                Type srcType = target.GetType();
                 string type = srcType.Name;
                 BitmapInfo = new CustomBitmapInfo(true) { Type = type };
 
@@ -112,24 +112,24 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization
                 switch (type)
                 {
                     case nameof(SKBitmap):
-                        info = Reflector.GetProperty(srcObject, nameof(SKBitmap.Info))!;
-                        bmpSrc = srcObject;
+                        info = Reflector.GetProperty(target, nameof(SKBitmap.Info))!;
+                        bmpSrc = target;
                         break;
 
                     case nameof(SKPixmap):
-                        info = Reflector.GetProperty(srcObject, nameof(SKPixmap.Info))!;
+                        info = Reflector.GetProperty(target, nameof(SKPixmap.Info))!;
 
                         // bmpSrc = new SKBitmap();
                         // bmpSrc.InstallPixels(srcObject);
                         bmpSrc = Reflector.CreateInstance(Reflector.ResolveType(srcType.Assembly, $"{srcType.Namespace}.{nameof(SKBitmap)}")!);
-                        Reflector.InvokeMethod(bmpSrc, nameof(SKBitmap.InstallPixels), srcObject);
+                        Reflector.InvokeMethod(bmpSrc, nameof(SKBitmap.InstallPixels), target);
                         break;
 
                     case nameof(SKImage):
-                        info = Reflector.GetProperty(srcObject, nameof(SKImage.Info))!;
+                        info = Reflector.GetProperty(target, nameof(SKImage.Info))!;
 
                         // pixels = new srcObject.PeekPixels();
-                        object? pixels = Reflector.InvokeMethod(srcObject, nameof(SKImage.PeekPixels));
+                        object? pixels = Reflector.InvokeMethod(target, nameof(SKImage.PeekPixels));
                         if (pixels != null)
                         {
                             // bmpSrc = new SKBitmap();
@@ -142,7 +142,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization
                             // bmpSrc = new SKBitmap(info);
                             // srcObject.ReadPixels(info, bmpSrc.GetPixels());
                             bmpSrc = Reflector.CreateInstance(Reflector.ResolveType(srcType.Assembly, $"{srcType.Namespace}.{nameof(SKBitmap)}")!, info);
-                            Reflector.InvokeMethod(srcObject, nameof(SKImage.ReadPixels), info, Reflector.InvokeMethod(bmpSrc, nameof(SKBitmap.GetPixels)));
+                            Reflector.InvokeMethod(target, nameof(SKImage.ReadPixels), info, Reflector.InvokeMethod(bmpSrc, nameof(SKBitmap.GetPixels)));
                         }
                         break;
 
@@ -152,7 +152,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization
                         // bmpSrc = new SKBitmap(info);
                         // snapshot.ReadPixels(info, bitmap.GetPixels());
                         // snapshot.Dispose();
-                        object snapshot = Reflector.InvokeMethod(srcObject, nameof(SKSurface.Snapshot))!;
+                        object snapshot = Reflector.InvokeMethod(target, nameof(SKSurface.Snapshot))!;
                         info = Reflector.GetProperty(snapshot, nameof(SKImage.Info))!;
                         bmpSrc = Reflector.CreateInstance(Reflector.ResolveType(srcType.Assembly, $"{srcType.Namespace}.{nameof(SKBitmap)}")!, info);
                         Reflector.InvokeMethod(snapshot, nameof(SKImage.ReadPixels), info, Reflector.InvokeMethod(bmpSrc, nameof(SKBitmap.GetPixels)));
@@ -160,7 +160,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization
                         break;
 
                     default:
-                        throw new ArgumentException(PublicResources.ArgumentInvalid, nameof(srcObject));
+                        throw new ArgumentException(PublicResources.ArgumentInvalid, nameof(target));
                 }
 
                 var size = new Size((int)Reflector.GetProperty(info, nameof(SKImageInfo.Width))!, (int)Reflector.GetProperty(info, nameof(SKImageInfo.Height))!);
@@ -185,13 +185,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization
                     var canvas = Reflector.CreateInstance(Reflector.ResolveType(srcType.Assembly, $"{srcType.Namespace}.{nameof(SKCanvas)}")!, clone);
                     Reflector.InvokeMethod(canvas, nameof(SKCanvas.DrawBitmap), bmpSrc, 0f, 0f, null); // TODO: new SKPaint { BlendMode = SKBlendMode.Src } - not really needed because the target is empty but may improve performance
                     (canvas as IDisposable)?.Dispose();
-                    if (bmpSrc != srcObject)
+                    if (bmpSrc != target)
                         (bmpSrc as IDisposable)?.Dispose();
                     bmpSrc = clone;
                 }
 
                 IntPtr buffer = (IntPtr)Reflector.InvokeMethod(bmpSrc, nameof(SKBitmap.GetPixels))!;
-                Action? disposeCallback = bmpSrc == srcObject ? null : () => (bmpSrc as IDisposable)?.Dispose();
+                Action? disposeCallback = bmpSrc == target ? null : () => (bmpSrc as IDisposable)?.Dispose();
                 var pixelFormat = attributes[nameof(SKImageInfo.AlphaType)] switch
                 {
                     nameof(SKAlphaType.Premul) => KnownPixelFormat.Format32bppPArgb,
@@ -200,22 +200,22 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization
                     _ => KnownPixelFormat.Undefined
                 };
 
-                BackingObject = srcObject;
+                BackingObject = target;
                 BitmapInfo.BitmapData = buffer == IntPtr.Zero || pixelFormat == KnownPixelFormat.Undefined
                     ? null
-                     // BitmapDataFactory.CreateBitmapData(buffer, size, size.Width * 4, pixelFromat, default(Color32), default(byte), disposeCallback),
-                    : (IReadableBitmapData)Reflector.InvokeMethod(typeof(BitmapDataFactory), nameof(BitmapDataFactory.CreateBitmapData),
-                        buffer, size, size.Width * 4, pixelFormat, default(Color32), default(byte), disposeCallback)!;
+                    : BitmapDataFactory.CreateBitmapData(buffer, size, size.Width * 4, pixelFormat, default(Color32), default(byte), disposeCallback);
+                     //(IReadableBitmapData)Reflector.InvokeMethod(typeof(BitmapDataFactory), nameof(BitmapDataFactory.CreateBitmapData),
+                     //   buffer, size, size.Width * 4, pixelFormat, default(Color32), default(byte), disposeCallback)!;
 
 #if DEBUG
-                if (srcType.Assembly != typeof(SKColor).Assembly)
+                if (!Equals(srcType.Assembly, typeof(SKColor).Assembly))
                     BitmapInfo.CustomAttributes["SkiaSharp version mismatch"] = $"{srcType.Assembly} vs. {typeof(SKColor).Assembly}";
 #endif
 
             }
             catch (Exception e) when (e is not ArgumentException)
             {
-                throw new ArgumentException(PublicResources.ArgumentInvalid, nameof(srcObject), e);
+                throw new ArgumentException(PublicResources.ArgumentInvalid, nameof(target), e);
             }
         }
 

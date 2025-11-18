@@ -165,7 +165,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization
                 // If the debugged project uses a different version of KGySoft.Drawing.Core, a MissingMethodException can be thrown
                 // (even though the signature is the same, just because of different assembly versions).
 #if DEBUG
-                BitmapInfo?.CustomAttributes[$"{e.GetType()}"] = e.Message;
+                BitmapInfo?.CustomAttributes[$"Recovered from {e.GetType()}"] = e.Message;
 #endif
 
                 // Creating the IReadableBitmapData by reflection. Its assembly may be different from the one referenced by this project.
