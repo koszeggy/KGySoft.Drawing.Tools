@@ -30,8 +30,11 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
     {
         #region Constructors
         
-        internal ReadableBitmapDataSerializationInfo(IReadableBitmapData bitmapData, bool disposeBitmapData)
+        internal ReadableBitmapDataSerializationInfo(object target)
         {
+            IReadableBitmapData bitmapData = AsBitmapData(target);
+            bool disposeBitmapData = !ReferenceEquals(bitmapData, target);
+
             BitmapInfo = new CustomBitmapInfo(disposeBitmapData)
             {
                 ShowPixelSize = true,
@@ -49,6 +52,11 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
 
             if (bitmapData.Palette != null)
                 BitmapInfo.CustomAttributes[$"{nameof(bitmapData.Palette)}.{nameof(bitmapData.Palette.Count)}"] = $"{bitmapData.Palette.Count}";
+
+#if DEBUG
+            if (!Equals(target.GetType().Assembly, typeof(IReadableBitmapData).Assembly))
+                BitmapInfo?.CustomAttributes["KGySoft.Drawing.Core version mismatch"] = $"{target.GetType().Assembly} vs. {typeof(IReadableBitmapData).Assembly}";
+#endif
         }
 
         internal ReadableBitmapDataSerializationInfo(BinaryReader reader)

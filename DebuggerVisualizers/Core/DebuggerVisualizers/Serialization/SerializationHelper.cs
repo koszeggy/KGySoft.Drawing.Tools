@@ -32,42 +32,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
     {
         internal static void SerializeCustomBitmapInfo(object target, Stream outgoingData)
         {
-            if (target is not IReadableBitmapData bitmapData)
-            {
-                // This part is reached when debugging a .NET Framework project, and the target's assembly version is different from ours,
-                // so casting it to IReadableBitmapData would fail. Here we create a clone of the target and serialize that instead.
-                try
-                {
-                    // Actually we don't need the writer and reader here, just their BaseStream, which may be a file stream.
-                    using var ms = new MemoryStream();
-                    using (BinaryWriter writer = ms.InitSerializationWriter())
-                    {
-                        // Invoking BitmapDataExtensions.Save(bitmapData, stream) in the target's assembly
-                        Type bitmapDataExtensions = Reflector.ResolveType(target.GetType().Assembly, typeof(BitmapDataExtensions).FullName!, ResolveTypeOptions.ThrowError)!;
-                        Reflector.InvokeMethod(bitmapDataExtensions, nameof(BitmapDataExtensions.Save), target, writer.BaseStream);
-                        writer.Flush();
-                    }
-
-                    ms.Position = 0;
-
-                    // Deserializing the bitmap data with the correct assembly identity
-                    using (BinaryReader reader = ms.InitSerializationReader())
-                        bitmapData = BitmapDataFactory.Load(reader.BaseStream);
-                }
-                catch (Exception e)
-                {
-                    throw new ArgumentException(PublicResources.NotAnInstanceOfType(typeof(IReadableBitmapData)), nameof(target), e);
-                }
-            }
-
-            using var imageInfo = new ReadableBitmapDataSerializationInfo(bitmapData, !ReferenceEquals(target, bitmapData));
-#if DEBUG
-            if (!ReferenceEquals(target, bitmapData))
-                imageInfo.BitmapInfo!.CustomAttributes["KGySoft.Drawing.Core version mismatch"] = $"{target.GetType().Assembly} vs. {typeof(IReadWriteBitmapData).Assembly}";
-#endif
-            using (BinaryWriter writer = outgoingData.InitSerializationWriter())
-                imageInfo.Write(writer);
-
+            using var imageInfo = new ReadableBitmapDataSerializationInfo(target);
+            using BinaryWriter writer = outgoingData.InitSerializationWriter();
+            imageInfo.Write(writer);
         }
 
         internal static CustomBitmapInfo DeserializeCustomBitmapInfo(Stream stream)
@@ -80,7 +47,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
         {
             if (target is not Palette palette)
             {
-                // This part is reached when debugging a .NET Framework project, and the target's assembly version is different from ours,
+                // This part is reached when the debugged project uses a different version of KGySoft.Drawing.Core
                 // so casting it to Palette would fail. Here we create a clone of the target and serialize that instead.
                 try
                 {
@@ -142,7 +109,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
                     try
                     {
                         // Serializing the color as a byte array and deserializing it with the correct assembly identity.
-                        byte[] bytes = BinarySerializer.SerializeValueType((ValueType)target);
+                        byte[]? bytes = target is ValueType colorValue && colorValue.GetType().Namespace == typeof(Color32).Namespace
+                            ? BinarySerializer.SerializeValueType(colorValue)
+                            : null;
+
+                        if (bytes == null)
+                            throw new ArgumentException(PublicResources.NotAnInstanceOfType(typeof(Color32)));
+
                         info = target.GetType().Name switch
                         {
                             nameof(Color32) => new ColorSerializationInfo(BinarySerializer.DeserializeValueType<Color32>(bytes)),
