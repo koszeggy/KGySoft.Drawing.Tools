@@ -93,18 +93,28 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            Version currentVersion = new(Ids.PackageVersion);
-            Version? lastVersion = null;
-            if (Configuration.LastVersion is string { Length: > 0 } ver)
-                Version.TryParse(ver, out lastVersion);
-
-            // Displaying notification about the new version
-            if (lastVersion is null || lastVersion < currentVersion)
+            try
             {
-                Notifications.Info(lastVersion is null ? Res.InfoMessagePackageInstalled(currentVersion) : Res.InfoMessagePackageUpgraded(lastVersion, currentVersion),
-                    GetReleaseNotesSpan(), GetOpenImagingToolsButton());
-                Configuration.LastVersion = Ids.PackageVersion;
-                Configuration.SaveConfig();
+                Version currentVersion = new(Ids.PackageVersion);
+                Version? lastVersion = null;
+                if (Configuration.LastVersion is string { Length: > 0 } ver)
+                    Version.TryParse(ver, out lastVersion);
+
+                // Displaying notification about the new version
+                if (lastVersion is null || lastVersion < currentVersion)
+                {
+                    Notifications.Info(lastVersion is null ? Res.InfoMessagePackageInstalled(currentVersion) : Res.InfoMessagePackageUpgraded(lastVersion, currentVersion),
+                        GetReleaseNotesSpan(), GetOpenImagingToolsButton());
+                    Configuration.LastVersion = Ids.PackageVersion;
+                    Configuration.SaveConfig();
+                }
+                else
+                    Configuration.Release();
+
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                Notifications.Error(Res.ErrorMessageUnexpectedError(e.Message));
             }
 
             if (Services.ShellService == null)
@@ -114,23 +124,30 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
             }
 
             // Checking and handling the installation of the classic visualizers
-            Services.ShellService.GetProperty((int)__VSSPROPID2.VSSPROPID_VisualStudioDir, out object documentsDirObj);
-            string documentsDir = documentsDirObj.ToString();
-            string targetPath = Path.Combine(documentsDir, "Visualizers");
-            InstallationInfo installedVersion = InstallationManager.GetInstallationInfo(targetPath);
+            try
+            {
+                Services.ShellService.GetProperty((int)__VSSPROPID2.VSSPROPID_VisualStudioDir, out object documentsDirObj);
+                string documentsDir = documentsDirObj.ToString();
+                string targetPath = Path.Combine(documentsDir, "Visualizers");
+                InstallationInfo installedVersion = InstallationManager.GetInstallationInfo(targetPath);
 
-            // Not installed: great, not needed for VS2022 and later
-            if (!installedVersion.Installed)
-                return;
+                // Not installed: great, not needed for VS2022 and later
+                if (!installedVersion.Installed)
+                    return;
 
-            InstallationInfo availableVersion = InstallationManager.AvailableVersion;
-            if (installedVersion.Version != null && installedVersion.Version >= availableVersion.Version)
-                return;
+                InstallationInfo availableVersion = InstallationManager.AvailableVersion;
+                if (installedVersion.Version != null && installedVersion.Version >= availableVersion.Version)
+                    return;
 
-            // Old version found (or version cannot be determined): taking it as an upgrade, trying to uninstall silently
-            InstallationManager.Uninstall(targetPath, out string? error);
-            if (error != null)
-                Notifications.Error(Res.ErrorMessageFailedToUninstallClassic(targetPath, error));
+                // Old version found (or version cannot be determined): taking it as an upgrade, trying to uninstall silently
+                InstallationManager.Uninstall(targetPath, out string? error);
+                if (error != null)
+                    Notifications.Error(Res.ErrorMessageFailedToUninstallClassic(targetPath, error));
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                Notifications.Error(Res.ErrorMessageUnexpectedError(e.Message));
+            }
         }
 
         private static void ResetTheme()
