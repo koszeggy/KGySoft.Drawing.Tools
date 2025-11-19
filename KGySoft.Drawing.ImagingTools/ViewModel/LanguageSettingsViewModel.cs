@@ -157,11 +157,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             {
                 ResourceCustomPath = lastSavedResourcesPath.Length != 0
                     ? Path.GetFullPath(Path.IsPathRooted(lastSavedResourcesPath) ? lastSavedResourcesPath : Path.Combine(Files.GetExecutingPath(), lastSavedResourcesPath))
-                    : Res.DefaultResourcesPath;
+                    : Res.TextDefaultResourcesPath;
             }
             catch (Exception e) when (!e.IsCritical())
             {
-                ResourceCustomPath = Res.DefaultResourcesPath;
+                UseCustomResourcePath = false;
+                ResourceCustomPath = Res.TextDefaultResourcesPath;
             }
 
             initializing = false;
@@ -243,7 +244,33 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     break;
 
                 case nameof(UseCustomResourcePath):
-                    string path = e.NewValue is true ? Path.Combine(Files.GetExecutingPath(), Res.DefaultResourcesPath) : Res.DefaultResourcesPath;
+                    string path = Res.TextDefaultResourcesPath;
+                    if (e.NewValue is true)
+                    {
+                        path = Res.DefaultResourcesPath;
+                        try
+                        {
+                            if (!Directory.Exists(path))
+                                Directory.CreateDirectory(path);
+                        }
+                        catch (Exception ex) when (!ex.IsCritical())
+                        {
+                            // Local AppData is not writable, trying to use a subfolder of the executable
+                            try
+                            {
+                                path = Path.Combine(Files.GetExecutingPath(), "Resources");
+                                if (!Directory.Exists(path))
+                                    Directory.CreateDirectory(path);
+                            }
+                            catch (Exception exInner) when (!exInner.IsCritical())
+                            {
+                                // giving up
+                                UseCustomResourcePath = false;
+                                path = Res.TextDefaultResourcesPath;
+                            }
+                        }
+                    }
+
                     ResourceCustomPath = path;
                     UpdateApplyCommandState();
                     SetResPath(e.NewValue is true ? path : String.Empty);
@@ -268,7 +295,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
         }
 
-        protected override void ApplyDisplayLanguage() => UpdateApplyCommandState();
+        protected override void ApplyDisplayLanguage()
+        {
+            if (!UseCustomResourcePath)
+                ResourceCustomPath = Res.TextDefaultResourcesPath;
+            UpdateApplyCommandState();
+        }
 
         protected override void Dispose(bool disposing)
         {
@@ -276,7 +308,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 return;
 
             if (disposing)
+            {
                 (Languages as SortableBindingList<CultureInfo>)?.Dispose();
+                Configuration.Release();
+            }
 
             validationResultsChangedHandler = null;
             base.Dispose(disposing);
@@ -338,7 +373,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void UpdateApplyCommandState()
         {
-            // Apply is enabled if current language is different than display language,
+            // Apply is enabled if current language is different from display language,
             CultureInfo selected = CurrentLanguage;
             ApplyCommandState.Enabled = !Equals(selected, Res.DisplayLanguage)
                 // or when path has been changed
@@ -362,7 +397,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             {
                 // If path does not exist, then trying to create it first. SavePendingResources would also create it,
                 // but we try to prevent saving the configuration if the path is invalid
-                string path = customPath ? ResourceCustomPath : Path.Combine(Files.GetExecutingPath(), Res.DefaultResourcesPath);
+                string path = customPath ? ResourceCustomPath : Res.DefaultResourcesPath;
                 if (!Directory.Exists(path))
                 {
                     try
@@ -459,7 +494,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnEditResourcesCommand()
         {
-            using IViewModel viewModel = ViewModelFactory.CreateEditResources(CurrentLanguage, 
+            using IViewModel viewModel = ViewModelFactory.CreateEditResources(CurrentLanguage,
                 ResourceCustomPath != (lastSavedResourcesPath.Length == 0 ? Res.DefaultResourcesPath : lastSavedResourcesPath));
             if (viewModel is EditResourcesViewModel vm)
                 vm.SaveConfigurationCallback = SaveConfiguration;

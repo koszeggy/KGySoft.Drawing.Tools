@@ -48,18 +48,8 @@ namespace KGySoft.Drawing.ImagingTools
     {
         #region Constants
 
-        #region Private Constants
-        
         private const string unavailableResource = "Resource ID not found: {0}";
         private const string invalidResource = "Resource text is not valid for {0} arguments: {1}";
-
-        #endregion
-
-        #region Internal Constants
-
-        internal const string DefaultResourcesPath = "Resources";
-
-        #endregion
 
         #endregion
 
@@ -102,6 +92,14 @@ namespace KGySoft.Drawing.ImagingTools
 
         internal static CultureInfo OSLanguage { get; }
         internal static CultureInfo DefaultLanguage { get; }
+
+        internal static string DefaultResourcesPath =>
+#if NET35
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Path.Combine("KGySoft", Path.Combine("Drawing.ImagingTools", "Resources")));
+#else
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "KGySoft", "Drawing.ImagingTools", "Resources");
+#endif
+
 
         /// <summary>
         /// Gets or sets the resources directory for searching the available .resx files.
@@ -243,6 +241,9 @@ namespace KGySoft.Drawing.ImagingTools
 
         /// <summary>Downloading...</summary>
         internal static string TextDownloading => Get("Text_Downloading");
+
+        /// <summary>(Default path)</summary>
+        internal static string TextDefaultResourcesPath => Get("Text_DefaultResourcesPath");
 
         #endregion
 
@@ -409,17 +410,16 @@ namespace KGySoft.Drawing.ImagingTools
             string? desiredResXPath = Configuration.ResXResourcesCustomPath;
             if (PathHelper.HasInvalidChars(desiredResXPath))
                 desiredResXPath = null;
-            if (!String.IsNullOrEmpty(desiredResXPath))
+            if (String.IsNullOrEmpty(desiredResXPath))
+                desiredResXPath = DefaultResourcesPath;
+            try
             {
-                try
-                {
-                    ResourcesDir = Path.GetFullPath(Path.IsPathRooted(desiredResXPath) ? desiredResXPath! : Path.Combine(Files.GetExecutingPath(), desiredResXPath!));
-                    ApplyResourcesDir();
-                }
-                catch (Exception e) when (!e.IsCritical())
-                {
-                    ResourcesDir = null;
-                }
+                ResourcesDir = Path.GetFullPath(Path.IsPathRooted(desiredResXPath) ? desiredResXPath : Path.Combine(Files.GetExecutingPath(), desiredResXPath!));
+                ApplyResourcesDir();
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                ResourcesDir = null;
             }
 
             // here, allowing specific (non-neutral) languages, too
@@ -427,6 +427,7 @@ namespace KGySoft.Drawing.ImagingTools
             if (Equals(displayLanguage, CultureInfo.InvariantCulture) || (!Equals(displayLanguage, DefaultLanguage) && !ResHelper.GetAvailableLanguages().Contains(displayLanguage)))
                 displayLanguage = DefaultLanguage;
             DisplayLanguage = displayLanguage;
+            Configuration.Release();
 
             LanguageSettings.DynamicResourceManagersSource = ResourceManagerSources.CompiledAndResX;
         }

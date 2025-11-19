@@ -234,6 +234,9 @@
   <data name="Text_Downloading" xml:space="preserve">
     <value>Downloading...</value>
   </data>
+  <data name="Text_DefaultResourcesPath" xml:space="preserve">
+    <value>(Default path)</value>
+  </data>
   <data name="ToolTipText_CompoundAnimation" xml:space="preserve">
     <value>Toggles whether the animation is handled as a single image.
 • When checked, animation will play and saving as GIF saves the whole animation.
