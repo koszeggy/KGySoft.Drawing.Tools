@@ -487,14 +487,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (sbHorizontalVisible)
             {
                 float origCenter = sbHorizontal.Visible
-                    ? (sbHorizontal.Value - sbHorizontal.Minimum + sbHorizontal.LargeChange / 2f) / (sbHorizontal.Maximum - sbHorizontal.Minimum)
+                    ? (sbHorizontal.Value + sbHorizontal.LargeChange / 2f) / sbHorizontal.Maximum
                     : 0.5f;
-                sbHorizontal.Minimum = targetLocation.X;
-                sbHorizontal.Maximum = targetLocation.X + scaledSize.Width;
+                sbHorizontal.Minimum = 0;
+                sbHorizontal.Maximum = scaledSize.Width;
                 sbHorizontal.LargeChange = clientSize.Width;
                 sbHorizontal.SmallChange = this.ScaleSize(referenceScrollSize).Width;
-                int newValue = (int)(scaledSize.Width * origCenter - clientSize.Width / 2f) + targetLocation.X;
-                sbHorizontal.Value = Math.Min(Math.Max(newValue, sbHorizontal.Minimum), sbHorizontal.Maximum - sbHorizontal.LargeChange);
+                int newValue = (int)(scaledSize.Width * origCenter - clientSize.Width / 2f);
+                sbHorizontal.Value = Math.Min(Math.Max(newValue, 0), sbHorizontal.Maximum - sbHorizontal.LargeChange);
             }
 
             if (sbVerticalVisible)
@@ -506,14 +506,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 }
 
                 float origCenter = sbVertical.Visible
-                    ? (sbVertical.Value - sbVertical.Minimum + sbVertical.LargeChange / 2f) / (sbVertical.Maximum - sbVertical.Minimum)
+                    ? (sbVertical.Value + sbVertical.LargeChange / 2f) / sbVertical.Maximum
                     : 0.5f;
-                sbVertical.Minimum = targetLocation.Y;
-                sbVertical.Maximum = targetLocation.Y + scaledSize.Height;
+                sbVertical.Minimum = 0;
+                sbVertical.Maximum = scaledSize.Height;
                 sbVertical.LargeChange = clientSize.Height;
                 sbVertical.SmallChange = this.ScaleSize(referenceScrollSize).Height;
-                int newValue = (int)(scaledSize.Height * origCenter - clientSize.Height / 2f) + targetLocation.Y;
-                sbVertical.Value = Math.Min(Math.Max(newValue, sbVertical.Minimum), sbVertical.Maximum - sbVertical.LargeChange);
+                int newValue = (int)(scaledSize.Height * origCenter - clientSize.Height / 2f);
+                sbVertical.Value = Math.Min(Math.Max(newValue, 0), sbVertical.Maximum - sbVertical.LargeChange);
             }
 
             sbHorizontal.Visible = sbHorizontalVisible;
@@ -534,9 +534,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             g.IntersectClip(clientRectangle);
             Rectangle dest = targetRectangle;
             if (sbHorizontalVisible)
-                dest.X -= sbHorizontal.Value;
+                dest.X -= sbHorizontal.Value + targetRectangle.X;
             if (sbVerticalVisible)
-                dest.Y -= sbVertical.Value;
+                dest.Y -= sbVertical.Value + targetRectangle.Y;
 
             // This lock ensures that no disposed image is painted. The generator also locks on it when frees the cached preview.
             lock (displayImageGenerator.SyncRoot)
