@@ -1,10 +1,10 @@
 ## KGy SOFT Image Debugger Visualizers
 
-**VS 2022**: See the [64-bit installer](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) (for version 17.9 Preview 1 or higher only; offers modern, non-dialog embeddable visualizers)
+**VS 2022-2026**: See the [64-bit installer](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) (for version 17.9 Preview 1 or higher only; offers modern, non-dialog embeddable visualizers)
 
 **VS 2013-2019**: See the [32-bit installer](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers) (classic visualizers)
 
-**VS 2008-2022**: See [manual installation](https://github.com/koszeggy/KGySoft.Drawing.Tools#installing-debugger-visualizers) (classic visualizers)
+**VS 2008-2026**: See [manual installation](https://github.com/koszeggy/KGySoft.Drawing.Tools#installing-debugger-visualizers) (classic visualizers)
 
 This package provides debugger visualizers for several  GDI+, WPF, SkiaSharp and KGy SOFT image types like `Bitmap`, `BitmapSource`, `SKBitmap`, `Metafile`, `ImageSource`, `SKImage`, `Icon`, `Graphics`, `SKSurface`, `BitmapData`, `SKPixmap`, `ColorPalette`, `BitmapPalette` and more. Possible derived types such as `DrawingImage`, `BitmapFrame`, `WriteableBitmap`, etc. are also supported). For GDI+ types it also supports multi-page, multi-resolution and animated images as well as saving them in various formats.
 
@@ -35,7 +35,7 @@ See the [change log](https://github.com/koszeggy/KGySoft.Drawing.Tools/blob/mast
 ## FAQ
 
 **Q:** Can I use the debugger visualizers for other Visual Studio versions?
-<br/>**A:** The VSIX installer has two versions. You can use the [32-bit version](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers) for VS2013-2019 and the [64-bit version](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) for VS2022. However, you can install the debugger visualizers manually for any version starting with Visual Studio 2008. See the [installation steps](https://github.com/koszeggy/KGySoft.Drawing.Tools#installing-debugger-visualizers) at the project site.
+<br/>**A:** The VSIX installer has two versions. You can use the [32-bit version](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers) for VS2013-2019 and the [64-bit version](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) for VS2022-VS2026. However, you can install the debugger visualizers manually for any version starting with Visual Studio 2008. See the [installation steps](https://github.com/koszeggy/KGySoft.Drawing.Tools#installing-debugger-visualizers) at the project site.
 
 **Q:** Is Visual Studio Code supported?
 <br/>**A:** As it has a completely different API, it is not supported yet.

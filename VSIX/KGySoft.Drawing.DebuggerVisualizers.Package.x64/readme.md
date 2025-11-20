@@ -1,10 +1,10 @@
 ## KGy SOFT Image Debugger Visualizers
 
-**VS 2022**: See the [64-bit installer](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) (for version 17.9 Preview 1 or higher only; offers modern, non-dialog embeddable visualizers)
+**VS 2022-2026**: See the [64-bit installer](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) (for version 17.9 Preview 1 or higher only; offers modern, non-dialog embeddable visualizers)
 
 **VS 2013-2019**: See the [32-bit installer](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers) (classic visualizers)
 
-**VS 2008-2022**: See [manual installation](https://github.com/koszeggy/KGySoft.Drawing.Tools#installing-debugger-visualizers) (classic visualizers)
+**VS 2008-2026**: See [manual installation](https://github.com/koszeggy/KGySoft.Drawing.Tools#installing-debugger-visualizers) (classic visualizers)
 
 This package provides debugger visualizers for several  GDI+, WPF, SkiaSharp and KGy SOFT image types like `Bitmap`, `BitmapSource`, `SKBitmap`, `Metafile`, `ImageSource`, `SKImage`, `Icon`, `Graphics`, `SKSurface`, `BitmapData`, `SKPixmap`, `ColorPalette`, `BitmapPalette` and more. Possible derived types such as `DrawingImage`, `BitmapFrame`, `WriteableBitmap`, etc. are also supported). For GDI+ types it also supports multi-page, multi-resolution and animated images as well as saving them in various formats.
 
@@ -31,7 +31,7 @@ See the [change log](https://github.com/koszeggy/KGySoft.Drawing.Tools/blob/mast
 ## FAQ
 
 **Q:** Can I use the debugger visualizers for other Visual Studio versions?
-<br/>**A:** The VSIX installer has two versions. You can use the [32-bit version](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers) for VS2013-2019 and the [64-bit version](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) for VS2022. However, you can install the debugger visualizers manually for any version starting with Visual Studio 2008. See the [installation steps](https://github.com/koszeggy/KGySoft.Drawing.Tools#installing-debugger-visualizers) at the project site.
+<br/>**A:** The VSIX installer has two versions. You can use the [32-bit version](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers) for VS2013-2019 and the [64-bit version](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) for VS2022-2026. However, you can install the debugger visualizers manually for any version starting with Visual Studio 2008. See the [installation steps](https://github.com/koszeggy/KGySoft.Drawing.Tools#installing-debugger-visualizers) at the project site.
 
 **Q:** Is Visual Studio Code supported?
 <br/>**A:** As it has a completely different API, it is not supported yet.
@@ -40,7 +40,7 @@ See the [change log](https://github.com/koszeggy/KGySoft.Drawing.Tools/blob/mast
 <br/>**A:** It can have several reasons. See the [Troubleshooting](https://github.com/koszeggy/KGySoft.Drawing.Tools#troubleshooting) section at the project site.
 
 **Q:** I prefer the classic visualizers, can I revert to them?
-<br/>**A:** If you want to use the classic visualizers with Visual Studio 2022, you have to remove this package, and [manually install](https://github.com/koszeggy/KGySoft.Drawing.Tools#installing-debugger-visualizers) the classic visualizers from the Imaging Tools application. The classic visualizers are not available in the VSIX package for Visual Studio 2022.
+<br/>**A:** If you want to use the classic visualizers with Visual Studio 2022+, you have to remove this package, and [manually install](https://github.com/koszeggy/KGySoft.Drawing.Tools#installing-debugger-visualizers) the classic visualizers from the Imaging Tools application. The classic visualizers are not available in the VSIX package for Visual Studio 2022 or newer versions.
 
 **Q:** Even though I installed the 64-bit version of the debugger visualizers, I still see the classic dialog-based visualizers.
 <br/>**A:** This can happen if you have the classic visualizers installed from the Imaging Tools application. You can remove them by executing the Imaging Tools application from the Visual Studio Extensions menu, and then clicking drop-down area of the _Application Settings_ button on the tool bar. Select the _Manage Classic Debugger Visualizer Installations..._ menu item. Select Visual Studio version from the drop-down list and click the _Remove_ button. You need to restart the debug session to see the changes.

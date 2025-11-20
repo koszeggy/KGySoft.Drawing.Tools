@@ -35,8 +35,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
         internal const int ManageDebuggerVisualizerInstallationsCommandId = 0x0101;
 #endif
         internal const string ResourceTitle = "110";
-        internal const string Version = "5.0.0"; // Note: in .vsixmanifest it should be adjusted manually
-        internal const string PackageVersion = "5.0.0"; // It can also be an informational version
+        internal const string Version = "5.1.0"; // Note: in .vsixmanifest it should be adjusted manually
+        internal const string PackageVersion = "5.1.0"; // It can also be an informational version
 
         #endregion
 
