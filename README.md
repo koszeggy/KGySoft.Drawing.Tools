@@ -153,13 +153,15 @@ Alternatively, you can download the installer package from the VisualStudio Mark
 <details>
 <summary><strong>Manual Install</strong><a id="manual-install"/></summary><p/>
 
+> ⚠️ _Important:_ The installers below contain the classic debugger visualizers. If you want to use the new embeddable visualizers that can remain open while stepping through the code, use the [64-bit VSIX package](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) for Visual Studio 2022.
+
 1. [Download](#download) the binaries and extract the .7z archive to any folder.
 2. Open the folder with the extracted content. You will find five folders there:
   - `net35` contains the .NET Framework 3.5 build. Compatible with all Visual Studio versions starting with Visual Studio 2008 (tested with versions 2008-2019). Cannot be used to debug .NET Core applications. 
   - `net40` contains the .NET Framework 4.0 build. It requires at least Visual Studio 2010 but it's compatible even with Windows XP and ReactOS. Cannot be used to debug .NET Core applications.
   - `net45` contains the .NET Framework 4.5 build. It requires at least Windows Vista SP2 and Visual Studio 2012. With some limitations supports also .NET Core/.NET projects (in case of issues see the [Troubleshooting](#Troubleshooting) section).
   - `net462` contains the .NET Framework 4.6.2 build. It requires at least Windows 7 SP1 and Visual Studio 2012. It contains also the SkiaSharp debugger visualizers, which is not included into the other builds. With some limitations supports also .NET Core/.NET projects (in case of issues see the [Troubleshooting](#Troubleshooting) section).
-  - `net6.0-windows` contains the .NET 6.0 binaries of the Imaging Tools application. Debugger visualizers are not included because it would not be recognized by Visual Studio anyway.
+  - `net9.0-windows` contains the .NET 9.0 binaries of the Imaging Tools application. Debugger visualizers are not included because it would not be recognized by Visual Studio anyway.
 3. Execute `KGySoft.Drawing.ImagingTools.exe` from one of the folders listed above. Click the _Manage Debugger Visualizer Installations..._ button (the gear icon) on the toolbar.
 
 <p align="center">
