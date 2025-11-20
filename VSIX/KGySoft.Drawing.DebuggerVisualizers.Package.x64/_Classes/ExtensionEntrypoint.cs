@@ -188,9 +188,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 #if DEBUG
             Notifications.Info("Debugging Visualizer Extensions"); 
 #endif
-            CheckInstallations();
             VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
             ResetTheme();
+            CheckInstallations();
 
             await base.OnInitializedAsync(extensibility, cancellationToken);
         }

@@ -52,7 +52,7 @@ See the [change log](https://github.com/koszeggy/KGySoft.Drawing.Tools/blob/mast
 <br/>**A:** Yes, starting with version 3.1.0 SkiaSharp types `SKBitmap`, `SKImage`, `SKPixmap`, `SKSurface` and `SKColor` are also supported. The infrastructure is extensible so further frameworks can be expected in future versions.
 
 **Q:** Where do I find the edited/downloaded resource files?
-<br/>**A:** From the Language Options dialog click the _Edit Resources..._ button. Starting with version 5.0.0 the Edit Resources window has an _Open in containing folder_ button that navigates to the folder where the edited resource files are stored, selecting currently edited file.
+<br/>**A:** From the Language Options dialog click the _Edit Resources..._ button. Starting with version 5.0.0 the Edit Resources window has an _Open in containing folder_ button that navigates to the folder where the edited resource files are stored, selecting the currently edited file.
 
 ## More Info:
 
