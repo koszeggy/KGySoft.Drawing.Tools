@@ -12,7 +12,7 @@
 * KGySoft.Drawing.ImagingTools.exe
 ==================================
 * Moving the user-specific settings to Registry. The possibly existing old user settings are migrated automatically
-  when they exist. It was required to make configuration persistent when the application is executed as a Visual
+  when they exist. It was required to make the configuration persistent when the application is executed as a Visual
   Studio extension, because the location of user-scoped settings kept changing with each Visual Studio update.
 - Fixing scrollbar handling when the UI is embedded into a Visual Studio tool window (applies to Visual Studio 2022+
   extension-based debugger visualizers).
