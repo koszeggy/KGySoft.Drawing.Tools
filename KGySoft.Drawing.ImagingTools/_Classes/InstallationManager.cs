@@ -241,10 +241,12 @@ namespace KGySoft.Drawing.ImagingTools
                 }
                 catch (Exception e) when (!e.IsCritical())
                 {
-                    // VS issue workaround: if the package is installed and we try to remove the executed version during debugging, then the executing path will be
+                    // VS issue workaround: if the package is installed, and we try to remove the executed version during debugging, then the executing path will be
                     // the package installation path in uppercase, instead of the target directory (the path is the directory if the package is not installed though).
                     // However, the same path is in lowercase if we start the removing from the VS Tools menu instead of debugging...
+#pragma warning disable CA1862 // Use the 'StringComparison' method overloads to perform case-insensitive string comparisons - false alarm, this is not a case-insensitive comparison but an actual uppercase check
                     if (executingPath == executingPath.ToUpperInvariant() && e is UnauthorizedAccessException)
+#pragma warning restore CA1862
                         error = Res.ErrorMessageInstallationCannotBeRemoved;
                     else
                         error = Res.ErrorMessageCouldNotDeleteFile(file, e.Message);

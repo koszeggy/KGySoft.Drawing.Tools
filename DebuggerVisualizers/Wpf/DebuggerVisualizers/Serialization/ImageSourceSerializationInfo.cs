@@ -16,6 +16,7 @@
 #region Usings
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -145,6 +146,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization
 
         #region Instance Methods
 
+        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local", Justification = "Accessing BitmapInfo in DEBUG build")]
         private IReadableBitmapData GetReadableBitmapData(BitmapSource bitmap)
         {
             #region Local Methods
@@ -160,7 +162,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization
                 // The trivial way
                 return GetReadableBitmapDataDirect(bitmap);
             }
+#pragma warning disable CS0168 // Variable is declared but never used - e is used in DEBUG build
             catch (MissingMethodException e)
+#pragma warning restore CS0168 // Variable is declared but never used
             {
                 // If the debugged project uses a different version of KGySoft.Drawing.Core, a MissingMethodException can be thrown
                 // (even though the signature is the same, just because of different assembly versions).
