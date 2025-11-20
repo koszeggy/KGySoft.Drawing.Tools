@@ -21,6 +21,7 @@ using KGySoft.CoreLibraries;
 using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.Reflection;
 
 #endregion
 
@@ -38,15 +39,17 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
             BitmapInfo = new CustomBitmapInfo(disposeBitmapData)
             {
                 ShowPixelSize = true,
-                Type = bitmapData.GetType().GetName(TypeNameKind.ShortName),
+                Type = target.GetType().GetName(TypeNameKind.ShortName),
                 BitmapData = bitmapData,
                 CustomPalette = PaletteSerializationInfo.GetPaletteInfo(bitmapData.Palette),
                 CustomAttributes =
                 {
-                    { nameof(bitmapData.PixelFormat), $"{bitmapData.PixelFormat}" },
+                    { nameof(bitmapData.Width), $"{bitmapData.Width}" },
+                    { nameof(bitmapData.Height), $"{bitmapData.Height}" },
+                    { nameof(bitmapData.PixelFormat), $"{(target == bitmapData ? bitmapData.PixelFormat : Reflector.GetProperty(target, nameof(bitmapData.PixelFormat)))}" },
                     { nameof(bitmapData.BackColor), $"{bitmapData.BackColor}" },
                     { nameof(bitmapData.AlphaThreshold), $"{bitmapData.AlphaThreshold}" },
-                    { nameof(bitmapData.WorkingColorSpace), $"{bitmapData.WorkingColorSpace}" },
+                    { nameof(bitmapData.WorkingColorSpace), $"{(target == bitmapData ? bitmapData.WorkingColorSpace : Reflector.GetProperty(target, nameof(bitmapData.WorkingColorSpace)))}" },
                 }
             };
 

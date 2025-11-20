@@ -27,6 +27,12 @@
 + CustomBitmapSerializationInfoBase class:
   + New AsBitmapData method
 
+* KGySoft.Drawing.DebuggerVisualizers.Core
+==========================================
+* IReadableBitmapData debugger visualizer:
+  + Displaying also Width and Height properties
+  - Displaying the original pixel format and type even if the bitmap data has been converted internally.
+
 - KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.dll
 ===================================================
 - Fixing possible MissingMethodException when the debugged project references KGySoft.Drawing.Core as well, but with
