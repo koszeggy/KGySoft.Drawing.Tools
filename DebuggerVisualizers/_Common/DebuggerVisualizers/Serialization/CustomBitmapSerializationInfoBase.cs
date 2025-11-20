@@ -94,7 +94,14 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Serialization
         protected static IReadableBitmapData AsBitmapData(object bitmapData)
         {
             if (bitmapData is IReadableBitmapData readableBitmapData)
+            {
+                if (readableBitmapData.IsDisposed)
+                    throw new ObjectDisposedException(nameof(bitmapData), PublicResources.ObjectDisposed);
                 return readableBitmapData;
+            }
+
+            if (Reflector.TryGetProperty(bitmapData, nameof(IBitmapData.IsDisposed), out object? isDisposed) && isDisposed is true)
+                throw new ObjectDisposedException(nameof(bitmapData), PublicResources.ObjectDisposed);
 
             // Assuming bitmap data of a different assembly identity: saving into a temp stream using the loaded assembly by reflection, and reloading it by the expected assembly identity.
             // Can occur if the debugged application uses a different version of KGySoft.Drawing.Core than this visualizer.
