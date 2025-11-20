@@ -71,8 +71,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization
                 Type = image.GetType().Name,
                 CustomAttributes =
                 {
-                    { nameof(image.Width), $"{image.Width:#.##}" },
-                    { nameof(image.Height), $"{image.Height:#.##}" },
+                    { nameof(image.Width), $"{image.Width:0.##}" },
+                    { nameof(image.Height), $"{image.Height:0.##}" },
                 }
             };
 
@@ -94,8 +94,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization
                     { nameof(bitmap.PixelWidth), $"{bitmap.PixelWidth}" },
                     { nameof(bitmap.PixelHeight), $"{bitmap.PixelHeight}" },
                     { nameof(bitmap.Format), bitmap.Format.ToString() },
-                    { nameof(bitmap.DpiX), $"{bitmap.DpiX:#.##}" },
-                    { nameof(bitmap.DpiY), $"{bitmap.DpiY:#.##}" },
+                    { nameof(bitmap.DpiX), $"{bitmap.DpiX:0.##}" },
+                    { nameof(bitmap.DpiY), $"{bitmap.DpiY:0.##}" },
                 }
             };
 
@@ -135,7 +135,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Serialization
             targetHeight = sourceHeight * ratio;
 
             int dpi = SystemDpi;
-            var bitmap = new RenderTargetBitmap((int)(targetWidth * dpi / 96), (int)(targetHeight * dpi / 96),
+            var bitmap = new RenderTargetBitmap(Math.Max(1, (int)(targetWidth * dpi / 96)), Math.Max(1, (int)(targetHeight * dpi / 96)),
                 dpi * targetWidth / sourceWidth, dpi * targetHeight / sourceHeight, PixelFormats.Pbgra32);
             bitmap.Render(visual);
             return bitmap;

@@ -42,6 +42,7 @@
 =============================================
 - Fixing possible MissingMethodException when the debugged project references KGySoft.Drawing.Core as well, but with
   a different assembly identity.
+- Fixing ImageSource debugging with zero width or height.
 
 
 ~~~~~~~~~
