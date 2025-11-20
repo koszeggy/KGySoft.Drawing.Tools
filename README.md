@@ -147,7 +147,7 @@ If you use Visual Studio 2013 or newer, then you can perform the install directl
 
 Alternatively, you can download the installer package from the VisualStudio Marketplace. There are two versions available:
 * A [32-bit version](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers) for Visual Studio 2013-2019
-* And a [64-bit version](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) for Visual Studio 2022
+* And a [64-bit version](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) for Visual Studio 2022-2026
 </details>
 
 <details>
