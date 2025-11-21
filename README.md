@@ -153,23 +153,21 @@ Alternatively, you can download the installer package from the VisualStudio Mark
 <details>
 <summary><strong>Manual Install</strong><a id="manual-install"/></summary><p/>
 
-> ⚠️ _Important:_ The installers below contain the classic debugger visualizers. If you want to use the new embeddable visualizers that can remain open while stepping through the code, use the [64-bit VSIX package](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) for Visual Studio 2022.
+> ⚠️ _Important:_ The installers below contain the classic debugger visualizers. If you want to use the new embeddable visualizers that can remain open while stepping through the code, use the [64-bit VSIX package](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) for Visual Studio 2022-2026.
 
 1. [Download](#download) the binaries and extract the .7z archive to any folder.
 2. Open the folder with the extracted content. You will find five folders there:
-  - `net35` contains the .NET Framework 3.5 build. Compatible with all Visual Studio versions starting with Visual Studio 2008 (tested with versions 2008-2019). Cannot be used to debug .NET Core applications. 
-  - `net40` contains the .NET Framework 4.0 build. It requires at least Visual Studio 2010 but it's compatible even with Windows XP and ReactOS. Cannot be used to debug .NET Core applications.
-  - `net45` contains the .NET Framework 4.5 build. It requires at least Windows Vista SP2 and Visual Studio 2012. With some limitations supports also .NET Core/.NET projects (in case of issues see the [Troubleshooting](#Troubleshooting) section).
-  - `net462` contains the .NET Framework 4.6.2 build. It requires at least Windows 7 SP1 and Visual Studio 2012. It contains also the SkiaSharp debugger visualizers, which is not included into the other builds. With some limitations supports also .NET Core/.NET projects (in case of issues see the [Troubleshooting](#Troubleshooting) section).
-  - `net9.0-windows` contains the .NET 9.0 binaries of the Imaging Tools application. Debugger visualizers are not included because it would not be recognized by Visual Studio anyway.
+  - `net35` contains the .NET Framework 3.5 build. Compatible with all Visual Studio versions starting with Visual Studio 2008 (tested with versions 2008-2026). This is the only version that supports debugging .NET Framework 2.0-3.5 projects, and it supports .NET Framework 4.x as well. You cannot use this version as a debugger visualizer for .NET Core projects.
+  - `net40` contains the .NET Framework 4.0 build. It requires at least Visual Studio 2010, but it's compatible even with Windows XP and ReactOS. Cannot be used to debug images of .NET Framework 2.0-3.5 and .NET Core projects.
+  - `net45` contains the .NET Framework 4.5 build. It requires at least Windows Vista SP2 and Visual Studio 2012. Its debugger visualizers support .NET Framework 4.x, .NET Core 2.1+ and .NET 5+ projects.
+  - `net462` contains the .NET Framework 4.6.2 build. It requires at least Windows 7 SP1 and Visual Studio 2012. It contains also the SkiaSharp debugger visualizers, which is not included into the other builds. It can be used to debug images of .NET Framework 4.x, .NET Core 2.1+ and .NET 5+ projects.
+  - `net9.0-windows` contains the .NET 9.0 binaries of the Imaging Tools application. It can be used as a standalone application only, as it does not contain any debugger visualizers (because Visual Studio would not recognize the .NET build of the visualizers).
 3. Execute `KGySoft.Drawing.ImagingTools.exe` from one of the folders listed above. Click the _Manage Debugger Visualizer Installations..._ button (the gear icon) on the toolbar.
 
 <p align="center">
   <img alt="Installing Debugger Visualizers from Imaging Tools" src="https://user-images.githubusercontent.com/27336165/124270600-b53b1180-db3c-11eb-92d2-fcbdcbc76ca8.png"/>
   <br/><em>Installing Debugger Visualizers from Imaging Tools</em>
 </p>
-
-> 📝 _Note:_ Starting with version 2.1.0 the debugger visualizers can be used also for .NET Core projects from Visual Studio 2019, even though no .NET Core binaries are used.
 
 4. In the drop down list you will see the identified Visual Studio versions in your Documents folder. You can select either one of them or the _&lt;Custom Path...&gt;_ menu item to install the visualizer debuggers into a custom folder.
 
