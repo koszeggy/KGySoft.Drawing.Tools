@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: Images.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -101,7 +101,10 @@ namespace KGySoft.Drawing.ImagingTools.View
             if (icon == null)
                 throw new ArgumentNullException(nameof(icon), PublicResources.ArgumentNull);
             using (icon)
-                return icon.ExtractNearestBitmap(referenceSize.Scale(scale ?? OSUtils.SystemScale), PixelFormat.Format32bppArgb);
+            {
+                using var resizedIcon = icon.Resize(referenceSize.Scale(scale ?? OSUtils.SystemScale));
+                return resizedIcon.ExtractBitmap(0)!;
+            }
         }
 
         internal static Icon ToScaledIcon(this Icon icon, PointF? scale = null, bool div16Scaling = true)
@@ -112,7 +115,7 @@ namespace KGySoft.Drawing.ImagingTools.View
             using (icon)
             {
                 Size size = referenceSize.Scale(scale ?? OSUtils.SystemScale);
-                Icon result = icon.ExtractNearestIcon(size, PixelFormat.Format32bppArgb);
+                Icon result = icon.Resize(size);
                 int mod;
                 if (!div16Scaling || !OSUtils.IsWindows || (mod = result.Width & 0xF) == 0)
                     return result;

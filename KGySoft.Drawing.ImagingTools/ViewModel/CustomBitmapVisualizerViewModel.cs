@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: CustomBitmapVisualizerViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -16,6 +16,7 @@
 #region Usings
 
 using System;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 
@@ -27,41 +28,41 @@ using KGySoft.Drawing.ImagingTools.Model;
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal sealed class CustomBitmapVisualizerViewModel : ImageVisualizerViewModel
+    internal sealed class CustomBitmapVisualizerViewModel : ImageVisualizerViewModel, IViewModel<CustomBitmapInfo?>
     {
         #region Fields
 
-        private readonly CustomBitmapInfo bitmapInfo;
+        private CustomBitmapInfo? bitmapInfo;
 
         #endregion
 
         #region Constructors
 
-        internal CustomBitmapVisualizerViewModel(CustomBitmapInfo bitmapInfo)
+        internal CustomBitmapVisualizerViewModel(CustomBitmapInfo? bitmapInfo)
             : base(AllowedImageTypes.Bitmap)
         {
-            this.bitmapInfo = bitmapInfo;
-            Image = bitmapInfo.BitmapData?.ToBitmap();
             ReadOnly = true;
+            ResetBitmapInfo(bitmapInfo, true);
         }
 
         #endregion
 
         #region Methods
 
+        #region Protected Methods
+
         protected override void UpdateInfo()
         {
-            IReadableBitmapData? bitmapData = bitmapInfo.BitmapData;
-
-            if (bitmapData == null)
+            if (bitmapInfo == null)
             {
                 TitleCaption = Res.TitleNoImage;
                 InfoText = null;
                 return;
             }
 
-            string type = bitmapInfo!.Type ?? bitmapData.GetType().Name;
-            TitleCaption = $"{Res.TitleType(type)}{(bitmapInfo.ShowPixelSize ? $"{Res.TextSeparator}{Res.TitleSize(bitmapData.Size)}" : String.Empty)}";
+            IReadableBitmapData? bitmapData = bitmapInfo.BitmapData;
+            string type = bitmapInfo.Type ?? bitmapData?.GetType().Name ?? PublicResources.Null;
+            TitleCaption = $"{Res.TitleType(type)}{(bitmapInfo.ShowPixelSize ? $"{Res.TextSeparator}{Res.TitleSize(bitmapData?.Size ?? Size.Empty)}" : String.Empty)}";
             var sb = new StringBuilder(Res.TitleType(type));
             if (bitmapInfo.CustomAttributes.Count > 0)
             {
@@ -72,11 +73,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             InfoText = sb.ToString();
         }
 
-        protected override bool IsPaletteAvailable() => bitmapInfo.CustomPalette != null || base.IsPaletteAvailable();
+        protected override bool IsPaletteAvailable() => bitmapInfo?.CustomPalette != null || base.IsPaletteAvailable();
 
         protected override void ShowPalette()
         {
-            if (bitmapInfo.CustomPalette == null)
+            if (bitmapInfo?.CustomPalette == null)
             {
                 base.ShowPalette();
                 return;
@@ -92,10 +93,30 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 return;
 
             if (disposing)
-                bitmapInfo.Dispose();
+                bitmapInfo?.Dispose();
             
+            bitmapInfo = null;
             base.Dispose(disposing);
         }
+
+        #endregion
+
+        #region Private Methods
+
+        private void ResetBitmapInfo(CustomBitmapInfo? model, bool resetPreview)
+        {
+            bitmapInfo = model;
+            SetImageInfo(new ImageInfo(model?.BitmapData?.ToBitmap()), resetPreview);
+        }
+
+        #endregion
+
+        #region Explicitly Implemented Interface Methods
+
+        CustomBitmapInfo? IViewModel<CustomBitmapInfo?>.GetEditedModel() => null; // not editable
+        bool IViewModel<CustomBitmapInfo?>.TrySetModel(CustomBitmapInfo? model) => TryInvokeSync(() => ResetBitmapInfo(model, false));
+
+        #endregion
 
         #endregion
     }

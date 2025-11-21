@@ -6,6 +6,202 @@
 ===============================================================================
 
 ~~~~~~~~~
+* v5.1.0:
+~~~~~~~~~
+
+* KGySoft.Drawing.ImagingTools.exe
+==================================
+* Moving the user-specific settings to Registry. The possibly existing old user settings are migrated automatically
+  when they exist. It was required to make the configuration persistent when the application is executed as a Visual
+  Studio extension, because the location of user-scoped settings kept changing with each Visual Studio update.
+- Fixing scrollbar handling when the UI is embedded into a Visual Studio tool window (applies to Visual Studio 2022+
+  extension-based debugger visualizers).
+
+* KGySoft.Drawing.DebuggerVisualizers.Package.x64.dll
+=====================================================
++ Explicitly supporting Visual Studio 2026
+- The configurations are no longer reset whenever Visual Studio is updated to a new version.
+
++ KGySoft.Drawing.DebuggerVisualizers.dll
+=========================================
++ CustomBitmapSerializationInfoBase class:
+  + New AsBitmapData method
+
+* KGySoft.Drawing.DebuggerVisualizers.Core
+==========================================
+* IReadableBitmapData debugger visualizer:
+  + Displaying also Width and Height properties
+  - Displaying the original pixel format and type even if the bitmap data has been converted internally.
+
+- KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.dll
+===================================================
+- Fixing possible MissingMethodException when the debugged project references KGySoft.Drawing.Core as well, but with
+  a different assembly identity.
+
+- KGySoft.Drawing.DebuggerVisualizers.Wpf.dll
+=============================================
+- Fixing possible MissingMethodException when the debugged project references KGySoft.Drawing.Core as well, but with
+  a different assembly identity.
+- Fixing ImageSource debugging with zero width or height.
+
+
+~~~~~~~~~
+! v5.0.0:
+~~~~~~~~~
+
+! KGySoft.Drawing.DebuggerVisualizers.Package.x64.dll
+=====================================================
+! The debugger visualizers now support Visual Studio 2022 extension-based visualizers. They are displayed in a tool
+  window instead of the classic dialogs. The tool window can remain open while stepping through the code, and can be
+  docked in the Visual Studio IDE. If you prefer the classic dialog, download the 4.6.2 build and use the installer
+  of the ImagingTools application.
+! The extension requires Visual Studio 2022 version 17.9 Preview 1 or higher. To install the debugger visualizers
+  for Visual Studio 2022 version 17.8 or lower, download the 4.6.2 build and use the installer of the ImagingTools
+  application.
+! The startup code now removes the old debugger visualizers from the Documents\Visual Studio 2022\Visualizers folder
+  to avoid conflicts with the new extension-based visualizers. Though if you install them manually, they will be
+  preserved if the version number is 5.0.0 or higher.
+
+
+! KGySoft.Drawing.ImagingTools.exe
+==================================
+! UI changes:
+
+! Debugger Visualizer Installations dialog:
+  ! In the .NET Core and .NET Framework 4.7.2+ builds the classic visualizers cannot be installed anymore.
+  * Installing the classic debugger visualizer for Visual Studio 2022 or higher asks for confirmation because the
+    extension-based visualizers from Visual Studio Marketplace are recommended.
+! Language Settings dialog:
+  ! It no longer has "Allow using resource files" option. Instead, the application automatically uses resource files
+    if they are available.
+  * The languages are now sorted by their native names instead of their English names.
+* Using dark mode when the Windows theme is set to dark (when executing the application on Windows 10 or higher).
+* The default font is adjusted to the current OS theme. For example, on Windows 11, the default font is Segoe UI
+  rather than MS Sans Serif (affects .NET Framework builds).
+* Fixing the tool strip overflow button scaling on high DPI displays (affects .NET Framework builds).
+* Fixing the tool strip overflow button appearance in high contrast mode.
+* Palette visualizer:
+  * The dialog width does not have a maximum limit anymore. The entries are scaled to fit the available width.
++ Edit Resources window:
+  + New 'Hide Dependent Resources' check box.
+  + New 'Open in containing folder' button to open the folder of the selected resource.
+
+! API changes:
+
+! KGySoft.Drawing.ImagingTools.ViewModel namespace:
+---------------------------------------------------
+! IViewModel<TModel> interface:
+  ! New ChangesApplied event and TrySetModel method. Breaking change only if you implemented this interface,
+    which is normally not needed.
+! ViewModelFactory class:
+  ! The return value of the FromPalette(ColorPalette, bool) method has been changed to IViewModel<ColorPalette> from
+    IViewModel<Color[]>. The FromPalette(Color[], bool) overload still returns IViewModel<Color[]>.
+  * The return type of the FromGraphics(GraphicsInfo) method has been changed to IViewModel<GraphicsInfo> from
+    IViewModel. This is a compatible change because IVIewModel<TModel> is a more specific type than IViewModel.
+  * The return type of the FromBitmapData(BitmapDataInfo) method has been changed to IViewModel<BitmapDataInfo> from
+    IViewModel. This is a compatible change because IVIewModel<TModel> is a more specific type than IViewModel.
+  * The return type of the FromCustomBitmap method has been changed to IViewModel<CustomBitmapInfo> from
+    IViewModel. This is a compatible change because IVIewModel<TModel> is a more specific type than IViewModel.
+  * The return type of the FromCustomColor method has been changed to IViewModel<CustomColorInfo> from
+    IViewModel. This is a compatible change because IVIewModel<TModel> is a more specific type than IViewModel.
+  * The return type of the FromCustomPalette method has been changed to IViewModel<CustomPaletteInfo> from
+    IViewModel. This is a compatible change because IVIewModel<TModel> is a more specific type than IViewModel.
+
+* KGySoft.Drawing.ImagingTools.View namespace:
+----------------------------------------------
+* ViewFactory class:
+  * Opening a view for an empty palette no longer closes the view immediately.
+
++ KGySoft.Drawing.ImagingTools namespace:
+-----------------------------------------
++ New ThemeColor enum
++ New ThemeColors class
+
+
++ KGySoft.Drawing.DebuggerVisualizers.dll
+=========================================
+
++ KGySoft.Drawing.DebuggerVisualizers namespace:
+------------------------------------------------
++ New IDebuggerVisualizerProvider interface (.NET Framework 4.7.2 only): Allows providing the implementation of
+  debugger visualizer extensions for Visual Studio 2022.
++ DebuggerHelper class:
+  + New GetDebuggerVisualizers method: Gets the classic debugger visualizers of a specified assembly.
+  + New GetDebuggerVisualizerProviders method (.NET Framework 4.7.2 only): Gets the debugger visualizer provider
+    implementations of an assembly for the new extension-based visualizers supported by Visual Studio 2022.
+  + New GetStringResource method to allow debugger visualizers to get dynamically localizable strings.
++ StreamExtensions class:
+  + New AsReadOnlySequence method (.NET Framework 4.7.2 only)
+  + New AsStream method (.NET Framework 4.7.2 only)
+
++ KGySoft.Drawing.DebuggerVisualizers.Serialization namespace:
+--------------------------------------------------------------
++ New SerializerBase class
+
++ KGySoft.Drawing.DebuggerVisualizers.View namespace:
+-----------------------------------------------------
++ New VisualizerExtensionWpfAdapter<TModel> class (.NET Framework 4.7.2 only)
+
+
++ KGySoft.Drawing.DebuggerVisualizers.GdiPlus.dll
+=================================================
+
++ KGySoft.Drawing.DebuggerVisualizers.GdiPlus namespace:
+--------------------------------------------------------
++ GdiPlusDebuggerHelper class:
+  + New GetDebuggerVisualizerProviders method (.NET Framework 4.7.2 only)
++ New ImageDebuggerVisualizerProviderImpl class (.NET Framework 4.7.2 only)
++ New IconDebuggerVisualizerProviderImpl class (.NET Framework 4.7.2 only)
++ New ColorDebuggerVisualizerProviderImpl class (.NET Framework 4.7.2 only)
++ New ColorPaletteDebuggerVisualizerProviderImpl class (.NET Framework 4.7.2 only)
++ New GraphicsDebuggerVisualizerProviderImpl class (.NET Framework 4.7.2 only)
++ New BitmapDataDebuggerVisualizerProviderImpl class (.NET Framework 4.7.2 only)
+
++ KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization namespace:
+----------------------------------------------------------------------
++ The ImageSerializer class has been made public.
++ The IconSerializer class has been made public.
++ The ColorSerializer class has been made public.
++ The ColorPaletteSerializer class has been made public.
++ The GraphicsSerializer class has been made public.
++ The BitmapDataSerializer class has been made public.
+
+
++ KGySoft.Drawing.DebuggerVisualizers.Wpf.dll
+=============================================
+
++ KGySoft.Drawing.DebuggerVisualizers.Wpf namespace:
+----------------------------------------------------
++ WpfDebuggerHelper class:
+  + New GetDebuggerVisualizerProviders method (.NET Framework 4.7.2 only)
++ New ImageSourceDebuggerVisualizerProviderImpl class (.NET Framework 4.7.2 only)
++ New ColorDebuggerVisualizerProviderImpl class (.NET Framework 4.7.2 only)
++ New BitmapPaletteDebuggerVisualizerProviderImpl class (.NET Framework 4.7.2 only)
+
++ KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization namespace:
+----------------------------------------------------------------------
++ The ImageSourceSerializer class has been made public.
++ The ColorSerializer class has been made public.
++ The BitmapPaletteSerializer class has been made public.
+
+
++ KGySoft.Drawing.DebuggerVisualizers.Core.dll
+==============================================
+
++ KGySoft.Drawing.DebuggerVisualizers.Core namespace:
+-----------------------------------------------------
++ CoreDebuggerHelper class:
+  + New GetDebuggerVisualizerProviders method (.NET Framework 4.7.2 only)
++ New ReadableBitmapDataDebuggerVisualizerProviderImpl class (.NET Framework 4.7.2 only)
++ New ColorDebuggerVisualizerProviderImpl class (.NET Framework 4.7.2 only)
+
++ KGySoft.Drawing.DebuggerVisualizers.Core.Serialization namespace:
+-------------------------------------------------------------------
++ The ReadableBitmapDataSerializer class has been made public.
++ New ColorSerializer class.
+
+
+~~~~~~~~~
 * v4.0.0:
 ~~~~~~~~~
 

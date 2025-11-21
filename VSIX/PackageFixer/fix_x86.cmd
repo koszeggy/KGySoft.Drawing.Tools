@@ -1,1 +1,1 @@
-bin\Release\net6.0\PackageFixer ..\KGySoft.Drawing.DebuggerVisualizers.Package.x86\bin\Release\KGySoft.Drawing.DebuggerVisualizers.Package.vsix C:\Temp\vsix\ref.x86.vsix
+bin\Release\net9.0\PackageFixer ..\KGySoft.Drawing.DebuggerVisualizers.Package.x86\bin\Release\KGySoft.Drawing.DebuggerVisualizers.Package.vsix D:\Temp\vsix\ref.x86.vsix

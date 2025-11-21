@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: IView.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -16,6 +16,8 @@
 #region Usings
 
 using System;
+
+using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
 
@@ -32,7 +34,7 @@ namespace KGySoft.Drawing.ImagingTools.View
         /// <summary>
         /// Gets whether this view is disposed.
         /// </summary>
-        public bool IsDisposed { get; }
+        bool IsDisposed { get; }
 
         #endregion
 

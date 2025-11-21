@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: PaletteSerializationInfo.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -29,7 +29,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
     {
         #region Constructors
 
-        internal PaletteSerializationInfo(IPalette palette) => PaletteInfo = GetPaletteInfo(palette);
+        internal PaletteSerializationInfo(Palette palette) => PaletteInfo = GetPaletteInfo(palette);
 
         internal PaletteSerializationInfo(BinaryReader reader)
             : base(reader)
@@ -40,7 +40,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
 
         #region Methods
 
-        internal static CustomPaletteInfo? GetPaletteInfo(IPalette? palette)
+        internal static CustomPaletteInfo? GetPaletteInfo(Palette? palette)
         {
             if (palette == null)
                 return null;

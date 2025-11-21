@@ -1,0 +1,70 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net35;net40;net45;net462;net472;net9.0-windows</TargetFrameworks>
+    <!--<TargetFrameworks>net462;net472</TargetFrameworks>-->
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <RootNamespace>KGySoft.Drawing.DebuggerVisualizers</RootNamespace>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\..\KGySoft.snk</AssemblyOriginatorKeyFile>
+    <LangVersion>latest</LangVersion>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageLicenseFile>..\..\..\LICENSE</PackageLicenseFile>
+    <Authors>György Kőszeg</Authors>
+    <Nullable>enable</Nullable>
+    <UseWPF Condition="'$(TargetFramework)'=='net472'">true</UseWPF>
+    <UseWindowsForms Condition="'$(TargetFramework)'=='net472'">true</UseWindowsForms>
+  </PropertyGroup>
+
+  <!-- Project references -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\KGySoft.Drawing.ImagingTools\KGySoft.Drawing.ImagingTools.csproj" />
+  </ItemGroup>
+
+  <!-- Common NuGet references -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!-- .NET Framework only references -->
+  <ItemGroup Condition="'$(TargetFramework)'=='net35' OR '$(TargetFramework)'=='net40' OR '$(TargetFramework)'=='net45' OR '$(TargetFramework)'=='net462' OR '$(TargetFramework)'=='net472'">
+    <!--
+    Note: VSSDK.DebuggerVisualizers does not work in VS2022 anymore if VSIX is also installed,
+          because it causes "Unable to cast object [...] to type DialogDebuggerVisualizer"
+    IMPORTANT: Do NOT reference v17.6.1032901 or newer: it is incompatible with older VS versions.
+               Calling the "safer" (and incompatible) new DialogDebuggerVisualizer(FormatterPolicy) constructor
+               is not needed at all because we don't use any auto serialization (neither binary nor JSON) as we [de]serialize the binary stream manually.
+    -->
+    <PackageReference Include="Microsoft.VisualStudio.DebuggerVisualizers" Version="17.0.1061105" />
+  </ItemGroup>
+
+  <!-- .NET Framework 4.7.2 only references (to support modern visualizer extensions) -->
+  <ItemGroup Condition="'$(TargetFramework)'=='net472'">
+    <PackageReference Include="Microsoft.VisualStudio.Extensibility" Version="17.9.2092" />
+  </ItemGroup>
+
+  <!-- .NET only references (note: doesn't really make sense but allows testing from KGySoft.Drawing.DebuggerVisualizers.*.Test) -->
+  <ItemGroup Condition="'$(TargetFramework)'=='net9.0-windows'">
+    <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers">
+      <HintPath>..\..\_ref\Microsoft.VisualStudio.DebuggerVisualizers.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Excluding the WPF adapter for non-net472 targets -->
+  <ItemGroup Condition="'$(TargetFramework)'!='net472'">
+    <Page Remove="View\VisualizerExtensionWpfAdapterBase.xaml" />
+    <None Include="View\VisualizerExtensionWpfAdapterBase.xaml" />
+    <None Update="View\VisualizerExtensionWpfAdapterBase.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy bin\$(ConfigurationName)\$(TargetFramework)\$(TargetFileName) ..\..\..\KGySoft.Drawing.ImagingTools\bin\$(ConfigurationName)\$(TargetFramework)\ /Y" />
+  </Target>
+
+  </Project>

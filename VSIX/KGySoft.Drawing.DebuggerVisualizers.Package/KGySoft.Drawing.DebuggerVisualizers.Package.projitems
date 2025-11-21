@@ -10,33 +10,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)GlobalSuppressions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Microsoft.VisualStudio\Shell\InfoBarActionItem.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Microsoft.VisualStudio\Shell\InfoBarButton.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Microsoft.VisualStudio\Shell\InfoBarHyperLink.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Microsoft.VisualStudio\Shell\InfoBarModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Microsoft.VisualStudio\Shell\InfoBarTextSpan.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Properties\AssemblyInfo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Properties\Resources.Designer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Res.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Classes\Services.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Attributes\PackageRegistrationAsyncAttribute.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Attributes\ProvideAutoLoadAsyncAttribute.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Classes\DebuggerVisualizersPackage.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Classes\ExecuteImagingToolsCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)_Classes\Ids.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Microsoft.VisualStudio\Imaging\KnownMonikers.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Classes\ManageDebuggerVisualizerInstallationsCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)_Classes\Services.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)_Classes\Notifications.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)_Classes\ViewHelper.cs" />
-    <None Include="$(MSBuildThisFileDirectory)readme.md" />
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Properties\Resources.resx">
-      <MergeWithCTO>true</MergeWithCTO>
-      <SubType>Designer</SubType>
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Microsoft.VisualStudio\Imaging\" />
+    <Compile Include="$(MSBuildThisFileDirectory)_Extensions\ExceptionExtensions.cs" />
   </ItemGroup>
 </Project>

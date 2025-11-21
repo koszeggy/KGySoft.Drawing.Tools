@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: CWPRETSTRUCT.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -16,14 +16,18 @@
 #region Usings
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.WinApi
 {
+    /// <summary>
+    /// Defines the message parameters passed to a WH_CALLWNDPROCRET hook procedure, HOOKPROC callback function.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    // ReSharper disable once InconsistentNaming
+    [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "WinAPI")]
     internal struct CWPRETSTRUCT
     {
         #region Fields

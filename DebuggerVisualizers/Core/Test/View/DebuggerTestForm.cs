@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: DebuggerTestForm.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -20,6 +20,7 @@ using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.DebuggerVisualizers.Core.Test.ViewModel;
+using KGySoft.Drawing.DebuggerVisualizers.Test;
 
 #endregion
 
@@ -64,14 +65,15 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.View
 
             commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.PixelFormatEnabled), nameof(cmbPixelFormat.Enabled), cmbPixelFormat);
             commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.BitmapDataFromFile), nameof(gbFile.Enabled), gbFile);
-            commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.CanDebug), nameof(Button.Enabled), btnViewDirect, btnViewByDebugger);
+            commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.CanDebug), nameof(Button.Enabled), btnViewDirect, btnViewByClassicDebugger);
             commandBindings.AddPropertyBinding(viewModel, nameof(viewModel.PreviewImage), nameof(pbPreview.Image), pbPreview);
 
             commandBindings.Add<EventArgs>(OnSelectFileCommand)
                 .AddSource(txtFile, nameof(txtFile.Click))
                 .AddSource(txtFile, nameof(txtFile.DoubleClick));
             commandBindings.Add(viewModel.DirectViewCommand).AddSource(btnViewDirect, nameof(btnViewDirect.Click));
-            commandBindings.Add(viewModel.DebugCommand).AddSource(btnViewByDebugger, nameof(btnViewByDebugger.Click));
+            commandBindings.Add(viewModel.ClassicDebugCommand).AddSource(btnViewByClassicDebugger, nameof(btnViewByClassicDebugger.Click));
+            commandBindings.Add(viewModel.ExtensionDebugCommand).AddSource(btnViewByExtensionDebugger, nameof(btnViewByExtensionDebugger.Click));
 
             viewModel.GetHwndCallback = () => Handle;
 

@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: WindowsUtils.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -17,7 +17,6 @@
 
 using System;
 using System.Drawing;
-using System.Linq;
 
 #if NETFRAMEWORK
 using Microsoft.Win32;
@@ -33,10 +32,13 @@ namespace KGySoft.Drawing.ImagingTools
 
         private static bool? isVistaOrLater;
         private static bool? isWin8OrLater;
+        private static bool? isWin10OrLater;
+        private static bool? isWindows10Build1903OrLater;
         private static bool? isWin11OrLater;
         private static bool? isWindows;
         private static bool? isLinux;
         private static bool? isMono;
+        private static Version? windowsVersion;
 
         #endregion
 
@@ -47,79 +49,20 @@ namespace KGySoft.Drawing.ImagingTools
         internal static bool IsMono => isMono ??= Type.GetType("Mono.Runtime") != null;
 
         internal static bool IsVistaOrLater
-        {
-            get
-            {
-                if (isVistaOrLater.HasValue)
-                    return isVistaOrLater.Value;
-
-                OperatingSystem os = Environment.OSVersion;
-                if (os.Platform != PlatformID.Win32NT)
-                {
-                    isVistaOrLater = false;
-                    return false;
-                }
-
-                isVistaOrLater = os.Version >= new Version(6, 0, 5243);
-                return isVistaOrLater.Value;
-            }
-        }
+            => isVistaOrLater ??= GetWindowsVersion() is Version version && version >= new Version(6, 0, 5243);
 
         internal static bool IsWindows8OrLater
-        {
-            get
-            {
-                if (isWin8OrLater.HasValue)
-                    return isWin8OrLater.Value;
+            => isWin8OrLater ??= GetWindowsVersion() is Version version && version >= new Version(6, 2, 9200);
 
-                OperatingSystem os = Environment.OSVersion;
-                if (os.Platform != PlatformID.Win32NT)
-                {
-                    isWin8OrLater = false;
-                    return false;
-                }
+        internal static bool IsWindows10OrLater
+            // In fact, the October 2018 release, version 1809, the first one with dark theme support
+            => isWin10OrLater ??= GetWindowsVersion() is Version version && version >= new Version(10, 0, 17763);
 
-                isWin8OrLater = os.Version >= new Version(6, 2, 9200);
-                return isWin8OrLater.Value;
-            }
-        }
+        internal static bool IsWindows10Build1903OrLater
+            => isWindows10Build1903OrLater ??= GetWindowsVersion() is Version version && version >= new Version(10, 0, 18362);
 
         internal static bool IsWindows11OrLater
-        {
-            get
-            {
-                if (isWin11OrLater.HasValue)
-                    return isWin11OrLater.Value;
-
-                OperatingSystem osVer = Environment.OSVersion;
-                if (osVer.Platform != PlatformID.Win32NT)
-                {
-                    isWin11OrLater = false;
-                    return false;
-                }
-
-#if NETCOREAPP
-                isWin11OrLater = osVer.Version >= new Version(10, 0, 22000);
-#else
-                // .NET Framework never returns a higher version than Windows 8, so we need to access the Registry
-                const string path = @"SOFTWARE\Microsoft\Windows NT\CurrentVersion";
-                const string key = "CurrentBuild";
-                try
-                {
-                    using RegistryKey? reg = Registry.LocalMachine.OpenSubKey(path);
-                    isWin11OrLater = reg?.GetValueNames().Contains(key) == true
-                        && reg.GetValue(key) is string value
-                        && Int32.TryParse(value, out int buildNumber)
-                        && buildNumber >= 22000;
-                }
-                catch (Exception e) when (!e.IsCritical())
-                {
-                    isWin11OrLater = false;
-                }
-#endif
-                return isWin11OrLater.Value; 
-            }
-        }
+            => isWin11OrLater ??= GetWindowsVersion() is Version version && version >= new Version(10, 0, 22000);
 
         internal static PointF SystemScale => GetScale(IntPtr.Zero);
         internal static PointF SystemDpi => GetDpiForHwnd(IntPtr.Zero);
@@ -142,8 +85,55 @@ namespace KGySoft.Drawing.ImagingTools
 
         private static PointF GetDpiForHwnd(IntPtr handle)
         {
-            using (Graphics screen = Graphics.FromHwnd(handle))
-                return new PointF(screen.DpiX, screen.DpiY);
+            using Graphics screen = Graphics.FromHwnd(handle);
+            return new PointF(screen.DpiX, screen.DpiY);
+        }
+
+        private static Version? GetWindowsVersion()
+        {
+            if (windowsVersion is not null)
+                return windowsVersion;
+            OperatingSystem osVer = Environment.OSVersion;
+            if (osVer.Platform != PlatformID.Win32NT)
+                return null;
+
+#if NETCOREAPP
+            windowsVersion = osVer.Version;
+#else
+            if (osVer.Version != new Version(6, 2, 9200, 0))
+                windowsVersion = osVer.Version;
+            else
+            {
+                // .NET Framework never returns a higher version than Windows 8, so we need to access the Registry
+                // NOTE: This could be fixed by an app.manifest file with supportedOS element, but it would only when ImagingTools is executed directly.
+                const string path = @"SOFTWARE\Microsoft\Windows NT\CurrentVersion";
+                const string keyLcuVer = "LCUVer";
+                const string keyMajor = "CurrentMajorVersionNumber";
+                const string keyMinor = "CurrentMinorVersionNumber";
+                const string keyBuild = "CurrentBuild";
+                const int defaultMajor = 10;
+                const int defaultMinor = 0;
+                try
+                {
+                    using RegistryKey? reg = Registry.LocalMachine.OpenSubKey(path);
+                    if (reg == null)
+                        windowsVersion = osVer.Version;
+                    else if (reg.GetValue(keyLcuVer) is string versionString && VersionExtensions.TryParse(versionString, out Version? version))
+                        windowsVersion = version;
+                    else if (reg.GetValue(keyBuild) is string build && Int32.TryParse(build, out int buildNumber))
+                        windowsVersion = new Version(reg.GetValue(keyMajor, defaultMajor) is int major ? major : defaultMajor,
+                            reg.GetValue(keyMinor, defaultMinor) is int minor ? minor : defaultMinor,
+                            buildNumber);
+                    else
+                        windowsVersion = osVer.Version;
+                }
+                catch (Exception e) when (!e.IsCritical())
+                {
+                    windowsVersion = osVer.Version;
+                }
+            }
+#endif
+            return windowsVersion;
         }
 
         #endregion

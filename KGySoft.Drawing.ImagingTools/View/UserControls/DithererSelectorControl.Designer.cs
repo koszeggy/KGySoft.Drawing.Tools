@@ -20,8 +20,8 @@
             this.lblStrength = new System.Windows.Forms.Label();
             this.lblStrengthValue = new System.Windows.Forms.Label();
             this.tbStrength = new System.Windows.Forms.TrackBar();
-            this.chbSerpentineProcessing = new System.Windows.Forms.CheckBox();
-            this.chbByBrightness = new System.Windows.Forms.CheckBox();
+            this.chbSerpentineProcessing = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
+            this.chbByBrightness = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
             this.tblSeed = new System.Windows.Forms.TableLayoutPanel();
             this.lblSeed = new System.Windows.Forms.Label();
             this.txtSeed = new System.Windows.Forms.TextBox();
@@ -183,8 +183,8 @@
         private System.Windows.Forms.Label lblStrength;
         private System.Windows.Forms.Label lblStrengthValue;
         private System.Windows.Forms.TrackBar tbStrength;
-        private System.Windows.Forms.CheckBox chbSerpentineProcessing;
-        private System.Windows.Forms.CheckBox chbByBrightness;
+        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox chbSerpentineProcessing;
+        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox chbByBrightness;
         private System.Windows.Forms.TableLayoutPanel tblSeed;
         private System.Windows.Forms.Label lblSeed;
         private System.Windows.Forms.TextBox txtSeed;

@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: GraphicsExtensions.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -34,6 +34,7 @@ namespace KGySoft.Drawing.ImagingTools
         }
 
         internal static Size ScaleSize(this Graphics graphics, Size size) => size.Scale(graphics.GetScale());
+        internal static int ScaleWidth(this Graphics graphics, int width) => width.Scale(graphics.GetScale().X);
 
         #endregion
     }

@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: BaseForm.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -15,17 +15,20 @@
 
 #region Usings
 
-#if !NET5_0_OR_GREATER
 using System;
+using System.ComponentModel;
+#if !NET5_0_OR_GREATER
 using System.Security;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.Drawing;
 using System.Reflection;
+#endif
+using System.Threading;
+using System.Windows.Forms;
 
+#if !NET5_0_OR_GREATER
 using KGySoft.Drawing.ImagingTools.WinApi;
 #endif
-using System.Windows.Forms;
 
 #if NETFRAMEWORK
 using KGySoft.Reflection;
@@ -36,20 +39,14 @@ using KGySoft.Reflection;
 namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
     /// <summary>
-    /// Copied from the KGySoft.Controls project for the resizing issue fix but used also for common DPI handling.
+    /// Copied from the KGySoft.Controls project for the resizing issue fix but used also for common DPI handling and theming.
     /// </summary>
     internal class BaseForm : Form
     {
-        #region Constants
-
-#if !NET5_0_OR_GREATER
-        // ReSharper disable once InconsistentNaming
-        private const int WM_NCHITTEST = 0x0084;
-#endif
-
-        #endregion
-
         #region Fields
+
+        private readonly int threadId;
+        private readonly ManualResetEventSlim handleCreated;
 
 #if !NET5_0_OR_GREATER
         private static BitVector32.Section formStateRenderSizeGrip;
@@ -60,6 +57,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         #endregion
 
         #region Properties
+
+        #region Protected Properties
+
+        protected bool IsDesignMode => DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime;
+
+        #endregion
+
+        #region Private Properties
 
 #if !NET5_0_OR_GREATER
         private BitVector32 FormState
@@ -80,20 +85,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #endregion
 
+        #endregion
+
         #region Constructors
 
-        static BaseForm()
+        protected BaseForm()
         {
-#if NETFRAMEWORK
-            Type? dpiHelper = Reflector.ResolveType(typeof(Form).Assembly, "System.Windows.Forms.DpiHelper");
-            if (dpiHelper == null)
-                return;
-
-            // Turning off WinForms auto resize logic to prevent interferences.
-            // Occurs when executed as visualizer debugger and devenv.exe.config contains some random DpiAwareness
-            Reflector.TrySetField(dpiHelper, "isInitialized", true);
-            Reflector.TrySetField(dpiHelper, "enableHighDpi", false); 
-#endif
+            threadId = Thread.CurrentThread.ManagedThreadId;
+            handleCreated = new ManualResetEventSlim();
+            ThemeColors.ThemeChanged += ThemeColors_ThemeChanged;
         }
 
         #endregion
@@ -101,6 +101,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         #region Methods
 
         #region Protected Methods
+
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            if (IsDesignMode)
+                return;
+
+            handleCreated.Set();
+            this.ApplyTheme();
+        }
 
 #if !NET5_0_OR_GREATER
         protected override void WndProc(ref Message m)
@@ -113,7 +123,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
             switch (m.Msg)
             {
-                case WM_NCHITTEST:
+                case Constants.WM_NCHITTEST:
                     WmNCHitTest(ref m);
                     return;
                 default:
@@ -123,11 +133,40 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         }
 #endif
 
+        protected void InvokeIfRequired(Action action)
+        {
+            if (Disposing || IsDisposed)
+                return;
+
+            try
+            {
+                // no invoke is required (not using InvokeRequired because that may return false if handle is not created yet)
+                if (threadId == Thread.CurrentThread.ManagedThreadId)
+                {
+                    action.Invoke();
+                    return;
+                }
+
+                if (!handleCreated.IsSet)
+                    handleCreated.Wait();
+
+                Invoke(action);
+            }
+            catch (ObjectDisposedException)
+            {
+                // it can happen that actual Invoke is started to execute only after querying isClosing and when Disposing and IsDisposed both return false
+            }
+        }
+
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
+            ThemeColors.ThemeChanged -= ThemeColors_ThemeChanged;
             if (disposing)
+            {
+                handleCreated.Dispose();
                 Events.Dispose();
+            }
         }
 
         #endregion
@@ -158,12 +197,24 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             DefWndProc(ref m);
             if (AutoSizeMode == AutoSizeMode.GrowAndShrink)
             {
-                int result = (int)m.Result;
+                nint result = m.Result;
                 if (result >= 10 && result <= 17)
                     m.Result = (IntPtr)18;
             }
         }
 #endif
+
+        #endregion
+
+        #region Event Handlers
+
+        private void ThemeColors_ThemeChanged(object? sender, EventArgs e)
+        {
+            if (!IsHandleCreated)
+                return;
+
+            InvokeIfRequired(this.ApplyTheme);
+        }
 
         #endregion
 

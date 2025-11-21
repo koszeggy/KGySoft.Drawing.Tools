@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: PalettePanel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -39,6 +39,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         private static readonly Color selectionFrameColor = Color.FromArgb(0, 204, 255);
         private static readonly Color selectionFrameColorAlternative = Color.DarkBlue;
+        private static readonly Point distanceUnit = new(13, 13);
+        private static readonly Point paddingUnit = new(2, 2);
 
         #endregion
 
@@ -52,6 +54,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         private int visibleRowCount;
         private int counter;
         private PointF scale = new PointF(1f, 1f);
+        private Point scaledDistance = distanceUnit;
+        private Point scaledPadding = paddingUnit;
         private int scrollFraction;
         private bool isRightToLeft;
 
@@ -80,8 +84,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 palette = value;
                 if (ColorCount == 0)
                     timerSelection.Enabled = false;
-                if (value != null)
-                    SelectedColorIndex = 0;
+                SelectedColorIndex = value is { Count: > 0 } ? 0 : -1;
                 ResetLayout();
             }
         }
@@ -189,7 +192,20 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            PointF currentScale = e.Graphics.GetScale();
+            if (DesignMode)
+            {
+                base.OnPaint(e);
+                return;
+            }
+
+            var clientSize = ClientSize;
+            float minScale = e.Graphics.GetScale().X;
+            float maxScale = Math.Max(Math.Min(clientSize.Width / 240f, clientSize.Height / (distanceUnit.Y + paddingUnit.Y * 2f)), 0.25f);
+            int colorRows = Math.Min(16, (int)Math.Ceiling(palette!.Count / 16d));
+            float actualScale = maxScale <= minScale
+                ? maxScale
+                : Math.Min(maxScale, Math.Max(minScale, clientSize.Height / (distanceUnit.Y * colorRows + paddingUnit.Y * 2f)));
+            var currentScale = new PointF(actualScale, actualScale);
             if (currentScale != scale)
             {
                 scale = currentScale;
@@ -211,7 +227,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     continue;
 
                 // background
-                e.Graphics.FillRectangle(SystemBrushes.Control, rect);
+                e.Graphics.FillRectangle(BackColor.GetBrush(), rect);
                 
                 // selection frame
                 if (i == selectedColorIndex)
@@ -225,7 +241,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
                     // Using wider pen fails even with Inset alignment with every possible PixelOffsetMode. So using a 1 width pen and drawing possible more rectangles
                     int penWidth = Math.Max((int)scale.X, 1);
-                    using (Pen pen = new Pen(Color.FromArgb(r, g, b)))
+                    Pen pen = Color.FromArgb(r, g, b).GetPen();
                     {
                         for (int x = 0; x < penWidth; x++)
                             e.Graphics.DrawRectangle(pen, rectSelection.Left + x, rectSelection.Top + x, rectSelection.Width - 1 - (x << 1), rectSelection.Height - 1 - (x << 1));
@@ -258,8 +274,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 }
 
                 // color
-                using (Brush b = new SolidBrush(c))
-                    e.Graphics.FillRectangle(b, rect);
+                e.Graphics.FillRectangle(c.GetBrush(), rect);
             }
         }
 
@@ -275,7 +290,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (isRightToLeft)
             {
                 location.X -= scrollbarWidth;
-                location.X = (int)MathF.Round(((13 << 4) + 2) * scale.X) - location.X;
+                location.X = (scaledDistance.X << 4) + scaledPadding.X * 2 - location.X;
             }
             
             // same as before (using the raw location because GetColorRect translates it)
@@ -283,11 +298,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 return;
 
             // out of range
-            if (!Rectangle.Round(new RectangleF(2 * scale.X, 2 * scale.Y, (13 << 4) * scale.X, 13 * visibleRowCount * scale.Y)).Contains(location))
+            if (!new Rectangle(scaledPadding.X, scaledPadding.Y, scaledDistance.X << 4, scaledDistance.Y * visibleRowCount).Contains(location))
                 return;
 
-            int x = ((int)(location.X / scale.X) - 2) / 13;
-            int y = ((int)(location.Y / scale.Y) - 2) / 13;
+            int x = (location.X - scaledPadding.X) / scaledDistance.X;
+            int y = (location.Y - scaledPadding.Y) / scaledDistance.Y;
             int index = firstVisibleColor + (y << 4) + x;
 
             if (index >= ColorCount)
@@ -357,7 +372,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             else if (newValue > sbPalette.Maximum - sbPalette.LargeChange + 1)
                 newValue = sbPalette.Maximum - sbPalette.LargeChange + 1;
 
-            sbPalette.Value = newValue;
+            sbPalette.Value = Math.Min(Math.Max(newValue, sbPalette.Minimum),sbPalette.Maximum);
         }
 
         protected override void OnSizeChanged(EventArgs e)
@@ -389,13 +404,19 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             Invalidate();
 
+            scaledDistance = new Point((int)(scale.X * 13), (int)(scale.Y * 13));
+            scaledPadding = new Point((int)(scale.X * 2), (int)(scale.Y * 2));
+
             // calculating visible rows
-            int maxRows = ((int)(Height / scale.Y) - 5) / 13;
+            int maxRows = (ClientSize.Height - scaledPadding.Y * 2) / scaledDistance.Y;
             if (maxRows == visibleRowCount)
+            {
+                timerSelection.Enabled = IsSelectedColorVisible();
                 return;
+            }
 
             visibleRowCount = maxRows;
-            int colorRows = (int)Math.Ceiling((double)palette!.Count / 16);
+            int colorRows = (int)Math.Ceiling(palette!.Count / 16d);
             if (visibleRowCount >= colorRows)
             {
                 // scrollbar is not needed
@@ -419,22 +440,23 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         private Rectangle GetColorRect(int index)
         {
-            float left = index % 16;
+            var unit = new Size((int)(scale.X * 13), (int)(scale.Y * 13));
+            int left = index & 15;
             if (isRightToLeft)
-                left = 15 - left; 
-            left = (2 + left * 13) * scale.X;
+                left = 15 - left;
+            left = left * unit.Width + (int)(scale.X * 2);
             if (isRightToLeft)
                 left += scrollbarWidth;
 
-            //float left = (2 + (index % 16) * 13) * scale.X;
-            float top = (2 + ((index - firstVisibleColor) >> 4) * 13) * scale.Y;
+            int top = (index - firstVisibleColor) >> 4;
+            top = top * unit.Height + (int)(scale.Y * 2);
 
             // ReSharper disable once CompareOfFloatsByEqualityOperator - intended
-            return new Rectangle(left % 1 == 0 ? (int)left : (int)left + 1, top % 1 == 0 ? (int)top : (int)top + 1, (int)(13 * scale.X), (int)(13 * scale.Y));
+            return new Rectangle(left, top, (int)(13 * scale.X), (int)(13 * scale.Y));
         }
 
         private bool IsSelectedColorVisible()
-            => selectedColorIndex >= firstVisibleColor
+            => !scaledPadding.IsEmpty && selectedColorIndex >= firstVisibleColor
                 && selectedColorIndex < firstVisibleColor + (visibleRowCount << 4);
 
         private void OnSelectedColorIndexChanged(EventArgs e) => Events.GetHandler<EventHandler>(nameof(SelectedColorIndexChanged))?.Invoke(this, e);

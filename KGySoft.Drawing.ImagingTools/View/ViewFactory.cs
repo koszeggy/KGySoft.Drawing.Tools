@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ViewFactory.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -16,8 +16,11 @@
 #region Usings
 
 using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.View.Forms;
+using KGySoft.Drawing.ImagingTools.View.UserControls;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
@@ -31,6 +34,8 @@ namespace KGySoft.Drawing.ImagingTools.View
     {
         #region Methods
 
+        #region Public Methods
+
         /// <summary>
         /// Creates a view for the specified <see cref="IViewModel"/> instance.
         /// </summary>
@@ -43,21 +48,21 @@ namespace KGySoft.Drawing.ImagingTools.View
 
             return viewModel switch
             {
-                DefaultViewModel defaultViewModel => new AppMainForm(defaultViewModel),
-                GraphicsVisualizerViewModel graphicsVisualizerViewModel => new GraphicsVisualizerForm(graphicsVisualizerViewModel),
-                ImageVisualizerViewModel imageVisualizerViewModel => new ImageVisualizerForm(imageVisualizerViewModel), // also for BitmapData and CustomBitmap
-                PaletteVisualizerViewModel paletteVisualizerViewModel => new PaletteVisualizerForm(paletteVisualizerViewModel), // also for custom palette
-                ColorVisualizerViewModel colorVisualizerViewModel => new ColorVisualizerForm(colorVisualizerViewModel), // also for custom color
-                ManageInstallationsViewModel manageInstallationsViewModel => new ManageInstallationsForm(manageInstallationsViewModel),
-                ResizeBitmapViewModel resizeBitmapViewModel => new ResizeBitmapForm(resizeBitmapViewModel),
-                ColorSpaceViewModel colorSpaceViewModel => new ColorSpaceForm(colorSpaceViewModel),
-                CountColorsViewModel countColorsViewModel => new CountColorsForm(countColorsViewModel),
-                AdjustBrightnessViewModel adjustBrightnessViewModel => new AdjustBrightnessForm(adjustBrightnessViewModel),
-                AdjustContrastViewModel adjustContrastViewModel => new AdjustContrastForm(adjustContrastViewModel),
-                AdjustGammaViewModel adjustGammaViewModel => new AdjustGammaForm(adjustGammaViewModel),
-                LanguageSettingsViewModel languageSettingsViewModel => new LanguageSettingsForm(languageSettingsViewModel),
-                EditResourcesViewModel editResourcesViewModel => new EditResourcesForm(editResourcesViewModel),
-                DownloadResourcesViewModel downloadResourcesViewModel => new DownloadResourcesForm(downloadResourcesViewModel),
+                DefaultViewModel defaultViewModel => new MainUserControl(defaultViewModel),
+                GraphicsVisualizerViewModel graphicsVisualizerViewModel => new GraphicsVisualizerControl(graphicsVisualizerViewModel),
+                ImageVisualizerViewModel imageVisualizerViewModel => new ImageVisualizerControl(imageVisualizerViewModel), // also for BitmapData and CustomBitmap
+                PaletteVisualizerViewModel paletteVisualizerViewModel => new PaletteVisualizerControl(paletteVisualizerViewModel), // also for custom palette
+                ColorVisualizerViewModel colorVisualizerViewModel => new ColorVisualizerControl(colorVisualizerViewModel), // also for custom color
+                ManageInstallationsViewModel manageInstallationsViewModel => new ManageInstallationsControl(manageInstallationsViewModel),
+                ResizeBitmapViewModel resizeBitmapViewModel => new ResizeBitmapControl(resizeBitmapViewModel),
+                ColorSpaceViewModel colorSpaceViewModel => new ColorSpaceControl(colorSpaceViewModel),
+                CountColorsViewModel countColorsViewModel => new CountColorsControl(countColorsViewModel),
+                AdjustBrightnessViewModel adjustBrightnessViewModel => new AdjustBrightnessControl(adjustBrightnessViewModel),
+                AdjustContrastViewModel adjustContrastViewModel => new AdjustContrastControl(adjustContrastViewModel),
+                AdjustGammaViewModel adjustGammaViewModel => new AdjustGammaControl(adjustGammaViewModel),
+                LanguageSettingsViewModel languageSettingsViewModel => new LanguageSettingsControl(languageSettingsViewModel),
+                EditResourcesViewModel editResourcesViewModel => new EditResourcesControl(editResourcesViewModel),
+                DownloadResourcesViewModel downloadResourcesViewModel => new DownloadResourcesControl(downloadResourcesViewModel),
                 _ => throw new InvalidOperationException(Res.InternalError($"Unexpected viewModel type: {viewModel.GetType()}"))
             };
         }
@@ -88,6 +93,26 @@ namespace KGySoft.Drawing.ImagingTools.View
             using IView view = CreateView(viewModel);
             view.ShowDialog(owner);
         }
+
+        #endregion
+
+        #region Internal Methods
+
+        [SuppressMessage("ReSharper", "SuspiciousTypeConversion.Global", Justification = "A public interface can be implemented by anyone")]
+        internal static Form? TryGetForm(IView view)
+        {
+            if (view is not MvvmBaseUserControl mvvmControl)
+                return view as Form;
+
+            if (mvvmControl.ParentForm is MvvmParentForm parent)
+                return parent;
+
+            return mvvmControl.Parent != null ? null // Custom parent: not creating a parent form
+                : mvvmControl is MainUserControl mainUserControl ? new AppMainForm(mainUserControl)
+                : new MvvmParentForm(mvvmControl);
+        }
+
+        #endregion
 
         #endregion
     }

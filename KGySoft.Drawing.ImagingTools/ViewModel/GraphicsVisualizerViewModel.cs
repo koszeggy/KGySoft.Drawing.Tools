@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: GraphicsVisualizerViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -21,18 +21,23 @@ using System.Drawing.Drawing2D;
 using System.Text;
 
 using KGySoft.ComponentModel;
-using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.Drawing.ImagingTools.View;
 
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal class GraphicsVisualizerViewModel : ImageVisualizerViewModel
+    internal class GraphicsVisualizerViewModel : ImageVisualizerViewModel, IViewModel<GraphicsInfo?>
     {
+        #region Fields
+
+        private GraphicsInfo? graphicsInfo;
+        
+        #endregion
+
         #region Properties
 
-        internal GraphicsInfo? GraphicsInfo { get => Get<GraphicsInfo?>(); init => Set(value); }
         internal bool Crop { get => Get<bool>(); set => Set(value); }
         internal bool HighlightVisibleClip { get => Get(true); set => Set(value); }
         internal Action<Graphics, Rectangle>? DrawFocusRectangleCallback { get => Get<Action<Graphics, Rectangle>?>(); set => Set(value); }
@@ -47,9 +52,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Constructors
 
-        internal GraphicsVisualizerViewModel() : base(AllowedImageTypes.Bitmap)
+        internal GraphicsVisualizerViewModel(GraphicsInfo? graphicsInfo)
+            : base(AllowedImageTypes.Bitmap)
         {
             ReadOnly = true;
+            ResetGraphicsInfo(graphicsInfo, true);
         }
 
         #endregion
@@ -58,16 +65,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Protected Methods
 
-        protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
-        {
-            base.OnPropertyChanged(e);
-            if (e.PropertyName.In(nameof(GraphicsInfo), nameof(GraphicsInfo)))
-                UpdateImageAndCommands();
-        }
-
         protected override void UpdateInfo()
         {
-            GraphicsInfo? graphicsInfo = GraphicsInfo;
             Matrix? transform = graphicsInfo?.Transform;
             if (graphicsInfo?.GraphicsImage == null || transform == null)
             {
@@ -116,7 +115,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-                GraphicsInfo?.Dispose();
+                graphicsInfo?.Dispose();
 
             base.Dispose(disposing);
         }
@@ -125,18 +124,23 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Private Methods
 
-        private void UpdateImageAndCommands()
+        private void ResetGraphicsInfo(GraphicsInfo? model, bool resetPreview)
         {
-            UpdateGraphicImage();
-            GraphicsInfo? graphicsInfo = GraphicsInfo;
+            graphicsInfo?.Dispose();
+            graphicsInfo = model;
+            UpdateGraphicImage(resetPreview);
+            UpdateCommands();
+        }
+
+        private void UpdateCommands()
+        {
             Bitmap? backingImage = graphicsInfo?.GraphicsImage;
             bool commandsEnabled = backingImage != null && (backingImage.Size != graphicsInfo!.OriginalVisibleClipBounds.Size || graphicsInfo.OriginalVisibleClipBounds.Location != Point.Empty);
             CropCommandState.Enabled = HighlightVisibleClipCommandState.Enabled = commandsEnabled;
         }
 
-        private void UpdateGraphicImage()
+        private void UpdateGraphicImage(bool resetPreview)
         {
-            GraphicsInfo? graphicsInfo = GraphicsInfo;
             Bitmap? backingImage = graphicsInfo?.GraphicsImage;
             if (backingImage == null)
                 return;
@@ -151,7 +155,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 using (Graphics g = Graphics.FromImage(newImage))
                     g.DrawImage(backingImage, new Rectangle(Point.Empty, visibleRect.Size), visibleRect, GraphicsUnit.Pixel);
 
-                Image = newImage;
+                SetImageInfo(new ImageInfo(newImage), resetPreview);
                 return;
             }
 
@@ -160,23 +164,28 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 var newImage = new Bitmap(backingImage);
                 using (Graphics g = Graphics.FromImage(newImage))
                 {
-                    using (Brush b = new SolidBrush(Color.FromArgb(128, Color.Black)))
-                    {
-                        g.FillRectangle(b, 0, 0, newImage.Width, visibleRect.Top);
-                        g.FillRectangle(b, 0, visibleRect.Bottom, newImage.Width, newImage.Height - visibleRect.Bottom);
-                        g.FillRectangle(b, 0, visibleRect.Top, visibleRect.Left, visibleRect.Height);
-                        g.FillRectangle(b, visibleRect.Right, visibleRect.Top, newImage.Width - visibleRect.Height, visibleRect.Height);
-                        visibleRect.Inflate(1, 1);
-                        DrawFocusRectangleCallback?.Invoke(g, visibleRect);
-                    }
+                    Brush b = Color.FromArgb(128, Color.Black).GetBrush();
+                    g.FillRectangle(b, 0, 0, newImage.Width, visibleRect.Top);
+                    g.FillRectangle(b, 0, visibleRect.Bottom, newImage.Width, newImage.Height - visibleRect.Bottom);
+                    g.FillRectangle(b, 0, visibleRect.Top, visibleRect.Left, visibleRect.Height);
+                    g.FillRectangle(b, visibleRect.Right, visibleRect.Top, newImage.Width - visibleRect.Height, visibleRect.Height);
+                    visibleRect.Inflate(1, 1);
+                    DrawFocusRectangleCallback?.Invoke(g, visibleRect);
                 }
 
-                Image = newImage;
+                SetImageInfo(new ImageInfo(newImage), resetPreview);
                 return;
             }
 
-            Image = (Image)backingImage.Clone();
+            SetImageInfo(new ImageInfo((Image?)backingImage.Clone()), resetPreview);
         }
+
+        #endregion
+
+        #region Explicitly Implemented Interface Methods
+
+        GraphicsInfo? IViewModel<GraphicsInfo?>.GetEditedModel() => null; // not editable
+        bool IViewModel<GraphicsInfo?>.TrySetModel(GraphicsInfo? model) => TryInvokeSync(() => ResetGraphicsInfo(model, false));
 
         #endregion
 
@@ -186,13 +195,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             Crop = newValue;
             HighlightVisibleClipCommandState.Enabled = !newValue;
-            UpdateGraphicImage();
+            UpdateGraphicImage(false);
         }
 
         private void OnHighlightVisibleClipCommand(bool newValue)
         {
             HighlightVisibleClip = newValue;
-            UpdateGraphicImage();
+            UpdateGraphicImage(false);
         }
 
         #endregion

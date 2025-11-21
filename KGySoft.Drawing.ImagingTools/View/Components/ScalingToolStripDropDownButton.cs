@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ScalingToolStripDropDownButton.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -51,9 +51,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
         {
             get
             {
-                if (!arrowSize.IsEmpty)
+                if (!arrowSize.IsEmpty || Owner is null)
                     return arrowSize;
-                return arrowSize = Size.Round(Owner.ScaleSize(arrowSizeUnscaled));
+                return arrowSize = Owner.ScaleSize(arrowSizeUnscaled);
             }
         }
 
@@ -61,9 +61,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
         {
             get
             {
-                if (arrowPadding != Padding.Empty)
+                if (arrowPadding != Padding.Empty || Owner is null)
                     return arrowPadding;
-                Size scaled = Size.Round(Owner.ScaleSize(arrowPaddingUnscaled));
+                Size scaled = Owner.ScaleSize(arrowPaddingUnscaled);
                 return arrowPadding = new Padding(scaled.Width, scaled.Height, scaled.Width, scaled.Height);
             }
         }

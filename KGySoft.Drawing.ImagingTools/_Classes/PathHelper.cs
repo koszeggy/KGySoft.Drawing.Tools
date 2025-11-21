@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: PathHelper.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -15,6 +15,7 @@
 
 #region Usings
 
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -33,6 +34,8 @@ namespace KGySoft.Drawing.ImagingTools
         #region Methods
 
         internal static bool HasInvalidChars(string? path) => path?.IndexOfAny(invalidPathChars) >= 0;
+
+        internal static void OpenUrl(string url) => Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
 
         #endregion
     }

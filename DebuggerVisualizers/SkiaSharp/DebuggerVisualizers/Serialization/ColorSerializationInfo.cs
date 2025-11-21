@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ColorSerializationInfo.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.IO;
 
 using KGySoft.Drawing.DebuggerVisualizers.Serialization;
+using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.SkiaSharp;
 
@@ -36,14 +37,16 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization
         {
             Type = nameof(SKColor),
             Name = color.ToString(),
-            DisplayColor = color.ToColor32()
+            // Not using color.ToColor32() to prevent possible MissingMethodException if the debugged app references a different KGySoft.Drawing.Core version than the KGySoft.Drawing.SkiaSharp package referenced by the visualizer
+            DisplayColor = new Color32(color.Alpha, color.Red, color.Green, color.Blue)
         };
 
         internal ColorSerializationInfo(SKPMColor color) => ColorInfo = new CustomColorInfo
         {
             Type = nameof(SKPMColor),
             Name = color.ToString(),
-            DisplayColor = color.ToColor32(),
+            // Not using color.ToColor32() to prevent possible MissingMethodException if the debugged app references a different KGySoft.Drawing.Core version than the KGySoft.Drawing.SkiaSharp package referenced by the visualizer
+            DisplayColor = new PColor32(color.Alpha, color.Red, color.Green, color.Blue).ToColor32(),
             CustomColorComponents = new KeyValuePair<string, string>[]
             {
                 new(nameof(SKPMColor.Alpha), $"{color.Alpha}"),
@@ -57,7 +60,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization
         {
             Type = nameof(SKColorF),
             Name = color.ToString(),
-            DisplayColor = color.ToColor32(),
+            // Not using color.ToColor32() to prevent possible MissingMethodException if the debugged app references a different KGySoft.Drawing.Core version than the KGySoft.Drawing.SkiaSharp package referenced by the visualizer
+            DisplayColor = new ColorF(color.Alpha, color.Red, color.Green, color.Blue).ToColor32(),
             CustomColorComponents = new KeyValuePair<string, string>[]
             {
                 new(nameof(SKColorF.Alpha), $"{color.Alpha:F6}"),

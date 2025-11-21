@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: CheckGroupBox.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -19,7 +19,6 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
 
 using KGySoft.CoreLibraries;
 
@@ -91,23 +90,22 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             Controls.Add(checkBox);
             checkBox.SizeChanged += CheckBox_SizeChanged;
 
-            // Vista or later: using System FlayStyle so animation is enabled with theming and text is not misplaced with classic themes
+            // Vista or later: using System FlatStyle so animation is enabled with theming and text is not misplaced with classic themes
             bool visualStylesEnabled = Application.RenderWithVisualStyles;
             checkBox.FlatStyle = OSUtils.IsMono ? FlatStyle.Standard
                 : OSUtils.IsVistaOrLater ? FlatStyle.System
                 // Windows XP: Using standard style with themes so CheckBox color can be set correctly, and using System with classic theme for good placement
                 : visualStylesEnabled ? FlatStyle.Standard : FlatStyle.System;
 
-            // GroupBox.FlayStyle must be the same as CheckBox; otherwise, System appearance would be transparent
+            // GroupBox.FlatStyle must be the same as CheckBox; otherwise, System checkbox appearance may be transparent (strikethrough by GroupBox line) - not in every OS
             FlatStyle = checkBox.FlatStyle;
             checkBox.CheckedChanged += CheckBox_CheckedChanged;
 
             // making sure there is enough space before the CheckBox at every DPI
             base.Text = "   ";
 
-            // Making sure that text color is correct with themes; may not work with System style)
-            if (visualStylesEnabled)
-                checkBox.ForeColor = new VisualStyleRenderer(VisualStyleElement.Button.GroupBox.Normal).GetColor(ColorProperty.TextColor);
+            // Making sure that text color is correct with themes; may not work with System style (relevant for Windows XP where GroupBox caption has a special color)
+            checkBox.ForeColor = ThemeColors.GroupBoxText;
         }
 
         #endregion
@@ -119,7 +117,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         protected override void OnControlAdded(ControlEventArgs e)
         {
             base.OnControlAdded(e);
-            if (DesignMode || e.Control.In(checkBox, contentPanel))
+            if (DesignMode || e.Control.In(checkBox, contentPanel) || e.Control is null)
                 return;
 
             // Linux/Mono workaround: prevent disabling ErrorProvider's user control when the content is disabled
@@ -129,6 +127,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             // when not in design mode, adding custom controls to a panel so we can toggle its Enabled with preserving their original state
             contentPanel.Parent ??= this;
             e.Control.Parent = contentPanel;
+        }
+
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            ResetCheckBoxLocation();
         }
 
         protected virtual void OnCheckedChanged(EventArgs e) => (Events[nameof(CheckedChanged)] as EventHandler)?.Invoke(this, e);
@@ -164,9 +168,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         #region Private Methods
 
         private void ResetCheckBoxLocation()
-            => checkBox.Left = RightToLeft == RightToLeft.No
+        {
+            // Skipping if the handle is not created yet (GetScale uses the Handle).
+            // Without this, the focus rectangle may not be rendered when pressing TAB, and not even the ShowFocusCues is called.
+            // Can happen if the CheckBox is unchecked and the GroupBox is inside a user control.
+            if (!IsHandleCreated)
+                return;
+
+            checkBox.Left = RightToLeft == RightToLeft.No
                 ? (int)(10 * this.GetScale().X)
                 : Width - checkBox.Width - (int)(10 * this.GetScale().X);
+        }
 
         #endregion
 
@@ -187,7 +199,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         void ICustomLocalizable.ApplyStringResources(ToolTip? toolTip)
         {
-            string? name = Name;
+            string name = Name;
             if (String.IsNullOrEmpty(name))
                 return;
 

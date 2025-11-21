@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: User32.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -17,9 +17,8 @@
 
 using System;
 using System.ComponentModel;
-#if !NET5_0_OR_GREATER
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-#endif
 using System.Runtime.InteropServices;
 using System.Security;
 #if !NET5_0_OR_GREATER
@@ -35,6 +34,7 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
     {
         #region NativeMethods class
 
+        [SuppressMessage("ReSharper", "MemberHidesStaticFromOuterClass", Justification = "Outer class methods are never called from here.")]
         private static class NativeMethods
         {
             #region Methods
@@ -140,6 +140,186 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             [return: MarshalAs(UnmanagedType.Bool)]
             internal static extern bool SetWindowText(IntPtr hWnd, string lpString);
 
+            /// <summary>
+            /// Sets the current value of a specified Desktop Window Manager (DWM) attribute applied to a window.
+            /// </summary>
+            /// <param name="hwnd">An HWND specifying the handle to the window for which the attribute value is to be set.</param>
+            /// <param name="data">A pointer to a WINDOWCOMPOSITIONATTRIBDATA structure describing which attribute to set and its new value.</param>
+            /// <returns>TRUE if the function succeeds; otherwise, FALSE.</returns>
+            [DllImport("user32.dll")]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            internal static extern bool SetWindowCompositionAttribute(IntPtr hwnd, ref WINDOWCOMPOSITIONATTRIBDATA data);
+
+            /// <summary>
+            /// Adds a new entry or changes an existing entry in the property list of the specified window.
+            /// The function adds a new entry to the list if the specified character string does not exist already in the list.
+            /// The new entry contains the string and the handle. Otherwise, the function replaces the string's current handle with the specified handle.
+            /// </summary>
+            /// <param name="hWnd">A handle to the window whose property list receives the new entry.</param>
+            /// <param name="lpString">A null-terminated string or an atom that identifies a string.
+            /// If this parameter is an atom, it must be a global atom created by a previous call to the GlobalAddAtom function.
+            /// The atom must be placed in the low-order word of lpString; the high-order word must be zero.</param>
+            /// <param name="propertyValue">A handle to the data to be copied to the property list. The data handle can identify any value useful to the application.</param>
+            /// <returns></returns>
+            [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            internal static extern bool SetProp(IntPtr hWnd, string lpString, IntPtr propertyValue);
+
+            /// <summary>
+            /// Retrieves a handle to the foreground window (the window with which the user is currently working).
+            /// The system assigns a slightly higher priority to the thread that creates the foreground window than it does to other threads.
+            /// </summary>
+            /// <returns>The return value is a handle to the foreground window. The foreground window can be NULL in certain circumstances, such as when a window is losing activation.</returns>
+            [DllImport("user32.dll")]
+            internal static extern IntPtr GetForegroundWindow();
+
+            /// <summary>
+            /// Sends the specified message to a window or windows.
+            /// The SendMessage function calls the window procedure for the specified window and does not return until the window procedure has processed the message.
+            /// To send a message and return immediately, use the SendMessageCallback or SendNotifyMessage function.
+            /// To post a message to a thread's message queue and return immediately, use the PostMessage or PostThreadMessage function.
+            /// </summary>
+            /// <param name="hWnd">A handle to the window whose window procedure will receive the message. If this parameter is HWND_BROADCAST ((HWND)0xffff),
+            /// the message is sent to all top-level windows in the system, including disabled or invisible unowned windows, overlapped windows, and pop-up windows;
+            /// but the message is not sent to child windows.
+            /// Message sending is subject to UIPI. The thread of a process can send messages only to message queues of threads in processes of lesser or equal integrity level.</param>
+            /// <param name="msg">The message to be sent.</param>
+            /// <param name="wParam">Additional message-specific information.</param>
+            /// <param name="lParam">Additional message-specific information.</param>
+            /// <returns>The return value specifies the result of the message processing; it depends on the message sent.</returns>
+            [DllImport("user32.dll", SetLastError = true)]
+            internal static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+
+            /// <summary>
+            /// The GetWindowDC function retrieves the device context (DC) for the entire window, including title bar, menus, and scroll bars.
+            /// A window device context permits painting anywhere in a window, because the origin of the device context is the upper-left corner of the window instead of the client area.
+            /// GetWindowDC assigns default attributes to the window device context each time it retrieves the device context. Previous attributes are lost. 
+            /// </summary>
+            /// <param name="hWnd">Handle to the window with a device context that is to be retrieved. If this value is NULL, GetWindowDC retrieves the device context for the entire screen.</param>
+            /// <returns>If the function succeeds, the return value is a handle to a device context for the specified window.
+            /// If the function fails, the return value is NULL, indicating an error or an invalid hWnd parameter. 
+            /// </returns>
+            [DllImport("user32.dll")]
+            internal extern static IntPtr GetWindowDC(IntPtr hWnd);
+
+            /// <summary>
+            /// The GetDCEx function retrieves a handle to a device context (DC) for the client area of a specified window or for the entire screen.
+            /// You can use the returned handle in subsequent GDI functions to draw in the DC. The device context is an opaque data structure, whose values are used internally by GDI.
+            /// This function is an extension to the GetDC function, which gives an application more control over how and whether clipping occurs in the client area.
+            /// </summary>
+            /// <param name="hWnd">A handle to the window whose DC is to be retrieved. If this value is NULL, GetDCEx retrieves the DC for the entire screen.</param>
+            /// <param name="hrgnClip">A clipping region that may be combined with the visible region of the DC. If the value of flags is DCX_INTERSECTRGN or DCX_EXCLUDERGN,
+            /// then the operating system assumes ownership of the region and will automatically delete it when it is no longer needed.
+            /// In this case, the application should not use or delete the region after a successful call to GetDCEx.</param>
+            /// <param name="flags">Specifies how the DC is created.</param>
+            /// <returns></returns>
+            [DllImport("user32.dll")]
+            internal extern static IntPtr GetDCEx(IntPtr hWnd, IntPtr hrgnClip, uint flags);
+
+            /// <summary>
+            /// The ReleaseDC function releases a device context (DC), freeing it for use by other applications. The effect of the ReleaseDC function depends on the type of DC. It frees only common and window DCs. It has no effect on class or private DCs.
+            /// </summary>
+            /// <param name="hWnd">A handle to the window whose DC is to be released.</param>
+            /// <param name="hDC">A handle to the DC to be released.</param>
+            /// <returns>The return value indicates whether the DC was released. If the DC was released, the return value is 1.
+            /// If the DC was not released, the return value is zero.</returns>
+            /// <remarks>
+            /// The application must call the ReleaseDC function for each call to the GetWindowDC function and for each call to the GetDC function that retrieves a common DC.
+            /// An application cannot use the ReleaseDC function to release a DC that was created by calling the CreateDC function; instead, it must use the DeleteDC function. ReleaseDC must be called from the same thread that called GetDC.</remarks>
+            [DllImport("user32.dll")]
+            internal static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC);
+
+            /// <summary>
+            /// Changes the size, position, and Z order of a child, pop-up, or top-level window.
+            /// These windows are ordered according to their appearance on the screen.
+            /// The topmost window receives the highest rank and is the first window in the Z order.
+            /// </summary>
+            /// <param name="hWnd">A handle to the window.</param>
+            /// <param name="hWndInsertAfter">A handle to the window to precede the positioned window in the Z order. This parameter must be a window handle or one of the following values.
+            /// HWND_BOTTOM
+            /// Places the window at the bottom of the Z order. If the hWnd parameter identifies a topmost window, the window loses its topmost status and is placed at the bottom of all other windows.
+            /// HWND_NOTOPMOST
+            /// Places the window above all non-topmost windows (that is, behind all topmost windows). This flag has no effect if the window is already a non-topmost window.
+            /// HWND_TOP
+            /// Places the window at the top of the Z order.
+            /// HWND_TOPMOST
+            /// Places the window above all non-topmost windows. The window maintains its topmost position even when it is deactivated.
+            /// </param>
+            /// <param name="X">Specifies the new position of the left side of the window, in client coordinates.</param>
+            /// <param name="Y">Specifies the new position of the top of the window, in client coordinates.</param>
+            /// <param name="cx">Specifies the new width of the window, in pixels.</param>
+            /// <param name="cy">Specifies the new height of the window, in pixels.</param>
+            /// <param name="uFlags">Specifies the window sizing and positioning flags. This parameter can be a combination of the following values. 
+            /// <para>SWP_ASYNCWINDOWPOS:
+            /// If the calling thread and the thread that owns the window are attached to different input queues, the system posts the request to the thread that owns the window. This prevents the calling thread from blocking its execution while other threads process the request. </para>
+            /// <para>SWP_DEFERERASE:
+            /// Prevents generation of the WM_SYNCPAINT message. </para>
+            /// <para>SWP_DRAWFRAME:
+            /// Draws a frame (defined in the window's class description) around the window.</para>
+            /// <para>SWP_FRAMECHANGED:
+            /// Applies new frame styles set using the SetWindowLong function. Sends a WM_NCCALCSIZE message to the window, even if the window's size is not being changed. If this flag is not specified, WM_NCCALCSIZE is sent only when the window's size is being changed.</para>
+            /// <para>SWP_HIDEWINDOW:
+            /// Hides the window.</para>
+            /// <para>SWP_NOACTIVATE:
+            /// Does not activate the window. If this flag is not set, the window is activated and moved to the top of either the topmost or non-topmost group (depending on the setting of the hWndInsertAfter parameter).</para>
+            /// <para>SWP_NOCOPYBITS:
+            /// Discards the entire contents of the client area. If this flag is not specified, the valid contents of the client area are saved and copied back into the client area after the window is sized or repositioned.</para>
+            /// <para>SWP_NOMOVE:
+            /// Retains the current position (ignores X and Y parameters).</para>
+            /// <para>SWP_NOOWNERZORDER:
+            /// Does not change the owner window's position in the Z order.</para>
+            /// <para>SWP_NOREDRAW:
+            /// Does not redraw changes. If this flag is set, no repainting of any kind occurs. This applies to the client area, the nonclient area (including the title bar and scroll bars), and any part of the parent window uncovered as a result of the window being moved. When this flag is set, the application must explicitly invalidate or redraw any parts of the window and parent window that need redrawing.</para>
+            /// <para>SWP_NOREPOSITION:
+            /// Same as the SWP_NOOWNERZORDER flag.</para>
+            /// <para>SWP_NOSENDCHANGING:
+            /// Prevents the window from receiving the WM_WINDOWPOSCHANGING message.</para>
+            /// <para>SWP_NOSIZE:
+            /// Retains the current size (ignores the cx and cy parameters).</para>
+            /// <para>SWP_NOZORDER:
+            /// Retains the current Z order (ignores the hWndInsertAfter parameter).</para>
+            /// <para>SWP_SHOWWINDOW
+            /// Displays the window.</para>
+            /// </param>
+            /// <returns>If the function succeeds, the return value is nonzero.
+            /// If the function fails, the return value is zero. To get extended error information, call GetLastError.</returns>
+            [DllImport("user32.dll")]
+            internal static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+
+            /// <summary>
+            /// Retrieves information about the specified combo box.
+            /// </summary>
+            /// <param name="hwndCombo">A handle to the combo box.</param>
+            /// <param name="pcbi">A pointer to a COMBOBOXINFO structure that receives the information. You must set COMBOBOXINFO.cbSize before calling this function.</param>
+            /// <returns>If the function succeeds, the return value is nonzero.
+            /// If the function fails, the return value is zero. To get extended error information, call GetLastError.</returns>
+            [DllImport("user32.dll")]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            internal static extern bool GetComboBoxInfo(IntPtr hwndCombo, ref COMBOBOXINFO pcbi);
+
+            /// <summary>
+            ///Retrieves the coordinates of a window's client area. The client coordinates specify the upper-left and lower-right corners of the client area.
+            /// Because client coordinates are relative to the upper-left corner of a window's client area, the coordinates of the upper-left corner are (0,0).
+            /// </summary>
+            /// <param name="hWnd">A handle to the window whose client coordinates are to be retrieved.</param>
+            /// <param name="lpRect">[out] A pointer to a RECT structure that receives the client coordinates. The left and top members are zero. The right and bottom members contain the width and height of the window.</param>
+            /// <returns>If the function succeeds, the return value is nonzero.
+            /// If the function fails, the return value is zero. To get extended error information, call GetLastError.
+            /// </returns>
+            [DllImport("user32.dll")]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            internal static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
+
+            /// <summary>
+            /// Determines whether the specified window handle identifies an existing window.
+            /// </summary>
+            /// <param name="hWnd">A handle to the window to be tested.</param>
+            /// <returns>If the window handle identifies an existing window, the return value is nonzero.
+            /// If the window handle does not identify an existing window, the return value is zero.</returns>
+            [DllImport("user32.dll")]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            internal static extern bool IsWindow(IntPtr hWnd);
+
             #endregion
         }
 
@@ -183,6 +363,83 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
         internal static int GetDialogControlId(IntPtr handle) => NativeMethods.GetDlgCtrlID(handle);
 
         internal static void SetControlText(IntPtr handle, string text) => NativeMethods.SetWindowText(handle, text);
+
+        internal static void SetCaptionTheme(IntPtr handle, bool isDarkTheme)
+        {
+            if (!OSUtils.IsWindows10OrLater)
+                return;
+
+            // Windows 10 1903 or later
+            if (OSUtils.IsWindows10Build1903OrLater)
+            {
+                int attributeValueBufferSize = sizeof(int);
+                IntPtr attributeValueBuffer = Marshal.AllocHGlobal(attributeValueBufferSize);
+                Marshal.WriteInt32(attributeValueBuffer, isDarkTheme ? 1 : 0);
+
+                try
+                {
+                    WINDOWCOMPOSITIONATTRIBDATA windowCompositionAttributeData = new()
+                    {
+                        Attrib = WINDOWCOMPOSITIONATTRIB.WCA_USE_DARK_MODE_COLORS,
+                        pvData = attributeValueBuffer,
+                        cbData = (uint)attributeValueBufferSize
+                    };
+
+                    NativeMethods.SetWindowCompositionAttribute(handle, ref windowCompositionAttributeData);
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(attributeValueBuffer);
+                }
+            }
+            // Windows 10 1809 only
+            else
+                NativeMethods.SetProp(handle, "UseImmersiveDarkModeColors", new IntPtr(isDarkTheme ? 1 : 0));
+
+            if (OSUtils.IsWindows11OrLater)
+                return;
+
+            // Invalidating the caption area to force the system to redraw it. Needed when the theme is changed and the window is already visible.
+            // In Windows 11 this is not needed anymore. If we still do it, the caption area is changed immediately, without the fade effect.
+            bool isActivated = handle == NativeMethods.GetForegroundWindow();
+            NativeMethods.SendMessage(handle, Constants.WM_NCACTIVATE, new IntPtr(isActivated ? 0 : 1), IntPtr.Zero);
+            NativeMethods.SendMessage(handle, Constants.WM_NCACTIVATE, new IntPtr(isActivated ? 1 : 0), IntPtr.Zero);
+        }
+
+        internal static IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam) => NativeMethods.SendMessage(hWnd, msg, wParam, lParam);
+
+        /// <summary>
+        /// Gets the device context (DC) for the entire window, including the non-client area.
+        /// If the <paramref name="hrgn"/> parameter is 1 (from msg.WParam), the returned DC must be released with <see cref="ReleaseDC"/>.
+        /// </summary>
+        internal static IntPtr GetNonClientDC(IntPtr hWnd, IntPtr hrgn)
+            => hrgn == (IntPtr)1 ? NativeMethods.GetWindowDC(hWnd) : NativeMethods.GetDCEx(hWnd, hrgn, Constants.DCX_WINDOW | Constants.DCX_USESTYLE);
+
+        internal static bool ReleaseDC(IntPtr hWnd, IntPtr hDC) => NativeMethods.ReleaseDC(hWnd, hDC);
+
+        internal static void InvalidateNC(IntPtr handle)
+        {
+            // We could also use RedrawWindow(handle, IntPtr.Zero, Constants.RDW_FRAME | Constants.RDW_INVALIDATE | Constants.RDW_UPDATENOW) but it's not calling WM_NCCALCSIZE
+            NativeMethods.SetWindowPos(handle, IntPtr.Zero, 0, 0, 0, 0,
+                Constants.SWP_NOMOVE | Constants.SWP_NOSIZE | Constants.SWP_NOZORDER | Constants.SWP_NOACTIVATE | Constants.SWP_DRAWFRAME);
+        }
+
+        internal static bool GetComboBoxInfo(IntPtr hwndCombo, ref COMBOBOXINFO pcbi)
+        {
+            try
+            {
+                return NativeMethods.GetComboBoxInfo(hwndCombo, ref pcbi);
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                return false;
+            }
+        }
+
+        internal static Rectangle GetClientRect(IntPtr hWnd)
+            => NativeMethods.GetClientRect(hWnd, out RECT result) ? result.ToRectangle() : Rectangle.Empty;
+
+        internal static bool IsWindow(IntPtr hWnd) => hWnd != IntPtr.Zero && NativeMethods.IsWindow(hWnd);
 
         #endregion
     }

@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: CustomPaletteVisualizerViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -15,43 +15,65 @@
 
 #region Usings
 
+using System.Drawing;
 using System.Linq;
 
 using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.Reflection;
 
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal sealed class CustomPaletteVisualizerViewModel : PaletteVisualizerViewModel
+    internal sealed class CustomPaletteVisualizerViewModel : PaletteVisualizerViewModel, IViewModel<CustomPaletteInfo?>
     {
         #region Fields
 
-        private readonly CustomPaletteInfo paletteInfo;
+        private CustomPaletteInfo? paletteInfo;
 
         #endregion
 
         #region Constructors
 
-        internal CustomPaletteVisualizerViewModel(CustomPaletteInfo paletteInfo)
+        internal CustomPaletteVisualizerViewModel(CustomPaletteInfo? paletteInfo)
         {
-            this.paletteInfo = paletteInfo;
             ReadOnly = true;
-            Palette = paletteInfo.Entries.Select(ci => ci.DisplayColor.ToColor()).ToArray();
-            Type = paletteInfo.Type;
+            ResetPaletteInfo(paletteInfo);
         }
 
         #endregion
 
         #region Methods
 
+        #region Protected Methods
+
         protected override ColorVisualizerViewModel GetSelectedColorViewModel(int index)
         {
-            var result = new CustomColorVisualizerViewModel(paletteInfo.Entries[index]);
-            result.Type ??= paletteInfo.EntryType;
+            var result = new CustomColorVisualizerViewModel((uint)index < (uint)(paletteInfo?.Entries.Count ?? 0) ? paletteInfo?.Entries[index] : null);
+            result.Type ??= paletteInfo?.EntryType;
             result.SelectedIndex = index;
             return result;
         }
+
+        #endregion
+
+        #region Private Methods
+
+        private void ResetPaletteInfo(CustomPaletteInfo? model)
+        {
+            paletteInfo = model;
+            Palette = paletteInfo?.Entries.Select(ci => ci.DisplayColor.ToColor()).ToArray() ?? Reflector.EmptyArray<Color>();
+            Type = paletteInfo?.Type;
+        }
+
+        #endregion
+
+        #region Explicitly Implemented Interface Methods
+
+        CustomPaletteInfo? IViewModel<CustomPaletteInfo?>.GetEditedModel() => null; // read-only
+        bool IViewModel<CustomPaletteInfo?>.TrySetModel(CustomPaletteInfo? model) => TryInvokeSync(() => ResetPaletteInfo(model));
+
+        #endregion
 
         #endregion
     }

@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ImageViewer.DisplayImageGenerator.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -421,13 +421,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         using IWritableBitmapData dst = result.GetWritableBitmapData();
 
                         // here allowing to use max parallelization as the original image is locked anyway
-                        var cfg = new AsyncConfig { IsCancelRequestedCallback = () => task.IsCanceled, ThrowIfCanceled = false };
+                        var cfg = new ParallelConfig() { IsCancelRequestedCallback = () => task.IsCanceled, ThrowIfCanceled = false };
 
-                        // Not using Task and await because we want to be compatible with .NET 3.5, too.
-                        IAsyncResult asyncResult = src.BeginCopyTo(dst, asyncConfig: cfg);
-
-                        // As we are already on a pool thread the End... call does not block the UI. It's still not the same as CopyTo() due to cancellation support.
-                        asyncResult.EndCopyTo();
+                        // As we are already on a pool thread the call does not block the UI.
+                        src.CopyTo(dst, Point.Empty, null, null, cfg);
                     }
                     catch (Exception)
                     {
@@ -521,19 +518,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                             using IReadableBitmapData src = doubled.GetReadableBitmapData();
                             using IReadWriteBitmapData dst = result.GetReadWriteBitmapData();
 
-                            // not using Task and await we want to be compatible with .NET 3.5
-                            IAsyncResult asyncResult = src.BeginDrawInto(dst, 
+                            // As we are already on a pool thread this is not a UI blocking call
+                            src.DrawInto(dst, 
                                 new Rectangle(Point.Empty, doubled.Size),
                                 new Rectangle(Point.Empty, task.Size),
-                                asyncConfig: new AsyncConfig
+                                null, null, default,
+                                new ParallelConfig
                                 {
                                     IsCancelRequestedCallback = () => task.IsCanceled,
                                     ThrowIfCanceled = false,
                                     MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount - 2)
                                 });
-
-                            // As we are already on a pool thread this is not a UI blocking call
-                            asyncResult.EndDrawInto();
                         }
                     }
                     catch (Exception)
@@ -568,19 +563,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                             using IReadableBitmapData src = ((Bitmap)task.SourceImage).GetReadableBitmapData();
                             using IReadWriteBitmapData dst = result.GetReadWriteBitmapData();
 
-                            // not using Task and await we want to be compatible with .NET 3.5
-                            IAsyncResult asyncResult = src.BeginDrawInto(dst,
+                            // As we are already on a pool thread this call does not block the UI.
+                            src.DrawInto(dst,
                                 new Rectangle(Point.Empty, task.SourceImage.Size),
-                                new Rectangle(Point.Empty, task.Size), 
-                                asyncConfig: new AsyncConfig
+                                new Rectangle(Point.Empty, task.Size),
+                                null, null, default,
+                                parallelConfig: new AsyncConfig
                                 {
                                     IsCancelRequestedCallback = () => task.IsCanceled,
                                     ThrowIfCanceled = false,
                                     MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount - 2)
                                 });
-
-                            // As we are already on a pool thread the End... call does not block the UI.
-                            asyncResult.EndDrawInto();
                         }
                     }
                     catch (Exception)

@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: SerializationHelper.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -15,9 +15,11 @@
 
 #region Usings
 
+using System;
 using System.IO;
 
 using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.Serialization.Binary;
 
 using SkiaSharp;
 
@@ -29,32 +31,37 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization
     {
         #region Methods
 
-        internal static void SerializeCustomBitmapInfo(SKBitmap bitmap, Stream outgoingData)
-        {
-            using BinaryWriter writer = outgoingData.InitSerializationWriter();
-            using var info = new BitmapDataSerializationInfo(bitmap);
-            info.Write(writer);
-        }
+        #region Internal Methods
 
-        internal static void SerializeCustomBitmapInfo(SKPixmap pixmap, Stream outgoingData)
+        internal static void SerializeCustomBitmapInfo(object target, Stream outgoingData)
         {
             using BinaryWriter writer = outgoingData.InitSerializationWriter();
-            using var info = new BitmapDataSerializationInfo(pixmap);
-            info.Write(writer);
-        }
+            BitmapDataSerializationInfo info;
+            try
+            {
+                info = target switch
+                {
+                    SKBitmap bitmap => new BitmapDataSerializationInfo(bitmap),
+                    SKPixmap pixmap => new BitmapDataSerializationInfo(pixmap),
+                    SKImage image => new BitmapDataSerializationInfo(image),
+                    SKSurface surface => new BitmapDataSerializationInfo(surface),
 
-        internal static void SerializeCustomBitmapInfo(SKImage image, Stream outgoingData)
-        {
-            using BinaryWriter writer = outgoingData.InitSerializationWriter();
-            using var info = new BitmapDataSerializationInfo(image);
-            info.Write(writer);
-        }
+                    // This point is reached only if the target assembly is different from our SkiaSharp so we must extract everything by reflection
+                    _ => new BitmapDataSerializationInfo(target)
+                };
+            }
+            catch (Exception e) when (e is not ArgumentException)
+            {
+                // If the debugged project uses a different version of KGySoft.Drawing.Core, a MissingMethodException can be thrown
+                // (even though the signature is the same, just because of different assembly versions).
+                info = new BitmapDataSerializationInfo(target);
+#if DEBUG
+                info.BitmapInfo!.CustomAttributes[$"Recovered from {e.GetType()}"] = e.Message;
+#endif
+            }
 
-        internal static void SerializeCustomBitmapInfo(SKSurface image, Stream outgoingData)
-        {
-            using BinaryWriter writer = outgoingData.InitSerializationWriter();
-            using var info = new BitmapDataSerializationInfo(image);
-            info.Write(writer);
+            using (info)
+                info.Write(writer);
         }
 
         internal static CustomBitmapInfo DeserializeCustomBitmapInfo(Stream stream)
@@ -63,22 +70,50 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization
             return new BitmapDataSerializationInfo(reader).BitmapInfo!;
         }
 
-        internal static void SerializeCustomColorInfo(SKColor color, Stream outgoingData)
+        internal static void SerializeCustomColorInfo(object target, Stream outgoingData)
         {
             using BinaryWriter writer = outgoingData.InitSerializationWriter();
-            new ColorSerializationInfo(color).Write(writer);
-        }
+            ColorSerializationInfo? info;
+            switch (target)
+            {
+                case SKColor color:
+                    info = new ColorSerializationInfo(color);
+                    break;
+                case SKPMColor pmColor:
+                    info = new ColorSerializationInfo(pmColor);
+                    break;
+                case SKColorF colorF:
+                    info = new ColorSerializationInfo(colorF);
+                    break;
 
-        internal static void SerializeCustomColorInfo(SKPMColor color, Stream outgoingData)
-        {
-            using BinaryWriter writer = outgoingData.InitSerializationWriter();
-            new ColorSerializationInfo(color).Write(writer);
-        }
+                default:
+                    // This point is reached only if the target assembly is different from ours.
+                    try
+                    {
+                        // Serializing the color as a byte array and deserializing it with the correct assembly identity.
+                        byte[] bytes = BinarySerializer.SerializeValueType((ValueType)target);
+                        info = target.GetType().Name switch
+                        {
+                            nameof(SKColor) => new ColorSerializationInfo(BinarySerializer.DeserializeValueType<SKColor>(bytes)),
+                            nameof(SKPMColor) => new ColorSerializationInfo(BinarySerializer.DeserializeValueType<SKPMColor>(bytes)),
+                            nameof(SKColorF) => new ColorSerializationInfo(BinarySerializer.DeserializeValueType<SKColorF>(bytes)),
+                            _ => throw new ArgumentException(PublicResources.ArgumentInvalid, nameof(target))
+                        };
 
-        internal static void SerializeCustomColorInfo(SKColorF color, Stream outgoingData)
-        {
-            using BinaryWriter writer = outgoingData.InitSerializationWriter();
-            new ColorSerializationInfo(color).Write(writer);
+#if DEBUG
+                        info.ColorInfo!.CustomAttributes["SkiaSharp version mismatch"] = $"{target.GetType().Assembly} vs. {typeof(SKColor).Assembly}";
+#endif
+
+                    }
+                    catch (Exception e) when (e is not ArgumentException)
+                    {
+                        throw new ArgumentException(PublicResources.ArgumentInvalid, nameof(target), e);
+                    }
+
+                    break;
+            }
+
+            info.Write(writer);
         }
 
         internal static CustomColorInfo DeserializeCustomColorInfo(Stream stream)
@@ -86,6 +121,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Serialization
             using BinaryReader reader = stream.InitSerializationReader();
             return new ColorSerializationInfo(reader).ColorInfo!;
         }
+
+        #endregion
 
         #endregion
     }

@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: QuantizerDescriptor.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -50,13 +50,13 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #region Constructors
 
-        internal QuantizerDescriptor(Type type, string methodName)
+        internal QuantizerDescriptor(Type type, string methodName, bool hasAlpha)
         {
             displayName = Res.Get($"{type.Name}.{methodName}");
-            Method = type.GetMethod(methodName)!;
+            Method = type.GetVisibleMethod(methodName);
             parameters = Method.GetParameters();
             IsOptimized = type == typeof(OptimizedPaletteQuantizer);
-            HasAlpha = parameters.Any(p => p.Name == "alphaThreshold");
+            HasAlpha = hasAlpha;
             HasSingleBitAlpha = IsOptimized || methodName is nameof(PredefinedColorsQuantizer.Argb1555) or nameof(PredefinedColorsQuantizer.SystemDefault8BppPalette);
             HasWhiteThreshold = methodName == nameof(PredefinedColorsQuantizer.BlackAndWhite);
             HasDirectMapping = parameters.Any(p => p.Name == "directMapping");
@@ -91,7 +91,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
             {
                 args[i] = parameters[i].Name switch
                 {
-                    "backColor" => settings.BackColor,
+                    "backColor" => settings.BackColor.ToColor32(),
                     "alphaThreshold" => settings.AlphaThreshold,
                     "whiteThreshold" => settings.WhiteThreshold,
                     "directMapping" => settings.DirectMapping,

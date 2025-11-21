@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: PaletteVisualizerViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -18,7 +18,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Reflection;
 
 using KGySoft.ComponentModel;
 
@@ -26,7 +25,7 @@ using KGySoft.ComponentModel;
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal class PaletteVisualizerViewModel : ViewModelBase, IViewModel<Color[]>
+    internal class PaletteVisualizerViewModel : ViewModelBase<Color[]>
     {
         #region Fields
 
@@ -39,7 +38,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Internal Properties
 
         // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract - not cloning if value is null
-        internal Color[] Palette { get => Get<Color[]>(); init => Set(value?.Clone() ?? throw new ArgumentNullException(nameof(value), PublicResources.ArgumentNull)); }
+        internal Color[] Palette { get => Get<Color[]>(); set => Set(value?.Clone() ?? throw new ArgumentNullException(nameof(value), PublicResources.ArgumentNull)); }
         internal int Count { get => Get<int>(); private set => Set(value); }
         internal bool ReadOnly { get => Get<bool>(); set => Set(value); }
         internal int SelectedColorIndex { get => Get(-1); set => Set(value); }
@@ -60,17 +59,20 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Methods
 
+        #region Public Methods
+
+        public override Color[] GetEditedModel() => Palette;
+        public override bool TrySetModel(Color[] model) => TryInvokeSync(() => Palette = model);
+
+        #endregion
+
         #region Internal Methods
 
         internal override void ViewLoaded()
         {
             base.ViewLoaded();
             if (Palette.Length == 0)
-            {
                 ReadOnly = true;
-                ShowInfo(Res.InfoMessagePaletteEmpty);
-                CloseViewCallback?.Invoke();
-            }
         }
 
         #endregion
@@ -91,16 +93,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 case nameof(Palette):
                     var palette = (IList<Color>)e.NewValue!;
                     Count = palette.Count;
-                    if (palette.Count == 0)
-                        return;
-
-                    SelectedColorIndex = 0;
+                    SelectedColorIndex = palette.Count > 0 ? 0 : -1;
                     break;
 
                 case nameof(SelectedColorIndex):
                     int index = (int)e.NewValue!;
-                    if (Count == 0)
-                        break;
                     SelectedColorViewModel = GetSelectedColorViewModel(index);
                     break;
 
@@ -124,7 +121,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         protected virtual ColorVisualizerViewModel GetSelectedColorViewModel(int index) => new ColorVisualizerViewModel
         {
             SelectedIndex = index,
-            Color = Palette[index],
+            Color = (uint)index < (uint)Count ? Palette[index] : default,
             ReadOnly = ReadOnly,
         };
 
@@ -153,12 +150,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             Palette[SelectedColorIndex] = color;
             SetModified(true);
         }
-
-        #endregion
-
-        #region Explicitly Implemented Interface Methods
-
-        Color[] IViewModel<Color[]>.GetEditedModel() => Palette;
 
         #endregion
 

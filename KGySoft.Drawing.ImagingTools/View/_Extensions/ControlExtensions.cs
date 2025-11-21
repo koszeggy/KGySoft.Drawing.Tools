@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ControlExtensions.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -19,6 +19,9 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
+using KGySoft.Drawing.ImagingTools.View.Controls;
+using KGySoft.Drawing.ImagingTools.View.UserControls;
+using KGySoft.Drawing.ImagingTools.WinApi;
 using KGySoft.Reflection;
 
 #endregion
@@ -45,6 +48,8 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         #region Methods
 
+        #region Internal Methods
+
         /// <summary>
         /// Sets the double buffering state of a control
         /// </summary>
@@ -65,7 +70,6 @@ namespace KGySoft.Drawing.ImagingTools.View
         }
 
         internal static Size ScaleSize(this Control control, Size size) => size.Scale(control.GetScale());
-
         internal static int ScaleWidth(this Control control, int width) => width.Scale(control.GetScale().X);
         internal static int ScaleHeight(this Control control, int height) => height.Scale(control.GetScale().Y);
 
@@ -129,47 +133,192 @@ namespace KGySoft.Drawing.ImagingTools.View
 
                 default:
                     foreach (Control child in control.Controls)
+                    {
+                        // MvvmBaseUserControl triggers ApplyStringResources on its own, so skipping it as a child control here
+                        if (child is MvvmBaseUserControl)
+                            continue;
+
                         child.ApplyStringResources(toolTip);
+                    }
+
                     break;
             }
         }
 
-        internal static void FixAppearance(this ToolStrip toolStrip)
+        internal static void ApplyTheme(this Control control)
         {
-            static void FixItems(ToolStripItemCollection items, Color? replacementColor)
+#if NET9_0_OR_GREATER && SYSTEM_THEMING
+            return;
+#endif
+
+            // special handling for controls by type
+            switch (control)
             {
-                foreach (ToolStripItem item in items)
-                {
-                    // fixing closing menu due to the appearing tool tip (only on Mono/Windows)
-                    if (OSUtils.IsWindows && item is ToolStripDropDownButton or ToolStripSplitButton)
+                case Form form:
+                    // skipping everything if the theme has never changed
+                    if (!ThemeColors.IsThemeEverChanged)
+                        return;
+
+                    // setting the caption theme
+                    if (ThemeColors.IsBaseThemeEverChanged && OSUtils.IsWindows10OrLater)
                     {
-                        item.AutoToolTip = false;
-                        item.ToolTipText = null;
+                        try
+                        {
+                            User32.SetCaptionTheme(form.Handle, ThemeColors.IsDarkBaseTheme);
+                        }
+                        catch (Exception e) when (!e.IsCritical())
+                        {
+                        }
                     }
 
-                    // fixing menu color
-                    if (replacementColor.HasValue)
-                    {
-                        if ((item is ToolStripMenuItem || item is ToolStripLabel || item is ToolStripSeparator || item is ToolStripProgressBar) && item.BackColor.ToArgb() == replacementColor.Value.ToArgb())
-                            item.BackColor = replacementColor.Value;
-                    }
+                    // setting the form's background and foreground color
+                    form.BackColor = ThemeColors.Control;
+                    form.ForeColor = ThemeColors.ControlText;
+                    break;
 
-                    // to children
-                    if (item is ToolStripDropDownItem dropDownItem)
-                        FixItems(dropDownItem.DropDownItems, replacementColor);
-                }
+                case TextBoxBase textBox:
+                    textBox.ApplyVisualStyleTheme();
+                    if (!textBox.Enabled)
+                    {
+                        textBox.BackColor = ThemeColors.Control;
+                        textBox.ForeColor = ThemeColors.ControlTextDisabled;
+                    }
+                    else if (textBox.ReadOnly)
+                    {
+                        textBox.BackColor = ThemeColors.Control;
+                        textBox.ForeColor = ThemeColors.ControlText;
+                    }
+                    else
+                    {
+                        textBox.BackColor = ThemeColors.Window;
+                        textBox.ForeColor = ThemeColors.WindowText;
+                    }
+                    break;
+
+                case Button button:
+                    // TODO: Set FlatStyle to Flat if custom colors are set; otherwise, set it to System and call ApplyVisualStyleTheme
+                    button.ApplyVisualStyleTheme();
+                    break;
+
+                case ButtonBase buttonBase and (CheckBox or RadioButton):
+                    // ISSUE: The text of FlatStyle.System appearance is always black with visual styles, even in dark mode. TODO: Use KGySoft.WinForms.Controls.AdvancedCheckBox/RadioButton
+                    //buttonBase.FlatStyle = ThemeColors.IsDarkBaseTheme ? FlatStyle.Standard : FlatStyle.System;
+                    buttonBase.ApplyVisualStyleTheme();
+                    break;
+
+                case ComboBox comboBox:
+                    comboBox.BackColor = ThemeColors.Window;
+                    comboBox.ForeColor = ThemeColors.WindowText;
+                    comboBox.ApplyVisualStyleTheme();
+                    break;
+
+                case GroupBox groupBox:
+                    groupBox.ForeColor = ThemeColors.GroupBoxText;
+                    break;
+
+                case AdvancedDataGridView dataGridView:
+                    dataGridView.ApplyTheme();
+                    break;
+
+                case ScrollBar scrollBar:
+                    scrollBar.ApplyVisualStyleTheme();
+                    break;
+
+                case ProgressBar progressBar:
+                    // Makes a difference only when visual styles are not enabled
+                    progressBar.BackColor = ThemeColors.ProgressBarBackground;
+                    progressBar.ForeColor = ThemeColors.ProgressBar;
+                    progressBar.ApplyVisualStyleTheme();
+                    break;
+
+#if !SYSTEM_THEMING
+                case AdvancedToolStrip toolStrip:
+                    toolStrip.ApplyTheme();
+                    break;
+#endif
             }
 
-            if (!OSUtils.IsMono)
+            foreach (Control child in control.Controls)
+                child.ApplyTheme();
+        }
+
+        #endregion
+        
+        #region Private Methods
+        
+        private static void ApplyVisualStyleTheme(this Control control)
+        {
+            if (!OSUtils.IsWindows10OrLater) // TODO: || !VisualStyleHelper.InitializedWithVisualStyles
                 return;
 
-            // fixing "dark on dark" menu issue on Mono/Linux
-            Color? replacementColor = OSUtils.IsLinux && !SystemInformation.HighContrast ? Color.FromArgb(ProfessionalColors.MenuStripGradientBegin.ToArgb()) : null;
-            if (replacementColor.HasValue)
-                toolStrip.BackColor = replacementColor.Value;
+            const string darkTheme = "DarkMode_Explorer";
+            const string lightTheme = "Explorer";
+            const string textBoxTheme = "CFD";
 
-            FixItems(toolStrip.Items, replacementColor);
+            control.HandleCreated -= Control_HandleCreated;
+            control.HandleCreated += Control_HandleCreated;
+            control.Disposed -= Control_Disposed;
+            control.Disposed += Control_Disposed;
+            if (!control.IsHandleCreated || !Application.RenderWithVisualStyles)
+                return;
+
+            switch (control)
+            {
+                case TextBoxBase { Multiline: false }:
+                    IntPtr handle = control.Handle;
+                    UxTheme.SetWindowTheme(handle, textBoxTheme, null);
+                    UxTheme.SetWindowDarkMode(handle, ThemeColors.IsDarkBaseTheme);
+                    User32.SendMessage(handle, Constants.WM_THEMECHANGED, IntPtr.Zero, IntPtr.Zero);
+                    break;
+
+                case TextBoxBase { Multiline: true }:
+                    UxTheme.SetWindowTheme(control.Handle, ThemeColors.IsDarkBaseTheme ? darkTheme : lightTheme, null);
+                    break;
+
+                case ButtonBase or ScrollBar:
+                    UxTheme.SetWindowTheme(control.Handle, ThemeColors.IsDarkBaseTheme ? darkTheme : null, null);
+                    break;
+
+                case ComboBox:
+                    handle = control.Handle;
+                    UxTheme.SetWindowTheme(handle, textBoxTheme, null);
+                    UxTheme.SetWindowDarkMode(handle, ThemeColors.IsDarkBaseTheme);
+                    User32.SendMessage(handle, Constants.WM_THEMECHANGED, IntPtr.Zero, IntPtr.Zero);
+
+                    // The scrollbar of the drop-down area
+                    unsafe
+                    {
+                        COMBOBOXINFO cInfo = default;
+                        cInfo.cbSize = (uint)sizeof(COMBOBOXINFO);
+                        if (User32.GetComboBoxInfo(handle, ref cInfo))
+                            UxTheme.SetWindowTheme(cInfo.hwndList, ThemeColors.IsDarkBaseTheme ? darkTheme : null, null); 
+                    }
+                    break;
+
+                case ProgressBar:
+                    // When dark theme is enabled, turning off visual styles for the progress bar, so custom colors can be applied.
+                    if (ThemeColors.IsDarkBaseTheme)
+                        UxTheme.SetWindowTheme(control.Handle, " ", " ");
+                    else
+                        UxTheme.SetWindowTheme(control.Handle, null, null);
+                    break;
+            }
         }
+
+        #endregion
+
+        #region Event Handlers
+
+        private static void Control_HandleCreated(object? sender, EventArgs e) => ((Control)sender!).ApplyVisualStyleTheme();
+
+        private static void Control_Disposed(object? sender, EventArgs e)
+        {
+            Control control = (Control)sender!;
+            control.HandleCreated -= Control_HandleCreated;
+            control.Disposed -= Control_Disposed;
+        }
+
+        #endregion
 
         #endregion
     }

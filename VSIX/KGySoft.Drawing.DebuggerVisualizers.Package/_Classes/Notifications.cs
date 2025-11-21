@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: Notifications.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Windows.Forms;
 
 using EnvDTE;
 
@@ -29,6 +28,10 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 #endregion
+
+#if !VS2022_OR_GREATER
+#nullable enable
+#endif
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Package
 {
@@ -121,6 +124,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Package
 
         private static bool TryShowInfoBar(ImageMoniker icon, IEnumerable<IVsInfoBarTextSpan> textSpans, IEnumerable<IVsInfoBarActionItem> actionItems)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (Services.InfoBarUIFactory == null || Services.ShellService == null)
                 return false;
 

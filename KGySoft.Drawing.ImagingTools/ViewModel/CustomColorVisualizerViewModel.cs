@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: CustomColorVisualizerViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -27,11 +27,11 @@ using KGySoft.Drawing.ImagingTools.Model;
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal sealed class CustomColorVisualizerViewModel : ColorVisualizerViewModel
+    internal sealed class CustomColorVisualizerViewModel : ColorVisualizerViewModel, IViewModel<CustomColorInfo?>
     {
         #region Fields
 
-        private readonly CustomColorInfo colorInfo;
+        private CustomColorInfo? colorInfo;
 
         #endregion
 
@@ -43,18 +43,17 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Constructors
 
-        internal CustomColorVisualizerViewModel(CustomColorInfo colorInfo)
+        internal CustomColorVisualizerViewModel(CustomColorInfo? colorInfo)
         {
-            this.colorInfo = colorInfo;
             ReadOnly = true;
-            Type = colorInfo.Type;
-            Color = colorInfo.DisplayColor.ToColor();
-            CustomColorComponents = colorInfo.CustomColorComponents;
+            ResetColorInfo(colorInfo);
         }
 
         #endregion
 
         #region Methods
+
+        #region Protected Methods
 
         protected override void UpdateInfo()
         {
@@ -66,10 +65,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             if (Type is string type)
                 sb.AppendLine(Res.TitleType(type));
-            if (colorInfo.Name is string name)
+            if (colorInfo?.Name is string name)
                 sb.AppendLine(Res.TitleColor(name));
 
-            if (colorInfo.CustomAttributes.Count > 0 || colorInfo.CustomColorComponents is { Length: > 4 } )
+            if (colorInfo?.CustomAttributes.Count > 0 || colorInfo?.CustomColorComponents is { Length: > 4 } )
             {
                 var attrs = new List<KeyValuePair<string, string>>(colorInfo.CustomAttributes);
                 if (colorInfo.CustomColorComponents is { Length: > 4 })
@@ -80,6 +79,33 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             InfoText = sb.ToString();
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            colorInfo = null;
+            base.Dispose(disposing);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void ResetColorInfo(CustomColorInfo? model)
+        {
+            colorInfo = model;
+            Type = colorInfo?.Type;
+            Color = colorInfo?.DisplayColor.ToColor() ?? default;
+            CustomColorComponents = colorInfo?.CustomColorComponents;
+        }
+
+        #endregion
+
+        #region Explicitly Implemented Interface Methods
+
+        CustomColorInfo? IViewModel<CustomColorInfo?>.GetEditedModel() => null; // read-only
+        bool IViewModel<CustomColorInfo?>.TrySetModel(CustomColorInfo? model) => TryInvokeSync(() => ResetColorInfo(model));
+
+        #endregion
 
         #endregion
     }

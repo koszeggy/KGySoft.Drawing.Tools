@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ImageVisualizerViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -17,7 +17,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -37,7 +36,7 @@ using KGySoft.Drawing.ImagingTools.Model;
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal class ImageVisualizerViewModel : ViewModelBase, IViewModel<ImageInfo>, IViewModel<Image?>, IViewModel<Icon?>, IViewModel<Bitmap?>, IViewModel<Metafile?>
+    internal class ImageVisualizerViewModel : ViewModelBase<ImageInfo>, IViewModel<Image?>, IViewModel<Icon?>, IViewModel<Bitmap?>, IViewModel<Metafile?>
     {
         #region Constants
 
@@ -61,8 +60,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private readonly AllowedImageTypes imageTypes;
 
-        private ImageInfo imageInfo = new ImageInfo(ImageInfoType.None);
+        /// <summary>
+        /// Indicates that the current <see cref="imageInfo"/> instance has been returned by <see cref="GetEditedModel"/> so it should be kept alive.
+        /// If <see langword="true"/>, then the <see cref="imageInfo"/> will not be disposed when a new image is set or when the view model is closed.
+        /// </summary>
         private bool keepAliveImageInfo;
+
+        private ImageInfo imageInfo = new ImageInfo(ImageInfoType.None);
         private int currentFrame = -1;
         private bool isOpenFilterUpToDate;
         private Size currentResolution;
@@ -80,20 +84,20 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal Image? Image
         {
             get => imageInfo.GetCreateImage();
-            set => SetImageInfo(new ImageInfo(value));
+            set => SetImageInfo(new ImageInfo(value), true);
         }
 
         internal Icon? Icon
         {
             get => imageInfo.Icon;
-            set => SetImageInfo(new ImageInfo(value));
+            set => SetImageInfo(new ImageInfo(value), true);
         }
 
         [AllowNull]
         internal ImageInfo ImageInfo
         {
             get => imageInfo;
-            set => SetImageInfo(value ?? new ImageInfo(ImageInfoType.None));
+            set => SetImageInfo(value ?? new ImageInfo(ImageInfoType.None), true);
         }
 
         internal Image? PreviewImage { get => Get<Image?>(); set => Set(value); }
@@ -155,10 +159,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommand AdjustContrastCommand => Get(() => new SimpleCommand(OnAdjustContrastCommand));
         internal ICommand AdjustGammaCommand => Get(() => new SimpleCommand(OnAdjustGammaCommand));
         internal ICommand ShowAboutCommand => Get(() => new SimpleCommand(OnShowAboutCommand));
-        internal ICommand VisitWebSiteCommand => Get(() => new SimpleCommand(() => OpenUrl("https://kgysoft.net")));
-        internal ICommand VisitGitHubCommand => Get(() => new SimpleCommand(() => OpenUrl("https://github.com/koszeggy/KGySoft.Drawing.Tools")));
-        internal ICommand VisitMarketplaceCommand => Get(() => new SimpleCommand(() => OpenUrl("https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers")));
-        internal ICommand SubmitResourcesCommand => Get(() => new SimpleCommand(() => OpenUrl("https://github.com/koszeggy/KGySoft.Drawing.Tools/issues/new?assignees=&labels=&template=submit-resources.md&title=%5BRes%5D")));
+        internal ICommand VisitWebSiteCommand => Get(() => new SimpleCommand(() => PathHelper.OpenUrl("https://kgysoft.net")));
+        internal ICommand VisitGitHubCommand => Get(() => new SimpleCommand(() => PathHelper.OpenUrl("https://github.com/koszeggy/KGySoft.Drawing.Tools")));
+        internal ICommand VisitMarketplaceCommand => Get(() => new SimpleCommand(() => PathHelper.OpenUrl("https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers")));
+        internal ICommand SubmitResourcesCommand => Get(() => new SimpleCommand(() => PathHelper.OpenUrl("https://github.com/koszeggy/KGySoft.Drawing.Tools/issues/new?assignees=&labels=&template=submit-resources.md&title=%5BRes%5D")));
         internal ICommand ShowEasterEggCommand => Get(() => new SimpleCommand(() => ShowInfo(Res.InfoMessageEasterEgg)));
 
         #endregion
@@ -234,17 +238,27 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             return true;
         }
 
-        private static void OpenUrl(string url) => Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
-
         #endregion
 
         #region Instance Methods
+
+        #region Public Methods
+
+        public override ImageInfo GetEditedModel()
+        {
+            keepAliveImageInfo = true;
+            return imageTypes == AllowedImageTypes.Icon ? imageInfo.AsIcon() : imageInfo.AsImage();
+        }
+
+        public override bool TrySetModel(ImageInfo model) => TryInvokeSync(() => SetImageInfo(model, false));
+
+        #endregion
 
         #region Internal Methods
 
         internal override void ViewLoaded()
         {
-            InitAutoZoom(true);
+            InitAutoZoom(true, true);
             if (deferUpdateInfo)
             {
                 if (SetCompoundViewCommandState.GetValueOrDefault<bool>(stateVisible))
@@ -275,6 +289,26 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     UpdateMultiResImage();
                     return;
             }
+        }
+
+        protected void SetImageInfo(ImageInfo value, bool resetPreview)
+        {
+            ValidateImageInfo(value);
+
+            currentResolution = Size.Empty;
+            if (!keepAliveImageInfo)
+                imageInfo.Dispose();
+            imageInfo = value;
+            keepAliveImageInfo = false;
+            SetModified(false);
+            if (resetPreview)
+                PreviewImage = null;
+            InitAutoZoom(false, resetPreview);
+
+            if (value.HasFrames)
+                InitMultiImage();
+            else
+                InitSingleImage();
         }
 
         protected virtual void UpdateInfo()
@@ -457,25 +491,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Private Methods
 
-        private void SetImageInfo(ImageInfo value)
-        {
-            ValidateImageInfo(value);
-
-            currentResolution = Size.Empty;
-            imageInfo.Dispose();
-            imageInfo = value;
-            SetModified(false);
-            PreviewImage = null;
-            InitAutoZoom(false);
-
-            if (value.HasFrames)
-                InitMultiImage();
-            else
-                InitSingleImage();
-        }
-
         private void ValidateImageInfo(ImageInfo value)
         {
+            if (value == null)
+                throw new ArgumentNullException(PublicResources.ArgumentNull, nameof(value));
+
             // validating the image info itself
             if (!value.IsValid)
             {
@@ -511,9 +531,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void UpdateCompoundToolTip() => SetCompoundViewCommandState[stateToolTipText] = imageInfo.Type switch
         {
-            ImageInfoType.Pages => Res.TooltipTextCompoundMultiPage,
-            ImageInfoType.Animation => Res.TooltipTextCompoundAnimation,
-            _ => Res.TooltipTextCompoundMultiSize
+            ImageInfoType.Pages => Res.ToolTipTextCompoundMultiPage,
+            ImageInfoType.Animation => Res.ToolTipTextCompoundAnimation,
+            _ => Res.ToolTipTextCompoundMultiSize
         };
 
         private ImageInfoBase GetCurrentImageInfo()
@@ -996,7 +1016,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             SaveFileFilterIndex = (filter.Split('|').IndexOf(item => item.Contains("*." + ext, StringComparison.OrdinalIgnoreCase)) >> 1) + 1;
         }
 
-        private void InitAutoZoom(bool viewLoading)
+        private void InitAutoZoom(bool viewLoading, bool resetZoom)
         {
             UpdateSmoothZoomingTooltip();
             if (imageInfo.Type == ImageInfoType.None)
@@ -1010,14 +1030,15 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             // metafile: we always turn on auto zoom and preserve current smooth zooming
             if (imageInfo.IsMetafile)
             {
-                AutoZoom = true;
+                if (resetZoom)
+                    AutoZoom = true;
                 return;
             }
 
             // if we are just opening a new image we don't auto toggle AutoZoom and SmoothZooming anymore
             if (!viewLoading)
             {
-                if (!AutoZoom)
+                if (!AutoZoom && resetZoom)
                     Zoom = 1f;
                 return;
             }
@@ -1137,8 +1158,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void UpdateSmoothZoomingTooltip()
             => SetSmoothZoomingCommandState[stateToolTipText] =
                 imageInfo.Type == ImageInfoType.None ? null
-                : imageInfo.IsMetafile ? Res.TooltipTextSmoothMetafile
-                : Res.TooltipTextSmoothBitmap;
+                : imageInfo.IsMetafile ? Res.ToolTipTextSmoothMetafile
+                : Res.ToolTipTextSmoothBitmap;
 
         private void UpdateNotification() => Notification = notificationId == null ? null : Res.Get(notificationId);
 
@@ -1150,11 +1171,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         Icon? IViewModel<Icon?>.GetEditedModel() => Icon?.Clone() as Icon;
         Bitmap? IViewModel<Bitmap?>.GetEditedModel() => Image?.Clone() as Bitmap;
         Metafile? IViewModel<Metafile?>.GetEditedModel() => Image?.Clone() as Metafile;
-        ImageInfo IViewModel<ImageInfo>.GetEditedModel()
-        {
-            keepAliveImageInfo = true;
-            return imageTypes == AllowedImageTypes.Icon ? imageInfo.AsIcon() : imageInfo.AsImage();
-        }
+        bool IViewModel<Image?>.TrySetModel(Image? model) => TryInvokeSync(() => SetImageInfo(new ImageInfo(model), false));
+        bool IViewModel<Icon?>.TrySetModel(Icon? model) => TryInvokeSync(() => SetImageInfo(new ImageInfo(model), false));
+        bool IViewModel<Bitmap?>.TrySetModel(Bitmap? model) => ((IViewModel<Image?>)this).TrySetModel(model);
+        bool IViewModel<Metafile?>.TrySetModel(Metafile? model) => ((IViewModel<Image?>)this).TrySetModel(model);
 
         #endregion
 

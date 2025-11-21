@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: OkCancelButtons.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -29,6 +29,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         #region Fields
 
         private bool isApplyVisible;
+        private bool areDefaultButtonsVisible = true;
 
         #endregion
 
@@ -55,6 +56,17 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         internal Button OKButton => btnOK;
         internal Button CancelButton => btnCancel;
         internal Button ApplyButton => btnApply;
+
+        internal bool DefaultButtonsVisible
+        {
+            get => areDefaultButtonsVisible;
+            set
+            {
+                if (areDefaultButtonsVisible == value)
+                    return;
+                OKButton.Visible = CancelButton.Visible = areDefaultButtonsVisible = value;
+            }
+        }
 
         #endregion
 

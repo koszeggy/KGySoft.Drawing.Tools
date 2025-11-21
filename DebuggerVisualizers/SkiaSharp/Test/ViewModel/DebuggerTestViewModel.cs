@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: DebuggerTestViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -24,13 +24,11 @@ using System.Windows.Media;
 
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
+using KGySoft.Drawing.DebuggerVisualizers.Test;
 using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.Wpf;
 using KGySoft.Drawing.SkiaSharp;
-using KGySoft.Reflection;
-
-using Microsoft.VisualStudio.DebuggerVisualizers;
 
 using SkiaSharp;
 
@@ -66,10 +64,14 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Test.ViewModel
 
         private static readonly Dictionary<Type, DebuggerVisualizerAttribute> debuggerVisualizers = SkiaSharpDebuggerHelper.GetDebuggerVisualizers();
 
+#if NET472_OR_GREATER
+        private static readonly Dictionary<Type, IDebuggerVisualizerProvider> debuggerVisualizerProviders = SkiaSharpDebuggerHelper.GetDebuggerVisualizerProviders();
+#endif
+
         #endregion
 
         #region Instance Fields
-        
+
         private SKColorSpace? adobeColorSpace;
         private IReadableBitmapData? sampleBitmapData;
         private SKBitmap? backingBitmap;
@@ -102,7 +104,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Test.ViewModel
         public bool IsSKColorF { get => Get<bool>(); set => Set(value); }
 
         public ICommand DirectViewCommand => Get(() => new SimpleCommand(OnViewDirectCommand));
-        public ICommand DebugCommand => Get(() => new SimpleCommand(OnDebugCommand));
+        public ICommand ClassicDebugCommand => Get(() => new SimpleCommand(OnClassicDebugCommand));
+        public ICommand ExtensionDebugCommand => Get(() => new SimpleCommand(OnExtensionDebugCommand));
 
         public ICommandState DebugCommandState => Get(() => new CommandState { Enabled = false });
 
@@ -430,36 +433,57 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Test.ViewModel
             }
         }
 
-        private void OnDebugCommand()
+        private void OnClassicDebugCommand()
         {
             object? testObject = TestObject;
             if (testObject == null)
                 return;
 
-            Type targetType = testObject is ImageSource
-                ? typeof(ImageSource)
-                : testObject.GetType();
+            Type targetType = testObject.GetType();
             DebuggerVisualizerAttribute? attr = debuggerVisualizers.GetValueOrDefault(targetType);
             if (attr == null)
             {
-                ErrorCallback?.Invoke($"No debugger visualizer found for type {targetType}");
+                ErrorCallback?.Invoke($"No debugger visualizer found for type {targetType}. Note that classic debugger visualizers are not available in .NET Framework 4.7.2 and above.");
                 return;
             }
 
             try
             {
-                var windowService = new TestWindowService();
-                var objectProvider = new TestObjectProvider(testObject);
-                DialogDebuggerVisualizer debugger = (DialogDebuggerVisualizer)Reflector.CreateInstance(Reflector.ResolveType(attr.VisualizerTypeName)!);
-                objectProvider.Serializer = (VisualizerObjectSource)Reflector.CreateInstance(Reflector.ResolveType(attr.VisualizerObjectSourceTypeName!)!);
-                Reflector.InvokeMethod(debugger, "Show", windowService, objectProvider);
-                if (objectProvider.ObjectReplaced)
-                    TestObject = objectProvider.Object;
+                if (DebuggerVisualizerHelper.ShowClassicVisualizer(attr, testObject, default, out object? replacementObject))
+                    TestObject = replacementObject;
             }
             catch (Exception e) when (e is not StackOverflowException)
             {
                 ErrorCallback?.Invoke($"Failed to debug object: {e.Message}");
             }
+        }
+
+        private void OnExtensionDebugCommand()
+        {
+            object? testObject = TestObject;
+            if (testObject == null)
+                return;
+
+#if NET472_OR_GREATER
+            Type targetType = testObject.GetType();
+            IDebuggerVisualizerProvider? provider = debuggerVisualizerProviders.GetValueOrDefault(targetType);
+            if (provider == null)
+            {
+                ErrorCallback?.Invoke($"No debugger visualizer extension found for type {targetType}");
+                return;
+            }
+
+            try
+            {
+                DebuggerVisualizerHelper.ShowExtensionVisualizer(provider, testObject, default, o => TestObject = o);
+            }
+            catch (Exception e) when (e is not StackOverflowException)
+            {
+                ErrorCallback?.Invoke($"Failed to debug object: {e.Message}");
+            }
+#else
+            ErrorCallback?.Invoke("Debugger visualizer extensions are supported only in .NET Framework 4.7.2 and above.");
+#endif
         }
 
         #endregion

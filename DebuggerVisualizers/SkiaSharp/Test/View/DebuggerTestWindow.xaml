@@ -5,7 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Test.ViewModel"
-        xmlns:v="clr-namespace:KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Test.View"
+        xmlns:t="clr-namespace:KGySoft.Drawing.DebuggerVisualizers.Test"
         mc:Ignorable="d"
         Title="Debugger Visualizer Test"
         SizeToContent="Width">
@@ -15,7 +15,7 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="130"/>
+            <ColumnDefinition Width="160"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
@@ -49,8 +49,9 @@
             <RadioButton IsChecked="{Binding IsSKPMColor}">SKPMColor</RadioButton>
             <RadioButton IsChecked="{Binding IsSKColorF}">SKColorF</RadioButton>
 
-            <Button Click="{v:EventToCommand Command={Binding DirectViewCommand}, State={Binding DebugCommandState}}">View Directly</Button>
-            <Button Click="{v:EventToCommand Command={Binding DebugCommand}, State={Binding DebugCommandState}}">View by Debugger</Button>
+            <Button Click="{t:EventToCommand Command={Binding DirectViewCommand}, State={Binding DebugCommandState}}">View Directly</Button>
+            <Button Click="{t:EventToCommand Command={Binding ClassicDebugCommand}, State={Binding DebugCommandState}}">View by Classic Debugger</Button>
+            <Button Click="{t:EventToCommand Command={Binding ExtensionDebugCommand}, State={Binding DebugCommandState}}">View by Extension Debugger</Button>
         </StackPanel>
 
         <!--Preview Image-->

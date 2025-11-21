@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ReadableBitmapDataSerializer.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -17,19 +17,24 @@
 
 using System.IO;
 
+using KGySoft.Drawing.DebuggerVisualizers.Serialization;
 using KGySoft.Drawing.Imaging;
-
-using Microsoft.VisualStudio.DebuggerVisualizers;
 
 #endregion
 
 namespace KGySoft.Drawing.DebuggerVisualizers.Core.Serialization
 {
-    internal sealed class ReadableBitmapDataSerializer : VisualizerObjectSource
+    /// <summary>
+    /// Provides serialization for the <see cref="IReadableBitmapData"/> type.
+    /// </summary>
+    public sealed class ReadableBitmapDataSerializer : SerializerBase
     {
         #region Methods
 
-        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeCustomBitmapInfo((IReadableBitmapData)target, outgoingData);
+        /// <summary>
+        /// Called when the object to be debugged is about to be serialized.
+        /// </summary>
+        public override void GetData(object target, Stream outgoingData) => SerializationHelper.SerializeCustomBitmapInfo(target, outgoingData);
 
         #endregion
     }

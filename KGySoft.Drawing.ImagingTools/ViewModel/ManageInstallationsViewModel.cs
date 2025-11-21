@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ManageInstallationsViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -17,6 +17,9 @@
 
 using System;
 using System.Collections.Generic;
+#if NETFRAMEWORK && !NET472_OR_GREATER
+using System.Globalization;
+#endif
 using System.IO;
 using System.Linq;
 
@@ -37,6 +40,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private const string visualStudioName = "Visual Studio";
         private const string installDirsPattern = visualStudioName + " ????";
         private const string visualizersDir = "Visualizers";
+#if NETCOREAPP || !NET472_OR_GREATER
+        private const string urlMarketplace = "https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64";
+#endif
+#if NET472_OR_GREATER
+        private const string urlGitHubDownload = "https://github.com/koszeggy/KGySoft.Drawing.Tools#download";
+#endif
 
         #endregion
 
@@ -210,12 +219,50 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnInstallCommand()
         {
+            #region Local Methods
+
+#if NETFRAMEWORK && !NET472_OR_GREATER
+            int? TryGetVisualStudioVersion()
+            {
+                string selected = SelectedInstallation;
+                if (selected.Length == 0)
+                    return null;
+
+                string? name = Installations.FirstOrDefault(i => i.Key == selected).Value;
+                if (name?.StartsWith(visualStudioName) != true)
+                    return null;
+
+                if (Int32.TryParse(name.Substring(name.Length - 4, 4), NumberStyles.None, CultureInfo.InvariantCulture, out int ver))
+                    return ver;
+                return null;
+            }
+#endif
+
+            #endregion
+
             if (currentStatus.Installed && !Confirm(Res.ConfirmMessageOverwriteInstallation, currentStatus.Version != null && InstallationManager.AvailableVersion.Version > currentStatus.Version))
                 return;
 #if NETCOREAPP
-            if (!Confirm(Res.ConfirmMessageNetCoreVersion, false))
-                return;
-#endif
+            if (Confirm(Res.ConfirmMessageNetCoreDebuggerVisualizers))
+                PathHelper.OpenUrl(urlMarketplace);
+#elif NET472_OR_GREATER
+            if (Confirm(Res.ConfirmMessageNet472DebuggerVisualizers))
+                PathHelper.OpenUrl(urlGitHubDownload);
+#else
+            if (TryGetVisualStudioVersion() >= 2022)
+            {
+                switch (CancellableConfirm(Res.ConfirmMessageInstallClassicVisualizers))
+                {
+                    case null:
+                        return;
+                    case true:
+                        break;
+                    case false:
+                        PathHelper.OpenUrl(urlMarketplace);
+                        CloseViewCallback?.Invoke();
+                        return;
+                }
+            }
 
             InstallationManager.Install(currentStatus.Path, out string? error, out string? warning);
             if (error != null)
@@ -223,6 +270,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             else if (warning != null)
                 ShowWarning(Res.WarningMessageInstallationWarning(warning));
             UpdateStatus(currentStatus.Path);
+#endif
         }
 
         private void OnRemoveCommand()

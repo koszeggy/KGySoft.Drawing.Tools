@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: Configuration.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -27,15 +27,24 @@ using System.Net;
 using System.Reflection; 
 using System.Runtime.CompilerServices;
 
-#if NET35
 using KGySoft.CoreLibraries; 
-#endif
 using KGySoft.Drawing.ImagingTools.Properties;
+
+using Microsoft.Win32;
 
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools
 {
+    /// <summary>
+    /// NOTE: Originally read-write configurations were stored in user-scoped application settings, but when using Imaging Tools as a VS extension, this a problem,
+    /// because in such case application settings location keeps changing with every new Visual Studio version.
+    /// Because of this, now the Registry is used for read-write configurations. Fortunately this works even on Linux with Mono, as Mono implements the registry using files.
+    /// The application settings are kept only for backward compatibility, when upgrading from an older version,
+    /// or when the registry is not accessible from the possibly restricted AppDomain of a Visual Studio extension.
+    /// Application-scoped configuration (app.config) is kept for read-only settings that are alright to be used from Imaging Tools as a standalone application.
+    /// Make sure to call <see cref="Release"/> after accessing registry-based settings even when not saving any changes to release the registry key.
+    /// </summary>
     internal static class Configuration
     {
         #region Nested classes
@@ -68,6 +77,7 @@ namespace KGySoft.Drawing.ImagingTools
 
         private const string defaultResourceRepositoryLocation = "https://koszeggy.github.io/KGySoft.Drawing.Tools/res/"; // same as "https://raw.githubusercontent.com/koszeggy/KGySoft.Drawing.Tools/pages/res/"
         private const string fallbackResourceRepositoryLocation = "http://kgysoft.net/res/"; // "http://koszeggy.github.io/KGySoft.Drawing.Tools/res/" does not work on Win7/.NET 3.5
+        private const string registryPath = @"Software\KGy SOFT\Imaging Tools";
 
         #endregion
 
@@ -76,17 +86,18 @@ namespace KGySoft.Drawing.ImagingTools
         private static readonly bool allowHttps;
 
         private static Uri? baseUri;
+        private static RegistryKey? registryKey;
+        private static bool forceAppSettings;
 
         #endregion
 
         #region Properties
 
         #region Internal Properties
-        
-        internal static bool AllowResXResources { get => GetFromSettings<bool>(); set => SetInSettings(value); }
-        internal static bool UseOSLanguage { get => GetFromSettings<bool>(); set => SetInSettings(value); }
-        internal static CultureInfo DisplayLanguage { get => GetFromSettings<CultureInfo>() ?? Res.DefaultLanguage; set => SetInSettings(value); }
-        internal static string? ResXResourcesCustomPath { get => GetFromSettings<string?>(); set => SetInSettings(value); }
+
+        internal static bool UseOSLanguage { get => Get<bool>(); set => Set(value); }
+        internal static CultureInfo DisplayLanguage { get => Get<CultureInfo>() ?? Res.DefaultLanguage; set => Set(value); }
+        internal static string? ResXResourcesCustomPath { get => Get<string?>(); set => Set(value); }
         internal static Uri BaseUri => baseUri ??= new Uri(ResourceRepositoryLocation);
 
         #endregion
@@ -95,6 +106,25 @@ namespace KGySoft.Drawing.ImagingTools
         
         private static string ResourceRepositoryLocation => GetFromAppConfig()
             ?? (allowHttps ? defaultResourceRepositoryLocation : fallbackResourceRepositoryLocation);
+
+        private static RegistryKey? RegistryKey
+        {
+            get
+            {
+                if (registryKey is null)
+                {
+                    try
+                    {
+                        registryKey = Registry.CurrentUser.CreateSubKey(registryPath);
+                    }
+                    catch (Exception e) when (!e.IsCritical())
+                    {
+                        forceAppSettings = true;
+                    }
+                }
+                return registryKey;
+            }
+        }
 
         #endregion
 
@@ -109,7 +139,7 @@ namespace KGySoft.Drawing.ImagingTools
             allowHttps &= OSUtils.IsWindows8OrLater;
 #endif
 
-            // To be able to resolve UserSettingsGroup of with other framework version
+            // To be able to resolve UserSettingsGroup with other framework version
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 #if NET35
             // To prevent serializing CultureInfo by DisplayName instead of Name
@@ -140,11 +170,50 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Internal Methods
 
-        internal static void SaveSettings() => Settings.Default.Save();
+        internal static void SaveSettings()
+        {
+            if (forceAppSettings)
+                Settings.Default.Save();
+            registryKey?.Flush();
+            Release();
+        }
+
+        internal static void Release()
+        {
+            registryKey?.Close();
+            registryKey = null;
+            forceAppSettings = false;
+        }
 
         #endregion
 
         #region Private Methods
+
+        private static T? Get<T>([CallerMemberName]string propertyName = null!)
+        {
+            T? result = default;
+            if (!forceAppSettings && TryGetFromRegistry(propertyName, out result))
+                return result;
+
+            if (Equals(result, default(T)))
+            {
+                result = GetFromSettings<T>(propertyName);
+
+                // If found in settings and registry is accessible, migrating to registry
+                if (!forceAppSettings)
+                    SetInRegistry(result, propertyName);
+            }
+
+            return result;
+        }
+
+        private static void Set(object? value, [CallerMemberName]string propertyName = null!)
+        {
+            if (!forceAppSettings)
+                SetInRegistry(value, propertyName);
+            if (forceAppSettings)
+                SetInSettings(value, propertyName);
+        }
 
         private static T? GetFromSettings<T>([CallerMemberName]string propertyName = null!)
         {
@@ -163,6 +232,52 @@ namespace KGySoft.Drawing.ImagingTools
             try
             {
                 Settings.Default[propertyName] = value;
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+            }
+        }
+
+        private static bool TryGetFromRegistry<T>(string propertyName, out T? value)
+        {
+            try
+            {
+                object? result = RegistryKey?.GetValue(propertyName);
+                if (result is null)
+                {
+                    value = default;
+                    return false;
+                }
+
+                if (result is T t || result.TryConvert(out t!))
+                {
+                    value = t;
+                    return true;
+                }
+
+                value = default;
+                return false;
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                value = default;
+                return false;
+            }
+        }
+
+        private static void SetInRegistry(object? value, string propertyName)
+        {
+            value = value switch
+            {
+                bool boolValue => boolValue ? 1 : 0,
+                null => String.Empty,
+                _ => value
+            };
+
+            try
+            {
+                RegistryKey? key = RegistryKey;
+                key?.SetValue(propertyName, value);
             }
             catch (Exception e) when (!e.IsCritical())
             {

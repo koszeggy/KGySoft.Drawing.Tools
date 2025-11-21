@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: AutoMirrorPanel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -51,7 +51,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             // there is no public IsLayoutSuspended property but in this project we can assume that controls are either added
             // in suspended state or before setting RightToLeft
             base.OnControlAdded(e);
-            toBeAdjusted.Add(e.Control);
+            if (e.Control != null)
+                toBeAdjusted.Add(e.Control);
         }
 
         protected override void OnLayout(LayoutEventArgs levent)

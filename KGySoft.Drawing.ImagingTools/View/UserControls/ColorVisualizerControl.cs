@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ColorVisualizerControl.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -22,18 +22,25 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
 
+using KGySoft.Drawing.ImagingTools.View.Forms;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
+    /// <summary>
+    /// This user control can be used both as a top-level visualizer (VM constructor) and as a child control (default constructor).
+    /// </summary>
     internal partial class ColorVisualizerControl : MvvmBaseUserControl
     {
         #region Fields
 
+        private readonly bool isChild;
+
         private Bitmap? alphaPattern;
         private ImageAttributes? attrTiles;
+        private ParentViewProperties? parentProperties;
 
         #endregion
 
@@ -45,13 +52,53 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             set => base.ViewModel = value;
         }
 
+        internal override ParentViewProperties ParentViewProperties => parentProperties ??= new ParentViewProperties
+        {
+            BorderStyle = FormBorderStyle.SizableToolWindow,
+            MinimumSize = new Size(260, 234),
+            Icon = Properties.Resources.Palette,
+            AcceptButton = buttons.OKButton,
+            CancelButton = buttons.CancelButton,
+            ClosingCallback = (sender, _) =>
+            {
+                if (((MvvmParentForm)sender!).DialogResult != DialogResult.OK)
+                    ViewModel!.SetModified(false);
+            },
+            ProcessKeyCallback = (parent, key) =>
+            {
+                if (key == Keys.Escape && ViewModel!.ReadOnly)
+                {
+                    parent.DialogResult = DialogResult.Cancel;
+                    return true;
+                }
+
+                return false;
+            }
+        };
+
+        internal override Action<MvvmParentForm> ParentViewPropertyBindingsInitializer => InitParentViewPropertyBindings;
+
         #endregion
 
         #region Constructors
 
-        public ColorVisualizerControl()
+        /// <summary>
+        /// The default constructor for using this control as a child control.
+        /// The <see cref="ViewModel"/> property should be set manually.
+        /// Should be public for the designer when used in a parent control.
+        /// </summary>
+        public ColorVisualizerControl() : this(null)
+        {
+            isChild = true;
+        }
+
+        /// <summary>
+        /// The constructor for using this control as a top-level visualizer.
+        /// </summary>
+        public ColorVisualizerControl(ColorVisualizerViewModel? viewModel) : base(viewModel)
         {
             InitializeComponent();
+            BackColor = Color.Transparent; // to make the resize grip in the parent form visible
             btnSelectColor.Image = Images.Palette;
             pnlColor.SetDoubleBuffered(true);
             tbAlpha.SetDoubleBuffered(true);
@@ -91,6 +138,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             UpdateColor();
         }
 
+        protected override void ApplyTheme()
+        {
+            base.ApplyTheme();
+            pnlControls.BackColor = ThemeColors.Control;
+        }
+
         private void InitPropertyBindings()
         {
             ColorVisualizerViewModel vm = ViewModel!;
@@ -104,6 +157,72 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // Removing color channel panels if there are custom components (this cannot be undone in this instance)
             if (vm.CustomColorComponents != null)
                 ApplyCustomColorComponentsLayout();
+
+            if (isChild)
+                return;
+
+            bool isInForm = ParentForm != null;
+            buttons.DefaultButtonsVisible = isInForm;
+            buttons.ApplyButtonVisible = !isInForm;
+
+            // !VM.ReadOnly -> buttons.Visible
+            CommandBindings.AddPropertyBinding(vm, nameof(vm.ReadOnly), nameof(buttons.Visible), ro => ro is false, buttons);
+
+            // VM.IsModified -> OKButton.Enabled
+            CommandBindings.AddPropertyBinding(vm, nameof(ViewModel.IsModified), nameof(Enabled), buttons.OKButton);
+        }
+
+        private void InitParentViewPropertyBindings(MvvmParentForm parent)
+        {
+            var vm = ViewModel;
+            if (vm == null)
+                return;
+
+            // VM.TitleCaption -> Text
+            CommandBindings.AddPropertyBinding(vm, nameof(vm.TitleCaption), nameof(Text), parent);
+        }
+
+        private void InitCommandBindings()
+        {
+            ColorVisualizerViewModel vm = ViewModel!;
+
+            // VM.PropertyChanged(Color) -> UpdateColor
+            CommandBindings.AddPropertyChangedHandlerBinding(vm, UpdateColor, nameof(ViewModel.Color));
+
+            // btnSelectColor.Click -> OnSelectColorCommand
+            CommandBindings.Add(OnSelectColorCommand)
+                .AddSource(btnSelectColor, nameof(btnSelectColor.Click));
+
+            // tbAlpha.Scroll -> OnAlphaScrollCommand
+            CommandBindings.Add(OnAlphaScrollCommand)
+                .AddSource(tbAlpha, nameof(tbAlpha.Scroll));
+
+            // tbRed.Scroll -> OnRedScrollCommand
+            CommandBindings.Add(OnRedScrollCommand)
+                .AddSource(tbRed, nameof(tbRed.Scroll));
+
+            // tbGreen.Scroll -> OnGreenScrollCommand
+            CommandBindings.Add(OnGreenScrollCommand)
+                .AddSource(tbGreen, nameof(tbGreen.Scroll));
+
+            // tbBlue.Scroll -> OnBlueScrollCommand
+            CommandBindings.Add(OnBlueScrollCommand)
+                .AddSource(tbBlue, nameof(tbBlue.Scroll));
+
+            // SystemColorsChanged -> VM.ResetSystemColors
+            CommandBindings.Add(vm.ResetSystemColors)
+                .AddSource(this, nameof(SystemColorsChanged));
+
+            if (isChild)
+                return;
+
+            // CancelButton.Click -> OnCancelCommand
+            CommandBindings.Add(OnCancelCommand)
+                .AddSource(buttons.CancelButton, nameof(buttons.CancelButton.Click));
+
+            // ApplyButton.Click -> VM.ApplyChangesCommand
+            CommandBindings.Add(vm.ApplyChangesCommand, vm.ApplyChangesCommandCommandState)
+                .AddSource(buttons.ApplyButton, nameof(buttons.ApplyButton.Click));
         }
 
         private void ApplyCustomColorComponentsLayout()
@@ -140,40 +259,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             tblColor.SetColumnSpan(lblBlue, 2);
         }
 
-        private void InitCommandBindings()
-        {
-            ColorVisualizerViewModel vm = ViewModel!;
-
-            // VM.PropertyChanged(Color) -> UpdateColor
-            CommandBindings.AddPropertyChangedHandlerBinding(vm, UpdateColor, nameof(ViewModel.Color));
-
-            // btnSelectColor.Click -> OnSelectColorCommand
-            CommandBindings.Add(OnSelectColorCommand)
-                .AddSource(btnSelectColor, nameof(btnSelectColor.Click));
-
-            // tbAlpha.Scroll -> OnAlphaScrollCommand
-            CommandBindings.Add(OnAlphaScrollCommand)
-                .AddSource(tbAlpha, nameof(tbAlpha.Scroll));
-            
-            // tbRed.Scroll -> OnRedScrollCommand
-            CommandBindings.Add(OnRedScrollCommand)
-                .AddSource(tbRed, nameof(tbRed.Scroll));
-            
-            // tbGreen.Scroll -> OnGreenScrollCommand
-            CommandBindings.Add(OnGreenScrollCommand)
-                .AddSource(tbGreen, nameof(tbGreen.Scroll));
-
-            // tbBlue.Scroll -> OnBlueScrollCommand
-            CommandBindings.Add(OnBlueScrollCommand)
-                .AddSource(tbBlue, nameof(tbBlue.Scroll));
-
-            // SystemColorsChanged -> VM.ResetSystemColors
-            CommandBindings.Add(vm.ResetSystemColors)
-                .AddSource(this, nameof(SystemColorsChanged));
-        }
-
         protected override void Dispose(bool disposing)
         {
+            if (IsDisposed)
+                return;
+
             if (disposing)
             {
                 components?.Dispose();
@@ -183,6 +273,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
             alphaPattern = null;
             attrTiles = null;
+            parentProperties = null;
             if (pnlAlpha != null)
                 pnlAlpha.Paint -= pnlColor_Paint;
             pnlColor.Paint -= pnlColor_Paint;
@@ -265,13 +356,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 if (alphaPattern == null)
                     CreateAlphaPattern();
 
-                Size size = pnlColor.Size;
+                Size size = ((Control)sender!).Size;
                 e.Graphics.DrawImage(alphaPattern!, new Rectangle(Point.Empty, size), 0, 0 , size.Width, size.Height, GraphicsUnit.Pixel, attrTiles);
             }
 
             Color backColor = sender == pnlAlpha ? Color.FromArgb(color.A, Color.White) : color;
-            using (Brush b = new SolidBrush(backColor))
-                e.Graphics.FillRectangle(b, e.ClipRectangle);
+            e.Graphics.FillRectangle(backColor.GetBrush(), e.ClipRectangle);
         }
 
 #pragma warning restore IDE1006 // Naming Styles
@@ -314,6 +404,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             Color color = ViewModel!.Color;
             ViewModel!.Color = Color.FromArgb(color.A, color.R, color.G, tbBlue.Value);
         }
+
+        private void OnCancelCommand() => ViewModel!.SetModified(false);
 
         #endregion
 

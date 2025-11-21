@@ -18,7 +18,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.View
         private void InitializeComponent()
         {
             this.btnViewDirect = new System.Windows.Forms.Button();
-            this.btnViewByDebugger = new System.Windows.Forms.Button();
+            this.btnViewByClassicDebugger = new System.Windows.Forms.Button();
             this.txtFile = new System.Windows.Forms.TextBox();
             this.rbFromFile = new System.Windows.Forms.RadioButton();
             this.rbManagedBitmapData = new System.Windows.Forms.RadioButton();
@@ -35,6 +35,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.View
             this.rbColor32 = new System.Windows.Forms.RadioButton();
             this.rbPalette = new System.Windows.Forms.RadioButton();
             this.cmbPixelFormat = new System.Windows.Forms.ComboBox();
+            this.btnViewByExtensionDebugger = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pbPreview)).BeginInit();
             this.panelControls.SuspendLayout();
             this.gbFile.SuspendLayout();
@@ -51,16 +52,16 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.View
             this.btnViewDirect.Text = "View Directly";
             this.btnViewDirect.UseVisualStyleBackColor = true;
             // 
-            // btnViewByDebugger
+            // btnViewByClassicDebugger
             // 
-            this.btnViewByDebugger.Dock = System.Windows.Forms.DockStyle.Top;
-            this.btnViewByDebugger.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnViewByDebugger.Location = new System.Drawing.Point(0, 283);
-            this.btnViewByDebugger.Name = "btnViewByDebugger";
-            this.btnViewByDebugger.Size = new System.Drawing.Size(196, 24);
-            this.btnViewByDebugger.TabIndex = 12;
-            this.btnViewByDebugger.Text = "View by Debugger";
-            this.btnViewByDebugger.UseVisualStyleBackColor = true;
+            this.btnViewByClassicDebugger.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnViewByClassicDebugger.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btnViewByClassicDebugger.Location = new System.Drawing.Point(0, 283);
+            this.btnViewByClassicDebugger.Name = "btnViewByClassicDebugger";
+            this.btnViewByClassicDebugger.Size = new System.Drawing.Size(196, 24);
+            this.btnViewByClassicDebugger.TabIndex = 12;
+            this.btnViewByClassicDebugger.Text = "View by Classic Debugger";
+            this.btnViewByClassicDebugger.UseVisualStyleBackColor = true;
             // 
             // txtFile
             // 
@@ -104,14 +105,15 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.View
             this.pbPreview.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pbPreview.Location = new System.Drawing.Point(224, 10);
             this.pbPreview.Name = "pbPreview";
-            this.pbPreview.Size = new System.Drawing.Size(159, 306);
+            this.pbPreview.Size = new System.Drawing.Size(159, 335);
             this.pbPreview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pbPreview.TabIndex = 14;
             this.pbPreview.TabStop = false;
             // 
             // panelControls
             // 
-            this.panelControls.Controls.Add(this.btnViewByDebugger);
+            this.panelControls.Controls.Add(this.btnViewByExtensionDebugger);
+            this.panelControls.Controls.Add(this.btnViewByClassicDebugger);
             this.panelControls.Controls.Add(this.btnViewDirect);
             this.panelControls.Controls.Add(this.gbFile);
             this.panelControls.Controls.Add(this.rbFromFile);
@@ -128,7 +130,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.View
             this.panelControls.Location = new System.Drawing.Point(15, 10);
             this.panelControls.Name = "panelControls";
             this.panelControls.Padding = new System.Windows.Forms.Padding(0, 0, 13, 0);
-            this.panelControls.Size = new System.Drawing.Size(209, 306);
+            this.panelControls.Size = new System.Drawing.Size(209, 335);
             this.panelControls.TabIndex = 0;
             // 
             // gbFile
@@ -266,11 +268,22 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.View
             this.cmbPixelFormat.Size = new System.Drawing.Size(196, 21);
             this.cmbPixelFormat.TabIndex = 0;
             // 
+            // btnViewByExtensionDebugger
+            // 
+            this.btnViewByExtensionDebugger.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnViewByExtensionDebugger.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btnViewByExtensionDebugger.Location = new System.Drawing.Point(0, 307);
+            this.btnViewByExtensionDebugger.Name = "btnViewByExtensionDebugger";
+            this.btnViewByExtensionDebugger.Size = new System.Drawing.Size(196, 24);
+            this.btnViewByExtensionDebugger.TabIndex = 17;
+            this.btnViewByExtensionDebugger.Text = "View by Extension Debugger";
+            this.btnViewByExtensionDebugger.UseVisualStyleBackColor = true;
+            // 
             // DebuggerTestForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(398, 321);
+            this.ClientSize = new System.Drawing.Size(398, 350);
             this.Controls.Add(this.pbPreview);
             this.Controls.Add(this.panelControls);
             this.MinimizeBox = false;
@@ -292,7 +305,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.View
         private RadioButton rbManagedBitmapData;
         private RadioButton rbFromFile;
         private TextBox txtFile;
-        private Button btnViewByDebugger;
+        private Button btnViewByClassicDebugger;
         private Button btnViewDirect;
         private PictureBox pbPreview;
         private Panel panelControls;
@@ -307,5 +320,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.View
         private RadioButton rbPColor64;
         private RadioButton rbColor64;
         private RadioButton rbPColor32;
+        private Button btnViewByExtensionDebugger;
     }
 }

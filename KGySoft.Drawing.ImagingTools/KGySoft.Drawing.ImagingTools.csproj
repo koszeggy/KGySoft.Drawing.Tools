@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <TargetFrameworks>net35;net40;net45;net462;net6.0-windows</TargetFrameworks>
-    <!--<TargetFrameworks>net462</TargetFrameworks>-->
+    <TargetFrameworks>net35;net40;net45;net462;net472;net9.0-windows</TargetFrameworks>
+    <!--<TargetFrameworks>net462;net472;net9.0-windows</TargetFrameworks>-->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>KGySoft.Drawing.ImagingTools</RootNamespace>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
@@ -17,25 +17,32 @@
     <OutputType>WinExe</OutputType>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <!--To check the original ToolStrip rendering or .NET 9+ built-in dark theming -->
+    <!--<DefineConstants>$(DefineConstants);SYSTEM_THEMING</DefineConstants>-->
 
     <!--Suppressions
-        - WFAC010: Remove high DPI settings from app.manifest and configure via Application.SetHighDpiMode - as targeting many frameworks handling it manually everywhere is intended. Otherwise, it would cause conflicts, eg. scaling sizes multiple times, etc. -->
-    <NoWarn>$(NoWarn);WFAC010</NoWarn>
+        - WFAC010: Remove high DPI settings from app.manifest and configure via Application.SetHighDpiMode - as targeting many frameworks handling it manually everywhere is intended. Otherwise, it would cause conflicts, e.g. scaling sizes multiple times, etc.
+        - WFO0003: Remove high DPI settings from app.manifest and configure via Application.SetHighDpiMode API or 'ApplicationHighDpiMode' project proprty - as targeting many frameworks handling it manually everywhere is intended. Otherwise, it would cause conflicts, e.g. scaling sizes multiple times, etc.
+        - WFO1000: Property does not configure the code serialization for its property content. - false alarm, every custom control in this project is internal
+        - WFO5001: Suppression of experimental features
+        -->
+    <NoWarn>$(NoWarn);WFAC010;WFO0003;WFO1000;WFO5001</NoWarn>
   </PropertyGroup>
 
   <!--Common package references-->
   <ItemGroup>
-    <PackageReference Include="KGySoft.Drawing" Version="8.0.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0">
+    <!--IMPRTANT: Make sure this references the same KGySoft.Drawing.Core version as every other specific drawing package in the debugger visualizers; otherwise, version mismatch may occur when loading the visualizers -->
+    <PackageReference Include="KGySoft.Drawing" Version="9.2.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
 
   <!--Framework-only references-->
-  <ItemGroup Condition="'$(TargetFramework)'=='net35' OR '$(TargetFramework)'=='net40' OR '$(TargetFramework)'=='net45' OR '$(TargetFramework)'=='net462'">
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Design" />
+  <ItemGroup Condition="'$(TargetFramework)'=='net35' OR '$(TargetFramework)'=='net40' OR '$(TargetFramework)'=='net45' OR '$(TargetFramework)'=='net462' OR '$(TargetFramework)'=='net472'">
     <Reference Include="System.Configuration" />
   </ItemGroup>
 

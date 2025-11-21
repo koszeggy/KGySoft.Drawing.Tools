@@ -234,25 +234,28 @@
   <data name="Text_Downloading" xml:space="preserve">
     <value>Downloading...</value>
   </data>
-  <data name="TooltipText_CompoundAnimation" xml:space="preserve">
+  <data name="Text_DefaultResourcesPath" xml:space="preserve">
+    <value>(Default path)</value>
+  </data>
+  <data name="ToolTipText_CompoundAnimation" xml:space="preserve">
     <value>Toggles whether the animation is handled as a single image.
 • When checked, animation will play and saving as GIF saves the whole animation.
 • When not checked, frame navigation will be enabled and saving saves only the selected frame.</value>
   </data>
-  <data name="TooltipText_CompoundMultiSize" xml:space="preserve">
+  <data name="ToolTipText_CompoundMultiSize" xml:space="preserve">
     <value>Toggles whether the icon is handled as a multi-resolution image.
 • When checked, always the best fitting image is displayed and saving as Icon saves every image.
 • When not checked, icon images can be explored by navigation and saving saves the selected image only.</value>
   </data>
-  <data name="TooltipText_CompoundMultiPage" xml:space="preserve">
+  <data name="ToolTipText_CompoundMultiPage" xml:space="preserve">
     <value>Toggles whether the pages are handled as a compound image.
 • When checked, saving as TIFF saves every page.
 • When not checked, saving saves always the selected page only.</value>
   </data>
-  <data name="TooltipText_SmoothMetafile" xml:space="preserve">
+  <data name="ToolTipText_SmoothMetafile" xml:space="preserve">
     <value>Smoothing Edges (Alt+S)</value>
   </data>
-  <data name="TooltipText_SmoothBitmap" xml:space="preserve">
+  <data name="ToolTipText_SmoothBitmap" xml:space="preserve">
     <value>Smoothing Resized Image (Alt+S)</value>
   </data>
   <data name="Text_Auto" xml:space="preserve">
@@ -448,6 +451,20 @@ Either select at least '{1}' or reduce the number of colors to {2}.</value>
   <data name="ErrorMessage_CannotApplyLanguageSettingsFormat" xml:space="preserve">
     <value>Language settings cannot be applied: {0}</value>
   </data>
+  <data name="ErrorMessage_CannotOpenFolderFormat" xml:space="preserve">
+    <value>Could not open folder: {0}</value>
+  </data>
+  <data name="ErrorMessage_FailedToUninstallClassicFormat" xml:space="preserve">
+    <value>Failed to uninstall the classic visualizers from {0}: {1}
+
+Make sure every running debugger is closed. Removal will be tried again on restarting Visual Studio.</value>
+  </data>
+  <data name="ErrorMessage_UnexpectedErrorFormat" xml:space="preserve">
+    <value>Unexpected error occurred: {0}</value>
+  </data>
+  <data name="ErrorMessage_ShellServiceUnavailable" xml:space="preserve">
+    <value>Shell service could not be obtained. Installation status of the classic debugger visualizers cannot be checked.</value>
+  </data>
   <data name="WarningMessage_CouldNotCreateNetCoreDirectoryFormat" xml:space="preserve">
     <value>Could not create directory {0}: {1}
 
@@ -493,6 +510,15 @@ so partial transparent pixels will be blended with back color.</value>
   <data name="ConfirmMessage_OverwriteInstallation" xml:space="preserve">
     <value>Are you sure you want to overwrite this installation?</value>
   </data>
+  <data name="ConfirmMessage_InstallClassicVisualizers" xml:space="preserve">
+    <value>For Visual Studio 2022 version 17.9 Preview 1 or higher it is not required to install the classic visualizers at this path if you use the KGy SOFT Image DebuggerVisualizers x64 package from Visual Studio Marketplace. The package offers modern non-dialog visualizers that can remain open while stepping through the code.
+
+Do you really want to install the classic visualizers at this path?
+
+Yes: Install the classic visualizers.
+No: Close the dialog and navigate to the Visual Studio Marketplace.
+Cancel: Do nothing.</value>
+  </data>
   <data name="ConfirmMessage_SaveFileExtensionFormat" xml:space="preserve">
     <value>The extension of the provided filename '{0}' does not match to the selected format ({1}).
 
@@ -512,8 +538,15 @@ Do you want to overwrite them?</value>
   <data name="ConfirmMessage_RemoveInstallation" xml:space="preserve">
     <value>Are you sure you want to remove this installation?</value>
   </data>
-  <data name="ConfirmMessage_NetCoreVersion" xml:space="preserve">
-    <value>You are about to install the .NET Core version, which might not be supported by Visual Studio as a debugger visualizer. Are you sure?</value>
+  <data name="ConfirmMessage_NetCoreDebuggerVisualizers" xml:space="preserve">
+    <value>This is the .NET Core build of KGy SOFT Imaging Tools. To install debugger visualizers you need to use a .NET Framework build.
+    
+Do you want to visit the Visual Studio Marketplace where you can download the installer of the debugger visualizers?</value>
+  </data>
+  <data name="ConfirmMessage_Net472DebuggerVisualizers" xml:space="preserve">
+    <value>This is the .NET Framework 4.7.2 build of KGy SOFT Imaging Tools. To install the classic debugger visualizers you need to use a build targeting .NET Framework 4.6.2 or lower.
+    
+Do you want to visit the GitHub page where you can download various builds for different target platforms?</value>
   </data>
   <data name="ConfirmMessage_DiscardChanges" xml:space="preserve">
     <value>There are unsaved modifications. Are sure to discard the changes?</value>
@@ -522,8 +555,9 @@ Do you want to overwrite them?</value>
     <value>One or more selected items are for a different Imaging Tools version.
 Are you sure you want to continue?</value>
   </data>
-  <data name="InfoMessage_PaletteEmpty" xml:space="preserve">
-    <value>The palette contains no colors. Click OK to exit.</value>
+  <data name="ConfirmMessage_ResourceUnknownLibraries" xml:space="preserve">
+    <value>One or more selected items contain resources for unknown libraries. This may occur if a selected item is for a newer Imaging Tools version.
+Are you sure you want to continue? If so, the resources for the unknown libraries will be skipped.</value>
   </data>
   <data name="InfoMessage_QuantizerMayHaveNoEffect" xml:space="preserve">
     <value>The selected quantizer uses more colors than the original image.
@@ -583,6 +617,30 @@ Copyright © {2} KGy SOFT. All rights reserved.</value>
 Now imagine every combination of target platforms (from .NET Framework 3.5 to .NET 5), operating systems (from Windows XP to Linux/Mono), different DPI settings, enabled/disabled visual styles and high contrast mode, right-to-left layout...
 
 Harmonizing visual elements for all possible environments is never a trivial task, but OMG, the ToolStrip wasn't a cakewalk. Would you believe that each and every combination had at least one rendering issue? My custom-zoomable ImageViewer control with the asynchronously generated resized interpolated images on multiple cores was an easy-peasy compared to that...</value>
+  </data>
+  <data name="InfoMessage_PackageInstalledFormat" xml:space="preserve">
+    <value>KGy SOFT Imaging Tools v{0} and the debugger visualizers have been installed.</value>
+  </data>
+  <data name="InfoMessage_PackageUpgradedFormat" xml:space="preserve">
+    <value>KGy SOFT Imaging Tools v{0} and the debugger visualizers have been upgraded to version v{1}.</value>
+  </data>
+  <data name="InfoMessage_ChangeLog" xml:space="preserve">
+    <value>Change log</value>
+  </data>
+  <data name="InfoMessage_OpenImagingTools" xml:space="preserve">
+    <value>Open Imaging Tools</value>
+  </data>
+  <data name="WarningMessage_DebuggerVisualizerApplyNotAvailable" xml:space="preserve">
+    <value>Applying changes was attempted in a state when messaging was not available. Try again later.</value>
+  </data>
+  <data name="ErrorMessage_DebuggerVisualizerCannotLoadFormat" xml:space="preserve">
+    <value>Could not load the debugger visualizer due to an error: {0}</value>
+  </data>
+  <data name="ErrorMessage_DebuggerVisualizerCannotApplyFormat" xml:space="preserve">
+    <value>Could not apply the changes due to an error: {0}</value>
+  </data>
+  <data name="WarningMessage_DebuggerVisualizerCannotUpdateFormat" xml:space="preserve">
+    <value>Failed to update the debugger visualizer: {0}</value>
   </data>
   <data name="Installations_NotAvailable" xml:space="preserve">
     <value>N/A (KGySoft.Drawing.DebuggerVisualizers.dll is missing)</value>
@@ -689,6 +747,9 @@ Harmonizing visual elements for all possible environments is never a trivial tas
   <data name="miManageInstallations.Text" xml:space="preserve">
     <value>Manage Debugger Visualizer Installations...</value>
   </data>
+  <data name="miManageClassicInstallations.Text" xml:space="preserve">
+    <value>Manage Classic Debugger Visualizer Installations...</value>
+  </data>
   <data name="miLanguageSettings.Text" xml:space="preserve">
     <value>Language Settings...</value>
   </data>
@@ -721,6 +782,9 @@ Harmonizing visual elements for all possible environments is never a trivial tas
   </data>
   <data name="ManageInstallationsForm.Text" xml:space="preserve">
     <value>Debugger Visualizer Installations</value>
+  </data>
+  <data name="ManageClassicInstallationsForm.Text" xml:space="preserve">
+    <value>Classic Debugger Visualizer Installations</value>
   </data>
   <data name="gbAvailableVersion.Text" xml:space="preserve">
     <value>Installable Version:</value>
@@ -1074,24 +1138,18 @@ Using a specific seed disables parallel processing, which impacts performance on
   <data name="LanguageSettingsForm.Text" xml:space="preserve">
     <value>Language Settings</value>
   </data>
-  <data name="gbAllowResxResources.Text" xml:space="preserve">
-    <value>Allow using resource files</value>
-  </data>
-  <data name="gbAllowResxResources.ToolTipText" xml:space="preserve">
-    <value>When checked, allows using resources from .resx files directly</value>
-  </data>
   <data name="chbUseOSLanguage.Text" xml:space="preserve">
     <value>Use Operating System Language</value>
   </data>
   <data name="chbUseOSLanguage.ToolTipText" xml:space="preserve">
     <value>When checked, uses the language of the operating system. The possibly non-existing resources will be automatically generated.</value>
   </data>
-  <data name="chbExistingResourcesOnly.Text" xml:space="preserve">
-    <value>List Languages Only With Existing Resources</value>
+  <data name="chbAllowAnyLanguage.Text" xml:space="preserve">
+    <value>Allow Selecting Any Language</value>
   </data>
-  <data name="chbExistingResourcesOnly.ToolTipText" xml:space="preserve">
-    <value>When checked, enlists languages only with existing resource files. Uncheck to allow generating resources for any language.
-Newly generated resources will contain English texts prefixed with "[T]". You can then edit the resources to translate these texts. </value>
+  <data name="chbAllowAnyLanguage.ToolTipText" xml:space="preserve">
+    <value>Check to allow selecting languages with no existing localization. Can be used to generate new localizations for any language.
+Newly generated resources will contain English texts prefixed with "[T]". You can then edit the resources to translate these texts.</value>
   </data>
   <data name="gbResxResourcesPath.Text" xml:space="preserve">
     <value>Custom Resources Path</value>
@@ -1107,6 +1165,15 @@ Newly generated resources will contain English texts prefixed with "[T]". You ca
   </data>
   <data name="btnDownloadResources.Text" xml:space="preserve">
     <value>&amp;Download Resources...</value>
+  </data>
+  <data name="chbHideDependencies.Text" xml:space="preserve">
+    <value>Hide Dependencies</value>
+  </data>
+  <data name="chbHideDependencies.ToolTipText" xml:space="preserve">
+    <value>When checked, hides the resources of the dependent libraries. It is allowed for a localization to contain the resources of the Imaging Tools application only.</value>
+  </data>
+  <data name="btnGoToFile.ToolTipText" xml:space="preserve">
+    <value>Open in containing folder</value>
   </data>
   <data name="gbResourceFile.Text" xml:space="preserve">
     <value>Resource File</value>

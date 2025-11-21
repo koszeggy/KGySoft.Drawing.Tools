@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: NotificationLabel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -17,6 +17,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
@@ -41,6 +42,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Properties
 
+        [AllowNull]
         public override string Text
         {
             get => base.Text;
@@ -63,7 +65,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 {
                     float scale;
                     using (Graphics g = CreateGraphics())
-                        scale = (float)Math.Round(Math.Max(g.DpiX, g.DpiY) / 96, 2);
+                        scale = (float)Math.Round(g.GetScale().X, 2);
                     if (scale > 1)
                     {
                         // the temp bitmap is not used for anything - it just makes value to the best fitting size

@@ -1,0 +1,46 @@
+﻿<Window x:Class="KGySoft.Drawing.DebuggerVisualizers.Wpf.Test.View.DebuggerTestWindow"
+        x:ClassModifier="internal"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:KGySoft.Drawing.DebuggerVisualizers.Wpf.Test.ViewModel"
+        xmlns:t="clr-namespace:KGySoft.Drawing.DebuggerVisualizers.Test"
+        mc:Ignorable="d"
+        Title="Debugger Visualizer Test"
+        SizeToContent="Width">
+    <Window.DataContext>
+        <vm:DebuggerTestViewModel/>
+    </Window.DataContext>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="160"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0" Orientation="Vertical">
+
+            <!--Pixel Format-->
+            <ComboBox Grid.Row="2" Grid.Column="1"
+                      ItemsSource="{Binding PixelFormats, Mode=OneTime}"
+                      SelectedItem="{Binding SelectedFormat}"/>
+
+            <!--Options-->
+            <RadioButton IsChecked="{Binding BitmapSource}">BitmapSource</RadioButton>
+            <RadioButton IsChecked="{Binding ImageSource}">ImageSource</RadioButton>
+            <RadioButton IsChecked="{Binding Palette}">BitmapPalette</RadioButton>
+            <RadioButton IsChecked="{Binding SingleColorSrgb}">Single Color (sRGB)</RadioButton>
+            <RadioButton IsChecked="{Binding SingleColorLinear}">Single Color (Linear)</RadioButton>
+            <RadioButton IsChecked="{Binding SingleColorFromProfile}">Single Color (From Profile)</RadioButton>
+
+            <Button Click="{t:EventToCommand Command={Binding DirectViewCommand}, State={Binding DebugCommandState}}">View Directly</Button>
+            <Button Click="{t:EventToCommand Command={Binding ClassicDebugCommand}, State={Binding DebugCommandState}}">View by Classic Debugger</Button>
+            <Button Click="{t:EventToCommand Command={Binding ExtensionDebugCommand}, State={Binding DebugCommandState}}">View by Extension Debugger</Button>
+        </StackPanel>
+
+        <!--Preview Image-->
+        <Image Grid.Column="1"
+               Source="{Binding PreviewImage}"/>
+    </Grid>
+</Window>

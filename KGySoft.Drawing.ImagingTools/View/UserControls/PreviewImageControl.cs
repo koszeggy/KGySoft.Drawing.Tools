@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: PreviewImageControl.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -15,7 +15,6 @@
 
 #region Usings
 
-using System;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -83,12 +82,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Protected Methods
 
-        protected override void OnLoad(EventArgs e)
-        {
-            tsMenu.FixAppearance();
-            base.OnLoad(e);
-        }
-
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -109,6 +102,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             InitCommandBindings();
             InitPropertyBindings();
             base.ApplyViewModel();
+        }
+
+        protected override void ApplyTheme()
+        {
+            base.ApplyTheme();
+            ivPreview.BackColor = ThemeColors.Control;
         }
 
         #endregion

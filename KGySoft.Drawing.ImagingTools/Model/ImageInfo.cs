@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ImageInfo.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -110,7 +110,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
         /// Initializes a new instance of the <see cref="ImageInfo"/> class from an <see cref="Image"/>.
         /// </summary>
         /// <param name="image">The image to be used for the initialization.</param>
-        /// <param name="cloneFrames"><see langword="true"/>&#160;to clone each frame when initializing <see cref="Frames"/>; otherwise, <see langword="false"/>.
+        /// <param name="cloneFrames"><see langword="true"/>to clone each frame when initializing <see cref="Frames"/>; otherwise, <see langword="false"/>.
         /// When <see langword="false"/>, then <see cref="ImageInfoBase.Image"/> will not be set in <see cref="Frames"/> so you must extract the corresponding frames from
         /// the specified <paramref name="image"/> manually to access the actual frame content.</param>
         public ImageInfo(Image? image, bool cloneFrames)
@@ -131,7 +131,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
         /// Initializes a new instance of the <see cref="ImageInfo"/> class from an <see cref="System.Drawing.Icon"/>.
         /// </summary>
         /// <param name="icon">The icon to be used for the initialization.</param>
-        /// <param name="cloneImages"><see langword="true"/>&#160;to clone each frame when initializing <see cref="Frames"/>; otherwise, <see langword="false"/>.
+        /// <param name="cloneImages"><see langword="true"/>to clone each frame when initializing <see cref="Frames"/>; otherwise, <see langword="false"/>.
         /// When <see langword="false"/>, then <see cref="ImageInfoBase.Image"/> will not be set in <see cref="Frames"/> so you must extract the corresponding frames from
         /// the specified <paramref name="icon"/> manually to access the actual frame content.</param>
         public ImageInfo(Icon? icon, bool cloneImages)

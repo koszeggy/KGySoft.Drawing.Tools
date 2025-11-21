@@ -1,0 +1,33 @@
+{
+  "DebuggerVisualizerProviders.GdiPlus.BitmapDebuggerVisualizerProvider.Name": "KGy SOFT Bitmap Debugger Visualizer",
+  "DebuggerVisualizerProviders.GdiPlus.MetafileDebuggerVisualizerProvider.Name": "KGy SOFT Metafile Debugger Visualizer",
+  "DebuggerVisualizerProviders.GdiPlus.ImageDebuggerVisualizerProvider.Name": "KGy SOFT Image Debugger Visualizer",
+  "DebuggerVisualizerProviders.GdiPlus.IconDebuggerVisualizerProvider.Name": "KGy SOFT Icon Debugger Visualizer",
+  "DebuggerVisualizerProviders.GdiPlus.ColorDebuggerVisualizerProvider.Name": "KGy SOFT Color Debugger Visualizer",
+  "DebuggerVisualizerProviders.GdiPlus.ColorPaletteDebuggerVisualizerProvider.Name": "KGy SOFT ColorPalette Debugger Visualizer",
+  "DebuggerVisualizerProviders.GdiPlus.GraphicsDebuggerVisualizerProvider.Name": "KGy SOFT Graphics Debugger Visualizer",
+  "DebuggerVisualizerProviders.GdiPlus.BitmapDataDebuggerVisualizerProvider.Name": "KGy SOFT BitmapData Debugger Visualizer",
+
+  "DebuggerVisualizerProviders.Core.ReadableBitmapDataDebuggerVisualizerProvider.Name": "KGy SOFT IReadableBitmapData Debugger Visualizer",
+  "DebuggerVisualizerProviders.Core.Color32DebuggerVisualizerProvider.Name": "KGy SOFT Color32 Debugger Visualizer",
+  "DebuggerVisualizerProviders.Core.PColor32DebuggerVisualizerProvider.Name": "KGy SOFT PColor32 Debugger Visualizer",
+  "DebuggerVisualizerProviders.Core.Color64DebuggerVisualizerProvider.Name": "KGy SOFT Color64 Debugger Visualizer",
+  "DebuggerVisualizerProviders.Core.PColor64DebuggerVisualizerProvider.Name": "KGy SOFT PColor64 Debugger Visualizer",
+  "DebuggerVisualizerProviders.Core.ColorFDebuggerVisualizerProvider.Name": "KGy SOFT ColorF Debugger Visualizer",
+  "DebuggerVisualizerProviders.Core.PColorFDebuggerVisualizerProvider.Name": "KGy SOFT PColorF Debugger Visualizer",
+  "DebuggerVisualizerProviders.Core.PaletteDebuggerVisualizerProvider.Name": "KGy SOFT Palette Debugger Visualizer",
+
+  "DebuggerVisualizerProviders.Wpf.ImageSourceDebuggerVisualizerProvider.Name": "KGy SOFT ImageSource Debugger Visualizer",
+  "DebuggerVisualizerProviders.Wpf.ColorDebuggerVisualizerProvider.Name": "KGy SOFT Color Debugger Visualizer",
+  "DebuggerVisualizerProviders.Wpf.BitmapPaletteDebuggerVisualizerProvider.Name": "KGy SOFT BitmapPalette Debugger Visualizer",
+
+  "DebuggerVisualizerProviders.SkiaSharp.SKBitmapDebuggerVisualizerProvider.Name": "KGy SOFT SKBitmap Debugger Visualizer",
+  "DebuggerVisualizerProviders.SkiaSharp.SKPixmapDebuggerVisualizerProvider.Name": "KGy SOFT SKPixmap Debugger Visualizer",
+  "DebuggerVisualizerProviders.SkiaSharp.SKImageDebuggerVisualizerProvider.Name": "KGy SOFT SKImage Debugger Visualizer",
+  "DebuggerVisualizerProviders.SkiaSharp.SKSurfaceDebuggerVisualizerProvider.Name": "KGy SOFT SKSurface Debugger Visualizer",
+  "DebuggerVisualizerProviders.SkiaSharp.SKColorDebuggerVisualizerProvider.Name": "KGy SOFT SKColor Debugger Visualizer",
+  "DebuggerVisualizerProviders.SkiaSharp.SKPMColorDebuggerVisualizerProvider.Name": "KGy SOFT SKPMColor Debugger Visualizer",
+  "DebuggerVisualizerProviders.SkiaSharp.SKColorFDebuggerVisualizerProvider.Name": "KGy SOFT SKColorF Debugger Visualizer",
+
+  "Commands.ExecuteImagingToolsCommand.Text": "Execute Imaging Tools"
+}

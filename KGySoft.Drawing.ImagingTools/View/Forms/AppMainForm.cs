@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: AppMainForm.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -20,13 +20,14 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Windows.Forms;
 
+using KGySoft.Drawing.ImagingTools.View.UserControls;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.View.Forms
 {
-    internal partial class AppMainForm : ImageVisualizerForm
+    internal sealed class AppMainForm : MvvmParentForm
     {
         #region Properties
 
@@ -35,7 +36,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         [AllowNull]
         public override string Text
         {
-            // base has VM.TitleCaption -> Text binding so this solution makes possible to enrich it in a compatible way
+            // base of MainUserControl has VM.TitleCaption -> Text binding so this solution makes possible to enrich it in a compatible way
             get => base.Text;
             set => base.Text = FormatText(value);
         }
@@ -44,7 +45,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Private Properties
 
-        private new DefaultViewModel ViewModel => (DefaultViewModel)base.ViewModel;
+        private new MainUserControl MvvmChild => (MainUserControl)base.MvvmChild;
+        private DefaultViewModel ViewModel => MvvmChild.ViewModel;
 
         #endregion
 
@@ -52,24 +54,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Constructors
 
-        #region Internal Constructors
-
-        internal AppMainForm(DefaultViewModel viewModel)
-            : base(viewModel)
+        internal AppMainForm(MainUserControl mvvmChild) : base(mvvmChild)
         {
-            InitializeComponent();
+            Name = "AppMainForm";
         }
-
-        #endregion
-
-        #region Private Constructors
-
-        private AppMainForm() : this(null!)
-        {
-            // this ctor is just for the designer
-        }
-
-        #endregion
 
         #endregion
 
@@ -77,10 +65,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Protected Methods
 
-        protected override void ApplyViewModel()
+        protected override void ApplyBindings()
         {
             InitPropertyBindings();
-            base.ApplyViewModel();
+            base.ApplyBindings();
         }
 
         protected override void ApplyStringResources()
@@ -101,13 +89,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             base.OnFormClosing(e);
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-                components?.Dispose();
-            base.Dispose(disposing);
-        }
-
         #endregion
 
         #region Private Methods
@@ -116,7 +97,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             // Base updates Text when ViewModel.TitleCaption changes.
             // Here adding an update also for FileName and IsModified changes in a compatible way
-            CommandBindings.AddPropertyChangedHandlerBinding(ViewModel, () => Text = ViewModel.TitleCaption!,
+            MvvmChild.CommandBindings.AddPropertyChangedHandlerBinding(ViewModel, () => Text = ViewModel.TitleCaption!,
                 nameof(ViewModel.FileName), nameof(ViewModel.IsModified));
         }
 

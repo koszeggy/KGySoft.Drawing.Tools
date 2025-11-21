@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ColorVisualizerViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -26,7 +26,7 @@ using KGySoft.CoreLibraries;
 
 namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
-    internal class ColorVisualizerViewModel : ViewModelBase, IViewModel<Color>
+    internal class ColorVisualizerViewModel : ViewModelBase<Color>
     {
         #region Fields
 
@@ -106,8 +106,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Static Methods
 
-        private static string GetKnownColor(Color color) => KnownColors.GetValueOrDefault(color.ToArgb(), "–")!;
-        private static string GetSystemColors(Color color) => SystemColors.GetValueOrDefault(color.ToArgb(), "–")!;
+        private static string GetKnownColor(Color color) => KnownColors.GetValueOrDefault(color.ToArgb(), "–");
+        private static string GetSystemColors(Color color) => SystemColors.GetValueOrDefault(color.ToArgb(), "–");
 
         #endregion
 
@@ -115,7 +115,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Public Methods
 
-        public Color GetEditedModel() => Color;
+        public override Color GetEditedModel() => Color;
+        public override bool TrySetModel(Color model) => TryInvokeSync(() => Color = model);
 
         #endregion
 
@@ -148,7 +149,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             Color color = Color;
             TitleCaption = Res.TitleColor(color.Name);
             var sb = new StringBuilder();
-            if (SelectedIndex is int index)
+            if (SelectedIndex is int index and >= 0)
                 sb.AppendLine(Res.InfoSelectedIndex(index));
 
             sb.Append(Res.InfoColor(color.ToArgb(), GetKnownColor(color), GetSystemColors(color), color.GetHue(), color.GetSaturation() * 100f, color.GetBrightness() * 100f));

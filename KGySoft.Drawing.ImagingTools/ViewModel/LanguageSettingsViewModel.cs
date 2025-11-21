@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: LanguageSettingsViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -18,14 +18,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
-using KGySoft.Resources;
 
 #endregion
 
@@ -48,6 +46,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private List<CultureInfo>? selectableLanguages;
         private string lastSavedResourcesPath;
         private string? customPathError;
+        private EventHandler? validationResultsChangedHandler;
 
         #endregion
 
@@ -55,8 +54,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal event EventHandler? ValidationResultsChanged
         {
-            add => ValidationResultsChangedHandler += value;
-            remove => ValidationResultsChangedHandler -= value;
+            add => value.AddSafe(ref validationResultsChangedHandler);
+            remove => value.RemoveSafe(ref validationResultsChangedHandler);
         }
 
         #endregion
@@ -72,9 +71,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Internal Properties
 
-        internal bool AllowResXResources { get => Get<bool>(); set => Set(value); }
         internal bool UseOSLanguage { get => Get<bool>(); set => Set(value); }
-        internal bool ExistingLanguagesOnly { get => Get<bool>(); set => Set(value); }
+        internal bool AllowAnyLanguage { get => Get<bool>(); set => Set(value); }
         internal bool UseCustomResourcePath { get => Get<bool>(); set => Set(value); }
         internal string ResourceCustomPath { get => Get<string>(); set => Set(value); }
         internal CultureInfo CurrentLanguage { get => Get<CultureInfo>(); set => Set(value); }
@@ -90,7 +88,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal ICommand SelectFolderCommand => Get(() => new SimpleCommand(OnSelectFolderCommand));
         internal ICommandState ApplyCommandState => Get(() => new CommandState());
-        internal ICommandState EditResourcesCommandState => Get(() => new CommandState());
 
         #endregion
 
@@ -133,8 +130,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
         }
 
-        private EventHandler? ValidationResultsChangedHandler { get => Get<EventHandler?>(); set => Set(value); }
-
         #endregion
 
         #endregion
@@ -155,20 +150,19 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             initializing = true;
             CurrentLanguage = Res.DisplayLanguage;
-            AllowResXResources = Configuration.AllowResXResources;
             UseOSLanguage = Configuration.UseOSLanguage;
-            ExistingLanguagesOnly = true; // could be the default value but this way we spare one reset when initializing binding
             lastSavedResourcesPath = Configuration.ResXResourcesCustomPath ?? String.Empty;
             UseCustomResourcePath = lastSavedResourcesPath.Length != 0;
             try
             {
                 ResourceCustomPath = lastSavedResourcesPath.Length != 0
                     ? Path.GetFullPath(Path.IsPathRooted(lastSavedResourcesPath) ? lastSavedResourcesPath : Path.Combine(Files.GetExecutingPath(), lastSavedResourcesPath))
-                    : Res.DefaultResourcesPath;
+                    : Res.TextDefaultResourcesPath;
             }
             catch (Exception e) when (!e.IsCritical())
             {
-                ResourceCustomPath = Res.DefaultResourcesPath;
+                UseCustomResourcePath = false;
+                ResourceCustomPath = Res.TextDefaultResourcesPath;
             }
 
             initializing = false;
@@ -240,23 +234,43 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 case nameof(ValidationResults):
                     var validationResults = (ValidationResultsCollection)e.NewValue!;
                     IsValid = !validationResults.HasErrors;
-                    ValidationResultsChangedHandler?.Invoke(this, EventArgs.Empty);
+                    validationResultsChangedHandler?.Invoke(this, EventArgs.Empty);
                     return;
 
-                case nameof(AllowResXResources):
-                    EditResourcesCommandState.Enabled = e.NewValue is true;
-                    ResetLanguages();
-                    UpdateApplyCommandState();
-                    break;
-
                 case nameof(UseOSLanguage):
-                case nameof(ExistingLanguagesOnly):
+                case nameof(AllowAnyLanguage):
                     ResetLanguages();
                     UpdateApplyCommandState();
                     break;
 
                 case nameof(UseCustomResourcePath):
-                    string path = e.NewValue is true ? Path.Combine(Files.GetExecutingPath(), Res.DefaultResourcesPath) : Res.DefaultResourcesPath;
+                    string path = Res.TextDefaultResourcesPath;
+                    if (e.NewValue is true)
+                    {
+                        path = Res.DefaultResourcesPath;
+                        try
+                        {
+                            if (!Directory.Exists(path))
+                                Directory.CreateDirectory(path);
+                        }
+                        catch (Exception ex) when (!ex.IsCritical())
+                        {
+                            // Local AppData is not writable, trying to use a subfolder of the executable
+                            try
+                            {
+                                path = Path.Combine(Files.GetExecutingPath(), "Resources");
+                                if (!Directory.Exists(path))
+                                    Directory.CreateDirectory(path);
+                            }
+                            catch (Exception exInner) when (!exInner.IsCritical())
+                            {
+                                // giving up
+                                UseCustomResourcePath = false;
+                                path = Res.TextDefaultResourcesPath;
+                            }
+                        }
+                    }
+
                     ResourceCustomPath = path;
                     UpdateApplyCommandState();
                     SetResPath(e.NewValue is true ? path : String.Empty);
@@ -281,7 +295,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
         }
 
-        protected override void ApplyDisplayLanguage() => UpdateApplyCommandState();
+        protected override void ApplyDisplayLanguage()
+        {
+            if (!UseCustomResourcePath)
+                ResourceCustomPath = Res.TextDefaultResourcesPath;
+            UpdateApplyCommandState();
+        }
 
         protected override void Dispose(bool disposing)
         {
@@ -289,8 +308,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 return;
 
             if (disposing)
+            {
                 (Languages as SortableBindingList<CultureInfo>)?.Dispose();
+                Configuration.Release();
+            }
 
+            validationResultsChangedHandler = null;
             base.Dispose(disposing);
         }
 
@@ -334,13 +357,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void ResetLanguages()
         {
-            if (!AllowResXResources)
-            {
-                Languages = new[] { Res.DefaultLanguage };
-                CurrentLanguage = Res.DefaultLanguage;
-                return;
-            }
-
             if (UseOSLanguage)
             {
                 Languages = new[] { Res.OSLanguage };
@@ -348,8 +364,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 return;
             }
 
-            var result = new SortableBindingList<CultureInfo>(ExistingLanguagesOnly ? SelectableLanguages : NeutralLanguages);
-            result.ApplySort(nameof(CultureInfo.EnglishName), ListSortDirection.Ascending);
+            var result = new SortableBindingList<CultureInfo>(AllowAnyLanguage ? NeutralLanguages : SelectableLanguages);
+            result.ApplySort(nameof(CultureInfo.NativeName), ListSortDirection.Ascending);
             CultureInfo lastSelectedLanguage = CurrentLanguage;
             Languages = result;
             CurrentLanguage = result.Contains(lastSelectedLanguage) ? lastSelectedLanguage : Res.DefaultLanguage;
@@ -357,16 +373,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void UpdateApplyCommandState()
         {
-            // Apply is enabled if current language is different than display language,
+            // Apply is enabled if current language is different from display language,
             CultureInfo selected = CurrentLanguage;
             ApplyCommandState.Enabled = !Equals(selected, Res.DisplayLanguage)
                 // or when path has been changed
                 || ((String.IsNullOrEmpty(lastSavedResourcesPath) ^ !UseCustomResourcePath)
                     || (!String.IsNullOrEmpty(lastSavedResourcesPath) && lastSavedResourcesPath != ResourceCustomPath))
                 // or when turning on/off .resx resources for the default language matters because it also has a resource file
-                || (Equals(selected, Res.DefaultLanguage)
-                    && (AllowResXResources ^ LanguageSettings.DynamicResourceManagersSource != ResourceManagerSources.CompiledOnly)
-                    && AvailableLanguages.Contains(Res.DefaultLanguage));
+                || (Equals(selected, Res.DefaultLanguage) && AvailableLanguages.Contains(Res.DefaultLanguage));
         }
 
         private void ApplyAndSave()
@@ -383,7 +397,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             {
                 // If path does not exist, then trying to create it first. SavePendingResources would also create it,
                 // but we try to prevent saving the configuration if the path is invalid
-                string path = customPath ? ResourceCustomPath : Path.Combine(Files.GetExecutingPath(), Res.DefaultResourcesPath);
+                string path = customPath ? ResourceCustomPath : Res.DefaultResourcesPath;
                 if (!Directory.Exists(path))
                 {
                     try
@@ -406,8 +420,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             SaveConfiguration();
 
             // Applying the current language
-            LanguageSettings.DynamicResourceManagersSource = AllowResXResources ? ResourceManagerSources.CompiledAndResX : ResourceManagerSources.CompiledOnly;
-
             if (Equals(Res.DisplayLanguage, currentLanguage))
                 Res.OnDisplayLanguageChanged();
             else
@@ -435,11 +447,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void SaveConfiguration()
         {
-            bool allowResX = AllowResXResources;
-            Configuration.AllowResXResources = allowResX;
-            Configuration.UseOSLanguage = allowResX && UseOSLanguage;
-            Configuration.DisplayLanguage = allowResX ? CurrentLanguage : Res.DefaultLanguage;
-            string path = allowResX && UseCustomResourcePath ? ResourceCustomPath : String.Empty;
+            Configuration.UseOSLanguage = UseOSLanguage;
+            Configuration.DisplayLanguage = CurrentLanguage;
+            string path = UseCustomResourcePath ? ResourceCustomPath : String.Empty;
             if (path != lastSavedResourcesPath)
             {
                 Configuration.ResXResourcesCustomPath = Res.ResourcesDir = path;
@@ -484,7 +494,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnEditResourcesCommand()
         {
-            using IViewModel viewModel = ViewModelFactory.CreateEditResources(CurrentLanguage, 
+            using IViewModel viewModel = ViewModelFactory.CreateEditResources(CurrentLanguage,
                 ResourceCustomPath != (lastSavedResourcesPath.Length == 0 ? Res.DefaultResourcesPath : lastSavedResourcesPath));
             if (viewModel is EditResourcesViewModel vm)
                 vm.SaveConfigurationCallback = SaveConfiguration;

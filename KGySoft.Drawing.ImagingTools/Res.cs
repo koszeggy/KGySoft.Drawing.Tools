@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: Res.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -17,7 +17,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -35,24 +34,22 @@ using KGySoft.Resources;
 
 #endregion
 
+#region Suppressions
+
+#if NETFRAMEWORK
+#pragma warning disable CS8603 // Possible null reference return. - String.IsNullOrEmpty is not recognized by the analyzer in older frameworks
+#endif
+
+#endregion
+
 namespace KGySoft.Drawing.ImagingTools
 {
     internal static class Res
     {
         #region Constants
 
-        #region Private Constants
-        
         private const string unavailableResource = "Resource ID not found: {0}";
         private const string invalidResource = "Resource text is not valid for {0} arguments: {1}";
-
-        #endregion
-
-        #region Internal Constants
-
-        internal const string DefaultResourcesPath = "Resources";
-
-        #endregion
 
         #endregion
 
@@ -96,6 +93,14 @@ namespace KGySoft.Drawing.ImagingTools
         internal static CultureInfo OSLanguage { get; }
         internal static CultureInfo DefaultLanguage { get; }
 
+        internal static string DefaultResourcesPath =>
+#if NET35
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Path.Combine("KGySoft", Path.Combine("Drawing.ImagingTools", "Resources")));
+#else
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "KGySoft", "Drawing.ImagingTools", "Resources");
+#endif
+
+
         /// <summary>
         /// Gets or sets the resources directory for searching the available .resx files.
         /// To apply it also in resource managers call the <see cref="ApplyResourcesDir"/> immediately after setting this property.
@@ -111,7 +116,7 @@ namespace KGySoft.Drawing.ImagingTools
                     resourcesDir = Path.IsPathRooted(path) ? Path.GetFullPath(path) : Path.GetFullPath(Path.Combine(Files.GetExecutingPath(), path));
                 }
 
-                return resourcesDir!;
+                return resourcesDir;
             }
             set => resourcesDir = value;
         }
@@ -207,23 +212,23 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Toggles whether the animation is handled as a single image.
         /// • When checked, animation will play and saving as GIF saves the whole animation.
         /// • When not checked, frame navigation will be enabled and saving saves only the selected frame.</summary>
-        internal static string TooltipTextCompoundAnimation => Get("TooltipText_CompoundAnimation");
+        internal static string ToolTipTextCompoundAnimation => Get("ToolTipText_CompoundAnimation");
 
         /// <summary>Toggles whether the icon is handled as a multi-resolution image.
         /// • When checked, always the best fitting image is displayed and saving as Icon saves every image.
         /// • When not checked, icon images can be explored by navigation and saving saves the selected image only.</summary>
-        internal static string TooltipTextCompoundMultiSize => Get("TooltipText_CompoundMultiSize");
+        internal static string ToolTipTextCompoundMultiSize => Get("ToolTipText_CompoundMultiSize");
 
         /// <summary>Toggles whether the pages are handled as a compound image.
         /// • When checked, saving as TIFF saves every page.
         /// • When not checked, saving saves always the selected page only.</summary>
-        internal static string TooltipTextCompoundMultiPage => Get("TooltipText_CompoundMultiPage");
+        internal static string ToolTipTextCompoundMultiPage => Get("ToolTipText_CompoundMultiPage");
 
         /// <summary>Smoothing Edges (Alt+S)</summary>
-        internal static string TooltipTextSmoothMetafile => Get("TooltipText_SmoothMetafile");
+        internal static string ToolTipTextSmoothMetafile => Get("ToolTipText_SmoothMetafile");
 
         /// <summary>Smooth Zooming (Alt+S)</summary>
-        internal static string TooltipTextSmoothBitmap => Get("TooltipText_SmoothBitmap");
+        internal static string ToolTipTextSmoothBitmap => Get("ToolTipText_SmoothBitmap");
 
         /// <summary>Auto</summary>
         internal static string TextAuto => Get("Text_Auto");
@@ -236,6 +241,9 @@ namespace KGySoft.Drawing.ImagingTools
 
         /// <summary>Downloading...</summary>
         internal static string TextDownloading => Get("Text_Downloading");
+
+        /// <summary>(Default path)</summary>
+        internal static string TextDefaultResourcesPath => Get("Text_DefaultResourcesPath");
 
         #endregion
 
@@ -301,13 +309,17 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Are you sure you want to overwrite this installation?</summary>
         internal static string ConfirmMessageOverwriteInstallation => Get("ConfirmMessage_OverwriteInstallation");
 
+        /// <summary>For Visual Studio 2022 version 17.9 Preview 1 or higher it is not required to install the classic visualizers at this path if you use the KGy SOFT Image DebuggerVisualizers x64 package from Visual Studio Marketplace. The package offers modern non-dialog visualizers that can remain open while stepping through the code.
+        ///
+        /// Do you really want to install the classic visualizers at this path?
+        ///
+        /// Yes: Install the classic visualizers.
+        /// No: Close the dialog and navigate to the Visual Studio Marketplace.
+        /// Cancel: Do nothing.</summary>
+        internal static string ConfirmMessageInstallClassicVisualizers => Get("ConfirmMessage_InstallClassicVisualizers");
+
         /// <summary>Are you sure you want to remove this installation?</summary>
         internal static string ConfirmMessageRemoveInstallation => Get("ConfirmMessage_RemoveInstallation");
-
-#if NETCOREAPP
-        /// <summary>You are about to install the .NET Core version, which might not be supported by Visual Studio as a debugger visualizer. Are you sure?</summary>
-        internal static string ConfirmMessageNetCoreVersion => Get("ConfirmMessage_NetCoreVersion"); 
-#endif
 
         /// <summary>There are unsaved modifications. Are sure to discard the changes?</summary>
         internal static string ConfirmMessageDiscardChanges => Get("ConfirmMessage_DiscardChanges");
@@ -316,8 +328,23 @@ namespace KGySoft.Drawing.ImagingTools
         /// Are you sure you want to continue?</summary>
         internal static string ConfirmMessageResourceVersionMismatch => Get("ConfirmMessage_ResourceVersionMismatch");
 
-        /// <summary>The palette contains no colors. Click OK to exit.</summary>
-        internal static string InfoMessagePaletteEmpty => Get("InfoMessage_PaletteEmpty");
+        /// <summary>One or more selected items contain resources for unknown libraries. This may occur if a selected item is for a newer Imaging Tools version.
+        /// Are you sure you want to continue? If so, the resources for the unknown libraries will be skipped.</summary>
+        internal static string ConfirmMessageResourceUnknownLibraries => Get("ConfirmMessage_ResourceUnknownLibraries");
+
+#if NETCOREAPP
+        /// <summary>This is the .NET Core build of KGy SOFT Imaging Tools. To install debugger visualizers you need to use a .NET Framework build.
+        ///
+        /// Do you want to visit the Visual Studio Marketplace where you can download the installer of the debugger visualizers?</summary>
+        internal static string ConfirmMessageNetCoreDebuggerVisualizers => Get("ConfirmMessage_NetCoreDebuggerVisualizers");
+#endif
+
+#if NET472_OR_GREATER
+        /// <summary>This is the .NET Framework 4.7.2 build of KGy SOFT Imaging Tools. To install the classic debugger visualizers you need to use a build targeting .NET Framework 4.6.2 or lower.
+        ///
+        /// Do you want to visit the GitHub page where you can download various builds for different target platforms?</summary>
+        internal static string ConfirmMessageNet472DebuggerVisualizers => Get("ConfirmMessage_Net472DebuggerVisualizers"); 
+#endif
 
         /// <summary>The selected quantizer uses more colors than the original image.
         /// It is possible that is has no effect.</summary>
@@ -342,6 +369,13 @@ namespace KGySoft.Drawing.ImagingTools
         ///
         /// Harmonizing visual elements for all possible environments is never a trivial task, but OMG, the ToolStrip wasn't a cakewalk. Would you believe that each and every combination had at least one rendering issue? My custom-zoomable ImageViewer control with the asynchronously generated resized interpolated images on multiple cores was an easy-peasy compared to that...</summary>
         internal static string InfoMessageEasterEgg => Get("InfoMessage_EasterEgg");
+
+#if NET472_OR_GREATER
+        /// <summary>
+        /// Applying changes was attempted in a state when messaging was not available. Try again later.
+        /// </summary>
+        internal static string WarningMessageDebuggerVisualizerApplyNotAvailable => Get("WarningMessage_DebuggerVisualizerApplyNotAvailable");
+#endif
 
         #endregion
 
@@ -376,29 +410,26 @@ namespace KGySoft.Drawing.ImagingTools
             string? desiredResXPath = Configuration.ResXResourcesCustomPath;
             if (PathHelper.HasInvalidChars(desiredResXPath))
                 desiredResXPath = null;
-            if (!String.IsNullOrEmpty(desiredResXPath))
+            if (String.IsNullOrEmpty(desiredResXPath))
+                desiredResXPath = DefaultResourcesPath;
+            try
             {
-                try
-                {
-                    ResourcesDir = Path.GetFullPath(Path.IsPathRooted(desiredResXPath) ? desiredResXPath! : Path.Combine(Files.GetExecutingPath(), desiredResXPath!));
-                    ApplyResourcesDir();
-                }
-                catch (Exception e) when (!e.IsCritical())
-                {
-                    ResourcesDir = null;
-                }
+                ResourcesDir = Path.GetFullPath(Path.IsPathRooted(desiredResXPath) ? desiredResXPath : Path.Combine(Files.GetExecutingPath(), desiredResXPath!));
+                ApplyResourcesDir();
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                ResourcesDir = null;
             }
 
-            bool allowResXResources = Configuration.AllowResXResources;
-            displayLanguage = allowResXResources
-                ? Configuration.UseOSLanguage ? OSLanguage : Configuration.DisplayLanguage // here, allowing specific languages, too
-                : DefaultLanguage;
-
+            // here, allowing specific (non-neutral) languages, too
+            displayLanguage = Configuration.UseOSLanguage ? OSLanguage : Configuration.DisplayLanguage;
             if (Equals(displayLanguage, CultureInfo.InvariantCulture) || (!Equals(displayLanguage, DefaultLanguage) && !ResHelper.GetAvailableLanguages().Contains(displayLanguage)))
                 displayLanguage = DefaultLanguage;
             DisplayLanguage = displayLanguage;
+            Configuration.Release();
 
-            LanguageSettings.DynamicResourceManagersSource = allowResXResources ? ResourceManagerSources.CompiledAndResX : ResourceManagerSources.CompiledOnly;
+            LanguageSettings.DynamicResourceManagersSource = ResourceManagerSources.CompiledAndResX;
         }
 
         #endregion
@@ -448,7 +479,7 @@ namespace KGySoft.Drawing.ImagingTools
 
         internal static string Get<TEnum>(TEnum value) where TEnum : struct, Enum => Get($"{value.GetType().Name}.{Enum<TEnum>.ToString(value)}");
 
-        internal static void ApplyStringResources(object target, string name)
+        internal static void ApplyStringResources(object target, string? name)
         {
             // Unlike ComponentResourceManager we don't go by ResourceSet because that would kill resource fallback traversal
             // so we go by localizable properties
@@ -674,6 +705,9 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Language settings cannot be applied: {0}</summary>
         internal static string ErrorMessageCannotApplyLanguageSettings(string message) => Get("ErrorMessage_CannotApplyLanguageSettingsFormat", message);
 
+        /// <summary>Could not open folder: {0}</summary>
+        internal static string ErrorMessageCannotOpenFolder(string message) => Get("ErrorMessage_CannotOpenFolderFormat", message);
+
 #if NET45_OR_GREATER
         /// <summary>Could not create directory {0}: {1}
         ///
@@ -759,6 +793,24 @@ namespace KGySoft.Drawing.ImagingTools
         /// Copyright © {2} KGy SOFT. All rights reserved.
         /// </summary>
         internal static string InfoMessageAbout(Version version, string platform, int year) => Get("InfoMessage_About", version, platform, year);
+
+#if NET472_OR_GREATER
+        /// <summary>
+        /// Could not load the debugger visualizer due to an error: {0}
+        /// </summary>
+        internal static string ErrorMessageDebuggerVisualizerCannotLoad(string message) => Get("ErrorMessage_DebuggerVisualizerCannotLoadFormat", message);
+
+        /// <summary>
+        /// Could not apply the changes due to an error: {0}
+        /// </summary>
+        internal static string ErrorMessageDebuggerVisualizerCannotApply(string message) => Get("ErrorMessage_DebuggerVisualizerCannotApplyFormat", message);
+
+        /// <summary>
+        /// Failed to update the debugger visualizer: {0}
+        /// </summary>
+        internal static string WarningMessageDebuggerVisualizerCannotUpdate(string message) => Get("WarningMessage_DebuggerVisualizerCannotUpdateFormat", message);
+
+#endif
 
         #endregion
 

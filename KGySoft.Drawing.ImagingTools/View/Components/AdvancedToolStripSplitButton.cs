@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: AdvancedToolStripSplitButton.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -27,7 +27,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
     /// <summary>
     /// A <see cref="ToolStripSplitButton"/> whose button part can be checked and the default item can automatically be changed.
     /// </summary>
-    // NOTE: The properly scaled arrow and the checked appearance is rendered by ScalingToolStripMenuRenderer, while
+    // NOTE: The properly scaled arrow and the checked appearance is rendered by AdvancedToolStripRenderer, while
     // the drop-down button size is adjusted in ScalingToolStrip for all ToolStripSplitButtons
     internal class AdvancedToolStripSplitButton : ToolStripSplitButton
     {
@@ -89,7 +89,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
 
         public override Size GetPreferredSize(Size constrainingSize)
         {
-            if (Owner.Orientation == Orientation.Horizontal)
+            if (Owner == null || Owner.Orientation == Orientation.Horizontal)
                 return base.GetPreferredSize(constrainingSize);
 
             // with vertical orientation the image is too small
@@ -127,7 +127,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
         protected override void OnDropDownItemClicked(ToolStripItemClickedEventArgs e)
         {
             base.OnDropDownItemClicked(e);
-            if (autoChangeDefaultItem && DefaultItem != e.ClickedItem)
+            if (autoChangeDefaultItem && DefaultItem != e.ClickedItem && e.ClickedItem != null)
                 SetDefaultItem(e.ClickedItem);
         }
 

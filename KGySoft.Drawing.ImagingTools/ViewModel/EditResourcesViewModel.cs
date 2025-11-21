@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: EditResourcesViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2024 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -15,14 +15,12 @@
 
 #region Usings
 
-
 #region Used Namespaces
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
@@ -32,6 +30,7 @@ using System.Resources;
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.Drawing.ImagingTools.WinApi;
 using KGySoft.Reflection;
 using KGySoft.Resources;
 
@@ -85,7 +84,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Properties
 
-        internal KeyValuePair<LocalizableLibraries, string>[] ResourceFiles { get; } // get only because never changes
+        internal bool HideDependentResources { get => Get(true); set => Set(value); }
+        internal KeyValuePair<LocalizableLibraries, string>[] ResourceFiles { get => Get<KeyValuePair<LocalizableLibraries, string>[]>(); set => Set(value); }
         internal string TitleCaption { get => Get<string>(); set => Set(value); }
         internal LocalizableLibraries SelectedLibrary { get => Get<LocalizableLibraries>(); set => Set(value); }
         internal string Filter { get => Get<string>(""); set => Set(value); }
@@ -94,6 +94,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommand ApplyResourcesCommand => Get(() => new SimpleCommand(OnApplyResourcesCommand));
         internal ICommand SaveResourcesCommand => Get(() => new SimpleCommand(OnSaveResourcesCommand));
         internal ICommand CancelEditCommand => Get(() => new SimpleCommand(OnCancelEditCommand));
+        internal ICommand OpenResourcesFolderCommand => Get(() => new SimpleCommand(OnOpenResourcesFolderCommand));
 
         internal ICommandState ApplyResourcesCommandState => Get(() => new CommandState());
 
@@ -112,13 +113,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             // The default language is used as the invariant resource set.
             // The invariant file name is preferred, unless only the language-specific file exists.
             useInvariant = Equals(culture, Res.DefaultLanguage) && !File.Exists(ToFileNameWithPath(LocalizableLibraries.ImagingTools));
-            resources = new Dictionary<LocalizableLibraries, (IList<ResourceEntry>, bool)>(3, EnumComparer<LocalizableLibraries>.Comparer);
+            resources = new Dictionary<LocalizableLibraries, (IList<ResourceEntry>, bool)>(4, EnumComparer<LocalizableLibraries>.Comparer);
             Filter = String.Empty;
-            ResourceFiles = Enum<LocalizableLibraries>.GetFlags().Select(lib => new KeyValuePair<LocalizableLibraries, string>(lib, ToFileName(lib))).ToArray();
+            ResetResourceFiles();
             ApplyResourcesCommandState.Enabled = hasPendingChanges || !Equals(Res.DisplayLanguage, culture);
             UpdateTitle();
             initializing = false;
-
             SelectedLibrary = LocalizableLibraries.ImagingTools;
         }
 
@@ -135,7 +135,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             base.ViewLoaded();
 
             // Marking VM modified immediately if apply is enabled and the display language is edited.
-            // Thus exiting by save (OK) will apply the pending changes (eg. path change for display language) without performing any actual change.
+            // Thus exiting by save (OK) will apply the pending changes (e.g. path change for display language) without performing any actual change.
             if (createdWithPendingChanges && Equals(Res.DisplayLanguage, culture))
                 SetModified(true);
         }
@@ -145,8 +145,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             base.OnPropertyChanged(e);
             if (initializing)
                 return;
+
             switch (e.PropertyName)
             {
+                case nameof(HideDependentResources):
+                    ResetResourceFiles();
+                    break;
+
                 case nameof(SelectedLibrary):
                 case nameof(Filter):
                     ApplySelection();
@@ -179,7 +184,15 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Private Methods
 
-        private void UpdateTitle() => TitleCaption = Res.TitleEditResources($"{culture.EnglishName} ({culture.NativeName})");
+        private void ResetResourceFiles()
+        {
+            IEnumerable<LocalizableLibraries> libraries = HideDependentResources ? [LocalizableLibraries.ImagingTools] : Enum<LocalizableLibraries>.GetFlags();
+            ResourceFiles = libraries.Select(lib => new KeyValuePair<LocalizableLibraries, string>(lib, ToFileName(lib))).ToArray();
+            if (!initializing)
+                SelectedLibrary = LocalizableLibraries.ImagingTools;
+        }
+
+        private void UpdateTitle() => TitleCaption = Res.TitleEditResources($"{culture.NativeName} ({culture.EnglishName})");
 
         private string ToFileName(LocalizableLibraries library) => useInvariant
             ? ResHelper.GetBaseName(library) + ".resx"
@@ -279,6 +292,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             FilteredSet = newSet;
         }
 
+        [SuppressMessage("ReSharper", "UsingStatementResourceInitialization", Justification = "False alarm, the initialized properties don't throw exceptions here.")]
         private bool TryReadResources(LocalizableLibraries library, [MaybeNullWhen(false)]out IList<ResourceEntry> set, [MaybeNullWhen(true)]out Exception error)
         {
             try
@@ -434,6 +448,30 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         }
 
         private void OnCancelEditCommand() => SetModified(false);
+
+        private void OnOpenResourcesFolderCommand()
+        {
+            try
+            {
+                // is the file exists, we try to select it in Explorer
+                if (OSUtils.IsWindows && File.Exists(ToFileNameWithPath(SelectedLibrary)))
+                {
+                    if (Shell32.OpenFolderAndSelectItems(Res.ResourcesDir, ToFileName(SelectedLibrary)))
+                        return;
+                }
+
+                string dir = Res.ResourcesDir;
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+
+                // otherwise, we just open the folder
+                PathHelper.OpenUrl(dir);
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                ShowError(Res.ErrorMessageCannotOpenFolder(e.Message));
+            }
+        }
 
         #endregion
 
