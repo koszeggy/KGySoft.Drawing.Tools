@@ -141,7 +141,7 @@ For older Visual Studio versions the classic debugger visualizers are still avai
 ### Installing Debugger Visualizers
 
 <details>
-<summary><strong>By VSIX Installer</strong></summary><p/>
+<summary><strong>By VSIX Installer</strong><a id="by-vsix-installer"/></summary><p/>
 
 If you use Visual Studio 2013 or newer, then you can perform the install directly from Visual Studio by the _Extensions/Manage Extensions_ (older Visual Studio versions: _Tools/Extensions and Updates..._) menu if you search for the "_KGy SOFT Image DebuggerVisualizers_" extension.
 
@@ -222,7 +222,7 @@ If Visual Studio cannot load the visualizer or you have other debugger visualize
 ## Download
 
 <details>
-<summary><strong>Details</strong><a id="by-vsix-installer"/></summary><p/>
+<summary><strong>Details</strong></summary><p/>
 
 > 💡 _Tip:_ See [above](#by-vsix-installer) how to download the debugger visualizer installers
 
