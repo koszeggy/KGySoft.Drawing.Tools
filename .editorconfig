@@ -230,3 +230,9 @@ dotnet_style_qualification_for_field = false:suggestion
 dotnet_style_qualification_for_property = false:suggestion
 dotnet_style_qualification_for_method = false:suggestion
 dotnet_style_qualification_for_event = false:suggestion
+[*]
+vsspell_section_id = 3b359db5b17e4e37ae6ba5898a10745c
+vsspell_additional_dictionary_folders_3b359db5b17e4e37ae6ba5898a10745c = .\
+vsspell_dictionary_languages_3b359db5b17e4e37ae6ba5898a10745c = en-US
+vsspell_ignored_words_3b359db5b17e4e37ae6ba5898a10745c = File:IgnoredWords.dic
+

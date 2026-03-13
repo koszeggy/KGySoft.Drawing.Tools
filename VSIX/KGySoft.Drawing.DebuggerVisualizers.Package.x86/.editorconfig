@@ -1,0 +1,5 @@
+# C# files
+[*.cs]
+
+# VSSpell001: Applying Ignored words does not work for projects with old .csproj
++ dotnet_diagnostic.VSSpell001.severity = none 
