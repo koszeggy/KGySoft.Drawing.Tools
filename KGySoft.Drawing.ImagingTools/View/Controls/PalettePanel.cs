@@ -21,6 +21,8 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
+using KGySoft.WinForms.Controls;
+
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.View.Controls
