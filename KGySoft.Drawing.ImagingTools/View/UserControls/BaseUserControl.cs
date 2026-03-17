@@ -16,9 +16,6 @@
 #region Usings
 
 using System;
-using System.ComponentModel;
-using System.Threading;
-using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.View.Forms;
 
@@ -26,20 +23,11 @@ using KGySoft.Drawing.ImagingTools.View.Forms;
 
 namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    internal class BaseUserControl : UserControl
+    internal class BaseUserControl : KGySoft.WinForms.Controls.BaseUserControl
     {
         #region Fields
 
-        private readonly int threadId;
-        private readonly ManualResetEventSlim handleCreated;
-
         private bool themeApplied;
-
-        #endregion
-
-        #region Properties
-
-        protected bool IsDesignMode => DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime;
 
         #endregion
 
@@ -47,43 +35,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         protected BaseUserControl()
         {
-            threadId = Thread.CurrentThread.ManagedThreadId;
-            handleCreated = new ManualResetEventSlim();
             ThemeColors.ThemeChanged += ThemeColors_ThemeChanged;
         }
 
         #endregion
 
         #region Methods
-
-        #region Internal Methods
-
-        internal void InvokeIfRequired(Action action)
-        {
-            if (Disposing || IsDisposed)
-                return;
-
-            try
-            {
-                // no invoke is required (not using InvokeRequired because that may return false if handle is not created yet)
-                if (threadId == Thread.CurrentThread.ManagedThreadId)
-                {
-                    action.Invoke();
-                    return;
-                }
-
-                if (!handleCreated.IsSet)
-                    handleCreated.Wait();
-
-                Invoke(action);
-            }
-            catch (ObjectDisposedException)
-            {
-                // it can happen that actual Invoke is started to execute only after querying isClosing and when Disposing and IsDisposed both return false
-            }
-        }
-
-        #endregion
 
         #region Protected Methods
 
@@ -93,7 +50,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             if (IsDesignMode)
                 return;
 
-            handleCreated.Set();
             if (ThemeColors.IsThemeEverChanged)
                 ApplyTheme();
         }
@@ -124,11 +80,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             base.Dispose(disposing);
             ThemeColors.ThemeChanged -= ThemeColors_ThemeChanged;
-            if (disposing)
-            {
-                handleCreated.Dispose();
-                Events.Dispose();
-            }
         }
 
         #endregion
@@ -141,7 +92,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             if (!IsHandleCreated)
                 return;
 
-            InvokeIfRequired(ApplyTheme);
+            InvokeOnUIThread(ApplyTheme);
         }
 
         #endregion

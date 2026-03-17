@@ -42,7 +42,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private ViewModelBase? viewModel;
         private MvvmParentForm? mvvmParent;
-        private bool isLoaded;
 
         #endregion
 
@@ -60,7 +59,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Internal Properties
 
-        internal CommandBindingsCollection CommandBindings { get; } = new WinFormsCommandBindingsCollection();
         internal virtual ParentViewProperties? ParentViewProperties => null;
         internal virtual Action<MvvmParentForm>? ParentViewPropertyBindingsInitializer => null;
         internal virtual Action<MvvmParentForm>? ParentViewCommandBindingsInitializer => null;
@@ -85,7 +83,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             }
         }
 
-        protected bool IsLoaded => isLoaded;
         protected AdvancedErrorProvider ErrorProvider => errorProvider ??= CreateProvider(ValidationSeverity.Error);
         protected AdvancedErrorProvider WarningProvider => warningProvider ??= CreateProvider(ValidationSeverity.Warning);
         protected AdvancedErrorProvider InfoProvider => infoProvider ??= CreateProvider(ValidationSeverity.Information);
@@ -132,14 +129,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         protected override void OnLoad(EventArgs e)
         {
-            base.OnLoad(e);
-
             // isLoaded can be true if handle was recreated
-            if (isLoaded)
+            if (IsLoaded)
                 return;
 
-            isLoaded = true;
-            ApplyResources();
+            base.OnLoad(e);
 
             // Null VM occurs in design mode
             if (viewModel != null)
@@ -155,9 +149,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             infoProvider?.ResetAppearance();
         }
 
-        protected virtual void ApplyResources() => ApplyStringResources();
-
-        protected virtual void ApplyStringResources() => this.ApplyStringResources(toolTip);
+        protected override void ApplyStringResources() => this.ApplyStringResources(toolTip);
 
         protected virtual void ApplyViewModel()
         {
@@ -170,7 +162,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             viewModel.ConfirmCallback = Dialogs.ConfirmMessage;
             viewModel.CancellableConfirmCallback = (msg, btn) => Dialogs.CancellableConfirmMessage(msg, btn switch { 0 => MessageBoxDefaultButton.Button1, 1 => MessageBoxDefaultButton.Button2, _ => MessageBoxDefaultButton.Button3 });
             viewModel.ShowChildViewCallback = ShowChildView;
-            viewModel.SynchronizedInvokeCallback = InvokeIfRequired;
+            viewModel.SynchronizedInvokeCallback = InvokeOnUIThread;
             if (viewModel is ViewModelBase vm && mvvmParent is MvvmParentForm parent)
                 vm.CloseViewCallback = () => BeginInvoke(new Action(parent.Close));
 
@@ -244,7 +236,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private void OnViewModelChanged(EventArgs e)
         {
-            if (!isLoaded)
+            if (!IsLoaded)
                 return;
 
             CommandBindings.Clear();
@@ -257,7 +249,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Command Handlers
 
-        private void OnDisplayLanguageChangedCommand() => InvokeIfRequired(() =>
+        private void OnDisplayLanguageChangedCommand() => InvokeOnUIThread(() =>
         {
             ApplyRightToLeft();
             ApplyStringResources();
@@ -287,7 +279,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             Justification = "Without the base qualifier executing in Mono causes StackOverflowException. See https://github.com/mono/mono/issues/21129")]
         void IDisposable.Dispose()
         {
-            InvokeIfRequired(mvvmParent is IDisposable parent ? parent.Dispose : base.Dispose);
+            InvokeOnUIThread(mvvmParent is IDisposable parent ? parent.Dispose : base.Dispose);
         }
 
         void IView.ShowDialog(IntPtr ownerHandle)
@@ -324,7 +316,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             } while (parent.IsRtlChanging);
         }
 
-        void IView.Show() => InvokeIfRequired(() =>
+        void IView.Show() => InvokeOnUIThread(() =>
         {
             Form? parent = TryGetCreateParent() ?? ParentForm;
             if (parent == null)
