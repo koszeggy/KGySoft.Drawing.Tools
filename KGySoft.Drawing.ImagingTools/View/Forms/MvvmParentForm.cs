@@ -151,7 +151,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
-        protected virtual void ApplyStringResources() => this.ApplyStringResources(null);
+        protected override void ApplyStringResources() => this.ApplyStringResources(null);
 
         protected virtual void ApplyBindings()
         {
@@ -240,7 +240,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Command Handlers
 
-        private void OnDisplayLanguageChangedCommand() => mvvmChild.InvokeIfRequired(() =>
+        private void OnDisplayLanguageChangedCommand() => InvokeOnUIThread(() =>
         {
             ApplyRightToLeft();
             ApplyStringResources();
