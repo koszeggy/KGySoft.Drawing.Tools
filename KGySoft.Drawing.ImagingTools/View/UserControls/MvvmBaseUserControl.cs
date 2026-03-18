@@ -26,6 +26,7 @@ using KGySoft.Drawing.ImagingTools.View.Components;
 using KGySoft.Drawing.ImagingTools.View.Forms;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 using KGySoft.Drawing.ImagingTools.WinApi;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -149,7 +150,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             infoProvider?.ResetAppearance();
         }
 
-        protected override void ApplyStringResources() => this.ApplyStringResources(toolTip);
+        protected override void ApplyStringResources() => LocalizationHelper.ApplyStringResources(this);
 
         protected virtual void ApplyViewModel()
         {

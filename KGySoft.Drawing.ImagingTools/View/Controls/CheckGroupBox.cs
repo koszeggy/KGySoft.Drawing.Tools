@@ -21,6 +21,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
 
 using KGySoft.CoreLibraries;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -197,25 +198,27 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Explicitly Implemented Interface Methods
 
-        void ICustomLocalizable.ApplyStringResources(ToolTip? toolTip)
+        bool ICustomLocalizable.ApplyStringResources(LocalizationContext context)
         {
             string name = Name;
             if (String.IsNullOrEmpty(name))
-                return;
+                return false;
 
             // Self properties
-            Res.ApplyStringResources(this, name);
+            LocalizationHelper.LocalizeStringProperties(this, name, context);
 
-            // tool tip: forwarding to the check box
-            if (toolTip != null)
+            // tool tip: forwarding to the checkbox
+            if (context.ToolTip != null)
             {
                 string? value = Res.GetStringOrNull(name + "." + ControlExtensions.ToolTipPropertyName);
-                toolTip.SetToolTip(checkBox, value);
+                context.ToolTip.SetToolTip(checkBox, value);
             }
 
             // children: only contentPanel controls so checkBox is skipped (otherwise, could be overwritten by checkbox.Name)
             foreach (Control child in contentPanel.Controls)
-                child.ApplyStringResources(toolTip);
+                LocalizationHelper.ApplyStringResources(child, context);
+
+            return true;
         }
 
         #endregion

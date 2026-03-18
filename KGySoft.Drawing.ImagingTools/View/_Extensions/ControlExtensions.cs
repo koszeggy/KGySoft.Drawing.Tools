@@ -20,7 +20,6 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.View.Controls;
-using KGySoft.Drawing.ImagingTools.View.UserControls;
 using KGySoft.Drawing.ImagingTools.WinApi;
 using KGySoft.Reflection;
 
@@ -72,78 +71,6 @@ namespace KGySoft.Drawing.ImagingTools.View
         internal static Size ScaleSize(this Control control, Size size) => size.Scale(control.GetScale());
         internal static int ScaleWidth(this Control control, int width) => width.Scale(control.GetScale().X);
         internal static int ScaleHeight(this Control control, int height) => height.Scale(control.GetScale().Y);
-
-        /// <summary>
-        /// Applies fixed string resources (which do not change unless language is changed) to a control.
-        /// </summary>
-        internal static void ApplyStringResources(this Control control, ToolTip? toolTip = null)
-        {
-            #region Local Methods
-
-            static void ApplyToolTip(Control control, string name, ToolTip toolTip)
-            {
-                string? value = Res.GetStringOrNull(name + "." + ToolTipPropertyName);
-                toolTip.SetToolTip(control, value);
-            }
-
-            static void ApplyToolStripResources(ToolStripItemCollection items)
-            {
-                foreach (ToolStripItem item in items)
-                {
-                    // to self
-                    Res.ApplyStringResources(item, item.Name);
-
-                    // to children
-                    if (item is ToolStripDropDownItem dropDownItem)
-                        ApplyToolStripResources(dropDownItem.DropDownItems);
-                }
-            }
-
-            #endregion
-
-            string name = control.Name;
-            if (String.IsNullOrEmpty(name))
-                name = control.GetType().Name;
-
-            // custom localization
-            if (control is ICustomLocalizable customLocalizable)
-            {
-                customLocalizable.ApplyStringResources(toolTip);
-                return;
-            }
-
-            // to self
-            Res.ApplyStringResources(control, name);
-
-            // applying tool tip
-            if (toolTip != null)
-                ApplyToolTip(control, name, toolTip);
-
-            // to children
-            switch (control)
-            {
-                case ToolStrip toolStrip:
-                    ApplyToolStripResources(toolStrip.Items);
-                    break;
-
-                case DataGridView dataGridView:
-                    foreach (DataGridViewColumn item in dataGridView.Columns)
-                        Res.ApplyStringResources(item, item.Name);
-                    break;
-
-                default:
-                    foreach (Control child in control.Controls)
-                    {
-                        // MvvmBaseUserControl triggers ApplyStringResources on its own, so skipping it as a child control here
-                        if (child is MvvmBaseUserControl)
-                            continue;
-
-                        child.ApplyStringResources(toolTip);
-                    }
-
-                    break;
-            }
-        }
 
         internal static void ApplyTheme(this Control control)
         {

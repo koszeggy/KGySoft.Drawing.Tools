@@ -22,6 +22,7 @@ using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.View.UserControls;
 using KGySoft.Drawing.ImagingTools.ViewModel;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -151,7 +152,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
-        protected override void ApplyStringResources() => this.ApplyStringResources(null);
+        protected override void ApplyStringResources() => LocalizationHelper.ApplyStringResources(this);
 
         protected virtual void ApplyBindings()
         {

@@ -16,21 +16,17 @@
 #region Usings
 
 using System;
-using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Resources;
 using System.Threading;
 
-using KGySoft.Collections;
 using KGySoft.CoreLibraries;
-using KGySoft.Reflection;
 using KGySoft.Resources;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -60,10 +56,6 @@ namespace KGySoft.Drawing.ImagingTools
             SafeMode = true,
             UseLanguageSettings = true,
         };
-
-        // Note: No need to use ThreadSafeCacheFactory here because used only from the UI thread when applying resources
-        // ReSharper disable once CollectionNeverUpdated.Local
-        private static readonly Cache<Type, PropertyInfo[]?> localizableStringPropertiesCache = new Cache<Type, PropertyInfo[]?>(GetLocalizableStringProperties);
 
         private static string? resourcesDir;
         private static CultureInfo displayLanguage;
@@ -430,6 +422,7 @@ namespace KGySoft.Drawing.ImagingTools
             Configuration.Release();
 
             LanguageSettings.DynamicResourceManagersSource = ResourceManagerSources.CompiledAndResX;
+            LocalizationHelper.LocalizationRequested += LocalizationHelper_LocalizationRequested;
         }
 
         #endregion
@@ -478,23 +471,6 @@ namespace KGySoft.Drawing.ImagingTools
         }
 
         internal static string Get<TEnum>(TEnum value) where TEnum : struct, Enum => Get($"{value.GetType().Name}.{Enum<TEnum>.ToString(value)}");
-
-        internal static void ApplyStringResources(object target, string? name)
-        {
-            // Unlike ComponentResourceManager we don't go by ResourceSet because that would kill resource fallback traversal
-            // so we go by localizable properties
-            PropertyInfo[]? properties = localizableStringPropertiesCache[target.GetType()];
-            if (properties == null)
-                return;
-
-            foreach (PropertyInfo property in properties)
-            {
-                string? value = GetStringOrNull(name + "." + property.Name);
-                if (value == null)
-                    continue;
-                Reflector.SetProperty(target, property, value);
-            }
-        }
 
         /// <summary>Internal Error: {0}</summary>
         internal static string InternalError(string msg) => Get("General_InternalErrorFormat", msg);
@@ -860,15 +836,6 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static PropertyInfo[]? GetLocalizableStringProperties(Type type)
-        {
-            // Getting string properties only. The resource manager in this class works in safe mode anyway.
-            var result = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(p => p.PropertyType == typeof(string)
-                    && Attribute.GetCustomAttribute(p, typeof(LocalizableAttribute)) is LocalizableAttribute la && la.IsLocalizable).ToArray();
-            return result.Length == 0 ? null : result;
-        }
-
         private static CultureInfo GetClosestNeutralCulture(this CultureInfo culture)
         {
             if (CultureInfo.InvariantCulture.Equals(culture))
@@ -878,6 +845,16 @@ namespace KGySoft.Drawing.ImagingTools
                 culture = culture.Parent;
 
             return culture;
+        }
+
+        #endregion
+
+        #region Event Handlers
+
+        private static void LocalizationHelper_LocalizationRequested(object? sender, LocalizationRequestedEventArgs e)
+        {
+            Debug.Assert(e.Value is null, "Multiple handlers of LocalizationHelper.LocalizationRequested");
+            e.Value = GetStringOrNull(e.Key);
         }
 
         #endregion
