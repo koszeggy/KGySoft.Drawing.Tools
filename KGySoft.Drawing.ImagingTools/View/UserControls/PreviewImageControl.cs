@@ -18,8 +18,8 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-using KGySoft.Drawing.ImagingTools.View.Controls;
 using KGySoft.Drawing.ImagingTools.ViewModel;
+using KGySoft.WinForms.Controls;
 
 #endregion
 
@@ -140,9 +140,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             CommandBindings.AddTwoWayPropertyBinding(ViewModel!, nameof(ViewModel.AutoZoom), btnZoom, nameof(btnZoom.Checked));
             CommandBindings.AddTwoWayPropertyBinding(ViewModel!, nameof(ViewModel.AutoZoom), ivPreview, nameof(ivPreview.AutoZoom));
 
-            // btnAntiAlias.Checked <-> VM.SmoothZooming -> ivPreview.SmoothZooming
+            // btnAntiAlias.Checked <-> VM.SmoothZooming -> ivPreview.SmoothingEnabled
             CommandBindings.AddTwoWayPropertyBinding(ViewModel!, nameof(ViewModel.SmoothZooming), btnAntiAlias, nameof(btnAntiAlias.Checked));
-            CommandBindings.AddPropertyBinding(ViewModel!, nameof(ViewModel.SmoothZooming), nameof(ivPreview.SmoothZooming), ivPreview);
+            CommandBindings.AddPropertyBinding(ViewModel!, nameof(ViewModel.SmoothZooming), nameof(ivPreview.SmoothingEnabled), ivPreview);
         }
 
         #endregion

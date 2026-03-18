@@ -164,6 +164,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             viewModel.CancellableConfirmCallback = (msg, btn) => Dialogs.CancellableConfirmMessage(msg, btn switch { 0 => MessageBoxDefaultButton.Button1, 1 => MessageBoxDefaultButton.Button2, _ => MessageBoxDefaultButton.Button3 });
             viewModel.ShowChildViewCallback = ShowChildView;
             viewModel.SynchronizedInvokeCallback = InvokeOnUIThread;
+
+            // Using BeginInvoke instead of InvokeOnUIThread is intended. It defers the invoke after other UI events, preventing possible infinite recursion
+            // when ClosingCallback calls Close again.
             if (viewModel is ViewModelBase vm && mvvmParent is MvvmParentForm parent)
                 vm.CloseViewCallback = () => BeginInvoke(new Action(parent.Close));
 

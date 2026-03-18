@@ -38,7 +38,7 @@
             this.dlgOpen = new System.Windows.Forms.OpenFileDialog();
             this.dlgSave = new System.Windows.Forms.SaveFileDialog();
             this.timerPlayer = new System.Windows.Forms.Timer(this.components);
-            this.imageViewer = new KGySoft.Drawing.ImagingTools.View.Controls.ImageViewer();
+            this.imageViewer = new KGySoft.WinForms.Controls.ImageViewer();
             this.lblNotification = new KGySoft.Drawing.ImagingTools.View.Controls.NotificationLabel();
             this.splitter = new System.Windows.Forms.Splitter();
             this.tsMenu = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedToolStrip();
@@ -259,6 +259,9 @@
             this.imageViewer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.imageViewer.Location = new System.Drawing.Point(0, 49);
             this.imageViewer.Name = "imageViewer";
+            this.imageViewer.OptimizationOptions = ((KGySoft.WinForms.Controls.ImageViewerOptimizationOptions)((((KGySoft.WinForms.Controls.ImageViewerOptimizationOptions.UseOptimalPixelFormat | KGySoft.WinForms.Controls.ImageViewerOptimizationOptions.GenerateResizedBitmap) 
+            | KGySoft.WinForms.Controls.ImageViewerOptimizationOptions.CheckQuicklyAvailableMemory) 
+            | KGySoft.WinForms.Controls.ImageViewerOptimizationOptions.UseUnsafeCooperativeLocking)));
             this.imageViewer.Size = new System.Drawing.Size(364, 111);
             this.imageViewer.TabIndex = 7;
             this.imageViewer.TabStop = false;
@@ -496,7 +499,7 @@
         private System.Windows.Forms.OpenFileDialog dlgOpen;
         private System.Windows.Forms.SaveFileDialog dlgSave;
         private System.Windows.Forms.Timer timerPlayer;
-        private Controls.ImageViewer imageViewer;
+        private KGySoft.WinForms.Controls.ImageViewer imageViewer;
         private Controls.NotificationLabel lblNotification;
         private System.Windows.Forms.Splitter splitter;
         protected Controls.AdvancedToolStrip tsMenu;

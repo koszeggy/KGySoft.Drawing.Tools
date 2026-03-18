@@ -18,7 +18,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PreviewImageControl));
-            this.ivPreview = new KGySoft.Drawing.ImagingTools.View.Controls.ImageViewer();
+            this.ivPreview = new KGySoft.WinForms.Controls.ImageViewer();
             this.tsMenu = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedToolStrip();
             this.btnZoom = new ZoomSplitButton();
             this.btnAntiAlias = new System.Windows.Forms.ToolStripButton();
@@ -31,6 +31,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.ivPreview.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ivPreview.Location = new System.Drawing.Point(33, 0);
             this.ivPreview.Name = "ivPreview";
+            this.ivPreview.OptimizationOptions = ((KGySoft.WinForms.Controls.ImageViewerOptimizationOptions)((((KGySoft.WinForms.Controls.ImageViewerOptimizationOptions.UseOptimalPixelFormat | KGySoft.WinForms.Controls.ImageViewerOptimizationOptions.GenerateResizedBitmap)
+                | KGySoft.WinForms.Controls.ImageViewerOptimizationOptions.CheckQuicklyAvailableMemory)
+                | KGySoft.WinForms.Controls.ImageViewerOptimizationOptions.UseUnsafeCooperativeLocking)));
             this.ivPreview.Size = new System.Drawing.Size(117, 150);
             this.ivPreview.TabIndex = 1;
             // 
@@ -89,7 +92,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         private Controls.AdvancedToolStrip tsMenu;
         private ZoomSplitButton btnZoom;
         private System.Windows.Forms.ToolStripButton btnAntiAlias;
-        private Controls.ImageViewer ivPreview;
+        private KGySoft.WinForms.Controls.ImageViewer ivPreview;
         private System.Windows.Forms.ToolStripButton btnShowOriginal;
     }
 }
