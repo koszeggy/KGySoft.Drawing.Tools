@@ -162,7 +162,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 return;
 
             bool isInForm = ParentForm != null;
-            buttons.DefaultButtonsVisible = isInForm;
+            buttons.OKButtonVisible = buttons.CancelButtonVisible = isInForm;
             buttons.ApplyButtonVisible = !isInForm;
 
             // !VM.ReadOnly -> buttons.Visible

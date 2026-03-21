@@ -33,7 +33,7 @@
             this.miManageInstallations = new System.Windows.Forms.ToolStripMenuItem();
             this.miLanguageSettings = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.buttons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
+            this.buttons = new KGySoft.WinForms.Controls.OkCancelButtons();
             this.miResizeBitmap = new System.Windows.Forms.ToolStripMenuItem();
             this.dlgOpen = new System.Windows.Forms.OpenFileDialog();
             this.dlgSave = new System.Windows.Forms.SaveFileDialog();
@@ -494,7 +494,7 @@
         private System.Windows.Forms.ToolStripMenuItem miManageInstallations;
         private System.Windows.Forms.ToolStripMenuItem miLanguageSettings;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-        protected OkCancelButtons buttons;
+        protected KGySoft.WinForms.Controls.OkCancelButtons buttons;
         private System.Windows.Forms.ToolStripMenuItem miResizeBitmap;
         private System.Windows.Forms.OpenFileDialog dlgOpen;
         private System.Windows.Forms.SaveFileDialog dlgSave;

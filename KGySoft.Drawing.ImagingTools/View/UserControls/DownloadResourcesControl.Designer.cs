@@ -17,7 +17,7 @@
         {
             this.components = new System.ComponentModel.Container();
             this.bindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.okCancelButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
+            this.okCancelButtons = new KGySoft.WinForms.Controls.OkCancelButtons();
             this.gridDownloadableResources = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedDataGridView();
             this.colSelected = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.colLanguage = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -127,7 +127,7 @@
         private Controls.DownloadProgressFooter progress;
         private Controls.AdvancedDataGridView gridDownloadableResources;
         private System.Windows.Forms.BindingSource bindingSource;
-        private UserControls.OkCancelButtons okCancelButtons;
+        private KGySoft.WinForms.Controls.OkCancelButtons okCancelButtons;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colSelected;
         private System.Windows.Forms.DataGridViewTextBoxColumn colLanguage;
         private System.Windows.Forms.DataGridViewTextBoxColumn colAuthor;

@@ -22,7 +22,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.pnlPalette = new KGySoft.Drawing.ImagingTools.View.Controls.PalettePanel();
             this.gbSelectedColor = new System.Windows.Forms.GroupBox();
             this.colorVisualizerControl = new KGySoft.Drawing.ImagingTools.View.UserControls.ColorVisualizerControl();
-            this.okCancelButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
+            this.okCancelButtons = new KGySoft.WinForms.Controls.OkCancelButtons();
             this.gbPalette.SuspendLayout();
             this.gbSelectedColor.SuspendLayout();
             this.SuspendLayout();
@@ -100,6 +100,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         private PalettePanel pnlPalette;
         private System.Windows.Forms.GroupBox gbSelectedColor;
         private ColorVisualizerControl colorVisualizerControl;
-        private OkCancelButtons okCancelButtons;
+        private KGySoft.WinForms.Controls.OkCancelButtons okCancelButtons;
     }
 }

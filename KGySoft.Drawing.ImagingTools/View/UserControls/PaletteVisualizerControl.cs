@@ -162,7 +162,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsModified), nameof(okCancelButtons.OKButton.Enabled), okCancelButtons.OKButton);
 
             bool isInForm = ParentForm != null;
-            okCancelButtons.DefaultButtonsVisible = isInForm;
+            okCancelButtons.OKButtonVisible = okCancelButtons.CancelButtonVisible = isInForm;
             okCancelButtons.ApplyButtonVisible = !isInForm;
         }
 

@@ -36,7 +36,7 @@
             this.txtOriginalText = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox();
             this.gbTranslatedText = new System.Windows.Forms.GroupBox();
             this.txtTranslatedText = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox();
-            this.okCancelApplyButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
+            this.okCancelApplyButtons = new KGySoft.WinForms.Controls.OkCancelButtons();
             this.gbResourceEntries.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridResources)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource)).BeginInit();
@@ -309,7 +309,7 @@
 
         #endregion
 
-        private UserControls.OkCancelButtons okCancelApplyButtons;
+        private KGySoft.WinForms.Controls.OkCancelButtons okCancelApplyButtons;
         private System.Windows.Forms.GroupBox gbResourceEntries;
         private Controls.AdvancedDataGridView gridResources;
         private System.Windows.Forms.TableLayoutPanel pnlEditResourceEntry;

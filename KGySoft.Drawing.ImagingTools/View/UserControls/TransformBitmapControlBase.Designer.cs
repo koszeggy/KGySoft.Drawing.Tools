@@ -16,7 +16,7 @@
         private void InitializeComponent()
         {
             this.progress = new KGySoft.Drawing.ImagingTools.View.Controls.DrawingProgressFooter();
-            this.okCancelButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
+            this.okCancelButtons = new KGySoft.WinForms.Controls.OkCancelButtons();
             this.previewImage = new KGySoft.Drawing.ImagingTools.View.UserControls.PreviewImageControl();
             this.pnlSettings = new KGySoft.Drawing.ImagingTools.View.Controls.AutoMirrorPanel();
             this.SuspendLayout();
@@ -75,7 +75,7 @@
         #endregion
 
         private Controls.DrawingProgressFooter progress;
-        private UserControls.OkCancelButtons okCancelButtons;
+        private KGySoft.WinForms.Controls.OkCancelButtons okCancelButtons;
         private UserControls.PreviewImageControl previewImage;
         protected Controls.AutoMirrorPanel pnlSettings;
     }
