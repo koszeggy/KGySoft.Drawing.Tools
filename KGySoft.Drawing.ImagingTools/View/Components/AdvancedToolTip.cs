@@ -15,7 +15,6 @@
 
 #region Usings
 
-using System;
 using System.ComponentModel;
 using System.Windows.Forms;
 
@@ -24,7 +23,7 @@ using System.Windows.Forms;
 namespace KGySoft.Drawing.ImagingTools.View.Components
 {
     /// <summary>
-    /// A ToolTip that supports RTL correctly
+    /// A ToolTip that supports RTL and theming correctly
     /// </summary>
     /// <seealso cref="ToolTip" />
     internal class AdvancedToolTip : ToolTip

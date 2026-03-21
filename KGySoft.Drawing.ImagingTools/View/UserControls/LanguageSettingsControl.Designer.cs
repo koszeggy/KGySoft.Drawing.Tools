@@ -17,7 +17,6 @@
         {
             this.components = new System.ComponentModel.Container();
             this.okCancelApplyButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
-            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.gbDisplayLanguage = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedGroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.btnDownloadResources = new System.Windows.Forms.Button();
@@ -178,7 +177,6 @@
         #endregion
 
         private UserControls.OkCancelButtons okCancelApplyButtons;
-        private System.Windows.Forms.ToolTip toolTip;
         private Controls.AdvancedGroupBox gbDisplayLanguage;
         private Controls.AdvancedCheckBox chbAllowAnyLanguage;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;

@@ -120,7 +120,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             }
 
             isLoaded = true;
-            ApplyStringResources();
             ApplyBindings();
         }
 
@@ -152,7 +151,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
-        protected override void ApplyStringResources() => LocalizationHelper.ApplyStringResources(this);
+        protected override void ApplyStringResources()
+        {
+            // Unlike in MvvmBaseUserControl, not calling LocalizationHelper.ApplyStringResources to prevent double localization, just localizing self properties.
+            // Also, using MvvmChild as the context root, so the theming-capable AdvancedToolTip will be used instead of BaseForm.ToolTip
+            LocalizationHelper.LocalizeStringProperties(this, Name, new LocalizationContext(MvvmChild));
+        }
 
         protected virtual void ApplyBindings()
         {
