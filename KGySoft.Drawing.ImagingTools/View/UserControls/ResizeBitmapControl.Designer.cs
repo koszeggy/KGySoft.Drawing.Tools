@@ -29,8 +29,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.pnlWidthPx = new KGySoft.Drawing.ImagingTools.View.Controls.AutoMirrorPanel();
             this.lblWidthPx = new System.Windows.Forms.Label();
             this.txtWidthPx = new System.Windows.Forms.TextBox();
-            this.rbByPixels = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedRadioButton();
-            this.rbByPercentage = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedRadioButton();
+            this.rbByPixels = new KGySoft.WinForms.Controls.AdvancedRadioButton();
+            this.rbByPercentage = new KGySoft.WinForms.Controls.AdvancedRadioButton();
             this.pnlWidthPercent = new KGySoft.Drawing.ImagingTools.View.Controls.AutoMirrorPanel();
             this.lblWidthPercent = new System.Windows.Forms.Label();
             this.txtWidthPercent = new System.Windows.Forms.TextBox();
@@ -197,7 +197,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // rbByPixels
             // 
             this.rbByPixels.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rbByPixels.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.rbByPixels.Location = new System.Drawing.Point(212, 30);
             this.rbByPixels.Name = "rbByPixels";
             this.rbByPixels.Size = new System.Drawing.Size(103, 21);
@@ -209,7 +208,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // rbByPercentage
             // 
             this.rbByPercentage.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rbByPercentage.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.rbByPercentage.Location = new System.Drawing.Point(103, 30);
             this.rbByPercentage.Name = "rbByPercentage";
             this.rbByPercentage.Size = new System.Drawing.Size(103, 21);
@@ -308,8 +306,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         #endregion
 
         private System.Windows.Forms.TableLayoutPanel tblNewSize;
-        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedRadioButton rbByPixels;
-        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedRadioButton rbByPercentage;
+        private KGySoft.WinForms.Controls.AdvancedRadioButton rbByPixels;
+        private KGySoft.WinForms.Controls.AdvancedRadioButton rbByPercentage;
         private Controls.AutoMirrorPanel pnlWidthPercent;
         private System.Windows.Forms.Label lblWidthPercent;
         private System.Windows.Forms.TextBox txtWidthPercent;
