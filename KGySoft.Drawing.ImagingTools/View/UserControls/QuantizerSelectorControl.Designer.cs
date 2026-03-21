@@ -23,7 +23,7 @@
             this.tblBackColor = new System.Windows.Forms.TableLayoutPanel();
             this.lblBackColor = new System.Windows.Forms.Label();
             this.pnlBackColor = new System.Windows.Forms.Panel();
-            this.btnBackColor = new System.Windows.Forms.Button();
+            this.btnBackColor = new KGySoft.WinForms.Controls.AdvancedButton();
             this.tblAlphaThreshold = new System.Windows.Forms.TableLayoutPanel();
             this.lblAlphaThreshold = new System.Windows.Forms.Label();
             this.lblAlphaThresholdValue = new System.Windows.Forms.Label();
@@ -152,7 +152,6 @@
             // 
             this.btnBackColor.AutoSize = true;
             this.btnBackColor.Dock = System.Windows.Forms.DockStyle.Left;
-            this.btnBackColor.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.btnBackColor.Location = new System.Drawing.Point(240, 0);
             this.btnBackColor.Margin = new System.Windows.Forms.Padding(0);
             this.btnBackColor.Name = "btnBackColor";
@@ -383,7 +382,7 @@
         private System.Windows.Forms.TableLayoutPanel tblBackColor;
         private System.Windows.Forms.Label lblBackColor;
         private System.Windows.Forms.Panel pnlBackColor;
-        private System.Windows.Forms.Button btnBackColor;
+        private KGySoft.WinForms.Controls.AdvancedButton btnBackColor;
         private System.Windows.Forms.TableLayoutPanel tblAlphaThreshold;
         private System.Windows.Forms.Label lblAlphaThreshold;
         private System.Windows.Forms.Label lblAlphaThresholdValue;

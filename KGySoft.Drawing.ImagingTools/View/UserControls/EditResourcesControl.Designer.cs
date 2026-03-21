@@ -28,7 +28,7 @@
             this.gbResourceFile = new System.Windows.Forms.GroupBox();
             this.pnlResourceFile = new System.Windows.Forms.Panel();
             this.cmbResourceFiles = new System.Windows.Forms.ComboBox();
-            this.btnGoToFile = new System.Windows.Forms.Button();
+            this.btnGoToFile = new KGySoft.WinForms.Controls.AdvancedButton();
             this.chbHideDependencies = new KGySoft.WinForms.Controls.AdvancedCheckBox();
             this.splitterEditResources = new System.Windows.Forms.Splitter();
             this.pnlEditResourceEntry = new System.Windows.Forms.TableLayoutPanel();
@@ -329,6 +329,6 @@
         private System.Windows.Forms.Label lblFilter;
         private KGySoft.WinForms.Controls.AdvancedCheckBox chbHideDependencies;
         private System.Windows.Forms.Panel pnlResourceFile;
-        private System.Windows.Forms.Button btnGoToFile;
+        private KGySoft.WinForms.Controls.AdvancedButton btnGoToFile;
     }
 }

@@ -122,12 +122,7 @@ namespace KGySoft.Drawing.ImagingTools.View
                     }
                     break;
 
-                case Button button:
-                    // TODO: Set FlatStyle to Flat if custom colors are set; otherwise, set it to System and call ApplyVisualStyleTheme
-                    button.ApplyVisualStyleTheme();
-                    break;
-
-                case ButtonBase buttonBase and (CheckBox or RadioButton):
+                case ButtonBase buttonBase:
                     buttonBase.ApplyVisualStyleTheme();
                     break;
 

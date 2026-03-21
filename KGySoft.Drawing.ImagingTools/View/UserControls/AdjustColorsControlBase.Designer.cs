@@ -16,7 +16,7 @@
         private void InitializeComponent()
         {
             this.trackBar = new System.Windows.Forms.TrackBar();
-            this.btnReset = new System.Windows.Forms.Button();
+            this.btnReset = new KGySoft.WinForms.Controls.AdvancedButton();
             this.lblValue = new System.Windows.Forms.Label();
             this.pnlCheckBoxes = new System.Windows.Forms.TableLayoutPanel();
             this.chbBlue = new KGySoft.WinForms.Controls.AdvancedCheckBox();
@@ -47,7 +47,6 @@
             // 
             this.btnReset.AutoSize = true;
             this.btnReset.Dock = System.Windows.Forms.DockStyle.Right;
-            this.btnReset.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.btnReset.Location = new System.Drawing.Point(196, 25);
             this.btnReset.Name = "btnReset";
             this.btnReset.Size = new System.Drawing.Size(52, 31);
@@ -134,7 +133,7 @@
         #endregion
 
         private System.Windows.Forms.TrackBar trackBar;
-        private System.Windows.Forms.Button btnReset;
+        private KGySoft.WinForms.Controls.AdvancedButton btnReset;
         private System.Windows.Forms.Label lblValue;
         private System.Windows.Forms.TableLayoutPanel pnlCheckBoxes;
         private KGySoft.WinForms.Controls.AdvancedCheckBox chbBlue;

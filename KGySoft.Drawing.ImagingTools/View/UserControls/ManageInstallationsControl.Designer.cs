@@ -22,8 +22,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.lblStatusText = new System.Windows.Forms.Label();
             this.lblStatus = new System.Windows.Forms.Label();
             this.pnlButtons = new System.Windows.Forms.FlowLayoutPanel();
-            this.btnRemove = new System.Windows.Forms.Button();
-            this.btnInstall = new System.Windows.Forms.Button();
+            this.btnRemove = new KGySoft.WinForms.Controls.AdvancedButton();
+            this.btnInstall = new KGySoft.WinForms.Controls.AdvancedButton();
             this.tbPath = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox();
             this.lblPath = new System.Windows.Forms.Label();
             this.gbVisualStudioVersions = new System.Windows.Forms.GroupBox();
@@ -100,7 +100,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             this.btnRemove.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.btnRemove.AutoSize = true;
-            this.btnRemove.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.btnRemove.Location = new System.Drawing.Point(307, 6);
             this.btnRemove.Name = "btnRemove";
             this.btnRemove.Size = new System.Drawing.Size(76, 23);
@@ -112,7 +111,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             this.btnInstall.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.btnInstall.AutoSize = true;
-            this.btnInstall.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.btnInstall.Location = new System.Drawing.Point(226, 6);
             this.btnInstall.Name = "btnInstall";
             this.btnInstall.Size = new System.Drawing.Size(75, 23);
@@ -208,8 +206,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         #endregion
         private System.Windows.Forms.GroupBox gbInstallation;
         private System.Windows.Forms.FlowLayoutPanel pnlButtons;
-        private System.Windows.Forms.Button btnRemove;
-        private System.Windows.Forms.Button btnInstall;
+        private KGySoft.WinForms.Controls.AdvancedButton btnRemove;
+        private KGySoft.WinForms.Controls.AdvancedButton btnInstall;
         private Controls.AutoMirrorPanel pnlStatus;
         private System.Windows.Forms.Label lblStatusText;
         private System.Windows.Forms.Label lblStatus;

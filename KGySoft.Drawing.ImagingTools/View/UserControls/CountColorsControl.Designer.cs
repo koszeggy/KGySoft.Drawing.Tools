@@ -17,7 +17,7 @@
         {
             this.lblCountColorsStatus = new System.Windows.Forms.Label();
             this.pnlButton = new System.Windows.Forms.Panel();
-            this.btnClose = new System.Windows.Forms.Button();
+            this.btnClose = new KGySoft.WinForms.Controls.AdvancedButton();
             this.progress = new KGySoft.Drawing.ImagingTools.View.Controls.DrawingProgressFooter();
             this.pnlButton.SuspendLayout();
             this.SuspendLayout();
@@ -45,7 +45,6 @@
             // btnClose
             // 
             this.btnClose.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.btnClose.Location = new System.Drawing.Point(100, 3);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(75, 23);
@@ -80,7 +79,7 @@
 
         private System.Windows.Forms.Label lblCountColorsStatus;
         private System.Windows.Forms.Panel pnlButton;
-        private System.Windows.Forms.Button btnClose;
+        private KGySoft.WinForms.Controls.AdvancedButton btnClose;
         private Controls.DrawingProgressFooter progress;
     }
 }
