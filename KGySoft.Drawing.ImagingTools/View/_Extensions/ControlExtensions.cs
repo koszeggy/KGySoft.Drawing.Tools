@@ -22,6 +22,7 @@ using System.Windows.Forms;
 using KGySoft.Drawing.ImagingTools.View.Controls;
 using KGySoft.Drawing.ImagingTools.WinApi;
 using KGySoft.Reflection;
+using KGySoft.WinForms.Controls;
 
 #endregion
 
@@ -124,6 +125,10 @@ namespace KGySoft.Drawing.ImagingTools.View
 
                 case ButtonBase buttonBase:
                     buttonBase.ApplyVisualStyleTheme();
+                    break;
+
+                case AdvancedLabel label:
+                    label.DisabledForeColor = ThemeColors.ControlTextDisabled;
                     break;
 
                 case ComboBox comboBox:

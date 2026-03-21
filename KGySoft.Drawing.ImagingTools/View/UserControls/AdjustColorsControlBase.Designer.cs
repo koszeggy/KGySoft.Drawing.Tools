@@ -17,7 +17,7 @@
         {
             this.trackBar = new System.Windows.Forms.TrackBar();
             this.btnReset = new KGySoft.WinForms.Controls.AdvancedButton();
-            this.lblValue = new System.Windows.Forms.Label();
+            this.lblValue = new KGySoft.WinForms.Controls.AdvancedLabel();
             this.pnlCheckBoxes = new System.Windows.Forms.TableLayoutPanel();
             this.chbBlue = new KGySoft.WinForms.Controls.AdvancedCheckBox();
             this.chbGreen = new KGySoft.WinForms.Controls.AdvancedCheckBox();
@@ -134,7 +134,7 @@
 
         private System.Windows.Forms.TrackBar trackBar;
         private KGySoft.WinForms.Controls.AdvancedButton btnReset;
-        private System.Windows.Forms.Label lblValue;
+        private KGySoft.WinForms.Controls.AdvancedLabel lblValue;
         private System.Windows.Forms.TableLayoutPanel pnlCheckBoxes;
         private KGySoft.WinForms.Controls.AdvancedCheckBox chbBlue;
         private KGySoft.WinForms.Controls.AdvancedCheckBox chbGreen;

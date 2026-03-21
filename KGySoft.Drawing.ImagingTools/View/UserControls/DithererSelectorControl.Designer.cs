@@ -17,13 +17,13 @@
         {
             this.cmbDitherer = new System.Windows.Forms.ComboBox();
             this.tblStrength = new System.Windows.Forms.TableLayoutPanel();
-            this.lblStrength = new System.Windows.Forms.Label();
-            this.lblStrengthValue = new System.Windows.Forms.Label();
+            this.lblStrength = new KGySoft.WinForms.Controls.AdvancedLabel();
+            this.lblStrengthValue = new KGySoft.WinForms.Controls.AdvancedLabel();
             this.tbStrength = new System.Windows.Forms.TrackBar();
             this.chbSerpentineProcessing = new KGySoft.WinForms.Controls.AdvancedCheckBox();
             this.chbByBrightness = new KGySoft.WinForms.Controls.AdvancedCheckBox();
             this.tblSeed = new System.Windows.Forms.TableLayoutPanel();
-            this.lblSeed = new System.Windows.Forms.Label();
+            this.lblSeed = new KGySoft.WinForms.Controls.AdvancedLabel();
             this.txtSeed = new System.Windows.Forms.TextBox();
             this.tblStrength.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbStrength)).BeginInit();
@@ -62,7 +62,6 @@
             // 
             this.lblStrength.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblStrength.AutoSize = true;
-            this.lblStrength.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.lblStrength.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.lblStrength.Location = new System.Drawing.Point(3, 4);
             this.lblStrength.Name = "lblStrength";
@@ -74,7 +73,6 @@
             // 
             this.lblStrengthValue.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblStrengthValue.AutoSize = true;
-            this.lblStrengthValue.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.lblStrengthValue.Location = new System.Drawing.Point(243, 4);
             this.lblStrengthValue.Name = "lblStrengthValue";
             this.lblStrengthValue.Size = new System.Drawing.Size(13, 13);
@@ -138,7 +136,6 @@
             // 
             this.lblSeed.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblSeed.AutoSize = true;
-            this.lblSeed.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.lblSeed.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.lblSeed.Location = new System.Drawing.Point(3, 4);
             this.lblSeed.Name = "lblSeed";
@@ -178,13 +175,13 @@
         #endregion
         private System.Windows.Forms.ComboBox cmbDitherer;
         private System.Windows.Forms.TableLayoutPanel tblStrength;
-        private System.Windows.Forms.Label lblStrength;
-        private System.Windows.Forms.Label lblStrengthValue;
+        private KGySoft.WinForms.Controls.AdvancedLabel lblStrength;
+        private KGySoft.WinForms.Controls.AdvancedLabel lblStrengthValue;
         private System.Windows.Forms.TrackBar tbStrength;
         private KGySoft.WinForms.Controls.AdvancedCheckBox chbSerpentineProcessing;
         private KGySoft.WinForms.Controls.AdvancedCheckBox chbByBrightness;
         private System.Windows.Forms.TableLayoutPanel tblSeed;
-        private System.Windows.Forms.Label lblSeed;
+        private KGySoft.WinForms.Controls.AdvancedLabel lblSeed;
         private System.Windows.Forms.TextBox txtSeed;
     }
 }

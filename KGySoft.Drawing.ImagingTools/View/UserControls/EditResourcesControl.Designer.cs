@@ -24,7 +24,7 @@
             this.bindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.pnlFilter = new KGySoft.Drawing.ImagingTools.View.Controls.AutoMirrorPanel();
             this.txtFilter = new System.Windows.Forms.TextBox();
-            this.lblFilter = new System.Windows.Forms.Label();
+            this.lblFilter = new KGySoft.WinForms.Controls.AdvancedLabel();
             this.gbResourceFile = new System.Windows.Forms.GroupBox();
             this.pnlResourceFile = new System.Windows.Forms.Panel();
             this.cmbResourceFiles = new System.Windows.Forms.ComboBox();
@@ -326,7 +326,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colTranslatedText;
         private Controls.AutoMirrorPanel pnlFilter;
         private System.Windows.Forms.TextBox txtFilter;
-        private System.Windows.Forms.Label lblFilter;
+        private KGySoft.WinForms.Controls.AdvancedLabel lblFilter;
         private KGySoft.WinForms.Controls.AdvancedCheckBox chbHideDependencies;
         private System.Windows.Forms.Panel pnlResourceFile;
         private KGySoft.WinForms.Controls.AdvancedButton btnGoToFile;

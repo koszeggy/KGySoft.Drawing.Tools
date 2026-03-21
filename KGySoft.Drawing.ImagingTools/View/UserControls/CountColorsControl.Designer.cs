@@ -15,7 +15,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.lblCountColorsStatus = new System.Windows.Forms.Label();
+            this.lblCountColorsStatus = new KGySoft.WinForms.Controls.AdvancedLabel();
             this.pnlButton = new System.Windows.Forms.Panel();
             this.btnClose = new KGySoft.WinForms.Controls.AdvancedButton();
             this.progress = new KGySoft.Drawing.ImagingTools.View.Controls.DrawingProgressFooter();
@@ -77,7 +77,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Label lblCountColorsStatus;
+        private KGySoft.WinForms.Controls.AdvancedLabel lblCountColorsStatus;
         private System.Windows.Forms.Panel pnlButton;
         private KGySoft.WinForms.Controls.AdvancedButton btnClose;
         private Controls.DrawingProgressFooter progress;
