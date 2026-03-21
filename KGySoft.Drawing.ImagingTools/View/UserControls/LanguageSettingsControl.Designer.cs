@@ -25,7 +25,7 @@
             this.cmbLanguages = new System.Windows.Forms.ComboBox();
             this.chbAllowAnyLanguage = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
             this.chbUseOSLanguage = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
-            this.gbResxResourcesPath = new KGySoft.Drawing.ImagingTools.View.Controls.CheckGroupBox();
+            this.gbResxResourcesPath = new KGySoft.WinForms.Controls.CheckGroupBox();
             this.txtResxResourcesPath = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox();
             this.gbDisplayLanguage.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -138,7 +138,6 @@
             // 
             this.gbResxResourcesPath.Controls.Add(this.txtResxResourcesPath);
             this.gbResxResourcesPath.Dock = System.Windows.Forms.DockStyle.Top;
-            this.gbResxResourcesPath.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.gbResxResourcesPath.Location = new System.Drawing.Point(3, 3);
             this.gbResxResourcesPath.Name = "gbResxResourcesPath";
             this.gbResxResourcesPath.Size = new System.Drawing.Size(328, 45);
@@ -186,7 +185,7 @@
         private System.Windows.Forms.Button btnDownloadResources;
         private System.Windows.Forms.Button btnEditResources;
         private System.Windows.Forms.ComboBox cmbLanguages;
-        private Controls.CheckGroupBox gbResxResourcesPath;
+        private KGySoft.WinForms.Controls.CheckGroupBox gbResxResourcesPath;
         private Controls.AdvancedTextBox txtResxResourcesPath;
         private Controls.AdvancedCheckBox chbUseOSLanguage;
     }

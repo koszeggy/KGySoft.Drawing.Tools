@@ -19,6 +19,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.WinApi;
+using KGySoft.WinForms.Controls;
 
 #endregion
 
