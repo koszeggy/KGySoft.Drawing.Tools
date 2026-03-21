@@ -128,8 +128,6 @@ namespace KGySoft.Drawing.ImagingTools.View
                     break;
 
                 case ButtonBase buttonBase and (CheckBox or RadioButton):
-                    // ISSUE: The text of FlatStyle.System appearance is always black with visual styles, even in dark mode. TODO: Use KGySoft.WinForms.Controls.AdvancedCheckBox/RadioButton
-                    //buttonBase.FlatStyle = ThemeColors.IsDarkBaseTheme ? FlatStyle.Standard : FlatStyle.System;
                     buttonBase.ApplyVisualStyleTheme();
                     break;
 

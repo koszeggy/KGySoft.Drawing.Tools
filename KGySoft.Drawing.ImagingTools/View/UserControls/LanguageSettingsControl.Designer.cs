@@ -22,8 +22,8 @@
             this.btnDownloadResources = new System.Windows.Forms.Button();
             this.btnEditResources = new System.Windows.Forms.Button();
             this.cmbLanguages = new System.Windows.Forms.ComboBox();
-            this.chbAllowAnyLanguage = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
-            this.chbUseOSLanguage = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
+            this.chbAllowAnyLanguage = new KGySoft.WinForms.Controls.AdvancedCheckBox();
+            this.chbUseOSLanguage = new KGySoft.WinForms.Controls.AdvancedCheckBox();
             this.gbResxResourcesPath = new KGySoft.WinForms.Controls.CheckGroupBox();
             this.txtResxResourcesPath = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox();
             this.gbDisplayLanguage.SuspendLayout();
@@ -113,7 +113,6 @@
             // 
             this.chbAllowAnyLanguage.AutoSize = true;
             this.chbAllowAnyLanguage.Dock = System.Windows.Forms.DockStyle.Top;
-            this.chbAllowAnyLanguage.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.chbAllowAnyLanguage.Location = new System.Drawing.Point(3, 33);
             this.chbAllowAnyLanguage.Name = "chbAllowAnyLanguage";
             this.chbAllowAnyLanguage.Size = new System.Drawing.Size(322, 17);
@@ -125,7 +124,6 @@
             // 
             this.chbUseOSLanguage.AutoSize = true;
             this.chbUseOSLanguage.Dock = System.Windows.Forms.DockStyle.Top;
-            this.chbUseOSLanguage.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.chbUseOSLanguage.Location = new System.Drawing.Point(3, 16);
             this.chbUseOSLanguage.Name = "chbUseOSLanguage";
             this.chbUseOSLanguage.Size = new System.Drawing.Size(322, 17);
@@ -178,13 +176,13 @@
 
         private UserControls.OkCancelButtons okCancelApplyButtons;
         private Controls.AdvancedGroupBox gbDisplayLanguage;
-        private Controls.AdvancedCheckBox chbAllowAnyLanguage;
+        private KGySoft.WinForms.Controls.AdvancedCheckBox chbAllowAnyLanguage;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Button btnDownloadResources;
         private System.Windows.Forms.Button btnEditResources;
         private System.Windows.Forms.ComboBox cmbLanguages;
         private KGySoft.WinForms.Controls.CheckGroupBox gbResxResourcesPath;
         private Controls.AdvancedTextBox txtResxResourcesPath;
-        private Controls.AdvancedCheckBox chbUseOSLanguage;
+        private KGySoft.WinForms.Controls.AdvancedCheckBox chbUseOSLanguage;
     }
 }

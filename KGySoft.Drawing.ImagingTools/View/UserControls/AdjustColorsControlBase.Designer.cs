@@ -19,9 +19,9 @@
             this.btnReset = new System.Windows.Forms.Button();
             this.lblValue = new System.Windows.Forms.Label();
             this.pnlCheckBoxes = new System.Windows.Forms.TableLayoutPanel();
-            this.chbBlue = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
-            this.chbGreen = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
-            this.chbRed = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
+            this.chbBlue = new KGySoft.WinForms.Controls.AdvancedCheckBox();
+            this.chbGreen = new KGySoft.WinForms.Controls.AdvancedCheckBox();
+            this.chbRed = new KGySoft.WinForms.Controls.AdvancedCheckBox();
             this.pnlSettings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar)).BeginInit();
             this.pnlCheckBoxes.SuspendLayout();
@@ -86,7 +86,6 @@
             // 
             this.chbBlue.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.chbBlue.AutoSize = true;
-            this.chbBlue.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.chbBlue.Location = new System.Drawing.Point(170, 3);
             this.chbBlue.Name = "chbBlue";
             this.chbBlue.Size = new System.Drawing.Size(71, 18);
@@ -98,7 +97,6 @@
             // 
             this.chbGreen.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.chbGreen.AutoSize = true;
-            this.chbGreen.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.chbGreen.Location = new System.Drawing.Point(85, 3);
             this.chbGreen.Name = "chbGreen";
             this.chbGreen.Size = new System.Drawing.Size(76, 18);
@@ -110,7 +108,6 @@
             // 
             this.chbRed.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.chbRed.AutoSize = true;
-            this.chbRed.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.chbRed.Location = new System.Drawing.Point(6, 3);
             this.chbRed.Name = "chbRed";
             this.chbRed.Size = new System.Drawing.Size(70, 18);
@@ -140,8 +137,8 @@
         private System.Windows.Forms.Button btnReset;
         private System.Windows.Forms.Label lblValue;
         private System.Windows.Forms.TableLayoutPanel pnlCheckBoxes;
-        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox chbBlue;
-        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox chbGreen;
-        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox chbRed;
+        private KGySoft.WinForms.Controls.AdvancedCheckBox chbBlue;
+        private KGySoft.WinForms.Controls.AdvancedCheckBox chbGreen;
+        private KGySoft.WinForms.Controls.AdvancedCheckBox chbRed;
     }
 }

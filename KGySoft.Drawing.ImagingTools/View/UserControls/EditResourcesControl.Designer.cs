@@ -29,7 +29,7 @@
             this.pnlResourceFile = new System.Windows.Forms.Panel();
             this.cmbResourceFiles = new System.Windows.Forms.ComboBox();
             this.btnGoToFile = new System.Windows.Forms.Button();
-            this.chbHideDependencies = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
+            this.chbHideDependencies = new KGySoft.WinForms.Controls.AdvancedCheckBox();
             this.splitterEditResources = new System.Windows.Forms.Splitter();
             this.pnlEditResourceEntry = new System.Windows.Forms.TableLayoutPanel();
             this.gbOriginalText = new System.Windows.Forms.GroupBox();
@@ -185,7 +185,6 @@
             this.chbHideDependencies.Checked = true;
             this.chbHideDependencies.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chbHideDependencies.Dock = System.Windows.Forms.DockStyle.Top;
-            this.chbHideDependencies.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.chbHideDependencies.Location = new System.Drawing.Point(3, 16);
             this.chbHideDependencies.Name = "chbHideDependencies";
             this.chbHideDependencies.Size = new System.Drawing.Size(573, 17);
@@ -328,7 +327,7 @@
         private Controls.AutoMirrorPanel pnlFilter;
         private System.Windows.Forms.TextBox txtFilter;
         private System.Windows.Forms.Label lblFilter;
-        private Controls.AdvancedCheckBox chbHideDependencies;
+        private KGySoft.WinForms.Controls.AdvancedCheckBox chbHideDependencies;
         private System.Windows.Forms.Panel pnlResourceFile;
         private System.Windows.Forms.Button btnGoToFile;
     }

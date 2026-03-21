@@ -28,12 +28,12 @@
             this.lblAlphaThreshold = new System.Windows.Forms.Label();
             this.lblAlphaThresholdValue = new System.Windows.Forms.Label();
             this.tbAlphaThreshold = new System.Windows.Forms.TrackBar();
-            this.chbLinearColorSpace = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
+            this.chbLinearColorSpace = new KGySoft.WinForms.Controls.AdvancedCheckBox();
             this.tblNumColors = new System.Windows.Forms.TableLayoutPanel();
             this.lblNumColors = new System.Windows.Forms.Label();
             this.lblNumColorsValue = new System.Windows.Forms.Label();
             this.tbNumColors = new System.Windows.Forms.TrackBar();
-            this.chbDirectMapping = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
+            this.chbDirectMapping = new KGySoft.WinForms.Controls.AdvancedCheckBox();
             this.tblBitLevel = new System.Windows.Forms.TableLayoutPanel();
             this.lblBitLevel = new System.Windows.Forms.Label();
             this.lblBitLevelValue = new System.Windows.Forms.Label();
@@ -216,7 +216,6 @@
             // chbLinearColorSpace
             // 
             this.chbLinearColorSpace.Dock = System.Windows.Forms.DockStyle.Top;
-            this.chbLinearColorSpace.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.chbLinearColorSpace.Location = new System.Drawing.Point(0, 21);
             this.chbLinearColorSpace.Name = "chbLinearColorSpace";
             this.chbLinearColorSpace.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
@@ -283,7 +282,6 @@
             // chbDirectMapping
             // 
             this.chbDirectMapping.Dock = System.Windows.Forms.DockStyle.Top;
-            this.chbDirectMapping.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.chbDirectMapping.Location = new System.Drawing.Point(0, 131);
             this.chbDirectMapping.Name = "chbDirectMapping";
             this.chbDirectMapping.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
@@ -390,12 +388,12 @@
         private System.Windows.Forms.Label lblAlphaThreshold;
         private System.Windows.Forms.Label lblAlphaThresholdValue;
         private System.Windows.Forms.TrackBar tbAlphaThreshold;
-        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox chbLinearColorSpace;
+        private KGySoft.WinForms.Controls.AdvancedCheckBox chbLinearColorSpace;
         private System.Windows.Forms.TableLayoutPanel tblNumColors;
         private System.Windows.Forms.Label lblNumColors;
         private System.Windows.Forms.Label lblNumColorsValue;
         private System.Windows.Forms.TrackBar tbNumColors;
-        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox chbDirectMapping;
+        private KGySoft.WinForms.Controls.AdvancedCheckBox chbDirectMapping;
         private System.Windows.Forms.TableLayoutPanel tblBitLevel;
         private System.Windows.Forms.Label lblBitLevel;
         private System.Windows.Forms.Label lblBitLevelValue;

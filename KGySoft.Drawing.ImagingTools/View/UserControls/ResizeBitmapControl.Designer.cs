@@ -18,7 +18,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         private void InitializeComponent()
         {
             this.tblNewSize = new System.Windows.Forms.TableLayoutPanel();
-            this.chbMaintainAspectRatio = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
+            this.chbMaintainAspectRatio = new KGySoft.WinForms.Controls.AdvancedCheckBox();
             this.lblScalingMode = new System.Windows.Forms.Label();
             this.pnlHeightPx = new KGySoft.Drawing.ImagingTools.View.Controls.AutoMirrorPanel();
             this.lblHeightPx = new System.Windows.Forms.Label();
@@ -85,7 +85,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.chbMaintainAspectRatio.AutoSize = true;
             this.tblNewSize.SetColumnSpan(this.chbMaintainAspectRatio, 2);
             this.chbMaintainAspectRatio.Dock = System.Windows.Forms.DockStyle.Top;
-            this.chbMaintainAspectRatio.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.chbMaintainAspectRatio.Location = new System.Drawing.Point(103, 3);
             this.chbMaintainAspectRatio.Name = "chbMaintainAspectRatio";
             this.chbMaintainAspectRatio.Size = new System.Drawing.Size(212, 18);
@@ -327,6 +326,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         private System.Windows.Forms.TextBox txtWidthPx;
         private System.Windows.Forms.Label lblScalingMode;
         private System.Windows.Forms.ComboBox cmbScalingMode;
-        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox chbMaintainAspectRatio;
+        private KGySoft.WinForms.Controls.AdvancedCheckBox chbMaintainAspectRatio;
     }
 }

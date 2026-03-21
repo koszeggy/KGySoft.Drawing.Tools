@@ -20,8 +20,8 @@
             this.lblStrength = new System.Windows.Forms.Label();
             this.lblStrengthValue = new System.Windows.Forms.Label();
             this.tbStrength = new System.Windows.Forms.TrackBar();
-            this.chbSerpentineProcessing = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
-            this.chbByBrightness = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
+            this.chbSerpentineProcessing = new KGySoft.WinForms.Controls.AdvancedCheckBox();
+            this.chbByBrightness = new KGySoft.WinForms.Controls.AdvancedCheckBox();
             this.tblSeed = new System.Windows.Forms.TableLayoutPanel();
             this.lblSeed = new System.Windows.Forms.Label();
             this.txtSeed = new System.Windows.Forms.TextBox();
@@ -96,7 +96,6 @@
             // chbSerpentineProcessing
             // 
             this.chbSerpentineProcessing.Dock = System.Windows.Forms.DockStyle.Top;
-            this.chbSerpentineProcessing.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.chbSerpentineProcessing.Location = new System.Drawing.Point(0, 43);
             this.chbSerpentineProcessing.Name = "chbSerpentineProcessing";
             this.chbSerpentineProcessing.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
@@ -110,7 +109,6 @@
             this.chbByBrightness.Checked = true;
             this.chbByBrightness.CheckState = System.Windows.Forms.CheckState.Indeterminate;
             this.chbByBrightness.Dock = System.Windows.Forms.DockStyle.Top;
-            this.chbByBrightness.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.chbByBrightness.Location = new System.Drawing.Point(0, 65);
             this.chbByBrightness.Name = "chbByBrightness";
             this.chbByBrightness.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
@@ -183,8 +181,8 @@
         private System.Windows.Forms.Label lblStrength;
         private System.Windows.Forms.Label lblStrengthValue;
         private System.Windows.Forms.TrackBar tbStrength;
-        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox chbSerpentineProcessing;
-        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox chbByBrightness;
+        private KGySoft.WinForms.Controls.AdvancedCheckBox chbSerpentineProcessing;
+        private KGySoft.WinForms.Controls.AdvancedCheckBox chbByBrightness;
         private System.Windows.Forms.TableLayoutPanel tblSeed;
         private System.Windows.Forms.Label lblSeed;
         private System.Windows.Forms.TextBox txtSeed;
