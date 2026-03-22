@@ -137,7 +137,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             {
                 isCustomAlternatingRowsDefaultCellStyle = value != null;
                 base.AlternatingRowsDefaultCellStyle = isCustomAlternatingRowsDefaultCellStyle ? value
-                    : SystemInformation.HighContrast ? null
+                    : ThemeColors.HighContrast ? null
                     : defaultAlternatingRowsDefaultCellStyle;
             }
         }
@@ -336,12 +336,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             {
                 defaultDefaultCellStyle.BackColor = ThemeColors.Window;
                 defaultDefaultCellStyle.ForeColor = ThemeColors.WindowText;
+                defaultDefaultCellStyle.SelectionBackColor = ThemeColors.Highlight;
+                defaultDefaultCellStyle.SelectionForeColor = ThemeColors.HighlightText;
             }
 
-            bool isHighContrast = SystemInformation.HighContrast;
             if (!isCustomAlternatingRowsDefaultCellStyle)
             {
-                if (isHighContrast)
+                if (ThemeColors.HighContrast)
                     base.AlternatingRowsDefaultCellStyle = null;
                 else
                 {
@@ -353,7 +354,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             if (!isCustomColumnHeadersDefaultCellStyle || !isCustomRowHeadersDefaultCellStyle)
             {
-                EnableHeadersVisualStyles = !ThemeColors.IsThemingEnabled && !SystemInformation.HighContrast;
+                EnableHeadersVisualStyles = !ThemeColors.IsThemingEnabled && !ThemeColors.HighContrast;
                 defaultHeadersDefaultCellStyle.BackColor = ThemeColors.Control;
                 defaultHeadersDefaultCellStyle.ForeColor = ThemeColors.ControlText;
             }
@@ -379,7 +380,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             base.OnHandleCreated(e);
 
             // Trying to avoid double invocation of ApplyTheme
-            if (ThemeColors.IsThemeEverChanged && !SystemInformation.HighContrast)
+            if (ThemeColors.IsThemeEverChanged && !ThemeColors.HighContrast)
                 return;
 
             ApplyTheme();
@@ -391,7 +392,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             // Unfortunately OnSystemColorsChanged is not called when the dark/light theme changes so we have an ApplyTheme call also in ThemeColors.
             // Which also means that we can ignore the base invocation if theming will be applied anyway.
-            if (ThemeColors.IsThemeEverChanged && !SystemInformation.HighContrast)
+            if (ThemeColors.IsThemeEverChanged && !ThemeColors.HighContrast)
                 return;
 
             ApplyTheme();

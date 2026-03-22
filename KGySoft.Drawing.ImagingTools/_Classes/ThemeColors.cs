@@ -308,8 +308,8 @@ namespace KGySoft.Drawing.ImagingTools
         private static volatile bool isDarkBaseTheme;
         private static volatile bool isBaseThemeEverChanged;
         private static volatile bool isCustomThemeEverChanged;
-        private static volatile bool useVisualStyles;
-        private static volatile bool isHighContrast;
+        private static volatile bool useVisualStyles; // TODO: remove and use VisualStyleHelper.RenderWithVisualStyles once using the UserPreferenceChanged handler from VisualStyleHelper
+        private static volatile bool isHighContrast; // TODO: remove and use VisualStyleHelper.IsHighContrast once using the UserPreferenceChanged handler from VisualStyleHelper
         private static bool? isDarkSystemTheme;
         private static DefaultTheme currentBaseTheme;
         private static Dictionary<ThemeColor, Color>? customColors; // changed to a simple dictionary because it is always replaced with a new one
@@ -343,6 +343,10 @@ namespace KGySoft.Drawing.ImagingTools
         #endregion
 
         #region Internal Properties
+
+        // TODO: Remove these and use VisualStyleHelper properties once ThemeChanged will be invoked from the UserPreferenceChanged handler in VisualStyleHelper
+        internal static bool RenderWithVisualStyles => useVisualStyles;
+        internal static bool HighContrast => isHighContrast;
 
         internal static Color Control => Get(ThemeColor.Control);
         internal static Color ControlText => Get(ThemeColor.ControlText);
@@ -411,6 +415,7 @@ namespace KGySoft.Drawing.ImagingTools
         // TODO: is it possible to retrieve them by VisualStyleRenderer (like the GroupBox color)? If so, they can be configurable after all.
         internal static Color FixedSingleBorder => Color.FromArgb(unchecked((int)(0xFFC8C8C8)));
         internal static Color FixedSingleBorderInactive => Color.FromArgb(unchecked((int)(0xFF9B9B9B)));
+        internal static Color MultilineTextBoxBorder => Color.FromArgb(unchecked((int)(0xFF383838)));
 
         internal static bool IsBaseThemeEverChanged => isBaseThemeEverChanged;
         internal static bool IsThemeEverChanged => isBaseThemeEverChanged || isCustomThemeEverChanged;
@@ -472,6 +477,9 @@ namespace KGySoft.Drawing.ImagingTools
         {
             try
             {
+                // NOTE: this can be removed after ThemeChanged will be invoked from the UserPreferenceChanged handler of VisualStyleHelper.
+                // Until then, we must keep these in sync here separately. VisualStyleHelper.RenderWithVisualStyles/HighContrast still could be used in other classes,
+                // when the check is not an immediate response to a theme or visual style change (e.g. in paint methods), but for now using these everywhere in the project.
                 useVisualStyles = Application.RenderWithVisualStyles;
                 isHighContrast = SystemInformation.HighContrast;
                 if (OSUtils.IsWindows)
@@ -508,7 +516,7 @@ namespace KGySoft.Drawing.ImagingTools
             if (!OSUtils.IsWindows10OrLater)
                 return;
 
-            bool isNewThemeDark = (theme == DefaultTheme.Dark || theme == DefaultTheme.System && IsDarkSystemTheme) && Application.RenderWithVisualStyles;
+            bool isNewThemeDark = (theme == DefaultTheme.Dark || theme == DefaultTheme.System && IsDarkSystemTheme) && useVisualStyles;
             bool defaultColorsChanged = isNewThemeDark != isDarkBaseTheme;
             currentBaseTheme = theme;
 
@@ -681,13 +689,16 @@ namespace KGySoft.Drawing.ImagingTools
 
         private static void SystemEvents_UserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
         {
-            if (e.Category == UserPreferenceCategory.General)
+            if (e.Category is UserPreferenceCategory.VisualStyle or UserPreferenceCategory.General)
             {
                 useVisualStyles = Application.RenderWithVisualStyles;
                 isHighContrast = SystemInformation.HighContrast;
-                isDarkSystemTheme = null;
-                if (currentBaseTheme == DefaultTheme.System)
-                    SetBaseTheme(DefaultTheme.System, false);
+                if (e.Category == UserPreferenceCategory.General)
+                {
+                    isDarkSystemTheme = null;
+                    if (currentBaseTheme == DefaultTheme.System)
+                        SetBaseTheme(DefaultTheme.System, false);
+                }
             }
         }
 

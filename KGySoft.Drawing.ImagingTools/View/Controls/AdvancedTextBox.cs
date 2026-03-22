@@ -51,7 +51,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     base.WndProc(ref m);
 
                     // Stopping buffered animations in dark mode to avoid flickering, which is especially apparent when it's embedded into a WPF control (modern visualizers).
-                    if (Application.RenderWithVisualStyles)
+                    if (ThemeColors.RenderWithVisualStyles)
                         UxTheme.BufferedPaintStopAllAnimations(Handle);
                     PaintDarkNCArea(m.WParam);
                     break;
@@ -120,8 +120,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 var rect = new Rectangle(0, 0, Width - 1, Height - 1);
                 g.DrawRectangle(color.GetPen(), rect);
                 rect.Inflate(-1, -1);
-                color = Color.FromArgb(unchecked((int)0xFF383838));
-                g.DrawRectangle(color.GetPen(), rect);
+                g.DrawRectangle(ThemeColors.MultilineTextBoxBorder.GetPen(), rect);
             }
             finally
             {

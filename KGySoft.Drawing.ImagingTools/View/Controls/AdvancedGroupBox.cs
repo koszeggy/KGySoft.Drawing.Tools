@@ -33,7 +33,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         protected override void OnPaint(PaintEventArgs e)
         {
             // Customizing only the disabled text color in dark mode. Not including the FlatStyle check here, because System FlatStyle is drawn in WM_PAINT
-            if (!ThemeColors.IsDarkBaseTheme || Enabled || !Application.RenderWithVisualStyles || Width < 10 || Height < 10)
+            if (!ThemeColors.IsDarkBaseTheme || Enabled || !ThemeColors.RenderWithVisualStyles || Width < 10 || Height < 10)
             {
                 base.OnPaint(e);
                 return;

@@ -97,7 +97,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             set
             {
                 // Workaround for progress bar on Vista and above where it advances very slowly
-                if (pbProgress.Style == AdvancedProgressBarStyle.System && Application.RenderWithVisualStyles && OSUtils.IsVistaOrLater && value > pbProgress.Value && value < pbProgress.Maximum)
+                if (pbProgress.Style == AdvancedProgressBarStyle.System && ThemeColors.RenderWithVisualStyles && OSUtils.IsVistaOrLater && value > pbProgress.Value && value < pbProgress.Maximum)
                     pbProgress.Value = value + 1;
                 pbProgress.Value = value;
             }

@@ -196,7 +196,7 @@ namespace KGySoft.Drawing.ImagingTools.View
             control.HandleCreated += Control_HandleCreated;
             control.Disposed -= Control_Disposed;
             control.Disposed += Control_Disposed;
-            if (!control.IsHandleCreated || !Application.RenderWithVisualStyles)
+            if (!control.IsHandleCreated || !ThemeColors.RenderWithVisualStyles)
                 return;
 
             switch (control)

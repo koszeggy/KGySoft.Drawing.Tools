@@ -397,7 +397,7 @@ namespace KGySoft.Drawing.ImagingTools
             DefaultLanguage = (Attribute.GetCustomAttribute(typeof(Res).Assembly, typeof(NeutralResourcesLanguageAttribute)) is NeutralResourcesLanguageAttribute attr
                 ? CultureInfo.GetCultureInfo(attr.CultureName)
                 : CultureInfo.InvariantCulture).GetClosestNeutralCulture();
-            DrawingModule.Initialize(); // This implicitly initializes DrawingCoreModule, too
+            WinFormsModule.Initialize(); // This implicitly initializes DrawingModule and DrawingCoreModule, too
 
             string? desiredResXPath = Configuration.ResXResourcesCustomPath;
             if (PathHelper.HasInvalidChars(desiredResXPath))

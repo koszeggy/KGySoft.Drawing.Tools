@@ -269,7 +269,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     return;
                 }
 
-                if (Application.RenderWithVisualStyles)
+                if (ThemeColors.RenderWithVisualStyles)
                     RenderWithVisualStyles(g, colorTable, bounds, style);
                 else
                     RenderBasicTheme(g, colorTable, bounds, style);
@@ -370,8 +370,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 Rectangle bounds = e.Item is ScalingToolStripDropDownButton scalingButton ? scalingButton.ArrowRectangle
                     : OSUtils.IsMono && e.Item is ToolStripMenuItem mi ? new Rectangle(e.ArrowRectangle.Left, 0, e.ArrowRectangle.Width, mi.Height)
                     : e.ArrowRectangle;
-                Color color = !e.Item.Enabled ? SystemInformation.HighContrast ? SystemColors.GrayText : ThemeColors.ControlTextDisabled
-                    : SystemInformation.HighContrast ? e.Item.Selected && !e.Item.Pressed ? SystemColors.HighlightText : SystemColors.ControlText
+                Color color = !e.Item.Enabled ? ThemeColors.HighContrast ? SystemColors.GrayText : ThemeColors.ControlTextDisabled
+                    : ThemeColors.HighContrast ? e.Item.Selected && !e.Item.Pressed ? SystemColors.HighlightText : SystemColors.ControlText
                     : ThemeColors.ControlText;
 
                 DrawArrow(e.Graphics, color, bounds, e.Direction);
@@ -446,7 +446,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     return;
                 }
 
-                if (SystemInformation.HighContrast)
+                if (ThemeColors.HighContrast)
                     DrawHighContrast(e);
                 else
                     DrawThemed(e, ColorTable);
@@ -467,8 +467,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 }
 
                 Rectangle textRect = e.TextRectangle;
-                Color textColor = !mi.Enabled ? SystemInformation.HighContrast ? SystemColors.GrayText : ThemeColors.ToolStripMenuItemTextDisabled
-                    : SystemInformation.HighContrast ? mi.Selected || mi.Pressed ? SystemColors.HighlightText : SystemColors.ControlText
+                Color textColor = !mi.Enabled ? ThemeColors.HighContrast ? SystemColors.GrayText : ThemeColors.ToolStripMenuItemTextDisabled
+                    : ThemeColors.HighContrast ? mi.Selected || mi.Pressed ? SystemColors.HighlightText : SystemColors.ControlText
                     : mi.Selected || mi.Pressed ? ThemeColors.ControlText
                     : e.Item.ForeColor.ToThemeColor();
 
@@ -502,7 +502,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     | (button.Checked ? ButtonStyle.Checked : 0)
                     | (button.Selected ? ButtonStyle.Selected : 0);
 
-                if (SystemInformation.HighContrast)
+                if (ThemeColors.HighContrast)
                     DrawHighContrastButtonBackground(e.Graphics, bounds, style);
                 else if (button.Enabled && style != ButtonStyle.None)
                     DrawThemedButtonBackground(e.Graphics, ColorTable, bounds, style);
@@ -522,7 +522,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     | (button.Pressed ? ButtonStyle.Pressed : 0)
                     | (button.Selected ? ButtonStyle.Selected : 0);
 
-                if (SystemInformation.HighContrast)
+                if (ThemeColors.HighContrast)
                     DrawHighContrastButtonBackground(e.Graphics, bounds, style);
                 else if (button.Enabled && style != ButtonStyle.None)
                     DrawThemedButtonBackground(e.Graphics, ColorTable, bounds, style);
@@ -623,7 +623,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     | (button.Selected ? ButtonStyle.Selected : 0)
                     | (button is AdvancedToolStripSplitButton { Checked: true } ? ButtonStyle.Checked : 0);
 
-                if (SystemInformation.HighContrast)
+                if (ThemeColors.HighContrast)
                     DrawHighContrast(e, style);
                 else
                     DrawThemed(e, ColorTable, style);
@@ -640,7 +640,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             {
                 int size = e.Item.Height;
                 Rectangle bounds = new Rectangle(e.Item.RightToLeft == RightToLeft.Yes ? e.Item.Width - size - 1 : OSUtils.IsMono ? 1 : 2, 0, size, size);
-                if (SystemInformation.HighContrast)
+                if (ThemeColors.HighContrast)
                     DrawHighContrastButtonBackground(e.Graphics, bounds, ButtonStyle.Selected);
                 else
                     DrawThemedButtonBackground(e.Graphics, ColorTable, bounds, e.Item.Selected ? ButtonStyle.Pressed : ButtonStyle.Selected);
@@ -662,7 +662,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 if (OSUtils.IsMono && e.Item is ToolStripMenuItem)
                     bounds.Size = e.Item.Owner.ScaleSize(referenceImageSize);
                 // In high contrast mode shifting the pressed buttons by 1 pixel, including ToolStripSplitButton
-                else if (SystemInformation.HighContrast && e.Item is ToolStripButton { Pressed: true } or ToolStripSplitButton { ButtonPressed: true })
+                else if (ThemeColors.HighContrast && e.Item is ToolStripButton { Pressed: true } or ToolStripSplitButton { ButtonPressed: true })
                     bounds.X += 1;
 #if NETFRAMEWORK
                 else if (e.Item is ScalingToolStripDropDownButton btn)
@@ -883,7 +883,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 }
 #endif
 
-                if (SystemInformation.HighContrast)
+                if (ThemeColors.HighContrast)
                     DrawHighContrast(e);
                 else
                     DrawThemed(e, ColorTable);
