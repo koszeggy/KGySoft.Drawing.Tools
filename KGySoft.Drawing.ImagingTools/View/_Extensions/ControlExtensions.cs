@@ -108,8 +108,8 @@ namespace KGySoft.Drawing.ImagingTools.View
                     textBox.ApplyVisualStyleTheme();
                     if (!textBox.Enabled)
                     {
-                        textBox.BackColor = ThemeColors.Control;
-                        textBox.ForeColor = ThemeColors.ControlTextDisabled;
+                        textBox.BackColor = ThemeColors.Window;
+                        textBox.ForeColor = ThemeColors.WindowTextDisabled;
                     }
                     else if (textBox.ReadOnly)
                     {
@@ -123,8 +123,19 @@ namespace KGySoft.Drawing.ImagingTools.View
                     }
                     break;
 
-                case ButtonBase buttonBase:
-                    buttonBase.ApplyVisualStyleTheme();
+                case AdvancedButton button:
+                    button.DisabledForeColor = ThemeColors.ControlTextDisabled;
+                    button.ApplyVisualStyleTheme();
+                    break;
+
+                case AdvancedCheckBox checkBox:
+                    checkBox.DisabledForeColor = ThemeColors.ControlTextDisabled;
+                    checkBox.ApplyVisualStyleTheme();
+                    break;
+
+                case AdvancedRadioButton radioButton:
+                    radioButton.DisabledForeColor = ThemeColors.ControlTextDisabled;
+                    radioButton.ApplyVisualStyleTheme();
                     break;
 
                 case AdvancedLabel label:

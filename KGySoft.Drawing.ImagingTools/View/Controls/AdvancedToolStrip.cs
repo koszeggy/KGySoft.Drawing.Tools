@@ -467,7 +467,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 }
 
                 Rectangle textRect = e.TextRectangle;
-                Color textColor = !mi.Enabled ? SystemInformation.HighContrast ? SystemColors.GrayText : ThemeColors.ControlTextDisabled
+                Color textColor = !mi.Enabled ? SystemInformation.HighContrast ? SystemColors.GrayText : ThemeColors.ToolStripMenuItemTextDisabled
                     : SystemInformation.HighContrast ? mi.Selected || mi.Pressed ? SystemColors.HighlightText : SystemColors.ControlText
                     : mi.Selected || mi.Pressed ? ThemeColors.ControlText
                     : e.Item.ForeColor.ToThemeColor();

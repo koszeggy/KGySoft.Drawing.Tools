@@ -170,6 +170,11 @@ namespace KGySoft.Drawing.ImagingTools
         ToolStripButtonCheckedBorder,
 
         /// <summary>
+        /// Represents the foreground color of a <see cref="ToolStripMenuItem"/> when it is disabled.
+        /// </summary>
+        ToolStripMenuItemTextDisabled,
+
+        /// <summary>
         /// Represents the border color of a <see cref="ToolStripMenuItem"/> when it is selected.
         /// </summary>
         ToolStripMenuItemSelectedBorder,

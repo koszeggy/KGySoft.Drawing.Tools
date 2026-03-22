@@ -82,6 +82,7 @@ namespace KGySoft.Drawing.ImagingTools
             ProfessionalColors.ButtonSelectedBorder, // ToolStripButtonPressedBorder (Highlight)  
             ProfessionalColors.ButtonSelectedBorder, // ToolStripButtonCheckedBorder (Highlight)  
 #endif
+            SystemColors.ControlDarkDark, // ToolStripMenuItemTextDisabled - Light explorer theme: 0x9F9F9F
             ProfessionalColors.MenuItemBorder, // ToolStripMenuItemSelectedBorder (Highlight)
             ProfessionalColors.MenuItemBorder, // ToolStripMenuItemOpenedBorder (Highlight)
             ProfessionalColors.MenuItemBorder, // ToolStripMenuItemDisabledBorder (Highlight)
@@ -117,14 +118,14 @@ namespace KGySoft.Drawing.ImagingTools
 
         private static readonly Color[] darkThemeColors =
         [
-            // Explorer / Gray Window / Gray Highlight / Context menu-like gray ToolStrip menu items
+            // Explorer / Gray Window / Gray Highlight / Context menu-like gray ToolStrip menu items / different disabled colors for control/window/menu texts (reflecting system default rendering)
             Color.FromArgb((unchecked((int)0xFF383838))), // Control
             Color.FromArgb((unchecked((int)0xFFFFFFFF))), // ControlText
-            Color.FromArgb((unchecked((int)0xFF797979))), // ControlTextDisabled // ToolStrip menu item text
+            Color.FromArgb((unchecked((int)0xFFCCCCCC))), // ControlTextDisabled // e.g. disabled Button - taken from Button with FlatStyle = System
             Color.FromArgb((unchecked((int)0xFF101010))), // ControlHighlight (.NET 9 ButtonHighlight) // e.g. highlight text on a control or a ToolStripOverflowButton
             Color.FromArgb((unchecked((int)0xFF383838))), // Window
             Color.FromArgb((unchecked((int)0xFFFFFFFF))), // WindowText
-            Color.FromArgb((unchecked((int)0xFF6D6D6D))), // WindowTextDisabled // e.g. disabled TextBox
+            Color.FromArgb((unchecked((int)0xFF6D6D6D))), // WindowTextDisabled // e.g. disabled TextBox - taken from .NET 9+ system dark mode disabled, but also the same as the hint text in open file dialog Explorer
             Color.FromArgb((unchecked((int)0xFF191919))), // WindowAlternate // e.g. in DataGridView
             Color.FromArgb((unchecked((int)0xFFFFFFFF))), // WindowTextAlternate // e.g. in DataGridView
             Color.FromArgb((unchecked((int)0xFF505050))), // Highlight
@@ -146,6 +147,7 @@ namespace KGySoft.Drawing.ImagingTools
             Color.FromArgb((unchecked((int)0xFF636363))), // ToolStripButtonSelectedBorder (GridLine)
             Color.FromArgb((unchecked((int)0xFFC3C3C3))), // ToolStripButtonPressedBorder
             Color.FromArgb((unchecked((int)0xFFC3C3C3))), // ToolStripButtonCheckedBorder
+            Color.FromArgb((unchecked((int)0xFF797979))), // ToolStripMenuItemTextDisabled // taken from Explorer context menu disabled items
             Color.FromArgb((unchecked((int)0xFF2C2C2C))), // ToolStripMenuItemSelectedBorder
             Color.FromArgb((unchecked((int)0xFF2C2C2C))), // ToolStripMenuItemOpenedBorder
             Color.FromArgb((unchecked((int)0xFF2C2C2C))), // ToolStripMenuItemDisabledBorder
@@ -178,10 +180,10 @@ namespace KGySoft.Drawing.ImagingTools
             Color.FromArgb((unchecked((int)0xFF707070))), // ProgressBarBackground
             Color.FromArgb((unchecked((int)0xFF7160E8))), // ProgressBar
 
-            //// Explorer / Gray Window / TextBox highlight / Files ListView-like dark ToolStrip menu items
+            //// Explorer / Gray Window / TextBox highlight / Files Explorer ListView-like dark ToolStrip menu items / unified disabled text colors
             //Color.FromArgb((unchecked((int)0xFF383838))), // Control
             //Color.FromArgb((unchecked((int)0xFFFFFFFF))), // ControlText
-            //Color.FromArgb((unchecked((int)0xFF6D6D6D))), // ControlTextDisabled // now the same as WindowTextDisabled, though this differs from e.g. disabled CheckBox with FlatStyle.System
+            //Color.FromArgb((unchecked((int)0xFF6D6D6D))), // ControlTextDisabled // now the same as WindowTextDisabled, though this differs from e.g. disabled Button with FlatStyle.System
             //Color.FromArgb((unchecked((int)0xFF101010))), // ControlHighlight (.NET 9 ButtonHighlight) // e.g. highlight text on a control or a ToolStripOverflowButton
             //Color.FromArgb((unchecked((int)0xFF383838))), // Window
             //Color.FromArgb((unchecked((int)0xFFFFFFFF))), // WindowText
@@ -207,6 +209,7 @@ namespace KGySoft.Drawing.ImagingTools
             //Color.FromArgb((unchecked((int)0xFF636363))), // ToolStripButtonSelectedBorder
             //Color.FromArgb((unchecked((int)0xFFC3C3C3))), // ToolStripButtonPressedBorder
             //Color.FromArgb((unchecked((int)0xFFC3C3C3))), // ToolStripButtonCheckedBorder
+            //Color.FromArgb((unchecked((int)0xFF6D6D6D))), // ToolStripMenuItemTextDisabled // now the same as Control/WindowTextDisabled
             //Color.FromArgb((unchecked((int)0xFF505050))), // ToolStripMenuItemSelectedBorder
             //Color.FromArgb((unchecked((int)0xFFC3C3C3))), // ToolStripMenuItemOpenedBorder
             //Color.FromArgb((unchecked((int)0xFF505050))), // ToolStripMenuItemDisabledBorder
@@ -239,7 +242,7 @@ namespace KGySoft.Drawing.ImagingTools
             //Color.FromArgb((unchecked((int)0xFF707070))), // ProgressBarBackground
             //Color.FromArgb((unchecked((int)0xFF7160E8))), // ProgressBar
 
-            //// .NET 9's dark theme by its AlternateSystemColors
+            //// .NET 9's dark theme by its AlternateSystemColors, fix GrayText for disabled colors (though system rendering uses different colors)
             //Color.FromArgb((unchecked((int)0xFF202020))), // Control
             //Color.FromArgb((unchecked((int)0xFFFFFFFF))), // ControlText
             //Color.FromArgb((unchecked((int)0xFF969696))), // ControlTextDisabled (GrayText) // note though that a disabled CheckBox with FlatStyle.System is 0xFFCCCCCC, for example
@@ -268,6 +271,7 @@ namespace KGySoft.Drawing.ImagingTools
             //Color.FromArgb((unchecked((int)0xFF2864B4))), // ToolStripButtonSelectedBorder (Highlight)
             //Color.FromArgb((unchecked((int)0xFF2864B4))), // ToolStripButtonPressedBorder (Highlight)
             //Color.FromArgb((unchecked((int)0xFF2864B4))), // ToolStripButtonCheckedBorder (Highlight)
+            //Color.FromArgb((unchecked((int)0xFF969696))), // ToolStripMenuItemTextDisabled (GrayText)
             //Color.FromArgb((unchecked((int)0xFF2864B4))), // ToolStripMenuItemSelectedBorder (Highlight)
             //Color.FromArgb((unchecked((int)0xFF2864B4))), // ToolStripMenuItemOpenedBorder (Highlight)
             //Color.FromArgb((unchecked((int)0xFF2864B4))), // ToolStripMenuItemDisabledBorder (Highlight)
@@ -368,6 +372,7 @@ namespace KGySoft.Drawing.ImagingTools
         internal static Color ToolStripButtonSelectedBorder => Get(ThemeColor.ToolStripButtonSelectedBorder);
         internal static Color ToolStripButtonPressedBorder => Get(ThemeColor.ToolStripButtonPressedBorder);
         internal static Color ToolStripButtonCheckedBorder => Get(ThemeColor.ToolStripButtonCheckedBorder);
+        internal static Color ToolStripMenuItemTextDisabled => Get(ThemeColor.ToolStripMenuItemTextDisabled);
         internal static Color ToolStripMenuItemSelectedBorder => Get(ThemeColor.ToolStripMenuItemSelectedBorder);
         internal static Color ToolStripMenuItemOpenedBorder => Get(ThemeColor.ToolStripMenuItemOpenedBorder);
         internal static Color ToolStripMenuItemDisabledBorder => Get(ThemeColor.ToolStripMenuItemDisabledBorder);
