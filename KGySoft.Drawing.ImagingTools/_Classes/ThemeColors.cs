@@ -118,7 +118,7 @@ namespace KGySoft.Drawing.ImagingTools
 
         private static readonly Color[] darkThemeColors =
         [
-            // Explorer / Gray Window / Gray Highlight / Context menu-like gray ToolStrip menu items / different disabled colors for control/window/menu texts (reflecting system default rendering)
+            // Explorer / Gray Window / Gray Highlight / Context menu-like gray ToolStrip menu items / same control/window colors / different disabled colors for control/window/menu texts (reflecting system default rendering)
             Color.FromArgb((unchecked((int)0xFF383838))), // Control
             Color.FromArgb((unchecked((int)0xFFFFFFFF))), // ControlText
             Color.FromArgb((unchecked((int)0xFFCCCCCC))), // ControlTextDisabled // e.g. disabled Button - taken from Button with FlatStyle = System
@@ -180,7 +180,7 @@ namespace KGySoft.Drawing.ImagingTools
             Color.FromArgb((unchecked((int)0xFF707070))), // ProgressBarBackground
             Color.FromArgb((unchecked((int)0xFF7160E8))), // ProgressBar
 
-            //// Explorer / Gray Window / TextBox highlight / Files Explorer ListView-like dark ToolStrip menu items / unified disabled text colors
+            //// Explorer / Gray Window / TextBox highlight / Files Explorer ListView-like dark ToolStrip menu items / same control/window colors / unified disabled text colors
             //Color.FromArgb((unchecked((int)0xFF383838))), // Control
             //Color.FromArgb((unchecked((int)0xFFFFFFFF))), // ControlText
             //Color.FromArgb((unchecked((int)0xFF6D6D6D))), // ControlTextDisabled // now the same as WindowTextDisabled, though this differs from e.g. disabled Button with FlatStyle.System
@@ -242,7 +242,7 @@ namespace KGySoft.Drawing.ImagingTools
             //Color.FromArgb((unchecked((int)0xFF707070))), // ProgressBarBackground
             //Color.FromArgb((unchecked((int)0xFF7160E8))), // ProgressBar
 
-            //// .NET 9's dark theme by its AlternateSystemColors, fix GrayText for disabled colors (though system rendering uses different colors)
+            //// .NET 9's dark theme by its AlternateSystemColors, different window/control colors, same GrayText for disabled colors (though system rendering uses different colors)
             //Color.FromArgb((unchecked((int)0xFF202020))), // Control
             //Color.FromArgb((unchecked((int)0xFFFFFFFF))), // ControlText
             //Color.FromArgb((unchecked((int)0xFF969696))), // ControlTextDisabled (GrayText) // note though that a disabled CheckBox with FlatStyle.System is 0xFFCCCCCC, for example

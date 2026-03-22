@@ -26,11 +26,9 @@ using KGySoft.Drawing.ImagingTools.WinApi;
 namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
     /// <summary>
-    /// Just a TextBox that
-    /// - allows Ctrl+A even if auto appending is enabled
-    /// - fixes the rendering in dark mode when Multiline is true
+    /// Just a TextBox that fixes the rendering in dark mode when Multiline is true
     /// </summary>
-    internal class AdvancedTextBox : TextBox
+    internal class AdvancedTextBox : KGySoft.WinForms.Controls.AdvancedTextBox
     {
         #region Fields
 
@@ -41,18 +39,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         #region Methods
 
         #region Protected Methods
-
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        {
-            switch (keyData)
-            {
-                case Keys.Control | Keys.A when ShortcutsEnabled:
-                    SelectAll();
-                    return true;
-                default:
-                    return base.ProcessCmdKey(ref msg, keyData);
-            }
-        }
 
         protected override void WndProc(ref Message m)
         {

@@ -24,7 +24,7 @@
             this.chbByBrightness = new KGySoft.WinForms.Controls.AdvancedCheckBox();
             this.tblSeed = new System.Windows.Forms.TableLayoutPanel();
             this.lblSeed = new KGySoft.WinForms.Controls.AdvancedLabel();
-            this.txtSeed = new System.Windows.Forms.TextBox();
+            this.txtSeed = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox();
             this.tblStrength.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbStrength)).BeginInit();
             this.tblSeed.SuspendLayout();
@@ -182,6 +182,6 @@
         private KGySoft.WinForms.Controls.AdvancedCheckBox chbByBrightness;
         private System.Windows.Forms.TableLayoutPanel tblSeed;
         private KGySoft.WinForms.Controls.AdvancedLabel lblSeed;
-        private System.Windows.Forms.TextBox txtSeed;
+        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox txtSeed;
     }
 }

@@ -15,6 +15,8 @@
 
 #region Usings
 
+#region Used Namespaces
+
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -23,6 +25,14 @@ using KGySoft.Drawing.ImagingTools.View.Controls;
 using KGySoft.Drawing.ImagingTools.WinApi;
 using KGySoft.Reflection;
 using KGySoft.WinForms.Controls;
+
+#endregion
+
+#region Used Aliases
+
+using AdvancedTextBox = KGySoft.WinForms.Controls.AdvancedTextBox;
+
+#endregion
 
 #endregion
 
@@ -104,23 +114,12 @@ namespace KGySoft.Drawing.ImagingTools.View
                     form.ForeColor = ThemeColors.ControlText;
                     break;
 
-                case TextBoxBase textBox:
+                case AdvancedTextBox textBox:
                     textBox.ApplyVisualStyleTheme();
-                    if (!textBox.Enabled)
-                    {
-                        textBox.BackColor = ThemeColors.Window;
-                        textBox.ForeColor = ThemeColors.WindowTextDisabled;
-                    }
-                    else if (textBox.ReadOnly)
-                    {
-                        textBox.BackColor = ThemeColors.Control;
-                        textBox.ForeColor = ThemeColors.ControlText;
-                    }
-                    else
-                    {
-                        textBox.BackColor = ThemeColors.Window;
-                        textBox.ForeColor = ThemeColors.WindowText;
-                    }
+                    textBox.DisabledForeColor = ThemeColors.WindowTextDisabled;
+                    textBox.DisabledBackColor = ThemeColors.Control;
+                    textBox.EnabledForeColor = textBox.ReadOnly ? ThemeColors.ControlText : ThemeColors.WindowText;
+                    textBox.EnabledBackColor = ThemeColors.Window;
                     break;
 
                 case AdvancedButton button:
