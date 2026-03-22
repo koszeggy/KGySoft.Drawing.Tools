@@ -58,7 +58,7 @@
             this.progress.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.progress.Location = new System.Drawing.Point(0, 68);
             this.progress.Name = "progress";
-            this.progress.Size = new System.Drawing.Size(275, 22);
+            this.progress.Size = new System.Drawing.Size(275, 20);
             this.progress.TabIndex = 5;
             // 
             // CountColorsControl

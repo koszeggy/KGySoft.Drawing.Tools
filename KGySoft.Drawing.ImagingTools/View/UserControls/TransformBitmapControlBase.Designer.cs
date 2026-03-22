@@ -27,7 +27,7 @@
             this.progress.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.progress.Location = new System.Drawing.Point(3, 189);
             this.progress.Name = "progress";
-            this.progress.Size = new System.Drawing.Size(242, 22);
+            this.progress.Size = new System.Drawing.Size(242, 20);
             this.progress.TabIndex = 3;
             // 
             // okCancelButtons

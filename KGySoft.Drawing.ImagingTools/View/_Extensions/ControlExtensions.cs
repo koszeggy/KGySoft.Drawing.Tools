@@ -141,9 +141,11 @@ namespace KGySoft.Drawing.ImagingTools.View
                     label.DisabledForeColor = ThemeColors.ControlTextDisabled;
                     break;
 
-                case ComboBox comboBox:
-                    comboBox.BackColor = ThemeColors.Window;
-                    comboBox.ForeColor = ThemeColors.WindowText;
+                case AdvancedComboBox comboBox:
+                    comboBox.EnabledBackColor = ThemeColors.Window;
+                    comboBox.EnabledForeColor = ThemeColors.WindowText;
+                    comboBox.DisabledBackColor = ThemeColors.Control;
+                    comboBox.DisabledForeColor = ThemeColors.WindowTextDisabled;
                     comboBox.ApplyVisualStyleTheme();
                     break;
 
@@ -159,11 +161,11 @@ namespace KGySoft.Drawing.ImagingTools.View
                     scrollBar.ApplyVisualStyleTheme();
                     break;
 
-                case ProgressBar progressBar:
-                    // Makes a difference only when visual styles are not enabled
+                case AdvancedProgressBar progressBar:
+                    // Makes a difference only when Style is not System
                     progressBar.BackColor = ThemeColors.ProgressBarBackground;
                     progressBar.ForeColor = ThemeColors.ProgressBar;
-                    progressBar.ApplyVisualStyleTheme();
+                    progressBar.Style = ThemeColors.IsSet(ThemeColor.ProgressBar) || ThemeColors.IsSet(ThemeColor.ProgressBarBackground) ? AdvancedProgressBarStyle.ThemedShiny : AdvancedProgressBarStyle.System;
                     break;
 
 #if !SYSTEM_THEMING
@@ -228,14 +230,6 @@ namespace KGySoft.Drawing.ImagingTools.View
                         if (User32.GetComboBoxInfo(handle, ref cInfo))
                             UxTheme.SetWindowTheme(cInfo.hwndList, ThemeColors.IsDarkBaseTheme ? darkTheme : null, null); 
                     }
-                    break;
-
-                case ProgressBar:
-                    // When dark theme is enabled, turning off visual styles for the progress bar, so custom colors can be applied.
-                    if (ThemeColors.IsDarkBaseTheme)
-                        UxTheme.SetWindowTheme(control.Handle, " ", " ");
-                    else
-                        UxTheme.SetWindowTheme(control.Handle, null, null);
                     break;
             }
         }

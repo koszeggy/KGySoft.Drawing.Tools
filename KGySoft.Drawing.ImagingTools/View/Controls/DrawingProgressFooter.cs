@@ -15,8 +15,6 @@
 
 #region Usings
 
-using System.Windows.Forms;
-
 using KGySoft.Threading;
 
 #endregion
@@ -42,10 +40,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (displayedProgress?.OperationType != progress.OperationType)
                 ProgressText = Res.Get(progress.OperationType);
             if (progress.MaximumValue == 0)
-                ProgressStyle = ProgressBarStyle.Marquee;
+                IsMarquee = true;
             else
             {
-                ProgressStyle = ProgressBarStyle.Blocks;
+                IsMarquee = false;
                 Maximum = progress.MaximumValue;
                 Value = progress.CurrentValue;
             }

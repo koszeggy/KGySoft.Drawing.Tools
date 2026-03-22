@@ -55,9 +55,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 toBeAdjusted.Add(e.Control);
         }
 
-        protected override void OnLayout(LayoutEventArgs levent)
+        protected override void OnLayout(LayoutEventArgs e)
         {
-            base.OnLayout(levent);
+            base.OnLayout(e);
             if (toBeAdjusted.Count == 0)
                 return;
 

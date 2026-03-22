@@ -102,7 +102,7 @@
             this.progress.BackColor = System.Drawing.Color.Transparent;
             this.progress.Location = new System.Drawing.Point(3, 201);
             this.progress.Name = "progress";
-            this.progress.Size = new System.Drawing.Size(358, 22);
+            this.progress.Size = new System.Drawing.Size(358, 20);
             this.progress.TabIndex = 2;
             // 
             // DownloadResourcesControl

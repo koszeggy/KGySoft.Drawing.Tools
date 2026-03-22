@@ -21,6 +21,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Windows.Forms;
 
+using KGySoft.WinForms.Controls;
+
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.View.Controls
@@ -33,9 +35,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         #region Fields
 
         private readonly object syncRoot = new object();
-        private readonly bool visualStyles = Application.RenderWithVisualStyles;
         private readonly Label lblProgress;
-        private readonly ProgressBar pbProgress;
+        private readonly AdvancedProgressBar pbProgress;
         private readonly Timer timer;
 
         private bool progressVisible = true; // so ctor change will have effect at run-time
@@ -88,15 +89,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         protected virtual void UpdateProgress() => throw new InvalidOperationException(Res.InternalError($"{nameof(UpdateProgress)} is not overridden"));
 
         protected string ProgressText { set => lblProgress.Text = value; }
-        protected ProgressBarStyle ProgressStyle { set => pbProgress.Style = value; }
+        protected bool IsMarquee { set => pbProgress.IsMarquee = value; }
         protected int Maximum { set => pbProgress.Maximum = value; }
 
         protected int Value
         {
             set
             {
-                // Workaround for progress bar on Vista and above where it advances very slow
-                if (OSUtils.IsVistaOrLater && visualStyles && value > pbProgress.Value && value < pbProgress.Maximum)
+                // Workaround for progress bar on Vista and above where it advances very slowly
+                if (pbProgress.Style == AdvancedProgressBarStyle.System && Application.RenderWithVisualStyles && OSUtils.IsVistaOrLater && value > pbProgress.Value && value < pbProgress.Maximum)
                     pbProgress.Value = value + 1;
                 pbProgress.Value = value;
             }
@@ -119,7 +120,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 Dock = DockStyle.Left,
                 TextAlign = ContentAlignment.MiddleLeft
             };
-            pbProgress = new ProgressBar
+            pbProgress = new AdvancedProgressBar
             {
                 Name = nameof(pbProgress),
                 Dock = DockStyle.Fill,

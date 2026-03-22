@@ -13,13 +13,6 @@
 
 #endregion
 
-#region Usings
-
-using System.Windows.Forms;
-using KGySoft.Drawing.ImagingTools.Model;
-
-#endregion
-
 namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
     internal class DownloadProgressFooter : ProgressFooter<(int MaximumValue, int CurrentValue)>
@@ -45,10 +38,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         {
             var progress = Progress;
             if (progress.MaximumValue == 0)
-                ProgressStyle = ProgressBarStyle.Marquee;
+                IsMarquee = true;
             else
             {
-                ProgressStyle = ProgressBarStyle.Blocks;
+                IsMarquee = false;
                 Maximum = progress.MaximumValue;
                 Value = progress.CurrentValue;
             }
