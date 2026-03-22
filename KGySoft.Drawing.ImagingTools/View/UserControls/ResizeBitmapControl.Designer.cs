@@ -36,7 +36,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.txtWidthPercent = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox();
             this.lblWidth = new KGySoft.WinForms.Controls.AdvancedLabel();
             this.lblHeight = new KGySoft.WinForms.Controls.AdvancedLabel();
-            this.cmbScalingMode = new System.Windows.Forms.ComboBox();
+            this.cmbScalingMode = new KGySoft.WinForms.Controls.AdvancedComboBox();
             this.pnlSettings.SuspendLayout();
             this.tblNewSize.SuspendLayout();
             this.pnlHeightPx.SuspendLayout();
@@ -274,7 +274,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.tblNewSize.SetColumnSpan(this.cmbScalingMode, 2);
             this.cmbScalingMode.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cmbScalingMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbScalingMode.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.cmbScalingMode.FormattingEnabled = true;
             this.cmbScalingMode.Location = new System.Drawing.Point(100, 108);
             this.cmbScalingMode.Margin = new System.Windows.Forms.Padding(0);
@@ -323,7 +322,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         private KGySoft.WinForms.Controls.AdvancedLabel lblWidthPx;
         private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox txtWidthPx;
         private KGySoft.WinForms.Controls.AdvancedLabel lblScalingMode;
-        private System.Windows.Forms.ComboBox cmbScalingMode;
+        private KGySoft.WinForms.Controls.AdvancedComboBox cmbScalingMode;
         private KGySoft.WinForms.Controls.AdvancedCheckBox chbMaintainAspectRatio;
     }
 }

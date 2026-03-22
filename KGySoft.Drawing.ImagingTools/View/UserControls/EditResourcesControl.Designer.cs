@@ -27,7 +27,7 @@
             this.lblFilter = new KGySoft.WinForms.Controls.AdvancedLabel();
             this.gbResourceFile = new System.Windows.Forms.GroupBox();
             this.pnlResourceFile = new System.Windows.Forms.Panel();
-            this.cmbResourceFiles = new System.Windows.Forms.ComboBox();
+            this.cmbResourceFiles = new KGySoft.WinForms.Controls.AdvancedComboBox();
             this.btnGoToFile = new KGySoft.WinForms.Controls.AdvancedButton();
             this.chbHideDependencies = new KGySoft.WinForms.Controls.AdvancedCheckBox();
             this.splitterEditResources = new System.Windows.Forms.Splitter();
@@ -162,7 +162,6 @@
             // 
             this.cmbResourceFiles.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cmbResourceFiles.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbResourceFiles.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.cmbResourceFiles.FormattingEnabled = true;
             this.cmbResourceFiles.Location = new System.Drawing.Point(0, 0);
             this.cmbResourceFiles.Name = "cmbResourceFiles";
@@ -320,7 +319,7 @@
         private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox txtTranslatedText;
         private System.Windows.Forms.BindingSource bindingSource;
         private System.Windows.Forms.GroupBox gbResourceFile;
-        private System.Windows.Forms.ComboBox cmbResourceFiles;
+        private KGySoft.WinForms.Controls.AdvancedComboBox cmbResourceFiles;
         private System.Windows.Forms.DataGridViewTextBoxColumn colResourceKey;
         private System.Windows.Forms.DataGridViewTextBoxColumn colOriginalText;
         private System.Windows.Forms.DataGridViewTextBoxColumn colTranslatedText;

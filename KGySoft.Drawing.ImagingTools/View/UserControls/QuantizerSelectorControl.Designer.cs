@@ -15,7 +15,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.cmbQuantizer = new System.Windows.Forms.ComboBox();
+            this.cmbQuantizer = new KGySoft.WinForms.Controls.AdvancedComboBox();
             this.tblWhiteThreshold = new System.Windows.Forms.TableLayoutPanel();
             this.lblWhiteThreshold = new KGySoft.WinForms.Controls.AdvancedLabel();
             this.lblWhiteThresholdValue = new KGySoft.WinForms.Controls.AdvancedLabel();
@@ -53,7 +53,6 @@
             // 
             this.cmbQuantizer.Dock = System.Windows.Forms.DockStyle.Top;
             this.cmbQuantizer.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbQuantizer.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.cmbQuantizer.FormattingEnabled = true;
             this.cmbQuantizer.Location = new System.Drawing.Point(0, 0);
             this.cmbQuantizer.Name = "cmbQuantizer";
@@ -365,7 +364,7 @@
         }
 
         #endregion
-        private System.Windows.Forms.ComboBox cmbQuantizer;
+        private KGySoft.WinForms.Controls.AdvancedComboBox cmbQuantizer;
         private System.Windows.Forms.TableLayoutPanel tblWhiteThreshold;
         private KGySoft.WinForms.Controls.AdvancedLabel lblWhiteThreshold;
         private KGySoft.WinForms.Controls.AdvancedLabel lblWhiteThresholdValue;

@@ -25,7 +25,7 @@
             this.tbPath = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox();
             this.lblPath = new KGySoft.WinForms.Controls.AdvancedLabel();
             this.gbVisualStudioVersions = new System.Windows.Forms.GroupBox();
-            this.cmbInstallations = new System.Windows.Forms.ComboBox();
+            this.cmbInstallations = new KGySoft.WinForms.Controls.AdvancedComboBox();
             this.gbAvailableVersion = new System.Windows.Forms.GroupBox();
             this.lblAvailableVersion = new KGySoft.WinForms.Controls.AdvancedLabel();
             this.gbInstallation.SuspendLayout();
@@ -149,7 +149,6 @@
             // 
             this.cmbInstallations.Dock = System.Windows.Forms.DockStyle.Top;
             this.cmbInstallations.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbInstallations.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.cmbInstallations.FormattingEnabled = true;
             this.cmbInstallations.Location = new System.Drawing.Point(3, 16);
             this.cmbInstallations.Name = "cmbInstallations";
@@ -208,7 +207,7 @@
         private Controls.AdvancedTextBox tbPath;
         private KGySoft.WinForms.Controls.AdvancedLabel lblPath;
         private System.Windows.Forms.GroupBox gbVisualStudioVersions;
-        private System.Windows.Forms.ComboBox cmbInstallations;
+        private KGySoft.WinForms.Controls.AdvancedComboBox cmbInstallations;
         private System.Windows.Forms.GroupBox gbAvailableVersion;
         private KGySoft.WinForms.Controls.AdvancedLabel lblAvailableVersion;
     }

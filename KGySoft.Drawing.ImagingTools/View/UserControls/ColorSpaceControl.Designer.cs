@@ -15,7 +15,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.cmbPixelFormat = new System.Windows.Forms.ComboBox();
+            this.cmbPixelFormat = new KGySoft.WinForms.Controls.AdvancedComboBox();
             this.gbPixelFormat = new KGySoft.WinForms.Controls.CheckGroupBox();
             this.quantizerSelector = new KGySoft.Drawing.ImagingTools.View.UserControls.QuantizerSelectorControl();
             this.gbQuantizer = new KGySoft.WinForms.Controls.CheckGroupBox();
@@ -38,7 +38,6 @@
             // 
             this.cmbPixelFormat.Dock = System.Windows.Forms.DockStyle.Top;
             this.cmbPixelFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbPixelFormat.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.cmbPixelFormat.FormattingEnabled = true;
             this.cmbPixelFormat.Location = new System.Drawing.Point(3, 18);
             this.cmbPixelFormat.Name = "cmbPixelFormat";
@@ -118,6 +117,6 @@
         private KGySoft.WinForms.Controls.CheckGroupBox gbQuantizer;
         private UserControls.QuantizerSelectorControl quantizerSelector;
         private KGySoft.WinForms.Controls.CheckGroupBox gbPixelFormat;
-        private System.Windows.Forms.ComboBox cmbPixelFormat;
+        private KGySoft.WinForms.Controls.AdvancedComboBox cmbPixelFormat;
     }
 }

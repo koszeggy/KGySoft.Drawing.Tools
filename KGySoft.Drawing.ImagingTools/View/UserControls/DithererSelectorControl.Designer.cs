@@ -15,7 +15,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.cmbDitherer = new System.Windows.Forms.ComboBox();
+            this.cmbDitherer = new KGySoft.WinForms.Controls.AdvancedComboBox();
             this.tblStrength = new System.Windows.Forms.TableLayoutPanel();
             this.lblStrength = new KGySoft.WinForms.Controls.AdvancedLabel();
             this.lblStrengthValue = new KGySoft.WinForms.Controls.AdvancedLabel();
@@ -34,7 +34,6 @@
             // 
             this.cmbDitherer.Dock = System.Windows.Forms.DockStyle.Top;
             this.cmbDitherer.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbDitherer.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.cmbDitherer.FormattingEnabled = true;
             this.cmbDitherer.Location = new System.Drawing.Point(0, 0);
             this.cmbDitherer.Name = "cmbDitherer";
@@ -173,7 +172,7 @@
         }
 
         #endregion
-        private System.Windows.Forms.ComboBox cmbDitherer;
+        private KGySoft.WinForms.Controls.AdvancedComboBox cmbDitherer;
         private System.Windows.Forms.TableLayoutPanel tblStrength;
         private KGySoft.WinForms.Controls.AdvancedLabel lblStrength;
         private KGySoft.WinForms.Controls.AdvancedLabel lblStrengthValue;

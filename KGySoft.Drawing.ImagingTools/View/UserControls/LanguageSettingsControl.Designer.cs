@@ -21,7 +21,7 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.btnDownloadResources = new KGySoft.WinForms.Controls.AdvancedButton();
             this.btnEditResources = new KGySoft.WinForms.Controls.AdvancedButton();
-            this.cmbLanguages = new System.Windows.Forms.ComboBox();
+            this.cmbLanguages = new KGySoft.WinForms.Controls.AdvancedComboBox();
             this.chbAllowAnyLanguage = new KGySoft.WinForms.Controls.AdvancedCheckBox();
             this.chbUseOSLanguage = new KGySoft.WinForms.Controls.AdvancedCheckBox();
             this.gbResxResourcesPath = new KGySoft.WinForms.Controls.CheckGroupBox();
@@ -100,7 +100,6 @@
             // 
             this.cmbLanguages.Dock = System.Windows.Forms.DockStyle.Top;
             this.cmbLanguages.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbLanguages.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.cmbLanguages.FormattingEnabled = true;
             this.cmbLanguages.Location = new System.Drawing.Point(3, 3);
             this.cmbLanguages.Name = "cmbLanguages";
@@ -178,7 +177,7 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private KGySoft.WinForms.Controls.AdvancedButton btnDownloadResources;
         private KGySoft.WinForms.Controls.AdvancedButton btnEditResources;
-        private System.Windows.Forms.ComboBox cmbLanguages;
+        private KGySoft.WinForms.Controls.AdvancedComboBox cmbLanguages;
         private KGySoft.WinForms.Controls.CheckGroupBox gbResxResourcesPath;
         private Controls.AdvancedTextBox txtResxResourcesPath;
         private KGySoft.WinForms.Controls.AdvancedCheckBox chbUseOSLanguage;
