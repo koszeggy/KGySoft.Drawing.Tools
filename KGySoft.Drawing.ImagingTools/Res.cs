@@ -139,6 +139,8 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
+        internal static bool IsRightToLeft => DisplayLanguage.TextInfo.IsRightToLeft;
+
         #endregion
 
         #region Title Captions

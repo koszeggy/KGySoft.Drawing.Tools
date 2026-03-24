@@ -48,7 +48,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
 
         #region Internal Methods
 
-        internal void ResetAppearance() => OwnerDraw = Res.DisplayLanguage.TextInfo.IsRightToLeft
+        internal void ResetAppearance() => OwnerDraw = Res.IsRightToLeft
             || ThemeColors.IsSet(ThemeColor.ToolTip) || ThemeColors.IsSet(ThemeColor.ToolTipBorder) || ThemeColors.IsSet(ThemeColor.ToolTipText);
 
         #endregion

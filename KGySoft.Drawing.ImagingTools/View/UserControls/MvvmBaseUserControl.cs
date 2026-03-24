@@ -233,7 +233,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private void ApplyRightToLeft()
         {
-            RightToLeft rtl = Res.DisplayLanguage.TextInfo.IsRightToLeft ? RightToLeft.Yes : RightToLeft.No;
+            RightToLeft rtl = Res.IsRightToLeft ? RightToLeft.Yes : RightToLeft.No;
             RightToLeft = rtl;
             toolTip?.ResetAppearance();
         }

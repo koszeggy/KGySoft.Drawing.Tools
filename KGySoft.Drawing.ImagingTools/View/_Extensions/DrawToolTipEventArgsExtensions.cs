@@ -38,7 +38,7 @@ namespace KGySoft.Drawing.ImagingTools.View
             ControlPaint.DrawBorder(e.Graphics, e.Bounds, frameColor, ButtonBorderStyle.Solid);
 
             var flags = TextFormatFlags.HidePrefix | TextFormatFlags.VerticalCenter | TextFormatFlags.LeftAndRightPadding;
-            if (Res.DisplayLanguage.TextInfo.IsRightToLeft)
+            if (Res.IsRightToLeft)
                 flags |= TextFormatFlags.RightToLeft | TextFormatFlags.Right;
             
             e.DrawText(flags);
