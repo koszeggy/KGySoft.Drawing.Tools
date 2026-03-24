@@ -320,6 +320,13 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             [return: MarshalAs(UnmanagedType.Bool)]
             internal static extern bool IsWindow(IntPtr hWnd);
 
+            /// <summary>
+            /// Retrieves the window handle to the active window attached to the calling thread's message queue.
+            /// </summary>
+            /// <returns>The return value is the handle to the active window attached to the calling thread's message queue. Otherwise, the return value is NULL.</returns>
+            [DllImport("user32.dll")]
+            internal static extern IntPtr GetActiveWindow();
+
             #endregion
         }
 
@@ -440,6 +447,7 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             => NativeMethods.GetClientRect(hWnd, out RECT result) ? result.ToRectangle() : Rectangle.Empty;
 
         internal static bool IsWindow(IntPtr hWnd) => hWnd != IntPtr.Zero && NativeMethods.IsWindow(hWnd);
+        internal static IntPtr GetActiveWindow() => NativeMethods.GetActiveWindow();
 
         #endregion
     }

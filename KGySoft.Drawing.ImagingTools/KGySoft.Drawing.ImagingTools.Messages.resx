@@ -1045,6 +1045,12 @@ Using a specific seed disables parallel processing, which impacts performance on
   <data name="btnOK.Text" xml:space="preserve">
     <value>&amp;OK</value>
   </data>
+  <data name="btnYes.Text" xml:space="preserve">
+    <value>&amp;Yes</value>
+  </data>
+  <data name="btnNo.Text" xml:space="preserve">
+    <value>&amp;No</value>
+  </data>
   <data name="btnCancel.Text" xml:space="preserve">
     <value>&amp;Cancel</value>
   </data>
@@ -1250,12 +1256,6 @@ Tip: use '[T]' to filter untranslated texts.</value>
   </data>
   <data name="Button.2" xml:space="preserve">
     <value>&amp;Cancel</value>
-  </data>
-  <data name="Button.6" xml:space="preserve">
-    <value>&amp;Yes</value>
-  </data>
-  <data name="Button.7" xml:space="preserve">
-    <value>&amp;No</value>
   </data>
   <data name="ColorDialog.Static.-1" xml:space="preserve">
     <value>&amp;Basic Colors:</value>

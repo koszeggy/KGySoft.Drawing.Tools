@@ -114,6 +114,7 @@ namespace KGySoft.Drawing.ImagingTools
             ProfessionalColors.SeparatorLight, // ToolStripSeparatorLight (ButtonHighlight)
             SystemColors.Control, // ProgressBarBackground (actually not applied with visual styles, default theming)
             SystemColors.Highlight, // ProgressBar (actually not applied with visual styles, default theming)
+            Color.FromArgb((unchecked((int)0xFFDFDFDF))), // TaskDialogDivider (only with visual styles; otherwise, has system colors)
         ];
 
         private static readonly Color[] darkThemeColors =
@@ -179,6 +180,7 @@ namespace KGySoft.Drawing.ImagingTools
             Color.FromArgb((unchecked((int)0xFF2C2C2C))), // ToolStripSeparatorLight
             Color.FromArgb((unchecked((int)0xFF707070))), // ProgressBarBackground
             Color.FromArgb((unchecked((int)0xFF7160E8))), // ProgressBar
+            Color.FromArgb((unchecked((int)0xFF585858))), // TaskDialogDivider
 
             //// Explorer / Gray Window / TextBox highlight / Files Explorer ListView-like dark ToolStrip menu items / same control/window colors / unified disabled text colors
             //Color.FromArgb((unchecked((int)0xFF383838))), // Control
@@ -241,6 +243,7 @@ namespace KGySoft.Drawing.ImagingTools
             //Color.FromArgb((unchecked((int)0xFF2C2C2C))), // ToolStripSeparatorLight
             //Color.FromArgb((unchecked((int)0xFF707070))), // ProgressBarBackground
             //Color.FromArgb((unchecked((int)0xFF7160E8))), // ProgressBar
+            //Color.FromArgb((unchecked((int)0xFF585858))), // TaskDialogDivider
 
             //// .NET 9's dark theme by its AlternateSystemColors, different window/control colors, same GrayText for disabled colors (though system rendering uses different colors)
             //Color.FromArgb((unchecked((int)0xFF202020))), // Control
@@ -303,6 +306,7 @@ namespace KGySoft.Drawing.ImagingTools
             //Color.FromArgb((unchecked((int)0xFF101010))), // ToolStripSeparatorLight (ButtonHighlight)
             //Color.FromArgb((unchecked((int)0xFF707070))), // ProgressBarBackground
             //Color.FromArgb((unchecked((int)0xFF7160E8))), // ProgressBar
+            //Color.FromArgb((unchecked((int)0xFF525252))), // TaskDialogDivider
         ];
 
         private static volatile bool isDarkBaseTheme;
@@ -408,6 +412,7 @@ namespace KGySoft.Drawing.ImagingTools
         internal static Color ToolStripSeparatorLight => Get(ThemeColor.ToolStripSeparatorLight);
         internal static Color ProgressBarBackground => Get(ThemeColor.ProgressBarBackground);
         internal static Color ProgressBar => Get(ThemeColor.ProgressBar);
+        internal static Color TaskDialogDivider => Get(ThemeColor.TaskDialogDivider);
 
         internal static ProfessionalColorTable ColorTable { get; } = new ThemeColorTable();
 

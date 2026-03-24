@@ -15,12 +15,29 @@
 
 #region Usings
 
+#region Used Namespaces
+
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
 
+using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.WinApi;
+using KGySoft.WinForms.Components;
+
+#endregion
+
+#region Used Aliases
+
+#if NET5_0_OR_GREATER
+using TaskDialog = KGySoft.WinForms.Components.TaskDialog;
+using TaskDialogButton = KGySoft.WinForms.Components.TaskDialogButton;
+#endif
+
+#endregion
 
 #endregion
 
@@ -34,8 +51,8 @@ namespace KGySoft.Drawing.ImagingTools.View
         
         private enum DialogType
         {
-            SingleButtonMessageBox,
-            MultiButtonMessageBox,
+            //SingleButtonMessageBox,
+            //MultiButtonMessageBox,
             ColorDialog,
             FolderDialog
         }
@@ -75,20 +92,21 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         #region Internal Methods
 
-        internal static void ErrorMessage(string message) => ShowMessageBox(message, Res.TitleError, MessageBoxButtons.OK, MessageBoxIcon.Error);
-        internal static void InfoMessage(string message) => ShowMessageBox(message, Res.TitleInformation, MessageBoxButtons.OK, MessageBoxIcon.Information);
-        internal static void WarningMessage(string message) => ShowMessageBox(message, Res.TitleWarning, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        internal static void ErrorMessage(string message) => ShowMessage(message, Res.TitleError, TaskDialogStandardButtonFlags.OK, TaskDialogStandardIcons.Error);
+        internal static void InfoMessage(string message) => ShowMessage(message, Res.TitleInformation, TaskDialogStandardButtonFlags.OK, TaskDialogStandardIcons.Information);
+        internal static void WarningMessage(string message) => ShowMessage(message, Res.TitleWarning, TaskDialogStandardButtonFlags.OK, TaskDialogStandardIcons.Warning);
         
         internal static bool ConfirmMessage(string message, bool isYesDefault = true)
-            => ShowMessageBox(message, Res.TitleConfirmation, MessageBoxButtons.YesNo, MessageBoxIcon.Question, isYesDefault ? MessageBoxDefaultButton.Button1 : MessageBoxDefaultButton.Button2) == DialogResult.Yes;
+            => ShowMessage(message, Res.TitleConfirmation, TaskDialogStandardButtonFlags.Yes | TaskDialogStandardButtonFlags.No, TaskDialogStandardIcons.Question, isYesDefault ? 0 : 1) == 0;
 
-        internal static bool? CancellableConfirmMessage(string message, MessageBoxDefaultButton defaultButton = MessageBoxDefaultButton.Button1)
-            => ShowMessageBox(message, Res.TitleConfirmation, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, defaultButton) switch
-            {
-                DialogResult.Yes => true,
-                DialogResult.No => false,
-                _ => null
-            };
+        internal static bool? CancellableConfirmMessage(string message, int defaultButton = 0)
+            => ShowMessage(message, Res.TitleConfirmation, TaskDialogStandardButtonFlags.Yes | TaskDialogStandardButtonFlags.No | TaskDialogStandardButtonFlags.Cancel,
+                    TaskDialogStandardIcons.Question, defaultButton) switch
+                {
+                    0 => true,
+                    1 => false,
+                    _ => null
+                };
 
         internal static Color? PickColor(Color? selectedColor = default)
         {
@@ -146,27 +164,89 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         #region Private Methods
 
-        private static DialogResult ShowMessageBox(string message, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton defaultButton = MessageBoxDefaultButton.Button1)
+        private static int ShowMessage(string message, string caption, TaskDialogStandardButtonFlags buttons, TaskDialogStandardIcons icon, int defaultButton = 0)
         {
-            MessageBoxOptions options = Res.DisplayLanguage.TextInfo.IsRightToLeft ? MessageBoxOptions.RightAlign | MessageBoxOptions.RtlReading : default;
-            IntPtr windowHook = IntPtr.Zero;
-
-            // On Windows hooking messages to be able to localize the buttons
-            if (OSUtils.IsWindows && !OSUtils.IsMono)
+            // ReSharper disable once UsingStatementResourceInitialization - false alarm, these property setters do not throw exceptions
+            using var taskDialog = new TaskDialog
             {
-                windowHook = User32.HookCallWndRetProc(callWndRetProc);
-                dialogContext = new DialogContext
-                {
-                    DialogType = buttons == MessageBoxButtons.OK ? DialogType.SingleButtonMessageBox : DialogType.MultiButtonMessageBox
-                };
+                Caption = caption,
+                //StandardButtons = buttons,
+                //DefaultStandardButton = defaultButton,
+                Icon = icon,
+                Message = message,
+                ForceCompatibilityMode = true, // so we can apply theme changes
+                //Options = TaskDialogOptions.TranslateStandardButtons,
+            };
+
+            if (Res.IsRightToLeft)
+                taskDialog.Options |= TaskDialogOptions.RightToLeftLayout;
+
+            // Adding the buttons as custom ones. This makes possible to use local resources instead of the ones in KGySoft.WinForms
+            foreach (TaskDialogStandardButtonFlags flag in buttons.GetFlags())
+                taskDialog.Buttons.Add(new TaskDialogButton(Res.Get($"btn{flag}.Text")));
+            taskDialog.Buttons[defaultButton].IsDefault = true;
+
+            SynchronizationContext context = SynchronizationContext.Current!;
+            taskDialog.Created += TaskDialog_Created;
+            ThemeColors.ThemeChanged += ThemeColors_ThemeChanged;
+
+            int selectedButtonIndex;
+            try
+            {
+                taskDialog.Show(GetOwner(), out selectedButtonIndex, out var _, out var _);
+            }
+            finally
+            {
+                ThemeColors.ThemeChanged -= ThemeColors_ThemeChanged;
+                taskDialog.Created -= TaskDialog_Created; // though it's removed on dispose
             }
 
-            DialogResult result = MessageBox.Show(message, caption, buttons, icon, defaultButton, options);
+            return selectedButtonIndex;
 
-            if (windowHook != IntPtr.Zero)
-                User32.UnhookWindowsHook(windowHook);
+            #region Local Methods
 
-            return result;
+            // ReSharper disable InconsistentNaming - event handlers
+            static void TaskDialog_Created(object? sender, EventArgs e) => ApplyTheme((TaskDialog)sender!);
+
+            [SuppressMessage("ReSharper", "AccessToDisposedClosure", Justification = "False alarm, event is unsubscribed on disposing")]
+            void ThemeColors_ThemeChanged(object? sender, EventArgs e) => context.Send(_ => ApplyTheme(taskDialog), null);
+            // ReSharper restore InconsistentNaming
+
+            static IWin32Window? GetOwner()
+            {
+                if (Form.ActiveForm is Form form)
+                    return form;
+                if (!OSUtils.IsWindows)
+                    return null;
+                IntPtr hwnd = User32.GetActiveWindow();
+                return hwnd == IntPtr.Zero ? null : new OwnerWindowHandle(hwnd);
+            }
+
+            static void ApplyTheme(TaskDialog td)
+            {
+                if (!ThemeColors.RenderWithVisualStyles || ThemeColors.HighContrast || !ThemeColors.IsBaseThemeEverChanged)
+                    return;
+
+                Control? form = Control.FromHandle(td.Handle);
+                if (form == null)
+                    return;
+
+                // header, root colors
+                form.ApplyTheme();
+
+                // These controls have explicitly set colors that we need to override
+                form.Controls["pnlDividerMainBottom"]?.BackColor = ThemeColors.TaskDialogDivider;
+                Control? pnlMain = form.Controls["pnlMain"];
+                Debug.Assert(pnlMain != null);
+                if (pnlMain != null)
+                {
+                    pnlMain.BackColor = ThemeColors.Window;
+                    pnlMain.ForeColor = ThemeColors.WindowText;
+                    pnlMain.Controls["pnlMainIcon"]?.Controls["pnlMainIconBackground"]?.BackColor = ThemeColors.Window;
+                }
+            }
+
+            #endregion
         }
 
         private static IntPtr CallWndRetProc(int nCode, IntPtr wParam, IntPtr lParam)
@@ -209,9 +289,9 @@ namespace KGySoft.Drawing.ImagingTools.View
                     return true;
                 id = --dialogContext.CustomStaticId;
             }
-            // If there is a single OK button in a MessageBox it has the same id as a Cancel button.
-            else if (dialogContext.DialogType == DialogType.SingleButtonMessageBox && id == Constants.IDCANCEL && className == Constants.ClassNameButton)
-                id = Constants.IDOK;
+            //// If there is a single OK button in a MessageBox it has the same id as a Cancel button.
+            //else if (dialogContext.DialogType == DialogType.SingleButtonMessageBox && id == Constants.IDCANCEL && className == Constants.ClassNameButton)
+            //    id = Constants.IDOK;
 
             string? text = Res.GetStringOrNull($"{dialogContext.DialogType}.{className}.{id}") ?? Res.GetStringOrNull($"{className}.{id}");
             if (text != null)

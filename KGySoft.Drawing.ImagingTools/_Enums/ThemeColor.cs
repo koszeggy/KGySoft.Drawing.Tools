@@ -328,5 +328,10 @@ namespace KGySoft.Drawing.ImagingTools
         /// Represents the foreground color of a <see cref="ProgressBar"/>.
         /// </summary>
         ProgressBar,
+
+        /// <summary>
+        /// Represents the color of the message/buttons divider in a task dialog.
+        /// </summary>
+        TaskDialogDivider,
     }
 }

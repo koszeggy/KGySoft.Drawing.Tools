@@ -1,5 +1,7 @@
+enum
 Gy
 metafile
 mvvm
+namespace
 serializer
 theming

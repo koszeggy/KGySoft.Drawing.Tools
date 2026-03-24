@@ -6,6 +6,26 @@
 ===============================================================================
 
 ~~~~~~~~~
+! v6.0.0:
+~~~~~~~~~
+
+! KGySoft.Drawing.ImagingTools.exe
+==================================
+! UI changes:
+
+! The standard message boxes have been replaced, using the TaskDialog class from the KGySoft.WinForms package.
+  Task dialogs work better with per-monitor DPI awareness and with Windows 10+ dark theme. This is a breaking change
+  only in terms of localization of the buttons.
+* Improved appearance with dark theme.
+
+! API changes:
+
+! KGySoft.Drawing.ImagingTools namespace:
+-----------------------------------------
+! ThemeColor enum: New members, some old names have now different values.
+
+
+~~~~~~~~~
 * v5.1.0:
 ~~~~~~~~~
 

@@ -161,7 +161,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             viewModel.ShowWarningCallback = Dialogs.WarningMessage;
             viewModel.ShowErrorCallback = Dialogs.ErrorMessage;
             viewModel.ConfirmCallback = Dialogs.ConfirmMessage;
-            viewModel.CancellableConfirmCallback = (msg, btn) => Dialogs.CancellableConfirmMessage(msg, btn switch { 0 => MessageBoxDefaultButton.Button1, 1 => MessageBoxDefaultButton.Button2, _ => MessageBoxDefaultButton.Button3 });
+            viewModel.CancellableConfirmCallback = (msg, btn) => Dialogs.CancellableConfirmMessage(msg, btn);
             viewModel.ShowChildViewCallback = ShowChildView;
             viewModel.SynchronizedInvokeCallback = InvokeOnUIThread;
 
