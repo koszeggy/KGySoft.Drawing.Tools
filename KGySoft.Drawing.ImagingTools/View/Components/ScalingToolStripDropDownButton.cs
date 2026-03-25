@@ -18,6 +18,8 @@
 using System.Drawing;
 using System.Windows.Forms;
 
+using KGySoft.WinForms;
+
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.View.Components

@@ -20,7 +20,6 @@ using KGySoft.WinForms;
 #region Used Namespaces
 
 using System;
-using System.Drawing;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.View.Controls;
@@ -73,17 +72,6 @@ namespace KGySoft.Drawing.ImagingTools.View
                 throw new ArgumentNullException(nameof(control));
             Reflector.SetProperty(control, "DoubleBuffered", useDoubleBuffering);
         }
-
-        internal static PointF GetScale(this Control control)
-        {
-            if (control == null)
-                throw new ArgumentNullException(nameof(control));
-            return ScaleHelper.GetScale(control.Handle);
-        }
-
-        internal static Size ScaleSize(this Control control, Size size) => size.Scale(control.GetScale());
-        internal static int ScaleWidth(this Control control, int width) => width.Scale(control.GetScale().X);
-        internal static int ScaleHeight(this Control control, int height) => height.Scale(control.GetScale().Y);
 
         internal static void ApplyTheme(this Control control)
         {

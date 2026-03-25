@@ -105,13 +105,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 }
             }
 
-            private static void DrawArrow(Graphics g, Color color, Rectangle bounds, ArrowDirection direction)
+            private static void DrawArrow(ToolStrip owner, Graphics g, Color color, Rectangle bounds, ArrowDirection direction)
             {
                 var middle = new Point(bounds.Left + bounds.Width / 2, bounds.Top + bounds.Height / 2);
 
                 Point[] arrow;
-                Size offset = g.ScaleSize(referenceOffset);
-                Size offsetDouble = g.ScaleSize(referenceOffsetDouble);
+                PointF scale = owner.GetScale();
+                Size offset =  referenceOffset.Scale(scale);
+                Size offsetDouble = referenceOffsetDouble.Scale(scale);
 
                 switch (direction)
                 {
@@ -158,13 +159,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             /// - .NET Framework 4.5.2-: Fixed scaling
             /// - Fixing arrow direction and line position in RTL mode, vertical orientation
             /// </summary>
-            private static void DrawOverflowArrow(Graphics g, Rectangle arrowRect, ArrowDirection direction, Color color)
+            private static void DrawOverflowArrow(ToolStrip owner, Graphics g, Rectangle arrowRect, ArrowDirection direction, Color color)
             {
                 var middle = new Point(arrowRect.Left + arrowRect.Width / 2, arrowRect.Top + arrowRect.Height / 2);
 
                 // if the width is odd - favor pushing it over one pixel right.
                 middle.X += arrowRect.Width % 2;
-                Size offset = g.ScaleSize(referenceOffset);
+                Size offset = owner.ScaleSize(referenceOffset);
 
                 Point[] arrow = direction switch
                 {
@@ -375,7 +376,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     : ThemeColors.HighContrast ? e.Item.Selected && !e.Item.Pressed ? SystemColors.HighlightText : SystemColors.ControlText
                     : ThemeColors.ControlText;
 
-                DrawArrow(e.Graphics, color, bounds, e.Direction);
+                DrawArrow(e.Item.Owner, e.Graphics, color, bounds, e.Direction);
             }
 
             /// <summary>
@@ -409,7 +410,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     Graphics g = e.Graphics;
                     Rectangle bounds = new(Point.Empty, item.Size);
 
-                    int scaledSize = g.ScaleWidth(referenceMenuItemPaddingWidth);
+                    int scaledSize = e.Item.Owner.ScaleWidth(referenceMenuItemPaddingWidth);
                     bounds.X += scaledSize + 1;
                     bounds.Width -= scaledSize * 2 + 1;
                     Color backgroundStart;
@@ -573,7 +574,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     if (OSHelper.IsFrameworkMono)
                         bounds.X -= button.ButtonBounds.Left;
 
-                    DrawArrow(e.Graphics, button.Enabled ? ThemeColors.ControlText : ThemeColors.ControlTextDisabled, bounds, ArrowDirection.Down);
+                    DrawArrow(e.Item.Owner, e.Graphics, button.Enabled ? ThemeColors.ControlText : ThemeColors.ControlTextDisabled, bounds, ArrowDirection.Down);
                 }
 
                 // Changes to original:
@@ -613,7 +614,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     }
 
                     // arrow
-                    DrawArrow(e.Graphics, arrowColor, button.DropDownButtonBounds, ArrowDirection.Down);
+                    DrawArrow(e.Item.Owner, e.Graphics, arrowColor, button.DropDownButtonBounds, ArrowDirection.Down);
                 }
 
                 #endregion
@@ -723,11 +724,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
                     // draw highlight
                     overflowArrowRect.Offset(1 * rightToLeftShift, 1);
-                    DrawOverflowArrow(g, overflowArrowRect, direction, ThemeColors.ControlHighlight);
+                    DrawOverflowArrow(e.Item.Owner, g, overflowArrowRect, direction, ThemeColors.ControlHighlight);
 
                     // draw black triangle
                     overflowArrowRect.Offset(-1 * rightToLeftShift, -1);
-                    DrawOverflowArrow(g, overflowArrowRect, direction, ThemeColors.ControlText);
+                    DrawOverflowArrow(e.Item.Owner, g, overflowArrowRect, direction, ThemeColors.ControlText);
                 }
 
                 // Changes to original:
@@ -740,12 +741,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     ButtonStyle style = (button.Pressed ? ButtonStyle.Dropped : 0)
                         | (button.Selected ? ButtonStyle.Selected : 0);
                     DrawHighContrastButtonBackground(e.Graphics, bounds, style);
-                    DrawArrow(e.Graphics, style == ButtonStyle.Selected ? SystemColors.HighlightText : SystemColors.ControlText, bounds, ArrowDirection.Down);
+                    DrawArrow(e.Item.Owner, e.Graphics, style == ButtonStyle.Selected ? SystemColors.HighlightText : SystemColors.ControlText, bounds, ArrowDirection.Down);
                 }
 
                 static void RenderOverflowBackground(ToolStripItemRenderEventArgs e, ProfessionalColorTable colorTable)
                 {
-                    Size overflowButtonSize = e.Graphics.ScaleSize(referenceOverflowButtonSize);
+                    Size overflowButtonSize = e.Item.Owner.ScaleSize(referenceOverflowButtonSize);
 
                     Graphics g = e.Graphics;
                     var item = (ToolStripOverflowButton)e.Item;
@@ -866,7 +867,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     // are forcibly maxed with a constant 16, but fortunately we can exploit the fact that the
                     // Padding is respected, it's public, and it's actually not used for anything else.
                     var button = (ToolStripOverflowButton)e.Item;
-                    var scaledSize = e.Graphics.ScaleSize(referenceOverflowButtonBounds);
+                    var scaledSize = e.Item.Owner.ScaleSize(referenceOverflowButtonBounds);
                     if (e.ToolStrip.Orientation == Orientation.Horizontal && scaledSize.Width > button.Width)
                     {
                         var padding = button.Padding;

@@ -24,6 +24,7 @@ using KGySoft.ComponentModel;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.ImagingTools.View.Forms;
 using KGySoft.Drawing.ImagingTools.ViewModel;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -445,7 +446,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private void AdjustSize()
         {
-            int minHeight = new Size(16, 16).Scale(this.GetScale()).Height + SystemInformation.HorizontalScrollBarHeight;
+            int minHeight = this.ScaleHeight(16) + SystemInformation.HorizontalScrollBarHeight;
             if (imageViewer.Height >= minHeight)
                 return;
             int buttonsHeight = buttons.Visible ? buttons.Height : 0;

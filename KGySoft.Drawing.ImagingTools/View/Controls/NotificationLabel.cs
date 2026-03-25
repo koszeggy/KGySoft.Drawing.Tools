@@ -22,6 +22,8 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
 
+using KGySoft.WinForms;
+
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.View.Controls
@@ -63,13 +65,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 // if the image to set is a multi-res bitmap, then adjusting the icon size
                 if (value?.RawFormat.Equals(ImageFormat.Icon) == true)
                 {
-                    float scale;
-                    using (Graphics g = CreateGraphics())
-                        scale = (float)Math.Round(g.GetScale().X, 2);
-                    if (scale > 1)
+                    PointF scale = this.GetScale();
+                    if (scale != ScaleHelper.DefaultScale)
                     {
-                        // the temp bitmap is not used for anything - it just makes value to the best fitting size
-                        using (new Bitmap(value, Size.Round(new SizeF(value.Width * scale, value.Height * scale)))) { }
+                        // the temp bitmap is not used for anything - it just makes value to select the best fitting resolution
+                        using var _ = new Bitmap(value, value.Size.Scale(scale));
                     }
                 }
 
