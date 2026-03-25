@@ -30,6 +30,7 @@ using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.View.Components;
 using KGySoft.Drawing.ImagingTools.WinApi;
 using KGySoft.Reflection;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -202,8 +203,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         {
             get
             {
-                // Mono has a ToolTip tooltip_window field
-                if (OSUtils.IsMono)
+                // Framework Mono has a ToolTip tooltip_window field
+                if (OSHelper.IsFrameworkMono)
                 {
                     if (!toolAccessorsInitialized)
                     {
@@ -229,7 +230,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     return toolTipControlField?.GetInstanceValue<DataGridView, ToolTip>(this) as AdvancedToolTip;
                 }
 
-                // Assuming Windows implementation here: DataGridView.*toolTipControl*.*toolTip*
+                // Assuming Windows implementation here (including Wine Mono): DataGridView.*toolTipControl*.*toolTip*
                 if (!toolAccessorsInitialized)
                 {
                     try
@@ -548,7 +549,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (Rows[e.RowIndex].DataBoundItem is not IValidatingObject validatingObject)
                 return String.IsNullOrEmpty(e.ErrorText) ? null : ErrorIcon;
 
-            if (!OSUtils.IsWindows)
+            if (!OSHelper.IsWindows)
                 EnsureValidationText(e, validatingObject);
 
             ValidationResultsCollection validationResults = validatingObject.ValidationResults;

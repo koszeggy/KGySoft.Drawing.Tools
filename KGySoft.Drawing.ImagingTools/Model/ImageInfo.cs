@@ -16,7 +16,6 @@
 #region Usings
 
 using System;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -25,6 +24,7 @@ using System.Linq;
 
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -368,9 +368,9 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
             Icon = icon;
             Type = ImageInfoType.Icon;
-            PointF defaultDpi = OSUtils.SystemDpi;
-            HorizontalRes = defaultDpi.X;
-            VerticalRes = defaultDpi.Y;
+            PointF scale = ScaleHelper.SystemScale;
+            HorizontalRes = scale.X * ScaleHelper.DefaultDpi;
+            VerticalRes = scale.Y * ScaleHelper.DefaultDpi;
 
             // obtaining icon images in original format
             IconInfo[] iconInfo = icon.GetIconInfo();
@@ -391,7 +391,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
                 InitIconMeta(iconInfo[i], frames[i]);
 
                 // In Windows XP all icon images are uncompressed so displaying just Icon
-                if (!OSUtils.IsVistaOrLater)
+                if (!OSHelper.IsWindowsVistaOrLater)
                     RawFormat = ImageFormat.Icon.Guid;
             }
 

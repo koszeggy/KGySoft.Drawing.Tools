@@ -21,6 +21,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Security;
+
+using KGySoft.WinForms;
 #if !NET5_0_OR_GREATER
 using System.Windows.Forms;
 #endif
@@ -373,11 +375,11 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
 
         internal static void SetCaptionTheme(IntPtr handle, bool isDarkTheme)
         {
-            if (!OSUtils.IsWindows10OrLater)
+            if (!OSHelper.IsWindows10OrLater)
                 return;
 
             // Windows 10 1903 or later
-            if (OSUtils.IsWindows10Build1903OrLater)
+            if (OSHelper.IsWindows10Build1903OrLater)
             {
                 int attributeValueBufferSize = sizeof(int);
                 IntPtr attributeValueBuffer = Marshal.AllocHGlobal(attributeValueBufferSize);
@@ -403,7 +405,7 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             else
                 NativeMethods.SetProp(handle, "UseImmersiveDarkModeColors", new IntPtr(isDarkTheme ? 1 : 0));
 
-            if (OSUtils.IsWindows11OrLater)
+            if (OSHelper.IsWindows11OrLater)
                 return;
 
             // Invalidating the caption area to force the system to redraw it. Needed when the theme is changed and the window is already visible.

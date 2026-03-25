@@ -27,6 +27,7 @@ using System.Windows.Forms;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.WinApi;
 using KGySoft.Reflection;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -253,7 +254,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
 
         internal void ResetAppearance()
         {
-            bool customToolTip = OSUtils.IsWindows && !OSUtils.IsMono
+            bool customToolTip = !OSHelper.IsFrameworkMono
                 && ThemeColors.IsSet(ThemeColor.ToolTip) || ThemeColors.IsSet(ThemeColor.ToolTipText) || ThemeColors.IsSet(ThemeColor.ToolTipBorder);
             if (isCustomRendering == customToolTip)
                 return;

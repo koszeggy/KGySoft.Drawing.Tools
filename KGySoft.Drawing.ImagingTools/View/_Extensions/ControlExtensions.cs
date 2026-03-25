@@ -15,6 +15,8 @@
 
 #region Usings
 
+using KGySoft.WinForms;
+
 #region Used Namespaces
 
 using System;
@@ -76,7 +78,7 @@ namespace KGySoft.Drawing.ImagingTools.View
         {
             if (control == null)
                 throw new ArgumentNullException(nameof(control));
-            return OSUtils.GetScale(control.Handle);
+            return ScaleHelper.GetScale(control.Handle);
         }
 
         internal static Size ScaleSize(this Control control, Size size) => size.Scale(control.GetScale());
@@ -98,7 +100,7 @@ namespace KGySoft.Drawing.ImagingTools.View
                         return;
 
                     // setting the caption theme
-                    if (ThemeColors.IsBaseThemeEverChanged && OSUtils.IsWindows10OrLater)
+                    if (ThemeColors.IsBaseThemeEverChanged && OSHelper.IsWindows10OrLater)
                     {
                         try
                         {
@@ -185,7 +187,7 @@ namespace KGySoft.Drawing.ImagingTools.View
         
         private static void ApplyVisualStyleTheme(this Control control)
         {
-            if (!OSUtils.IsWindows10OrLater) // TODO: || !VisualStyleHelper.InitializedWithVisualStyles
+            if (!OSHelper.IsWindows10OrLater) // TODO: || !VisualStyleHelper.InitializedWithVisualStyles
                 return;
 
             const string darkTheme = "DarkMode_Explorer";

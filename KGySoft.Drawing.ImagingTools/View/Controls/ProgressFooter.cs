@@ -21,6 +21,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Windows.Forms;
 
+using KGySoft.WinForms;
 using KGySoft.WinForms.Controls;
 
 #endregion
@@ -97,7 +98,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             set
             {
                 // Workaround for progress bar on Vista and above where it advances very slowly
-                if (pbProgress.Style == AdvancedProgressBarStyle.System && ThemeColors.RenderWithVisualStyles && OSUtils.IsVistaOrLater && value > pbProgress.Value && value < pbProgress.Maximum)
+                if (pbProgress.Style == AdvancedProgressBarStyle.System && ThemeColors.RenderWithVisualStyles && OSHelper.IsWindowsVistaOrLater && value > pbProgress.Value && value < pbProgress.Maximum)
                     pbProgress.Value = value + 1;
                 pbProgress.Value = value;
             }
@@ -150,7 +151,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             // Fixing high DPI appearance on Mono
             PointF scale;
-            if (OSUtils.IsMono && (scale = this.GetScale()) != new PointF(1f, 1f))
+            if (OSHelper.IsFrameworkMono && (scale = this.GetScale()) != new PointF(1f, 1f))
                 Height = (int)(22 * scale.Y);
         }
 

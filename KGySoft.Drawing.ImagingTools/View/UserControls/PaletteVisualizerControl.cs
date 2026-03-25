@@ -21,6 +21,7 @@ using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.View.Forms;
 using KGySoft.Drawing.ImagingTools.ViewModel;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -106,7 +107,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             // Fixing high DPI appearance on Mono
             PointF scale;
-            if (OSUtils.IsMono && (scale = this.GetScale()) != new PointF(1f, 1f) && ParentForm is MvvmParentForm parent)
+            if (OSHelper.IsFrameworkMono && (scale = this.GetScale()) != new PointF(1f, 1f) && ParentForm is MvvmParentForm parent)
             {
                 parent.MinimumSize = new Size(255, 335).Scale(scale);
                 parent.MaximumSize = new Size((int)(280 * scale.X), Int16.MaxValue);

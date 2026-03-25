@@ -11,11 +11,13 @@
 
 ! KGySoft.Drawing.ImagingTools.exe
 ==================================
-! UI changes:
+! UI/Functional changes:
 
 ! The standard message boxes have been replaced, using the TaskDialog class from the KGySoft.WinForms package.
   Task dialogs work better with per-monitor DPI awareness and with Windows 10+ dark theme. This is a breaking change
   only in terms of localization of the buttons.
+! The .NET Framework 4.7.2 build is no longer compatible with Framework Mono (as of the release of this version).
+  You still can use the .NET Framework 4.6.2 build though. Wine Mono is not affected by this change.
 * Improved appearance with dark theme.
 
 ! API changes:

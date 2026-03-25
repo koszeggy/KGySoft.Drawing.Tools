@@ -29,6 +29,7 @@ using System.Runtime.CompilerServices;
 
 using KGySoft.CoreLibraries; 
 using KGySoft.Drawing.ImagingTools.Properties;
+using KGySoft.WinForms;
 
 using Microsoft.Win32;
 
@@ -134,9 +135,9 @@ namespace KGySoft.Drawing.ImagingTools
 
         static Configuration()
         {
-            allowHttps = !(OSUtils.IsMono && OSUtils.IsWindows);
+            allowHttps = !OSHelper.IsWindowsMono;
 #if NET35
-            allowHttps &= OSUtils.IsWindows8OrLater;
+            allowHttps &= OSHelper.IsWindows8OrLater;
 #endif
 
             // To be able to resolve UserSettingsGroup with other framework version

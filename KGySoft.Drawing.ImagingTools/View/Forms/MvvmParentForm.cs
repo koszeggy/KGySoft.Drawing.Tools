@@ -72,10 +72,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // Note that we should set the Font for the Form only, because setting it also for the user controls would cause double scaling.
             // Not setting it for the user controls is alright even when docking them into a WPF host, because its default font is correct.
             // Also note that setting it in BaseForm would sometimes cause wrong scaling when opening a view from Visual Studio extension.
-            if (!IsDesignMode && !OSUtils.IsMono && SystemFonts.MessageBoxFont is Font font)
+            if (!IsDesignMode && !OSHelper.IsMono && SystemFonts.MessageBoxFont is Font font)
                 base.Font = font;
 
-            StartPosition = OSUtils.IsMono && OSUtils.IsWindows ? FormStartPosition.WindowsDefaultLocation : FormStartPosition.CenterParent;
+            StartPosition = OSHelper.IsWindowsMono ? FormStartPosition.WindowsDefaultLocation : FormStartPosition.CenterParent;
         }
 
         #endregion
@@ -99,7 +99,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         protected override void OnLoad(EventArgs e)
         {
             // Not Using tool window appearance on Linux because looks bad an on high DPI the close is too small
-            if (OSUtils.IsMono && OSUtils.IsLinux && FormBorderStyle == FormBorderStyle.SizableToolWindow)
+            if (OSHelper.IsLinuxMono && FormBorderStyle == FormBorderStyle.SizableToolWindow)
             {
                 FormBorderStyle = FormBorderStyle.Sizable;
                 MinimizeBox = false;
@@ -229,7 +229,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             if (RightToLeft == rtl)
                 return;
 
-            if (!OSUtils.IsMono && IsHandleCreated)
+            if (!OSHelper.IsFrameworkMono && IsHandleCreated)
                 IsRtlChanging = true;
 
             RightToLeft = rtl;
@@ -237,7 +237,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // Modal forms on Windows: when changing RTL, the DialogResult is set to Cancel in older framework targets, causing the dialog to close.
             // To make it work the same way on all platforms, we set it to Retry, signaling the check in OnClosing that the dialog should be reopened.
             // Without the reopening, the dialog would turn into a non-modal form, allowing the user to interact with the caller form.
-            if (Modal && !OSUtils.IsMono && OSUtils.IsWindows)
+            if (Modal && !OSHelper.IsFrameworkMono)
                 DialogResult = DialogResult.Retry;
         }
 

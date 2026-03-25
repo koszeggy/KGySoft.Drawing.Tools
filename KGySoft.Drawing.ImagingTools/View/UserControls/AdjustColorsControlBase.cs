@@ -20,6 +20,7 @@ using System.Drawing;
 
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.ViewModel;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -71,7 +72,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             // Fixing high DPI appearance on Mono
             PointF scale;
-            if (OSUtils.IsMono && (scale = this.GetScale()) != new PointF(1f, 1f))
+            if (OSHelper.IsFrameworkMono && (scale = this.GetScale()) != new PointF(1f, 1f))
             {
                 pnlCheckBoxes.Height = (int)(25 * scale.Y);
                 btnReset.Width = (int)(64 * scale.X);
@@ -83,7 +84,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         protected override void ApplyViewModel()
         {
-            if (OSUtils.IsMono)
+            if (OSHelper.IsFrameworkMono)
                 pnlCheckBoxes.Height = this.ScaleHeight(25);
             InitCommandBindings();
             InitPropertyBindings();

@@ -106,7 +106,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             InitializeComponent();
 
 #if !NET35
-            if (!OSUtils.IsWindows11OrLater)
+            if (!OSHelper.IsWindows11OrLater)
 #endif
             {
                 toolTip.AutoPopDelay = Int16.MaxValue;

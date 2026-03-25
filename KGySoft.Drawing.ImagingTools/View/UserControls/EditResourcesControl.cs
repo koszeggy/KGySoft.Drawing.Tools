@@ -24,6 +24,7 @@ using KGySoft.ComponentModel;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.ImagingTools.View.Forms;
 using KGySoft.Drawing.ImagingTools.ViewModel;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -81,7 +82,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             BackColor = Color.Transparent; // to make the resize grip in the parent form visible
 
             // For Linux/Mono adding an empty column in the middle so the error provider icon will not appear in a new row
-            if (!OSUtils.IsWindows)
+            if (OSHelper.IsLinuxMono)
             {
                 pnlEditResourceEntry.ColumnCount = 3;
                 pnlEditResourceEntry.SetColumn(gbTranslatedText, 2);

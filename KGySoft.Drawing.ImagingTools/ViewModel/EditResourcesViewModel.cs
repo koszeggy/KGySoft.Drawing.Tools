@@ -15,6 +15,8 @@
 
 #region Usings
 
+using KGySoft.WinForms;
+
 #region Used Namespaces
 
 using System;
@@ -454,7 +456,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             try
             {
                 // is the file exists, we try to select it in Explorer
-                if (OSUtils.IsWindows && File.Exists(ToFileNameWithPath(SelectedLibrary)))
+                if (OSHelper.IsWindows && File.Exists(ToFileNameWithPath(SelectedLibrary)))
                 {
                     if (Shell32.OpenFolderAndSelectItems(Res.ResourcesDir, ToFileName(SelectedLibrary)))
                         return;

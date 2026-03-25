@@ -21,6 +21,7 @@ using System.Globalization;
 
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.ImagingTools.ViewModel;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -72,7 +73,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             // Fixing high DPI appearance on Mono
             PointF scale;
-            if (OSUtils.IsMono && (scale = this.GetScale()) != new PointF(1f, 1f))
+            if (OSHelper.IsFrameworkMono && (scale = this.GetScale()) != new PointF(1f, 1f))
                 tblNewSize.ColumnStyles[0].Width = (int)(100 * scale.X);
 
             if (!IsLoaded)

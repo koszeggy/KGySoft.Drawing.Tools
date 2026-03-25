@@ -15,6 +15,8 @@
 
 #region Usings
 
+using KGySoft.WinForms;
+
 #region Used Namespaces
 
 using System;
@@ -116,7 +118,7 @@ namespace KGySoft.Drawing.ImagingTools.View
 
             // On Windows hooking messages to be able to localize the dialog texts
             IntPtr windowHook = IntPtr.Zero;
-            if (OSUtils.IsWindows && !OSUtils.IsMono)
+            if (OSHelper.IsWindows && !OSHelper.IsFrameworkMono)
             {
                 windowHook = User32.HookCallWndRetProc(callWndRetProc);
                 dialogContext = new DialogContext
@@ -142,7 +144,7 @@ namespace KGySoft.Drawing.ImagingTools.View
 
             // On Windows hooking messages to be able to localize the dialog texts
             IntPtr windowHook = IntPtr.Zero;
-            if (OSUtils.IsWindows && !OSUtils.IsMono)
+            if (OSHelper.IsWindows && !OSHelper.IsFrameworkMono)
             {
                 windowHook = User32.HookCallWndRetProc(callWndRetProc);
                 dialogContext = new DialogContext
@@ -216,7 +218,7 @@ namespace KGySoft.Drawing.ImagingTools.View
             {
                 if (Form.ActiveForm is Form form)
                     return form;
-                if (!OSUtils.IsWindows)
+                if (!OSHelper.IsWindows)
                     return null;
                 IntPtr hwnd = User32.GetActiveWindow();
                 return hwnd == IntPtr.Zero ? null : new OwnerWindowHandle(hwnd);

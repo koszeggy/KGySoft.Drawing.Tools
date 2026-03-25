@@ -19,6 +19,8 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
+using KGySoft.WinForms;
+
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.WinApi
@@ -83,7 +85,7 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
 
         internal static void SetWindowTheme(IntPtr hWnd, string? subAppName, string? subIdList)
         {
-            if (!OSUtils.IsVistaOrLater)
+            if (!OSHelper.IsWindowsVistaOrLater)
                 return;
             try
             {
@@ -96,7 +98,7 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
 
         internal static void SetWindowDarkMode(IntPtr hWnd, bool isDarkModeAllowed)
         {
-            if (!OSUtils.IsWindows10OrLater)
+            if (!OSHelper.IsWindows10OrLater)
                 return;
             try
             {
@@ -109,7 +111,7 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
 
         internal static void SetPreferredAppMode(DefaultTheme theme)
         {
-            if (!OSUtils.IsWindows10OrLater)
+            if (!OSHelper.IsWindows10OrLater)
                 return;
 
             // In Windows 10 build 1809 (October 2018 Update) every non-default value means that the dark mode is allowed when it's the used one in the system.
@@ -121,7 +123,7 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
 
         internal static void BufferedPaintStopAllAnimations(IntPtr hwnd)
         {
-            if (!OSUtils.IsVistaOrLater)
+            if (!OSHelper.IsWindowsVistaOrLater)
                 return;
             NativeMethods.BufferedPaintStopAllAnimations(hwnd);
         }

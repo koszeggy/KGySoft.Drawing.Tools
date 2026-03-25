@@ -21,6 +21,7 @@ using System.Linq;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.ViewModel;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -70,9 +71,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         protected override void OnLoad(EventArgs e)
         {
-            // Mono/Windows: ignoring because ToolTips throw an exception if set for an embedded control and
+            // Framework Mono/Windows: ignoring because ToolTips throw an exception if set for an embedded control and
             // since they don't appear for negative padding there is simply no place for them.
-            if (!IsLoaded && !(OSUtils.IsMono && OSUtils.IsWindows))
+            if (!IsLoaded && !OSHelper.IsWindowsMono)
             {
                 ValidationMapping[nameof(ViewModel.PixelFormat)] = gbPixelFormat.CheckBox;
                 ValidationMapping[nameof(ViewModel.QuantizerSelectorViewModel.Quantizer)] = gbQuantizer.CheckBox;

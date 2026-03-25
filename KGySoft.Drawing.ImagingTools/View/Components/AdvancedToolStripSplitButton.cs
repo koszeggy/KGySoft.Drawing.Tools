@@ -20,6 +20,8 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
+using KGySoft.WinForms;
+
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.View.Components
@@ -116,7 +118,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
         {
             if (CheckOnClick)
                 Checked = !Checked;
-            if (OSUtils.IsMono)
+            if (OSHelper.IsFrameworkMono)
                 DefaultItem?.PerformClick();
             else
                 base.OnButtonClick(e);

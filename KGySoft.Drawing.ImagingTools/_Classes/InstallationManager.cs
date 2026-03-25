@@ -26,6 +26,7 @@ using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
 #if NET45_OR_GREATER
 using KGySoft.Drawing.ImagingTools.WinApi;
+using KGySoft.WinForms;
 #endif
 
 #endregion
@@ -191,7 +192,7 @@ namespace KGySoft.Drawing.ImagingTools
                 {
                     string source = Path.Combine(directory, file);
                     string target = Path.Combine(netCorePath, file);
-                    if (isNtfs && OSUtils.IsWindows)
+                    if (isNtfs && OSHelper.IsWindows)
                     {
                         if (File.Exists(target))
                             File.Delete(target);

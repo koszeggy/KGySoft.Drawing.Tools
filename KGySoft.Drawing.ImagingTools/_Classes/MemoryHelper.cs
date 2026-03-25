@@ -16,6 +16,8 @@
 #region Usings
 
 using System;
+
+using KGySoft.WinForms;
 #if NETFRAMEWORK
 using System.Security;
 using KGySoft.Drawing.ImagingTools.WinApi; 
@@ -54,7 +56,7 @@ namespace KGySoft.Drawing.ImagingTools
                 {
                     maxMemoryForGC = Math.Min(
                         IntPtr.Size == 4 ? 1_600_000_000 : Int64.MaxValue,
-                        OSUtils.IsWindows ? Kernel32.GetTotalMemory() : Int64.MaxValue);
+                        OSHelper.IsWindows ? Kernel32.GetTotalMemory() : Int64.MaxValue);
                 }
 
                 return maxMemoryForGC.Value;

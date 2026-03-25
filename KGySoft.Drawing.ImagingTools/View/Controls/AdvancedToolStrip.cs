@@ -27,6 +27,7 @@ using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.View.Components;
 using KGySoft.Drawing.ImagingTools.WinApi;
 using KGySoft.Reflection;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -142,7 +143,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         arrow =
                         [
                             new Point(middle.X - offset.Width, middle.Y - 1),
-                            new Point(middle.X + offset.Width + (OSUtils.IsMono && OSUtils.IsLinux ? 2 : 1), middle.Y - 1),
+                            new Point(middle.X + offset.Width + (OSHelper.IsLinuxMono ? 2 : 1), middle.Y - 1),
                             new Point(middle.X, middle.Y + offset.Height)
                         ];
                         break;
@@ -368,7 +369,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 if (e.Item is ToolStripSplitButton or null)
                     return;
                 Rectangle bounds = e.Item is ScalingToolStripDropDownButton scalingButton ? scalingButton.ArrowRectangle
-                    : OSUtils.IsMono && e.Item is ToolStripMenuItem mi ? new Rectangle(e.ArrowRectangle.Left, 0, e.ArrowRectangle.Width, mi.Height)
+                    : OSHelper.IsFrameworkMono && e.Item is ToolStripMenuItem mi ? new Rectangle(e.ArrowRectangle.Left, 0, e.ArrowRectangle.Width, mi.Height)
                     : e.ArrowRectangle;
                 Color color = !e.Item.Enabled ? ThemeColors.HighContrast ? SystemColors.GrayText : ThemeColors.ControlTextDisabled
                     : ThemeColors.HighContrast ? e.Item.Selected && !e.Item.Pressed ? SystemColors.HighlightText : SystemColors.ControlText
@@ -558,7 +559,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         || (style & ButtonStyle.Selected) != 0 && (style & ButtonStyle.Dropped) == 0)
                     {
                         bounds = button.ButtonBounds;
-                        if (OSUtils.IsMono)
+                        if (OSHelper.IsFrameworkMono)
                             bounds.Location = Point.Empty;
                         bounds.Width += 2;
                         if (button.RightToLeft == RightToLeft.Yes)
@@ -569,7 +570,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
                     // arrow
                     bounds = button.DropDownButtonBounds;
-                    if (OSUtils.IsMono)
+                    if (OSHelper.IsFrameworkMono)
                         bounds.X -= button.ButtonBounds.Left;
 
                     DrawArrow(e.Graphics, button.Enabled ? ThemeColors.ControlText : ThemeColors.ControlTextDisabled, bounds, ArrowDirection.Down);
@@ -639,7 +640,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             protected override void OnRenderItemCheck(ToolStripItemImageRenderEventArgs e)
             {
                 int size = e.Item.Height;
-                Rectangle bounds = new Rectangle(e.Item.RightToLeft == RightToLeft.Yes ? e.Item.Width - size - 1 : OSUtils.IsMono ? 1 : 2, 0, size, size);
+                Rectangle bounds = new Rectangle(e.Item.RightToLeft == RightToLeft.Yes ? e.Item.Width - size - 1 : OSHelper.IsFrameworkMono ? 1 : 2, 0, size, size);
                 if (ThemeColors.HighContrast)
                     DrawHighContrastButtonBackground(e.Graphics, bounds, ButtonStyle.Selected);
                 else
@@ -659,7 +660,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 Rectangle bounds = e.ImageRectangle;
 
                 // Fixing image scaling in menu items on Mono
-                if (OSUtils.IsMono && e.Item is ToolStripMenuItem)
+                if (OSHelper.IsFrameworkMono && e.Item is ToolStripMenuItem)
                     bounds.Size = e.Item.Owner.ScaleSize(referenceImageSize);
                 // In high contrast mode shifting the pressed buttons by 1 pixel, including ToolStripSplitButton
                 else if (ThemeColors.HighContrast && e.Item is ToolStripButton { Pressed: true } or ToolStripSplitButton { ButtonPressed: true })
@@ -859,7 +860,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
 #if NETFRAMEWORK
                 // The scaling is wrong also in Mono, but it is not possible to fix it
-                if (!OSUtils.IsMono)
+                if (!OSHelper.IsFrameworkMono)
                 {
                     // On Windows the fix is also tricky, especially in .NET Framework 3.5 because the bounds
                     // are forcibly maxed with a constant 16, but fortunately we can exploit the fact that the
@@ -939,7 +940,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 return;
             toolTip = (ToolTip)Reflector.GetProperty(this, nameof(ToolTip))!;
 #if !NET35
-            if (!OSUtils.IsWindows11OrLater) 
+            if (!OSHelper.IsWindows11OrLater) 
 #endif
             {
                 toolTip.AutoPopDelay = Int16.MaxValue;
@@ -991,7 +992,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             base.OnSizeChanged(e);
 
             // Preventing double scaling in Mono
-            if (OSUtils.IsMono && Dock.In(DockStyle.Top, DockStyle.Bottom))
+            if (OSHelper.IsFrameworkMono && Dock.In(DockStyle.Top, DockStyle.Bottom))
                 Height = this.ScaleHeight(referenceItemHeight);
         }
 

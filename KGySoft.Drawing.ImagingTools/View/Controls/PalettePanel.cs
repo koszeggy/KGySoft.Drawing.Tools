@@ -21,6 +21,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
+using KGySoft.WinForms;
 using KGySoft.WinForms.Controls;
 
 #endregion
@@ -172,7 +173,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             DoubleBuffered = true;
             SetStyle(ControlStyles.Selectable, true);
-            scrollbarWidth = OSUtils.IsMono ? this.ScaleWidth(16) : SystemInformation.VerticalScrollBarWidth;
+            scrollbarWidth = OSHelper.IsFrameworkMono ? this.ScaleWidth(16) : SystemInformation.VerticalScrollBarWidth;
             sbPalette.Width = scrollbarWidth;
         }
 

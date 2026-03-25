@@ -20,6 +20,8 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
+using KGySoft.WinForms;
+
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.View.Components
@@ -96,7 +98,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
             base.OnParentChanged(oldParent, newParent);
 
             // Mono: without this the new parent's renderer will not be applied to the dropdown menu strip
-            if (OSUtils.IsMono && newParent != null && AutoZoomMenuItem.Owner != null)
+            if (OSHelper.IsFrameworkMono && newParent != null && AutoZoomMenuItem.Owner != null)
                 AutoZoomMenuItem.Owner.Renderer = newParent.Renderer;
         }
 

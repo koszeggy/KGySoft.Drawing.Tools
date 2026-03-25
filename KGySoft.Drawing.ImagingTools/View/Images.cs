@@ -17,8 +17,9 @@
 
 using System;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Globalization;
+
+using KGySoft.WinForms;
 
 #endregion
 
@@ -102,7 +103,7 @@ namespace KGySoft.Drawing.ImagingTools.View
                 throw new ArgumentNullException(nameof(icon), PublicResources.ArgumentNull);
             using (icon)
             {
-                using var resizedIcon = icon.Resize(referenceSize.Scale(scale ?? OSUtils.SystemScale));
+                using var resizedIcon = icon.Resize(referenceSize.Scale(scale ?? ScaleHelper.SystemScale));
                 return resizedIcon.ExtractBitmap(0)!;
             }
         }
@@ -114,19 +115,19 @@ namespace KGySoft.Drawing.ImagingTools.View
 
             using (icon)
             {
-                Size size = referenceSize.Scale(scale ?? OSUtils.SystemScale);
+                Size size = referenceSize.Scale(scale ?? ScaleHelper.SystemScale);
                 Icon result = icon.Resize(size);
                 int mod;
-                if (!div16Scaling || !OSUtils.IsWindows || (mod = result.Width & 0xF) == 0)
+                if (!div16Scaling || !OSHelper.IsWindows || (mod = result.Width & 0xF) == 0)
                     return result;
 
 #if !NET35
-                if (OSUtils.IsWindows8OrLater)
+                if (OSHelper.IsWindows8OrLater)
                     return result;
 #endif
 
                 // .NET 3.5 or Windows XP-Windows 7 with legacy scaling: we need to make sure that icon size is dividable by 16
-                // so it will not be corrupted (eg. ErrorProvider)
+                // so it will not be corrupted (e.g. ErrorProvider)
                 using Bitmap iconImage = icon.ExtractBitmap(result.Size)!;
                 result.Dispose();
 
@@ -142,7 +143,7 @@ namespace KGySoft.Drawing.ImagingTools.View
         private static Bitmap GetResource(string resourceName)
         {
             var icon = (Icon)Properties.Resources.ResourceManager.GetObject(resourceName, CultureInfo.InvariantCulture)!;
-            if (OSUtils.IsVistaOrLater)
+            if (OSHelper.IsWindowsVistaOrLater)
                 return icon.ToMultiResBitmap();
 
             // In Windows XP the multi resolution bitmap can be ugly if it has not completely transparent pixels

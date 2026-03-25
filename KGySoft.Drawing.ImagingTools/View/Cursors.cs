@@ -23,6 +23,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 
 using KGySoft.Collections;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -85,11 +86,11 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         private static Cursor? GetCreateCursor([CallerMemberName] string resourceName = null!)
         {
-            if (!OSUtils.IsWindows)
+            if (!OSHelper.IsWindows)
                 return null;
             if (!cursors.TryGetValue(resourceName, out CursorInfo? info))
                 cursors[resourceName] = info = new CursorInfo((Icon)Properties.Resources.ResourceManager.GetObject(resourceName, CultureInfo.InvariantCulture)!);
-            return info.GetCreateCursor(referenceSize.Scale(OSUtils.SystemScale));
+            return info.GetCreateCursor(referenceSize.Scale(ScaleHelper.SystemScale));
         }
 
         #endregion

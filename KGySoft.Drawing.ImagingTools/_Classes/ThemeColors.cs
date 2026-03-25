@@ -26,6 +26,7 @@ using System.Windows.Forms.VisualStyles;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.View;
 using KGySoft.Drawing.ImagingTools.WinApi;
+using KGySoft.WinForms;
 
 using Microsoft.Win32;
 
@@ -437,7 +438,7 @@ namespace KGySoft.Drawing.ImagingTools
                 if (isDarkSystemTheme.HasValue)
                     return isDarkSystemTheme.Value;
 
-                if (!OSUtils.IsWindows10OrLater)
+                if (!OSHelper.IsWindows10OrLater)
                     return (isDarkSystemTheme = false).Value;
 
                 const string path = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize";
@@ -482,12 +483,12 @@ namespace KGySoft.Drawing.ImagingTools
         {
             try
             {
-                // NOTE: this can be removed after ThemeChanged will be invoked from the UserPreferenceChanged handler of VisualStyleHelper.
+                // TODO: this can be removed after ThemeChanged will be invoked from the UserPreferenceChanged handler of VisualStyleHelper.
                 // Until then, we must keep these in sync here separately. VisualStyleHelper.RenderWithVisualStyles/HighContrast still could be used in other classes,
                 // when the check is not an immediate response to a theme or visual style change (e.g. in paint methods), but for now using these everywhere in the project.
                 useVisualStyles = Application.RenderWithVisualStyles;
                 isHighContrast = SystemInformation.HighContrast;
-                if (OSUtils.IsWindows)
+                if (OSHelper.IsWindows)
                     SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
             }
             catch (Exception e) when (e is InvalidOperationException or ExternalException)
@@ -518,7 +519,7 @@ namespace KGySoft.Drawing.ImagingTools
             if (theme == DefaultTheme.Classic && !isBaseThemeEverChanged && (customColors is null || !resetCustomColors))
                 return;
 
-            if (!OSUtils.IsWindows10OrLater)
+            if (!OSHelper.IsWindows10OrLater)
                 return;
 
             bool isNewThemeDark = (theme == DefaultTheme.Dark || theme == DefaultTheme.System && IsDarkSystemTheme) && useVisualStyles;
@@ -659,21 +660,21 @@ namespace KGySoft.Drawing.ImagingTools
                     case ThemeColor.GroupBoxText: // may be different on Windows XP
                         return new VisualStyleRenderer(VisualStyleElement.Button.GroupBox.Normal).GetColor(ColorProperty.TextColor);
                     case ThemeColor.ToolTip:
-                        if (OSUtils.IsWindows11OrLater)
+                        if (OSHelper.IsWindows11OrLater)
                             return Color.FromArgb((unchecked((int)0xFFF9F9F9)));
-                        if (OSUtils.IsWindows10OrLater)
+                        if (OSHelper.IsWindows10OrLater)
                             return Color.FromArgb((unchecked((int)0xFFFFFFFF)));
-                        if (OSUtils.IsVistaOrLater)
+                        if (OSHelper.IsWindowsVistaOrLater)
                             return Color.FromArgb((unchecked((int)0xFFF3F4F8))); // actually a gradient from white to 0xE4E5F0, this is the middle
                         break;
                     case ThemeColor.ToolTipText:
-                        if (OSUtils.IsVistaOrLater)
+                        if (OSHelper.IsWindowsVistaOrLater)
                             return Color.FromArgb((unchecked((int)0xFF575757)));
                         break;
                     case ThemeColor.ToolTipBorder:
-                        if (OSUtils.IsWindows11OrLater)
+                        if (OSHelper.IsWindows11OrLater)
                             return Color.FromArgb((unchecked((int)0xFFE5E5E5)));
-                        if (OSUtils.IsVistaOrLater)
+                        if (OSHelper.IsWindowsVistaOrLater)
                             return Color.FromArgb((unchecked((int)0xFF767676)));
                         break;
                 }

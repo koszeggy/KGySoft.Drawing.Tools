@@ -23,6 +23,7 @@ using System.Windows.Forms;
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.ImagingTools.View.Forms;
 using KGySoft.Drawing.ImagingTools.ViewModel;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -110,7 +111,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             // Fixing high DPI appearance on Mono
             PointF scale;
-            if (OSUtils.IsMono && (scale = this.GetScale()) != new PointF(1f, 1f))
+            if (OSHelper.IsFrameworkMono && (scale = this.GetScale()) != new PointF(1f, 1f))
             {
                 btnEditResources.Size = new Size(105, 23).Scale(scale);
                 btnDownloadResources.Height = (int)(23 * scale.Y);
@@ -118,7 +119,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
             // Mono/Windows: ignoring because ToolTips throw an exception if set for an embedded control and
             // since they don't appear for negative padding there is simply no place for them.
-            if (!IsLoaded && !(OSUtils.IsMono && OSUtils.IsWindows))
+            if (!IsLoaded && !OSHelper.IsWindowsMono)
             {
                 ValidationMapping[nameof(ViewModel.ResourceCustomPath)] = gbResxResourcesPath.CheckBox;
                 ErrorProvider.SetIconAlignment(gbResxResourcesPath.CheckBox, ErrorIconAlignment.TopRight);
