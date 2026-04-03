@@ -63,6 +63,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         internal MvvmParentForm(MvvmBaseUserControl mvvmChild)
         {
+#if NETFRAMEWORK
+            // In every child user control the AutoScaleMode is Font, which ensures the correct scaling of the controls themselves.
+            // Still, the container control is not scaled in .NET Framework, so doing that here manually.
+            // NOTE: Setting None in user controls and Font for the parent form is wrong for two reasons:
+            // - The scaling of the controls is quite random in many cases in that case
+            // - The user controls must be scaled because as an embedded visualizer in VS2022+ the controls have no parent form
+            mvvmChild.Size = mvvmChild.ScaleSize(mvvmChild.Size);
+#endif
             this.mvvmChild = mvvmChild;
             handleCreated = new ManualResetEventSlim();
             ApplyRightToLeft();
@@ -202,8 +210,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             if (properties.ClosingCallback is FormClosingEventHandler handler)
                 FormClosing += handler; // removed in base.Dispose
             ClientSize = clientSize;
-            AutoScaleMode = AutoScaleMode.Font;
             RightToLeftLayout = true;
+
+            // NOTE: Not setting AutoScaleDimensions along with Font, so the initial size will not change (in .NET Core+ it would cause double scaling).
+            // It still matters when the DPI changes after showing the form.
+            AutoScaleMode = AutoScaleMode.Font;
             ResumeLayout();
 
             // removed in BaseUserControl.Dispose

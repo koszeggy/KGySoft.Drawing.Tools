@@ -15,10 +15,21 @@
 
 #region Usings
 
+#region Used Namespaces
+
+using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
+using KGySoft.WinForms;
+
+#endregion
+
+#region Used Aliases
+
 using SystemDebug = System.Diagnostics.Debug;
+
+#endregion
 
 #endregion
 
@@ -36,6 +47,14 @@ namespace KGySoft.Drawing.ImagingTools
         internal static void Assert(bool condition, [CallerArgumentExpression(nameof(condition))] string? message = null)
         {
 #if NETFRAMEWORK
+            if (OSHelper.IsMono)
+            {
+                if (condition)
+                    return;
+                Fail(message);
+                return;
+            }
+
             SystemDebug.Assert(condition, message);
 #else
             if (!condition)
@@ -47,6 +66,14 @@ namespace KGySoft.Drawing.ImagingTools
         internal static void Fail(string? message)
         {
 #if NETFRAMEWORK
+            if (OSHelper.IsMono)
+            {
+                message = $"Debug failure occurred - {message ?? "No message"}";
+                WriteLine(message);
+                throw new InvalidOperationException(message);
+            }
+
+            SystemDebug.Fail(message ?? "No message");
             SystemDebug.Fail(message);
 #else
             SystemDebug.WriteLine("Debug failure occurred - " + (message ?? "No message"));
@@ -62,6 +89,15 @@ namespace KGySoft.Drawing.ImagingTools
             else
                 Debugger.Break();
 #endif
+        }
+
+        [Conditional("DEBUG")]
+        internal static void WriteLine(string? message = null)
+        {
+            if (OSHelper.IsMono || !Debugger.IsAttached)
+                Console.WriteLine(message);
+            else
+                SystemDebug.WriteLine(message);
         }
 
         #endregion
