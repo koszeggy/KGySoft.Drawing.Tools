@@ -369,14 +369,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             {
                 if (e.Item is ToolStripSplitButton or null)
                     return;
-                Rectangle bounds = e.Item is ScalingToolStripDropDownButton scalingButton ? scalingButton.ArrowRectangle
+                Rectangle bounds = e.Item is AdvancedToolStripDropDownButton scalingButton ? scalingButton.ArrowRectangle
                     : OSHelper.IsFrameworkMono && e.Item is ToolStripMenuItem mi ? new Rectangle(e.ArrowRectangle.Left, 0, e.ArrowRectangle.Width, mi.Height)
                     : e.ArrowRectangle;
                 Color color = !e.Item.Enabled ? ThemeColors.HighContrast ? SystemColors.GrayText : ThemeColors.ControlTextDisabled
                     : ThemeColors.HighContrast ? e.Item.Selected && !e.Item.Pressed ? SystemColors.HighlightText : SystemColors.ControlText
                     : ThemeColors.ControlText;
 
-                DrawArrow(e.Item.Owner, e.Graphics, color, bounds, e.Direction);
+                DrawArrow(e.Item.Owner!, e.Graphics, color, bounds, e.Direction);
             }
 
             /// <summary>
@@ -410,7 +410,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     Graphics g = e.Graphics;
                     Rectangle bounds = new(Point.Empty, item.Size);
 
-                    int scaledSize = e.Item.Owner.ScaleWidth(referenceMenuItemPaddingWidth);
+                    ToolStrip owner = e.ToolStrip!;
+                    int scaledSize = owner.ScaleWidth(referenceMenuItemPaddingWidth);
                     bounds.X += scaledSize + 1;
                     bounds.Width -= scaledSize * 2 + 1;
                     Color backgroundStart;
@@ -574,7 +575,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     if (OSHelper.IsFrameworkMono)
                         bounds.X -= button.ButtonBounds.Left;
 
-                    DrawArrow(e.Item.Owner, e.Graphics, button.Enabled ? ThemeColors.ControlText : ThemeColors.ControlTextDisabled, bounds, ArrowDirection.Down);
+                    DrawArrow(e.ToolStrip!, e.Graphics, button.Enabled ? ThemeColors.ControlText : ThemeColors.ControlTextDisabled, bounds, ArrowDirection.Down);
                 }
 
                 // Changes to original:
@@ -614,7 +615,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     }
 
                     // arrow
-                    DrawArrow(e.Item.Owner, e.Graphics, arrowColor, button.DropDownButtonBounds, ArrowDirection.Down);
+                    DrawArrow(e.ToolStrip!, e.Graphics, arrowColor, button.DropDownButtonBounds, ArrowDirection.Down);
                 }
 
                 #endregion
@@ -656,18 +657,22 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             /// </summary>
             protected override void OnRenderItemImage(ToolStripItemImageRenderEventArgs e)
             {
-                if (e.Image == null || e.Item.Owner is null)
+                if (e.Image == null || e.ToolStrip is null)
                     return;
-                Rectangle bounds = e.ImageRectangle;
+                Rectangle bounds = e.Item switch
+                {
+                    AdvancedToolStripDropDownButton dropDownButton => dropDownButton.ImageRectangle, // .NET 10+: the ImageRectangle can be very distorted (e.g. 9x16) when changing DPI from 150% to 100%
+                    _ => e.ImageRectangle
+                };
 
                 // Fixing image scaling in menu items on Mono
                 if (OSHelper.IsFrameworkMono && e.Item is ToolStripMenuItem)
-                    bounds.Size = e.Item.Owner.ScaleSize(referenceImageSize);
+                    bounds.Size = e.ToolStrip.ScaleSize(referenceImageSize);
                 // In high contrast mode shifting the pressed buttons by 1 pixel, including ToolStripSplitButton
                 else if (ThemeColors.HighContrast && e.Item is ToolStripButton { Pressed: true } or ToolStripSplitButton { ButtonPressed: true })
                     bounds.X += 1;
 #if NETFRAMEWORK
-                else if (e.Item is ScalingToolStripDropDownButton btn)
+                else if (e.Item is AdvancedToolStripDropDownButton btn)
                     btn.AdjustImageRectangle(ref bounds);
 #endif
 
@@ -724,11 +729,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
                     // draw highlight
                     overflowArrowRect.Offset(1 * rightToLeftShift, 1);
-                    DrawOverflowArrow(e.Item.Owner, g, overflowArrowRect, direction, ThemeColors.ControlHighlight);
+                    DrawOverflowArrow(e.ToolStrip!, g, overflowArrowRect, direction, ThemeColors.ControlHighlight);
 
                     // draw black triangle
                     overflowArrowRect.Offset(-1 * rightToLeftShift, -1);
-                    DrawOverflowArrow(e.Item.Owner, g, overflowArrowRect, direction, ThemeColors.ControlText);
+                    DrawOverflowArrow(e.ToolStrip!, g, overflowArrowRect, direction, ThemeColors.ControlText);
                 }
 
                 // Changes to original:
@@ -741,12 +746,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     ButtonStyle style = (button.Pressed ? ButtonStyle.Dropped : 0)
                         | (button.Selected ? ButtonStyle.Selected : 0);
                     DrawHighContrastButtonBackground(e.Graphics, bounds, style);
-                    DrawArrow(e.Item.Owner, e.Graphics, style == ButtonStyle.Selected ? SystemColors.HighlightText : SystemColors.ControlText, bounds, ArrowDirection.Down);
+                    DrawArrow(e.ToolStrip!, e.Graphics, style == ButtonStyle.Selected ? SystemColors.HighlightText : SystemColors.ControlText, bounds, ArrowDirection.Down);
                 }
 
                 static void RenderOverflowBackground(ToolStripItemRenderEventArgs e, ProfessionalColorTable colorTable)
                 {
-                    Size overflowButtonSize = e.Item.Owner.ScaleSize(referenceOverflowButtonSize);
+                    Size overflowButtonSize = e.ToolStrip!.ScaleSize(referenceOverflowButtonSize);
 
                     Graphics g = e.Graphics;
                     var item = (ToolStripOverflowButton)e.Item;
@@ -867,7 +872,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     // are forcibly maxed with a constant 16, but fortunately we can exploit the fact that the
                     // Padding is respected, it's public, and it's actually not used for anything else.
                     var button = (ToolStripOverflowButton)e.Item;
-                    var scaledSize = e.Item.Owner.ScaleSize(referenceOverflowButtonBounds);
+                    var scaledSize = e.ToolStrip.ScaleSize(referenceOverflowButtonBounds);
                     if (e.ToolStrip.Orientation == Orientation.Horizontal && scaledSize.Width > button.Width)
                     {
                         var padding = button.Padding;
@@ -973,11 +978,28 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         protected override void WndProc(ref Message m)
         {
-            base.WndProc(ref m);
+            switch (m.Msg)
+            {
+                // ensuring that items can be clicked even if the container form is not activated
+                case Constants.WM_MOUSEACTIVATE when m.Result == Constants.MA_ACTIVATEANDEAT:
+                    base.WndProc(ref m);
+                    m.Result = Constants.MA_ACTIVATE;
+                    return;
 
-            // ensuring that items can be clicked even if the container form is not activated
-            if (m.Msg == Constants.WM_MOUSEACTIVATE && m.Result == Constants.MA_ACTIVATEANDEAT)
-                m.Result = Constants.MA_ACTIVATE;
+                case Constants.WM_DPICHANGED_BEFOREPARENT:
+                    base.WndProc(ref m);
+                    ImageScalingSize = this.ScaleSize(referenceImageSize);
+                    return;
+
+                case Constants.WM_DPICHANGED_AFTERPARENT:
+                    base.WndProc(ref m);
+                    Font = Parent!.Font;
+                    return;
+
+                default:
+                    base.WndProc(ref m);
+                    return;
+            }
         }
 
         protected override void OnItemAdded(ToolStripItemEventArgs e)

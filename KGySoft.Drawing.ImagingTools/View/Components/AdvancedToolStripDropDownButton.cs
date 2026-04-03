@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 ///////////////////////////////////////////////////////////////////////////////
-//  File: ScalingToolStripDropDownButton.cs
+//  File: AdvancedToolStripDropDownButton.cs
 ///////////////////////////////////////////////////////////////////////////////
 //  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
@@ -27,48 +27,18 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
     /// <summary>
     /// A <see cref="ToolStripDropDownButton"/> that can scale its arrow regardless of .NET version and app.config settings.
     /// </summary>
-    internal class ScalingToolStripDropDownButton : ToolStripDropDownButton
+    internal class AdvancedToolStripDropDownButton : ToolStripDropDownButton
     {
         #region Fields
-
-        #region Static Fields
 
         private static readonly Size arrowSizeUnscaled = new Size(5, 3);
         private static readonly Size arrowPaddingUnscaled = new Size(2, 2);
 
         #endregion
 
-        #region Instance Fields
-
-        private Size arrowSize;
-        private Padding arrowPadding;
-
-        #endregion
-
-        #endregion
-
         #region Properties
 
-        internal Size ArrowSize
-        {
-            get
-            {
-                if (!arrowSize.IsEmpty || Owner is null)
-                    return arrowSize;
-                return arrowSize = Owner.ScaleSize(arrowSizeUnscaled);
-            }
-        }
-
-        internal Padding ArrowPadding
-        {
-            get
-            {
-                if (arrowPadding != Padding.Empty || Owner is null)
-                    return arrowPadding;
-                Size scaled = Owner.ScaleSize(arrowPaddingUnscaled);
-                return arrowPadding = new Padding(scaled.Width, scaled.Height, scaled.Width, scaled.Height);
-            }
-        }
+        #region Properties
 
         internal Rectangle ArrowRectangle
         {
@@ -90,24 +60,64 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
             }
         }
 
+        internal Rectangle ImageRectangle
+        {
+            get
+            {
+                var bounds = new Rectangle(Point.Empty, Size);
+                if (TextDirection == ToolStripTextDirection.Horizontal)
+                {
+                    int arrowRectWidth = ArrowSize.Width + ArrowPadding.Vertical;
+                    bounds.Width -= arrowRectWidth;
+                    if (RightToLeft == RightToLeft.Yes)
+                        bounds.X += arrowRectWidth;
+                }
+
+                bounds.Inflate(-1, -1);
+                Size imageSize = Owner.ImageScalingSize;
+                Rectangle imageRect = new Rectangle(bounds.X + bounds.Width / 2 - imageSize.Width / 2, bounds.Y + bounds.Height / 2 - imageSize.Height / 2, imageSize.Width, imageSize.Height);
+                return Rectangle.Intersect(bounds, imageRect);
+            }
+        }
+
+        #endregion
+
+        #region Private Properties
+
+        private PointF Scale => Owner?.GetScale() ?? ScaleHelper.SystemScale;
+        private Size ArrowSize => arrowSizeUnscaled.Scale(Scale);
+
+        private Padding ArrowPadding
+        {
+            get
+            {
+                Size scaled = arrowPaddingUnscaled.Scale(Scale);
+                return new Padding(scaled.Width, scaled.Height, scaled.Width, scaled.Height);
+            }
+        }
+
+        #endregion
+
         #endregion
 
         #region Methods
 
         #region Public Methods
-        
+
         public override Size GetPreferredSize(Size constrainingSize)
         {
-            var showArrow = ShowDropDownArrow;
+            bool showArrow = ShowDropDownArrow;
             ShowDropDownArrow = false;
             var preferredSize = base.GetPreferredSize(constrainingSize);
             if (!showArrow)
                 return preferredSize;
             ShowDropDownArrow = true;
+            Size arrowSize = ArrowSize;
+            Padding arrowPadding = ArrowPadding;
             if (TextDirection == ToolStripTextDirection.Horizontal)
-                preferredSize.Width += ArrowSize.Width + ArrowPadding.Horizontal;
+                preferredSize.Width += arrowSize.Width + arrowPadding.Horizontal;
             else
-                preferredSize.Height += ArrowSize.Height + ArrowPadding.Vertical;
+                preferredSize.Height += arrowSize.Height + arrowPadding.Vertical;
             return preferredSize;
         }
 

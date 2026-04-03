@@ -49,14 +49,14 @@
             this.btnSave = new System.Windows.Forms.ToolStripButton();
             this.btnClear = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.btnColorSettings = new KGySoft.Drawing.ImagingTools.View.Components.ScalingToolStripDropDownButton();
+            this.btnColorSettings = new KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripDropDownButton();
             this.miBackColor = new System.Windows.Forms.ToolStripMenuItem();
             this.miBackColorDefault = new System.Windows.Forms.ToolStripMenuItem();
             this.miBackColorWhite = new System.Windows.Forms.ToolStripMenuItem();
             this.miBackColorBlack = new System.Windows.Forms.ToolStripMenuItem();
             this.miShowPalette = new System.Windows.Forms.ToolStripMenuItem();
             this.miCountColors = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnEdit = new KGySoft.Drawing.ImagingTools.View.Components.ScalingToolStripDropDownButton();
+            this.btnEdit = new KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripDropDownButton();
             this.miRotateLeft = new System.Windows.Forms.ToolStripMenuItem();
             this.miRotateRight = new System.Windows.Forms.ToolStripMenuItem();
             this.tsMenu.SuspendLayout();
@@ -510,14 +510,14 @@
         private System.Windows.Forms.ToolStripButton btnSave;
         private System.Windows.Forms.ToolStripButton btnClear;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private Components.ScalingToolStripDropDownButton btnColorSettings;
+        private Components.AdvancedToolStripDropDownButton btnColorSettings;
         private System.Windows.Forms.ToolStripMenuItem miBackColor;
         private System.Windows.Forms.ToolStripMenuItem miBackColorDefault;
         private System.Windows.Forms.ToolStripMenuItem miBackColorWhite;
         private System.Windows.Forms.ToolStripMenuItem miBackColorBlack;
         private System.Windows.Forms.ToolStripMenuItem miShowPalette;
         private System.Windows.Forms.ToolStripMenuItem miCountColors;
-        private Components.ScalingToolStripDropDownButton btnEdit;
+        private Components.AdvancedToolStripDropDownButton btnEdit;
         private System.Windows.Forms.ToolStripMenuItem miRotateLeft;
         private System.Windows.Forms.ToolStripMenuItem miRotateRight;
     }

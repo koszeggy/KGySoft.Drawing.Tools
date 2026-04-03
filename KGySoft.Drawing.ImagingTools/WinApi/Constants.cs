@@ -36,6 +36,8 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
         internal const int WM_NCPAINT = 0x0085;
         internal const int WM_NCACTIVATE = 0x0086;
         internal const int WM_THEMECHANGED = 0x031A;
+        internal const int WM_DPICHANGED_BEFOREPARENT = 0x02E2;
+        internal const int WM_DPICHANGED_AFTERPARENT = 0x02E3;
 
         internal const nint MA_ACTIVATEANDEAT = 2;
         internal const nint MA_ACTIVATE = 1;
