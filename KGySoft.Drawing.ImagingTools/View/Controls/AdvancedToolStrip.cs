@@ -987,11 +987,19 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 case Constants.WM_DPICHANGED_BEFOREPARENT:
                     base.WndProc(ref m);
                     ImageScalingSize = this.ScaleSize(referenceImageSize);
+                    foreach (ToolStripItem item in Items)
+                    {
+                        if (item is ToolStripSplitButton splitBtn)
+                            splitBtn.DropDownButtonWidth = this.ScaleWidth(referenceDropDownButtonWidth);
+                    }
+
                     return;
 
                 case Constants.WM_DPICHANGED_AFTERPARENT:
                     base.WndProc(ref m);
                     Font = Parent!.Font;
+                    Height = this.ScaleHeight(referenceItemHeight);
+
                     return;
 
                 default:
@@ -1006,6 +1014,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 splitBtn.DropDownButtonWidth = this.ScaleWidth(referenceDropDownButtonWidth);
 
             base.OnItemAdded(e);
+        }
+
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            Height = this.ScaleHeight(referenceItemHeight);
         }
 
         protected override void OnSizeChanged(EventArgs e)

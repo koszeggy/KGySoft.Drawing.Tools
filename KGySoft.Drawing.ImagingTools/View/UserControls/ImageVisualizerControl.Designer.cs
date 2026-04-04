@@ -21,7 +21,7 @@
             this.btnPrev = new System.Windows.Forms.ToolStripButton();
             this.btnNext = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-            this.btnAbout = new System.Windows.Forms.ToolStripSplitButton();
+            this.btnAbout = new KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripSplitButton();
             this.miWebSite = new System.Windows.Forms.ToolStripMenuItem();
             this.miGitHub = new System.Windows.Forms.ToolStripMenuItem();
             this.miMarketplace = new System.Windows.Forms.ToolStripMenuItem();
@@ -482,7 +482,7 @@
         private System.Windows.Forms.ToolStripButton btnPrev;
         private System.Windows.Forms.ToolStripButton btnNext;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
-        private System.Windows.Forms.ToolStripSplitButton btnAbout;
+        private KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripSplitButton btnAbout;
         private System.Windows.Forms.ToolStripMenuItem miWebSite;
         private System.Windows.Forms.ToolStripMenuItem miGitHub;
         private System.Windows.Forms.ToolStripMenuItem miMarketplace;

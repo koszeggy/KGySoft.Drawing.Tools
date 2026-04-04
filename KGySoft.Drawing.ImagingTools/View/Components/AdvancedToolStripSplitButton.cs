@@ -30,7 +30,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
     /// A <see cref="ToolStripSplitButton"/> whose button part can be checked and the default item can automatically be changed.
     /// </summary>
     // NOTE: The properly scaled arrow and the checked appearance is rendered by AdvancedToolStripRenderer, while
-    // the drop-down button size is adjusted in ScalingToolStrip for all ToolStripSplitButtons
+    // the drop-down button size is adjusted in AdvancedToolStrip for all ToolStripSplitButtons
     internal class AdvancedToolStripSplitButton : ToolStripSplitButton
     {
         #region Fields
