@@ -31,6 +31,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
     {
         #region Fields
 
+        private static readonly Size referenceImageSize = new Size(16, 16);
         private static readonly Size arrowSizeUnscaled = new Size(5, 3);
         private static readonly Size arrowPaddingUnscaled = new Size(2, 2);
 
@@ -74,7 +75,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
                 }
 
                 bounds.Inflate(-1, -1);
-                Size imageSize = Owner.ImageScalingSize;
+                Size imageSize = Owner?.ImageScalingSize ?? referenceImageSize;
                 Rectangle imageRect = new Rectangle(bounds.X + bounds.Width / 2 - imageSize.Width / 2, bounds.Y + bounds.Height / 2 - imageSize.Height / 2, imageSize.Width, imageSize.Height);
                 return Rectangle.Intersect(bounds, imageRect);
             }
@@ -102,8 +103,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
 
         #region Methods
 
-        #region Public Methods
-
         public override Size GetPreferredSize(Size constrainingSize)
         {
             bool showArrow = ShowDropDownArrow;
@@ -120,22 +119,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
                 preferredSize.Height += arrowSize.Height + arrowPadding.Vertical;
             return preferredSize;
         }
-
-        #endregion
-
-        #region Internal Methods
-
-#if NETFRAMEWORK
-        internal void AdjustImageRectangle(ref Rectangle imageBounds)
-        {
-            if (RightToLeft == RightToLeft.Yes)
-                imageBounds.X = Width - 2 - imageBounds.Width;
-            else
-                imageBounds.X = 2;
-        }
-#endif
-
-        #endregion
 
         #endregion
     }

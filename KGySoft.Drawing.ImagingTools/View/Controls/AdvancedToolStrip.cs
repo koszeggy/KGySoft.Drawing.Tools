@@ -654,6 +654,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             /// - Unlike Windows' base implementation, not drawing the checked menu item background again, which is already done by OnRenderItemCheck
             /// - [Mono]: Scaling menu item images
             /// - [HighContrast]: Shifting also clicked ToolStripSplitButton images just like for buttons
+            /// - AdvancedToolStripDropDownButton image: manually calculated image bounds. Fixes .NET 10 per-monitor DPI awareness issue,
+            ///   where e.ImageRectangle can be very distorted (e.g. 9x16) when changing DPI from 150% to 100%
             /// </summary>
             protected override void OnRenderItemImage(ToolStripItemImageRenderEventArgs e)
             {
@@ -661,7 +663,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     return;
                 Rectangle bounds = e.Item switch
                 {
-                    AdvancedToolStripDropDownButton dropDownButton => dropDownButton.ImageRectangle, // .NET 10+: the ImageRectangle can be very distorted (e.g. 9x16) when changing DPI from 150% to 100%
+                    AdvancedToolStripDropDownButton dropDownButton => dropDownButton.ImageRectangle,
                     _ => e.ImageRectangle
                 };
 
@@ -671,10 +673,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 // In high contrast mode shifting the pressed buttons by 1 pixel, including ToolStripSplitButton
                 else if (ThemeColors.HighContrast && e.Item is ToolStripButton { Pressed: true } or ToolStripSplitButton { ButtonPressed: true })
                     bounds.X += 1;
-#if NETFRAMEWORK
-                else if (e.Item is AdvancedToolStripDropDownButton btn)
-                    btn.AdjustImageRectangle(ref bounds);
-#endif
 
                 // On ToolStripSplitButtons the image originally is not quite centered
                 if (e.Item is ToolStripSplitButton)
