@@ -21,8 +21,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.ivPreview = new KGySoft.WinForms.Controls.ImageViewer();
             this.tsMenu = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedToolStrip();
             this.btnZoom = new ZoomSplitButton();
-            this.btnAntiAlias = new System.Windows.Forms.ToolStripButton();
-            this.btnShowOriginal = new System.Windows.Forms.ToolStripButton();
+            this.btnAntiAlias = new KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripButton();
+            this.btnShowOriginal = new KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripButton();
             this.tsMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -91,8 +91,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private Controls.AdvancedToolStrip tsMenu;
         private ZoomSplitButton btnZoom;
-        private System.Windows.Forms.ToolStripButton btnAntiAlias;
+        private Components.AdvancedToolStripButton btnAntiAlias;
         private KGySoft.WinForms.Controls.ImageViewer ivPreview;
-        private System.Windows.Forms.ToolStripButton btnShowOriginal;
+        private Components.AdvancedToolStripButton btnShowOriginal;
     }
 }

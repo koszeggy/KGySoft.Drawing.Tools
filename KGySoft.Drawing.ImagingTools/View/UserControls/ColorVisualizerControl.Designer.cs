@@ -33,7 +33,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.pnlAlpha = new System.Windows.Forms.Panel();
             this.tbAlpha = new System.Windows.Forms.TrackBar();
             this.tsMenu = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedToolStrip();
-            this.btnSelectColor = new System.Windows.Forms.ToolStripButton();
+            this.btnSelectColor = new KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripButton();
             this.txtColor = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox();
             this.buttons = new KGySoft.WinForms.Controls.OkCancelButtons();
             this.pnlControls.SuspendLayout();
@@ -319,7 +319,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         private System.Windows.Forms.Panel pnlColor;
         private KGySoft.WinForms.Controls.AdvancedLabel lblAlpha;
         private System.Windows.Forms.Panel pnlAlpha;
-        private System.Windows.Forms.ToolStripButton btnSelectColor;
+        private Components.AdvancedToolStripButton btnSelectColor;
         private AdvancedTextBox txtColor;
         private System.Windows.Forms.TrackBar tbAlpha;
         private System.Windows.Forms.TrackBar tbRed;
