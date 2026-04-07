@@ -177,6 +177,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             set => base.RowHeadersBorderStyle = value;
         }
 
+        [DefaultValue(DataGridViewColumnHeadersHeightSizeMode.AutoSize)]
+        public new DataGridViewColumnHeadersHeightSizeMode ColumnHeadersHeightSizeMode
+        {
+            get => base.ColumnHeadersHeightSizeMode;
+            set => base.ColumnHeadersHeightSizeMode = value;
+        }
+
         [DefaultValue(BorderStyle.FixedSingle)]
         public new BorderStyle BorderStyle
         {
@@ -303,6 +310,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             RowHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
             ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
             base.BackgroundColor = ThemeColors.Workspace;
+            ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 
             ToolTip?.ResetAppearance();
         }
@@ -379,6 +387,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         protected override void OnHandleCreated(EventArgs e)
         {
             base.OnHandleCreated(e);
+            RowTemplate.Height = ColumnHeadersHeight;
 
             // Trying to avoid double invocation of ApplyTheme
             if (ThemeColors.IsThemeEverChanged && !ThemeColors.HighContrast)
@@ -404,8 +413,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             base.ScaleControl(factor, specified);
             if (factor.Width.Equals(1f))
                 return;
+
+            // This resizes the already existing columns and rows when (parent) font changes. The rows added afterward are managed by RowTemplate.Height.
+            // Works also when DPI changes, even for older frameworks, because the form resets the font.
+            // Up to now, this is not performed automatically (last tested platform: .NET 10), so there is no double sizing.
+            // If a new version will adjust this, we must handle it where RowTemplate.Height is also set.
+            SuspendLayout();
             foreach (DataGridViewColumn column in Columns)
                 column.Width = (int)(column.Width * factor.Width);
+            foreach (DataGridViewRow row in Rows)
+                row.Height = (int)(row.Height * factor.Width);
+            ResumeLayout();
         }
 
         protected override void OnRightToLeftChanged(EventArgs e)
@@ -465,7 +483,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         rect->Bottom -= 1;
                     }
 
-                    break;
+                    return;
 
                 case Constants.WM_NCPAINT:
                     if (!ThemeColors.IsDarkBaseTheme || BorderStyle != BorderStyle.FixedSingle)
@@ -474,9 +492,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     PaintDarkNCArea(m.WParam);
                     break;
 
+                case Constants.WM_DPICHANGED_BEFOREPARENT:
+                    base.WndProc(ref m);
+                    ReleaseIcons();
+                    return;
+
                 default:
                     base.WndProc(ref m);
-                    break;
+                    return;
             }
         }
 
@@ -497,14 +520,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             e.Graphics.FillRectangle(ThemeColors.Workspace.GetBrush(), rect);
         }
 
+        protected override void OnFontChanged(EventArgs e)
+        {
+            base.OnFontChanged(e);
+            if (ColumnHeadersHeightSizeMode == DataGridViewColumnHeadersHeightSizeMode.AutoSize)
+                RowTemplate.Height = ColumnHeadersHeight;
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-            {
-                errorIcon?.Dispose();
-                warningIcon?.Dispose();
-                infoIcon?.Dispose();
-            }
+                ReleaseIcons();
 
             base.Dispose(disposing);
         }
@@ -605,6 +631,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 if (hRgn == new IntPtr(1))
                     User32.ReleaseDC(hWnd, hDC);
             }
+        }
+
+        private void ReleaseIcons()
+        {
+            errorIcon?.Dispose();
+            warningIcon?.Dispose();
+            infoIcon?.Dispose();
+            errorIcon = null;
+            warningIcon = null;
+            infoIcon = null;
         }
 
         private bool ShouldSerializeDefaultCellStyle() => isCustomDefaultCellStyle;

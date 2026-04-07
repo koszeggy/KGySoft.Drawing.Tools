@@ -66,7 +66,6 @@
             this.gridResources.AllowUserToAddRows = false;
             this.gridResources.AllowUserToDeleteRows = false;
             this.gridResources.AutoGenerateColumns = false;
-            this.gridResources.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.gridResources.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colResourceKey,
             this.colOriginalText,
