@@ -172,7 +172,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 #endif
 
             miEasterEgg.Image = Images.ImagingTools;
-            btnAbout.Image = miAbout.Image = Icons.SystemInformation.ToScaledBitmap();
+            btnAbout.Image = miAbout.Image = Icons.SystemInformation.AsBitmap(true);
         }
 
         protected override void ApplyStringResources()

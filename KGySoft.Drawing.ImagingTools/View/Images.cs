@@ -97,14 +97,33 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         #region Internal Methods
 
-        internal static Bitmap ToScaledBitmap(this Icon icon, PointF? scale = null)
+        internal static Bitmap ToScaledBitmap(this Icon icon, PointF scale)
         {
             if (icon == null)
                 throw new ArgumentNullException(nameof(icon), PublicResources.ArgumentNull);
             using (icon)
             {
-                using var resizedIcon = icon.Resize(referenceSize.Scale(scale ?? ScaleHelper.SystemScale));
+                using var resizedIcon = icon.Resize(referenceSize.Scale(scale));
                 return resizedIcon.ExtractBitmap(0)!;
+            }
+        }
+
+        internal static Bitmap AsBitmap(this Icon icon, bool disposeIcon)
+        {
+            if (icon == null)
+                throw new ArgumentNullException(nameof(icon), PublicResources.ArgumentNull);
+            try
+            {
+                if (OSHelper.IsWindowsVistaOrLater)
+                    return icon.ToMultiResBitmap();
+
+                // In Windows XP the multi resolution bitmap can be ugly if it has not completely transparent pixels
+                return icon.ToScaledBitmap(ScaleHelper.SystemScale);
+            }
+            finally
+            {
+                if (disposeIcon)
+                    icon.Dispose();
             }
         }
 
@@ -141,14 +160,7 @@ namespace KGySoft.Drawing.ImagingTools.View
         #region Private Methods
 
         private static Bitmap GetResource(string resourceName)
-        {
-            var icon = (Icon)Properties.Resources.ResourceManager.GetObject(resourceName, CultureInfo.InvariantCulture)!;
-            if (OSHelper.IsWindowsVistaOrLater)
-                return icon.ToMultiResBitmap();
-
-            // In Windows XP the multi resolution bitmap can be ugly if it has not completely transparent pixels
-            return icon.ToScaledBitmap();
-        }
+            => ((Icon)Properties.Resources.ResourceManager.GetObject(resourceName, CultureInfo.InvariantCulture)!).AsBitmap(false);
 
         #endregion
 
