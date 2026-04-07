@@ -19,29 +19,18 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Windows.Forms;
 
+using KGySoft.Drawing.ImagingTools.WinApi;
 using KGySoft.WinForms;
+using KGySoft.WinForms.Controls;
 
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
-    internal class NotificationLabel : Label
+    internal class NotificationLabel : AdvancedLabel
     {
-        #region Constants
-
-        private const string fontMeasureValue = "0";
-
-        #endregion
-
-        #region Fields
-
-        private Size lastProposedSize;
-
-        #endregion
-
         #region Properties
 
         [AllowNull]
@@ -51,7 +40,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             set
             {
                 base.Text = value;
-                lastProposedSize = Size.Empty;
                 Visible = !String.IsNullOrEmpty(value);
             }
         }
@@ -60,21 +48,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         public new Image? Image
         {
             get => base.Image;
-            set
-            {
-                // if the image to set is a multi-res bitmap, then adjusting the icon size
-                if (value?.RawFormat.Equals(ImageFormat.Icon) == true)
-                {
-                    PointF scale = this.GetScale();
-                    if (scale != ScaleHelper.DefaultScale)
-                    {
-                        // the temp bitmap is not used for anything - it just makes value to select the best fitting resolution
-                        using var _ = new Bitmap(value, value.Size.Scale(scale));
-                    }
-                }
-
-                base.Image = value;
-            }
+            set => base.Image = value;
         }
 
         #endregion
@@ -84,10 +58,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         public NotificationLabel()
         {
             AutoSize = true;
-            BorderStyle = BorderStyle.FixedSingle;
+            BorderStyle = AdvancedBorderStyle.FixedSingle;
             BackColor = Color.FromArgb(255, 255, 128);
             ForeColor = Color.Black;
-            Image = Icons.SystemWarning.ToScaledBitmap();
             TextAlign = ContentAlignment.MiddleLeft;
             ImageAlign = ContentAlignment.MiddleRight;
         }
@@ -96,59 +69,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Methods
 
-        #region Public Methods
+        #region Protected Methods
 
-        public override Size GetPreferredSize(Size proposedSize)
+        protected override void OnHandleCreated(EventArgs e)
         {
-            // Workaround: Immediately after calculating preferred size (eg. Dock == Top), another request arrives with empty proposedSize, which ruins the constrained result.
-            if (proposedSize == Size.Empty && lastProposedSize != Size.Empty && Dock != DockStyle.None)
-            {
-                proposedSize = lastProposedSize;
-
-                // in design mode further Empty proposedSizes may arrive so clearing only at runtime
-                if (!DesignMode)
-                    lastProposedSize = Size.Empty;
-            }
-            else
-            {
-                lastProposedSize = proposedSize;
-            }
-
-            Size padding = GetBordersAndPadding();
-            Size proposedTextSize = proposedSize - padding;
-
-            // 0 or 1 means unbounded
-            if (proposedTextSize.Width <= 1)
-                proposedTextSize.Width = Int32.MaxValue;
-            if (proposedTextSize.Height <= 1)
-                proposedTextSize.Height = Int32.MaxValue;
-
-            Size preferredSize;
-            using (Graphics g = Graphics.FromHwnd(Handle))
-            {
-                if (String.IsNullOrEmpty(base.Text))
-                {
-                    preferredSize = Size.Ceiling(g.MeasureString(fontMeasureValue, base.Font, 0));
-                    preferredSize.Width = 0;
-                }
-                else
-                {
-                    preferredSize = TextRenderer.MeasureText(g, base.Text, base.Font, proposedTextSize, TextFormatFlags.WordBreak);
-                }
-            }
-
-            preferredSize += padding;
-            if (proposedSize.Width > preferredSize.Width)
-                preferredSize.Width = proposedSize.Width;
-            if (proposedSize.Height > preferredSize.Height)
-                preferredSize.Height = proposedSize.Height;
-
-            return preferredSize;
+            base.OnHandleCreated(e);
+            ResetIcon();
         }
 
-        #endregion
-
-        #region Protected Methods
 
         protected override void OnClick(EventArgs e)
         {
@@ -156,21 +84,30 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             Visible = false;
         }
 
+        protected override void WndProc(ref Message m)
+        {
+            switch (m.Msg)
+            {
+                case Constants.WM_DPICHANGED_BEFOREPARENT:
+                    base.WndProc(ref m);
+                    ResetIcon();
+                    return;
+
+                default:
+                    base.WndProc(ref m);
+                    return;
+            }
+        }
+
         #endregion
 
         #region Private Methods
 
-        private Size GetBordersAndPadding()
+        private void ResetIcon()
         {
-            Size size = Padding.Size;
-            size += SizeFromClientSize(Size.Empty);
-            int borderWidth = 0;
-            if (BorderStyle == BorderStyle.FixedSingle)
-                borderWidth = 1;
-            else if (BorderStyle == BorderStyle.Fixed3D)
-                borderWidth = 2;
-            size += new Size(borderWidth << 1, borderWidth << 1);
-            return size;
+            Image? prevImage = Image;
+            Image = Icons.SystemWarning.ToScaledBitmap(this.GetScale());
+            prevImage?.Dispose();
         }
 
         #endregion

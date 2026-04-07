@@ -270,7 +270,7 @@
             // 
             this.lblNotification.AutoSize = true;
             this.lblNotification.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
-            this.lblNotification.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.lblNotification.BorderStyle = KGySoft.WinForms.Controls.AdvancedBorderStyle.FixedSingle;
             this.lblNotification.Dock = System.Windows.Forms.DockStyle.Top;
             this.lblNotification.ForeColor = System.Drawing.Color.Black;
             this.lblNotification.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
