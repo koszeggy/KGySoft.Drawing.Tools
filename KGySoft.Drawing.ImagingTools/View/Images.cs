@@ -127,17 +127,17 @@ namespace KGySoft.Drawing.ImagingTools.View
             }
         }
 
-        internal static Icon ToScaledIcon(this Icon icon, PointF? scale = null, bool div16Scaling = true)
+        internal static Icon ToScaledIcon(this Icon icon, PointF scale)
         {
             if (icon == null)
                 throw new ArgumentNullException(nameof(icon), PublicResources.ArgumentNull);
 
             using (icon)
             {
-                Size size = referenceSize.Scale(scale ?? ScaleHelper.SystemScale);
+                Size size = referenceSize.Scale(scale);
                 Icon result = icon.Resize(size);
                 int mod;
-                if (!div16Scaling || !OSHelper.IsWindows || (mod = result.Width & 0xF) == 0)
+                if (!OSHelper.IsWindows || (mod = result.Width & 0xF) == 0)
                     return result;
 
 #if !NET35
@@ -145,7 +145,7 @@ namespace KGySoft.Drawing.ImagingTools.View
                     return result;
 #endif
 
-                // .NET 3.5 or Windows XP-Windows 7 with legacy scaling: we need to make sure that icon size is dividable by 16
+                // .NET 3.5 or Windows XP-Windows 7 with legacy scaling: we need to make sure that icon size is divisible by 16
                 // so it will not be corrupted (e.g. ErrorProvider)
                 using Bitmap iconImage = icon.ExtractBitmap(result.Size)!;
                 result.Dispose();
