@@ -200,6 +200,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #endregion
 
+        #region Internal Properties
+        
+        internal bool FocusCuesVisible => base.ShowFocusCues;
+
+        #endregion
+
         #region Private Properties
 
         private Bitmap ErrorIcon => errorIcon ??= Icons.SystemError.ToScaledBitmap(this.GetScale());

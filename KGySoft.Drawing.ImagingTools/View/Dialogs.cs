@@ -291,6 +291,7 @@ namespace KGySoft.Drawing.ImagingTools.View
                     return true;
                 id = --dialogContext.CustomStaticId;
             }
+            //// Needed for classic MessageBoxes. Restore if reverting from TaskDialogs
             //// If there is a single OK button in a MessageBox it has the same id as a Cancel button.
             //else if (dialogContext.DialogType == DialogType.SingleButtonMessageBox && id == Constants.IDCANCEL && className == Constants.ClassNameButton)
             //    id = Constants.IDOK;

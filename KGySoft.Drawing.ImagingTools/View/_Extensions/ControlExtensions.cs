@@ -145,6 +145,7 @@ namespace KGySoft.Drawing.ImagingTools.View
 
                 case AdvancedDataGridView dataGridView:
                     dataGridView.ApplyTheme();
+                    dataGridView.ApplyVisualStyleTheme();
                     break;
 
                 case ScrollBar scrollBar:
@@ -169,10 +170,12 @@ namespace KGySoft.Drawing.ImagingTools.View
                 child.ApplyTheme();
         }
 
+        internal static IntPtr GetHandleIfCreated(this Control c) => c.IsHandleCreated ? c.Handle : IntPtr.Zero;
+
         #endregion
-        
+
         #region Private Methods
-        
+
         private static void ApplyVisualStyleTheme(this Control control)
         {
             if (!OSHelper.IsWindows10OrLater) // TODO: || !VisualStyleHelper.InitializedWithVisualStyles
@@ -202,7 +205,7 @@ namespace KGySoft.Drawing.ImagingTools.View
                     UxTheme.SetWindowTheme(control.Handle, ThemeColors.IsDarkBaseTheme ? darkTheme : lightTheme, null);
                     break;
 
-                case ButtonBase or ScrollBar:
+                case ButtonBase or ScrollBar or AdvancedDataGridView: // AdvancedDataGridView: for the checkbox columns
                     UxTheme.SetWindowTheme(control.Handle, ThemeColors.IsDarkBaseTheme ? darkTheme : null, null);
                     break;
 
