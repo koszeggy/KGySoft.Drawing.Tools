@@ -1081,6 +1081,15 @@ Using a specific seed disables parallel processing, which impacts performance on
   <data name="DrawingOperation.Saving" xml:space="preserve">
     <value>Saving...</value>
   </data>
+  <data name="CheckState.Checked" xml:space="preserve">
+    <value>Selected</value>
+  </data>
+  <data name="CheckState.Unchecked" xml:space="preserve">
+    <value>Not Selected</value>
+  </data>
+  <data name="CheckState.Indeterminate" xml:space="preserve">
+    <value>Indeterminate</value>
+  </data>
   <data name="DrawingOperation.Loading" xml:space="preserve">
     <value>Loading...</value>
   </data>
