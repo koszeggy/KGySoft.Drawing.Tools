@@ -32,10 +32,20 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
     internal partial class LanguageSettingsControl : MvvmBaseUserControl
     {
         #region Fields
+        
+        #region Static Fields
+
+        private static readonly Size referenceSize = new Size(400, 225); // Adjusted for Segoe UI 9 font on 100% DPI.
+
+        #endregion
+        
+        #region Instance Fields
 
         private ParentViewProperties? parentProperties;
         private ICommandBinding? saveCommandBinding;
 
+        #endregion
+        
         #endregion
 
         #region Properties
@@ -75,7 +85,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         internal LanguageSettingsControl(LanguageSettingsViewModel viewModel) : base(viewModel)
         {
             InitializeComponent();
-            btnEditResources.Height = cmbLanguages.Height + 2; // helps aligning better for higher DPIs
         }
 
         #endregion
@@ -104,6 +113,13 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         #endregion
 
         #region Instance Methods
+
+        #region Internal Methods
+
+        internal override Size? GetDesiredSize(PointF scale) => referenceSize.Scale(scale);
+        internal override void AdjustSizes() => btnEditResources.Height = btnDownloadResources.Height = cmbLanguages.Height + 2;
+
+        #endregion
 
         #region Protected Methods
 

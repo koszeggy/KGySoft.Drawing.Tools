@@ -120,6 +120,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             }
 
             base.OnLoad(e);
+            mvvmChild.AdjustSizes();
 
             // Loaded can be true if handle was recreated
             if (isLoaded || IsDesignMode)
@@ -134,7 +135,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             }
 
             isLoaded = true;
-            mvvmChild.AdjustSizes();
             ApplyBindings();
         }
 
