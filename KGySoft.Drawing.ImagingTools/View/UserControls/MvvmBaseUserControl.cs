@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -126,6 +127,19 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Methods
 
+        #region Intenral Methods
+
+        /// <summary>
+        /// Recommended to override for views with fixed size to avoid bad scaling on different platforms
+        /// </summary>
+        internal virtual Size? GetDesiredSize(PointF scale) => null;
+
+        internal virtual void AdjustSizes()
+        {
+        }
+
+        #endregion
+
         #region Protected Methods
 
         protected override void OnLoad(EventArgs e)
@@ -182,6 +196,21 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             mvvmParent = ParentForm as MvvmParentForm;
             if (viewModel is ViewModelBase vm && mvvmParent is MvvmParentForm parent)
                 vm.CloseViewCallback = () => BeginInvoke(new Action(parent.Close));
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            switch (m.Msg)
+            {
+                case Constants.WM_DPICHANGED_AFTERPARENT:
+                    base.WndProc(ref m);
+                    AdjustSizes();
+                    return;
+
+                default:
+                    base.WndProc(ref m);
+                    return;
+            }
         }
 
         protected override void Dispose(bool disposing)

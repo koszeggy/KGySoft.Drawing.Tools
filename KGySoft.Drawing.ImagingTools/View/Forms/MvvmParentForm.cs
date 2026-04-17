@@ -23,6 +23,7 @@ using System.Windows.Forms;
 using KGySoft.Drawing.ImagingTools.View.UserControls;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 using KGySoft.WinForms;
+using KGySoft.WinForms.Forms;
 
 #endregion
 
@@ -83,6 +84,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             if (!IsDesignMode && !OSHelper.IsMono && SystemFonts.MessageBoxFont is Font font)
                 base.Font = font;
 
+            // It's important that doing this after setting the font. Using SystemScale, as handle is not created yet.
+            Size? desiredClientSize = mvvmChild.GetDesiredSize(ScaleHelper.SystemScale);
+            if (desiredClientSize != null)
+                ClientSize = desiredClientSize.Value;
+
             StartPosition = OSHelper.IsWindowsMono ? FormStartPosition.WindowsDefaultLocation : FormStartPosition.CenterParent;
         }
 
@@ -128,6 +134,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             }
 
             isLoaded = true;
+            mvvmChild.AdjustSizes();
             ApplyBindings();
         }
 
@@ -135,6 +142,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             base.OnHandleCreated(e);
             handleCreated.Set();
+        }
+
+        protected override void OnDeviceScaleGetNewSize(DeviceScaleGetNewSizeEventArgs e)
+        {
+            Size? desiredClientSize = mvvmChild.GetDesiredSize(e.NewScale);
+            e.Handled = desiredClientSize != null;
+            if (desiredClientSize == null)
+                return;
+
+            var scaleDiff = new PointF(e.NewScale.X / e.PreviousScale.X, e.NewScale.Y / e.PreviousScale.Y);
+            e.DesiredSize = desiredClientSize.Value + (Size - ClientSize).Scale(scaleDiff);
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
