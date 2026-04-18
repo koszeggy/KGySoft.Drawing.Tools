@@ -92,6 +92,17 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             base.ApplyViewModel();
         }
 
+        internal override void AdjustSizes(PointF? dynamicSizesScale)
+        {
+            base.AdjustSizes(dynamicSizesScale);
+            progress.AdjustSizes();
+            gridDownloadableResources.Font = Font;
+            if (dynamicSizesScale is PointF scale)
+                gridDownloadableResources.AdjustSizes(scale);
+            okCancelButtons.EnsureHeight();
+            Parent?.PerformLayout(); // because sometimes the control does not fill the parent completely
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (IsDisposed)

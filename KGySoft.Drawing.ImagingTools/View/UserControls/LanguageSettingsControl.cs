@@ -31,11 +31,18 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
     internal partial class LanguageSettingsControl : MvvmBaseUserControl
     {
+        #region Constants
+
+        private const int gbResXPathRefHeight = 52; // Adjusted for Segoe UI 9 font on 100% DPI.
+
+        #endregion
+
         #region Fields
-        
+
         #region Static Fields
 
         private static readonly Size referenceSize = new Size(400, 225); // Adjusted for Segoe UI 9 font on 100% DPI.
+        private static readonly Padding referencePadding = new Padding(3);
 
         #endregion
         
@@ -117,7 +124,25 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         #region Internal Methods
 
         internal override Size? GetDesiredSize(PointF scale) => referenceSize.Scale(scale);
-        internal override void AdjustSizes() => btnEditResources.Height = btnDownloadResources.Height = cmbLanguages.Height + 2;
+
+        internal override void AdjustSizes(PointF? dynamicSizesScale)
+        {
+            base.AdjustSizes(dynamicSizesScale);
+            SuspendLayout();
+            try
+            {
+                PointF scale = this.GetScale();
+                Padding = gbResxResourcesPath.Padding = gbDisplayLanguage.Padding = referencePadding.Scale(scale);
+                gbResxResourcesPath.Height = gbResXPathRefHeight.Scale(scale.Y);
+                btnEditResources.MinimumSize = new Size(0, cmbLanguages.Height + 2);
+                btnEditResources.Height = btnDownloadResources.Height = cmbLanguages.Height + 2;
+                okCancelApplyButtons.EnsureHeight();
+            }
+            finally
+            {
+                ResumeLayout();
+            }
+        }
 
         #endregion
 

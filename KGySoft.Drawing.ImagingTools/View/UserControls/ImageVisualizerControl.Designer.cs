@@ -65,8 +65,8 @@
             // txtInfo
             // 
             this.txtInfo.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.txtInfo.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.txtInfo.Location = new System.Drawing.Point(0, 163);
+            this.txtInfo.EnabledForeColor = System.Drawing.SystemColors.ControlText;
+            this.txtInfo.Location = new System.Drawing.Point(0, 168);
             this.txtInfo.Multiline = true;
             this.txtInfo.Name = "txtInfo";
             this.txtInfo.ReadOnly = true;
@@ -242,9 +242,9 @@
             // 
             this.buttons.BackColor = System.Drawing.Color.Transparent;
             this.buttons.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.buttons.Location = new System.Drawing.Point(0, 281);
+            this.buttons.Location = new System.Drawing.Point(0, 286);
             this.buttons.Name = "buttons";
-            this.buttons.Size = new System.Drawing.Size(364, 35);
+            this.buttons.Size = new System.Drawing.Size(364, 30);
             this.buttons.TabIndex = 11;
             // 
             // miResizeBitmap
@@ -257,34 +257,34 @@
             // imageViewer
             // 
             this.imageViewer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.imageViewer.Location = new System.Drawing.Point(0, 49);
+            this.imageViewer.Location = new System.Drawing.Point(0, 46);
             this.imageViewer.Name = "imageViewer";
             this.imageViewer.OptimizationOptions = ((KGySoft.WinForms.Controls.ImageViewerOptimizationOptions)((((KGySoft.WinForms.Controls.ImageViewerOptimizationOptions.UseOptimalPixelFormat | KGySoft.WinForms.Controls.ImageViewerOptimizationOptions.GenerateResizedBitmap) 
             | KGySoft.WinForms.Controls.ImageViewerOptimizationOptions.CheckQuicklyAvailableMemory) 
             | KGySoft.WinForms.Controls.ImageViewerOptimizationOptions.UseUnsafeCooperativeLocking)));
-            this.imageViewer.Size = new System.Drawing.Size(364, 111);
+            this.imageViewer.Size = new System.Drawing.Size(364, 119);
             this.imageViewer.TabIndex = 7;
             this.imageViewer.TabStop = false;
             // 
             // lblNotification
             // 
             this.lblNotification.AutoSize = true;
-            this.lblNotification.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.lblNotification.BorderStyle = KGySoft.WinForms.Controls.AdvancedBorderStyle.FixedSingle;
             this.lblNotification.Dock = System.Windows.Forms.DockStyle.Top;
-            this.lblNotification.ForeColor = System.Drawing.Color.Black;
+            this.lblNotification.EnabledBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+            this.lblNotification.EnabledForeColor = System.Drawing.Color.Black;
             this.lblNotification.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.lblNotification.Location = new System.Drawing.Point(0, 25);
             this.lblNotification.Name = "lblNotification";
             this.lblNotification.Padding = new System.Windows.Forms.Padding(3, 3, 20, 3);
-            this.lblNotification.Size = new System.Drawing.Size(364, 24);
+            this.lblNotification.Size = new System.Drawing.Size(364, 21);
             this.lblNotification.TabIndex = 10;
             this.lblNotification.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // splitter
             // 
             this.splitter.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.splitter.Location = new System.Drawing.Point(0, 160);
+            this.splitter.Location = new System.Drawing.Point(0, 165);
             this.splitter.MinExtra = 16;
             this.splitter.MinSize = 50;
             this.splitter.Name = "splitter";

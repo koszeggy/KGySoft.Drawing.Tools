@@ -33,15 +33,33 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
     /// </summary>
     internal class ProgressFooter<TProgress> : AutoMirrorPanel
     {
+        #region Constants
+
+        private const int refHeight = 20;
+
+        #endregion
+
         #region Fields
 
+        #region Static Fields
+
+        [SuppressMessage("ReSharper", "StaticMemberInGenericType", Justification = "There are only two contstructed types, so doesn't really matter")]
+        private static readonly Padding pnlProgressReferencePadding = new Padding(3, 3, 8, 3);
+
+        #endregion
+
+        #region Instance Fields
+
         private readonly object syncRoot = new object();
-        private readonly Label lblProgress;
+        private readonly AdvancedLabel lblProgress;
         private readonly AdvancedProgressBar pbProgress;
+        private readonly Panel pnlProgress;
         private readonly Timer timer;
 
         private bool progressVisible = true; // so ctor change will have effect at run-time
         private TProgress? progress;
+
+        #endregion
 
         #endregion
 
@@ -104,8 +122,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             }
         }
 
-        protected override Padding DefaultPadding => new Padding(3, 3, 8, 3);
-
         #endregion
 
         #endregion
@@ -115,11 +131,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         protected ProgressFooter()
         {
             Dock = DockStyle.Bottom;
-            lblProgress = new Label
+            lblProgress = new AdvancedLabel
             {
                 Name = nameof(lblProgress),
                 Dock = DockStyle.Left,
                 TextAlign = ContentAlignment.MiddleLeft
+            };
+            pnlProgress = new Panel
+            {
+                Name = nameof(pnlProgress),
+                Dock = DockStyle.Fill,
+                Padding = pnlProgressReferencePadding
             };
             pbProgress = new AdvancedProgressBar
             {
@@ -127,7 +149,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 Dock = DockStyle.Fill,
                 RightToLeftLayout = true,
             };
-            Controls.AddRange(new Control[] { pbProgress, lblProgress });
+            pnlProgress.Controls.Add(pbProgress);
+            Controls.AddRange([pnlProgress, lblProgress]);
             timer = new Timer { Interval = 30 };
 
             // DesignMode is false in the constructor
@@ -143,17 +166,28 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Methods
 
-        #region Protected Methods
+        #region Internal Methods
 
-        protected override void OnSizeChanged(EventArgs e)
+        internal void AdjustSizes()
         {
-            base.OnSizeChanged(e);
-
-            // Fixing high DPI appearance on Mono
-            PointF scale;
-            if (OSHelper.IsFrameworkMono && (scale = this.GetScale()) != new PointF(1f, 1f))
-                Height = (int)(22 * scale.Y);
+            SuspendLayout();
+            try
+            {
+                PointF scale = this.GetScale();
+                Height = refHeight.Scale(scale.Y);
+                pnlProgress.Padding = pnlProgressReferencePadding.Scale(scale);
+                if (ProgressVisible)
+                    ResetLabel();
+            }
+            finally
+            {
+                ResumeLayout();
+            }
         }
+
+        #endregion
+
+        #region Protected Methods
 
         protected override void Dispose(bool disposing)
         {
@@ -167,11 +201,21 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #endregion
 
+        #region Private Methods
+        
+        private void ResetLabel()
+        {
+            lblProgress.Width = 0;
+            lblProgress.Width = lblProgress.PreferredWidth;
+        }
+
+        #endregion
+
         #region Event handlers
+
 #pragma warning disable IDE1006 // Naming Styles
 
-        private void lblProgress_TextChanged(object? sender, EventArgs e) => lblProgress.Width = lblProgress.PreferredWidth;
-
+        private void lblProgress_TextChanged(object? sender, EventArgs e) => ResetLabel();
         private void timer_Tick(object? sender, EventArgs e) => UpdateProgress();
 
 #pragma warning restore IDE1006 // Naming Styles

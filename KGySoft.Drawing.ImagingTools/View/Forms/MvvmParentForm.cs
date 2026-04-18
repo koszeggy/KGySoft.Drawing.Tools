@@ -81,11 +81,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             if (!IsDesignMode && !OSHelper.IsMono && SystemFonts.MessageBoxFont is Font font)
                 base.Font = font;
 
-            // It's important that doing this after setting the font. Using SystemScale, as handle is not created yet.
-            Size? desiredClientSize = mvvmChild.GetDesiredSize(ScaleHelper.SystemScale);
-            if (desiredClientSize != null)
-                ClientSize = desiredClientSize.Value;
-
             StartPosition = OSHelper.IsWindowsMono ? FormStartPosition.WindowsDefaultLocation : FormStartPosition.CenterParent;
         }
 
@@ -117,7 +112,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             }
 
             base.OnLoad(e);
-            mvvmChild.AdjustSizes();
 
             // Loaded can be true if handle was recreated
             if (isLoaded || IsDesignMode)
@@ -135,8 +129,20 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             ApplyBindings();
         }
 
+        protected override void OnCreateControl()
+        {
+            // Just like OnLoad, this may be called multiple times if the RTL changes.
+            // Doing the size adjustments here, because in OnLoad the handle is not created, and the scale can be incorrect on RTL change.
+            base.OnCreateControl();
+            Size? desiredClientSize = mvvmChild.GetDesiredSize(this.GetScale());
+            if (desiredClientSize != null)
+                ClientSize = desiredClientSize.Value;
+            mvvmChild.AdjustSizes(null);
+        }
+
         protected override void OnDeviceScaleGetNewSize(DeviceScaleGetNewSizeEventArgs e)
         {
+            MinimumSize = Size.Empty; // to allow shrinking near upscaled minimum size (restored in mvvmChild.AdjustSizes)
             Size? desiredClientSize = mvvmChild.GetDesiredSize(e.NewScale);
             e.Handled = desiredClientSize != null;
             if (desiredClientSize == null)
@@ -203,8 +209,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 MinimizeBox = false;
             if (properties.BorderStyle is FormBorderStyle.FixedDialog)
                 MinimizeBox = MaximizeBox = false;
-            if (!properties.MinimumSize.IsEmpty)
-                MinimumSize = properties.MinimumSize;
             if (properties.ClosingCallback is FormClosingEventHandler handler)
                 FormClosing += handler; // removed in base.Dispose
             ClientSize = clientSize;

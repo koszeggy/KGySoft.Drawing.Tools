@@ -15,9 +15,11 @@
 
 #region Usings
 
+using System.Drawing;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.ViewModel;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -25,10 +27,30 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
     internal partial class CountColorsControl : MvvmBaseUserControl
     {
+        #region Constants
+
+        // Adjusted for Segoe UI 9 font on 100% DPI
+        private const int pnlButtonRefHeight = 33;
+
+        #endregion
+
         #region Fields
+
+        #region Static Fields
+
+        private static readonly Size referenceSize = new Size(320, 100); // Adjusted for Segoe UI 9 font on 100% DPI.
+        private static readonly Size buttonReferenceSize = new Size(75, 23);
+        private static readonly Padding buttonReferenceMargin = new Padding(3);
+        private static readonly Padding panelReferencePadding = new Padding(3);
+
+        #endregion
+
+        #region Instance Fields
 
         private ParentViewProperties? parentProperties;
         
+        
+        #endregion
         #endregion
 
         #region Properties
@@ -85,6 +107,34 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             InitCommandBindings();
             InitPropertyBindings();
             base.ApplyViewModel();
+        }
+
+        internal override Size? GetDesiredSize(PointF scale) => referenceSize.Scale(scale);
+
+        internal override void AdjustSizes(PointF? dynamicSizesScale)
+        {
+            base.AdjustSizes(dynamicSizesScale);
+            SuspendLayout();
+            try
+            {
+                PointF scale = this.GetScale();
+                pnlButton.Height = pnlButtonRefHeight.Scale(scale.Y);
+                progress.AdjustSizes();
+
+                Size minSize = buttonReferenceSize.Scale(scale);
+                Padding margin = buttonReferenceMargin.Scale(scale);
+
+                pnlButton.Padding = panelReferencePadding.Scale(scale);
+                pnlButton.Height = minSize.Height + pnlButton.Padding.Vertical + margin.Vertical;
+
+                btnClose.MinimumSize = minSize;
+                btnClose.Size = btnClose.GetPreferredSize(new Size(0, minSize.Height));
+                btnClose.Location = new Point((pnlButton.Width - btnClose.Width) / 2, (pnlButton.Height - btnClose.Height) / 2);
+            }
+            finally
+            {
+                ResumeLayout();
+            }
         }
 
         protected override void Dispose(bool disposing)

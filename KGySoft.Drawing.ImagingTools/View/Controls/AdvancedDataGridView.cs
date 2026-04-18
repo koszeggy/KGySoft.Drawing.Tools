@@ -386,6 +386,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             ToolTip?.ResetAppearance();
         }
 
+        internal void AdjustSizes(PointF scale)
+        {
+            foreach (DataGridViewColumn column in Columns)
+                column.Width = (int)(column.Width * scale.X);
+            foreach (DataGridViewRow row in Rows)
+                row.Height = (int)(row.Height * scale.Y);
+        }
+
         #endregion
 
         #region Protected Methods
@@ -417,19 +425,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
         {
             base.ScaleControl(factor, specified);
-            if (factor.Width.Equals(1f))
-                return;
 
-            // This resizes the already existing columns and rows when (parent) font changes. The rows added afterward are managed by RowTemplate.Height.
-            // Works also when DPI changes, even for older frameworks, because the form resets the font.
-            // Up to now, this is not performed automatically (last tested platform: .NET 10), so there is no double sizing.
-            // If a new version will adjust this, we must handle it where RowTemplate.Height is also set.
-            SuspendLayout();
-            foreach (DataGridViewColumn column in Columns)
-                column.Width = (int)(column.Width * factor.Width);
-            foreach (DataGridViewRow row in Rows)
-                row.Height = (int)(row.Height * factor.Width);
-            ResumeLayout();
+            // We are here when the framework scales the control by its own platform-dependent logic.
+            // Allowing it only when the handle is not created yet, which occurs when initializing the font for the first time.
+            // Once the handle is created, this method is typically called on DPI change, but the behavior depends on the platform target and configurations.
+            // For example, .NET Framework 4.7.2 behavior is good when app.config has NO PerMonitorV2 awareness, but is a mess when PerMonitorV2 DpiAwareness is set.
+            // Considering that as a debugger visualizer, we depend on the configuration of devenv.exe, we must be prepared for any case.
+            // NOTE: This logic is alright for this project, but may not suffice for a general AdvancedDataGridView.
+            if (!factor.Width.Equals(1f) && !IsHandleCreated)
+                AdjustSizes(factor.ToPointF());
         }
 
         protected override void OnRightToLeftChanged(EventArgs e)

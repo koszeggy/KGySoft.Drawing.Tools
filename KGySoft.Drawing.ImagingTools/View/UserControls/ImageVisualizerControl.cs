@@ -41,9 +41,17 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
     internal partial class ImageVisualizerControl : MvvmBaseUserControl
     {
+        #region Constants
+
+        private const int refSplitterMinHeight = 16;
+        private const int refSplitterWidth = 4;
+
+        #endregion
+
         #region Fields
 
         private ParentViewProperties? parentProperties;
+        private int lastInfoHeight;
 
         #endregion
 
@@ -237,6 +245,17 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             miBackColorDefault.ForeColor = ThemeColors.ControlText;
             if (miBackColorDefault.Image != null)
                 imageViewer.BackColor = ThemeColors.Control;
+        }
+
+        internal override void StoreDynamicSizes() => lastInfoHeight = txtInfo.Height;
+
+        internal override void AdjustSizes(PointF? dynamicSizesScale)
+        {
+            base.AdjustSizes(dynamicSizesScale);
+            splitter.Height = splitter.ScaleHeight(refSplitterWidth);
+            if (dynamicSizesScale is PointF scale)
+                txtInfo.Height = lastInfoHeight.Scale(scale.Y);
+            AdjustInfoSize();
         }
 
         protected override void Dispose(bool disposing)
@@ -444,11 +463,15 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             return dlgSave.FileName;
         }
 
-        private void AdjustSize()
+        private void AdjustInfoSize()
         {
-            int minHeight = this.ScaleHeight(16) + SystemInformation.HorizontalScrollBarHeight;
+            int minHeight = this.ScaleHeight(refSplitterMinHeight) + this.GetScrollBarSize().Height;
             if (imageViewer.Height >= minHeight)
+            {
+                txtInfo.EnsureHeight();
                 return;
+            }
+
             int buttonsHeight = buttons.Visible ? buttons.Height : 0;
             int notificationHeight = lblNotification.Visible ? lblNotification.Height : 0;
             txtInfo.Height = ClientSize.Height - Padding.Vertical - tsMenu.Height - splitter.Height - buttonsHeight - notificationHeight - minHeight;
@@ -491,9 +514,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 imageViewer.BackColor = Color.Black;
         }
 
-        private void OnPreviewImageResizedCommand() => AdjustSize();
+        private void OnPreviewImageResizedCommand() => AdjustInfoSize();
 
-        private void OnResizeCommand() => AdjustSize();
+        private void OnResizeCommand() => AdjustInfoSize();
 
         #endregion
 

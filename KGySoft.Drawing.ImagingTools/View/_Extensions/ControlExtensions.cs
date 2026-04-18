@@ -172,6 +172,17 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         internal static IntPtr GetHandleIfCreated(this Control c) => c.IsHandleCreated ? c.Handle : IntPtr.Zero;
 
+        /// <summary>
+        /// This method is to prevent accidentally disappearing controls after a faulty layout change.
+        /// May occur on some platforms after changing DPI or RTL.
+        /// </summary>
+        internal static void EnsureHeight(this Control c)
+        {
+            int height = c.Height;
+            c.Height = 0;
+            c.Height = height;
+        }
+
         #endregion
 
         #region Private Methods

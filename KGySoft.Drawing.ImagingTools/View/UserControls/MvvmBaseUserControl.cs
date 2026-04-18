@@ -44,6 +44,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private ViewModelBase? viewModel;
         private MvvmParentForm? mvvmParent;
+        private PointF lastScale;
 
         #endregion
 
@@ -105,6 +106,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             ApplyRightToLeft();
             InitializeComponent();
+            lastScale = ScaleHelper.SystemScale;
 
 #if !NET35
             if (!OSHelper.IsWindows11OrLater)
@@ -127,20 +129,44 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Methods
 
-        #region Intenral Methods
+        #region Internal Methods
 
         /// <summary>
-        /// Recommended to override for views with fixed size to avoid bad scaling on different platforms
+        /// Recommended to override for views with fixed size form border to avoid bad scaling on different platforms.
         /// </summary>
         internal virtual Size? GetDesiredSize(PointF scale) => null;
 
-        internal virtual void AdjustSizes()
+        /// <summary>
+        /// This method is called before applying a new DPI. Use it to store the sizes of dynamically resizable controls if it is desirable to maintain their ratio.
+        /// The new sizes should be applied in the <see cref="AdjustSizes"/> method.
+        /// </summary>
+        internal virtual void StoreDynamicSizes()
         {
+        }
+
+        /// <summary>
+        /// This method is called the view is initialized in a host parent, or after applying a new DPI.
+        /// Use it to adjust the sizes of the controls. If <paramref name="dynamicSizesScale"/> is not <see langword="null"/>,
+        /// the provided scale can be applied to dynamically resizable controls, whose sizes could be stored in a previous call of the <see cref="StoreDynamicSizes"/> method.
+        /// </summary>
+        /// <param name="dynamicSizesScale">The scale factor to apply to the dynamically resizable controls. It is <see langword="null"/>,
+        /// if this method is called on initializing the host view for the first time or in RTL layout change. If it has a value, the method is called due to a DPI change,
+        /// in which case the <see cref="StoreDynamicSizes"/> method had been also called previously.</param>
+        internal virtual void AdjustSizes(PointF? dynamicSizesScale)
+        {
+            if (ParentViewProperties?.MinimumSize is Size { IsEmpty: false } size && mvvmParent is MvvmParentForm parent)
+                parent.MinimumSize = size.Scale(parent.GetScale());
         }
 
         #endregion
 
         #region Protected Methods
+
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            lastScale = this.GetScale();
+        }
 
         protected override void OnLoad(EventArgs e)
         {
@@ -202,9 +228,16 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             switch (m.Msg)
             {
+                case Constants.WM_DPICHANGED_BEFOREPARENT:
+                    StoreDynamicSizes();
+                    base.WndProc(ref m);
+                    return;
+
                 case Constants.WM_DPICHANGED_AFTERPARENT:
                     base.WndProc(ref m);
-                    AdjustSizes();
+                    PointF newScale = this.GetScale();
+                    AdjustSizes(new PointF(newScale.X / lastScale.X, newScale.Y / lastScale.Y));
+                    lastScale = newScale;
                     return;
 
                 default:

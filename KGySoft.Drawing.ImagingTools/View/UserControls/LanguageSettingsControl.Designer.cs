@@ -17,7 +17,7 @@
         {
             this.okCancelApplyButtons = new KGySoft.WinForms.Controls.OkCancelButtons();
             this.gbDisplayLanguage = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedGroupBox();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.pnlLanguage = new System.Windows.Forms.TableLayoutPanel();
             this.btnDownloadResources = new KGySoft.WinForms.Controls.AdvancedButton();
             this.btnEditResources = new KGySoft.WinForms.Controls.AdvancedButton();
             this.cmbLanguages = new KGySoft.WinForms.Controls.AdvancedComboBox();
@@ -26,7 +26,7 @@
             this.gbResxResourcesPath = new KGySoft.WinForms.Controls.CheckGroupBox();
             this.txtResxResourcesPath = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox();
             this.gbDisplayLanguage.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
+            this.pnlLanguage.SuspendLayout();
             this.gbResxResourcesPath.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -35,47 +35,47 @@
             this.okCancelApplyButtons.ApplyButtonVisible = true;
             this.okCancelApplyButtons.BackColor = System.Drawing.Color.Transparent;
             this.okCancelApplyButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.okCancelApplyButtons.Location = new System.Drawing.Point(3, 162);
+            this.okCancelApplyButtons.Location = new System.Drawing.Point(3, 157);
             this.okCancelApplyButtons.Name = "okCancelApplyButtons";
-            this.okCancelApplyButtons.Size = new System.Drawing.Size(337, 30);
+            this.okCancelApplyButtons.Size = new System.Drawing.Size(337, 35);
             this.okCancelApplyButtons.TabIndex = 2;
             // 
             // gbDisplayLanguage
             // 
-            this.gbDisplayLanguage.Controls.Add(this.tableLayoutPanel1);
+            this.gbDisplayLanguage.Controls.Add(this.pnlLanguage);
             this.gbDisplayLanguage.Controls.Add(this.chbAllowAnyLanguage);
             this.gbDisplayLanguage.Controls.Add(this.chbUseOSLanguage);
             this.gbDisplayLanguage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gbDisplayLanguage.Location = new System.Drawing.Point(3, 48);
             this.gbDisplayLanguage.Name = "gbDisplayLanguage";
-            this.gbDisplayLanguage.Size = new System.Drawing.Size(337, 114);
+            this.gbDisplayLanguage.Size = new System.Drawing.Size(337, 109);
             this.gbDisplayLanguage.TabIndex = 1;
             this.gbDisplayLanguage.TabStop = false;
             this.gbDisplayLanguage.Text = "gbDisplayLanguage";
             // 
-            // tableLayoutPanel1
+            // pnlLanguage
             // 
-            this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.Controls.Add(this.btnDownloadResources, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.btnEditResources, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.cmbLanguages, 0, 0);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 50);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(331, 61);
-            this.tableLayoutPanel1.TabIndex = 2;
+            this.pnlLanguage.ColumnCount = 2;
+            this.pnlLanguage.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.pnlLanguage.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.pnlLanguage.Controls.Add(this.btnDownloadResources, 0, 1);
+            this.pnlLanguage.Controls.Add(this.btnEditResources, 1, 0);
+            this.pnlLanguage.Controls.Add(this.cmbLanguages, 0, 0);
+            this.pnlLanguage.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlLanguage.Location = new System.Drawing.Point(3, 50);
+            this.pnlLanguage.Name = "pnlLanguage";
+            this.pnlLanguage.RowCount = 2;
+            this.pnlLanguage.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.pnlLanguage.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.pnlLanguage.Size = new System.Drawing.Size(331, 56);
+            this.pnlLanguage.TabIndex = 2;
             // 
             // btnDownloadResources
             // 
             this.btnDownloadResources.AutoSize = true;
-            this.tableLayoutPanel1.SetColumnSpan(this.btnDownloadResources, 2);
+            this.pnlLanguage.SetColumnSpan(this.btnDownloadResources, 2);
             this.btnDownloadResources.Dock = System.Windows.Forms.DockStyle.Top;
-            this.btnDownloadResources.Location = new System.Drawing.Point(2, 32);
+            this.btnDownloadResources.Location = new System.Drawing.Point(2, 30);
             this.btnDownloadResources.Margin = new System.Windows.Forms.Padding(2, 2, 3, 3);
             this.btnDownloadResources.Name = "btnDownloadResources";
             this.btnDownloadResources.Size = new System.Drawing.Size(326, 22);
@@ -86,11 +86,12 @@
             // btnEditResources
             // 
             this.btnEditResources.AutoSize = true;
+            this.btnEditResources.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.btnEditResources.Dock = System.Windows.Forms.DockStyle.Top;
-            this.btnEditResources.Location = new System.Drawing.Point(223, 2);
+            this.btnEditResources.Location = new System.Drawing.Point(229, 2);
             this.btnEditResources.Margin = new System.Windows.Forms.Padding(3, 2, 3, 3);
             this.btnEditResources.Name = "btnEditResources";
-            this.btnEditResources.Size = new System.Drawing.Size(105, 22);
+            this.btnEditResources.Size = new System.Drawing.Size(99, 21);
             this.btnEditResources.TabIndex = 1;
             this.btnEditResources.Text = "btnEditResources";
             this.btnEditResources.UseVisualStyleBackColor = true;
@@ -102,7 +103,7 @@
             this.cmbLanguages.FormattingEnabled = true;
             this.cmbLanguages.Location = new System.Drawing.Point(3, 3);
             this.cmbLanguages.Name = "cmbLanguages";
-            this.cmbLanguages.Size = new System.Drawing.Size(214, 21);
+            this.cmbLanguages.Size = new System.Drawing.Size(220, 21);
             this.cmbLanguages.TabIndex = 0;
             // 
             // chbAllowAnyLanguage
@@ -156,12 +157,12 @@
             this.Controls.Add(this.gbResxResourcesPath);
             this.Controls.Add(this.okCancelApplyButtons);
             this.Name = "LanguageSettingsControl";
-            this.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.Padding = new System.Windows.Forms.Padding(3);
             this.Size = new System.Drawing.Size(343, 195);
             this.gbDisplayLanguage.ResumeLayout(false);
             this.gbDisplayLanguage.PerformLayout();
-            this.tableLayoutPanel1.ResumeLayout(false);
-            this.tableLayoutPanel1.PerformLayout();
+            this.pnlLanguage.ResumeLayout(false);
+            this.pnlLanguage.PerformLayout();
             this.gbResxResourcesPath.ResumeLayout(false);
             this.gbResxResourcesPath.PerformLayout();
             this.ResumeLayout(false);
@@ -173,7 +174,7 @@
         private KGySoft.WinForms.Controls.OkCancelButtons okCancelApplyButtons;
         private Controls.AdvancedGroupBox gbDisplayLanguage;
         private KGySoft.WinForms.Controls.AdvancedCheckBox chbAllowAnyLanguage;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.TableLayoutPanel pnlLanguage;
         private KGySoft.WinForms.Controls.AdvancedButton btnDownloadResources;
         private KGySoft.WinForms.Controls.AdvancedButton btnEditResources;
         private KGySoft.WinForms.Controls.AdvancedComboBox cmbLanguages;

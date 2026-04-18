@@ -76,7 +76,7 @@
             this.lblStatus.Dock = System.Windows.Forms.DockStyle.Left;
             this.lblStatus.Location = new System.Drawing.Point(0, 3);
             this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(47, 13);
+            this.lblStatus.Size = new System.Drawing.Size(47, 29);
             this.lblStatus.TabIndex = 0;
             this.lblStatus.Text = "lblStatus";
             // 
@@ -88,7 +88,7 @@
             this.pnlButtons.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
             this.pnlButtons.Location = new System.Drawing.Point(3, 81);
             this.pnlButtons.Name = "pnlButtons";
-            this.pnlButtons.Padding = new System.Windows.Forms.Padding(3);
+            this.pnlButtons.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
             this.pnlButtons.Size = new System.Drawing.Size(392, 35);
             this.pnlButtons.TabIndex = 3;
             // 
@@ -96,9 +96,11 @@
             // 
             this.btnRemove.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.btnRemove.AutoSize = true;
-            this.btnRemove.Location = new System.Drawing.Point(307, 6);
+            this.btnRemove.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.btnRemove.Location = new System.Drawing.Point(308, 6);
+            this.btnRemove.MinimumSize = new System.Drawing.Size(75, 23);
             this.btnRemove.Name = "btnRemove";
-            this.btnRemove.Size = new System.Drawing.Size(76, 23);
+            this.btnRemove.Size = new System.Drawing.Size(75, 23);
             this.btnRemove.TabIndex = 1;
             this.btnRemove.Text = "btnRemove";
             this.btnRemove.UseVisualStyleBackColor = true;
@@ -107,7 +109,9 @@
             // 
             this.btnInstall.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.btnInstall.AutoSize = true;
-            this.btnInstall.Location = new System.Drawing.Point(226, 6);
+            this.btnInstall.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.btnInstall.Location = new System.Drawing.Point(227, 6);
+            this.btnInstall.MinimumSize = new System.Drawing.Size(75, 23);
             this.btnInstall.Name = "btnInstall";
             this.btnInstall.Size = new System.Drawing.Size(75, 23);
             this.btnInstall.TabIndex = 0;
@@ -179,12 +183,12 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Size = new System.Drawing.Size(404, 211);
             this.Controls.Add(this.gbInstallation);
             this.Controls.Add(this.gbVisualStudioVersions);
             this.Controls.Add(this.gbAvailableVersion);
             this.Name = "ManageInstallationsControl";
-            this.Padding = new System.Windows.Forms.Padding(3);
+            this.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.Size = new System.Drawing.Size(404, 211);
             this.gbInstallation.ResumeLayout(false);
             this.gbInstallation.PerformLayout();
             this.pnlStatus.ResumeLayout(false);
@@ -194,6 +198,7 @@
             this.gbVisualStudioVersions.ResumeLayout(false);
             this.gbAvailableVersion.ResumeLayout(false);
             this.ResumeLayout(false);
+
         }
 
         #endregion

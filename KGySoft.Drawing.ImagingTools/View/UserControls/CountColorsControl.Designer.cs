@@ -28,7 +28,7 @@
             this.lblCountColorsStatus.Location = new System.Drawing.Point(0, 0);
             this.lblCountColorsStatus.Name = "lblCountColorsStatus";
             this.lblCountColorsStatus.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
-            this.lblCountColorsStatus.Size = new System.Drawing.Size(275, 39);
+            this.lblCountColorsStatus.Size = new System.Drawing.Size(275, 41);
             this.lblCountColorsStatus.TabIndex = 3;
             this.lblCountColorsStatus.Text = "lblCountColorsStatus";
             this.lblCountColorsStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -37,7 +37,7 @@
             // 
             this.pnlButton.Controls.Add(this.btnClose);
             this.pnlButton.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlButton.Location = new System.Drawing.Point(0, 39);
+            this.pnlButton.Location = new System.Drawing.Point(0, 41);
             this.pnlButton.Name = "pnlButton";
             this.pnlButton.Size = new System.Drawing.Size(275, 29);
             this.pnlButton.TabIndex = 4;
@@ -45,7 +45,10 @@
             // btnClose
             // 
             this.btnClose.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.btnClose.Location = new System.Drawing.Point(100, 3);
+            this.btnClose.AutoSize = true;
+            this.btnClose.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.btnClose.Location = new System.Drawing.Point(104, 3);
+            this.btnClose.MinimumSize = new System.Drawing.Size(75, 23);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(75, 23);
             this.btnClose.TabIndex = 0;
@@ -56,7 +59,7 @@
             // 
             this.progress.BackColor = System.Drawing.Color.Transparent;
             this.progress.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.progress.Location = new System.Drawing.Point(0, 68);
+            this.progress.Location = new System.Drawing.Point(0, 70);
             this.progress.Name = "progress";
             this.progress.Size = new System.Drawing.Size(275, 20);
             this.progress.TabIndex = 5;
@@ -71,6 +74,7 @@
             this.Name = "CountColorsControl";
             this.Size = new System.Drawing.Size(275, 90);
             this.pnlButton.ResumeLayout(false);
+            this.pnlButton.PerformLayout();
             this.ResumeLayout(false);
 
         }

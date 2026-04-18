@@ -15,7 +15,6 @@
 
 #region Usings
 
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
@@ -29,9 +28,31 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
     internal partial class ManageInstallationsControl : MvvmBaseUserControl
     {
+        #region Constants
+
+        // Adjusted for Segoe UI 9 font on 100% DPI
+        private const int gbAvailableVersionRefHeight = 46;
+        private const int gbVisualStudioVersionsRefHeight = 53;
+
+        #endregion
+
         #region Fields
 
+        #region Static Fields
+
+        private static readonly Size referenceSize = new Size(470, 240); // Adjusted for Segoe UI 9 font on 100% DPI.
+        private static readonly Size buttonReferenceSize = new Size(75, 23);
+        private static readonly Padding referencePadding = new Padding(3);
+        private static readonly Padding buttonReferenceMargin = new Padding(3);
+        private static readonly Padding panelReferencePadding = new Padding(3);
+
+        #endregion
+
+        #region Instance Fields
+
         private ParentViewProperties? parentProperties;
+
+        #endregion
 
         #endregion
 
@@ -85,27 +106,47 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Protected Methods
 
-        protected override void OnLoad(EventArgs e)
-        {
-            // Fixing high DPI appearance on Mono
-            PointF scale;
-            if (OSHelper.IsFrameworkMono && (scale = this.GetScale()) != new PointF(1f, 1f))
-            {
-                pnlButtons.Height = (int)(35 * scale.Y);
-                var referenceButtonSize = new Size(75, 23);
-                btnInstall.Size = referenceButtonSize.Scale(scale);
-                btnRemove.Size = referenceButtonSize.Scale(scale);
-            }
-
-            base.OnLoad(e);
-        }
-
         protected override void ApplyViewModel()
         {
             InitViewModelDependencies();
             InitPropertyBindings();
             InitCommandBindings();
             base.ApplyViewModel();
+        }
+
+        internal override Size? GetDesiredSize(PointF scale) => referenceSize.Scale(scale);
+
+        internal override void AdjustSizes(PointF? dynamicSizesScale)
+        {
+            base.AdjustSizes(dynamicSizesScale);
+            SuspendLayout();
+            pnlButtons.SuspendLayout();
+            PointF scale = this.GetScale();
+            Padding = gbAvailableVersion.Padding = gbVisualStudioVersions.Padding = gbInstallation.Padding = referencePadding.Scale(scale);
+            gbAvailableVersion.Height = gbAvailableVersionRefHeight.Scale(scale.Y);
+            gbVisualStudioVersions.Height = gbVisualStudioVersionsRefHeight.Scale(scale.Y);
+            try
+            {
+                Size minSize = buttonReferenceSize.Scale(scale);
+                Padding margin = buttonReferenceMargin.Scale(scale);
+                foreach (Control control in pnlButtons.Controls)
+                {
+                    if (control is not Button button)
+                        continue;
+
+                    button.MinimumSize = minSize;
+                    button.Size = button.GetPreferredSize(new Size(0, minSize.Height));
+                    button.Margin = margin;
+                }
+
+                pnlButtons.Padding = panelReferencePadding.Scale(scale);
+                pnlButtons.Height = minSize.Height + pnlButtons.Padding.Vertical + margin.Vertical;
+            }
+            finally
+            {
+                pnlButtons.ResumeLayout();
+                ResumeLayout();
+            }
         }
 
         protected override void Dispose(bool disposing)
