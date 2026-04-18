@@ -17,7 +17,6 @@
 
 using System;
 using System.Drawing;
-using System.Threading;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.View.UserControls;
@@ -33,7 +32,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
     {
         #region Fields
 
-        private readonly ManualResetEventSlim handleCreated;
         private readonly MvvmBaseUserControl mvvmChild;
 
         private bool isLoaded;
@@ -73,7 +71,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             mvvmChild.Size = mvvmChild.ScaleSize(mvvmChild.Size);
 #endif
             this.mvvmChild = mvvmChild;
-            handleCreated = new ManualResetEventSlim();
             ApplyRightToLeft();
             InitializeForm();
 
@@ -138,12 +135,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             ApplyBindings();
         }
 
-        protected override void OnHandleCreated(EventArgs e)
-        {
-            base.OnHandleCreated(e);
-            handleCreated.Set();
-        }
-
         protected override void OnDeviceScaleGetNewSize(DeviceScaleGetNewSizeEventArgs e)
         {
             Size? desiredClientSize = mvvmChild.GetDesiredSize(e.NewScale);
@@ -188,17 +179,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
             InitPropertyBindings();
             InitCommandBindings();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (IsDisposed)
-                return;
-
-            if (disposing)
-                handleCreated.Dispose();
-
-            base.Dispose(disposing);
         }
 
         #endregion
