@@ -19,6 +19,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.ViewModel;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -28,8 +29,18 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
     {
         #region Fields
 
+        #region Static Fields
+
+        private static readonly Padding referencePadding = new Padding(3);
+
+        #endregion
+
+        #region Instance Fields
+
         private ParentViewProperties? parentProperties;
 
+        #endregion
+        
         #endregion
 
         #region Properties
@@ -95,12 +106,21 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         internal override void AdjustSizes(PointF? dynamicSizesScale)
         {
             base.AdjustSizes(dynamicSizesScale);
-            progress.AdjustSizes();
-            gridDownloadableResources.Font = Font;
-            if (dynamicSizesScale is PointF scale)
-                gridDownloadableResources.AdjustSizes(scale);
-            okCancelButtons.EnsureHeight();
-            Parent?.PerformLayout(); // because sometimes the control does not fill the parent completely
+            SuspendLayout();
+            try
+            {
+                PointF scale = this.GetScale();
+                Padding = referencePadding.Scale(scale);
+                progress.AdjustSizes();
+                gridDownloadableResources.Font = Font;
+                if (dynamicSizesScale is PointF factor)
+                    gridDownloadableResources.AdjustSizes(factor);
+                okCancelButtons.EnsureHeight();
+            }
+            finally
+            {
+                ResumeLayout();
+            }
         }
 
         protected override void Dispose(bool disposing)

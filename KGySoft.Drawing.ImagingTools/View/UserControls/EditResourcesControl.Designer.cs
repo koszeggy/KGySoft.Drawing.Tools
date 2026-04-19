@@ -75,6 +75,7 @@
             this.gridResources.Location = new System.Drawing.Point(3, 40);
             this.gridResources.MultiSelect = false;
             this.gridResources.Name = "gridResources";
+            this.gridResources.RowTemplate.Height = 20;
             this.gridResources.Size = new System.Drawing.Size(573, 102);
             this.gridResources.TabIndex = 3;
             // 
@@ -130,7 +131,7 @@
             this.lblFilter.Location = new System.Drawing.Point(0, 2);
             this.lblFilter.Name = "lblFilter";
             this.lblFilter.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
-            this.lblFilter.Size = new System.Drawing.Size(39, 15);
+            this.lblFilter.Size = new System.Drawing.Size(39, 20);
             this.lblFilter.TabIndex = 0;
             this.lblFilter.Text = "lblFilter";
             // 
@@ -195,7 +196,7 @@
             this.splitterEditResources.BackColor = System.Drawing.SystemColors.Control;
             this.splitterEditResources.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.splitterEditResources.Location = new System.Drawing.Point(3, 205);
-            this.splitterEditResources.MinExtra = 50;
+            this.splitterEditResources.MinExtra = 100;
             this.splitterEditResources.MinSize = 50;
             this.splitterEditResources.Name = "splitterEditResources";
             this.splitterEditResources.Size = new System.Drawing.Size(579, 3);
@@ -231,9 +232,9 @@
             // 
             // txtOriginalText
             // 
-            this.txtOriginalText.BackColor = System.Drawing.SystemColors.Control;
             this.txtOriginalText.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtOriginalText.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.txtOriginalText.EnabledBackColor = System.Drawing.SystemColors.Control;
+            this.txtOriginalText.EnabledForeColor = System.Drawing.SystemColors.ControlText;
             this.txtOriginalText.Location = new System.Drawing.Point(3, 16);
             this.txtOriginalText.Multiline = true;
             this.txtOriginalText.Name = "txtOriginalText";

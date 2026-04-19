@@ -32,10 +32,31 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
     internal partial class EditResourcesControl : MvvmBaseUserControl
     {
+        #region Constants
+
+        // Adjusted for Segoe UI 9 font on 100% DPI
+        private const int gbResourceFileRefHeight = 66;
+        private const int pnlFilterRefHeight = 28;
+        private const int refSplitterMinHeight = 100;
+        private const int refSplitterWidth = 4;
+
+        #endregion
+
         #region Fields
+
+        #region Static Fields
+
+        private static readonly Padding referencePadding = new Padding(3);
+
+        #endregion
+
+        #region Instance Fields
 
         private ParentViewProperties? parentProperties;
         private ICommandBinding? saveCommandBinding;
+        private int lastEditPanelHeight;
+
+        #endregion
 
         #endregion
 
@@ -105,6 +126,48 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Methods
 
+        #region Internal Methods
+
+        internal override void StoreDynamicSizes() => lastEditPanelHeight = pnlEditResourceEntry.Height;
+
+        internal override void AdjustSizes(PointF? dynamicSizesScale)
+        {
+            base.AdjustSizes(dynamicSizesScale);
+            SuspendLayout();
+            try
+            {
+                PointF scale = this.GetScale();
+                Padding = gbResourceFile.Padding = gbResourceEntries.Padding = referencePadding.Scale(scale);
+                gbResourceFile.Height = gbResourceFileRefHeight.Scale(scale.Y);
+                splitterEditResources.Height = splitterEditResources.ScaleHeight(refSplitterWidth);
+                pnlFilter.Height = pnlFilterRefHeight.Scale(scale.Y);
+                pnlResourceFile.Height = cmbResourceFiles.Height;
+                btnGoToFile.Width = pnlResourceFile.Height;
+                gridResources.Font = Font;
+                if (dynamicSizesScale is PointF factor)
+                {
+                    gridResources.AdjustSizes(factor);
+                    pnlEditResourceEntry.Height = lastEditPanelHeight.Scale(factor.Y);
+
+                    // Only when DPI changes, but using the current scale rather than the change factor.
+                    // Needed because (unlike ToolStrip buttons), a regular button does not support multi-res bitmaps the same way:
+                    // It shows always the image scaled to the primary display's DPI.
+                    btnGoToFile.Image?.Dispose();
+                    btnGoToFile.Image = Images.OpenIcon.ToScaledBitmap(scale);
+                }
+
+                pnlResourceFile.EnsureHeight();
+                okCancelApplyButtons.EnsureHeight();
+                AdjustEditPanelSize();
+            }
+            finally
+            {
+                ResumeLayout();
+            }
+        }
+
+        #endregion
+
         #region Protected Methods
 
         protected override void OnLoad(EventArgs e)
@@ -119,17 +182,10 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             base.OnLoad(e);
         }
 
-        protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
-        {
-            base.ScaleControl(factor, specified);
-            if (pnlResourceFile != null)
-                pnlResourceFile.Height = cmbResourceFiles.Height;
-        }
-
         protected override void ApplyResources()
         {
             base.ApplyResources();
-            btnGoToFile.Image = Images.Open;
+            btnGoToFile.Image = Images.OpenIcon.ToScaledBitmap(this.GetScale()); // see the comment in AdjustSizes
         }
 
         protected override void ApplyTheme()
@@ -148,13 +204,23 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             base.ApplyViewModel();
         }
 
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+            if (Created)
+                AdjustEditPanelSize();
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (IsDisposed)
                 return;
 
             if (disposing)
+            {
+                btnGoToFile.Image?.Dispose();
                 components?.Dispose();
+            }
 
             parentProperties = null;
             saveCommandBinding = null;
@@ -227,6 +293,15 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // preventing closing the form if the command has executed with errors
             if (saveCommandBinding is ICommandBinding binding)
                 binding.Executed += (_, args) => parent.DialogResult = args.State[EditResourcesViewModel.StateSaveExecutedWithError] is true ? DialogResult.None : DialogResult.OK;
+        }
+
+        private void AdjustEditPanelSize()
+        {
+            int minExtraHeight = this.ScaleHeight(refSplitterMinHeight);
+            if (gbResourceEntries.Height >= minExtraHeight)
+                return;
+
+            pnlEditResourceEntry.Height = ClientSize.Height - Padding.Vertical - gbResourceFile.Height - /*gbResourceEntries.Height - */okCancelApplyButtons.Height - minExtraHeight;
         }
 
         #endregion

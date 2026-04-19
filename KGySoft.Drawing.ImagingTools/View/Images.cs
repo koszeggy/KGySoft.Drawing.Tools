@@ -91,6 +91,8 @@ namespace KGySoft.Drawing.ImagingTools.View
         internal static Bitmap Colors => colors ??= GetResource(nameof(Colors));
         internal static Bitmap Compare => compare ??= GetResource(nameof(Compare));
 
+        internal static Icon OpenIcon => GetResourceIcon(nameof(Open));
+
         #endregion
 
         #region Methods
@@ -159,8 +161,8 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         #region Private Methods
 
-        private static Bitmap GetResource(string resourceName)
-            => ((Icon)Properties.Resources.ResourceManager.GetObject(resourceName, CultureInfo.InvariantCulture)!).AsBitmap(false);
+        private static Bitmap GetResource(string resourceName) => GetResourceIcon(resourceName).AsBitmap(false);
+        private static Icon GetResourceIcon(string resourceName) => (Icon)Properties.Resources.ResourceManager.GetObject(resourceName, CultureInfo.InvariantCulture)!;
 
         #endregion
 
