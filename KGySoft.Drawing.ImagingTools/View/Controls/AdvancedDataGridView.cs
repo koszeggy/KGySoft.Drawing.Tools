@@ -83,6 +83,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         private Bitmap? errorIcon;
         private Bitmap? warningIcon;
         private Bitmap? infoIcon;
+        private Font? clonedFont;
 
         #endregion
 
@@ -195,6 +196,26 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 borderStyle = value;
                 base.BorderStyle = ThemeColors.IsDarkBaseTheme && value == BorderStyle.FixedSingle ? BorderStyle.None : value;
                 InvalidateNC();
+            }
+        }
+
+        [AllowNull]
+        public override Font Font
+        {
+            get => base.Font;
+            set
+            {
+                if (value is null || !Equals(base.Font, value))
+                {
+                    base.Font = value;
+                    return;
+                }
+
+                // Needed to prevent possible exception on some platforms when the framework disposes the self font internally.
+                // NOTE: could be refactored the same way as other advanced controls in the KGySoft.WinForms package.
+                clonedFont?.Dispose();
+                clonedFont = (Font)value.Clone();
+                base.Font = clonedFont;
             }
         }
 
@@ -388,6 +409,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         internal void AdjustSizes(PointF scale)
         {
+            RowHeadersWidth = (int)(RowHeadersWidth * scale.X);
             foreach (DataGridViewColumn column in Columns)
                 column.Width = (int)(column.Width * scale.X);
             foreach (DataGridViewRow row in Rows)
@@ -540,7 +562,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         protected override void Dispose(bool disposing)
         {
             if (disposing)
+            {
                 ReleaseIcons();
+                clonedFont?.Dispose();
+            }
 
             base.Dispose(disposing);
         }
