@@ -125,25 +125,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         internal override Size? GetDesiredSize(PointF scale) => referenceSize.Scale(scale);
 
-        internal override void AdjustSizes(PointF? dynamicSizesScale)
-        {
-            base.AdjustSizes(dynamicSizesScale);
-            SuspendLayout();
-            try
-            {
-                PointF scale = this.GetScale();
-                Padding = gbResxResourcesPath.Padding = gbDisplayLanguage.Padding = referencePadding.Scale(scale);
-                gbResxResourcesPath.Height = gbResXPathRefHeight.Scale(scale.Y);
-                btnEditResources.MinimumSize = new Size(0, cmbLanguages.Height + 2);
-                btnEditResources.Height = btnDownloadResources.Height = cmbLanguages.Height + 2;
-                okCancelApplyButtons.EnsureHeight();
-            }
-            finally
-            {
-                ResumeLayout();
-            }
-        }
-
         #endregion
 
         #region Protected Methods
@@ -175,6 +156,16 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             InitCommandBindings();
             InitPropertyBindings();
             base.ApplyViewModel();
+        }
+
+        protected override void ApplySizeAdjustments(PointF? dynamicSizesScale)
+        {
+            PointF scale = this.GetScale();
+            Padding = gbResxResourcesPath.Padding = gbDisplayLanguage.Padding = referencePadding.Scale(scale);
+            gbResxResourcesPath.Height = gbResXPathRefHeight.Scale(scale.Y);
+            btnEditResources.MinimumSize = new Size(0, cmbLanguages.Height + 2);
+            btnEditResources.Height = btnDownloadResources.Height = cmbLanguages.Height + 2;
+            okCancelApplyButtons.EnsureHeight();
         }
 
         protected override void Dispose(bool disposing)

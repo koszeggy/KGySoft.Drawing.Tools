@@ -146,6 +146,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Instance Methods
 
+        #region Internal Methods
+
+        internal override void StoreDynamicSizes() => lastInfoHeight = txtInfo.Height;
+
+        #endregion
+
         #region Protected Methods
 
         protected override void ApplyResources()
@@ -247,11 +253,15 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 imageViewer.BackColor = ThemeColors.Control;
         }
 
-        internal override void StoreDynamicSizes() => lastInfoHeight = txtInfo.Height;
-
-        internal override void AdjustSizes(PointF? dynamicSizesScale)
+        protected override void OnResize(EventArgs e)
         {
-            base.AdjustSizes(dynamicSizesScale);
+            base.OnResize(e);
+            if (Created)
+                AdjustInfoSize();
+        }
+
+        protected override void ApplySizeAdjustments(PointF? dynamicSizesScale)
+        {
             splitter.Height = splitter.ScaleHeight(refSplitterWidth);
             if (dynamicSizesScale is PointF scale)
                 txtInfo.Height = lastInfoHeight.Scale(scale.Y);
@@ -281,7 +291,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             ViewModel.GetImagePreviewSizeCallback = () => imageViewer.ClientSize;
             ViewModel.SelectFileToOpenCallback = SelectFileToOpen;
             ViewModel.SelectFileToSaveCallback = SelectFileToSave;
-            ViewModel.ApplyViewSizeCallback = ApplySize;
+            ViewModel.ApplyViewSizeCallback = ApplyViewSize;
             ViewModel.UpdatePreviewImageCallback = () => imageViewer.UpdateImage();
             ViewModel.GetCompoundViewIconCallback = GetCompoundViewIcon;
         }
@@ -434,8 +444,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 .AddSource(miEasterEgg, nameof(miEasterEgg.Click));
 
             // View commands
-            CommandBindings.Add(OnResizeCommand)
-                .AddSource(this, nameof(Resize));
             CommandBindings.Add(OnPreviewImageResizedCommand)
                 .AddSource(imageViewer, nameof(imageViewer.SizeChanged));
             CommandBindings.Add(() => miEasterEgg.Visible |= ModifierKeys == (Keys.Shift | Keys.Control))
@@ -478,7 +486,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             PerformLayout();
         }
 
-        private void ApplySize(Size size)
+        private void ApplyViewSize(Size size)
         {
             Form? parent = ParentForm;
             if (parent == null)
@@ -515,8 +523,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         }
 
         private void OnPreviewImageResizedCommand() => AdjustInfoSize();
-
-        private void OnResizeCommand() => AdjustInfoSize();
 
         #endregion
 

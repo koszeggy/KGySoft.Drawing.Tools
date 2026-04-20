@@ -100,6 +100,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Methods
 
+        #region Internal Methods
+
+        internal override Size? GetDesiredSize(PointF scale) => referenceSize.Scale(scale);
+
+        #endregion
+
         #region Protected Methods
 
         protected override void ApplyViewModel()
@@ -109,32 +115,21 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             base.ApplyViewModel();
         }
 
-        internal override Size? GetDesiredSize(PointF scale) => referenceSize.Scale(scale);
-
-        internal override void AdjustSizes(PointF? dynamicSizesScale)
+        protected override void ApplySizeAdjustments(PointF? dynamicSizesScale)
         {
-            base.AdjustSizes(dynamicSizesScale);
-            SuspendLayout();
-            try
-            {
-                PointF scale = this.GetScale();
-                pnlButton.Height = pnlButtonRefHeight.Scale(scale.Y);
-                progress.AdjustSizes();
+            PointF scale = this.GetScale();
+            pnlButton.Height = pnlButtonRefHeight.Scale(scale.Y);
+            progress.AdjustSizes();
 
-                Size minSize = buttonReferenceSize.Scale(scale);
-                Padding margin = buttonReferenceMargin.Scale(scale);
+            Size minSize = buttonReferenceSize.Scale(scale);
+            Padding margin = buttonReferenceMargin.Scale(scale);
 
-                pnlButton.Padding = panelReferencePadding.Scale(scale);
-                pnlButton.Height = minSize.Height + pnlButton.Padding.Vertical + margin.Vertical;
+            pnlButton.Padding = panelReferencePadding.Scale(scale);
+            pnlButton.Height = minSize.Height + pnlButton.Padding.Vertical + margin.Vertical;
 
-                btnClose.MinimumSize = minSize;
-                btnClose.Size = btnClose.GetPreferredSize(new Size(0, minSize.Height));
-                btnClose.Location = new Point((pnlButton.Width - btnClose.Width) / 2, (pnlButton.Height - btnClose.Height) / 2);
-            }
-            finally
-            {
-                ResumeLayout();
-            }
+            btnClose.MinimumSize = minSize;
+            btnClose.Size = btnClose.GetPreferredSize(new Size(0, minSize.Height));
+            btnClose.Location = new Point((pnlButton.Width - btnClose.Width) / 2, (pnlButton.Height - btnClose.Height) / 2);
         }
 
         protected override void Dispose(bool disposing)

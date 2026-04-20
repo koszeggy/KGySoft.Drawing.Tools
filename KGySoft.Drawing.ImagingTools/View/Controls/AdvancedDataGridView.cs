@@ -41,6 +41,10 @@ using KGySoft.WinForms;
 #pragma warning disable CS8602 // Dereference of a possibly null reference. - Columns items are never null
 #endif
 
+#if NETFRAMEWORK
+// ReSharper disable AssignNullToNotNullAttribute - Nullability annotation is not the same on old frameworks
+#endif
+
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.View.Controls
@@ -48,7 +52,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
     /// <summary>
     /// Just a DataGridView that
     /// - provides some default styles/colors with a few fixed issues
-    /// - scales the columns automatically
+    /// - scales the columns and rows automatically
     /// - provides scaling error/warning/info icons, which appear also on Linux/Mono
     /// - supports dark mode
     /// </summary>
@@ -407,13 +411,19 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             ToolTip?.ResetAppearance();
         }
 
-        internal void AdjustSizes(PointF scale)
+        internal void AdjustSizes(PointF factor)
         {
-            RowHeadersWidth = (int)(RowHeadersWidth * scale.X);
+            RowHeadersWidth = (int)(RowHeadersWidth * factor.X);
             foreach (DataGridViewColumn column in Columns)
-                column.Width = (int)(column.Width * scale.X);
+                column.Width = (int)(column.Width * factor.X);
             foreach (DataGridViewRow row in Rows)
-                row.Height = (int)(row.Height * scale.Y);
+                row.Height = (int)(row.Height * factor.Y);
+
+            // Unfortunately this does not work, because the base DataGridView immediately overwrites the size
+            // Forcing by Minimum/MaximumSize also does not work because the painted area still counts with the system DPI size
+            //var scrollbarSize = this.GetScrollBarSize();
+            //VerticalScrollBar.Width = scrollbarSize.Width;
+            //HorizontalScrollBar.Height = scrollbarSize.Height;
         }
 
         #endregion

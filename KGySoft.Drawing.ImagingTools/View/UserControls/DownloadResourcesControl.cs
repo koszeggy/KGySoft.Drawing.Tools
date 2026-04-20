@@ -103,24 +103,15 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             base.ApplyViewModel();
         }
 
-        internal override void AdjustSizes(PointF? dynamicSizesScale)
+        protected override void ApplySizeAdjustments(PointF? dynamicSizesScale)
         {
-            base.AdjustSizes(dynamicSizesScale);
-            SuspendLayout();
-            try
-            {
-                PointF scale = this.GetScale();
-                Padding = referencePadding.Scale(scale);
-                progress.AdjustSizes();
-                gridDownloadableResources.Font = Font;
-                if (dynamicSizesScale is PointF factor)
-                    gridDownloadableResources.AdjustSizes(factor);
-                okCancelButtons.EnsureHeight();
-            }
-            finally
-            {
-                ResumeLayout();
-            }
+            PointF scale = this.GetScale();
+            Padding = referencePadding.Scale(scale);
+            progress.AdjustSizes();
+            gridDownloadableResources.Font = Font;
+            if (dynamicSizesScale is PointF factor)
+                gridDownloadableResources.AdjustSizes(factor);
+            okCancelButtons.EnsureHeight();
         }
 
         protected override void Dispose(bool disposing)

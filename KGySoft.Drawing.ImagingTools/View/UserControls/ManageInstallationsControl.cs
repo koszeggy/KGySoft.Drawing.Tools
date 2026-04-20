@@ -104,6 +104,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Methods
 
+        #region Internal Methods
+
+        internal override Size? GetDesiredSize(PointF scale) => referenceSize.Scale(scale);
+
+        #endregion
+
         #region Protected Methods
 
         protected override void ApplyViewModel()
@@ -114,39 +120,26 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             base.ApplyViewModel();
         }
 
-        internal override Size? GetDesiredSize(PointF scale) => referenceSize.Scale(scale);
-
-        internal override void AdjustSizes(PointF? dynamicSizesScale)
+        protected override void ApplySizeAdjustments(PointF? dynamicSizesScale)
         {
-            base.AdjustSizes(dynamicSizesScale);
-            SuspendLayout();
-            pnlButtons.SuspendLayout();
             PointF scale = this.GetScale();
             Padding = gbAvailableVersion.Padding = gbVisualStudioVersions.Padding = gbInstallation.Padding = referencePadding.Scale(scale);
             gbAvailableVersion.Height = gbAvailableVersionRefHeight.Scale(scale.Y);
             gbVisualStudioVersions.Height = gbVisualStudioVersionsRefHeight.Scale(scale.Y);
-            try
+            Size minSize = buttonReferenceSize.Scale(scale);
+            Padding margin = buttonReferenceMargin.Scale(scale);
+            foreach (Control control in pnlButtons.Controls)
             {
-                Size minSize = buttonReferenceSize.Scale(scale);
-                Padding margin = buttonReferenceMargin.Scale(scale);
-                foreach (Control control in pnlButtons.Controls)
-                {
-                    if (control is not Button button)
-                        continue;
+                if (control is not Button button)
+                    continue;
 
-                    button.MinimumSize = minSize;
-                    button.Size = button.GetPreferredSize(new Size(0, minSize.Height));
-                    button.Margin = margin;
-                }
+                button.MinimumSize = minSize;
+                button.Size = button.GetPreferredSize(new Size(0, minSize.Height));
+                button.Margin = margin;
+            }
 
-                pnlButtons.Padding = panelReferencePadding.Scale(scale);
-                pnlButtons.Height = minSize.Height + pnlButtons.Padding.Vertical + margin.Vertical;
-            }
-            finally
-            {
-                pnlButtons.ResumeLayout();
-                ResumeLayout();
-            }
+            pnlButtons.Padding = panelReferencePadding.Scale(scale);
+            pnlButtons.Height = minSize.Height + pnlButtons.Padding.Vertical + margin.Vertical;
         }
 
         protected override void Dispose(bool disposing)

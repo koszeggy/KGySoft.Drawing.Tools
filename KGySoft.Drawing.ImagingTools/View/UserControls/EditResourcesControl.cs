@@ -130,42 +130,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         internal override void StoreDynamicSizes() => lastEditPanelHeight = pnlEditResourceEntry.Height;
 
-        internal override void AdjustSizes(PointF? dynamicSizesScale)
-        {
-            base.AdjustSizes(dynamicSizesScale);
-            SuspendLayout();
-            try
-            {
-                PointF scale = this.GetScale();
-                Padding = gbResourceFile.Padding = gbResourceEntries.Padding = referencePadding.Scale(scale);
-                gbResourceFile.Height = gbResourceFileRefHeight.Scale(scale.Y);
-                splitterEditResources.Height = splitterEditResources.ScaleHeight(refSplitterWidth);
-                pnlFilter.Height = pnlFilterRefHeight.Scale(scale.Y);
-                pnlResourceFile.Height = cmbResourceFiles.Height;
-                btnGoToFile.Width = pnlResourceFile.Height;
-                gridResources.Font = Font;
-                if (dynamicSizesScale is PointF factor)
-                {
-                    gridResources.AdjustSizes(factor);
-                    pnlEditResourceEntry.Height = lastEditPanelHeight.Scale(factor.Y);
-
-                    // Only when DPI changes, but using the current scale rather than the change factor.
-                    // Needed because (unlike ToolStrip buttons), a regular button does not support multi-res bitmaps the same way:
-                    // It shows always the image scaled to the primary display's DPI.
-                    btnGoToFile.Image?.Dispose();
-                    btnGoToFile.Image = Images.OpenIcon.ToScaledBitmap(scale);
-                }
-
-                pnlResourceFile.EnsureHeight();
-                okCancelApplyButtons.EnsureHeight();
-                AdjustEditPanelSize();
-            }
-            finally
-            {
-                ResumeLayout();
-            }
-        }
-
         #endregion
 
         #region Protected Methods
@@ -209,6 +173,33 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             base.OnResize(e);
             if (Created)
                 AdjustEditPanelSize();
+        }
+
+        protected override void ApplySizeAdjustments(PointF? dynamicSizesScale)
+        {
+            PointF scale = this.GetScale();
+            Padding = gbResourceFile.Padding = gbResourceEntries.Padding = referencePadding.Scale(scale);
+            gbResourceFile.Height = gbResourceFileRefHeight.Scale(scale.Y);
+            splitterEditResources.Height = splitterEditResources.ScaleHeight(refSplitterWidth);
+            pnlFilter.Height = pnlFilterRefHeight.Scale(scale.Y);
+            pnlResourceFile.Height = cmbResourceFiles.Height;
+            btnGoToFile.Width = pnlResourceFile.Height;
+            gridResources.Font = Font;
+            if (dynamicSizesScale is PointF factor)
+            {
+                gridResources.AdjustSizes(factor);
+                pnlEditResourceEntry.Height = lastEditPanelHeight.Scale(factor.Y);
+
+                // Only when DPI changes, but using the current scale rather than the change factor.
+                // Needed because (unlike ToolStrip buttons), a regular button does not support multi-res bitmaps the same way:
+                // It shows always the image scaled to the primary display's DPI.
+                btnGoToFile.Image?.Dispose();
+                btnGoToFile.Image = Images.OpenIcon.ToScaledBitmap(scale);
+            }
+
+            pnlResourceFile.EnsureHeight();
+            okCancelApplyButtons.EnsureHeight();
+            AdjustEditPanelSize();
         }
 
         protected override void Dispose(bool disposing)

@@ -146,16 +146,25 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         /// <summary>
         /// This method is called the view is initialized in a host parent, or after applying a new DPI.
-        /// Use it to adjust the sizes of the controls. If <paramref name="dynamicSizesScale"/> is not <see langword="null"/>,
-        /// the provided scale can be applied to dynamically resizable controls, whose sizes could be stored in a previous call of the <see cref="StoreDynamicSizes"/> method.
+        /// If <paramref name="dynamicSizesScale"/> is not <see langword="null"/>, the provided scale can be applied to dynamically resizable controls,
+        /// whose sizes could be stored in a previous call of the <see cref="StoreDynamicSizes"/> method.
         /// </summary>
         /// <param name="dynamicSizesScale">The scale factor to apply to the dynamically resizable controls. It is <see langword="null"/>,
         /// if this method is called on initializing the host view for the first time or in RTL layout change. If it has a value, the method is called due to a DPI change,
         /// in which case the <see cref="StoreDynamicSizes"/> method had been also called previously.</param>
-        internal virtual void AdjustSizes(PointF? dynamicSizesScale)
+        internal void AdjustSizes(PointF? dynamicSizesScale)
         {
-            if (ParentViewProperties?.MinimumSize is Size { IsEmpty: false } size && mvvmParent is MvvmParentForm parent)
-                parent.MinimumSize = size.Scale(parent.GetScale());
+            SuspendLayout();
+            try
+            {
+                if (ParentViewProperties?.MinimumSize is Size { IsEmpty: false } size && mvvmParent is MvvmParentForm parent)
+                    parent.MinimumSize = size.Scale(parent.GetScale());
+                ApplySizeAdjustments(dynamicSizesScale);
+            }
+            finally
+            {
+                ResumeLayout();
+            }
         }
 
         #endregion
@@ -244,6 +253,18 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                     base.WndProc(ref m);
                     return;
             }
+        }
+
+        /// <summary>
+        /// Override this method to apply size adjustments after the view is initialized in a host parent, or after applying a new DPI.
+        /// The layout is suspended when executing this method. If <paramref name="dynamicSizesScale"/> is not <see langword="null"/>,
+        /// the provided scale can be applied to dynamically resizable controls, whose sizes could be stored in a previous call of the <see cref="StoreDynamicSizes"/> method.
+        /// </summary>
+        /// <param name="dynamicSizesScale">The scale factor to apply to the dynamically resizable controls. It is <see langword="null"/>,
+        /// if this method is called on initializing the host view for the first time or in RTL layout change. If it has a value, the method is called due to a DPI change,
+        /// in which case the <see cref="StoreDynamicSizes"/> method had been also called previously.</param>
+        protected virtual void ApplySizeAdjustments(PointF? dynamicSizesScale)
+        {
         }
 
         protected override void Dispose(bool disposing)
