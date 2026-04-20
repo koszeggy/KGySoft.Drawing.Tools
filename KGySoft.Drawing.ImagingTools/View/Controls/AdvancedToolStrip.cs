@@ -905,7 +905,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         #region Constants
 
         private const int referenceDropDownButtonWidth = 11;
-        private const int referenceItemHeight = 25;
 
         #endregion
 
@@ -913,6 +912,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Static Fields
 
+        private static readonly Size referenceSize = new Size(35, 25);
         private static readonly Size referenceImageSize = new Size(16, 16);
 
         #endregion
@@ -932,7 +932,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         public AdvancedToolStrip()
         {
-            ImageScalingSize = this.ScaleSize(referenceImageSize);
 #if !SYSTEM_THEMING
             Renderer = new AdvancedToolStripRenderer();
 #endif
@@ -979,26 +978,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             switch (m.Msg)
             {
                 // ensuring that items can be clicked even if the container form is not activated
-                case Constants.WM_MOUSEACTIVATE when m.Result == Constants.MA_ACTIVATEANDEAT:
+                case Constants.WM_MOUSEACTIVATE:
                     base.WndProc(ref m);
-                    m.Result = Constants.MA_ACTIVATE;
-                    return;
-
-                case Constants.WM_DPICHANGED_BEFOREPARENT:
-                    base.WndProc(ref m);
-                    ImageScalingSize = this.ScaleSize(referenceImageSize);
-                    foreach (ToolStripItem item in Items)
-                    {
-                        if (item is ToolStripSplitButton splitBtn)
-                            splitBtn.DropDownButtonWidth = this.ScaleWidth(referenceDropDownButtonWidth);
-                    }
-
+                    if (m.Result == Constants.MA_ACTIVATEANDEAT)
+                        m.Result = Constants.MA_ACTIVATE;
                     return;
 
                 case Constants.WM_DPICHANGED_AFTERPARENT:
                     base.WndProc(ref m);
                     Font = Parent!.Font;
-                    Height = this.ScaleHeight(referenceItemHeight);
+                    AdjustSizes();
 
                     return;
 
@@ -1019,16 +1008,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         protected override void OnHandleCreated(EventArgs e)
         {
             base.OnHandleCreated(e);
-            Height = this.ScaleHeight(referenceItemHeight);
-        }
-
-        protected override void OnSizeChanged(EventArgs e)
-        {
-            base.OnSizeChanged(e);
-
-            // Preventing double scaling in Mono
-            if (OSHelper.IsFrameworkMono && Dock.In(DockStyle.Top, DockStyle.Bottom))
-                Height = this.ScaleHeight(referenceItemHeight);
+            AdjustSizes();
         }
 
         protected override void OnDockChanged(EventArgs e)
@@ -1079,6 +1059,21 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 return;
             instance.OwnerDraw = RightToLeft == RightToLeft.Yes
                 || ThemeColors.IsSet(ThemeColor.ToolTip) || ThemeColors.IsSet(ThemeColor.ToolTipBorder) || ThemeColors.IsSet(ThemeColor.ToolTipText);
+        }
+
+        private void AdjustSizes()
+        {
+            ImageScalingSize = this.ScaleSize(referenceImageSize);
+            foreach (ToolStripItem item in Items)
+            {
+                if (item is ToolStripSplitButton splitBtn)
+                    splitBtn.DropDownButtonWidth = this.ScaleWidth(referenceDropDownButtonWidth);
+            }
+
+            if (Orientation == Orientation.Horizontal)
+                Height = this.ScaleHeight(referenceSize.Height);
+            else
+                Width = this.ScaleWidth(referenceSize.Width);
         }
 
         #endregion
