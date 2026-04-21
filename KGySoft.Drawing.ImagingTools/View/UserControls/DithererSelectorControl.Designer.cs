@@ -61,22 +61,23 @@
             // 
             this.lblStrength.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblStrength.AutoSize = true;
-            this.lblStrength.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lblStrength.Location = new System.Drawing.Point(3, 4);
+            this.lblStrength.Location = new System.Drawing.Point(3, 0);
             this.lblStrength.Name = "lblStrength";
-            this.lblStrength.Size = new System.Drawing.Size(57, 13);
+            this.lblStrength.Size = new System.Drawing.Size(114, 22);
             this.lblStrength.TabIndex = 0;
             this.lblStrength.Text = "lblStrength";
+            this.lblStrength.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblStrengthValue
             // 
             this.lblStrengthValue.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblStrengthValue.AutoSize = true;
-            this.lblStrengthValue.Location = new System.Drawing.Point(243, 4);
+            this.lblStrengthValue.Location = new System.Drawing.Point(243, 0);
             this.lblStrengthValue.Name = "lblStrengthValue";
-            this.lblStrengthValue.Size = new System.Drawing.Size(13, 13);
+            this.lblStrengthValue.Size = new System.Drawing.Size(65, 22);
             this.lblStrengthValue.TabIndex = 2;
             this.lblStrengthValue.Text = "0";
+            this.lblStrengthValue.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // tbStrength
             // 
@@ -135,12 +136,12 @@
             // 
             this.lblSeed.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblSeed.AutoSize = true;
-            this.lblSeed.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lblSeed.Location = new System.Drawing.Point(3, 4);
+            this.lblSeed.Location = new System.Drawing.Point(3, 0);
             this.lblSeed.Name = "lblSeed";
-            this.lblSeed.Size = new System.Drawing.Size(42, 13);
+            this.lblSeed.Size = new System.Drawing.Size(114, 22);
             this.lblSeed.TabIndex = 0;
             this.lblSeed.Text = "lblSeed";
+            this.lblSeed.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // txtSeed
             // 

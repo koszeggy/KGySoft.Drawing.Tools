@@ -29,6 +29,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
     internal sealed partial class ColorSpaceControl : TransformBitmapControlBase
     {
+        #region Constants
+
+        private const int gbPixelFormatRefHeight = 50; // Adjusted for Segoe UI 9 font on 100% DPI.
+
+        #endregion
+
         #region Properties
 
         private new ColorSpaceViewModel ViewModel => (ColorSpaceViewModel)base.ViewModel!;
@@ -69,6 +75,13 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             properties.Icon = Properties.Resources.Quantize;
         }
 
+        protected override void OnCreateControl()
+        {
+            base.OnCreateControl();
+            quantizerSelector.AdjustSizes(null);
+            dithererSelector.AdjustSizes(null);
+        }
+
         protected override void OnLoad(EventArgs e)
         {
             // Framework Mono/Windows: ignoring because ToolTips throw an exception if set for an embedded control and
@@ -94,6 +107,13 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             InitCommandBindings();
             InitPropertyBindings();
             base.ApplyViewModel();
+        }
+
+        protected override void ApplySizeAdjustments(PointF? dynamicSizesScale)
+        {
+            // Adjusting only pixel format here. Others are either in the base or in their own user controls.
+            base.ApplySizeAdjustments(dynamicSizesScale);
+            gbPixelFormat.Height = this.ScaleHeight(gbPixelFormatRefHeight);
         }
 
         protected override void Dispose(bool disposing)

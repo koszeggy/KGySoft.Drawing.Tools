@@ -25,7 +25,7 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    internal sealed partial class DithererSelectorControl : MvvmBaseUserControl
+    internal sealed partial class DithererSelectorControl : SelectorControlBase
     {
         #region Properties
 
@@ -71,7 +71,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private void InitCommandBindings()
         {
-            CommandBindings.AddPropertyChangedHandlerBinding(ViewModel!, ResetParentSize, nameof(ViewModel.SelectedDitherer));
+            CommandBindings.AddPropertyChangedHandlerBinding(ViewModel!, OnResetParentSizeCommand, nameof(ViewModel.SelectedDitherer));
         }
 
         private void InitPropertyBindings()
@@ -130,23 +130,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             CommandBindings.AddPropertyBinding(cmbDitherer, nameof(cmbDitherer.SelectedValue), nameof(ViewModel.SelectedDitherer), ViewModel);
         }
 
-        private void ResetParentSize()
-        {
-            Control? parent = Parent?.Parent;
-            if (parent == null)
-                return;
+        #endregion
 
-            int height = 0;
-            foreach (Control control in Controls)
-            {
-                if (!control.Visible)
-                    continue;
+        #region Command Handlers
 
-                height += control.Height;
-            }
-
-            parent.Height = height + (parent.Height - parent.DisplayRectangle.Height);
-        }
+        private void OnResetParentSizeCommand() => ResetParentSize();
 
         #endregion
 

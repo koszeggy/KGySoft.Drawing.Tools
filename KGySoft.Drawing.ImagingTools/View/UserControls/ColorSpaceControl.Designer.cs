@@ -39,7 +39,7 @@
             this.cmbPixelFormat.Dock = System.Windows.Forms.DockStyle.Top;
             this.cmbPixelFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbPixelFormat.FormattingEnabled = true;
-            this.cmbPixelFormat.Location = new System.Drawing.Point(3, 18);
+            this.cmbPixelFormat.Location = new System.Drawing.Point(3, 16);
             this.cmbPixelFormat.Name = "cmbPixelFormat";
             this.cmbPixelFormat.Size = new System.Drawing.Size(372, 21);
             this.cmbPixelFormat.TabIndex = 0;
@@ -58,9 +58,9 @@
             // quantizerSelector
             // 
             this.quantizerSelector.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.quantizerSelector.Location = new System.Drawing.Point(3, 18);
+            this.quantizerSelector.Location = new System.Drawing.Point(3, 16);
             this.quantizerSelector.Name = "quantizerSelector";
-            this.quantizerSelector.Size = new System.Drawing.Size(372, 91);
+            this.quantizerSelector.Size = new System.Drawing.Size(372, 93);
             this.quantizerSelector.TabIndex = 0;
             // 
             // gbQuantizer
@@ -77,9 +77,9 @@
             // dithererSelector
             // 
             this.dithererSelector.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dithererSelector.Location = new System.Drawing.Point(3, 18);
+            this.dithererSelector.Location = new System.Drawing.Point(3, 16);
             this.dithererSelector.Name = "dithererSelector";
-            this.dithererSelector.Size = new System.Drawing.Size(372, 91);
+            this.dithererSelector.Size = new System.Drawing.Size(372, 93);
             this.dithererSelector.TabIndex = 0;
             // 
             // gbDitherer
@@ -97,8 +97,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Size = new System.Drawing.Size(384, 421);
             this.Name = "ColorSpaceControl";
+            this.Size = new System.Drawing.Size(384, 421);
             this.pnlSettings.ResumeLayout(false);
             this.gbPixelFormat.ResumeLayout(false);
             this.gbPixelFormat.PerformLayout();

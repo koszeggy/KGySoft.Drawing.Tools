@@ -66,7 +66,7 @@
             // 
             this.txtInfo.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.txtInfo.EnabledForeColor = System.Drawing.SystemColors.ControlText;
-            this.txtInfo.Location = new System.Drawing.Point(0, 168);
+            this.txtInfo.Location = new System.Drawing.Point(0, 163);
             this.txtInfo.Multiline = true;
             this.txtInfo.Name = "txtInfo";
             this.txtInfo.ReadOnly = true;
@@ -242,9 +242,9 @@
             // 
             this.buttons.BackColor = System.Drawing.Color.Transparent;
             this.buttons.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.buttons.Location = new System.Drawing.Point(0, 286);
+            this.buttons.Location = new System.Drawing.Point(0, 281);
             this.buttons.Name = "buttons";
-            this.buttons.Size = new System.Drawing.Size(364, 30);
+            this.buttons.Size = new System.Drawing.Size(364, 35);
             this.buttons.TabIndex = 11;
             // 
             // miResizeBitmap
@@ -262,7 +262,7 @@
             this.imageViewer.OptimizationOptions = ((KGySoft.WinForms.Controls.ImageViewerOptimizationOptions)((((KGySoft.WinForms.Controls.ImageViewerOptimizationOptions.UseOptimalPixelFormat | KGySoft.WinForms.Controls.ImageViewerOptimizationOptions.GenerateResizedBitmap) 
             | KGySoft.WinForms.Controls.ImageViewerOptimizationOptions.CheckQuicklyAvailableMemory) 
             | KGySoft.WinForms.Controls.ImageViewerOptimizationOptions.UseUnsafeCooperativeLocking)));
-            this.imageViewer.Size = new System.Drawing.Size(364, 119);
+            this.imageViewer.Size = new System.Drawing.Size(364, 114);
             this.imageViewer.TabIndex = 7;
             this.imageViewer.TabStop = false;
             // 
@@ -284,7 +284,7 @@
             // splitter
             // 
             this.splitter.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.splitter.Location = new System.Drawing.Point(0, 165);
+            this.splitter.Location = new System.Drawing.Point(0, 160);
             this.splitter.MinExtra = 16;
             this.splitter.MinSize = 50;
             this.splitter.Name = "splitter";
