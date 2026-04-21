@@ -24,6 +24,7 @@ using System.IO;
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -178,8 +179,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal void FinalizePath()
         {
+            Debug.Assert(UseCustomResourcePath || OSHelper.IsFrameworkMono);
+            if (!UseCustomResourcePath)
+                return;
+
             customPathError = null;
-            Debug.Assert(UseCustomResourcePath);
             string path = ResourceCustomPath;
             
             if (PathHelper.HasInvalidChars(path))

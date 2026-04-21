@@ -35,6 +35,14 @@ using Microsoft.Win32;
 
 #endregion
 
+#region Suppressions
+
+#if !NETFRAMEWORK
+#pragma warning disable IDE0044 // Make field readonly - false alarm, allowHttps is set also from InitSecurityProtocol, which is not compiled on .NET Core targets.
+#endif
+
+#endregion
+
 namespace KGySoft.Drawing.ImagingTools
 {
     /// <summary>
@@ -84,11 +92,10 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Fields
 
-        private static readonly bool allowHttps;
-
+        private static bool allowHttps;
+        private static bool forceAppSettings;
         private static Uri? baseUri;
         private static RegistryKey? registryKey;
-        private static bool forceAppSettings;
 
         #endregion
 
@@ -150,17 +157,14 @@ namespace KGySoft.Drawing.ImagingTools
 #if NETFRAMEWORK
             try
             {
-                // To be able to use HTTP requests with TLS 1.2 security protocol (may not work on Windows XP)
-                ServicePointManager.SecurityProtocol |=
-#if NET35 || NET40
-                    (SecurityProtocolType)3072;
-#else
-                    SecurityProtocolType.Tls12;
-#endif
+                InitSecurityProtocol();
             }
-            catch (NotSupportedException)
+            catch (TypeInitializationException)
             {
-                allowHttps = false;
+                // May occur on Mono when app.config contains DpiAwareness settings:
+                // The initializer for 'System.Net.ServicePointManager' threw an exception.
+                //  ---> System.Configuration.ConfigurationErrorsException: Error Initializing the configuration system.
+                //  ---> System.Configuration.ConfigurationErrorsException: Unrecognized configuration section <System.Windows.Forms.ApplicationConfigurationSection>
             }
 #endif
         }
@@ -189,6 +193,27 @@ namespace KGySoft.Drawing.ImagingTools
         #endregion
 
         #region Private Methods
+
+#if NETFRAMEWORK
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static void InitSecurityProtocol()
+        {
+            try
+            {
+                // To be able to use HTTP requests with TLS 1.2 security protocol (may not work on Windows XP)
+                ServicePointManager.SecurityProtocol |=
+#if NET35 || NET40
+                    (SecurityProtocolType)3072;
+#else
+                    SecurityProtocolType.Tls12;
+#endif
+            }
+            catch (NotSupportedException)
+            {
+                allowHttps = false;
+            }
+        }
+#endif
 
         private static T? Get<T>([CallerMemberName]string propertyName = null!)
         {
