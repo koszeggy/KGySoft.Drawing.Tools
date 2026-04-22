@@ -20,6 +20,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.ViewModel;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -29,7 +30,17 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
     {
         #region Fields
 
+        #region Static Fields
+
+        private static readonly Padding referencePadding = new Padding(3, 0, 3, 0);
+
+        #endregion
+        
+        #region Instance Fields
+
         private ParentViewProperties? parentProperties;
+
+        #endregion
 
         #endregion
 
@@ -137,6 +148,14 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 default:
                     return base.ProcessCmdKey(ref msg, keyData);
             }
+        }
+
+        protected override void ApplySizeAdjustments(PointF? dynamicSizesScale)
+        {
+            PointF scale = this.GetScale();
+            Padding = referencePadding.Scale(scale);
+            progress.AdjustSizes();
+            okCancelButtons.EnsureHeight();
         }
 
         protected override void Dispose(bool disposing)

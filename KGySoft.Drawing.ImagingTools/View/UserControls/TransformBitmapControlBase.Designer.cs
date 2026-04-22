@@ -25,7 +25,7 @@
             // 
             this.progress.BackColor = System.Drawing.Color.Transparent;
             this.progress.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.progress.Location = new System.Drawing.Point(3, 189);
+            this.progress.Location = new System.Drawing.Point(3, 191);
             this.progress.Name = "progress";
             this.progress.Size = new System.Drawing.Size(242, 20);
             this.progress.TabIndex = 3;
@@ -34,7 +34,7 @@
             // 
             this.okCancelButtons.BackColor = System.Drawing.Color.Transparent;
             this.okCancelButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.okCancelButtons.Location = new System.Drawing.Point(3, 154);
+            this.okCancelButtons.Location = new System.Drawing.Point(3, 156);
             this.okCancelButtons.Name = "okCancelButtons";
             this.okCancelButtons.Size = new System.Drawing.Size(242, 35);
             this.okCancelButtons.TabIndex = 2;
@@ -45,7 +45,8 @@
             this.previewImage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.previewImage.Location = new System.Drawing.Point(3, 56);
             this.previewImage.Name = "previewImage";
-            this.previewImage.Size = new System.Drawing.Size(242, 98);
+            this.previewImage.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.previewImage.Size = new System.Drawing.Size(242, 100);
             this.previewImage.TabIndex = 1;
             // 
             // pnlSettings
