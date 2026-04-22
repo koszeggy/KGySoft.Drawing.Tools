@@ -19,6 +19,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             this.pnlControls = new System.Windows.Forms.Panel();
             this.tblColor = new System.Windows.Forms.TableLayoutPanel();
+            this.lblAlpha = new KGySoft.WinForms.Controls.AdvancedLabel();
+            this.pnlAlpha = new System.Windows.Forms.Panel();
+            this.tbAlpha = new System.Windows.Forms.TrackBar();
             this.lblRed = new KGySoft.WinForms.Controls.AdvancedLabel();
             this.pnlRed = new System.Windows.Forms.Panel();
             this.tbRed = new System.Windows.Forms.TrackBar();
@@ -29,23 +32,20 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.pnlBlue = new System.Windows.Forms.Panel();
             this.tbBlue = new System.Windows.Forms.TrackBar();
             this.pnlColor = new System.Windows.Forms.Panel();
-            this.lblAlpha = new KGySoft.WinForms.Controls.AdvancedLabel();
-            this.pnlAlpha = new System.Windows.Forms.Panel();
-            this.tbAlpha = new System.Windows.Forms.TrackBar();
             this.tsMenu = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedToolStrip();
             this.btnSelectColor = new KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripButton();
             this.txtColor = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox();
             this.buttons = new KGySoft.WinForms.Controls.OkCancelButtons();
             this.pnlControls.SuspendLayout();
             this.tblColor.SuspendLayout();
+            this.pnlAlpha.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.tbAlpha)).BeginInit();
             this.pnlRed.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbRed)).BeginInit();
             this.pnlGreen.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbGreen)).BeginInit();
             this.pnlBlue.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbBlue)).BeginInit();
-            this.pnlAlpha.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.tbAlpha)).BeginInit();
             this.tsMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -67,6 +67,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.tblColor.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
             this.tblColor.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));
             this.tblColor.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tblColor.Controls.Add(this.lblAlpha, 0, 0);
+            this.tblColor.Controls.Add(this.pnlAlpha, 1, 0);
             this.tblColor.Controls.Add(this.lblRed, 0, 1);
             this.tblColor.Controls.Add(this.pnlRed, 1, 1);
             this.tblColor.Controls.Add(this.lblGreen, 0, 2);
@@ -74,8 +76,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.tblColor.Controls.Add(this.lblBlue, 0, 3);
             this.tblColor.Controls.Add(this.pnlBlue, 1, 3);
             this.tblColor.Controls.Add(this.pnlColor, 2, 0);
-            this.tblColor.Controls.Add(this.lblAlpha, 0, 0);
-            this.tblColor.Controls.Add(this.pnlAlpha, 1, 0);
             this.tblColor.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tblColor.Location = new System.Drawing.Point(0, 0);
             this.tblColor.Name = "tblColor";
@@ -88,6 +88,42 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.tblColor.Size = new System.Drawing.Size(220, 80);
             this.tblColor.TabIndex = 1;
             // 
+            // lblAlpha
+            // 
+            this.lblAlpha.AutoSize = true;
+            this.lblAlpha.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblAlpha.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.lblAlpha.Location = new System.Drawing.Point(3, 0);
+            this.lblAlpha.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.lblAlpha.Name = "lblAlpha";
+            this.lblAlpha.Size = new System.Drawing.Size(47, 20);
+            this.lblAlpha.TabIndex = 0;
+            this.lblAlpha.Text = "";
+            this.lblAlpha.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // pnlAlpha
+            // 
+            this.pnlAlpha.Controls.Add(this.tbAlpha);
+            this.pnlAlpha.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlAlpha.Location = new System.Drawing.Point(51, 1);
+            this.pnlAlpha.Margin = new System.Windows.Forms.Padding(1);
+            this.pnlAlpha.Name = "pnlAlpha";
+            this.pnlAlpha.Size = new System.Drawing.Size(78, 18);
+            this.pnlAlpha.TabIndex = 1;
+            // 
+            // tbAlpha
+            // 
+            this.tbAlpha.AutoSize = false;
+            this.tbAlpha.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tbAlpha.LargeChange = 64;
+            this.tbAlpha.Location = new System.Drawing.Point(0, 0);
+            this.tbAlpha.Maximum = 255;
+            this.tbAlpha.Name = "tbAlpha";
+            this.tbAlpha.RightToLeftLayout = true;
+            this.tbAlpha.Size = new System.Drawing.Size(78, 18);
+            this.tbAlpha.TabIndex = 0;
+            this.tbAlpha.TickFrequency = 64;
+            // 
             // lblRed
             // 
             this.lblRed.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -97,6 +133,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.lblRed.Name = "lblRed";
             this.lblRed.Size = new System.Drawing.Size(47, 20);
             this.lblRed.TabIndex = 2;
+            this.lblRed.Text = "";
             this.lblRed.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // pnlRed
@@ -112,7 +149,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // tbRed
             // 
             this.tbRed.AutoSize = false;
-            this.tbRed.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tbRed.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tbRed.LargeChange = 64;
             this.tbRed.Location = new System.Drawing.Point(0, 0);
             this.tbRed.Maximum = 255;
@@ -131,6 +168,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.lblGreen.Name = "lblGreen";
             this.lblGreen.Size = new System.Drawing.Size(47, 20);
             this.lblGreen.TabIndex = 4;
+            this.lblGreen.Text = "";
             this.lblGreen.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // pnlGreen
@@ -146,7 +184,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // tbGreen
             // 
             this.tbGreen.AutoSize = false;
-            this.tbGreen.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tbGreen.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tbGreen.LargeChange = 64;
             this.tbGreen.Location = new System.Drawing.Point(0, 0);
             this.tbGreen.Maximum = 255;
@@ -165,6 +203,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.lblBlue.Name = "lblBlue";
             this.lblBlue.Size = new System.Drawing.Size(47, 20);
             this.lblBlue.TabIndex = 6;
+            this.lblBlue.Text = "";
             this.lblBlue.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // pnlBlue
@@ -180,7 +219,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // tbBlue
             // 
             this.tbBlue.AutoSize = false;
-            this.tbBlue.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tbBlue.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tbBlue.LargeChange = 64;
             this.tbBlue.Location = new System.Drawing.Point(0, 0);
             this.tbBlue.Maximum = 255;
@@ -200,44 +239,10 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.pnlColor.Size = new System.Drawing.Size(84, 78);
             this.pnlColor.TabIndex = 8;
             // 
-            // lblAlpha
-            // 
-            this.lblAlpha.AutoSize = true;
-            this.lblAlpha.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblAlpha.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lblAlpha.Location = new System.Drawing.Point(3, 0);
-            this.lblAlpha.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
-            this.lblAlpha.Name = "lblAlpha";
-            this.lblAlpha.Size = new System.Drawing.Size(47, 20);
-            this.lblAlpha.TabIndex = 0;
-            this.lblAlpha.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // pnlAlpha
-            // 
-            this.pnlAlpha.Controls.Add(this.tbAlpha);
-            this.pnlAlpha.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlAlpha.Location = new System.Drawing.Point(51, 1);
-            this.pnlAlpha.Margin = new System.Windows.Forms.Padding(1);
-            this.pnlAlpha.Name = "pnlAlpha";
-            this.pnlAlpha.Size = new System.Drawing.Size(78, 18);
-            this.pnlAlpha.TabIndex = 1;
-            // 
-            // tbAlpha
-            // 
-            this.tbAlpha.AutoSize = false;
-            this.tbAlpha.Dock = System.Windows.Forms.DockStyle.Top;
-            this.tbAlpha.LargeChange = 64;
-            this.tbAlpha.Location = new System.Drawing.Point(0, 0);
-            this.tbAlpha.Maximum = 255;
-            this.tbAlpha.Name = "tbAlpha";
-            this.tbAlpha.RightToLeftLayout = true;
-            this.tbAlpha.Size = new System.Drawing.Size(78, 18);
-            this.tbAlpha.TabIndex = 0;
-            this.tbAlpha.TickFrequency = 64;
-            // 
             // tsMenu
             // 
             this.tsMenu.Dock = System.Windows.Forms.DockStyle.Right;
+            this.tsMenu.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.tsMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnSelectColor});
             this.tsMenu.Location = new System.Drawing.Point(220, 0);
@@ -250,13 +255,13 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.btnSelectColor.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnSelectColor.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnSelectColor.Name = "btnSelectColor";
-            this.btnSelectColor.Size = new System.Drawing.Size(21, 4);
+            this.btnSelectColor.Size = new System.Drawing.Size(21, 22);
             // 
             // txtColor
             // 
-            this.txtColor.BackColor = System.Drawing.SystemColors.Control;
             this.txtColor.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtColor.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.txtColor.EnabledBackColor = System.Drawing.SystemColors.Control;
+            this.txtColor.EnabledForeColor = System.Drawing.SystemColors.ControlText;
             this.txtColor.Location = new System.Drawing.Point(0, 83);
             this.txtColor.Multiline = true;
             this.txtColor.Name = "txtColor";
@@ -290,14 +295,14 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.pnlControls.PerformLayout();
             this.tblColor.ResumeLayout(false);
             this.tblColor.PerformLayout();
+            this.pnlAlpha.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.tbAlpha)).EndInit();
             this.pnlRed.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.tbRed)).EndInit();
             this.pnlGreen.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.tbGreen)).EndInit();
             this.pnlBlue.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.tbBlue)).EndInit();
-            this.pnlAlpha.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.tbAlpha)).EndInit();
             this.tsMenu.ResumeLayout(false);
             this.tsMenu.PerformLayout();
             this.ResumeLayout(false);

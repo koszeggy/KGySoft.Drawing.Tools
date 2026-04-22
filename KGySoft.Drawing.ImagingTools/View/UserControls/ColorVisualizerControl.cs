@@ -35,6 +35,24 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
     /// </summary>
     internal partial class ColorVisualizerControl : MvvmBaseUserControl
     {
+        #region Constants
+
+        // Adjusted for Segoe UI 9 font on 100% DPI
+        private const int tableRowRefHeight = 23;
+        private const float labelColumnRefWidth = 60f;
+        private const float sliderColumnRefWidth = 90f;
+
+        #endregion
+
+        #region Fields
+
+        private static readonly Padding pnlControlsRefPadding = new Padding(0, 0, 0, 3);
+        private static readonly Padding labelRefMargin = new Padding(4, 0, 0, 0);
+        private static readonly Padding sliderPanelRefMargin = new Padding(1);
+        private static readonly Padding colorPanelRefMargin = new Padding(4, 1, 4, 1);
+
+        #endregion
+
         #region Fields
 
         private readonly bool isChild;
@@ -265,6 +283,26 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             base.ApplyStringResources();
             if (ViewModel is { CustomColorComponents: null })
                 UpdateColor();
+        }
+
+        protected override void ApplySizeAdjustments(PointF? dynamicSizesScale)
+        {
+            PointF scale = this.GetScale();
+            pnlControls.Padding = pnlControlsRefPadding.Scale(scale);
+            foreach (Control control in Controls)
+            {
+                control.Margin = control switch
+                {
+                    Label => labelRefMargin.Scale(scale),
+                    Panel => (control == pnlColor ? colorPanelRefMargin : sliderPanelRefMargin).Scale(scale),
+                    _ => control.Margin
+                };
+            }
+
+            tblColor.ColumnStyles[0].Width = labelColumnRefWidth * scale.X;
+            tblColor.ColumnStyles[1].Width = sliderColumnRefWidth * scale.X;
+            pnlControls.Height = (tableRowRefHeight * tblColor.RowCount + pnlControlsRefPadding.Vertical).Scale(scale.Y);
+            buttons.EnsureSize();
         }
 
         protected override void Dispose(bool disposing)

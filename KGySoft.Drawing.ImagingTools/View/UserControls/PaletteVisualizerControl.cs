@@ -29,10 +29,27 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
     internal partial class PaletteVisualizerControl : MvvmBaseUserControl
     {
+        #region Constants
+
+        // Adjusted for Segoe UI 9 font on 100% DPI
+        private const int gbSelectedColorRefHeight = 248;
+
+        #endregion
+
         #region Fields
+
+        #region Static Fields
+
+        private static readonly Padding referencePadding = new Padding(3);
+
+        #endregion
+        
+        #region Instance Fields
 
         private ParentViewProperties? parentProperties;
 
+        #endregion
+        
         #endregion
 
         #region Properties
@@ -43,7 +60,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             BorderStyle = FormBorderStyle.SizableToolWindow,
             Icon = Properties.Resources.Palette,
-            MinimumSize = new Size(240, 335),
+            MinimumSize = new Size(240, 360),
             AcceptButton = okCancelButtons.OKButton,
             CancelButton = okCancelButtons.CancelButton,
             ClosingCallback = (sender, _) =>
@@ -116,6 +133,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             base.OnLoad(e);
         }
 
+        protected override void OnCreateControl()
+        {
+            base.OnCreateControl();
+            colorVisualizerControl.AdjustSizes(null);
+        }
+
         protected override void ApplyTheme()
         {
             base.ApplyTheme();
@@ -128,6 +151,14 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             InitPropertyBindings();
             InitCommandBindings();
             base.ApplyViewModel();
+        }
+
+        protected override void ApplySizeAdjustments(PointF? dynamicSizesScale)
+        {
+            PointF scale = this.GetScale();
+            Padding = gbPalette.Padding = gbSelectedColor.Padding = referencePadding.Scale(scale);
+            gbSelectedColor.Height = gbSelectedColorRefHeight.Scale(scale.Y);
+            okCancelButtons.EnsureSize();
         }
 
         protected override void Dispose(bool disposing)

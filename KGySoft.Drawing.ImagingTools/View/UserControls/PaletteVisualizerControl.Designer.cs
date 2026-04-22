@@ -34,7 +34,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.gbPalette.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gbPalette.Location = new System.Drawing.Point(3, 3);
             this.gbPalette.Name = "gbPalette";
-            this.gbPalette.Size = new System.Drawing.Size(241, 233);
+            this.gbPalette.Size = new System.Drawing.Size(244, 223);
             this.gbPalette.TabIndex = 0;
             this.gbPalette.TabStop = false;
             this.gbPalette.Text = "gbPalette";
@@ -44,7 +44,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.pnlPalette.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlPalette.Location = new System.Drawing.Point(3, 16);
             this.pnlPalette.Name = "pnlPalette";
-            this.pnlPalette.Size = new System.Drawing.Size(235, 214);
+            this.pnlPalette.Size = new System.Drawing.Size(238, 204);
             this.pnlPalette.TabIndex = 0;
             // 
             // gbSelectedColor
@@ -52,9 +52,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.gbSelectedColor.BackColor = System.Drawing.SystemColors.Control;
             this.gbSelectedColor.Controls.Add(this.colorVisualizerControl);
             this.gbSelectedColor.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.gbSelectedColor.Location = new System.Drawing.Point(3, 236);
+            this.gbSelectedColor.Location = new System.Drawing.Point(3, 226);
             this.gbSelectedColor.Name = "gbSelectedColor";
-            this.gbSelectedColor.Size = new System.Drawing.Size(241, 216);
+            this.gbSelectedColor.Size = new System.Drawing.Size(244, 216);
             this.gbSelectedColor.TabIndex = 1;
             this.gbSelectedColor.TabStop = false;
             this.gbSelectedColor.Text = "gbSelectedColor";
@@ -66,16 +66,16 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.colorVisualizerControl.Location = new System.Drawing.Point(3, 16);
             this.colorVisualizerControl.Name = "colorVisualizerControl";
             this.colorVisualizerControl.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.colorVisualizerControl.Size = new System.Drawing.Size(235, 197);
+            this.colorVisualizerControl.Size = new System.Drawing.Size(238, 197);
             this.colorVisualizerControl.TabIndex = 0;
             // 
             // okCancelButtons
             // 
             this.okCancelButtons.BackColor = System.Drawing.Color.Transparent;
             this.okCancelButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.okCancelButtons.Location = new System.Drawing.Point(3, 452);
+            this.okCancelButtons.Location = new System.Drawing.Point(3, 442);
             this.okCancelButtons.Name = "okCancelButtons";
-            this.okCancelButtons.Size = new System.Drawing.Size(241, 35);
+            this.okCancelButtons.Size = new System.Drawing.Size(244, 35);
             this.okCancelButtons.TabIndex = 2;
             // 
             // PaletteVisualizerControl
@@ -87,7 +87,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.Controls.Add(this.okCancelButtons);
             this.Name = "PaletteVisualizerControl";
             this.Padding = new System.Windows.Forms.Padding(3);
-            this.Size = new System.Drawing.Size(247, 490);
+            this.Size = new System.Drawing.Size(250, 480);
             this.gbPalette.ResumeLayout(false);
             this.gbSelectedColor.ResumeLayout(false);
             this.ResumeLayout(false);
