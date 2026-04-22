@@ -118,6 +118,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             pnlCheckBoxes.Height = tableRefHeight.Scale(scale.Y);
             pnlSettings.Height = (tableRefHeight + sliderRefHeight).Scale(scale.Y);
             lblValue.Width = labelRefWidth.Scale(scale.X);
+            lblValue.EnsureSize();
         }
 
 

@@ -176,8 +176,16 @@ namespace KGySoft.Drawing.ImagingTools.View
         /// This method is to prevent accidentally disappearing controls after a faulty layout change.
         /// May occur on some platforms after changing DPI or RTL.
         /// </summary>
-        internal static void EnsureHeight(this Control c)
+        internal static void EnsureSize(this Control c)
         {
+            if (c.Dock is DockStyle.Left or DockStyle.Right)
+            {
+                int width = c.Width;
+                c.Width = 0;
+                c.Width = width;
+                return;
+            }
+
             int height = c.Height;
             c.Height = 0;
             c.Height = height;

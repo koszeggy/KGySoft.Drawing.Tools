@@ -197,8 +197,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 btnGoToFile.Image = Images.OpenIcon.ToScaledBitmap(scale);
             }
 
-            pnlResourceFile.EnsureHeight();
-            okCancelApplyButtons.EnsureHeight();
+            pnlResourceFile.EnsureSize();
+            okCancelApplyButtons.EnsureSize();
             AdjustEditPanelSize();
         }
 

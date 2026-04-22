@@ -165,7 +165,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             gbResxResourcesPath.Height = gbResXPathRefHeight.Scale(scale.Y);
             btnEditResources.MinimumSize = new Size(0, cmbLanguages.Height + 2);
             btnEditResources.Height = btnDownloadResources.Height = cmbLanguages.Height + 2;
-            okCancelApplyButtons.EnsureHeight();
+            okCancelApplyButtons.EnsureSize();
         }
 
         protected override void Dispose(bool disposing)

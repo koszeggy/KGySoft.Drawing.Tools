@@ -155,7 +155,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             PointF scale = this.GetScale();
             Padding = referencePadding.Scale(scale);
             progress.AdjustSizes();
-            okCancelButtons.EnsureHeight();
+            okCancelButtons.EnsureSize();
         }
 
         protected override void Dispose(bool disposing)

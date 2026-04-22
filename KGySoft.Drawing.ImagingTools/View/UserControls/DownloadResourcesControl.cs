@@ -111,7 +111,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             gridDownloadableResources.Font = Font;
             if (dynamicSizesScale is PointF factor)
                 gridDownloadableResources.AdjustSizes(factor);
-            okCancelButtons.EnsureHeight();
+            okCancelButtons.EnsureSize();
         }
 
         protected override void Dispose(bool disposing)
