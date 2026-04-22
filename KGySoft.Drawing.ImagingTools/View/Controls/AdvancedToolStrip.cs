@@ -988,7 +988,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     base.WndProc(ref m);
                     Font = Parent!.Font;
                     AdjustSizes();
-
                     return;
 
                 default:
@@ -1008,6 +1007,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         protected override void OnHandleCreated(EventArgs e)
         {
             base.OnHandleCreated(e);
+            Font = Parent!.Font;
             AdjustSizes();
         }
 
