@@ -68,7 +68,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.tblNewSize.Controls.Add(this.lblWidth, 0, 2);
             this.tblNewSize.Controls.Add(this.lblHeight, 0, 3);
             this.tblNewSize.Controls.Add(this.cmbScalingMode, 1, 4);
-            this.tblNewSize.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tblNewSize.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tblNewSize.Location = new System.Drawing.Point(5, 5);
             this.tblNewSize.Name = "tblNewSize";
             this.tblNewSize.RowCount = 5;
@@ -77,7 +77,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.tblNewSize.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tblNewSize.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tblNewSize.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tblNewSize.Size = new System.Drawing.Size(318, 137);
+            this.tblNewSize.Size = new System.Drawing.Size(318, 133);
             this.tblNewSize.TabIndex = 0;
             // 
             // chbMaintainAspectRatio
@@ -87,7 +87,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.chbMaintainAspectRatio.Dock = System.Windows.Forms.DockStyle.Top;
             this.chbMaintainAspectRatio.Location = new System.Drawing.Point(103, 3);
             this.chbMaintainAspectRatio.Name = "chbMaintainAspectRatio";
-            this.chbMaintainAspectRatio.Size = new System.Drawing.Size(212, 18);
+            this.chbMaintainAspectRatio.Size = new System.Drawing.Size(212, 17);
             this.chbMaintainAspectRatio.TabIndex = 0;
             this.chbMaintainAspectRatio.Text = "chbMaintainAspectRatio";
             this.chbMaintainAspectRatio.UseVisualStyleBackColor = true;
@@ -95,9 +95,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // lblScalingMode
             // 
             this.lblScalingMode.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblScalingMode.Location = new System.Drawing.Point(3, 108);
+            this.lblScalingMode.Location = new System.Drawing.Point(3, 104);
             this.lblScalingMode.Name = "lblScalingMode";
-            this.lblScalingMode.Padding = new System.Windows.Forms.Padding(0, 3, 0, 0);
+            this.lblScalingMode.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
             this.lblScalingMode.Size = new System.Drawing.Size(94, 29);
             this.lblScalingMode.TabIndex = 9;
             this.lblScalingMode.Text = "lblScalingMode";
@@ -107,11 +107,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             this.pnlHeightPx.Controls.Add(this.lblHeightPx);
             this.pnlHeightPx.Controls.Add(this.txtHeightPx);
-            this.pnlHeightPx.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlHeightPx.Location = new System.Drawing.Point(209, 81);
+            this.pnlHeightPx.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlHeightPx.Location = new System.Drawing.Point(209, 78);
             this.pnlHeightPx.Margin = new System.Windows.Forms.Padding(0);
             this.pnlHeightPx.Name = "pnlHeightPx";
-            this.pnlHeightPx.Size = new System.Drawing.Size(109, 21);
+            this.pnlHeightPx.Size = new System.Drawing.Size(109, 26);
             this.pnlHeightPx.TabIndex = 8;
             // 
             // lblHeightPx
@@ -120,7 +120,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.lblHeightPx.Location = new System.Drawing.Point(62, 0);
             this.lblHeightPx.Name = "lblHeightPx";
             this.lblHeightPx.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
-            this.lblHeightPx.Size = new System.Drawing.Size(47, 21);
+            this.lblHeightPx.Size = new System.Drawing.Size(47, 26);
             this.lblHeightPx.TabIndex = 1;
             this.lblHeightPx.Text = "lblHeightPx";
             // 
@@ -137,11 +137,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             this.pnlHeightPercent.Controls.Add(this.lblHeightPercent);
             this.pnlHeightPercent.Controls.Add(this.txtHeightPercent);
-            this.pnlHeightPercent.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlHeightPercent.Location = new System.Drawing.Point(100, 81);
+            this.pnlHeightPercent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlHeightPercent.Location = new System.Drawing.Point(100, 78);
             this.pnlHeightPercent.Margin = new System.Windows.Forms.Padding(0);
             this.pnlHeightPercent.Name = "pnlHeightPercent";
-            this.pnlHeightPercent.Size = new System.Drawing.Size(109, 21);
+            this.pnlHeightPercent.Size = new System.Drawing.Size(109, 26);
             this.pnlHeightPercent.TabIndex = 7;
             // 
             // lblHeightPercent
@@ -151,7 +151,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.lblHeightPercent.Location = new System.Drawing.Point(62, 0);
             this.lblHeightPercent.Name = "lblHeightPercent";
             this.lblHeightPercent.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
-            this.lblHeightPercent.Size = new System.Drawing.Size(85, 15);
+            this.lblHeightPercent.Size = new System.Drawing.Size(85, 26);
             this.lblHeightPercent.TabIndex = 1;
             this.lblHeightPercent.Text = "lblHeightPercent";
             // 
@@ -168,11 +168,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             this.pnlWidthPx.Controls.Add(this.lblWidthPx);
             this.pnlWidthPx.Controls.Add(this.txtWidthPx);
-            this.pnlWidthPx.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlWidthPx.Location = new System.Drawing.Point(209, 54);
+            this.pnlWidthPx.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlWidthPx.Location = new System.Drawing.Point(209, 52);
             this.pnlWidthPx.Margin = new System.Windows.Forms.Padding(0);
             this.pnlWidthPx.Name = "pnlWidthPx";
-            this.pnlWidthPx.Size = new System.Drawing.Size(109, 21);
+            this.pnlWidthPx.Size = new System.Drawing.Size(109, 26);
             this.pnlWidthPx.TabIndex = 5;
             // 
             // lblWidthPx
@@ -181,7 +181,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.lblWidthPx.Location = new System.Drawing.Point(62, 0);
             this.lblWidthPx.Name = "lblWidthPx";
             this.lblWidthPx.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
-            this.lblWidthPx.Size = new System.Drawing.Size(47, 21);
+            this.lblWidthPx.Size = new System.Drawing.Size(47, 26);
             this.lblWidthPx.TabIndex = 1;
             this.lblWidthPx.Text = "lblWidthPx";
             // 
@@ -197,9 +197,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // rbByPixels
             // 
             this.rbByPixels.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rbByPixels.Location = new System.Drawing.Point(212, 30);
+            this.rbByPixels.Location = new System.Drawing.Point(212, 29);
             this.rbByPixels.Name = "rbByPixels";
-            this.rbByPixels.Size = new System.Drawing.Size(103, 21);
+            this.rbByPixels.Size = new System.Drawing.Size(103, 20);
             this.rbByPixels.TabIndex = 2;
             this.rbByPixels.TabStop = true;
             this.rbByPixels.Text = "rbByPixels";
@@ -208,9 +208,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // rbByPercentage
             // 
             this.rbByPercentage.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rbByPercentage.Location = new System.Drawing.Point(103, 30);
+            this.rbByPercentage.Location = new System.Drawing.Point(103, 29);
             this.rbByPercentage.Name = "rbByPercentage";
-            this.rbByPercentage.Size = new System.Drawing.Size(103, 21);
+            this.rbByPercentage.Size = new System.Drawing.Size(103, 20);
             this.rbByPercentage.TabIndex = 1;
             this.rbByPercentage.TabStop = true;
             this.rbByPercentage.Text = "rbByPercentage";
@@ -220,11 +220,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             this.pnlWidthPercent.Controls.Add(this.lblWidthPercent);
             this.pnlWidthPercent.Controls.Add(this.txtWidthPercent);
-            this.pnlWidthPercent.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlWidthPercent.Location = new System.Drawing.Point(100, 54);
+            this.pnlWidthPercent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlWidthPercent.Location = new System.Drawing.Point(100, 52);
             this.pnlWidthPercent.Margin = new System.Windows.Forms.Padding(0);
             this.pnlWidthPercent.Name = "pnlWidthPercent";
-            this.pnlWidthPercent.Size = new System.Drawing.Size(109, 21);
+            this.pnlWidthPercent.Size = new System.Drawing.Size(109, 26);
             this.pnlWidthPercent.TabIndex = 4;
             // 
             // lblWidthPercent
@@ -234,7 +234,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.lblWidthPercent.Location = new System.Drawing.Point(62, 0);
             this.lblWidthPercent.Name = "lblWidthPercent";
             this.lblWidthPercent.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
-            this.lblWidthPercent.Size = new System.Drawing.Size(82, 15);
+            this.lblWidthPercent.Size = new System.Drawing.Size(82, 26);
             this.lblWidthPercent.TabIndex = 1;
             this.lblWidthPercent.Text = "lblWidthPercent";
             // 
@@ -250,10 +250,10 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // lblWidth
             // 
             this.lblWidth.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblWidth.Location = new System.Drawing.Point(3, 54);
+            this.lblWidth.Location = new System.Drawing.Point(3, 52);
             this.lblWidth.Name = "lblWidth";
             this.lblWidth.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
-            this.lblWidth.Size = new System.Drawing.Size(94, 27);
+            this.lblWidth.Size = new System.Drawing.Size(94, 26);
             this.lblWidth.TabIndex = 3;
             this.lblWidth.Text = "lblWidth";
             this.lblWidth.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -261,10 +261,10 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // lblHeight
             // 
             this.lblHeight.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblHeight.Location = new System.Drawing.Point(3, 81);
+            this.lblHeight.Location = new System.Drawing.Point(3, 78);
             this.lblHeight.Name = "lblHeight";
             this.lblHeight.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
-            this.lblHeight.Size = new System.Drawing.Size(94, 27);
+            this.lblHeight.Size = new System.Drawing.Size(94, 26);
             this.lblHeight.TabIndex = 6;
             this.lblHeight.Text = "lblHeight";
             this.lblHeight.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -275,7 +275,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.cmbScalingMode.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cmbScalingMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbScalingMode.FormattingEnabled = true;
-            this.cmbScalingMode.Location = new System.Drawing.Point(100, 108);
+            this.cmbScalingMode.Location = new System.Drawing.Point(100, 104);
             this.cmbScalingMode.Margin = new System.Windows.Forms.Padding(0);
             this.cmbScalingMode.Name = "cmbScalingMode";
             this.cmbScalingMode.Size = new System.Drawing.Size(218, 21);
