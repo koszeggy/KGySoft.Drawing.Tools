@@ -118,6 +118,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
         }
 
+        protected override void ApplyDisplayLanguage()
+        {
+            base.ApplyDisplayLanguage();
+            if (Type == null)
+                TitleCaption = Res.TitlePaletteCount(Count);
+        }
+
         protected virtual ColorVisualizerViewModel GetSelectedColorViewModel(int index) => new ColorVisualizerViewModel
         {
             SelectedIndex = index,

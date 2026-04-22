@@ -260,6 +260,13 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             tblColor.SetColumnSpan(lblBlue, 2);
         }
 
+        protected override void ApplyStringResources()
+        {
+            base.ApplyStringResources();
+            if (ViewModel is { CustomColorComponents: null })
+                UpdateColor();
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (IsDisposed)
