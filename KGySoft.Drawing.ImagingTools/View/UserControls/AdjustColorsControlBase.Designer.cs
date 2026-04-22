@@ -40,16 +40,17 @@
             this.trackBar.Location = new System.Drawing.Point(35, 25);
             this.trackBar.Name = "trackBar";
             this.trackBar.RightToLeftLayout = true;
-            this.trackBar.Size = new System.Drawing.Size(161, 31);
+            this.trackBar.Size = new System.Drawing.Size(149, 31);
             this.trackBar.TabIndex = 2;
             // 
             // btnReset
             // 
             this.btnReset.AutoSize = true;
+            this.btnReset.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.btnReset.Dock = System.Windows.Forms.DockStyle.Right;
-            this.btnReset.Location = new System.Drawing.Point(196, 25);
+            this.btnReset.Location = new System.Drawing.Point(184, 25);
             this.btnReset.Name = "btnReset";
-            this.btnReset.Size = new System.Drawing.Size(52, 31);
+            this.btnReset.Size = new System.Drawing.Size(58, 31);
             this.btnReset.TabIndex = 3;
             this.btnReset.Text = "btnReset";
             this.btnReset.UseVisualStyleBackColor = true;
@@ -78,16 +79,16 @@
             this.pnlCheckBoxes.Name = "pnlCheckBoxes";
             this.pnlCheckBoxes.RowCount = 1;
             this.pnlCheckBoxes.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.pnlCheckBoxes.Size = new System.Drawing.Size(248, 25);
+            this.pnlCheckBoxes.Size = new System.Drawing.Size(242, 25);
             this.pnlCheckBoxes.TabIndex = 0;
             // 
             // chbBlue
             // 
             this.chbBlue.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.chbBlue.AutoSize = true;
-            this.chbBlue.Location = new System.Drawing.Point(170, 3);
+            this.chbBlue.Location = new System.Drawing.Point(168, 4);
             this.chbBlue.Name = "chbBlue";
-            this.chbBlue.Size = new System.Drawing.Size(71, 18);
+            this.chbBlue.Size = new System.Drawing.Size(65, 17);
             this.chbBlue.TabIndex = 2;
             this.chbBlue.Text = "chbBlue";
             this.chbBlue.UseVisualStyleBackColor = true;
@@ -96,9 +97,9 @@
             // 
             this.chbGreen.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.chbGreen.AutoSize = true;
-            this.chbGreen.Location = new System.Drawing.Point(85, 3);
+            this.chbGreen.Location = new System.Drawing.Point(83, 4);
             this.chbGreen.Name = "chbGreen";
-            this.chbGreen.Size = new System.Drawing.Size(76, 18);
+            this.chbGreen.Size = new System.Drawing.Size(73, 17);
             this.chbGreen.TabIndex = 1;
             this.chbGreen.Text = "chbGreen";
             this.chbGreen.UseVisualStyleBackColor = true;
@@ -107,9 +108,9 @@
             // 
             this.chbRed.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.chbRed.AutoSize = true;
-            this.chbRed.Location = new System.Drawing.Point(6, 3);
+            this.chbRed.Location = new System.Drawing.Point(8, 4);
             this.chbRed.Name = "chbRed";
-            this.chbRed.Size = new System.Drawing.Size(70, 18);
+            this.chbRed.Size = new System.Drawing.Size(64, 17);
             this.chbRed.TabIndex = 0;
             this.chbRed.Text = "chbRed";
             this.chbRed.UseVisualStyleBackColor = true;
@@ -118,7 +119,6 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Size = new System.Drawing.Size(248, 211);
             this.Name = "AdjustColorsControlBase";
             this.pnlSettings.ResumeLayout(false);
             this.pnlSettings.PerformLayout();
@@ -126,7 +126,6 @@
             this.pnlCheckBoxes.ResumeLayout(false);
             this.pnlCheckBoxes.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 

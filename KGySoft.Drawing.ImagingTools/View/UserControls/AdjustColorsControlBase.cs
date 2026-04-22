@@ -17,6 +17,7 @@
 
 using System;
 using System.Drawing;
+using System.Windows.Forms;
 
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.ViewModel;
@@ -28,6 +29,21 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
     internal partial class AdjustColorsControlBase : TransformBitmapControlBase
     {
+        #region Constants
+
+        // Adjusted for Segoe UI 9 font on 100% DPI
+        private const int tableRefHeight = 25;
+        private const int sliderRefHeight = 30;
+        private const int labelRefWidth = 36;
+
+        #endregion
+
+        #region Fields
+
+        private static readonly Padding tableDefaultItemRefMargin = new Padding(3);
+
+        #endregion
+
         #region Properties
 
         private new AdjustColorsViewModelBase ViewModel => (AdjustColorsViewModelBase)base.ViewModel!;
@@ -90,6 +106,20 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             InitPropertyBindings();
             base.ApplyViewModel();
         }
+
+        protected override void ApplySizeAdjustments(PointF? dynamicSizesScale)
+        {
+            base.ApplySizeAdjustments(dynamicSizesScale);
+            PointF scale = this.GetScale();
+
+            foreach (Control control in pnlCheckBoxes.Controls)
+                control.Margin = tableDefaultItemRefMargin.Scale(scale);
+
+            pnlCheckBoxes.Height = tableRefHeight.Scale(scale.Y);
+            pnlSettings.Height = (tableRefHeight + sliderRefHeight).Scale(scale.Y);
+            lblValue.Width = labelRefWidth.Scale(scale.X);
+        }
+
 
         protected override void Dispose(bool disposing)
         {
