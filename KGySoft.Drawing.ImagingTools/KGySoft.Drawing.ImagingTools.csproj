@@ -1,9 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <!--<TargetFrameworks>net35;net40;net45;net462;net472;net10.0-windows</TargetFrameworks>-->
-    <!--<TargetFrameworks>net35;net40;net45;net462;net472;netcoreapp3.0;netcoreapp3.1;net5.0-windows;net6.0-windows;net7.0-windows;net9.0-windows;net10.0-windows</TargetFrameworks>-->
-    <TargetFrameworks>net35;net462;net472;net9.0-windows;net10.0-windows</TargetFrameworks>
+    <TargetFrameworks>net35;net40;net45;net462;net472;net10.0-windows</TargetFrameworks>
+    <!--<TargetFrameworks>net462;net472</TargetFrameworks>-->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>KGySoft.Drawing.ImagingTools</RootNamespace>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
@@ -15,7 +14,8 @@
     <Authors>György Kőszeg</Authors>
     <ApplicationIcon>Resources\ImagingTools.ico</ApplicationIcon>
     <UseWindowsForms>true</UseWindowsForms>
-    <OutputType>WinExe</OutputType>
+    <OutputType Condition="'$(Configuration)'=='DEBUG'">Exe</OutputType>
+    <OutputType Condition="'$(Configuration)'!='DEBUG'">WinExe</OutputType>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

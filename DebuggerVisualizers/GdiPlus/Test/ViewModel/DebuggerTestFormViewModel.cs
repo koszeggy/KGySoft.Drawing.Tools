@@ -28,6 +28,7 @@ using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.DebuggerVisualizers.Test;
 using KGySoft.Drawing.Imaging;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -289,7 +290,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.ViewModel
             {
                 static Image ToSupportedFormat(Image image) =>
                     image.PixelFormat == PixelFormat.Format16bppGrayScale ? image.ConvertPixelFormat(PixelFormat.Format24bppRgb)
-                    : !OSUtils.IsWindows && image.PixelFormat.In(PixelFormat.Format16bppRgb555, PixelFormat.Format16bppRgb565) ? image.ConvertPixelFormat(PixelFormat.Format24bppRgb)
+                    : !OSHelper.IsWindows && image.PixelFormat.In(PixelFormat.Format16bppRgb555, PixelFormat.Format16bppRgb565) ? image.ConvertPixelFormat(PixelFormat.Format24bppRgb)
                     : image;
 
                 switch (obj)

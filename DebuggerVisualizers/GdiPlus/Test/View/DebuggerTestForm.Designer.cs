@@ -1,6 +1,4 @@
-﻿using System.Windows.Forms;
-
-namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
+﻿namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
 {
     partial class DebuggerTestForm
     {
@@ -17,30 +15,30 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
         /// </summary>
         private void InitializeComponent()
         {
-            this.btnViewDirect = new System.Windows.Forms.Button();
-            this.btnViewByClassicDebugger = new System.Windows.Forms.Button();
-            this.txtFile = new System.Windows.Forms.TextBox();
-            this.rbFromFile = new System.Windows.Forms.RadioButton();
-            this.rbManagedIcon = new System.Windows.Forms.RadioButton();
-            this.rbHIcon = new System.Windows.Forms.RadioButton();
-            this.rbMetafile = new System.Windows.Forms.RadioButton();
-            this.rbBitmap = new System.Windows.Forms.RadioButton();
+            this.btnViewDirect = new KGySoft.WinForms.Controls.AdvancedButton();
+            this.btnViewByClassicDebugger = new KGySoft.WinForms.Controls.AdvancedButton();
+            this.txtFile = new KGySoft.WinForms.Controls.AdvancedTextBox();
+            this.rbFromFile = new KGySoft.WinForms.Controls.AdvancedRadioButton();
+            this.rbManagedIcon = new KGySoft.WinForms.Controls.AdvancedRadioButton();
+            this.rbHIcon = new KGySoft.WinForms.Controls.AdvancedRadioButton();
+            this.rbMetafile = new KGySoft.WinForms.Controls.AdvancedRadioButton();
+            this.rbBitmap = new KGySoft.WinForms.Controls.AdvancedRadioButton();
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.panelControls = new System.Windows.Forms.Panel();
-            this.chbAsReadOnly = new System.Windows.Forms.CheckBox();
+            this.btnViewByExtensionDebugger = new KGySoft.WinForms.Controls.AdvancedButton();
+            this.chbAsReadOnly = new KGySoft.WinForms.Controls.AdvancedCheckBox();
             this.gbFile = new System.Windows.Forms.GroupBox();
-            this.rbAsIcon = new System.Windows.Forms.RadioButton();
-            this.rbAsMetafile = new System.Windows.Forms.RadioButton();
-            this.rbAsBitmap = new System.Windows.Forms.RadioButton();
-            this.rbAsImage = new System.Windows.Forms.RadioButton();
-            this.rbColor = new System.Windows.Forms.RadioButton();
-            this.rbPalette = new System.Windows.Forms.RadioButton();
-            this.rbBitmapData = new System.Windows.Forms.RadioButton();
-            this.rbGraphicsHwnd = new System.Windows.Forms.RadioButton();
-            this.rbGraphicsBitmap = new System.Windows.Forms.RadioButton();
-            this.chbAsImage = new System.Windows.Forms.CheckBox();
-            this.cmbPixelFormat = new System.Windows.Forms.ComboBox();
-            this.btnViewByExtensionDebugger = new System.Windows.Forms.Button();
+            this.rbAsIcon = new KGySoft.WinForms.Controls.AdvancedRadioButton();
+            this.rbAsMetafile = new KGySoft.WinForms.Controls.AdvancedRadioButton();
+            this.rbAsBitmap = new KGySoft.WinForms.Controls.AdvancedRadioButton();
+            this.rbAsImage = new KGySoft.WinForms.Controls.AdvancedRadioButton();
+            this.rbColor = new KGySoft.WinForms.Controls.AdvancedRadioButton();
+            this.rbPalette = new KGySoft.WinForms.Controls.AdvancedRadioButton();
+            this.rbBitmapData = new KGySoft.WinForms.Controls.AdvancedRadioButton();
+            this.rbGraphicsHwnd = new KGySoft.WinForms.Controls.AdvancedRadioButton();
+            this.rbGraphicsBitmap = new KGySoft.WinForms.Controls.AdvancedRadioButton();
+            this.chbAsImage = new KGySoft.WinForms.Controls.AdvancedCheckBox();
+            this.cmbPixelFormat = new KGySoft.WinForms.Controls.AdvancedComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.panelControls.SuspendLayout();
             this.gbFile.SuspendLayout();
@@ -49,8 +47,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
             // btnViewDirect
             // 
             this.btnViewDirect.Dock = System.Windows.Forms.DockStyle.Top;
-            this.btnViewDirect.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnViewDirect.Location = new System.Drawing.Point(0, 347);
+            this.btnViewDirect.Location = new System.Drawing.Point(0, 335);
             this.btnViewDirect.Name = "btnViewDirect";
             this.btnViewDirect.Size = new System.Drawing.Size(196, 24);
             this.btnViewDirect.TabIndex = 14;
@@ -60,8 +57,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
             // btnViewByClassicDebugger
             // 
             this.btnViewByClassicDebugger.Dock = System.Windows.Forms.DockStyle.Top;
-            this.btnViewByClassicDebugger.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnViewByClassicDebugger.Location = new System.Drawing.Point(0, 371);
+            this.btnViewByClassicDebugger.Location = new System.Drawing.Point(0, 359);
             this.btnViewByClassicDebugger.Name = "btnViewByClassicDebugger";
             this.btnViewByClassicDebugger.Size = new System.Drawing.Size(196, 24);
             this.btnViewByClassicDebugger.TabIndex = 15;
@@ -82,10 +78,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
             // 
             this.rbFromFile.AutoSize = true;
             this.rbFromFile.Dock = System.Windows.Forms.DockStyle.Top;
-            this.rbFromFile.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbFromFile.Location = new System.Drawing.Point(0, 201);
+            this.rbFromFile.Location = new System.Drawing.Point(0, 191);
             this.rbFromFile.Name = "rbFromFile";
-            this.rbFromFile.Size = new System.Drawing.Size(196, 18);
+            this.rbFromFile.Size = new System.Drawing.Size(196, 17);
             this.rbFromFile.TabIndex = 11;
             this.rbFromFile.Text = "Image From File";
             this.rbFromFile.UseVisualStyleBackColor = true;
@@ -94,10 +89,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
             // 
             this.rbManagedIcon.AutoSize = true;
             this.rbManagedIcon.Dock = System.Windows.Forms.DockStyle.Top;
-            this.rbManagedIcon.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbManagedIcon.Location = new System.Drawing.Point(0, 93);
+            this.rbManagedIcon.Location = new System.Drawing.Point(0, 89);
             this.rbManagedIcon.Name = "rbManagedIcon";
-            this.rbManagedIcon.Size = new System.Drawing.Size(196, 18);
+            this.rbManagedIcon.Size = new System.Drawing.Size(196, 17);
             this.rbManagedIcon.TabIndex = 5;
             this.rbManagedIcon.Text = "Managed Icon";
             this.rbManagedIcon.UseVisualStyleBackColor = true;
@@ -106,10 +100,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
             // 
             this.rbHIcon.AutoSize = true;
             this.rbHIcon.Dock = System.Windows.Forms.DockStyle.Top;
-            this.rbHIcon.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbHIcon.Location = new System.Drawing.Point(0, 75);
+            this.rbHIcon.Location = new System.Drawing.Point(0, 72);
             this.rbHIcon.Name = "rbHIcon";
-            this.rbHIcon.Size = new System.Drawing.Size(196, 18);
+            this.rbHIcon.Size = new System.Drawing.Size(196, 17);
             this.rbHIcon.TabIndex = 4;
             this.rbHIcon.Text = "Icon from Handle";
             this.rbHIcon.UseVisualStyleBackColor = true;
@@ -118,10 +111,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
             // 
             this.rbMetafile.AutoSize = true;
             this.rbMetafile.Dock = System.Windows.Forms.DockStyle.Top;
-            this.rbMetafile.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbMetafile.Location = new System.Drawing.Point(0, 57);
+            this.rbMetafile.Location = new System.Drawing.Point(0, 55);
             this.rbMetafile.Name = "rbMetafile";
-            this.rbMetafile.Size = new System.Drawing.Size(196, 18);
+            this.rbMetafile.Size = new System.Drawing.Size(196, 17);
             this.rbMetafile.TabIndex = 3;
             this.rbMetafile.Text = "Metafile";
             this.rbMetafile.UseVisualStyleBackColor = true;
@@ -131,10 +123,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
             this.rbBitmap.AutoSize = true;
             this.rbBitmap.Checked = true;
             this.rbBitmap.Dock = System.Windows.Forms.DockStyle.Top;
-            this.rbBitmap.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbBitmap.Location = new System.Drawing.Point(0, 39);
+            this.rbBitmap.Location = new System.Drawing.Point(0, 38);
             this.rbBitmap.Name = "rbBitmap";
-            this.rbBitmap.Size = new System.Drawing.Size(196, 18);
+            this.rbBitmap.Size = new System.Drawing.Size(196, 17);
             this.rbBitmap.TabIndex = 2;
             this.rbBitmap.TabStop = true;
             this.rbBitmap.Text = "Bitmap";
@@ -177,14 +168,23 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
             this.panelControls.Size = new System.Drawing.Size(209, 420);
             this.panelControls.TabIndex = 0;
             // 
+            // btnViewByExtensionDebugger
+            // 
+            this.btnViewByExtensionDebugger.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnViewByExtensionDebugger.Location = new System.Drawing.Point(0, 383);
+            this.btnViewByExtensionDebugger.Name = "btnViewByExtensionDebugger";
+            this.btnViewByExtensionDebugger.Size = new System.Drawing.Size(196, 24);
+            this.btnViewByExtensionDebugger.TabIndex = 16;
+            this.btnViewByExtensionDebugger.Text = "View by Extension Debugger";
+            this.btnViewByExtensionDebugger.UseVisualStyleBackColor = true;
+            // 
             // chbAsReadOnly
             // 
             this.chbAsReadOnly.AutoSize = true;
             this.chbAsReadOnly.Dock = System.Windows.Forms.DockStyle.Top;
-            this.chbAsReadOnly.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.chbAsReadOnly.Location = new System.Drawing.Point(0, 329);
+            this.chbAsReadOnly.Location = new System.Drawing.Point(0, 318);
             this.chbAsReadOnly.Name = "chbAsReadOnly";
-            this.chbAsReadOnly.Size = new System.Drawing.Size(196, 18);
+            this.chbAsReadOnly.Size = new System.Drawing.Size(196, 17);
             this.chbAsReadOnly.TabIndex = 13;
             this.chbAsReadOnly.Text = "As Read-Only";
             this.chbAsReadOnly.UseVisualStyleBackColor = true;
@@ -198,7 +198,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
             this.gbFile.Controls.Add(this.txtFile);
             this.gbFile.Dock = System.Windows.Forms.DockStyle.Top;
             this.gbFile.Enabled = false;
-            this.gbFile.Location = new System.Drawing.Point(0, 219);
+            this.gbFile.Location = new System.Drawing.Point(0, 208);
             this.gbFile.Name = "gbFile";
             this.gbFile.Size = new System.Drawing.Size(196, 110);
             this.gbFile.TabIndex = 12;
@@ -209,10 +209,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
             // 
             this.rbAsIcon.AutoSize = true;
             this.rbAsIcon.Dock = System.Windows.Forms.DockStyle.Top;
-            this.rbAsIcon.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbAsIcon.Location = new System.Drawing.Point(3, 90);
+            this.rbAsIcon.Location = new System.Drawing.Point(3, 87);
             this.rbAsIcon.Name = "rbAsIcon";
-            this.rbAsIcon.Size = new System.Drawing.Size(190, 18);
+            this.rbAsIcon.Size = new System.Drawing.Size(190, 17);
             this.rbAsIcon.TabIndex = 4;
             this.rbAsIcon.Text = "As Icon";
             this.rbAsIcon.UseVisualStyleBackColor = true;
@@ -221,10 +220,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
             // 
             this.rbAsMetafile.AutoSize = true;
             this.rbAsMetafile.Dock = System.Windows.Forms.DockStyle.Top;
-            this.rbAsMetafile.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbAsMetafile.Location = new System.Drawing.Point(3, 72);
+            this.rbAsMetafile.Location = new System.Drawing.Point(3, 70);
             this.rbAsMetafile.Name = "rbAsMetafile";
-            this.rbAsMetafile.Size = new System.Drawing.Size(190, 18);
+            this.rbAsMetafile.Size = new System.Drawing.Size(190, 17);
             this.rbAsMetafile.TabIndex = 3;
             this.rbAsMetafile.Text = "As Metafile";
             this.rbAsMetafile.UseVisualStyleBackColor = true;
@@ -233,10 +231,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
             // 
             this.rbAsBitmap.AutoSize = true;
             this.rbAsBitmap.Dock = System.Windows.Forms.DockStyle.Top;
-            this.rbAsBitmap.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbAsBitmap.Location = new System.Drawing.Point(3, 54);
+            this.rbAsBitmap.Location = new System.Drawing.Point(3, 53);
             this.rbAsBitmap.Name = "rbAsBitmap";
-            this.rbAsBitmap.Size = new System.Drawing.Size(190, 18);
+            this.rbAsBitmap.Size = new System.Drawing.Size(190, 17);
             this.rbAsBitmap.TabIndex = 2;
             this.rbAsBitmap.Text = "As Bitmap";
             this.rbAsBitmap.UseVisualStyleBackColor = true;
@@ -246,10 +243,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
             this.rbAsImage.AutoSize = true;
             this.rbAsImage.Checked = true;
             this.rbAsImage.Dock = System.Windows.Forms.DockStyle.Top;
-            this.rbAsImage.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.rbAsImage.Location = new System.Drawing.Point(3, 36);
             this.rbAsImage.Name = "rbAsImage";
-            this.rbAsImage.Size = new System.Drawing.Size(190, 18);
+            this.rbAsImage.Size = new System.Drawing.Size(190, 17);
             this.rbAsImage.TabIndex = 1;
             this.rbAsImage.TabStop = true;
             this.rbAsImage.Text = "As Image";
@@ -259,10 +255,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
             // 
             this.rbColor.AutoSize = true;
             this.rbColor.Dock = System.Windows.Forms.DockStyle.Top;
-            this.rbColor.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbColor.Location = new System.Drawing.Point(0, 183);
+            this.rbColor.Location = new System.Drawing.Point(0, 174);
             this.rbColor.Name = "rbColor";
-            this.rbColor.Size = new System.Drawing.Size(196, 18);
+            this.rbColor.Size = new System.Drawing.Size(196, 17);
             this.rbColor.TabIndex = 10;
             this.rbColor.Text = "Single Color";
             this.rbColor.UseVisualStyleBackColor = true;
@@ -271,10 +266,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
             // 
             this.rbPalette.AutoSize = true;
             this.rbPalette.Dock = System.Windows.Forms.DockStyle.Top;
-            this.rbPalette.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbPalette.Location = new System.Drawing.Point(0, 165);
+            this.rbPalette.Location = new System.Drawing.Point(0, 157);
             this.rbPalette.Name = "rbPalette";
-            this.rbPalette.Size = new System.Drawing.Size(196, 18);
+            this.rbPalette.Size = new System.Drawing.Size(196, 17);
             this.rbPalette.TabIndex = 9;
             this.rbPalette.Text = "Palette";
             this.rbPalette.UseVisualStyleBackColor = true;
@@ -283,10 +277,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
             // 
             this.rbBitmapData.AutoSize = true;
             this.rbBitmapData.Dock = System.Windows.Forms.DockStyle.Top;
-            this.rbBitmapData.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbBitmapData.Location = new System.Drawing.Point(0, 147);
+            this.rbBitmapData.Location = new System.Drawing.Point(0, 140);
             this.rbBitmapData.Name = "rbBitmapData";
-            this.rbBitmapData.Size = new System.Drawing.Size(196, 18);
+            this.rbBitmapData.Size = new System.Drawing.Size(196, 17);
             this.rbBitmapData.TabIndex = 8;
             this.rbBitmapData.Text = "BitmapData";
             this.rbBitmapData.UseVisualStyleBackColor = true;
@@ -295,10 +288,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
             // 
             this.rbGraphicsHwnd.AutoSize = true;
             this.rbGraphicsHwnd.Dock = System.Windows.Forms.DockStyle.Top;
-            this.rbGraphicsHwnd.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbGraphicsHwnd.Location = new System.Drawing.Point(0, 129);
+            this.rbGraphicsHwnd.Location = new System.Drawing.Point(0, 123);
             this.rbGraphicsHwnd.Name = "rbGraphicsHwnd";
-            this.rbGraphicsHwnd.Size = new System.Drawing.Size(196, 18);
+            this.rbGraphicsHwnd.Size = new System.Drawing.Size(196, 17);
             this.rbGraphicsHwnd.TabIndex = 7;
             this.rbGraphicsHwnd.Text = "Graphics from Handle";
             this.rbGraphicsHwnd.UseVisualStyleBackColor = true;
@@ -307,10 +299,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
             // 
             this.rbGraphicsBitmap.AutoSize = true;
             this.rbGraphicsBitmap.Dock = System.Windows.Forms.DockStyle.Top;
-            this.rbGraphicsBitmap.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rbGraphicsBitmap.Location = new System.Drawing.Point(0, 111);
+            this.rbGraphicsBitmap.Location = new System.Drawing.Point(0, 106);
             this.rbGraphicsBitmap.Name = "rbGraphicsBitmap";
-            this.rbGraphicsBitmap.Size = new System.Drawing.Size(196, 18);
+            this.rbGraphicsBitmap.Size = new System.Drawing.Size(196, 17);
             this.rbGraphicsBitmap.TabIndex = 6;
             this.rbGraphicsBitmap.Text = "Graphics from Bitmap";
             this.rbGraphicsBitmap.UseVisualStyleBackColor = true;
@@ -321,10 +312,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
             this.chbAsImage.Checked = true;
             this.chbAsImage.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chbAsImage.Dock = System.Windows.Forms.DockStyle.Top;
-            this.chbAsImage.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.chbAsImage.Location = new System.Drawing.Point(0, 21);
             this.chbAsImage.Name = "chbAsImage";
-            this.chbAsImage.Size = new System.Drawing.Size(196, 18);
+            this.chbAsImage.Size = new System.Drawing.Size(196, 17);
             this.chbAsImage.TabIndex = 1;
             this.chbAsImage.Text = "As Image";
             this.chbAsImage.UseVisualStyleBackColor = true;
@@ -333,23 +323,11 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
             // 
             this.cmbPixelFormat.Dock = System.Windows.Forms.DockStyle.Top;
             this.cmbPixelFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbPixelFormat.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.cmbPixelFormat.FormattingEnabled = true;
             this.cmbPixelFormat.Location = new System.Drawing.Point(0, 0);
             this.cmbPixelFormat.Name = "cmbPixelFormat";
             this.cmbPixelFormat.Size = new System.Drawing.Size(196, 21);
             this.cmbPixelFormat.TabIndex = 0;
-            // 
-            // btnViewByExtensionDebugger
-            // 
-            this.btnViewByExtensionDebugger.Dock = System.Windows.Forms.DockStyle.Top;
-            this.btnViewByExtensionDebugger.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnViewByExtensionDebugger.Location = new System.Drawing.Point(0, 395);
-            this.btnViewByExtensionDebugger.Name = "btnViewByExtensionDebugger";
-            this.btnViewByExtensionDebugger.Size = new System.Drawing.Size(196, 24);
-            this.btnViewByExtensionDebugger.TabIndex = 16;
-            this.btnViewByExtensionDebugger.Text = "View by Extension Debugger";
-            this.btnViewByExtensionDebugger.UseVisualStyleBackColor = true;
             // 
             // DebuggerTestForm
             // 
@@ -374,29 +352,29 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
 
         #endregion
 
-        private RadioButton rbBitmap;
-        private RadioButton rbMetafile;
-        private RadioButton rbHIcon;
-        private RadioButton rbManagedIcon;
-        private RadioButton rbFromFile;
-        private TextBox txtFile;
-        private Button btnViewByClassicDebugger;
-        private Button btnViewDirect;
-        private PictureBox pictureBox;
-        private Panel panelControls;
-        private RadioButton rbGraphicsBitmap;
-        private RadioButton rbGraphicsHwnd;
-        private GroupBox gbFile;
-        private RadioButton rbBitmapData;
-        private RadioButton rbPalette;
-        private RadioButton rbColor;
-        private RadioButton rbAsIcon;
-        private RadioButton rbAsMetafile;
-        private RadioButton rbAsBitmap;
-        private RadioButton rbAsImage;
-        private ComboBox cmbPixelFormat;
-        private CheckBox chbAsImage;
-        private CheckBox chbAsReadOnly;
-        private Button btnViewByExtensionDebugger;
+        private KGySoft.WinForms.Controls.AdvancedRadioButton rbBitmap;
+        private KGySoft.WinForms.Controls.AdvancedRadioButton rbMetafile;
+        private KGySoft.WinForms.Controls.AdvancedRadioButton rbHIcon;
+        private KGySoft.WinForms.Controls.AdvancedRadioButton rbManagedIcon;
+        private KGySoft.WinForms.Controls.AdvancedRadioButton rbFromFile;
+        private KGySoft.WinForms.Controls.AdvancedTextBox txtFile;
+        private KGySoft.WinForms.Controls.AdvancedButton btnViewByClassicDebugger;
+        private KGySoft.WinForms.Controls.AdvancedButton btnViewDirect;
+        private System.Windows.Forms.PictureBox pictureBox;
+        private System.Windows.Forms.Panel panelControls;
+        private KGySoft.WinForms.Controls.AdvancedRadioButton rbGraphicsBitmap;
+        private KGySoft.WinForms.Controls.AdvancedRadioButton rbGraphicsHwnd;
+        private System.Windows.Forms.GroupBox gbFile;
+        private KGySoft.WinForms.Controls.AdvancedRadioButton rbBitmapData;
+        private KGySoft.WinForms.Controls.AdvancedRadioButton rbPalette;
+        private KGySoft.WinForms.Controls.AdvancedRadioButton rbColor;
+        private KGySoft.WinForms.Controls.AdvancedRadioButton rbAsIcon;
+        private KGySoft.WinForms.Controls.AdvancedRadioButton rbAsMetafile;
+        private KGySoft.WinForms.Controls.AdvancedRadioButton rbAsBitmap;
+        private KGySoft.WinForms.Controls.AdvancedRadioButton rbAsImage;
+        private KGySoft.WinForms.Controls.AdvancedComboBox cmbPixelFormat;
+        private KGySoft.WinForms.Controls.AdvancedCheckBox chbAsImage;
+        private KGySoft.WinForms.Controls.AdvancedCheckBox chbAsReadOnly;
+        private KGySoft.WinForms.Controls.AdvancedButton btnViewByExtensionDebugger;
     }
 }

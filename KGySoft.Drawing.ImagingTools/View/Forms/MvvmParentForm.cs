@@ -34,7 +34,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private readonly MvvmBaseUserControl mvvmChild;
 
-        private bool isLoaded;
         private Point location;
         private Func<MvvmParentForm, Keys, bool>? processKeyCallback;
 
@@ -111,6 +110,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 MinimizeBox = false;
             }
 
+            bool isLoaded = IsLoaded;
             base.OnLoad(e);
 
             // Loaded can be true if handle was recreated
@@ -125,7 +125,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 return;
             }
 
-            isLoaded = true;
             ApplyBindings();
         }
 

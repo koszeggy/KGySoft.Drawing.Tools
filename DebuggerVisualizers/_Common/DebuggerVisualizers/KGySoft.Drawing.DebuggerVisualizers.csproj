@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net35;net40;net45;net462;net472;net9.0-windows</TargetFrameworks>
+    <TargetFrameworks>net35;net40;net45;net462;net472;net10.0-windows</TargetFrameworks>
     <!--<TargetFrameworks>net462;net472</TargetFrameworks>-->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>KGySoft.Drawing.DebuggerVisualizers</RootNamespace>
@@ -15,6 +15,13 @@
     <Nullable>enable</Nullable>
     <UseWPF Condition="'$(TargetFramework)'=='net472'">true</UseWPF>
     <UseWindowsForms Condition="'$(TargetFramework)'=='net472'">true</UseWindowsForms>
+
+    <!-- Suppressions
+        - NU1902: Package 'MessagePack' has a known moderate severity vulnerability - not used, transitive reference of Microsoft.VisualStudio.Extensibility. See also the comments of the package reference.
+        - NU1903: Package 'System.Text.Json'/'Microsoft.IO.Redist' has a known high severity vulnerability - not used, transitive reference Microsoft.VisualStudio.Extensibility. See also the comments of the package reference.
+        -->
+    <NoWarn>$(NoWarn);NU1902;NU1903</NoWarn>
+
   </PropertyGroup>
 
   <!-- Project references -->
@@ -44,11 +51,15 @@
 
   <!-- .NET Framework 4.7.2 only references (to support modern visualizer extensions) -->
   <ItemGroup Condition="'$(TargetFramework)'=='net472'">
+    <!-- NOTE: Referencing this version triggers NU1902/NU1903 because of vulnerabilities in some transitive dependencies.
+         Referencing the oldest possible version is necessary to be compatible with all VisualStudio versions with the extensibility API.
+         Our extensions do not use anything of those vulnerable packages, and if the consuming Visual Studio installation is updated regularly,
+         the actually referenced package versions will be the already fixed ones, without the vulnerability. -->
     <PackageReference Include="Microsoft.VisualStudio.Extensibility" Version="17.9.2092" />
   </ItemGroup>
 
   <!-- .NET only references (note: doesn't really make sense but allows testing from KGySoft.Drawing.DebuggerVisualizers.*.Test) -->
-  <ItemGroup Condition="'$(TargetFramework)'=='net9.0-windows'">
+  <ItemGroup Condition="'$(TargetFramework)'=='net10.0-windows'">
     <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers">
       <HintPath>..\..\_ref\Microsoft.VisualStudio.DebuggerVisualizers.dll</HintPath>
     </Reference>

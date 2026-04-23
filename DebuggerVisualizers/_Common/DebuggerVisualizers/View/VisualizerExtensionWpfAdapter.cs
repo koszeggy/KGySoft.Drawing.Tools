@@ -28,6 +28,7 @@ using System.Windows.Forms;
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.ImagingTools;
 using KGySoft.Drawing.ImagingTools.View;
+using KGySoft.Drawing.ImagingTools.View.UserControls;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 using Microsoft.VisualStudio.Extensibility.DebuggerVisualizers;
@@ -174,6 +175,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.View
                         viewModel = viewModelFactory.Invoke(model, visualizerTarget);
                         view = ViewFactory.CreateView(viewModel);
                         host.Child = (Control)view;
+                        (view as MvvmBaseUserControl)?.AdjustSizes(null);
                     }
                     catch (Exception e)
                     {
