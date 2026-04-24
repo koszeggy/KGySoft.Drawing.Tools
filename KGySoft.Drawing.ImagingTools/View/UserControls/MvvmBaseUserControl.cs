@@ -337,7 +337,15 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         private void ApplyRightToLeft()
         {
             RightToLeft rtl = Res.IsRightToLeft ? RightToLeft.Yes : RightToLeft.No;
-            RightToLeft = rtl;
+            try
+            {
+                RightToLeft = rtl;
+            }
+            catch (ArgumentException)
+            {
+                // Preventing sporadic argument exception on some platforms
+            }
+
             toolTip?.ResetAppearance();
         }
 
