@@ -10,7 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)_Classes\DebuggerVisualizerHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Classes\OSUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)_Classes\TestObjectProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)_Classes\TestVisualizerTarget.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)_Classes\TestWindowService.cs" />

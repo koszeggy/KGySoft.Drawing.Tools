@@ -1,19 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!--<TargetFrameworks>net462;net472;net6.0-windows</TargetFrameworks>-->
-    <TargetFrameworks>net462;net472</TargetFrameworks>
+    <TargetFrameworks>net462;net472;net10.0-windows</TargetFrameworks>
+    <!--<TargetFrameworks>net462;net472</TargetFrameworks>-->
     <OutputType>WinExe</OutputType>
     <Nullable>enable</Nullable>
     <UseWindowsForms Condition="'$(TargetFramework)'!='net472'">true</UseWindowsForms>
     <UseWPF>true</UseWPF>
     <LangVersion>latest</LangVersion>
     <DefineConstants>$(DefineConstants);WPF</DefineConstants>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
 
     <!--Suppressions
         - VSTHRD002: Synchronously waiting on tasks or awaiters may cause deadlocks. Use await or JoinableTaskFactory.Run instead.
-        - VSSDK005: Use the ThreadHelper.JoinableTaskContext singleton rather than instantiating your own to avoid deadlocks. - false alarm, in the testing environment we don't have an actual Visual Studio instance -->
-    <NoWarn>$(NoWarn);VSSDK005;VSTHRD002</NoWarn>
+        - VSSDK005: Use the ThreadHelper.JoinableTaskContext singleton rather than instantiating your own to avoid deadlocks. - false alarm, in the testing environment we don't have an actual Visual Studio instance
+        - WFO0003: Remove high DPI settings from app.manifest and configure via Application.SetHighDpiMode API or 'ApplicationHighDpiMode' project property - not supported in all targeted frameworks -->
+    <NoWarn>$(NoWarn);VSSDK005;VSTHRD002;WFO0003</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
