@@ -19,6 +19,7 @@ using System;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.DebuggerVisualizers.Core.Test.View;
+using KGySoft.WinForms.Forms;
 
 #endregion
 
@@ -33,6 +34,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test
         {
             DrawingModule.Initialize();
             Application.EnableVisualStyles();
+            Dialogs.UseTaskDialogs = true;
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new DebuggerTestForm());
         }
