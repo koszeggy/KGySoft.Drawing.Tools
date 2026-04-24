@@ -25,7 +25,7 @@
 
     <!--Suppressions
         - WFAC010: Remove high DPI settings from app.manifest and configure via Application.SetHighDpiMode - as targeting many frameworks handling it manually everywhere is intended. Otherwise, it would cause conflicts, e.g. scaling sizes multiple times, etc.
-        - WFO0003: Remove high DPI settings from app.manifest and configure via Application.SetHighDpiMode API or 'ApplicationHighDpiMode' project proprty - as targeting many frameworks handling it manually everywhere is intended. Otherwise, it would cause conflicts, e.g. scaling sizes multiple times, etc.
+        - WFO0003: Remove high DPI settings from app.manifest and configure via Application.SetHighDpiMode API or 'ApplicationHighDpiMode' project property - as targeting many frameworks handling it manually everywhere is intended. Otherwise, it would cause conflicts, e.g. scaling sizes multiple times, etc.
         - WFO1000: Property does not configure the code serialization for its property content. - false alarm, every custom control in this project is internal
         - WFO5001: Suppression of experimental features
         -->
@@ -36,7 +36,7 @@
   <ItemGroup>
     <!--IMPRTANT: Make sure this references the same KGySoft.Drawing.Core version as every other specific drawing package in the debugger visualizers; otherwise, version mismatch may occur when loading the visualizers -->
     <PackageReference Include="KGySoft.WinForms" Version="5.0.0-rc.3" />
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0">
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.203">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -46,6 +46,9 @@
   <ItemGroup Condition="'$(TargetFramework)'=='net35' OR '$(TargetFramework)'=='net40' OR '$(TargetFramework)'=='net45' OR '$(TargetFramework)'=='net462' OR '$(TargetFramework)'=='net472'">
     <Reference Include="System.Configuration" />
   </ItemGroup>
+  <!--<ItemGroup>
+    <ProjectReference Include="..\..\KGySoft.WinForms\KGySoft.WinForms\KGySoft.WinForms.csproj" />
+  </ItemGroup>-->
 
   <ItemGroup>
     <!--Icon resources-->
