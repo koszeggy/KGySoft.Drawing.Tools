@@ -180,6 +180,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             base.OnHandleCreated(e);
             lastScale = this.GetScale();
+            if (Parent is not Form)
+                AdjustFont();
         }
 
         protected override void OnLoad(EventArgs e)
@@ -215,7 +217,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             viewModel.ShowWarningCallback = Dialogs.WarningMessage;
             viewModel.ShowErrorCallback = Dialogs.ErrorMessage;
             viewModel.ConfirmCallback = Dialogs.ConfirmMessage;
-            viewModel.CancellableConfirmCallback = (msg, btn) => Dialogs.CancellableConfirmMessage(msg, btn);
+            viewModel.CancellableConfirmCallback = Dialogs.CancellableConfirmMessage;
             viewModel.ShowChildViewCallback = ShowChildView;
             viewModel.SynchronizedInvokeCallback = InvokeOnUIThread;
 
@@ -245,6 +247,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 case Constants.WM_DPICHANGED_BEFOREPARENT:
                     StoreDynamicSizes();
                     base.WndProc(ref m);
+
+                    // embedded into a WPF host (visualizer extension): adjusting the font
+                    if (Parent is not Form)
+                        AdjustFont();
+
                     return;
 
                 case Constants.WM_DPICHANGED_AFTERPARENT:
@@ -360,6 +367,29 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             Events.GetHandler<EventHandler>(nameof(ViewModelChanged))?.Invoke(this, e);
         }
 
+        private MvvmParentForm? TryGetCreateParent() => mvvmParent ??= ViewFactory.TryGetForm(this) as MvvmParentForm;
+
+        private void AdjustFont()
+        {
+            Debug.Assert(Parent is not BaseForm, "Adjusting font in needed when the view in embedded into a WPF host");
+            Font? font = SystemFonts.MessageBoxFont;
+            if (font == null)
+                return;
+
+            PointF systemScale = ScaleHelper.SystemScale;
+            PointF scale = this.GetScale();
+            if (scale == systemScale)
+            {
+                Font = font;
+                return;
+            }
+
+            float ratio = scale.Y / systemScale.Y;
+            Font = new Font(font.FontFamily, font.SizeInPoints * ratio, font.Style, GraphicsUnit.Point, font.GdiCharSet, font.GdiVerticalFont);
+            font.Dispose();
+        }
+
+
         #endregion
 
         #region Command Handlers
@@ -383,8 +413,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 InfoProvider.SetError(mapping.Value, info?.Message);
             }
         }
-
-        private MvvmParentForm? TryGetCreateParent() => mvvmParent ??= ViewFactory.TryGetForm(this) as MvvmParentForm;
 
         #endregion
 

@@ -1007,8 +1007,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         protected override void OnHandleCreated(EventArgs e)
         {
             base.OnHandleCreated(e);
-            Font = Parent!.Font;
             AdjustSizes();
+        }
+
+        protected override void OnParentFontChanged(EventArgs e)
+        {
+            base.OnParentFontChanged(e);
+            Font = Parent!.Font; // to prevent bad default scaling on some platforms
         }
 
         protected override void OnDockChanged(EventArgs e)
