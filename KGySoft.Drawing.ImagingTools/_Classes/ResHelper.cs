@@ -25,6 +25,7 @@ using System.Reflection;
 using KGySoft.Collections;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -38,6 +39,7 @@ namespace KGySoft.Drawing.ImagingTools
         private const string drawingCoreLibrariesBaseName = "KGySoft.Drawing.Core.Messages";
         private const string drawingLibrariesBaseName = "KGySoft.Drawing.Messages";
         private const string imagingToolsBaseName = "KGySoft.Drawing.ImagingTools.Messages";
+        private const string winFormsBaseName = "KGySoft.WinForms.Messages";
 
         #endregion
 
@@ -94,6 +96,7 @@ namespace KGySoft.Drawing.ImagingTools
             LocalizableLibraries.DrawingCoreLibraries => drawingCoreLibrariesBaseName,
             LocalizableLibraries.DrawingLibraries => drawingLibrariesBaseName,
             LocalizableLibraries.ImagingTools => imagingToolsBaseName,
+            LocalizableLibraries.WinForms => winFormsBaseName,
             _ => throw new ArgumentOutOfRangeException(nameof(library), PublicResources.EnumOutOfRange(library))
         };
 
@@ -103,6 +106,7 @@ namespace KGySoft.Drawing.ImagingTools
             LocalizableLibraries.DrawingCoreLibraries => typeof(DrawingCoreModule).Assembly,
             LocalizableLibraries.DrawingLibraries => typeof(DrawingModule).Assembly,
             LocalizableLibraries.ImagingTools => typeof(Res).Assembly,
+            LocalizableLibraries.WinForms => typeof(WinFormsModule).Assembly,
             _ => throw new ArgumentOutOfRangeException(nameof(library), PublicResources.EnumOutOfRange(library))
         };
 

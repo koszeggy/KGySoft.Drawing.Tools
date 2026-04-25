@@ -20,6 +20,8 @@
   You still can use the .NET Framework 4.6.2 build though. Wine Mono is not affected by this change.
 * Improved appearance with dark theme.
 + Per-monitor DPI awareness support
++ Edit Resources form:
+  + The resources of an additional dependent library has been included
 - Debugger Visualizer Installations dialog:
   - Handling the changed versioning of the Visual Studio folders starting with Visual Studio 2026
 
@@ -28,6 +30,10 @@
 ! KGySoft.Drawing.ImagingTools namespace:
 -----------------------------------------
 ! ThemeColor enum: New members, some old names have now different values.
+
++ KGySoft.Drawing.ImagingTools.Model namespace:
+-----------------------------------------------
++ LocalizableLibraries enum: New members for the newly added dependent libraries.
 
 
 ~~~~~~~~~

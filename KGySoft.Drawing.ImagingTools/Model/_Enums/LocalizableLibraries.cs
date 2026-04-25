@@ -22,11 +22,13 @@ using System;
 namespace KGySoft.Drawing.ImagingTools.Model
 {
     /// <summary>
-    /// Represents the known class libraries with localizable resources.
+    /// Represents the localizable KGy SOFT class libraries used in this project.
     /// </summary>
     [Flags]
     public enum LocalizableLibraries
     {
+        // NOTE: do not reorder members, the resources manifest file may contain the numeric value for compatibility reasons
+
         /// <summary>
         /// Represents none of the localizable libraries.
         /// </summary>
@@ -50,6 +52,11 @@ namespace KGySoft.Drawing.ImagingTools.Model
         /// <summary>
         /// Represents the <c>KGySoft.Drawing.ImagingTools.exe</c> assembly.
         /// </summary>
-        ImagingTools = 1 << 3
+        ImagingTools = 1 << 3,
+
+        /// <summary>
+        /// Represents the <c>KGySoft.WinForms.dll</c> assembly.
+        /// </summary>
+        WinForms = 1 << 4,
     }
 }
