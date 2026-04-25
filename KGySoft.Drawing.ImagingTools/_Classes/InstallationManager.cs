@@ -52,6 +52,7 @@ namespace KGySoft.Drawing.ImagingTools
             "KGySoft.Drawing.ImagingTools.exe",
             "KGySoft.Drawing.Core.dll",
             "KGySoft.Drawing.dll",
+            "KGySoft.WinForms.dll",
             "KGySoft.Drawing.Wpf.dll",
             "KGySoft.CoreLibraries.dll",
             "KGySoft.Drawing.DebuggerVisualizers.Core.dll",

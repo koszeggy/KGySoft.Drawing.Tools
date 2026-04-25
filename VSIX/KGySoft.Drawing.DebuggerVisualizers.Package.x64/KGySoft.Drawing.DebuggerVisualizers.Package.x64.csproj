@@ -55,6 +55,7 @@
     <Content Include="..\..\KGySoft.Drawing.ImagingTools\bin\$(Configuration)\net472\KGySoft.CoreLibraries.dll" Link="netstandard2.0\KGySoft.CoreLibraries.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\KGySoft.Drawing.ImagingTools\bin\$(Configuration)\net472\KGySoft.Drawing.dll" Link="netstandard2.0\KGySoft.Drawing.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\KGySoft.Drawing.ImagingTools\bin\$(Configuration)\net472\KGySoft.Drawing.Core.dll" Link="netstandard2.0\KGySoft.Drawing.Core.dll" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\KGySoft.Drawing.ImagingTools\bin\$(Configuration)\net472\KGySoft.WinForms.dll" Link="netstandard2.0\KGySoft.WinForms.dll" CopyToOutputDirectory="PreserveNewest" />
 
     <!--Further VSIX content-->
     <Content Include="..\..\LICENSE" Link="LICENSE" CopyToOutputDirectory="PreserveNewest" />
