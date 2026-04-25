@@ -17,9 +17,7 @@
 
 using System;
 using System.Collections.Generic;
-#if NETFRAMEWORK && !NET472_OR_GREATER
 using System.Globalization;
-#endif
 using System.IO;
 using System.Linq;
 
@@ -148,10 +146,22 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void InitInstallations()
         {
+            #region Local Methods
+
+            static int CompareNames(string name1, string name2) => String.CompareOrdinal(AdjustName(name1), AdjustName(name2));
+
+            // Making sure that Visual Studio 18 comes after Visual Studio 2022
+            static string AdjustName(string name) => name.StartsWith(visualStudioName, StringComparison.OrdinalIgnoreCase)
+                && Int32.TryParse(name.Substring(visualStudioName.Length), NumberStyles.AllowLeadingWhite, CultureInfo.InvariantCulture, out int ver)
+                    ? $"{visualStudioName} {(ver >= 2000 ? null : "v")}{ver}"
+                    : name;
+
+            #endregion
+
             string docsDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             var list = new List<KeyValuePair<string, string>>();
             list.AddRange(Directory.GetDirectories(docsDir, installDirsPattern).Select(d => new KeyValuePair<string, string>(d, Path.GetFileName(d))));
-            list.Sort((d1, d2) => String.CompareOrdinal(d1.Value, d2.Value));
+            list.Sort((d1, d2) => CompareNames(d1.Value, d2.Value));
             list.Add(new KeyValuePair<string, string>(String.Empty, Res.InstallationsCustomDir));
             Installations = list;
         }
@@ -229,10 +239,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     return null;
 
                 string? name = Installations.FirstOrDefault(i => i.Key == selected).Value;
-                if (name?.StartsWith(visualStudioName) != true)
+                if (name?.StartsWith(visualStudioName, StringComparison.OrdinalIgnoreCase) != true)
                     return null;
 
-                if (Int32.TryParse(name.Substring(name.Length - 4, 4), NumberStyles.None, CultureInfo.InvariantCulture, out int ver))
+                if (Int32.TryParse(name.Substring(visualStudioName.Length), NumberStyles.AllowLeadingWhite, CultureInfo.InvariantCulture, out int ver))
                     return ver;
                 return null;
             }
@@ -249,7 +259,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (Confirm(Res.ConfirmMessageNet472DebuggerVisualizers))
                 PathHelper.OpenUrl(urlGitHubDownload);
 #else
-            if (TryGetVisualStudioVersion() >= 2022)
+            // < 2000: starting with VS2026, the version in folder name reflects the major version rather than the year (i.e. Visual Studio 18 rather than Visual Studio 2026)
+            if (TryGetVisualStudioVersion() is >= 2022 or < 2000)
             {
                 switch (CancellableConfirm(Res.ConfirmMessageInstallClassicVisualizers))
                 {
