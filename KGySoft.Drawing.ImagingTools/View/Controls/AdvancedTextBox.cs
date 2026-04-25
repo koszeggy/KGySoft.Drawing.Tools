@@ -53,7 +53,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     // Stopping buffered animations in dark mode to avoid flickering, which is especially apparent when it's embedded into a WPF control (modern visualizers).
                     if (ThemeColors.RenderWithVisualStyles)
                         UxTheme.BufferedPaintStopAllAnimations(Handle);
-                    PaintDarkNCArea(m.WParam);
+                    PaintDarkNCArea(m.HWnd, m.WParam);
                     break;
 
                 default:
@@ -109,9 +109,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 User32.InvalidateNC(Handle);
         }
 
-        private void PaintDarkNCArea(IntPtr hRgn)
+        private void PaintDarkNCArea(IntPtr hWnd, IntPtr hRgn)
         {
-            var hWnd = Handle;
             IntPtr hDC = User32.GetNonClientDC(hWnd, hRgn);
             try
             {
@@ -122,10 +121,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 rect.Inflate(-1, -1);
                 g.DrawRectangle(ThemeColors.MultilineTextBoxBorder.GetPen(), rect);
             }
+            catch (InvalidOperationException)
+            {
+                // In rare cases 'Object is currently in use elsewhere' exception comes for the DrawRectangle call
+                // (e.g. when using as an embedded visualizer, and we activate the hidden window from the taskbar)
+                User32.InvalidateNC(hWnd);
+                return;
+            }
             finally
             {
-                if (hRgn == (IntPtr)1)
-                    User32.ReleaseDC(hWnd, hDC);
+                User32.ReleaseDC(hWnd, hDC);
             }
 
             // Invalidating the ClientArea because sometimes the NC repaint corrupts the content

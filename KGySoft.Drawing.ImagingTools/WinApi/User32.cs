@@ -419,7 +419,6 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
 
         /// <summary>
         /// Gets the device context (DC) for the entire window, including the non-client area.
-        /// If the <paramref name="hrgn"/> parameter is 1 (from msg.WParam), the returned DC must be released with <see cref="ReleaseDC"/>.
         /// </summary>
         internal static IntPtr GetNonClientDC(IntPtr hWnd, IntPtr hrgn)
             => hrgn == (IntPtr)1 ? NativeMethods.GetWindowDC(hWnd) : NativeMethods.GetDCEx(hWnd, hrgn, Constants.DCX_WINDOW | Constants.DCX_USESTYLE);
