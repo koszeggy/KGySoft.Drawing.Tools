@@ -172,6 +172,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             }
         }
 
+        internal void OnHostShown() => viewModel?.ViewShown();
+
         #endregion
 
         #region Protected Methods
@@ -187,14 +189,20 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         protected override void OnLoad(EventArgs e)
         {
             // isLoaded can be true if handle was recreated
-            if (IsLoaded)
-                return;
-
+            bool isLoaded = IsLoaded;
             base.OnLoad(e);
+            if (isLoaded)
+                return;
 
             // Null VM occurs in design mode
             if (viewModel != null)
                 ApplyViewModel();
+        }
+
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+            Debug.WriteLine($"Size: {Size}");
         }
 
         protected override void ApplyTheme()

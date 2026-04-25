@@ -110,6 +110,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             SetModified(false);
         }
 
+        internal virtual void ViewShown()
+        {
+        }
+
         #endregion
 
         #region Event Handlers

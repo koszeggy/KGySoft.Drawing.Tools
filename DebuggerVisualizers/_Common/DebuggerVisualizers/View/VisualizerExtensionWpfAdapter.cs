@@ -56,6 +56,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.View
         private TModel? lastAppliedModel;
         private bool suppressNextAvailable;
         private bool isMessagingAvailable;
+        private bool hostShown;
 
         #endregion
 
@@ -103,12 +104,23 @@ namespace KGySoft.Drawing.DebuggerVisualizers.View
             }
             else
                 Unloaded += WpfVisualizerAdapter_Unloaded;
-
         }
 
         #endregion
 
         #region Protected Methods
+
+        /// <inheritdoc />
+        protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+            if (hostShown || e.Property != ActualHeightProperty || host.Child is not MvvmBaseUserControl view)
+                return;
+
+            hostShown = true;
+            view.AdjustSizes(null);
+            view.OnHostShown();
+        }
 
         /// <inheritdoc />
         protected override void Dispose(bool disposing)
@@ -165,6 +177,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.View
                         goto case VisualizerTargetStateNotification.ValueUpdated;
                     }
 
+                    hostShown = false;
                     IView? view = null;
                     try
                     {
@@ -175,7 +188,6 @@ namespace KGySoft.Drawing.DebuggerVisualizers.View
                         viewModel = viewModelFactory.Invoke(model, visualizerTarget);
                         view = ViewFactory.CreateView(viewModel);
                         host.Child = (Control)view;
-                        (view as MvvmBaseUserControl)?.AdjustSizes(null);
                     }
                     catch (Exception e)
                     {

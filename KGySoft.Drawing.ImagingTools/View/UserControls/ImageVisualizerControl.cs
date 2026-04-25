@@ -201,7 +201,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             InitViewModelDependencies();
             InitPropertyBindings();
             InitCommandBindings();
-            base.ApplyViewModel(); //Apply is Enabled, OK is Disabled. Why?
+            base.ApplyViewModel();
             imageViewer.Focus();
         }
 
@@ -291,7 +291,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             ViewModel.GetImagePreviewSizeCallback = () => imageViewer.ClientSize;
             ViewModel.SelectFileToOpenCallback = SelectFileToOpen;
             ViewModel.SelectFileToSaveCallback = SelectFileToSave;
-            ViewModel.ApplyViewSizeCallback = ApplyViewSize;
+            ViewModel.ApplyViewSizeCallback = TryApplyViewSize;
             ViewModel.UpdatePreviewImageCallback = () => imageViewer.UpdateImage();
             ViewModel.GetCompoundViewIconCallback = GetCompoundViewIcon;
         }
@@ -486,11 +486,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             PerformLayout();
         }
 
-        private void ApplyViewSize(Size size)
+        private bool TryApplyViewSize(Size size)
         {
             Form? parent = ParentForm;
             if (parent == null)
-                return;
+                return false;
 
             parent.Size = size;
             Rectangle workingArea = GetScreenRectangle();
@@ -502,6 +502,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 parent.Top = workingArea.Bottom - Height;
             if (parent.Right > workingArea.Right)
                 parent.Left = workingArea.Right - Width;
+            return true;
         }
 
         #endregion

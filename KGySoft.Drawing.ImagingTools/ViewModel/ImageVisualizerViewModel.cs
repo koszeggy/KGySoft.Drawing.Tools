@@ -118,7 +118,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal Func<Rectangle>? GetScreenRectangleCallback { get => Get<Func<Rectangle>?>(); set => Set(value); }
         internal Func<Size>? GetViewSizeCallback { get => Get<Func<Size>?>(); set => Set(value); }
         internal Func<Size>? GetImagePreviewSizeCallback { get => Get<Func<Size>?>(); set => Set(value); }
-        internal Action<Size>? ApplyViewSizeCallback { get => Get<Action<Size>?>(); set => Set(value); }
+        internal Func<Size, bool>? ApplyViewSizeCallback { get => Get<Func<Size, bool>?>(); set => Set(value); }
         internal Func<string?>? SelectFileToOpenCallback { get => Get<Func<string?>?>(); set => Set(value); }
         internal Func<string?>? SelectFileToSaveCallback { get => Get<Func<string?>?>(); set => Set(value); }
         internal Action? UpdatePreviewImageCallback { get => Get<Action?>(); set => Set(value); }
@@ -258,7 +258,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal override void ViewLoaded()
         {
-            InitAutoZoom(true, true);
             if (deferUpdateInfo)
             {
                 if (SetCompoundViewCommandState.GetValueOrDefault<bool>(stateVisible))
@@ -268,6 +267,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             base.ViewLoaded();
         }
+
+        internal override void ViewShown() => InitAutoZoom(true, true);
 
         #endregion
 
@@ -1049,21 +1050,24 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             Size screenSize = workingArea.Size;
             Size viewSize = GetViewSizeCallback?.Invoke() ?? default;
-            Size padding = viewSize - GetImagePreviewSizeCallback?.Invoke() ?? default;
+            Size imageViewerSize = GetImagePreviewSizeCallback?.Invoke() ?? default;
+            Size padding = viewSize - imageViewerSize;
             Size desiredSize = imageInfo.Size + padding;
 
             if (desiredSize.Width <= screenSize.Width && desiredSize.Height <= screenSize.Height)
             {
                 // for icons turning on auto zoom so shrinking the view will not cause twitching as the scrollbar appears and disappears
                 AutoZoom = imageInfo.IsMultiRes;
-                ApplyViewSizeCallback?.Invoke(new Size(Math.Max(desiredSize.Width, viewSize.Width), Math.Max(desiredSize.Height, viewSize.Height)));
-                Zoom = 1f;
+                if (ApplyViewSizeCallback?.Invoke(new Size(Math.Max(desiredSize.Width, viewSize.Width), Math.Max(desiredSize.Height, viewSize.Height))) == true
+                    || imageViewerSize.Width >= imageInfo.Size.Width && imageViewerSize.Height >= imageInfo.Size.Height)
+                {
+                    Zoom = 1f;
+                    return;
+                }
             }
-            else
-            {
-                // image is too large to fit
-                AutoZoom = SmoothZooming = true;
-            }
+            
+            // image is too large to fit
+            AutoZoom = SmoothZooming = true;
         }
 
         private void InvalidateImage()

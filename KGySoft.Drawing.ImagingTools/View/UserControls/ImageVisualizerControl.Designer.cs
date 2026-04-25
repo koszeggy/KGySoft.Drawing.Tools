@@ -66,7 +66,7 @@
             // 
             this.txtInfo.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.txtInfo.EnabledForeColor = System.Drawing.SystemColors.ControlText;
-            this.txtInfo.Location = new System.Drawing.Point(0, 163);
+            this.txtInfo.Location = new System.Drawing.Point(0, 168);
             this.txtInfo.Multiline = true;
             this.txtInfo.Name = "txtInfo";
             this.txtInfo.ReadOnly = true;
@@ -80,7 +80,7 @@
             // 
             this.miColorSpace.Name = "miColorSpace";
             this.miColorSpace.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q)));
-            this.miColorSpace.Size = new System.Drawing.Size(208, 22);
+            this.miColorSpace.Size = new System.Drawing.Size(191, 22);
             this.miColorSpace.Text = "miColorSpace";
             // 
             // miAdjustColors
@@ -90,7 +90,7 @@
             this.miContrast,
             this.miGamma});
             this.miAdjustColors.Name = "miAdjustColors";
-            this.miAdjustColors.Size = new System.Drawing.Size(208, 22);
+            this.miAdjustColors.Size = new System.Drawing.Size(191, 22);
             this.miAdjustColors.Text = "miAdjustColors";
             // 
             // miBrightness
@@ -98,7 +98,7 @@
             this.miBrightness.Name = "miBrightness";
             this.miBrightness.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.B)));
-            this.miBrightness.Size = new System.Drawing.Size(216, 22);
+            this.miBrightness.Size = new System.Drawing.Size(195, 22);
             this.miBrightness.Text = "miBrightness";
             // 
             // miContrast
@@ -106,7 +106,7 @@
             this.miContrast.Name = "miContrast";
             this.miContrast.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.C)));
-            this.miContrast.Size = new System.Drawing.Size(216, 22);
+            this.miContrast.Size = new System.Drawing.Size(195, 22);
             this.miContrast.Text = "miContrast";
             // 
             // miGamma
@@ -114,7 +114,7 @@
             this.miGamma.Name = "miGamma";
             this.miGamma.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.G)));
-            this.miGamma.Size = new System.Drawing.Size(216, 22);
+            this.miGamma.Size = new System.Drawing.Size(195, 22);
             this.miGamma.Text = "miGamma";
             // 
             // sepFrames
@@ -171,43 +171,43 @@
             // miWebSite
             // 
             this.miWebSite.Name = "miWebSite";
-            this.miWebSite.Size = new System.Drawing.Size(179, 22);
+            this.miWebSite.Size = new System.Drawing.Size(167, 22);
             this.miWebSite.Text = "miWebSite";
             // 
             // miGitHub
             // 
             this.miGitHub.Name = "miGitHub";
-            this.miGitHub.Size = new System.Drawing.Size(179, 22);
+            this.miGitHub.Size = new System.Drawing.Size(167, 22);
             this.miGitHub.Text = "miGitHub";
             // 
             // miMarketplace
             // 
             this.miMarketplace.Name = "miMarketplace";
-            this.miMarketplace.Size = new System.Drawing.Size(179, 22);
+            this.miMarketplace.Size = new System.Drawing.Size(167, 22);
             this.miMarketplace.Text = "miMarketplace";
             // 
             // miSubmitResources
             // 
             this.miSubmitResources.Name = "miSubmitResources";
-            this.miSubmitResources.Size = new System.Drawing.Size(179, 22);
+            this.miSubmitResources.Size = new System.Drawing.Size(167, 22);
             this.miSubmitResources.Text = "miSubmitResources";
             // 
             // miSeparatorAbout
             // 
             this.miSeparatorAbout.Name = "miSeparatorAbout";
-            this.miSeparatorAbout.Size = new System.Drawing.Size(176, 6);
+            this.miSeparatorAbout.Size = new System.Drawing.Size(164, 6);
             // 
             // miAbout
             // 
             this.miAbout.Name = "miAbout";
             this.miAbout.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.miAbout.Size = new System.Drawing.Size(179, 22);
+            this.miAbout.Size = new System.Drawing.Size(167, 22);
             this.miAbout.Text = "miAbout";
             // 
             // miEasterEgg
             // 
             this.miEasterEgg.Name = "miEasterEgg";
-            this.miEasterEgg.Size = new System.Drawing.Size(179, 22);
+            this.miEasterEgg.Size = new System.Drawing.Size(167, 22);
             this.miEasterEgg.Visible = false;
             // 
             // btnConfiguration
@@ -224,34 +224,34 @@
             // miManageInstallations
             // 
             this.miManageInstallations.Name = "miManageInstallations";
-            this.miManageInstallations.Size = new System.Drawing.Size(194, 22);
+            this.miManageInstallations.Size = new System.Drawing.Size(178, 22);
             this.miManageInstallations.Text = "miManageInstallations";
             // 
             // miLanguageSettings
             // 
             this.miLanguageSettings.Name = "miLanguageSettings";
-            this.miLanguageSettings.Size = new System.Drawing.Size(194, 22);
+            this.miLanguageSettings.Size = new System.Drawing.Size(178, 22);
             this.miLanguageSettings.Text = "miLanguageSettings";
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(205, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(188, 6);
             // 
             // buttons
             // 
             this.buttons.BackColor = System.Drawing.Color.Transparent;
             this.buttons.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.buttons.Location = new System.Drawing.Point(0, 281);
+            this.buttons.Location = new System.Drawing.Point(0, 286);
             this.buttons.Name = "buttons";
-            this.buttons.Size = new System.Drawing.Size(364, 35);
+            this.buttons.Size = new System.Drawing.Size(364, 30);
             this.buttons.TabIndex = 11;
             // 
             // miResizeBitmap
             // 
             this.miResizeBitmap.Name = "miResizeBitmap";
             this.miResizeBitmap.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.miResizeBitmap.Size = new System.Drawing.Size(208, 22);
+            this.miResizeBitmap.Size = new System.Drawing.Size(191, 22);
             this.miResizeBitmap.Text = "miResizeBitmap";
             // 
             // imageViewer
@@ -262,7 +262,7 @@
             this.imageViewer.OptimizationOptions = ((KGySoft.WinForms.Controls.ImageViewerOptimizationOptions)((((KGySoft.WinForms.Controls.ImageViewerOptimizationOptions.UseOptimalPixelFormat | KGySoft.WinForms.Controls.ImageViewerOptimizationOptions.GenerateResizedBitmap) 
             | KGySoft.WinForms.Controls.ImageViewerOptimizationOptions.CheckQuicklyAvailableMemory) 
             | KGySoft.WinForms.Controls.ImageViewerOptimizationOptions.UseUnsafeCooperativeLocking)));
-            this.imageViewer.Size = new System.Drawing.Size(364, 114);
+            this.imageViewer.Size = new System.Drawing.Size(364, 119);
             this.imageViewer.TabIndex = 7;
             this.imageViewer.TabStop = false;
             // 
@@ -284,7 +284,7 @@
             // splitter
             // 
             this.splitter.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.splitter.Location = new System.Drawing.Point(0, 160);
+            this.splitter.Location = new System.Drawing.Point(0, 165);
             this.splitter.MinExtra = 16;
             this.splitter.MinSize = 50;
             this.splitter.Name = "splitter";
@@ -381,14 +381,14 @@
             this.miBackColorWhite,
             this.miBackColorBlack});
             this.miBackColor.Name = "miBackColor";
-            this.miBackColor.Size = new System.Drawing.Size(193, 22);
+            this.miBackColor.Size = new System.Drawing.Size(176, 22);
             this.miBackColor.Text = "miBackColor";
             // 
             // miBackColorDefault
             // 
             this.miBackColorDefault.Name = "miBackColorDefault";
             this.miBackColorDefault.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.D1)));
-            this.miBackColorDefault.Size = new System.Drawing.Size(216, 22);
+            this.miBackColorDefault.Size = new System.Drawing.Size(198, 22);
             this.miBackColorDefault.Text = "miBackColorDefault";
             this.miBackColorDefault.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
             // 
@@ -398,7 +398,7 @@
             this.miBackColorWhite.ForeColor = System.Drawing.Color.Black;
             this.miBackColorWhite.Name = "miBackColorWhite";
             this.miBackColorWhite.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.D2)));
-            this.miBackColorWhite.Size = new System.Drawing.Size(216, 22);
+            this.miBackColorWhite.Size = new System.Drawing.Size(198, 22);
             this.miBackColorWhite.Text = "miBackColorWhite";
             // 
             // miBackColorBlack
@@ -407,21 +407,21 @@
             this.miBackColorBlack.ForeColor = System.Drawing.Color.White;
             this.miBackColorBlack.Name = "miBackColorBlack";
             this.miBackColorBlack.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.D3)));
-            this.miBackColorBlack.Size = new System.Drawing.Size(216, 22);
+            this.miBackColorBlack.Size = new System.Drawing.Size(198, 22);
             this.miBackColorBlack.Text = "miBackColorBlack";
             // 
             // miShowPalette
             // 
             this.miShowPalette.Name = "miShowPalette";
             this.miShowPalette.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.P)));
-            this.miShowPalette.Size = new System.Drawing.Size(193, 22);
+            this.miShowPalette.Size = new System.Drawing.Size(176, 22);
             this.miShowPalette.Text = "miShowPalette";
             // 
             // miCountColors
             // 
             this.miCountColors.Name = "miCountColors";
             this.miCountColors.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.C)));
-            this.miCountColors.Size = new System.Drawing.Size(193, 22);
+            this.miCountColors.Size = new System.Drawing.Size(176, 22);
             this.miCountColors.Text = "miCountColors";
             // 
             // btnEdit
@@ -442,14 +442,14 @@
             // 
             this.miRotateLeft.Name = "miRotateLeft";
             this.miRotateLeft.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Left)));
-            this.miRotateLeft.Size = new System.Drawing.Size(208, 22);
+            this.miRotateLeft.Size = new System.Drawing.Size(191, 22);
             this.miRotateLeft.Text = "miRotateLeft";
             // 
             // miRotateRight
             // 
             this.miRotateRight.Name = "miRotateRight";
             this.miRotateRight.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Right)));
-            this.miRotateRight.Size = new System.Drawing.Size(208, 22);
+            this.miRotateRight.Size = new System.Drawing.Size(191, 22);
             this.miRotateRight.Text = "miRotateRight";
             // 
             // ImageVisualizerControl

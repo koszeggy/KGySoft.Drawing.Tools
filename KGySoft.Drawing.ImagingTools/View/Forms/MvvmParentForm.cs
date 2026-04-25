@@ -34,6 +34,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private readonly MvvmBaseUserControl mvvmChild;
 
+        private bool isShown;
         private Point location;
         private Func<MvvmParentForm, Keys, bool>? processKeyCallback;
 
@@ -126,17 +127,22 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             }
 
             ApplyBindings();
-        }
 
-        protected override void OnCreateControl()
-        {
-            // Just like OnLoad, this may be called multiple times if the RTL changes.
-            // Doing the size adjustments here, because in OnLoad the handle is not created, and the scale can be incorrect on RTL change.
-            base.OnCreateControl();
+            // adjusting desired size for fixed size windows
             Size? desiredClientSize = mvvmChild.GetDesiredSize(this.GetScale());
             if (desiredClientSize != null)
                 ClientSize = desiredClientSize.Value;
+
+            // fine-tuning view-specific sizes (makes sense even with no high DPI, if a message box was applied)
             mvvmChild.AdjustSizes(null);
+        }
+
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+            if (!isShown)
+                mvvmChild.OnHostShown();
+            isShown = true;
         }
 
         protected override void OnDeviceScaleGetNewSize(DeviceScaleGetNewSizeEventArgs e)
