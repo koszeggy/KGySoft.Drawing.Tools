@@ -24,6 +24,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 
+using KGySoft.Drawing.ImagingTools.Reflection;
 using KGySoft.WinForms;
 
 #endregion
@@ -237,8 +238,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (VisualStyleHelper.RenderWithVisualStyles)
                 DataGridView.InvalidateCell(ColumnIndex, e.RowIndex);
 
-            Point? mouseDownCell = DataGridView.MouseDownCellAddress;
-            bool? mouseDownInCheckBox = DataGridView.CellMouseDownInContentBounds;
+            Point? mouseDownCell = DataGridView.TryGetMouseDownCellAddress();
+            bool? mouseDownInCheckBox = DataGridView.TryGetCellMouseDownInContentBounds();
             if (mouseDownCell == null || mouseDownInCheckBox == null)
                 return;
 

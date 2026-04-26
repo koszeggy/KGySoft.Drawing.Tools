@@ -24,7 +24,6 @@ using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.View.Controls;
 using KGySoft.Drawing.ImagingTools.WinApi;
-using KGySoft.Reflection;
 using KGySoft.WinForms.Controls;
 
 #endregion
@@ -60,18 +59,6 @@ namespace KGySoft.Drawing.ImagingTools.View
         #region Methods
 
         #region Internal Methods
-
-        /// <summary>
-        /// Sets the double buffering state of a control
-        /// </summary>
-        /// <param name="control">The control to set.</param>
-        /// <param name="useDoubleBuffering"><see langword="true"/>, if <paramref name="control"/> should use double buffering; otherwise, <see langword="false"/>.</param>
-        internal static void SetDoubleBuffered(this Control control, bool useDoubleBuffering)
-        {
-            if (control == null)
-                throw new ArgumentNullException(nameof(control));
-            Reflector.SetProperty(control, "DoubleBuffered", useDoubleBuffering);
-        }
 
         internal static void ApplyTheme(this Control control)
         {

@@ -23,10 +23,9 @@ using System.Drawing.Text;
 using System.Windows.Forms;
 
 using KGySoft.Collections;
-using KGySoft.CoreLibraries;
+using KGySoft.Drawing.ImagingTools.Reflection;
 using KGySoft.Drawing.ImagingTools.View.Components;
 using KGySoft.Drawing.ImagingTools.WinApi;
-using KGySoft.Reflection;
 using KGySoft.WinForms;
 
 #endregion
@@ -935,13 +934,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 #if !SYSTEM_THEMING
             Renderer = new AdvancedToolStripRenderer();
 #endif
-            toolTip = Reflector.TryGetProperty(this, nameof(ToolTip), out object? result) ? (ToolTip)result!
-                : Reflector.TryGetField(this, "tooltip_window", out result) ? (ToolTip)result!
-                : null;
-
+            toolTip = this.TryGetToolTip();
             if (toolTip == null)
                 return;
-            toolTip = (ToolTip)Reflector.GetProperty(this, nameof(ToolTip))!;
 #if !NET35
             if (!OSHelper.IsWindows11OrLater) 
 #endif

@@ -15,11 +15,7 @@
 
 #region Usings
 
-using System.Drawing;
 using System.Windows.Forms;
-
-using KGySoft.Reflection;
-using KGySoft.WinForms;
 
 #endregion
 
@@ -66,28 +62,6 @@ namespace KGySoft.Drawing.ImagingTools.View
                         firstDisplayedRowIndex = grid.FirstDisplayedScrollingRowIndex;
 
                     return firstDisplayedRowIndex;
-                }
-            }
-
-            internal Point? MouseDownCellAddress
-            {
-                get
-                {
-                    if (!OSHelper.IsFrameworkMono && Reflector.TryGetProperty(grid, "MouseDownCellAddress", out object? value) && value is Point result)
-                        return result;
-
-                    return null;
-                }
-            }
-
-            internal bool? CellMouseDownInContentBounds
-            {
-                get
-                {
-                    if (!OSHelper.IsFrameworkMono && Reflector.TryGetProperty(grid, "CellMouseDownInContentBounds", out object? value) && value is bool result)
-                        return result;
-
-                    return null;
                 }
             }
         }

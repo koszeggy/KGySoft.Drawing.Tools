@@ -17,11 +17,9 @@
 
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
-using System.Reflection;
 
 using KGySoft.Drawing.Imaging;
-using KGySoft.Reflection;
+using KGySoft.Drawing.ImagingTools.Reflection;
 
 #endregion
 
@@ -31,19 +29,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
     {
         #region Fields
 
-        #region Static Fields
-
-        private static readonly FieldAccessor? flagsField = typeof(ColorPalette)
-            .GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
-            .FirstOrDefault(f => f.FieldType == typeof(int)) is FieldInfo fi ? FieldAccessor.GetAccessor(fi) : null;
-
-        #endregion
-
-        #region Instance Fields
-
         private PaletteFlags flags;
-
-        #endregion
 
         #endregion
 
@@ -63,23 +49,15 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         ColorPalette IViewModel<ColorPalette>.GetEditedModel()
         {
             Color[] entries = base.GetEditedModel();
+            var paletteFlags = flags & PaletteFlags.Halftone;
 
-            int len = entries.Length;
-            var result = (ColorPalette)Reflector.CreateInstance(typeof(ColorPalette), len);
-            entries.CopyTo(result.Entries, 0);
-
-            if (flagsField != null)
-            {
-                var palette = new Palette(entries);
-                var paletteFlags = flags & PaletteFlags.Halftone;
-                if (palette.HasAlpha)
-                    paletteFlags |= PaletteFlags.HasAlpha;
-                if (palette.IsGrayscale)
-                    paletteFlags |= PaletteFlags.GrayScale;
-                flagsField.SetInstanceValue(result, (int)paletteFlags);
-            }
-
-            return result;
+            // On Mono, the flags actually matter, so (re)calculating them accurately based on the entries.
+            var palette = new Palette(entries);
+            if (palette.HasAlpha)
+                paletteFlags |= PaletteFlags.HasAlpha;
+            if (palette.IsGrayscale)
+                paletteFlags |= PaletteFlags.GrayScale;
+            return Accessors.CreateColorPalette(entries, paletteFlags);
         }
 
         bool IViewModel<ColorPalette>.TrySetModel(ColorPalette model)
