@@ -35,6 +35,11 @@
 -----------------------------------------------
 + LocalizableLibraries enum: New members for the newly added dependent libraries.
 
++ KGySoft.Drawing.DebuggerVisualizers.dll
+=========================================
++ DebuggerHelper class:
+  + New CreateColorPalette method
+
 
 ~~~~~~~~~
 * v5.1.0:

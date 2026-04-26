@@ -70,8 +70,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization
         {
             // 1.) Entries
             int len = br.ReadInt32();
-            Palette = (ColorPalette)Reflector.CreateInstance(typeof(ColorPalette), len);
-            Color[] entries = Palette.Entries;
+            Color[] entries = new Color[len];
             for (int i = 0; i < len; i++)
             {
                 entries[i] = br.ReadBoolean()
@@ -81,11 +80,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization
 
             // 2.) Flags
             int flags = br.ReadInt32();
-            FieldInfo? flagsField = typeof(ColorPalette).GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
-                .FirstOrDefault(f => f.FieldType == typeof(int));
 
-            if (flagsField != null)
-                FieldAccessor.GetAccessor(flagsField).SetInstanceValue(Palette, flags);
+            Palette = DebuggerHelper.CreateColorPalette(entries, (PaletteFlags)flags);
         }
 
         #endregion
