@@ -20,13 +20,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Linq;
-using System.Reflection;
 using System.Windows.Forms;
 
 using KGySoft.CoreLibraries;
+using KGySoft.Drawing.ImagingTools.Reflection;
 using KGySoft.Drawing.ImagingTools.WinApi;
-using KGySoft.Reflection;
 using KGySoft.WinForms;
 
 #endregion
@@ -58,20 +56,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
 
         #region Fields
 
-        #region Static Fields
-
-        private static FieldAccessor? itemsField;
-        private static MethodAccessor? ensureErrorWindowMethod;
-        private static FieldAccessor? tipWindowField;
-
-        private static bool itemsFieldInitialized;
-        private static bool ensureErrorWindowMethodInitialized;
-        private static bool tipWindowFieldInitialized;
-
-        #endregion
-
-        #region Instance Fields
-
         // This delegate is stored as a field to prevent its possible garbage collection while used by P/Invoke call.
         private readonly HOOKPROC callWndRetProc;
         private readonly Dictionary<Control, NativeWindow> errorWindows = new();
@@ -82,98 +66,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
 
         #endregion
 
-        #endregion
-
         #region Properties
 
-        #region Static Properties
-
-        private static FieldAccessor? ItemsField
-        {
-            get
-            {
-                if (!itemsFieldInitialized)
-                {
-                    try
-                    {
-                        FieldInfo? fld = typeof(ErrorProvider).GetFields(BindingFlags.Instance | BindingFlags.NonPublic).FirstOrDefault(f => f.Name.Contains("items", StringComparison.Ordinal));
-                        if (fld != null)
-                            itemsField = FieldAccessor.GetAccessor(fld);
-                    }
-                    catch (Exception e) when (!e.IsCritical())
-                    {
-                        itemsField = null;
-                    }
-                    finally
-                    {
-                        itemsFieldInitialized = true;
-                    }
-                }
-
-                return itemsField;
-            }
-        }
-
-        private static MethodAccessor? EnsureErrorWindowMethod
-        {
-            get
-            {
-                if (!ensureErrorWindowMethodInitialized)
-                {
-                    try
-                    {
-                        MethodInfo? method = typeof(ErrorProvider).GetMethod("EnsureErrorWindow", BindingFlags.Instance | BindingFlags.NonPublic);
-                        if (method != null)
-                            ensureErrorWindowMethod = MethodAccessor.GetAccessor(method);
-                    }
-                    catch (Exception e) when (!e.IsCritical())
-                    {
-                        ensureErrorWindowMethod = null;
-                    }
-                    finally
-                    {
-                        ensureErrorWindowMethodInitialized = true;
-                    }
-                }
-
-                return ensureErrorWindowMethod;
-            }
-        }
-
-        private static FieldAccessor? TipWindowField
-        {
-            get
-            {
-                if (!tipWindowFieldInitialized)
-                {
-                    try
-                    {
-                        Type? errorWindowType = typeof(ErrorProvider).GetNestedType("ErrorWindow", BindingFlags.NonPublic);
-                        FieldInfo? fld = errorWindowType?.GetFields(BindingFlags.Instance | BindingFlags.NonPublic).FirstOrDefault(f => f.Name.Contains("tipWindow", StringComparison.Ordinal));
-                        if (fld != null)
-                            tipWindowField = FieldAccessor.GetAccessor(fld);
-                    }
-                    catch (Exception e) when (!e.IsCritical())
-                    {
-                        tipWindowField = null;
-                    }
-                    finally
-                    {
-                        tipWindowFieldInitialized = true;
-                    }
-                }
-
-                return tipWindowField;
-            }
-        }
-
-        #endregion
-
-        #region Instance Properties
-
-        private IDictionary? Items => ItemsField?.GetInstanceValue<ErrorProvider, IDictionary>(this);
-
-        #endregion
+        private IDictionary? Items => this.TryGetItems();
 
         #endregion
 
@@ -210,10 +105,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
 
             // Initializing custom hooks for the tooltip window of the ErrorProvider for custom rendering
             // NativeWindow tipWindow = ((ErrorWindow)EnsureErrorWindow(control.Parent)).*tipWindow*;
-            object? errorWindow = EnsureErrorWindowMethod?.InvokeInstanceFunction<ErrorProvider, Control, object>(this, control.Parent);
-            if (errorWindow == null)
-                return;
-            if (TipWindowField?.Get(errorWindow) is not NativeWindow tipWindow)
+            if (this.TryGetNativeWindow(control.Parent) is not NativeWindow tipWindow)
                 return;
 
             errorWindows.AddOrUpdate(control, InitHook, UpdateHook);

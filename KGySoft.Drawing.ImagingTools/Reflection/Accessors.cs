@@ -16,7 +16,9 @@
 #region Usings
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
@@ -62,19 +64,32 @@ namespace KGySoft.Drawing.ImagingTools.Reflection
         private static readonly object fieldDataGridView_tooltipWindow = new();
         private static readonly object fieldDataGridView_tooltipControl = new();
         private static readonly object fieldDataGridView_tooltipControl_toolTip = new();
+        private static readonly object fieldErrorProvider_items = new();
+        private static readonly object fieldErrorProvider_ErrorWindow_tipWindow = new();
         private static readonly object fieldToolStrip_tooltipWindow = new();
-        private static readonly Dictionary<object, Func<FieldInfo?>> fieldLookup = new(6)
+        private static readonly Dictionary<object, Func<FieldInfo?>> fieldLookup = new(7)
         {
             [fieldColorPalette_flags] = () => FindField(typeof(ColorPalette), "flags", typeof(int), BindingFlags.Instance | BindingFlags.NonPublic),
             [fieldColorPalette_entries] = () => FindField(typeof(ColorPalette), "entries", typeof(Color[]), BindingFlags.Instance | BindingFlags.NonPublic),
             [fieldDataGridView_tooltipWindow] = () => FindField(typeof(DataGridView), "tooltip_window", typeof(ToolTip), BindingFlags.Instance | BindingFlags.NonPublic),
             [fieldDataGridView_tooltipControl] = () => FindField(typeof(DataGridView), "toolTipControl", null, BindingFlags.Instance | BindingFlags.NonPublic),
-            [fieldDataGridView_tooltipControl_toolTip] = () => FindField(typeof(DataGridView).GetNestedType("DataGridViewToolTip", BindingFlags.Instance | BindingFlags.NonPublic), "toolTip", typeof(ToolTip), BindingFlags.Instance | BindingFlags.NonPublic),
+            [fieldDataGridView_tooltipControl_toolTip] = () => FindField(typeof(DataGridView).GetNestedType("DataGridViewToolTip", BindingFlags.NonPublic), "toolTip", typeof(ToolTip), BindingFlags.Instance | BindingFlags.NonPublic),
+            [fieldErrorProvider_items] = () => FindField(typeof(ErrorProvider), "items", typeof(IDictionary), BindingFlags.Instance | BindingFlags.NonPublic),
+            [fieldErrorProvider_ErrorWindow_tipWindow] = () => FindField(typeof(ErrorProvider).GetNestedType("ErrorWindow", BindingFlags.NonPublic), "tipWindow", typeof(NativeWindow), BindingFlags.Instance | BindingFlags.NonPublic),
             [fieldToolStrip_tooltipWindow] = () => FindField(typeof(ToolStrip), "tooltip_window", typeof(ToolTip), BindingFlags.Instance | BindingFlags.NonPublic),
         };
 
+        // Method keys and lookup callbacks. A public binding flag is added by FindMethod to support possible future compatibility for originally non-visible methods.
+        private static readonly object methodErrorProvider_EnsureErrorWindow = new();
+        private static readonly Dictionary<object, Func<MethodInfo?>> methodLookup = new(1)
+        {
+            [methodErrorProvider_EnsureErrorWindow] = () => FindMethod(typeof(ErrorProvider), "EnsureErrorWindow", [typeof(Control)], BindingFlags.Instance | BindingFlags.NonPublic),
+        };
+
+
         private static IThreadSafeCacheAccessor<object, PropertyAccessor?>? properties;
         private static IThreadSafeCacheAccessor<object, FieldAccessor?>? fields;
+        private static IThreadSafeCacheAccessor<object, MethodAccessor?>? methods;
 
         #endregion
 
@@ -148,6 +163,19 @@ namespace KGySoft.Drawing.ImagingTools.Reflection
 
         #endregion
 
+        #region ErrorProvider
+
+        internal static IDictionary? TryGetItems(this ErrorProvider instance)
+            => TryGetField(fieldErrorProvider_items)?.GetInstanceValue<ErrorProvider, IDictionary>(instance);
+
+        internal static NativeWindow? TryGetNativeWindow(this ErrorProvider instance, Control parent)
+        {
+            object? errorWindow = TryGetMethod(methodErrorProvider_EnsureErrorWindow)?.InvokeInstanceFunction<ErrorProvider, Control, object>(instance, parent);
+            return errorWindow == null ? null : TryGetField(fieldErrorProvider_ErrorWindow_tipWindow)?.Get(errorWindow) as NativeWindow;
+        }
+
+        #endregion
+
         #region ToolStrip
 
         internal static ToolTip? TryGetToolTip(this ToolStrip toolStrip) => OSHelper.IsFrameworkMono
@@ -186,8 +214,8 @@ namespace KGySoft.Drawing.ImagingTools.Reflection
             if (declaringType == null)
                 return null;
             FieldInfo[] candidates = declaringType.GetFields(bindingFlags | BindingFlags.DeclaredOnly);
-            return candidates.FirstOrDefault(f => (fieldType == null || f.FieldType == fieldType) && f.Name == namePattern) // exact name first
-                ?? candidates.FirstOrDefault(f => (fieldType == null || f.FieldType == fieldType)
+            return candidates.FirstOrDefault(f => (fieldType == null || f.FieldType == fieldType) && f.Name == namePattern) // exact type/name first
+                ?? candidates.FirstOrDefault(f => (fieldType == null || fieldType.IsAssignableFrom(f.FieldType))
                         && (namePattern == null || f.Name.Contains(namePattern, StringComparison.OrdinalIgnoreCase)));
         }
 
@@ -210,6 +238,33 @@ namespace KGySoft.Drawing.ImagingTools.Reflection
             if (fields == null)
                 Interlocked.CompareExchange(ref fields, ThreadSafeCacheFactory.Create<object, FieldAccessor?>(GetFieldAccessor, null, cacheOptions), null);
             return fields[key];
+        }
+
+        [MethodImpl(MethodImpl.AggressiveInlining)]
+        private static MethodAccessor? TryGetMethod(object key)
+        {
+            #region Local Methods
+
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            static MethodAccessor? GetMethodAccessor(object key)
+            {
+                if (!methodLookup.TryGetValue(key, out var func))
+                    throw new InvalidOperationException(Res.InternalError("GetMethodAccessor: Method key found"));
+                MethodInfo? result = func.Invoke();
+                return result is null ? null : MethodAccessor.GetAccessor(result);
+            }
+
+            #endregion
+
+            if (methods == null)
+                Interlocked.CompareExchange(ref methods, ThreadSafeCacheFactory.Create<object, MethodAccessor?>(GetMethodAccessor, null, cacheOptions), null);
+            return methods[key];
+        }
+
+        [SuppressMessage("Style", "IDE0220:Add explicit cast", Justification = "False alarm, methods are queried by GetMember")]
+        private static MethodInfo? FindMethod(Type declaringType, string methodName, Type[] parameterTypes, BindingFlags bindingFlags)
+        {
+            return declaringType.GetMethod(methodName, bindingFlags | BindingFlags.Public, null, parameterTypes, null);
         }
 
         #endregion
