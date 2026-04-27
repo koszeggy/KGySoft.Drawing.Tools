@@ -16,6 +16,7 @@
 #region Usings
 
 using System;
+using System.Threading;
 
 using KGySoft.Threading;
 
@@ -28,7 +29,7 @@ namespace KGySoft.Drawing.ImagingTools
         #region Fields
 
         private readonly Action<AsyncProgress<DrawingOperation>> reportCallback;
-        private readonly object syncRoot = new object();
+        private readonly Lock syncRoot = new();
 
         private AsyncProgress<DrawingOperation> current;
 

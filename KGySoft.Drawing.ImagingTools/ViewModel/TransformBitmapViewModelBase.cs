@@ -49,7 +49,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Fields
 
         private readonly Bitmap originalImage;
-        private readonly object syncRoot = new object();
+        private readonly Lock syncRoot = new();
 
         private volatile GenerateTaskBase? activeTask;
         private bool keepResult;
@@ -261,7 +261,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             // (It wouldn't cause deadlocks because here every TryInvokeSync is after completing the task.)
             // But many threads can be queued, which all stop here before acquiring the lock. To prevent spawning too many threads we
             // don't use a regular lock here but a bit active spinning that can exit without taking the lock if the task gets outdated.
-            while (!Monitor.TryEnter(syncRoot, 1))
+            while (!syncRoot.TryEnter(1))
             {
 
                 if (!IsDisposed && MatchesSettings(task))
@@ -367,7 +367,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
             finally
             {
-                Monitor.Exit(syncRoot);
+                syncRoot.Exit();
             }
         }
 

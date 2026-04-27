@@ -71,6 +71,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             internal override void Initialize(Bitmap source, bool isInUse)
             {
+                // Locking on source image to avoid "bitmap region is already locked" if the UI is painting the image when we clone it.
+                // This works this way because UI can repaint the image any time and is also locks the image for that period.
+                // Another solution could be if we used a clone of the original image, but it is better to avoid using multiple clones.
                 lock (source)
                     result = source.CloneCurrentFrame();
                 BitmapData = result.GetReadWriteBitmapData();

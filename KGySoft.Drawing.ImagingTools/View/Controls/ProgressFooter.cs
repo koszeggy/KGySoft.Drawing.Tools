@@ -15,14 +15,25 @@
 
 #region Usings
 
+#region Used Namespaces
+
 using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Threading;
 using System.Windows.Forms;
 
 using KGySoft.WinForms;
 using KGySoft.WinForms.Controls;
+
+#endregion
+
+#region Used Aliases
+
+using Timer = System.Windows.Forms.Timer;
+
+#endregion
 
 #endregion
 
@@ -50,7 +61,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Instance Fields
 
-        private readonly object syncRoot = new object();
+        private readonly Lock syncRoot = new();
         private readonly AdvancedLabel lblProgress;
         private readonly AdvancedProgressBar pbProgress;
         private readonly Panel pnlProgress;
