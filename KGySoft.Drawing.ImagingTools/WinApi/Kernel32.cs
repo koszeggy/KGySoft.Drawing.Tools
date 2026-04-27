@@ -33,6 +33,7 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
         {
             #region Methods
 
+#if NET45_OR_GREATER
             /// <summary>
             /// Establishes a hard link between an existing file and a new file. This function is only supported on the NTFS file system, and only for files, not directories.
             /// </summary>
@@ -47,15 +48,7 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
             [return: MarshalAs(UnmanagedType.Bool)]
             internal static extern bool CreateHardLink(string lpFileName, string lpExistingFileName, IntPtr lpSecurityAttributes);
-
-            /// <summary>
-            /// Retrieves information about the system's current usage of both physical and virtual memory.
-            /// </summary>
-            /// <param name="lpBuffer">A pointer to a <see cref="MEMORYSTATUSEX"/> structure that receives information about current memory availability.</param>
-            /// <returns>If the function succeeds, the return value is nonzero. If the function fails, the return value is zero. To get extended error information, call GetLastError.</returns>
-            [return: MarshalAs(UnmanagedType.Bool)]
-            [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-            internal static extern bool GlobalMemoryStatusEx(ref MEMORYSTATUSEX lpBuffer);
+#endif
 
             /// <summary>
             /// Retrieves the thread identifier of the calling thread.
@@ -71,20 +64,15 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
 
         #region Methods
 
+#if NET45_OR_GREATER
+
         internal static void CreateHardLink(string linkName, string existingFileName)
         {
             const string allowLongPathPrefix = @"\\?\";
             if (!NativeMethods.CreateHardLink(allowLongPathPrefix + linkName, allowLongPathPrefix + existingFileName, IntPtr.Zero))
                 throw new Win32Exception(Marshal.GetLastWin32Error());
         }
-
-        internal static long GetTotalMemory()
-        {
-            var status = new MEMORYSTATUSEX { dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX)) };
-            if (!NativeMethods.GlobalMemoryStatusEx(ref status))
-                throw new Win32Exception(Marshal.GetLastWin32Error());
-            return (long)status.ullTotalPhys;
-        }
+#endif
 
         internal static uint GetCurrentThreadId() => NativeMethods.GetCurrentThreadId();
 

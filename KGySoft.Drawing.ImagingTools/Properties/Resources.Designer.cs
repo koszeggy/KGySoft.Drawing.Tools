@@ -133,26 +133,6 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon HandGrab {
-            get {
-                object obj = ResourceManager.GetObject("HandGrab", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon HandOpen {
-            get {
-                object obj = ResourceManager.GetObject("HandOpen", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
         internal static System.Drawing.Icon HighlightVisibleClip {
             get {
                 object obj = ResourceManager.GetObject("HighlightVisibleClip", resourceCulture);

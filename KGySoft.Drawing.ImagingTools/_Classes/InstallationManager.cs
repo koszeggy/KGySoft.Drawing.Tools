@@ -162,7 +162,7 @@ namespace KGySoft.Drawing.ImagingTools
 
 #if NET45_OR_GREATER
             // .NET Core support: the visualizer must be in a netstandard2.0 subdirectory.
-            // And actually it can contain framework assemblies so we just create a symbolic link to it
+            // And actually it can contain framework assemblies so we just create a hard link to it
             // NOTE: It must be the .NET 4.5 or greater build, others do not work (even a Core build itself, even in netcoreapp folder)
             string netCorePath = Path.Combine(directory, netCoreSubdirectory);
             try

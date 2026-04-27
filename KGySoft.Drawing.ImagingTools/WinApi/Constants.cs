@@ -22,16 +22,10 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
 
         internal const int S_OK = 0;
 
-        internal const int WS_BORDER = 0x00800000;
-
         internal const int WM_PAINT = 0x0F;
         internal const int WM_MOUSEACTIVATE = 0x021;
         internal const int WM_INITDIALOG = 0x0110;
-        internal const int WM_MOUSEHWHEEL = 0x020E;
         internal const int WM_GETFONT = 0x0031;
-#if !NET5_0_OR_GREATER
-        internal const int WM_NCHITTEST = 0x0084;
-#endif
         internal const int WM_NCCALCSIZE = 0x0083;
         internal const int WM_NCPAINT = 0x0085;
         internal const int WM_NCACTIVATE = 0x0086;
@@ -54,8 +48,9 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
 
         internal const int WH_CALLWNDPROCRET = 12;
 
-        internal const int IDOK = 1;
-        internal const int IDCANCEL = 2;
+        //// Needed for classic MessageBoxes. Restore if reverting from TaskDialogs
+        //internal const int IDOK = 1;
+        //internal const int IDCANCEL = 2;
 
         // ReSharper restore InconsistentNaming
 

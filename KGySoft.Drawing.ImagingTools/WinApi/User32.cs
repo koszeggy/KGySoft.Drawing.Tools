@@ -23,9 +23,6 @@ using System.Runtime.InteropServices;
 using System.Security;
 
 using KGySoft.WinForms;
-#if !NET5_0_OR_GREATER
-using System.Windows.Forms;
-#endif
 
 #endregion
 
@@ -40,18 +37,6 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
         private static class NativeMethods
         {
             #region Methods
-
-#if !NET5_0_OR_GREATER
-            /// <summary>
-            /// The ScreenToClient function converts the screen coordinates of a specified point on the screen to client-area coordinates.
-            /// </summary>
-            /// <param name="hWnd">A handle to the window whose client area will be used for the conversion.</param>
-            /// <param name="lpPoint">A pointer to a POINT structure that specifies the screen coordinates to be converted.</param>
-            /// <returns>If the function succeeds, the return value is nonzero.
-            /// If the function fails, the return value is zero.</returns>
-            [DllImport("user32.dll")]
-            internal static extern bool ScreenToClient(IntPtr hWnd, ref Point lpPoint);
-#endif
 
             /// <summary>
             /// Installs an application-defined hook procedure into a hook chain. You would install a hook procedure to monitor the system for certain types of events.
@@ -344,10 +329,6 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
         #endregion
 
         #region Methods
-
-#if !NET5_0_OR_GREATER
-        internal static void ScreenToClient(Control control, ref Point point) => NativeMethods.ScreenToClient(control.Handle, ref point);
-#endif
 
         internal static IntPtr HookCallWndRetProc(HOOKPROC hookProc)
             => NativeMethods.SetWindowsHookEx(Constants.WH_CALLWNDPROCRET, hookProc, IntPtr.Zero, Kernel32.GetCurrentThreadId());
