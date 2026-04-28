@@ -199,12 +199,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 ApplyViewModel();
         }
 
-        protected override void OnResize(EventArgs e)
-        {
-            base.OnResize(e);
-            Debug.WriteLine($"Size: {Size}");
-        }
-
         protected override void ApplyTheme()
         {
             base.ApplyTheme();
