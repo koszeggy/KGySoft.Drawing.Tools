@@ -379,6 +379,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private void AdjustFont()
         {
+            if (IsDesignMode)
+                return;
             Debug.Assert(Parent is not BaseForm, "Adjusting font in needed when the view in embedded into a WPF host");
             Font? font = SystemFonts.MessageBoxFont;
             if (font == null)
