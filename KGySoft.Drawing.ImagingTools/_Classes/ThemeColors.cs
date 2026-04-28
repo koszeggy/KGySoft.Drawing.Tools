@@ -652,13 +652,14 @@ namespace KGySoft.Drawing.ImagingTools
 
             Debug.Assert(key.IsDefined() && (int)key < defaultThemeColors.Length && (int)key < darkThemeColors.Length);
 
-            // Special handling for some cases that may be different when visual styles are enabled
+            // Special handling for some cases system default light theme that may be different when visual styles are enabled
             if (!isDarkBaseTheme && useVisualStyles && !isHighContrast)
             {
                 switch (key)
                 {
                     case ThemeColor.GroupBoxText: // may be different on Windows XP
-                        return new VisualStyleRenderer(VisualStyleElement.Button.GroupBox.Normal).GetColor(ColorProperty.TextColor);
+                        var element = VisualStyleElement.Button.GroupBox.Normal;
+                        return VisualStyleHelper.GetTextColor(element.ClassName, IntPtr.Zero, element.Part, element.State, SystemColors.ControlText);
                     case ThemeColor.ToolTip:
                         if (OSHelper.IsWindows11OrLater)
                             return Color.FromArgb((unchecked((int)0xFFF9F9F9)));

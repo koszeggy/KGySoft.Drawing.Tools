@@ -65,7 +65,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         public AdvancedDataGridViewCheckBoxColumn(bool threeState)
             : base(threeState)
         {
+#if !SYSTEM_THEMING
             CellTemplate = new AdvancedDataGridViewCheckBoxCell(threeState);
+#endif
 
             // NOTE: Framework Mono does not set alignment, and only the default rendering shows the checkbox in the middle.
             // But as our custom rendering respects Alignment, we must explicitly set centered alignment in the default style.
