@@ -109,6 +109,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 pnlEditResourceEntry.SetColumn(gbTranslatedText, 2);
                 pnlEditResourceEntry.ColumnStyles.Insert(1, new ColumnStyle(SizeType.AutoSize));
             }
+
+            if (!IsDesignMode)
+                gridResources.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
         }
 
         #endregion

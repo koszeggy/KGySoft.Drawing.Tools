@@ -242,7 +242,6 @@
             this.txtOriginalText.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtOriginalText.Size = new System.Drawing.Size(277, 79);
             this.txtOriginalText.TabIndex = 0;
-            this.txtOriginalText.WordWrap = false;
             // 
             // gbTranslatedText
             // 
@@ -265,7 +264,6 @@
             this.txtTranslatedText.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtTranslatedText.Size = new System.Drawing.Size(278, 79);
             this.txtTranslatedText.TabIndex = 1;
-            this.txtTranslatedText.WordWrap = false;
             // 
             // okCancelApplyButtons
             // 
@@ -286,6 +284,7 @@
             this.Controls.Add(this.splitterEditResources);
             this.Controls.Add(this.pnlEditResourceEntry);
             this.Controls.Add(this.okCancelApplyButtons);
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "EditResourcesControl";
             this.Padding = new System.Windows.Forms.Padding(3);
             this.Size = new System.Drawing.Size(585, 350);
