@@ -58,5 +58,89 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
                 this["ResXResourcesCustomPath"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool SmoothZoomingDefault {
+            get {
+                return ((bool)(this["SmoothZoomingDefault"]));
+            }
+            set {
+                this["SmoothZoomingDefault"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SmoothZoomingMetafile {
+            get {
+                return ((bool)(this["SmoothZoomingMetafile"]));
+            }
+            set {
+                this["SmoothZoomingMetafile"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool SmoothZoomingMultiResIcon {
+            get {
+                return ((bool)(this["SmoothZoomingMultiResIcon"]));
+            }
+            set {
+                this["SmoothZoomingMultiResIcon"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SmoothZoomingBitmap {
+            get {
+                return ((bool)(this["SmoothZoomingBitmap"]));
+            }
+            set {
+                this["SmoothZoomingBitmap"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AutoZoomMultiResIcon {
+            get {
+                return ((bool)(this["AutoZoomMultiResIcon"]));
+            }
+            set {
+                this["AutoZoomMultiResIcon"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AutoZoomBitmap {
+            get {
+                return ((bool)(this["AutoZoomBitmap"]));
+            }
+            set {
+                this["AutoZoomBitmap"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AutoShrinkLargeBitmap {
+            get {
+                return ((bool)(this["AutoShrinkLargeBitmap"]));
+            }
+            set {
+                this["AutoShrinkLargeBitmap"] = value;
+            }
+        }
     }
 }

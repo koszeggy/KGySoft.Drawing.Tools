@@ -18,10 +18,11 @@
   only in terms of localization of the buttons.
 ! The .NET Framework 4.7.2 build is no longer compatible with Framework Mono (as of the release of this version).
   You still can use the .NET Framework 4.6.2 build though. Wine Mono is not affected by this change.
-* Improved appearance with dark theme.
++ Saving/restoring auto zoom / smooth zooming preferences
 + Per-monitor DPI awareness support
 + Edit Resources form:
   + The resources of an additional dependent library has been included
+* Improved appearance with dark theme.
 - Debugger Visualizer Installations dialog:
   - Handling the changed versioning of the Visual Studio folders starting with Visual Studio 2026
 

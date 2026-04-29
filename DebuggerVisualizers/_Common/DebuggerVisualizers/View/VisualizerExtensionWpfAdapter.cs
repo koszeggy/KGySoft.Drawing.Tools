@@ -102,8 +102,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.View
                     suppressNextAvailable = true;
                 visualizerTarget.StateChanged += VisualizerTargetOnStateChangedAsync;
             }
-            else
-                Unloaded += WpfVisualizerAdapter_Unloaded;
+
+            Unloaded += WpfVisualizerAdapter_Unloaded;
         }
 
         #endregion
@@ -278,7 +278,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.View
         private void WpfVisualizerAdapter_Unloaded(object sender, RoutedEventArgs e)
         {
             // Required to avoid memory leaks. When the visualizer Style is not ToolWindow but ModalDialog, then VS2022 may not call Dispose
-            // until VS is closed, even if the visualizer is closed.
+            // until VS is closed, even if the visualizer is closed (and tester host window does not call dispose either).
             Unloaded -= WpfVisualizerAdapter_Unloaded;
             Dispose();
         }

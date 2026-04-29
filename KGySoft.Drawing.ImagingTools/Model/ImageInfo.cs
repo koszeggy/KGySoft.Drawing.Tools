@@ -70,13 +70,13 @@ namespace KGySoft.Drawing.ImagingTools.Model
         /// <summary>
         /// Gets whether this instance represents a multi-frame image and has frames.
         /// </summary>
-        public bool HasFrames => !Frames.IsNullOrEmpty() && Type.In(ImageInfoType.Pages, ImageInfoType.Animation, ImageInfoType.MultiRes, ImageInfoType.Icon);
+        public bool HasFrames => !Frames.IsNullOrEmpty() && Type is ImageInfoType.Pages or ImageInfoType.Animation or ImageInfoType.MultiRes or ImageInfoType.Icon;
 
         #endregion
 
         #region Internal Properties
 
-        internal bool IsMultiRes => !Frames.IsNullOrEmpty() && Type.In(ImageInfoType.MultiRes, ImageInfoType.Icon);
+        internal bool IsMultiRes => !Frames.IsNullOrEmpty() && Type is ImageInfoType.MultiRes or ImageInfoType.Icon;
         internal bool IsMetafile => Image is Metafile;
 
         #endregion
@@ -187,7 +187,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         internal ImageInfo AsIcon()
         {
-            if (!Type.In(ImageInfoType.None, ImageInfoType.Icon))
+            if (Type is not (ImageInfoType.None or ImageInfoType.Icon))
                 Type = ImageInfoType.Icon;
             return this;
         }
@@ -211,7 +211,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
             var result = new ValidationResultsCollection();
             ImageFrameInfo[]? frames = Frames;
-            if (Type.In(ImageInfoType.Pages, ImageInfoType.Animation, ImageInfoType.MultiRes))
+            if (Type is ImageInfoType.Pages or ImageInfoType.Animation or ImageInfoType.MultiRes)
             {
                 if (frames.IsNullOrEmpty())
                     result.AddError(nameof(Frames), PublicResources.CollectionEmpty);

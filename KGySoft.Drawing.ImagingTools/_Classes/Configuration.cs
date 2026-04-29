@@ -20,6 +20,7 @@ using System;
 using System.ComponentModel; 
 #endif
 using System.Configuration;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 #if NETFRAMEWORK
 using System.Net; 
@@ -104,8 +105,15 @@ namespace KGySoft.Drawing.ImagingTools
         #region Internal Properties
 
         internal static bool UseOSLanguage { get => Get<bool>(); set => Set(value); }
-        internal static CultureInfo DisplayLanguage { get => Get<CultureInfo>() ?? Res.DefaultLanguage; set => Set(value); }
+        internal static CultureInfo DisplayLanguage { get => Get(Res.DefaultLanguage); set => Set(value); }
         internal static string? ResXResourcesCustomPath { get => Get<string?>(); set => Set(value); }
+        internal static bool SmoothZoomingDefault { get => Get(true); set => Set(value); }
+        internal static bool SmoothZoomingMetafile { get => Get<bool>(); set => Set(value); }
+        internal static bool SmoothZoomingMultiResIcon { get => Get(true); set => Set(value); }
+        internal static bool SmoothZoomingBitmap { get => Get<bool>(); set => Set(value); }
+        internal static bool AutoZoomMultiResIcon { get => Get(true); set => Set(value); }
+        internal static bool AutoZoomBitmap { get => Get<bool>(); set => Set(value); }
+        internal static bool AutoShrinkLargeBitmap { get => Get(true); set => Set(value); }
         internal static Uri BaseUri => baseUri ??= new Uri(ResourceRepositoryLocation);
 
         #endregion
@@ -179,13 +187,16 @@ namespace KGySoft.Drawing.ImagingTools
         {
             if (forceAppSettings)
                 Settings.Default.Save();
-            registryKey?.Flush();
+            registryKey?.Close();
             Release();
         }
 
         internal static void Release()
         {
-            registryKey?.Close();
+            // Disposing the registry key is actually the same as Close. There is no way to discard the changes of Registry keys
+            // (even though Release should be called when SaveSettings was not called, but it discards the changes of Settings only).
+            // Not calling Dispose here does not help: even though RegistryKey has no finalizer, the wrapped SafeRegistryHandle does have.
+            registryKey?.Dispose();
             registryKey = null;
             forceAppSettings = false;
         }
@@ -215,45 +226,51 @@ namespace KGySoft.Drawing.ImagingTools
         }
 #endif
 
-        private static T? Get<T>([CallerMemberName]string propertyName = null!)
+        private static T Get<T>(T defaultValue = default!, [CallerMemberName]string propertyName = null!)
         {
-            T? result = default;
-            if (!forceAppSettings && TryGetFromRegistry(propertyName, out result))
+            if (!forceAppSettings && TryGetFromRegistry(propertyName, out T? result))
                 return result;
 
-            if (Equals(result, default(T)))
-            {
-                result = GetFromSettings<T>(propertyName);
+            if (!TryGetFromSettings(propertyName, out result))
+                return defaultValue;
 
-                // If found in settings and registry is accessible, migrating to registry
-                if (!forceAppSettings)
-                    SetInRegistry(result, propertyName);
-            }
-
+            // If found in settings and registry is accessible, migrating to registry
+            if (!forceAppSettings)
+                SetInRegistry(result, propertyName);
             return result;
+
         }
 
         private static void Set(object? value, [CallerMemberName]string propertyName = null!)
         {
+            // NOTE: Order is important. Not an if-else, because forceAppSettings can turn to true if RegistryKey is not accessible
             if (!forceAppSettings)
                 SetInRegistry(value, propertyName);
             if (forceAppSettings)
                 SetInSettings(value, propertyName);
         }
 
-        private static T? GetFromSettings<T>([CallerMemberName]string propertyName = null!)
+        private static bool TryGetFromSettings<T>(string propertyName, [NotNullWhen(true)]out T? value)
         {
             try
             {
-                return (T)Settings.Default[propertyName];
+                if (Settings.Default[propertyName] is T result)
+                {
+                    value = result;
+                    return true;
+                }
+
+                value = default;
+                return false;
             }
             catch (Exception e) when (!e.IsCritical())
             {
-                return default;
+                value = default;
+                return false;
             }
         }
 
-        private static void SetInSettings(object? value, [CallerMemberName]string propertyName = null!)
+        private static void SetInSettings(object? value, string propertyName)
         {
             try
             {
@@ -264,7 +281,7 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static bool TryGetFromRegistry<T>(string propertyName, out T? value)
+        private static bool TryGetFromRegistry<T>(string propertyName, [NotNullWhen(true)]out T? value)
         {
             try
             {

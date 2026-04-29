@@ -43,12 +43,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #endregion
 
-        #region Constructors
-
-        internal DefaultViewModel() => SmoothZooming = true;
-
-        #endregion
-
         #region Methods
 
         #region Internal Methods

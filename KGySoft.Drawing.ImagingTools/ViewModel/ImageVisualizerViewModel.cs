@@ -66,11 +66,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// </summary>
         private bool keepAliveImageInfo;
 
+        private bool initialized;
+        private bool isOpenFilterUpToDate;
+        private bool deferUpdateInfo;
         private ImageInfo imageInfo = new ImageInfo(ImageInfoType.None);
         private int currentFrame = -1;
-        private bool isOpenFilterUpToDate;
         private Size currentResolution;
-        private bool deferUpdateInfo;
         private string? notificationId;
 
         #endregion
@@ -268,7 +269,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             base.ViewLoaded();
         }
 
-        internal override void ViewShown() => InitAutoZoom(true, true);
+        internal override void ViewShown()
+        {
+            InitDefaults();
+            initialized = true;
+        }
+
+        internal override void ViewUnloading() => Configuration.SaveSettings();
 
         #endregion
 
@@ -283,11 +290,45 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     if (imageInfo.HasFrames && imageInfo.Type != ImageInfoType.Pages)
                         ResetCompoundState();
                     return;
+                
                 case nameof(ReadOnly):
                     ReadOnlyChanged();
                     return;
+                
                 case nameof(AutoZoom):
                     UpdateMultiResImage();
+                    if (!initialized || imageInfo.Type == ImageInfoType.None || imageInfo.IsMetafile)
+                        return;
+
+                    if (imageInfo.IsMultiRes && IsCompoundView)
+                        Configuration.AutoZoomMultiResIcon = e.NewValue is true;
+                    else if (e.NewValue is true)
+                    {
+                        Configuration.AutoZoomBitmap = true;
+                        Configuration.AutoShrinkLargeBitmap = true;
+                    }
+                    else
+                    {
+                        Configuration.AutoZoomBitmap = false;
+
+                        // turning off auto zoom: separating the preference for small and large bitmaps
+                        Size size = GetSize(); // it's never a compound icon here
+                        Size imageViewerSize = GetImagePreviewSizeCallback?.Invoke() ?? size;
+                        if (size.Width > imageViewerSize.Width || size.Height > imageViewerSize.Height)
+                            Configuration.AutoShrinkLargeBitmap = false;
+                    }
+
+                    return;
+
+                case nameof(SmoothZooming) when initialized:
+                    if (imageInfo.Type == ImageInfoType.None)
+                        Configuration.SmoothZoomingDefault = e.NewValue is true;
+                    else if (imageInfo.IsMetafile)
+                        Configuration.SmoothZoomingMetafile = e.NewValue is true;
+                    else if (imageInfo.IsMultiRes)
+                        Configuration.SmoothZoomingMultiResIcon = e.NewValue is true;
+                    else
+                        Configuration.SmoothZoomingBitmap = e.NewValue is true;
                     return;
             }
         }
@@ -304,7 +345,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             SetModified(false);
             if (resetPreview)
                 PreviewImage = null;
-            InitAutoZoom(false, resetPreview);
+
+            UpdateSmoothZoomingTooltip();
+            SetAutoZoomCommandState.Enabled = SetSmoothZoomingCommandState.Enabled = imageInfo.Type != ImageInfoType.None;
+            if (IsViewLoaded)
+                AdjustZoom(resetPreview);
 
             if (value.HasFrames)
                 InitMultiImage();
@@ -1017,18 +1062,18 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             SaveFileFilterIndex = (filter.Split('|').IndexOf(item => item.Contains("*." + ext, StringComparison.OrdinalIgnoreCase)) >> 1) + 1;
         }
 
-        private void InitAutoZoom(bool viewLoading, bool resetZoom)
+        /// <summary>
+        /// Similar to InitDefaults, but executed when a new file is loaded or the image is updated
+        /// </summary>
+        private void AdjustZoom(bool resetZoom)
         {
-            UpdateSmoothZoomingTooltip();
             if (imageInfo.Type == ImageInfoType.None)
             {
                 SetAutoZoomCommandState.Enabled = AutoZoom = false;
                 return;
             }
 
-            SetAutoZoomCommandState.Enabled = SetSmoothZoomingCommandState.Enabled = true;
-
-            // metafile: we always turn on auto zoom and preserve current smooth zooming
+            // metafile: turning on auto zoom for a new file, and preserving current smooth zooming
             if (imageInfo.IsMetafile)
             {
                 if (resetZoom)
@@ -1037,37 +1082,71 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
 
             // if we are just opening a new image we don't auto toggle AutoZoom and SmoothZooming anymore
-            if (!viewLoading)
+            if (!AutoZoom && resetZoom)
+                Zoom = 1f;
+        }
+
+        /// <summary>
+        /// Similar to AdjustZoom, but works from Configuration, and attempts to initialize view size as well (for classic visualizers)
+        /// </summary>
+        private void InitDefaults()
+        {
+            if (imageInfo.Type == ImageInfoType.None)
             {
-                if (!AutoZoom && resetZoom)
-                    Zoom = 1f;
+                SetAutoZoomCommandState.Enabled = AutoZoom = false;
+                SmoothZooming = Configuration.SmoothZoomingDefault;
                 return;
             }
 
+            // metafile: we always turn on auto zoom, and get last smoothing for metafiles (true by default)
+            if (imageInfo.IsMetafile)
+            {
+                AutoZoom = true;
+                SmoothZooming = Configuration.SmoothZoomingMetafile;
+                return;
+            }
+
+            bool smoothZooming = imageInfo.IsMultiRes ? Configuration.SmoothZoomingMultiResIcon : Configuration.SmoothZoomingBitmap;
+            bool autoZoom = imageInfo.IsMultiRes ? Configuration.AutoZoomMultiResIcon : Configuration.AutoZoomBitmap;
+            SmoothZooming = smoothZooming;
+
+            // trying to auto-size the view so the image fits into it without shrinking or showing the scrollbars
             Rectangle workingArea = GetScreenRectangleCallback?.Invoke() ?? default;
             if (workingArea.IsEmpty)
+            {
+                AutoZoom = autoZoom;
                 return;
+            }
 
             Size screenSize = workingArea.Size;
             Size viewSize = GetViewSizeCallback?.Invoke() ?? default;
             Size imageViewerSize = GetImagePreviewSizeCallback?.Invoke() ?? default;
             Size padding = viewSize - imageViewerSize;
-            Size desiredSize = imageInfo.Size + padding;
+            Size desiredSize = GetCurrentImageInfo().Size + padding; // not GetSize so the max size is returned for an icon in compound view
 
             if (desiredSize.Width <= screenSize.Width && desiredSize.Height <= screenSize.Height)
             {
-                // for icons turning on auto zoom so shrinking the view will not cause twitching as the scrollbar appears and disappears
-                AutoZoom = imageInfo.IsMultiRes;
+                // for icons forcing auto zoom first, so shrinking the view will not cause twitching as the scrollbar appears and disappears
+                AutoZoom = autoZoom || imageInfo.IsMultiRes;
                 if (ApplyViewSizeCallback?.Invoke(new Size(Math.Max(desiredSize.Width, viewSize.Width), Math.Max(desiredSize.Height, viewSize.Height))) == true
                     || imageViewerSize.Width >= imageInfo.Size.Width && imageViewerSize.Height >= imageInfo.Size.Height)
                 {
-                    Zoom = 1f;
+                    if (imageInfo.IsMultiRes && !autoZoom)
+                        AutoZoom = autoZoom;
+                    if (!autoZoom)
+                        Zoom = 1f;
+
                     return;
                 }
             }
             
-            // image is too large to fit
-            AutoZoom = SmoothZooming = true;
+            // image is too large to fit: when auto zoom is requested (considering shrinking as well), forcing smooth zooming
+            autoZoom |= Configuration.AutoShrinkLargeBitmap;
+            AutoZoom = autoZoom;
+            if (autoZoom)
+                SmoothZooming = true;
+            else
+                Zoom = 1f;
         }
 
         private void InvalidateImage()

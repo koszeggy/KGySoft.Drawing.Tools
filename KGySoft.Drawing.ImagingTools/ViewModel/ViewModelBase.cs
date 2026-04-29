@@ -110,9 +110,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             SetModified(false);
         }
 
-        internal virtual void ViewShown()
-        {
-        }
+        internal virtual void ViewShown() { }
+        internal virtual void ViewUnloading() { }
 
         #endregion
 

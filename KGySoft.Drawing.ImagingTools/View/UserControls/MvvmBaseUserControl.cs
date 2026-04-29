@@ -288,6 +288,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
             if (disposing)
             {
+                // Unloading should be called from here rather than MvvmParentForm.Closing for example,
+                // because this way it works even when embedded into a WPF host (as a modern visualizer extension).
+                viewModel?.ViewUnloading();
                 components?.Dispose();
                 CommandBindings.Dispose();
             }
