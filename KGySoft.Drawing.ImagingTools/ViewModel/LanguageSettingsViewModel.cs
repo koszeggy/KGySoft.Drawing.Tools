@@ -382,9 +382,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             ApplyCommandState.Enabled = !Equals(selected, Res.DisplayLanguage)
                 // or when path has been changed
                 || ((String.IsNullOrEmpty(lastSavedResourcesPath) ^ !UseCustomResourcePath)
-                    || (!String.IsNullOrEmpty(lastSavedResourcesPath) && lastSavedResourcesPath != ResourceCustomPath))
-                // or when turning on/off .resx resources for the default language matters because it also has a resource file
-                || (Equals(selected, Res.DefaultLanguage) && AvailableLanguages.Contains(Res.DefaultLanguage));
+                    || (!String.IsNullOrEmpty(lastSavedResourcesPath) && lastSavedResourcesPath != ResourceCustomPath));
         }
 
         private void ApplyAndSave()
@@ -488,7 +486,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         // Both Save and Apply do the same thing.
         // The only differences are that Apply has an Enabled state,
-        // and that the View may bind Save to a button that closes the view is there was no error
+        // and that the View may bind Save to a button that closes the view if there was no error
         private void OnApplyCommand() => ApplyAndSave();
         private void OnSaveConfigCommand(ICommandState state)
         {
@@ -499,7 +497,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void OnEditResourcesCommand()
         {
             using IViewModel viewModel = ViewModelFactory.CreateEditResources(CurrentLanguage,
-                ResourceCustomPath != (lastSavedResourcesPath.Length == 0 ? Res.DefaultResourcesPath : lastSavedResourcesPath));
+                UseCustomResourcePath && ResourceCustomPath != (lastSavedResourcesPath.Length == 0 ? Res.DefaultResourcesPath : lastSavedResourcesPath));
             if (viewModel is EditResourcesViewModel vm)
                 vm.SaveConfigurationCallback = SaveConfiguration;
             ShowChildViewCallback?.Invoke(viewModel);
