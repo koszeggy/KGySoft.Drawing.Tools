@@ -142,5 +142,17 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
                 this["AutoShrinkLargeBitmap"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool CompoundView {
+            get {
+                return ((bool)(this["CompoundView"]));
+            }
+            set {
+                this["CompoundView"] = value;
+            }
+        }
     }
 }

@@ -114,6 +114,7 @@ namespace KGySoft.Drawing.ImagingTools
         internal static bool AutoZoomMultiResIcon { get => Get(true); set => Set(value); }
         internal static bool AutoZoomBitmap { get => Get<bool>(); set => Set(value); }
         internal static bool AutoShrinkLargeBitmap { get => Get(true); set => Set(value); }
+        internal static bool CompoundView { get => Get(true); set => Set(value); }
         internal static Uri BaseUri => baseUri ??= new Uri(ResourceRepositoryLocation);
 
         #endregion
