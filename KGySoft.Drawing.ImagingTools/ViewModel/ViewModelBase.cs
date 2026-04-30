@@ -59,6 +59,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Methods
 
+        #region Internal Methods
+
+        internal void SuspendChanges() => SuspendChangedEvent();
+        internal void ResumeChanges() => ResumeChangedEvent();
+
+        #endregion
+
         #region Protected Methods
 
         protected void ShowError(string message) => ShowErrorCallback?.Invoke(message);

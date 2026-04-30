@@ -476,7 +476,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             int minHeight = this.ScaleHeight(refSplitterMinHeight) + this.GetScrollBarSize().Height;
             if (imageViewer.Height >= minHeight)
             {
+                ViewModel.SuspendChanges();
                 txtInfo.EnsureSize();
+                ViewModel.ResumeChanges();
                 return;
             }
 
