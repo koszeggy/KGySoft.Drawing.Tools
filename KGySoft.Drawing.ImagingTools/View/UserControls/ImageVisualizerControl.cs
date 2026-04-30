@@ -162,6 +162,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             btnOpen.Image = Images.Open;
             btnSave.Image = Images.Save;
             btnClear.Image = Images.Clear;
+            btnCopy.Image = Images.Copy;
+            btnPaste.Image = Images.Paste;
 
             btnColorSettings.Image = Images.Palette;
             miBackColorDefault.Image = Images.Check;

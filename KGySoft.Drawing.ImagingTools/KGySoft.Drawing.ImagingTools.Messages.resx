@@ -699,6 +699,12 @@ Harmonizing visual elements for all possible environments is never a trivial tas
   <data name="btnClear.Text" xml:space="preserve">
     <value>Clear (Ctrl+Del)</value>
   </data>
+  <data name="btnCopy.Text" xml:space="preserve">
+    <value>Copy (Ctrl+C)</value>
+  </data>
+  <data name="btnPaste.Text" xml:space="preserve">
+    <value>Paste (Ctrl+V)</value>
+  </data>
   <data name="btnColorSettings.Text" xml:space="preserve">
     <value>Color Settings</value>
   </data>
