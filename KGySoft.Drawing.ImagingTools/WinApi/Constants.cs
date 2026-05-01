@@ -29,9 +29,12 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
         internal const int WM_NCCALCSIZE = 0x0083;
         internal const int WM_NCPAINT = 0x0085;
         internal const int WM_NCACTIVATE = 0x0086;
-        internal const int WM_THEMECHANGED = 0x031A;
         internal const int WM_DPICHANGED_BEFOREPARENT = 0x02E2;
         internal const int WM_DPICHANGED_AFTERPARENT = 0x02E3;
+        internal const int WM_DRAWCLIPBOARD = 0x0308;
+        internal const int WM_CHANGECBCHAIN = 0x030D;
+        internal const int WM_THEMECHANGED = 0x031A;
+        internal const int WM_CLIPBOARDUPDATE = 0x031D;
 
         internal const nint MA_ACTIVATEANDEAT = 2;
         internal const nint MA_ACTIVATE = 1;

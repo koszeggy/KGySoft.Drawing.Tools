@@ -314,6 +314,47 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             [DllImport("user32.dll")]
             internal static extern IntPtr GetActiveWindow();
 
+            /// <summary>
+            /// Places the given window in the system-maintained clipboard format listener list.
+            /// </summary>
+            /// <param name="hwnd">A handle to the window to be placed in the clipboard format listener list.</param>
+            /// <returns>Returns TRUE if successful, FALSE otherwise. Call GetLastError for additional details.</returns>
+            /// <remarks>When a window has been added to the clipboard format listener list, it is posted a WM_CLIPBOARDUPDATE message whenever the contents of the clipboard have changed.</remarks>
+            [DllImport("user32.dll", SetLastError = true)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            internal static extern bool AddClipboardFormatListener(IntPtr hwnd);
+
+            /// <summary>
+            /// Removes the given window from the system-maintained clipboard format listener list.
+            /// </summary>
+            /// <param name="hwnd">A handle to the window to remove from the clipboard format listener list.</param>
+            /// <returns>Returns TRUE if successful, FALSE otherwise. Call GetLastError for additional details.</returns>
+            [DllImport("user32.dll", SetLastError = true)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            internal static extern bool RemoveClipboardFormatListener(IntPtr hwnd);
+
+            /// <summary>
+            /// Adds the specified window to the chain of clipboard viewers. Clipboard viewer windows receive a WM_DRAWCLIPBOARD message whenever the content of the clipboard changes.
+            /// This function is used for backward compatibility with earlier versions of Windows.
+            /// </summary>
+            /// <param name="hWndNewViewer">A handle to the window to be added to the clipboard chain.</param>
+            /// <returns>If the function succeeds, the return value identifies the next window in the clipboard viewer chain. If an error occurs or there are no other windows in the clipboard viewer chain, the return value is NULL.</returns>
+            [DllImport("user32.dll", SetLastError = true)]
+            internal static extern IntPtr SetClipboardViewer(IntPtr hWndNewViewer);
+
+            /// <summary>
+            /// Removes a specified window from the chain of clipboard viewers.
+            /// </summary>
+            /// <param name="hWndRemove">A handle to the window to be removed from the chain. The handle must have been passed to the SetClipboardViewer function.</param>
+            /// <param name="hWndNewNext">A handle to the window that follows the hWndRemove window in the clipboard viewer chain.
+            /// (This is the handle returned by SetClipboardViewer, unless the sequence was changed in response to a WM_CHANGECBCHAIN message.)</param>
+            /// <returns>The return value indicates the result of passing the WM_CHANGECBCHAIN message to the windows in the clipboard viewer chain.
+            /// Because a window in the chain typically returns FALSE when it processes WM_CHANGECBCHAIN, the return value from ChangeClipboardChain is typically FALSE.
+            /// If there is only one window in the chain, the return value is typically TRUE.</returns>
+            [DllImport("user32.dll", SetLastError = true)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            internal static extern bool ChangeClipboardChain(IntPtr hWndRemove, IntPtr hWndNewNext);
+
             #endregion
         }
 
@@ -430,6 +471,13 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
 
         internal static bool IsWindow(IntPtr hWnd) => hWnd != IntPtr.Zero && NativeMethods.IsWindow(hWnd);
         internal static IntPtr GetActiveWindow() => NativeMethods.GetActiveWindow();
+        
+        internal static bool AddClipboardFormatListener(IntPtr handle) => NativeMethods.AddClipboardFormatListener(handle);
+        internal static void RemoveClipboardFormatListener(IntPtr handle) => NativeMethods.RemoveClipboardFormatListener(handle);
+        internal static IntPtr SetClipboardViewer(IntPtr handle) => NativeMethods.SetClipboardViewer(handle);
+        internal static void ChangeClipboardChain(IntPtr handleRemove, IntPtr handleNext) => NativeMethods.ChangeClipboardChain(handleRemove, handleNext);
+
+
 
         #endregion
     }
