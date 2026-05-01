@@ -267,7 +267,6 @@
             | KGySoft.WinForms.Controls.ImageViewerOptimizationOptions.UseUnsafeCooperativeLocking)));
             this.imageViewer.Size = new System.Drawing.Size(364, 114);
             this.imageViewer.TabIndex = 7;
-            this.imageViewer.TabStop = false;
             // 
             // lblNotification
             // 

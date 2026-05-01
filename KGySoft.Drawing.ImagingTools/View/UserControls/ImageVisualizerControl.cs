@@ -229,6 +229,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 case Keys.Shift | Keys.Left:
                     (RightToLeft == RightToLeft.Yes ? btnNext : btnPrev).PerformClick();
                     return true;
+                case Keys.Control | Keys.C or Keys.Control | Keys.Insert when !txtInfo.Focused:
+                    btnCopy.PerformClick();
+                    return true;
+                case Keys.Control | Keys.V or Keys.Shift | Keys.Insert when !txtInfo.Focused:
+                    btnPaste.PerformClick();
+                    return true;
 
                 default:
                     return base.ProcessCmdKey(ref msg, keyData);
@@ -382,6 +388,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 .AddSource(btnSave, nameof(btnSave.Click));
             CommandBindings.Add(ViewModel.ClearCommand, ViewModel.ClearCommandState)
                 .AddSource(btnClear, nameof(btnClear.Click));
+
+            // Clipboard
+            CommandBindings.Add(ViewModel.CopyCommand, ViewModel.CopyCommandState)
+                .AddSource(btnCopy, nameof(btnCopy.Click));
+            CommandBindings.Add(ViewModel.PasteCommand, ViewModel.PasteCommandState)
+                .AddSource(btnPaste, nameof(btnPaste.Click));
 
             // Color Settings
             CommandBindings.Add<EventArgs>(OnSetBackColorCommand)

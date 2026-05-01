@@ -130,6 +130,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommandState OpenFileCommandState => Get(() => new CommandState());
         internal ICommandState SaveFileCommandState => Get(() => new CommandState { Enabled = false });
         internal ICommandState ClearCommandState => Get(() => new CommandState { Enabled = false });
+        internal ICommandState CopyCommandState => Get(() => new CommandState { Enabled = false });
+        internal ICommandState PasteCommandState => Get(() => new CommandState { Enabled = false });
         internal ICommandState SetCompoundViewCommandState => Get(() => new CommandState { [stateVisible] = false });
         internal ICommandState AdvanceAnimationCommandState => Get(() => new CommandState());
         internal ICommandState PrevImageCommandState => Get(() => new CommandState());
@@ -144,6 +146,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommand OpenFileCommand => Get(() => new SimpleCommand(OnOpenFileCommand));
         internal ICommand SaveFileCommand => Get(() => new SimpleCommand(OnSaveFileCommand));
         internal ICommand ClearCommand => Get(() => new SimpleCommand(OnClearCommand));
+        internal ICommand CopyCommand => Get(() => new SimpleCommand(OnCopyCommand));
+        internal ICommand PasteCommand => Get(() => new SimpleCommand(OnPasteCommand));
         internal ICommand SetCompoundViewCommand => Get(() => new SimpleCommand<bool>(OnSetCompoundViewCommand));
         internal ICommand AdvanceAnimationCommand => Get(() => new SimpleCommand(OnAdvanceAnimationCommand));
         internal ICommand PrevImageCommand => Get(() => new SimpleCommand(OnPrevImageCommand));
@@ -266,6 +270,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 UpdateIfMultiResImage();
             }
 
+            if (!ReadOnly)
+            {
+                ClipboardHelper.ClipboardChanged += ClipboardHelper_ClipboardChanged;
+                PasteCommandState.Enabled = ClipboardHelper.HasImage;
+            }
+
             base.ViewLoaded();
         }
 
@@ -276,7 +286,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             initialized = true;
         }
 
-        internal override void ViewUnloading() => Configuration.SaveSettings();
+        internal override void ViewUnloading()
+        {
+            if (!ReadOnly)
+                ClipboardHelper.ClipboardChanged -= ClipboardHelper_ClipboardChanged;
+            Configuration.SaveSettings();
+        }
 
         #endregion
 
@@ -505,6 +520,16 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             SetModified(IsDebuggerVisualizer);
         }
 
+        protected void CopyToClipboard()
+        {
+            ShowInfo("TODO: Copy");
+        }
+
+        protected virtual void PasteFromClipboard()
+        {
+            ShowInfo("TODO: Paste");
+        }
+
         protected virtual bool IsPaletteAvailable() => GetCurrentImageInfo().Palette.Length > 0;
 
         protected virtual void ShowPalette()
@@ -578,7 +603,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             bool valid = value.Type == ImageInfoType.None
                 || value.IsMetafile && imageTypes.HasFlag<AllowedImageTypes>(AllowedImageTypes.Metafile)
                 || value.Type == ImageInfoType.Icon && imageTypes.HasFlag<AllowedImageTypes>(AllowedImageTypes.Icon)
-                || !value.Type.In(ImageInfoType.None, ImageInfoType.Icon) && !value.IsMetafile && imageTypes.HasFlag<AllowedImageTypes>(AllowedImageTypes.Bitmap);
+                || value.Type is not (ImageInfoType.None or ImageInfoType.Icon) && !value.IsMetafile && imageTypes.HasFlag<AllowedImageTypes>(AllowedImageTypes.Bitmap);
 
             if (!valid)
                 throw new ArgumentException(PublicResources.ArgumentOutOfRange, nameof(value));
@@ -644,6 +669,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             ShowPaletteCommandState.Enabled = IsPaletteAvailable();
             SaveFileCommandState.Enabled = imageInfo.Type != ImageInfoType.None;
             ClearCommandState.Enabled = imageInfo.Type != ImageInfoType.None && !ReadOnly;
+            CopyCommandState.Enabled = imageInfo.Type != ImageInfoType.None;
             EditBitmapCommandState.Enabled = CanEditImage();
             CountColorsCommandState.Enabled = imageInfo.Type != ImageInfoType.None && !imageInfo.IsMetafile && IsSingleImageShown();
             UpdateInfo();
@@ -654,6 +680,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             bool readOnly = ReadOnly;
             OpenFileCommandState.Enabled = !readOnly;
             ClearCommandState.Enabled = !readOnly && imageInfo.Type != ImageInfoType.None;
+            PasteCommandState.Enabled = !readOnly && ClipboardHelper.HasImage;
             EditBitmapCommandState.Enabled = CanEditImage();
         }
 
@@ -1320,6 +1347,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         }
 
         private void OnClearCommand() => Clear();
+        private void OnCopyCommand() => CopyToClipboard();
+        private void OnPasteCommand() => PasteFromClipboard();
 
         private void OnSetCompoundViewCommand(bool isCompound) => IsCompoundView = isCompound;
 
@@ -1412,6 +1441,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 #endif
             ShowInfo(Res.InfoMessageAbout(asm.GetName().Version!, frameworkName, DateTime.Now.Year));
         }
+
+        #endregion
+
+        #region Event Handlers
+
+        private void ClipboardHelper_ClipboardChanged(object? sender, EventArgs e) => TryInvokeSync(() => PasteCommandState.Enabled = ClipboardHelper.HasImage);
 
         #endregion
 
