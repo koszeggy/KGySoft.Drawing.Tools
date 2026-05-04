@@ -300,6 +300,9 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>The specified path is not an existing directory. It will be attempted to be created.</summary>
         internal static string WarningMessageDirectoryNotExists => Get("WarningMessage_DirectoryNotExists");
 
+        /// <summary>The clipboard does not contain an image in the required format.</summary>
+        internal static string WarningMessageCannotPasteClipboard => Get("WarningMessage_CannotPasteClipboard");
+
         /// <summary>Are you sure you want to overwrite this installation?</summary>
         internal static string ConfirmMessageOverwriteInstallation => Get("ConfirmMessage_OverwriteInstallation");
 

@@ -520,14 +520,18 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             SetModified(IsDebuggerVisualizer);
         }
 
-        protected void CopyToClipboard()
-        {
-            ShowInfo("TODO: Copy");
-        }
+        protected virtual void CopyToClipboard() => ClipboardHelper.CopyToClipboard(GetCurrentImageInfo());
 
         protected virtual void PasteFromClipboard()
         {
-            ShowInfo("TODO: Paste");
+            if (!ClipboardHelper.TryPasteFromClipboard(imageTypes, out ImageInfo? result))
+            {
+                ShowWarning(Res.WarningMessageCannotPasteClipboard);
+                return;
+            }
+
+            ImageInfo = result;
+            SetModified(true);
         }
 
         protected virtual bool IsPaletteAvailable() => GetCurrentImageInfo().Palette.Length > 0;

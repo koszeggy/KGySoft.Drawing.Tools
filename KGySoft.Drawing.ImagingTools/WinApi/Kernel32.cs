@@ -16,7 +16,10 @@
 #region Usings
 
 using System;
+#if NET45_OR_GREATER
 using System.ComponentModel;
+#endif
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Security;
 
@@ -29,6 +32,7 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
     {
         #region NativeMethods class
 
+        [SuppressMessage("ReSharper", "MemberHidesStaticFromOuterClass", Justification = "Not an issue, always the outer class calls the NativeMethods members")]
         private static class NativeMethods
         {
             #region Methods
@@ -57,6 +61,31 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             [DllImport("kernel32.dll")]
             internal static extern uint GetCurrentThreadId();
 
+            /// <summary>
+            /// Locks a global memory object and returns a pointer to the first byte of the object's memory block.
+            /// </summary>
+            /// <param name="hMem">A handle to the global memory object. This handle is returned by either the GlobalAlloc or GlobalReAlloc function.</param>
+            /// <returns>If the function succeeds, the return value is a pointer to the first byte of the memory block.
+            /// If the function fails, the return value is NULL.To get extended error information, call GetLastError.</returns>
+            /// <remarks>
+            /// <para>The internal data structures for each memory object include a lock count that is initially zero. For movable memory objects, GlobalLock increments the count by one, and the GlobalUnlock function decrements the count by one. Each successful call that a process makes to GlobalLock for an object must be matched by a corresponding call to GlobalUnlock. Locked memory will not be moved or discarded, unless the memory object is reallocated by using the GlobalReAlloc function. The memory block of a locked memory object remains locked until its lock count is decremented to zero, at which time it can be moved or discarded.</para>
+            /// <para>Memory objects allocated with GMEM_FIXED always have a lock count of zero. For these objects, the value of the returned pointer is equal to the value of the specified handle.</para>
+            /// <para>If the specified memory block has been discarded or if the memory block has a zero-byte size, this function returns NULL.</para>
+            /// <para>Discarded objects always have a lock count of zero.</para>
+            /// </remarks>
+            [DllImport("kernel32.dll", SetLastError = true)]
+            internal static extern IntPtr GlobalLock(IntPtr hMem);
+
+            /// <summary>
+            /// Decrements the lock count associated with a memory object that was allocated with GMEM_MOVEABLE. This function has no effect on memory objects allocated with GMEM_FIXED.
+            /// </summary>
+            /// <param name="hMem">A handle to the global memory object. This handle is returned by either the GlobalAlloc or GlobalReAlloc function.</param>
+            /// <returns>If the memory object is still locked after decrementing the lock count, the return value is a nonzero value. If the memory object is unlocked after decrementing the lock count, the function returns zero and GetLastError returns NO_ERROR.
+            /// If the function fails, the return value is zero and GetLastError returns a value other than NO_ERROR.</returns>
+            [DllImport("kernel32.dll", SetLastError = true)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            internal static extern bool GlobalUnlock(IntPtr hMem);
+
             #endregion
         }
 
@@ -75,6 +104,8 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
 #endif
 
         internal static uint GetCurrentThreadId() => NativeMethods.GetCurrentThreadId();
+        internal static IntPtr GlobalLock(IntPtr handle) => NativeMethods.GlobalLock(handle);
+        internal static void GlobalUnlock(IntPtr handle) => NativeMethods.GlobalUnlock(handle);
 
         #endregion
     }
