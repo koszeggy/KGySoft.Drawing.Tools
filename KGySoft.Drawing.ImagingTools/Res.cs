@@ -303,6 +303,9 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>The clipboard does not contain an image in the required format.</summary>
         internal static string WarningMessageCannotPasteClipboard => Get("WarningMessage_CannotPasteClipboard");
 
+        /// <summary>Could not access the clipboard for copying. Maybe it is locked by another process.</summary>
+        internal static string WarningMessageCannotCopyClipboard => Get("WarningMessage_CannotCopyClipboard");
+
         /// <summary>Are you sure you want to overwrite this installation?</summary>
         internal static string ConfirmMessageOverwriteInstallation => Get("ConfirmMessage_OverwriteInstallation");
 

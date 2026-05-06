@@ -510,6 +510,9 @@ so partial transparent pixels will be blended with back color.</value>
   <data name="WarningMessage_CannotPasteClipboard" xml:space="preserve">
     <value>The clipboard does not contain an image in the required format.</value>
   </data>
+  <data name="WarningMessage_CannotCopyClipboard" xml:space="preserve">
+    <value>Could not access the clipboard for copying. Maybe it is locked by another process.</value>
+  </data>
   <data name="ConfirmMessage_OverwriteInstallation" xml:space="preserve">
     <value>Are you sure you want to overwrite this installation?</value>
   </data>

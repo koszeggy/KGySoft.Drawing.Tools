@@ -61,6 +61,8 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
         internal const string ClassNameButton = "Button";
         internal const string ClassNameStatic = "Static";
 
+        internal const ulong MaxArrayLength = 0x7FFFFFC7;
+
         #endregion
     }
 }

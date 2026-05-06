@@ -86,6 +86,15 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             [return: MarshalAs(UnmanagedType.Bool)]
             internal static extern bool GlobalUnlock(IntPtr hMem);
 
+            /// <summary>
+            /// Retrieves the current size of the specified global memory object, in bytes.
+            /// </summary>
+            /// <param name="hMem">A handle to the global memory object. This handle is returned by either the GlobalAlloc or GlobalReAlloc function.</param>
+            /// <returns>If the function succeeds, the return value is the size of the specified global memory object, in bytes.
+            /// If the specified handle is not valid or if the object has been discarded, the return value is zero. To get extended error information, call GetLastError.</returns>
+            [DllImport("kernel32.dll", SetLastError = true)]
+            internal static extern nuint GlobalSize(IntPtr hMem);
+
             #endregion
         }
 
@@ -106,6 +115,7 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
         internal static uint GetCurrentThreadId() => NativeMethods.GetCurrentThreadId();
         internal static IntPtr GlobalLock(IntPtr handle) => NativeMethods.GlobalLock(handle);
         internal static void GlobalUnlock(IntPtr handle) => NativeMethods.GlobalUnlock(handle);
+        internal static nuint GlobalSize(IntPtr handle) => NativeMethods.GlobalSize(handle);
 
         #endregion
     }
