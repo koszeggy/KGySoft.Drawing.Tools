@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -258,9 +259,15 @@ namespace KGySoft.Drawing.ImagingTools
 
         internal static void CopyToClipboard(ImageInfoBase info)
         {
+            // NOTE: Using SetImage as a fallback solution only, because it does not support the native metafile formats, and puts a BinaryFormatter entry on the clipboard
+            // a with potentially poorly chosen encoder (supporting such formats in TryPasteFromClipboard, though).
+            // Instead, preparing the native Bitmap format as a well-known fallback (which is supported by the managed clipboard API as well) explicitly.
             try
             {
-                var dataObject = new DataObject();
+                // Value is IntPtr or MemoryStream. Using stream is better than byte[], because in the native API stream is handled natively,
+                // whereas byte[] is serialized in a BinaryFormatter compatible way.
+                var formats = new Dictionary<string, object>();
+                Image? image = null;
 
                 // compound image or single frame image
                 if (info is ImageInfo imageInfo)
@@ -272,14 +279,8 @@ namespace KGySoft.Drawing.ImagingTools
                             return;
 
                         case ImageInfoType.SingleImage when imageInfo.Image is Metafile metafile:
-                            bool isEmf = imageInfo.RawFormat == ImageFormat.Emf.Guid;
-                            var ms = new MemoryStream();
-                            if (isEmf)
-                                metafile.SaveAsEmf(ms);
-                            else
-                                metafile.SaveAsWmf(ms);
-                            CopyStream(dataObject, isEmf ? emfFormat : wmfFormat, ms);
-
+                            image = metafile;
+                            CopyMetafile(formats, metafile);
                             break;
 
                         case ImageInfoType.Pages:
@@ -300,14 +301,10 @@ namespace KGySoft.Drawing.ImagingTools
 
                 // TODO: HBitmap, DIB
 
-                // NOTE: Using dataObject.SetImage in debug only, because it puts a BinaryFormatter entry on the clipboard a with potentially bad encoder.
-                // Supporting it in Paste, though. Instead, preparing the native Bitmap format as a well-known fallback explicitly.
-#if DEBUG
-                //if (info.Image is Image image)
-                //    dataObject.SetImage(image);
-#endif
-
-                Clipboard.SetDataObject(dataObject, true);
+                if (formats.Count != 0)
+                    PopulateClipboard(formats);
+                else if (image != null)
+                    Clipboard.SetImage(image);
             }
             catch (Exception e) when (!e.IsCritical())
             {
@@ -333,7 +330,7 @@ namespace KGySoft.Drawing.ImagingTools
                 if ((imageTypes & AllowedImageTypes.Metafile) != AllowedImageTypes.None)
                 {
                     // 1.a. Metafile stream as we copy it.
-                    if (TryGetMetafileStream(formats.Intersect(["EMF", "WMF"]), dataObject, out Metafile? metafile))
+                    if (TryGetMetafileStream(formats.Intersect([emfFormat, wmfFormat]), dataObject, out Metafile? metafile))
                     {
                         imageInfo = new ImageInfo(metafile);
                         return true;
@@ -354,7 +351,7 @@ namespace KGySoft.Drawing.ImagingTools
                     }
 
                     // 1.d. Metafile stream - NOTE: .NET copies metafiles with System.Drawing.Bitmap format (though the actual raw format is PNG).
-                    // Not using it, as we don't put metafiles to the clipboard like this, and it has the same format as  bitmaps.
+                    // Not using it, as we don't put metafiles to the clipboard like this, and it is indicated by the same format as bitmaps, which is handled later.
                     // Metafiles with the System.Drawing.Bitmap format are handled when attempting to deserialize bitmaps.
                     //if (TryGetMetafileStream(formats.Intersect([typeof(Metafile).FullName!, typeof(Bitmap).FullName!]), dataObject, out metafile))
                     //{
@@ -387,10 +384,142 @@ namespace KGySoft.Drawing.ImagingTools
 
         private static void OnClipboardChanged() => clipboardChangedHandler?.Invoke(null, EventArgs.Empty);
 
-        private static void CopyStream(DataObject dataObject, string format, MemoryStream stream)
+        private static void PopulateClipboard(Dictionary<string, object> formats)
         {
-            // Using stream is better than byte[], because stream is handled natively, whereas byte[] is serialized in a BinaryFormatter compatible way
-            dataObject.SetData(format, stream);
+            bool useNativeApi = OSHelper.IsWindows && formats.ContainsKey(DataFormats.EnhancedMetafile);
+            if (useNativeApi && PopulateClipboardNatively(formats))
+                return;
+
+            var dataObject = new DataObject();
+            foreach (KeyValuePair<string, object> item in formats)
+                dataObject.SetData(item.Key, false, item.Value);
+
+            Clipboard.SetDataObject(dataObject, true);
+        }
+
+        private static bool PopulateClipboardNatively(Dictionary<string, object> formats)
+        {
+            try
+            {
+                if (!User32.OpenClipboard())
+                    return false;
+                try
+                {
+                    // This is why we cannot mix native and managed APIs: without EmptyClipboard we get an error that the thread does not have an open clipboard,
+                    // even though we called OpenClipboard, which apparently just increments a lock counter. Even using the native API first, and then
+                    // calling Clipboard.GetDataObject, adding the rest and setting everything together is not possible either, because Clipboard.SetDataObject
+                    // corrupts the formats that it does not support (e.g. EnhancedMetafile).
+                    if (!User32.EmptyClipboard())
+                        return false;
+
+                    foreach (KeyValuePair<string, object> item in formats)
+                    {
+                        IntPtr hMem = item.Value switch
+                        {
+                            IntPtr pointer => pointer,
+                            MemoryStream ms => StreamToHGlobal(ms),
+                            _ => throw new InvalidOperationException(Res.InternalError($"Unexpected clipboard format: {item.Key}: {item.Value.GetType()}"))
+                        };
+
+                        if (hMem != IntPtr.Zero && !User32.SetClipboardData(DataFormats.GetFormat(item.Key).Id, hMem))
+                            Debug.Fail($"Failed to add format '{item.Key}' to the clipboard natively: {new Win32Exception(Marshal.GetLastWin32Error()).Message}");
+                    }
+
+                    return true;
+                }
+                finally
+                {
+                    User32.CloseClipboard();
+                }
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                Debug.WriteLine($"Failed to populate the clipboard by the native API, trying to use fall back to .NET API ({e.Message})");
+                return false;
+            }
+        }
+
+        private static void CopyMetafile(Dictionary<string, object> formats, Metafile metafile)
+        {
+            Guid rawFormat = metafile.RawFormat.Guid;
+            bool? isEmf = rawFormat == ImageFormat.Emf.Guid ? true
+                : rawFormat == ImageFormat.Wmf.Guid ? false
+                : null;
+
+            // Metafile is neither EMF not WMF. Can occur when constructed from a bitmap stream, even by BinaryFormatter deserialization.
+            // In this case just the Bitmap format will be saved to the clipboard.
+            if (isEmf == null)
+                return;
+
+            // 1. Custom EMF/WMF format. Used to be able to restore the original raw format even from the clipboard.
+            var ms = new MemoryStream();
+            if (isEmf == true)
+                metafile.SaveAsEmf(ms);
+            else
+                metafile.SaveAsWmf(ms);
+            formats.Add(isEmf == true ? emfFormat : wmfFormat, ms);
+
+            if (!OSHelper.IsWindows)
+                return;
+
+            // 2. Standard EnhancedMetafile format, which is compatible with many applications.
+            // Windows automatically generates a MetaFilePict entry as well (though pasting it does not work, at least on x64 systems).
+            // GetHenhmetafile makes the original image unusable, so we clone it first.
+            using Metafile clone = (Metafile)metafile.Clone();
+
+            // 2.a. EMF: simply putting a clone to the clipboard.
+            if (isEmf == true)
+            {
+                IntPtr hEmf = clone.GetHenhmetafile();
+                if (hEmf == IntPtr.Zero)
+                    return;
+                try
+                {
+                    // We create another copy, which goes to the clipboard. The original handle that belongs to the managed clone will be deleted (and its owner disposed).
+                    IntPtr hEmfCopy = Gdi32.CopyEnhMetaFile(hEmf);
+                    if (hEmfCopy != IntPtr.Zero)
+                        formats.Add(DataFormats.EnhancedMetafile, hEmfCopy);
+                    return;
+                }
+                finally
+                {
+                    Gdi32.DeleteEnhMetaFile(hEmf);
+                }
+            }
+
+            // 2.b. WMF: cannot just put a MetaFilePict format to the clipboard with the handle, because it cannot be pasted by most applications.
+            // So converting it to EMF in memory, and putting that to the clipboard (which creates also the MetaFilePict entry, even if unusable).
+            IntPtr hmf = clone.GetHenhmetafile(); // NOTE: the method name is misleading: in this case this is NOT an enhanced metafile handle, we need to convert it
+            IntPtr hdc = IntPtr.Zero;
+            if (hmf == IntPtr.Zero)
+                return;
+
+            try
+            {
+                uint size = Gdi32.GetMetaFileBitsEx(hmf, 0, null);
+                if (size == 0)
+                    return;
+
+                byte[] wmfData = new byte[size];
+                Gdi32.GetMetaFileBitsEx(hmf, size, wmfData);
+
+                var mp = new METAFILEPICT
+                {
+                    mm = Constants.MM_ANISOTROPIC,
+                    hMF = hmf
+                };
+
+                hdc = User32.GetDC(IntPtr.Zero);
+                IntPtr hEmf = Gdi32.SetWinMetaFileBits(size, wmfData, hdc, ref mp);
+                if (hEmf != IntPtr.Zero)
+                    formats.Add(DataFormats.EnhancedMetafile, hEmf);
+            }
+            finally
+            {
+                if (hdc != IntPtr.Zero)
+                    User32.ReleaseDC(IntPtr.Zero, hdc);
+                Gdi32.DeleteMetaFile(hmf);
+            }
         }
 
         private static bool TryGetNativeEmf(IWinFormsDataObject dataObject, out Metafile? metafile)
@@ -530,11 +659,11 @@ namespace KGySoft.Drawing.ImagingTools
                             switch (medium.tymed)
                             {
                                 case TYMED.TYMED_ISTREAM:
-                                    metafile = new Metafile(FromIStream(ref medium));
+                                    metafile = new Metafile(ComIStreamToStream(ref medium));
                                     return true;
 
                                 case TYMED.TYMED_HGLOBAL:
-                                    var stream = FromHGlobalStream(ref medium);
+                                    MemoryStream? stream = HGlobalToStream(ref medium);
                                     if (stream == null)
                                         break;
                                     metafile = new Metafile(stream);
@@ -580,7 +709,7 @@ namespace KGySoft.Drawing.ImagingTools
             return false;
         }
 
-        private static MemoryStream FromIStream(ref STGMEDIUM medium)
+        private static MemoryStream ComIStreamToStream(ref STGMEDIUM medium)
         {
             Debug.Assert(medium.tymed == TYMED.TYMED_ISTREAM);
             IStream comStream = (IStream)Marshal.GetObjectForIUnknown(medium.unionmember);
@@ -601,7 +730,7 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static MemoryStream? FromHGlobalStream(ref STGMEDIUM medium)
+        private static MemoryStream? HGlobalToStream(ref STGMEDIUM medium)
         {
             Debug.Assert(medium.tymed == TYMED.TYMED_HGLOBAL);
             IntPtr ptrStream = Kernel32.GlobalLock(medium.unionmember);
@@ -632,6 +761,35 @@ namespace KGySoft.Drawing.ImagingTools
             finally
             {
                 Kernel32.GlobalUnlock(medium.unionmember);
+            }
+        }
+
+        private static IntPtr StreamToHGlobal(MemoryStream ms)
+        {
+            int size = (int)ms.Length; // always must success, because it's an array length
+            IntPtr hGlobal = Kernel32.GlobalAlloc(Constants.GMEM_SHARE | Constants.GMEM_MOVEABLE, size);
+            IntPtr hMem = IntPtr.Zero;
+            try
+            {
+                if (hGlobal != IntPtr.Zero)
+                    hMem = Kernel32.GlobalLock(hGlobal);
+                if (hMem == IntPtr.Zero)
+                {
+                    Debug.WriteLine($"Failed to allocate {ms.Length} bytes of global memory for the stream.");
+                    return IntPtr.Zero;
+                }
+
+                Marshal.Copy(ms.ToArray(), 0, hMem, size);
+                return hMem;
+            }
+            finally
+            {
+                if (hGlobal != IntPtr.Zero)
+                {
+                    Kernel32.GlobalUnlock(hGlobal);
+                    if (hMem == IntPtr.Zero)
+                        Kernel32.GlobalFree(hGlobal);
+                }
             }
         }
 

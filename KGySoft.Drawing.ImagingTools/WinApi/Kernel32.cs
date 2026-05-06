@@ -62,6 +62,26 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             internal static extern uint GetCurrentThreadId();
 
             /// <summary>
+            /// Allocates the specified number of bytes from the heap.
+            /// </summary>
+            /// <param name="uFlags">The memory allocation attributes. If zero is specified, the default is GMEM_FIXED.</param>
+            /// <param name="dwBytes">The number of bytes to allocate. If this parameter is zero and the uFlags parameter specifies GMEM_MOVEABLE,
+            /// the function returns a handle to a memory object that is marked as discarded.</param>
+            /// <returns>If the function succeeds, the return value is a handle to the newly allocated memory object.
+            /// If the function fails, the return value is NULL. To get extended error information, call GetLastError.</returns>
+            [DllImport("kernel32.dll", SetLastError = true)]
+            internal static extern IntPtr GlobalAlloc(uint uFlags, nuint dwBytes);
+
+            /// <summary>
+            /// Frees the specified global memory object and invalidates its handle.
+            /// </summary>
+            /// <param name="hMem">A handle to the global memory object. This handle is returned by either the GlobalAlloc or GlobalReAlloc function. It is not safe to free memory allocated with LocalAlloc.</param>
+            /// <returns>If the function succeeds, the return value is NULL.
+            /// If the function fails, the return value is equal to a handle to the global memory object. To get extended error information, call GetLastError.</returns>
+            [DllImport("kernel32.dll", SetLastError = true)]
+            internal static extern IntPtr GlobalFree(IntPtr hMem);
+
+            /// <summary>
             /// Locks a global memory object and returns a pointer to the first byte of the object's memory block.
             /// </summary>
             /// <param name="hMem">A handle to the global memory object. This handle is returned by either the GlobalAlloc or GlobalReAlloc function.</param>
@@ -113,6 +133,8 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
 #endif
 
         internal static uint GetCurrentThreadId() => NativeMethods.GetCurrentThreadId();
+        internal static IntPtr GlobalAlloc(uint flags, int size) => NativeMethods.GlobalAlloc(flags, (nuint)size);
+        internal static void GlobalFree(IntPtr handle) => NativeMethods.GlobalFree(handle);
         internal static IntPtr GlobalLock(IntPtr handle) => NativeMethods.GlobalLock(handle);
         internal static void GlobalUnlock(IntPtr handle) => NativeMethods.GlobalUnlock(handle);
         internal static nuint GlobalSize(IntPtr handle) => NativeMethods.GlobalSize(handle);

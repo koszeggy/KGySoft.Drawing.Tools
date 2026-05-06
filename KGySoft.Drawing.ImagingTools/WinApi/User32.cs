@@ -26,6 +26,12 @@ using KGySoft.WinForms;
 
 #endregion
 
+#region Suppressions
+
+// ReSharper disable InconsistentNaming
+
+#endregion
+
 namespace KGySoft.Drawing.ImagingTools.WinApi
 {
     [SecurityCritical]
@@ -355,6 +361,51 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             [return: MarshalAs(UnmanagedType.Bool)]
             internal static extern bool ChangeClipboardChain(IntPtr hWndRemove, IntPtr hWndNewNext);
 
+            /// <summary>
+            /// Opens the clipboard for examination and prevents other applications from modifying the clipboard content.
+            /// </summary>
+            /// <param name="hWndNewOwner">A handle to the window to be associated with the open clipboard. If this parameter is NULL, the open clipboard is associated with the current task.</param>
+            /// <returns>If the function succeeds, the return value is nonzero.
+            /// If the function fails, the return value is zero. To get extended error information, call GetLastError.</returns>
+            [DllImport("user32.dll", SetLastError = true)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            internal static extern bool OpenClipboard(IntPtr hWndNewOwner);
+
+            /// <summary>
+            /// Closes the clipboard.
+            /// </summary>
+            /// <returns>If the function succeeds, the return value is nonzero.
+            /// If the function fails, the return value is zero. To get extended error information, call GetLastError.</returns>
+            [DllImport("user32.dll", SetLastError = true)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            internal static extern bool CloseClipboard();
+
+            [DllImport("user32.dll", SetLastError = true)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            internal static extern bool EmptyClipboard();
+
+            /// <summary>
+            /// Places data on the clipboard in a specified clipboard format. The window must be the current clipboard owner, and the application must have called the OpenClipboard function.
+            /// (When responding to the WM_RENDERFORMAT message, the clipboard owner must not call OpenClipboard before calling SetClipboardData.)
+            /// </summary>
+            /// <param name="uFormat">The clipboard format. This parameter can be a registered format or any of the standard clipboard formats. For more information, see Standard Clipboard Formats and Registered Clipboard Formats.</param>
+            /// <param name="hMem">A handle to the data in the specified format. This parameter can be NULL, indicating that the window provides data in the specified clipboard format (renders the format) upon request; this is known as delayed rendering. If a window delays rendering, it must process the WM_RENDERFORMAT and WM_RENDERALLFORMATS messages.
+            /// If SetClipboardData succeeds, the system owns the object identified by the hMem parameter. The application may not write to or free the data once ownership has been transferred to the system, but it can lock and read from the data until the CloseClipboard function is called. (The memory must be unlocked before the Clipboard is closed.)
+            /// If the hMem parameter identifies a memory object, the object must have been allocated using the function with the GMEM_MOVEABLE flag.</param>
+            /// <returns>If the function succeeds, the return value is the handle to the data.
+            /// If the function fails, the return value is NULL. To get extended error information, call GetLastError.</returns>
+            [DllImport("user32.dll", SetLastError = true)]
+            internal static extern IntPtr SetClipboardData(uint uFormat, IntPtr hMem);
+
+            /// <summary>
+            /// The GetDC function retrieves a handle to a device context(DC) for the client area of a specified window or for the entire screen.You can use the returned handle in subsequent GDI functions to draw in the DC.The device context is an opaque data structure, whose values are used internally by GDI.
+            /// </summary>
+            /// <param name = "hWnd" > A handle to the window whose DC is to be retrieved.If this value is NULL, GetDC retrieves the DC for the entire screen.</param>
+            /// <returns>If the function succeeds, the return value is a handle to the DC for the specified window's client area.
+            /// If the function fails, the return value is NULL.</returns>
+            [DllImport("user32.dll", CharSet = CharSet.Auto)]
+            internal static extern IntPtr GetDC(IntPtr hWnd);
+
             #endregion
         }
 
@@ -476,8 +527,11 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
         internal static void RemoveClipboardFormatListener(IntPtr handle) => NativeMethods.RemoveClipboardFormatListener(handle);
         internal static IntPtr SetClipboardViewer(IntPtr handle) => NativeMethods.SetClipboardViewer(handle);
         internal static void ChangeClipboardChain(IntPtr handleRemove, IntPtr handleNext) => NativeMethods.ChangeClipboardChain(handleRemove, handleNext);
-
-
+        internal static bool OpenClipboard() => NativeMethods.OpenClipboard(IntPtr.Zero);
+        internal static bool EmptyClipboard() => NativeMethods.EmptyClipboard();
+        internal static bool CloseClipboard() => NativeMethods.CloseClipboard();
+        internal static bool SetClipboardData(int format, IntPtr hMem) => NativeMethods.SetClipboardData((uint)format, hMem) == hMem;
+        internal static IntPtr GetDC(IntPtr hWnd) => NativeMethods.GetDC(hWnd);
 
         #endregion
     }

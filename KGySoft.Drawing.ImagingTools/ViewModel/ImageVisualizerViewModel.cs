@@ -273,7 +273,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (!ReadOnly)
             {
                 ClipboardHelper.ClipboardChanged += ClipboardHelper_ClipboardChanged;
-                PasteCommandState.Enabled = ClipboardHelper.HasImage;
+                PasteCommandState.Enabled = ClipboardHelper.HasFormat(imageTypes);
             }
 
             base.ViewLoaded();
@@ -524,7 +524,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         protected virtual void PasteFromClipboard()
         {
-            if (!ClipboardHelper.TryPasteFromClipboard(imageTypes, out ImageInfo? result))
+            if (!ClipboardHelper.TryPasteFromClipboard(imageTypes, GetCurrentImageInfo() is ImageInfo, out ImageInfo? result))
             {
                 ShowWarning(Res.WarningMessageCannotPasteClipboard);
                 return;
@@ -684,7 +684,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             bool readOnly = ReadOnly;
             OpenFileCommandState.Enabled = !readOnly;
             ClearCommandState.Enabled = !readOnly && imageInfo.Type != ImageInfoType.None;
-            PasteCommandState.Enabled = !readOnly && ClipboardHelper.HasImage;
+            PasteCommandState.Enabled = !readOnly && ClipboardHelper.HasFormat(imageTypes);
             EditBitmapCommandState.Enabled = CanEditImage();
         }
 
@@ -1450,7 +1450,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Event Handlers
 
-        private void ClipboardHelper_ClipboardChanged(object? sender, EventArgs e) => TryInvokeSync(() => PasteCommandState.Enabled = ClipboardHelper.HasImage);
+        private void ClipboardHelper_ClipboardChanged(object? sender, EventArgs e) => TryInvokeSync(() => PasteCommandState.Enabled = ClipboardHelper.HasFormat(imageTypes));
 
         #endregion
 

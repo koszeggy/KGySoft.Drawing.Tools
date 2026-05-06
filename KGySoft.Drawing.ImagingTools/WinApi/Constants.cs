@@ -51,6 +51,11 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
 
         internal const int WH_CALLWNDPROCRET = 12;
 
+        internal const uint GMEM_MOVEABLE = 2;
+        internal const uint GMEM_SHARE = 0x2000;
+
+        internal const short MM_ANISOTROPIC = 8;
+
         //// Needed for classic MessageBoxes. Restore if reverting from TaskDialogs
         //internal const int IDOK = 1;
         //internal const int IDCANCEL = 2;

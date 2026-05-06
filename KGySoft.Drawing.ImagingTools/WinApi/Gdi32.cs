@@ -62,6 +62,36 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             [return: MarshalAs(UnmanagedType.Bool)]
             internal static extern bool DeleteMetaFile(IntPtr hmf);
 
+            /// <summary>
+            /// The CopyEnhMetaFile function copies the contents of an enhanced-format metafile to a specified file.
+            /// </summary>
+            /// <param name="hEnh">A handle to the enhanced metafile to be copied.</param>
+            /// <param name="lpFileName">A pointer to the name of the destination file. If this parameter is NULL, the source metafile is copied to memory.</param>
+            /// <returns>If the function succeeds, the return value is a handle to the copy of the enhanced metafile.
+            /// If the function fails, the return value is NULL.</returns>
+            [DllImport("gdi32.dll")]
+            internal static extern IntPtr CopyEnhMetaFile(IntPtr hEnh, IntPtr lpFileName);
+
+            /// <summary>
+            /// The DeleteEnhMetaFile function deletes an enhanced-format metafile or an enhanced-format metafile handle.
+            /// </summary>
+            /// <param name="hmf">A handle to an enhanced metafile.</param>
+            /// <returns>If the function succeeds, the return value is nonzero. If the function fails, the return value is zero.</returns>
+            [DllImport("gdi32.dll")]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            internal static extern bool DeleteEnhMetaFile(IntPtr hmf);
+
+            /// <summary>
+            /// The SetWinMetaFileBits function converts a metafile from the older Windows format to the new enhanced format and stores the new metafile in memory.
+            /// </summary>
+            /// <param name="nSize">The size, in bytes, of the buffer that contains the Windows-format metafile.</param>
+            /// <param name="lpMeta16Data">A pointer to a buffer that contains the Windows-format metafile data. (It is assumed that the data was obtained by using the GetMetaFileBitsEx or GetWinMetaFileBits function.)</param>
+            /// <param name="hdcRef">A handle to a reference device context.</param>
+            /// <param name="lpMFP">A pointer to a METAFILEPICT structure that contains the suggested size of the metafile picture and the mapping mode that was used when the picture was created.</param>
+            /// <returns>If the function succeeds, the return value is a handle to a memory-based enhanced metafile. If the function fails, the return value is NULL.-**</returns>
+            [DllImport("gdi32.dll")]
+            internal static extern IntPtr SetWinMetaFileBits(uint nSize, [In] byte[] lpMeta16Data, IntPtr hdcRef, [In] ref METAFILEPICT lpMFP);
+
             #endregion
         }
 
@@ -71,6 +101,11 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
 
         internal static uint GetMetaFileBitsEx(IntPtr handle, uint size, byte[]? buf) => NativeMethods.GetMetaFileBitsEx(handle, size, buf);
         internal static void DeleteMetaFile(IntPtr handle) => NativeMethods.DeleteMetaFile(handle);
+        internal static IntPtr CopyEnhMetaFile(IntPtr handle) => NativeMethods.CopyEnhMetaFile(handle, IntPtr.Zero);
+        internal static bool DeleteEnhMetaFile(IntPtr handle) => NativeMethods.DeleteEnhMetaFile(handle);
+
+        internal static IntPtr SetWinMetaFileBits(uint size, byte[] wmfData, IntPtr hdcRef, ref METAFILEPICT metafilepict)
+            => NativeMethods.SetWinMetaFileBits(size, wmfData, hdcRef, ref metafilepict);
 
         #endregion
     }
