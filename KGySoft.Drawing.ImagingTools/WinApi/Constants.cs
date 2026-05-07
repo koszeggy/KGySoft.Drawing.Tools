@@ -55,6 +55,8 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
         internal const uint GMEM_SHARE = 0x2000;
 
         internal const short MM_ANISOTROPIC = 8;
+        
+        internal const uint SRCCOPY = 0x00CC0020;
 
         //// Needed for classic MessageBoxes. Restore if reverting from TaskDialogs
         //internal const int IDOK = 1;

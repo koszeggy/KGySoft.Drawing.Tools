@@ -259,51 +259,53 @@ namespace KGySoft.Drawing.ImagingTools
 
         internal static void CopyToClipboard(ImageInfoBase info)
         {
-            // NOTE: Using SetImage as a fallback solution only, because it does not support the native metafile formats, and puts a BinaryFormatter entry on the clipboard
-            // a with potentially poorly chosen encoder (supporting such formats in TryPasteFromClipboard, though).
+            // NOTE: Using SetImage as a fallback solution only, because it does not support the native metafile formats, and puts a BinaryFormatter
+            // entry on the clipboard a with potentially poorly chosen encoder (supporting such formats in TryPasteFromClipboard, though).
             // Instead, preparing the native Bitmap format as a well-known fallback (which is supported by the managed clipboard API as well) explicitly.
+            // Value is IntPtr or MemoryStream. Using Stream is better than byte[], because in the managed API Stream is just converted to a byte[],
+            // whereas byte[] is serialized in a BinaryFormatter-compatible way.
+            var formats = new Dictionary<string, object>();
+
+            // compound image or single frame image
+            if (info is ImageInfo imageInfo)
+            {
+                switch (imageInfo.Type)
+                {
+                    case ImageInfoType.None:
+                        Debug.Fail("Copying expected to be disabled when there is no loaded image");
+                        return;
+
+                    case ImageInfoType.SingleImage when imageInfo.Image is Metafile metafile:
+                        CopyMetafile(formats, metafile);
+                        break;
+
+                    case ImageInfoType.Pages:
+                        CopyTiff(formats, imageInfo);
+                        break;
+
+                    case ImageInfoType.MultiRes:
+                    case ImageInfoType.Icon:
+                        CopyIcon(formats, imageInfo);
+                        break;
+
+                    case ImageInfoType.Animation:
+                        CopyAnimGif(formats, imageInfo);
+                        break;
+                }
+            }
+
+            Image? image = info.Image ?? (info as ImageInfo)?.GetCreateImage();
+            Debug.Assert(image != null, "Failed to obtain an image to copy");
+            if (image == null)
+                return;
+
+            // Standard Bitmap format, potentially along with some custom single-frame formats
+            CopyBitmap(formats, image);
+
             try
             {
-                // Value is IntPtr or MemoryStream. Using stream is better than byte[], because in the native API stream is handled natively,
-                // whereas byte[] is serialized in a BinaryFormatter compatible way.
-                var formats = new Dictionary<string, object>();
-                Image? image = null;
-
-                // compound image or single frame image
-                if (info is ImageInfo imageInfo)
-                {
-                    switch (imageInfo.Type)
-                    {
-                        case ImageInfoType.None:
-                            Debug.Fail("Copying expected to be disabled");
-                            return;
-
-                        case ImageInfoType.SingleImage when imageInfo.Image is Metafile metafile:
-                            image = metafile;
-                            CopyMetafile(formats, metafile);
-                            break;
-
-                        case ImageInfoType.Pages:
-                            // TODO: TIFF
-                            break;
-
-                        case ImageInfoType.MultiRes:
-                        case ImageInfoType.Icon:
-                            // TODO: ICON
-                            break;
-
-                        case ImageInfoType.Animation:
-                            // TODO: animgif
-                            break;
-                    }
-
-                }
-
-                // TODO: HBitmap, DIB
-
-                if (formats.Count != 0)
-                    PopulateClipboard(formats);
-                else if (image != null)
+                // If we managed to prepare some formats, we place them on the clipboard. If it fails, using Clipboard.SetImage as an ultimate fallback.
+                if (formats.Count == 0 || !PopulateClipboard(formats))
                     Clipboard.SetImage(image);
             }
             catch (Exception e) when (!e.IsCritical())
@@ -312,9 +314,9 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        internal static bool TryPasteFromClipboard(AllowedImageTypes imageTypes, bool allowMultiFrame, out ImageInfo? imageInfo)
+        internal static bool TryPasteFromClipboard(AllowedImageTypes allowedTypes, bool allowMultiFrame, out ImageInfo? imageInfo)
         {
-            Debug.Assert(imageTypes != AllowedImageTypes.None);
+            Debug.Assert(allowedTypes != AllowedImageTypes.None);
             imageInfo = null;
 
             try
@@ -326,50 +328,45 @@ namespace KGySoft.Drawing.ImagingTools
 
                 var formats = new HashSet<string>(dataObject.GetFormats(false));
 
-                // 1. Metafile is enabled: trying to obtain a Metafile in the first place
-                if ((imageTypes & AllowedImageTypes.Metafile) != AllowedImageTypes.None)
+                // 1. Metafile
+                if (TryPasteFromStream(formats.Intersect([emfFormat, wmfFormat]), dataObject, allowedTypes, false, out imageInfo))
+                    return true;
+                if (formats.Contains(DataFormats.EnhancedMetafile) && TryGetNativeEmf(dataObject, allowedTypes, out imageInfo))
+                    return true;
+                if (formats.Contains(DataFormats.MetafilePict) && TryGetNativeWmf(dataObject, allowedTypes, out imageInfo))
+                    return true;
+
+                // 2. Multiframe Bitmap or Icon
+                if (allowMultiFrame)
                 {
-                    // 1.a. Metafile stream as we copy it.
-                    if (TryGetMetafileStream(formats.Intersect([emfFormat, wmfFormat]), dataObject, out Metafile? metafile))
-                    {
-                        imageInfo = new ImageInfo(metafile);
+                    // 2.a. TIFF or Icon
+                    if (TryPasteFromStream(formats.Intersect([tiffFormat, iconFormat]), dataObject, allowedTypes, true, out imageInfo))
                         return true;
-                    }
 
-                    // 1.b. native EMF
-                    if (formats.Contains(DataFormats.EnhancedMetafile) && TryGetNativeEmf(dataObject, out metafile))
+                    // 2.b. [animated] GIF
+                    if (formats.Contains(gifFormat) && TryPasteFromStream([gifFormat], dataObject, allowedTypes, true, out imageInfo))
                     {
-                        imageInfo = new ImageInfo(metafile);
-                        return true;
-                    }
+                        // if a single-frame GIF found, accepting it if there is no PNG on the clipboard as well
+                        if (imageInfo!.Type == ImageInfoType.Animation || !formats.Contains(pngFormat))
+                            return true;
 
-                    // 1.c. native WMF
-                    if (formats.Contains(DataFormats.MetafilePict) && TryGetNativeWmf(dataObject, out metafile))
-                    {
-                        imageInfo = new ImageInfo(metafile);
-                        return true;
+                        // dropping the single frame GIF to obtain the PNG instead
+                        imageInfo.Dispose();
                     }
-
-                    // 1.d. Metafile stream - NOTE: .NET copies metafiles with System.Drawing.Bitmap format (though the actual raw format is PNG).
-                    // Not using it, as we don't put metafiles to the clipboard like this, and it is indicated by the same format as bitmaps, which is handled later.
-                    // Metafiles with the System.Drawing.Bitmap format are handled when attempting to deserialize bitmaps.
-                    //if (TryGetMetafileStream(formats.Intersect([typeof(Metafile).FullName!, typeof(Bitmap).FullName!]), dataObject, out metafile))
-                    //{
-                    //    imageInfo = new ImageInfo(metafile);
-                    //    return true;
-                    //}
                 }
 
-                // 2.) Icon is enabled
+                // 3. Single-frame Bitmap or Icon
+                if (TryPasteFromStream(formats.Intersect([pngFormat, tiffFormat, gifFormat, iconFormat]), dataObject, allowedTypes, false, out imageInfo))
+                    return true;
+
+                // 4. Standard Bitmap/DIB format (or leave it to GetImage?)
                 // TODO
 
-                // 3.) Bitmap is enabled
+                // 5. .NET System.Drawing.Bitmap format (or leave it to GetImage?)
                 // TODO
 
-                // 4.) Ultimate fallback: Clipboard.GetImage - normally we should not reach this point, but on Mono the lower level interfaces may not be implemented completely.
-                Image? image = Clipboard.GetImage();
-                if (image != null)
-                    imageInfo = new ImageInfo(image);
+                // 6. Ultimate fallback: Clipboard.GetImage - normally we should not reach this point, but on Mono the lower level interfaces may not be implemented completely.
+                imageInfo = EnsureFormat(Clipboard.GetImage(), allowedTypes, allowMultiFrame);
                 return imageInfo != null;
             }
             catch (Exception e) when (!e.IsCriticalGdi())
@@ -384,17 +381,49 @@ namespace KGySoft.Drawing.ImagingTools
 
         private static void OnClipboardChanged() => clipboardChangedHandler?.Invoke(null, EventArgs.Empty);
 
-        private static void PopulateClipboard(Dictionary<string, object> formats)
+        private static bool PopulateClipboard(Dictionary<string, object> formats)
         {
-            bool useNativeApi = OSHelper.IsWindows && formats.ContainsKey(DataFormats.EnhancedMetafile);
+            bool useNativeApi = OSHelper.IsWindows && (formats.ContainsKey(DataFormats.EnhancedMetafile) || formats.ContainsKey(DataFormats.Bitmap));
             if (useNativeApi && PopulateClipboardNatively(formats))
-                return;
+                return true;
 
+            // Here we could not populate the clipboard natively. As a fallback, we try to use the managed way.
             var dataObject = new DataObject();
+            bool result = false;
             foreach (KeyValuePair<string, object> item in formats)
-                dataObject.SetData(item.Key, false, item.Value);
+            {
+                switch (item.Value)
+                {
+                    case MemoryStream ms:
+                        result = true;
+                        dataObject.SetData(item.Key, false, ms);
+                        break;
 
-            Clipboard.SetDataObject(dataObject, true);
+                    // If we have prepared native entries, we discard them, because DataObject.SetData would just corrupt them.
+                    // As the clipboard will not take over the ownership of such items now, we must free them to prevent memory leaks.
+                    case IntPtr nativeHandle:
+                        Debug.Assert(OSHelper.IsWindows);
+                        if (item.Key == DataFormats.Bitmap)
+                            Gdi32.DeleteObject(nativeHandle);
+                        else if (item.Key == DataFormats.EnhancedMetafile)
+                            Gdi32.DeleteEnhMetaFile(nativeHandle);
+                        else
+                            throw new InvalidOperationException(Res.InternalError($"Unhandled native clipboard item to free: {item.Key}"));
+                        break;
+
+                    case Image image:
+                        Debug.Assert(!OSHelper.IsWindows && item.Key == DataFormats.Bitmap, "Setting an image directly is expected on non-Windows platforms only.");
+                        dataObject.SetImage(image);
+                        break;
+
+                    default:
+                        throw new InvalidOperationException(Res.InternalError($"Unhandled clipboard format to populate in a managed way: {item.Key}: {item.Value.GetType()}"));
+                }
+            }
+
+            if (result)
+                Clipboard.SetDataObject(dataObject, true);
+            return result;
         }
 
         private static bool PopulateClipboardNatively(Dictionary<string, object> formats)
@@ -418,7 +447,7 @@ namespace KGySoft.Drawing.ImagingTools
                         {
                             IntPtr pointer => pointer,
                             MemoryStream ms => StreamToHGlobal(ms),
-                            _ => throw new InvalidOperationException(Res.InternalError($"Unexpected clipboard format: {item.Key}: {item.Value.GetType()}"))
+                            _ => throw new InvalidOperationException(Res.InternalError($"Unhandled clipboard format to populate natively: {item.Key}: {item.Value.GetType()}"))
                         };
 
                         if (hMem != IntPtr.Zero && !User32.SetClipboardData(DataFormats.GetFormat(item.Key).Id, hMem))
@@ -453,11 +482,18 @@ namespace KGySoft.Drawing.ImagingTools
 
             // 1. Custom EMF/WMF format. Used to be able to restore the original raw format even from the clipboard.
             var ms = new MemoryStream();
-            if (isEmf == true)
-                metafile.SaveAsEmf(ms);
-            else
-                metafile.SaveAsWmf(ms);
-            formats.Add(isEmf == true ? emfFormat : wmfFormat, ms);
+            try
+            {
+                if (isEmf == true)
+                    metafile.SaveAsEmf(ms);
+                else
+                    metafile.SaveAsWmf(ms);
+                formats.Add(isEmf == true ? emfFormat : wmfFormat, ms);
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                Debug.WriteLine($"Failed to copy as metafile stream: {e.Message}");
+            }
 
             if (!OSHelper.IsWindows)
                 return;
@@ -465,66 +501,289 @@ namespace KGySoft.Drawing.ImagingTools
             // 2. Standard EnhancedMetafile format, which is compatible with many applications.
             // Windows automatically generates a MetaFilePict entry as well (though pasting it does not work, at least on x64 systems).
             // GetHenhmetafile makes the original image unusable, so we clone it first.
-            using Metafile clone = (Metafile)metafile.Clone();
-
-            // 2.a. EMF: simply putting a clone to the clipboard.
-            if (isEmf == true)
+            try
             {
-                IntPtr hEmf = clone.GetHenhmetafile();
-                if (hEmf == IntPtr.Zero)
+                using Metafile clone = (Metafile)metafile.Clone();
+
+                // 2.a. EMF: simply putting a clone to the clipboard.
+                if (isEmf == true)
+                {
+                    IntPtr hEmf = clone.GetHenhmetafile();
+                    if (hEmf == IntPtr.Zero)
+                        return;
+                    try
+                    {
+                        // We create another copy, which goes to the clipboard. The original handle that belongs to the managed clone will be deleted (and its owner disposed).
+                        IntPtr hEmfCopy = Gdi32.CopyEnhMetaFile(hEmf);
+                        if (hEmfCopy != IntPtr.Zero)
+                            formats.Add(DataFormats.EnhancedMetafile, hEmfCopy);
+                        return;
+                    }
+                    finally
+                    {
+                        Gdi32.DeleteEnhMetaFile(hEmf);
+                    }
+                }
+
+                // 2.b. WMF: cannot just put a MetaFilePict format to the clipboard with the handle, because it cannot be pasted by most applications.
+                // So converting it to EMF in memory, and putting that to the clipboard (which creates also the MetaFilePict entry, even if unusable).
+                IntPtr hmf = clone.GetHenhmetafile(); // NOTE: the method name is misleading: in this case this is NOT an enhanced metafile handle, we need to convert it
+                IntPtr hdc = IntPtr.Zero;
+                if (hmf == IntPtr.Zero)
                     return;
+
                 try
                 {
-                    // We create another copy, which goes to the clipboard. The original handle that belongs to the managed clone will be deleted (and its owner disposed).
-                    IntPtr hEmfCopy = Gdi32.CopyEnhMetaFile(hEmf);
-                    if (hEmfCopy != IntPtr.Zero)
-                        formats.Add(DataFormats.EnhancedMetafile, hEmfCopy);
-                    return;
+                    uint size = Gdi32.GetMetaFileBitsEx(hmf, 0, null);
+                    if (size == 0)
+                        return;
+
+                    byte[] wmfData = new byte[size];
+                    Gdi32.GetMetaFileBitsEx(hmf, size, wmfData);
+
+                    var mp = new METAFILEPICT
+                    {
+                        mm = Constants.MM_ANISOTROPIC,
+                        hMF = hmf
+                    };
+
+                    hdc = User32.GetDC(IntPtr.Zero);
+                    IntPtr hEmf = Gdi32.SetWinMetaFileBits(size, wmfData, hdc, ref mp);
+                    if (hEmf != IntPtr.Zero)
+                        formats.Add(DataFormats.EnhancedMetafile, hEmf);
                 }
                 finally
                 {
-                    Gdi32.DeleteEnhMetaFile(hEmf);
+                    if (hdc != IntPtr.Zero)
+                        User32.ReleaseDC(IntPtr.Zero, hdc);
+                    Gdi32.DeleteMetaFile(hmf);
                 }
             }
-
-            // 2.b. WMF: cannot just put a MetaFilePict format to the clipboard with the handle, because it cannot be pasted by most applications.
-            // So converting it to EMF in memory, and putting that to the clipboard (which creates also the MetaFilePict entry, even if unusable).
-            IntPtr hmf = clone.GetHenhmetafile(); // NOTE: the method name is misleading: in this case this is NOT an enhanced metafile handle, we need to convert it
-            IntPtr hdc = IntPtr.Zero;
-            if (hmf == IntPtr.Zero)
-                return;
-
-            try
+            catch (Exception e) when (!e.IsCritical())
             {
-                uint size = Gdi32.GetMetaFileBitsEx(hmf, 0, null);
-                if (size == 0)
-                    return;
-
-                byte[] wmfData = new byte[size];
-                Gdi32.GetMetaFileBitsEx(hmf, size, wmfData);
-
-                var mp = new METAFILEPICT
-                {
-                    mm = Constants.MM_ANISOTROPIC,
-                    hMF = hmf
-                };
-
-                hdc = User32.GetDC(IntPtr.Zero);
-                IntPtr hEmf = Gdi32.SetWinMetaFileBits(size, wmfData, hdc, ref mp);
-                if (hEmf != IntPtr.Zero)
-                    formats.Add(DataFormats.EnhancedMetafile, hEmf);
-            }
-            finally
-            {
-                if (hdc != IntPtr.Zero)
-                    User32.ReleaseDC(IntPtr.Zero, hdc);
-                Gdi32.DeleteMetaFile(hmf);
+                // NOTE: normally we should not reach this point, because the WinAPI calls only use SetLastError,
+                // but on non-native Windows the P/Invoke may fail otherwise.
+                Debug.WriteLine($"Failed to copy as {DataFormats.EnhancedMetafile}: {e.Message}");
             }
         }
 
-        private static bool TryGetNativeEmf(IWinFormsDataObject dataObject, out Metafile? metafile)
+        private static void CopyBitmap(Dictionary<string, object> formats, Image image)
         {
-            metafile = null;
+            Bitmap bitmap = image as Bitmap ?? new Bitmap(image);
+            try
+            {
+                Size size = bitmap.Size;
+                PixelFormat pixelFormat = bitmap.PixelFormat;
+
+                // 1. Custom PNG format. It is recognized by multiple applications, and unlike the standard Bitmap format, it preserves alpha.
+                if (pixelFormat.HasAlpha())
+                {
+                    try
+                    {
+                        var ms = new MemoryStream();
+                        bitmap.SaveAsPng(ms);
+                        formats.Add(pngFormat, ms);
+                    }
+                    catch (Exception e) when (!e.IsCritical())
+                    {
+                        Debug.WriteLine($"Failed to copy as PNG stream: {e.Message}");
+                    }
+                }
+
+                // 2. Custom GIF format. It is recognized by multiple applications, and unlike the standard Bitmap format, it preserves the palette.
+                if (pixelFormat.IsIndexed())
+                {
+                    Debug.Assert(!formats.ContainsKey(gifFormat), "Here only an animated GIF is expected in the formats, which don't have indexed pixel format");
+                    try
+                    {
+                        var ms = new MemoryStream();
+                        bitmap.SaveAsGif(ms);
+                        formats.Add(gifFormat, ms);
+                    }
+                    catch (Exception e) when (!e.IsCritical())
+                    {
+                        Debug.WriteLine($"Failed to copy as GIF stream: {e.Message}");
+                    }
+                }
+
+                // 3.a. "Standard" Bitmap format on non-Windows system: indicating to use DataObject.SetImage when populating the clipboard
+                if (!OSHelper.IsWindows)
+                {
+                    formats.Add(DataFormats.Bitmap, bitmap);
+                    return;
+                }
+
+                // 3.b. Standard Bitmap format. The clipboard expects a bitmap created by CreateCompatibleBitmap, so we cannot just return the result of GetHbitmap.
+                // When using SetClipboardData, Windows automatically generates DeviceIndependentBitmap (and Format17) entries as well.
+                // This is different from the managed Clipboard/DataObject.SetImage APIs, which don't generate these additional formats,
+                // but add a BinaryFormatter-serialized System.Drawing.Bitmap entry (along with the standard Bitmap format).
+                IntPtr hbmSrc = IntPtr.Zero;
+                IntPtr dcScreen = IntPtr.Zero;
+                try
+                {
+                    try
+                    {
+                        dcScreen = User32.GetDC(IntPtr.Zero);
+                        hbmSrc = bitmap.GetHbitmap();
+                        IntPtr dcSrc = Gdi32.CreateCompatibleDC(dcScreen);
+                        IntPtr prevSrc = Gdi32.SelectObject(dcSrc, hbmSrc);
+
+                        IntPtr dcDst = Gdi32.CreateCompatibleDC(dcScreen);
+                        IntPtr hbmDst = Gdi32.CreateCompatibleBitmap(dcScreen, size.Width, size.Height);
+                        IntPtr prevDst = Gdi32.SelectObject(dcDst, hbmDst);
+
+                        // copying the content and storing the result
+                        Gdi32.BitBlt(dcDst, dcSrc, size);
+                        formats.Add(DataFormats.Bitmap, hbmDst);
+
+                        // cleanup
+                        Gdi32.SelectObject(dcSrc, prevSrc);
+                        Gdi32.SelectObject(dcDst, prevDst);
+                        Gdi32.DeleteDC(dcSrc);
+                        Gdi32.DeleteDC(dcDst);
+                    }
+                    finally
+                    {
+                        if (hbmSrc != IntPtr.Zero)
+                            Gdi32.DeleteObject(hbmSrc);
+                        if (dcScreen != IntPtr.Zero)
+                            User32.ReleaseDC(IntPtr.Zero, dcScreen);
+                    }
+                }
+                catch (Exception e) when (!e.IsCritical())
+                {
+                    // NOTE: normally we should not reach this point, because the WinAPI calls only use SetLastError,
+                    // but on non-native Windows the P/Invoke may fail otherwise.
+                    Debug.WriteLine($"Failed to copy as {DataFormats.Bitmap}: {e.Message}");
+                }
+            }
+            finally
+            {
+                if (!ReferenceEquals(bitmap, image))
+                    bitmap.Dispose();
+            }
+        }
+
+        private static void CopyTiff(Dictionary<string, object> formats, ImageInfo info)
+        {
+            try
+            {
+                // If the main image is already a TIFF, using that one.
+                var ms = new MemoryStream();
+                if (info.Image is Image image && image.RawFormat.Guid == ImageFormat.Tiff.Guid)
+                    image.SaveAsTiff(ms, false);
+                else
+                    info.Frames!.Select(f => f.Image!).SaveAsMultipageTiff(ms);
+                formats.Add(tiffFormat, ms);
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                Debug.WriteLine($"Failed to copy as TIFF stream: {e.Message}");
+            }
+        }
+
+        private static void CopyIcon(Dictionary<string, object> formats, ImageInfo info)
+        {
+            try
+            {
+                var ms = new MemoryStream();
+                info.GetCreateIcon()!.SaveAsIcon(ms);
+                formats.Add(iconFormat, ms);
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                Debug.WriteLine($"Failed to copy as ICO stream: {e.Message}");
+            }
+        }
+
+        private static void CopyAnimGif(Dictionary<string, object> formats, ImageInfo info)
+        {
+            try
+            {
+                // If the animation is not generated, this may take a lot of time (though the default quantizer is quite fast). TODO: async, and progress bar in the caller
+                var ms = new MemoryStream();
+                info.GetCreateImage()!.SaveAsGif(ms);
+                formats.Add(gifFormat, ms);
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                Debug.WriteLine($"Failed to copy as TIFF stream: {e.Message}");
+            }
+        }
+
+        private static ImageInfo? EnsureFormat(object? data, AllowedImageTypes allowedTypes, bool allowMultiFrame)
+        {
+            switch (data)
+            {
+                case null:
+                    return null;
+
+                case Metafile metafile:
+                    if ((allowedTypes & AllowedImageTypes.Metafile) != AllowedImageTypes.None)
+                        return new ImageInfo(metafile);
+
+                    Size size = metafile.Size;
+                    if ((allowedTypes & AllowedImageTypes.Bitmap) != AllowedImageTypes.None)
+                    {
+                        Bitmap bitmap = metafile.ToBitmap(size);
+                        metafile.Dispose();
+                        return new ImageInfo(bitmap);
+                    }
+
+                    Debug.Assert((allowedTypes & AllowedImageTypes.Icon) != 0);
+                    Icon asIcon = metafile.ToIcon(Math.Min(256, Math.Max(size.Width, size.Height)), true);
+                    metafile.Dispose();
+                    return new ImageInfo(asIcon);
+
+                case Bitmap bitmap:
+                    Debug.Assert(allowedTypes != AllowedImageTypes.Metafile, "Not expected to be called with a Bitmap if metafiles are allowed only");
+                    if ((allowedTypes & AllowedImageTypes.Bitmap) != AllowedImageTypes.None)
+                    {
+                        if (!allowMultiFrame && bitmap.FrameDimensionsList is Guid[] { Length: > 0 } dimensions && bitmap.GetFrameCount(new FrameDimension(dimensions[0])) > 1)
+                        {
+                            Bitmap frame = bitmap.CloneCurrentFrame();
+                            bitmap.Dispose();
+                            return new ImageInfo(frame);
+                        }
+
+                        Debug.Assert(bitmap.RawFormat.Guid != ImageFormat.Icon.Guid);
+                        return new ImageInfo(bitmap);
+                    }
+
+                    size = bitmap.Size;
+                    if ((allowedTypes & AllowedImageTypes.Icon) != 0)
+                    {
+                        Icon icon = bitmap.ToIcon(Math.Min(256, Math.Max(size.Width, size.Height)), true);
+                        bitmap.Dispose();
+                        return new ImageInfo(icon);
+                    }
+
+                    bitmap.Dispose();
+                    return null;
+
+                case Icon icon:
+                    Debug.Assert(allowedTypes != AllowedImageTypes.Metafile, "Not expected to be called with an Icon if metafiles are allowed only");
+                    if ((allowedTypes & AllowedImageTypes.Icon) != AllowedImageTypes.None)
+                        return new ImageInfo(icon);
+
+                    if ((allowedTypes & AllowedImageTypes.Bitmap) != AllowedImageTypes.None)
+                    {
+                        Bitmap bitmap = OSHelper.IsWindows && allowMultiFrame ? icon.ToMultiResBitmap() : icon.ToAlphaBitmap();
+                        icon.Dispose();
+                        return new ImageInfo(bitmap);
+                    }
+
+                    icon.Dispose();
+                    return null;
+
+                default:
+                    throw new InvalidOperationException(Res.InternalError($"Unexpected type in EnsureFormat: {data.GetType()}"));
+            }
+        }
+
+        private static bool TryGetNativeEmf(IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, out ImageInfo? result)
+        {
+            result = null;
             if (dataObject is not IComDataObject comDataObject)
                 return false;
 
@@ -545,8 +804,8 @@ namespace KGySoft.Drawing.ImagingTools
                     return false;
                 }
 
-                metafile = new Metafile(medium.unionmember, medium.pUnkForRelease is null);
-                return true;
+                result = EnsureFormat(new Metafile(medium.unionmember, medium.pUnkForRelease is null), allowedTypes, false);
+                return result != null;
             }
             catch (Exception e) when (!e.IsCriticalGdi())
             {
@@ -554,9 +813,9 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static bool TryGetNativeWmf(IWinFormsDataObject dataObject, out Metafile? metafile)
+        private static bool TryGetNativeWmf(IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, out ImageInfo? result)
         {
-            metafile = null;
+            result = null;
             if (dataObject is not IComDataObject comDataObject)
                 return false;
 
@@ -597,8 +856,8 @@ namespace KGySoft.Drawing.ImagingTools
                         return false;
 
                     using var ms = new MemoryStream(buffer);
-                    metafile = new Metafile(ms);
-                    return true;
+                    result = EnsureFormat(new Metafile(ms), allowedTypes, false);
+                    return result != null;
 
                     //// Fallback attempt: creating an Enhanced Metafile, and replaying the WMF content into it.
                     //IntPtr hdc = User32.GetDC(IntPtr.Zero);
@@ -635,78 +894,99 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static bool TryGetMetafileStream(IEnumerable<string> formats, IWinFormsDataObject dataObject, out Metafile? metafile)
+        private static bool TryPasteFromStream(IEnumerable<string> formats, IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, bool allowMultiFrame, out ImageInfo? imageInfo)
         {
-            metafile = null;
+            Debug.Assert(allowedTypes != AllowedImageTypes.None);
+
             foreach (string format in formats)
             {
-                // 1. First, trying to use the native COM IDataObject interface
-                if (dataObject is IComDataObject comDataObject)
-                {
-                    try
-                    {
-                        var comFormat = new FORMATETC
-                        {
-                            cfFormat = (short)DataFormats.GetFormat(format).Id,
-                            dwAspect = DVASPECT.DVASPECT_CONTENT,
-                            lindex = -1,
-                            tymed = TYMED.TYMED_ISTREAM | TYMED.TYMED_HGLOBAL
-                        };
+                Stream? stream = TryGetStream(format, dataObject);
+                if (stream == null)
+                    continue;
 
-                        if (comDataObject.QueryGetData(ref comFormat) == Constants.S_OK)
-                        {
-                            comDataObject.GetData(ref comFormat, out STGMEDIUM medium);
-                            switch (medium.tymed)
-                            {
-                                case TYMED.TYMED_ISTREAM:
-                                    metafile = new Metafile(ComIStreamToStream(ref medium));
-                                    return true;
-
-                                case TYMED.TYMED_HGLOBAL:
-                                    MemoryStream? stream = HGlobalToStream(ref medium);
-                                    if (stream == null)
-                                        break;
-                                    metafile = new Metafile(stream);
-                                    return true;
-
-                                default:
-                                    // Not failing this time, so we can still try the fallback with the non-COM interface
-                                    Debug.WriteLine($"Expected vs. actual format of {format}: {comFormat.tymed} <-> {medium.tymed}");
-                                    break;
-                            }
-                        }
-                    }
-                    catch (Exception e) when (!e.IsCriticalGdi())
-                    {
-                        Debug.WriteLine($"Failed to get metafile from COM {format} stream: {e.Message}");
-                    }
-                }
-
-                // 2. Trying to use the managed IDataObject interface
                 try
                 {
-                    object? data = dataObject.GetData(format);
-                    switch (data)
+                    imageInfo = EnsureFormat(format is iconFormat ? Icons.FromStream(stream) : Image.FromStream(stream), allowedTypes, allowMultiFrame);
+                    if (imageInfo != null)
+                        return true;
+
+                    Debug.WriteLine($"Pasting from {format} was requested, but the allowed formats are {allowedTypes}");
+                }
+                catch (Exception e) when (!e.IsCriticalGdi())
+                {
+                    Debug.WriteLine($"Failed to paste content from format '{format}': {e.Message}");
+                }
+            }
+
+            imageInfo = null;
+            return false;
+        }
+
+        private static Stream? TryGetStream(string format, IWinFormsDataObject dataObject)
+        {
+            // 1. First, trying to use the native COM IDataObject interface
+            if (dataObject is IComDataObject comDataObject)
+            {
+                try
+                {
+                    var comFormat = new FORMATETC
                     {
-                        case MemoryStream ms:
-                            metafile = new Metafile(ms);
-                            return true;
+                        cfFormat = (short)DataFormats.GetFormat(format).Id,
+                        dwAspect = DVASPECT.DVASPECT_CONTENT,
+                        lindex = -1,
+                        tymed = TYMED.TYMED_ISTREAM | TYMED.TYMED_HGLOBAL
+                    };
 
-                        case null:
-                            continue;
+                    if (comDataObject.QueryGetData(ref comFormat) == Constants.S_OK)
+                    {
+                        comDataObject.GetData(ref comFormat, out STGMEDIUM medium);
+                        switch (medium.tymed)
+                        {
+                            case TYMED.TYMED_ISTREAM:
+                                return ComIStreamToStream(ref medium);
 
-                        default:
-                            Debug.Fail($"Unhandled metafile content type: {data.GetType()}");
-                            continue;
+                            case TYMED.TYMED_HGLOBAL:
+                                MemoryStream? stream = HGlobalToStream(ref medium);
+                                if (stream == null)
+                                    break;
+                                return stream;
+
+                            default:
+                                // Not failing this time, so we can still try the fallback with the non-COM interface
+                                Debug.WriteLine($"Expected vs. actual format of {format}: {comFormat.tymed} <-> {medium.tymed}");
+                                break;
+                        }
                     }
                 }
                 catch (Exception e) when (!e.IsCriticalGdi())
                 {
-                    Debug.WriteLine($"Failed to get metafile by IDataObject.GetData({format}): {e.Message}");
+                    Debug.WriteLine($"Failed to get COM {format} stream: {e.Message}");
                 }
             }
 
-            return false;
+            // 2. Trying to use the managed IDataObject interface
+            try
+            {
+                object? data = dataObject.GetData(format);
+                switch (data)
+                {
+                    case Stream stream:
+                        return stream;
+                    
+                    case null:
+                        Debug.WriteLine($"Failed to get stream for format {format}");
+                        return null;
+
+                    default:
+                        Debug.Fail($"Unexpected non-stream type for format '{format}': {data.GetType()}");
+                        return null;
+                }
+            }
+            catch (Exception e) when (!e.IsCriticalGdi())
+            {
+                Debug.WriteLine($"Failed to get metafile by IDataObject.GetData({format}): {e.Message}");
+                return null;
+            }
         }
 
         private static MemoryStream ComIStreamToStream(ref STGMEDIUM medium)
