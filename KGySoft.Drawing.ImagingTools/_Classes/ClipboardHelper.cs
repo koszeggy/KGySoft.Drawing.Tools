@@ -328,23 +328,23 @@ namespace KGySoft.Drawing.ImagingTools
 
                 var formats = new HashSet<string>(dataObject.GetFormats(false));
 
-                // 1. Metafile
-                if (TryPasteFromStream(formats.Intersect([emfFormat, wmfFormat]), dataObject, allowedTypes, false, out imageInfo))
+                // 1. Metafile - custom encodings first, and then by standard native formats
+                if (TryGetImageFromStream(formats.Intersect([emfFormat, wmfFormat]), dataObject, allowedTypes, false, out imageInfo))
                     return true;
                 if (formats.Contains(DataFormats.EnhancedMetafile) && TryGetNativeEmf(dataObject, allowedTypes, out imageInfo))
                     return true;
                 if (formats.Contains(DataFormats.MetafilePict) && TryGetNativeWmf(dataObject, allowedTypes, out imageInfo))
                     return true;
 
-                // 2. Multiframe Bitmap or Icon
+                // 2. Multiframe Bitmap or Icon with custom encoding
                 if (allowMultiFrame)
                 {
                     // 2.a. TIFF or Icon
-                    if (TryPasteFromStream(formats.Intersect([tiffFormat, iconFormat]), dataObject, allowedTypes, true, out imageInfo))
+                    if (TryGetImageFromStream(formats.Intersect([tiffFormat, iconFormat]), dataObject, allowedTypes, true, out imageInfo))
                         return true;
 
                     // 2.b. [animated] GIF
-                    if (formats.Contains(gifFormat) && TryPasteFromStream([gifFormat], dataObject, allowedTypes, true, out imageInfo))
+                    if (formats.Contains(gifFormat) && TryGetImageFromStream([gifFormat], dataObject, allowedTypes, true, out imageInfo))
                     {
                         // if a single-frame GIF found, accepting it if there is no PNG on the clipboard as well
                         if (imageInfo!.Type == ImageInfoType.Animation || !formats.Contains(pngFormat))
@@ -355,15 +355,15 @@ namespace KGySoft.Drawing.ImagingTools
                     }
                 }
 
-                // 3. Single-frame Bitmap or Icon
-                if (TryPasteFromStream(formats.Intersect([pngFormat, tiffFormat, gifFormat, iconFormat]), dataObject, allowedTypes, false, out imageInfo))
+                // 3. Single-frame custom encoded Bitmap or Icon. The way of the Intersect call ensures the order of the tried formats.
+                if (TryGetImageFromStream(new[] { pngFormat, tiffFormat, gifFormat, iconFormat }.Intersect(formats), dataObject, allowedTypes, false, out imageInfo))
                     return true;
 
-                // 4. Standard Bitmap/DIB format (or leave it to GetImage?)
-                // TODO
+                // 4. Standard Bitmap format or .NET Framework serialized Image
+                if (formats.Contains(DataFormats.Bitmap) && TryGetStandardBitmap(dataObject, allowedTypes, out imageInfo))
+                    return true;
 
-                // 5. .NET System.Drawing.Bitmap format (or leave it to GetImage?)
-                // TODO
+                // 5. TODO - DIB
 
                 // 6. Ultimate fallback: Clipboard.GetImage - normally we should not reach this point, but on Mono the lower level interfaces may not be implemented completely.
                 imageInfo = EnsureFormat(Clipboard.GetImage(), allowedTypes, allowMultiFrame);
@@ -371,6 +371,7 @@ namespace KGySoft.Drawing.ImagingTools
             }
             catch (Exception e) when (!e.IsCriticalGdi())
             {
+                Debug.WriteLine($"Error while trying to paste image from clipboard: {e.Message}");
                 return false;
             }
         }
@@ -781,6 +782,70 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
+        private static bool TryGetStandardBitmap(IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, out ImageInfo? result)
+        {
+            result = null;
+
+            // Trying the COM way first
+            if (dataObject is IComDataObject comDataObject)
+            {
+                try
+                {
+                    var format = new FORMATETC
+                    {
+                        cfFormat = (short)DataFormats.GetFormat(DataFormats.Bitmap).Id,
+                        dwAspect = DVASPECT.DVASPECT_CONTENT,
+                        lindex = -1,
+                        tymed = TYMED.TYMED_GDI
+                    };
+
+                    int hResult = comDataObject.QueryGetData(ref format);
+                    if (hResult == Constants.S_OK)
+                    {
+                        comDataObject.GetData(ref format, out STGMEDIUM medium);
+                        try
+                        {
+                            if (medium.tymed == TYMED.TYMED_GDI)
+                            {
+                                // NOTE: Image.FromHBitmap always creates a copy, so we are safe even when we don't own the handle (that is, when medium.pUnkForRelease is not null).
+                                // The managed GetData always clones the result here, but the docs says: "The FromHbitmap method makes a copy of the GDI bitmap; so you can release
+                                // the incoming GDI bitmap using the GDI DeleteObject method immediately after creating the new Image."
+                                Bitmap bitmap = Image.FromHbitmap(medium.unionmember);
+                                result = EnsureFormat(bitmap, allowedTypes, false);
+                                if (result != null)
+                                    return true;
+                            }
+                            else
+                                Debug.WriteLine($"Expected vs. actual format of {DataFormats.Bitmap}: {format.tymed} <-> {medium.tymed}");
+                        }
+                        finally
+                        {
+                            // If the type was TYMED_GDI, this may call Gdi32.DeleteObject, depending on medium.pUnkForRelease
+                            Ole32.ReleaseStgMedium(ref medium);
+                        }
+                    }
+                    else
+                        Debug.WriteLine($"Failed to get native {DataFormats.Bitmap} format: HRESULT is {hResult}");
+                }
+                catch (Exception e) when (!e.IsCriticalGdi())
+                {
+                    Debug.WriteLine($"Failed to get native {DataFormats.Bitmap} format: {e.Message}");
+                }
+            }
+
+            // 2. Trying to use the managed API - this may copy the image more times in memory than needed. It also tries to retrieve BinaryFormatter serialized System.Drawing.Bitmap entry
+#if NET10_0_OR_GREATER
+            if (dataObject.TryGetData<Image>(DataFormats.Bitmap, out Image? image))
+#else
+            if (dataObject.GetData(DataFormats.Bitmap) is Image image)
+#endif
+            {
+                result = EnsureFormat(image, allowedTypes, false);
+            }
+
+            return result != null;
+        }
+
         private static bool TryGetNativeEmf(IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, out ImageInfo? result)
         {
             result = null;
@@ -797,9 +862,17 @@ namespace KGySoft.Drawing.ImagingTools
                     tymed = TYMED.TYMED_ENHMF
                 };
 
+                int hResult = comDataObject.QueryGetData(ref format);
+                if (hResult != Constants.S_OK)
+                {
+                    Debug.WriteLine($"Failed to get native {DataFormats.EnhancedMetafile} format: HRESULT is {hResult}");
+                    return false;
+                }
+
                 comDataObject.GetData(ref format, out STGMEDIUM medium);
                 if (medium.tymed != TYMED.TYMED_ENHMF)
                 {
+                    Ole32.ReleaseStgMedium(ref medium);
                     Debug.Fail($"Expected vs. actual format of {DataFormats.EnhancedMetafile}: {format.tymed} <-> {medium.tymed}");
                     return false;
                 }
@@ -812,6 +885,7 @@ namespace KGySoft.Drawing.ImagingTools
             }
             catch (Exception e) when (!e.IsCriticalGdi())
             {
+                Debug.WriteLine($"Failed to get native {DataFormats.EnhancedMetafile} format: {e.Message}");
                 return false;
             }
         }
@@ -832,9 +906,17 @@ namespace KGySoft.Drawing.ImagingTools
                     tymed = TYMED.TYMED_MFPICT
                 };
 
+                int hResult = comDataObject.QueryGetData(ref format);
+                if (hResult != Constants.S_OK)
+                {
+                    Debug.WriteLine($"Failed to get native {DataFormats.MetafilePict} format: HRESULT is {hResult}");
+                    return false;
+                }
+
                 comDataObject.GetData(ref format, out STGMEDIUM medium);
                 if (medium.tymed != TYMED.TYMED_MFPICT)
                 {
+                    Ole32.ReleaseStgMedium(ref medium);
                     Debug.Fail($"Expected vs. actual format of {DataFormats.MetafilePict}: {format.tymed} <-> {medium.tymed}");
                     return false;
                 }
@@ -894,17 +976,18 @@ namespace KGySoft.Drawing.ImagingTools
             }
             catch (Exception e) when (!e.IsCriticalGdi())
             {
+                Debug.WriteLine($"Failed to get native {DataFormats.MetafilePict} format: {e.Message}");
                 return false;
             }
         }
 
-        private static bool TryPasteFromStream(IEnumerable<string> formats, IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, bool allowMultiFrame, out ImageInfo? imageInfo)
+        private static bool TryGetImageFromStream(IEnumerable<string> formats, IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, bool allowMultiFrame, out ImageInfo? imageInfo)
         {
             Debug.Assert(allowedTypes != AllowedImageTypes.None);
 
             foreach (string format in formats)
             {
-                Stream? stream = TryGetStream(format, dataObject);
+                MemoryStream? stream = TryGetStream(format, dataObject);
                 if (stream == null)
                     continue;
 
@@ -926,7 +1009,7 @@ namespace KGySoft.Drawing.ImagingTools
             return false;
         }
 
-        private static Stream? TryGetStream(string format, IWinFormsDataObject dataObject)
+        private static MemoryStream? TryGetStream(string format, IWinFormsDataObject dataObject)
         {
             // 1. First, trying to use the native COM IDataObject interface
             if (dataObject is IComDataObject comDataObject)
@@ -941,7 +1024,8 @@ namespace KGySoft.Drawing.ImagingTools
                         tymed = TYMED.TYMED_ISTREAM | TYMED.TYMED_HGLOBAL
                     };
 
-                    if (comDataObject.QueryGetData(ref comFormat) == Constants.S_OK)
+                    int hResult = comDataObject.QueryGetData(ref comFormat);
+                    if (hResult == Constants.S_OK)
                     {
                         comDataObject.GetData(ref comFormat, out STGMEDIUM medium);
                         try
@@ -970,6 +1054,8 @@ namespace KGySoft.Drawing.ImagingTools
                             Ole32.ReleaseStgMedium(ref medium);
                         }
                     }
+                    else
+                        Debug.WriteLine($"Failed to get COM {format} stream: HRESULT is {hResult}");
                 }
                 catch (Exception e) when (!e.IsCriticalGdi())
                 {
@@ -980,20 +1066,27 @@ namespace KGySoft.Drawing.ImagingTools
             // 2. Trying to use the managed IDataObject interface
             try
             {
+#if NET10_0_OR_GREATER
+                if (dataObject.TryGetData<MemoryStream>(format, out MemoryStream? stream))
+                    return stream;
+                Debug.WriteLine($"Failed to get a stream for format {format}");
+                return null;
+#else
                 object? data = dataObject.GetData(format);
                 switch (data)
                 {
-                    case Stream stream:
+                    case MemoryStream stream:
                         return stream;
                     
                     case null:
-                        Debug.WriteLine($"Failed to get stream for format {format}");
+                        Debug.WriteLine($"Failed to get a stream for format {format}");
                         return null;
 
                     default:
                         Debug.Fail($"Unexpected non-stream type for format '{format}': {data.GetType()}");
                         return null;
                 }
+#endif
             }
             catch (Exception e) when (!e.IsCriticalGdi())
             {
