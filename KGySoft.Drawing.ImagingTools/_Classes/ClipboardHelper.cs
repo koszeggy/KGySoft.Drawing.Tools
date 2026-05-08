@@ -804,7 +804,10 @@ namespace KGySoft.Drawing.ImagingTools
                     return false;
                 }
 
-                result = EnsureFormat(new Metafile(medium.unionmember, medium.pUnkForRelease is null), allowedTypes, false);
+                // If we do not own the medium, we create a copy to prevent the metafile from becoming unusable when the owner frees it up.
+                // Disposing the result metafile calls DeleteEnhancedMetafile due to the deleteEmf parameter, so not calling ReleaseStgMedium here.
+                IntPtr hEmf = medium.pUnkForRelease == null ? medium.unionmember : Gdi32.CopyEnhMetaFile(medium.unionmember);
+                result = EnsureFormat(new Metafile(hEmf, true), allowedTypes, false);
                 return result != null;
             }
             catch (Exception e) when (!e.IsCriticalGdi())
@@ -883,6 +886,7 @@ namespace KGySoft.Drawing.ImagingTools
                 }
                 finally
                 {
+                    // Same as calling ReleaseStgMedium. Unlike in EMF case, we always free the metafile here, because we create the result from a new stream.
                     if (medium.pUnkForRelease == null && hmf != IntPtr.Zero)
                         Gdi32.DeleteMetaFile(hmf);
                     Kernel32.GlobalUnlock(medium.unionmember);
@@ -940,21 +944,30 @@ namespace KGySoft.Drawing.ImagingTools
                     if (comDataObject.QueryGetData(ref comFormat) == Constants.S_OK)
                     {
                         comDataObject.GetData(ref comFormat, out STGMEDIUM medium);
-                        switch (medium.tymed)
+                        try
                         {
-                            case TYMED.TYMED_ISTREAM:
-                                return ComIStreamToStream(ref medium);
+                            switch (medium.tymed)
+                            {
+                                case TYMED.TYMED_ISTREAM:
+                                    return ComIStreamToStream(ref medium);
 
-                            case TYMED.TYMED_HGLOBAL:
-                                MemoryStream? stream = HGlobalToStream(ref medium);
-                                if (stream == null)
+                                case TYMED.TYMED_HGLOBAL:
+                                    MemoryStream? stream = HGlobalToStream(ref medium);
+                                    if (stream == null)
+                                        break;
+                                    return stream;
+
+                                default:
+                                    // Not failing this time, so we can still try the fallback with the non-COM interface
+                                    Debug.WriteLine($"Expected vs. actual format of {format}: {comFormat.tymed} <-> {medium.tymed}");
                                     break;
-                                return stream;
-
-                            default:
-                                // Not failing this time, so we can still try the fallback with the non-COM interface
-                                Debug.WriteLine($"Expected vs. actual format of {format}: {comFormat.tymed} <-> {medium.tymed}");
-                                break;
+                            }
+                        }
+                        finally
+                        {
+                            // It's much simpler to release the medium this way than knowing what to do
+                            // for the different TYMED and pUnkForRelease combinations.
+                            Ole32.ReleaseStgMedium(ref medium);
                         }
                     }
                 }
@@ -993,31 +1006,28 @@ namespace KGySoft.Drawing.ImagingTools
         {
             Debug.Assert(medium.tymed == TYMED.TYMED_ISTREAM);
             IStream comStream = (IStream)Marshal.GetObjectForIUnknown(medium.unionmember);
-            try
-            {
-                Marshal.Release(medium.unionmember);
-                comStream.Stat(out STATSTG stat, 0);
-                byte[] content = new byte[stat.cbSize];
+            Marshal.Release(medium.unionmember);
+            comStream.Stat(out STATSTG stat, 0);
+            byte[] content = new byte[stat.cbSize];
 
-                // NOTE: No need to check pcbRead, because if the requested bytes is not larger than the stream size, it always reads all requested bytes.
-                // See also https://learn.microsoft.com/en-us/windows/win32/api/objidl/nf-objidl-isequentialstream-read
-                comStream.Read(content, content.Length, IntPtr.Zero);
-                return new MemoryStream(content);
-            }
-            finally
-            {
-                Marshal.ReleaseComObject(comStream);
-            }
+            // Sometimes the stream position is at the end when we obtain the stream
+            comStream.Seek(0, Constants.STREAM_SEEK_SET, IntPtr.Zero);
+            int read;
+            unsafe { comStream.Read(content, content.Length, (IntPtr)(&read)); }
+
+            Debug.Assert(read == content.Length, "IStream.Read should not read less bytes than requested, unless the end of stream is reached.");
+            return new MemoryStream(content);
         }
 
         private static MemoryStream? HGlobalToStream(ref STGMEDIUM medium)
         {
             Debug.Assert(medium.tymed == TYMED.TYMED_HGLOBAL);
             IntPtr ptrStream = Kernel32.GlobalLock(medium.unionmember);
-            if (ptrStream == IntPtr.Zero)
-                return null;
             try
             {
+                if (ptrStream == IntPtr.Zero)
+                    return null;
+
                 nuint size = Kernel32.GlobalSize(medium.unionmember);
                 if (size == 0 || size >= Constants.MaxArrayLength)
                     return null;

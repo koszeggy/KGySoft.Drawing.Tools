@@ -58,6 +58,8 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
         
         internal const uint SRCCOPY = 0x00CC0020;
 
+        internal const int STREAM_SEEK_SET = 0;
+
         //// Needed for classic MessageBoxes. Restore if reverting from TaskDialogs
         //internal const int IDOK = 1;
         //internal const int IDCANCEL = 2;
