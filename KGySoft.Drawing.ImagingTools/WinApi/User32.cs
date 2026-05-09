@@ -403,7 +403,7 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             /// <param name = "hWnd" > A handle to the window whose DC is to be retrieved.If this value is NULL, GetDC retrieves the DC for the entire screen.</param>
             /// <returns>If the function succeeds, the return value is a handle to the DC for the specified window's client area.
             /// If the function fails, the return value is NULL.</returns>
-            [DllImport("user32.dll", CharSet = CharSet.Auto)]
+            [DllImport("user32.dll")]
             internal static extern IntPtr GetDC(IntPtr hWnd);
 
             #endregion

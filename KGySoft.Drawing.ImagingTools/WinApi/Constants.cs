@@ -70,7 +70,12 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
         internal const string ClassNameButton = "Button";
         internal const string ClassNameStatic = "Static";
 
-        internal const ulong MaxArrayLength = 0x7FFFFFC7;
+        internal const int MaxArrayLength = 0x7FFFFFC7;
+
+        internal const int DIB_RGB_COLORS = 0;
+        
+        internal const uint BI_RGB = 0;
+        internal const uint BI_BITFIELDS = 3;
 
         #endregion
     }

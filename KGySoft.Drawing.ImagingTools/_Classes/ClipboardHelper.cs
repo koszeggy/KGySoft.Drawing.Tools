@@ -29,12 +29,10 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using System.Windows.Forms;
 
-#if NETFRAMEWORK
-using KGySoft.CoreLibraries;
-#endif
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.ImagingTools.View;
 using KGySoft.Drawing.ImagingTools.WinApi;
+using KGySoft.Serialization.Binary;
 using KGySoft.WinForms;
 
 #endregion
@@ -168,7 +166,6 @@ namespace KGySoft.Drawing.ImagingTools
         #region Fields
 
         private readonly static Lock syncRoot = new();
-        private static readonly byte[] binaryFormatterStreamPrefix = new Guid("FD9EA796-3B13-4370-A679-56106BB288FB").ToByteArray();
 
         private static EventHandler? clipboardChangedHandler;
         private static ClipboardListener? clipboardViewer;
@@ -335,6 +332,8 @@ namespace KGySoft.Drawing.ImagingTools
                     return true;
                 if (formats.Contains(DataFormats.MetafilePict) && TryGetNativeWmf(dataObject, allowedTypes, out imageInfo))
                     return true;
+                if (allowedTypes == AllowedImageTypes.Metafile)
+                    return false;
 
                 // 2. Multiframe Bitmap or Icon with custom encoding
                 if (allowMultiFrame)
@@ -359,11 +358,13 @@ namespace KGySoft.Drawing.ImagingTools
                 if (TryGetImageFromStream(new[] { pngFormat, tiffFormat, gifFormat, iconFormat }.Intersect(formats), dataObject, allowedTypes, false, out imageInfo))
                     return true;
 
-                // 4. Standard Bitmap format
-                if (formats.Contains(DataFormats.Bitmap) && TryGetNativeBitmap(dataObject, allowedTypes, out imageInfo))
+                // 4. Standard DIB format - before standard Bitmap because we may retrieve alpha from it
+                if (formats.Contains(DataFormats.Dib) && TryGetDeviceIndependentBitmap(dataObject, allowedTypes, out imageInfo))
                     return true;
 
-                // 5. TODO - DIB
+                // 5. Standard Bitmap format
+                if (formats.Contains(DataFormats.Bitmap) && TryGetNativeBitmap(dataObject, allowedTypes, out imageInfo))
+                    return true;
 
                 // 6. Ultimate fallback: Clipboard.GetImage - it attempts to process .NET Framework serialized System.Drawing.Bitmap entries,
                 //    and also the standard Bitmap format if it wasn't processed natively above.
@@ -835,6 +836,76 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
+        private static bool TryGetDeviceIndependentBitmap(IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, out ImageInfo? result)
+        {
+            result = null;
+            if (!OSHelper.IsWindows)
+                return false;
+
+            int headerSize;
+            unsafe { headerSize = sizeof(BITMAPINFOHEADER); }
+
+            byte[]? buf = TryGetBytes(DataFormats.Dib, dataObject);
+            if (!(buf?.Length >= headerSize))
+                return false;
+
+            try
+            {
+                BITMAPINFOHEADER header;
+                if (BitConverter.IsLittleEndian)
+                    header = BinarySerializer.DeserializeValueType<BITMAPINFOHEADER>(buf);
+                else
+                    unsafe { fixed (byte* pBuf = buf) header = (BITMAPINFOHEADER)Marshal.PtrToStructure(new IntPtr(pBuf), typeof(BITMAPINFOHEADER))!; }
+
+                if (header.biSize != headerSize || header.biPlanes != 1 || (uint)header.biWidth > UInt16.MaxValue || (uint)header.biHeight > UInt16.MaxValue)
+                    return false;
+
+                int paletteSize = (int)header.biClrUsed;
+                if (paletteSize == 0)
+                {
+                    if (header.biCompression == Constants.BI_BITFIELDS)
+                        paletteSize = 3;
+                    else if (header.biBitCount is > 0 and < 16)
+                        paletteSize = 1 << header.biBitCount;
+                }
+
+                IntPtr dcScreen = User32.GetDC(IntPtr.Zero);
+                IntPtr dcDst = Gdi32.CreateCompatibleDC(dcScreen);
+                IntPtr hBitmap = IntPtr.Zero;
+                try
+                {
+                        
+                    var bitmapInfo = new BITMAPINFO();
+                    bitmapInfo.bmiHeader = header;
+                    unsafe
+                    {
+                        if (paletteSize > 0)
+                            Marshal.Copy(buf, headerSize, new IntPtr(bitmapInfo.bmiColors), paletteSize * 4);
+                    }
+
+                    hBitmap = Gdi32.CreateDibSection(dcDst, ref bitmapInfo, out IntPtr bits);
+                    int bitmapInfoSize = headerSize + paletteSize * 4;
+                    Marshal.Copy(buf, bitmapInfoSize, bits, buf.Length - bitmapInfoSize);
+                    result = EnsureFormat(Image.FromHbitmap(hBitmap), allowedTypes, false);
+                    return result != null;
+                }
+                finally
+                {
+                    if (hBitmap != IntPtr.Zero)
+                        Gdi32.DeleteObject(hBitmap);
+                    if (dcDst != IntPtr.Zero)
+                        Gdi32.DeleteDC(dcDst);
+                    if (dcScreen != IntPtr.Zero)
+                        User32.ReleaseDC(IntPtr.Zero, dcScreen);
+                }
+            }
+            catch (Exception e) when (!e.IsCriticalGdi())
+            {
+                Debug.WriteLine($"Failed to get native {DataFormats.Dib} format: {e.Message}");
+                return false;
+            }
+        }
+
         private static bool TryGetNativeEmf(IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, out ImageInfo? result)
         {
             result = null;
@@ -1001,58 +1072,85 @@ namespace KGySoft.Drawing.ImagingTools
         private static MemoryStream? TryGetStream(string format, IWinFormsDataObject dataObject)
         {
             // 1. First, trying to use the native COM IDataObject interface
-            if (!OSHelper.IsWindows && dataObject is IComDataObject comDataObject)
+            if (OSHelper.IsWindows && dataObject is IComDataObject comDataObject)
             {
-                try
-                {
-                    var comFormat = new FORMATETC
-                    {
-                        cfFormat = (short)DataFormats.GetFormat(format).Id,
-                        dwAspect = DVASPECT.DVASPECT_CONTENT,
-                        lindex = -1,
-                        tymed = TYMED.TYMED_ISTREAM | TYMED.TYMED_HGLOBAL
-                    };
-
-                    int hResult = comDataObject.QueryGetData(ref comFormat);
-                    if (hResult == Constants.S_OK)
-                    {
-                        comDataObject.GetData(ref comFormat, out STGMEDIUM medium);
-                        try
-                        {
-                            switch (medium.tymed)
-                            {
-                                case TYMED.TYMED_ISTREAM:
-                                    return ComIStreamToStream(ref medium);
-
-                                case TYMED.TYMED_HGLOBAL:
-                                    MemoryStream? stream = HGlobalToStream(ref medium);
-                                    if (stream == null)
-                                        break;
-                                    return stream;
-
-                                default:
-                                    // Not failing this time, so we can still try the fallback with the non-COM interface
-                                    Debug.WriteLine($"Expected vs. actual format of {format}: {comFormat.tymed} <-> {medium.tymed}");
-                                    break;
-                            }
-                        }
-                        finally
-                        {
-                            // It's much simpler to release the medium this way than knowing what to do
-                            // for the different TYMED and pUnkForRelease combinations.
-                            Ole32.ReleaseStgMedium(ref medium);
-                        }
-                    }
-                    else
-                        Debug.WriteLine($"Failed to get COM {format} stream: HRESULT is {hResult}");
-                }
-                catch (Exception e) when (!e.IsCriticalGdi())
-                {
-                    Debug.WriteLine($"Failed to get COM {format} stream: {e.Message}");
-                }
+                if (TryGetBytesNative(format, comDataObject) is byte[] buf)
+                    return new MemoryStream(buf);
             }
 
             // 2. Trying to use the managed IDataObject interface
+            return TryGetStreamManaged(format, dataObject);
+        }
+
+        private static byte[]? TryGetBytes(string format, IWinFormsDataObject dataObject)
+        {
+            // 1. First, trying to use the native COM IDataObject interface
+            if (OSHelper.IsWindows && dataObject is IComDataObject comDataObject)
+            {
+                if (TryGetBytesNative(format, comDataObject) is byte[] buf)
+                    return buf;
+            }
+
+            // 2. Trying to use the managed IDataObject interface
+            if (TryGetStreamManaged(format, dataObject) is not MemoryStream ms || ms.Length == 0)
+                return null;
+
+            return ms.ToArray();
+        }
+
+        private static byte[]? TryGetBytesNative(string format, IComDataObject comDataObject)
+        {
+            Debug.Assert(OSHelper.IsWindows);
+            try
+            {
+                var comFormat = new FORMATETC
+                {
+                    cfFormat = (short)DataFormats.GetFormat(format).Id,
+                    dwAspect = DVASPECT.DVASPECT_CONTENT,
+                    lindex = -1,
+                    tymed = TYMED.TYMED_ISTREAM | TYMED.TYMED_HGLOBAL
+                };
+
+                int hResult = comDataObject.QueryGetData(ref comFormat);
+                if (hResult != Constants.S_OK)
+                {
+                    Debug.WriteLine($"Failed to get COM {format} data: HRESULT is {hResult}");
+                    return null;
+                }
+
+                comDataObject.GetData(ref comFormat, out STGMEDIUM medium);
+                try
+                {
+                    switch (medium.tymed)
+                    {
+                        case TYMED.TYMED_ISTREAM:
+                            return ReadComIStream(ref medium);
+
+                        case TYMED.TYMED_HGLOBAL:
+                            return ReadHGlobal(ref medium);
+
+                        default:
+                            // Not failing this time, so we can still try the fallback with the non-COM interface
+                            Debug.WriteLine($"Expected vs. actual format of {format}: {comFormat.tymed} <-> {medium.tymed}");
+                            return null;
+                    }
+                }
+                finally
+                {
+                    // It's much simpler to release the medium this way than knowing what to do
+                    // for the different TYMED and pUnkForRelease combinations.
+                    Ole32.ReleaseStgMedium(ref medium);
+                }
+            }
+            catch (Exception e) when (!e.IsCriticalGdi())
+            {
+                Debug.WriteLine($"Failed to get COM {format} data: {e.Message}");
+                return null;
+            }
+        }
+
+        private static MemoryStream? TryGetStreamManaged(string format, IWinFormsDataObject dataObject)
+        {
             try
             {
 #if NET10_0_OR_GREATER
@@ -1066,9 +1164,9 @@ namespace KGySoft.Drawing.ImagingTools
                 {
                     case MemoryStream stream:
                         return stream;
-                    
+
                     case null:
-                        Debug.WriteLine($"Failed to get a stream for format {format}");
+                        Debug.WriteLine($"Failed to get a stream for format {format}: GetData returned null");
                         return null;
 
                     default:
@@ -1079,17 +1177,20 @@ namespace KGySoft.Drawing.ImagingTools
             }
             catch (Exception e) when (!e.IsCriticalGdi())
             {
-                Debug.WriteLine($"Failed to get metafile by IDataObject.GetData({format}): {e.Message}");
+                Debug.WriteLine($"Failed to get a stream for format {format}: {e.Message}");
                 return null;
             }
         }
 
-        private static MemoryStream ComIStreamToStream(ref STGMEDIUM medium)
+        private static byte[]? ReadComIStream(ref STGMEDIUM medium)
         {
             Debug.Assert(OSHelper.IsWindows && medium.tymed == TYMED.TYMED_ISTREAM);
             IStream comStream = (IStream)Marshal.GetObjectForIUnknown(medium.unionmember);
             Marshal.Release(medium.unionmember);
             comStream.Stat(out STATSTG stat, 0);
+            if (stat.cbSize is <= 0 or > Constants.MaxArrayLength)
+                return null;
+
             byte[] content = new byte[stat.cbSize];
 
             // Sometimes the stream position is at the end when we obtain the stream
@@ -1098,10 +1199,10 @@ namespace KGySoft.Drawing.ImagingTools
             unsafe { comStream.Read(content, content.Length, (IntPtr)(&read)); }
 
             Debug.Assert(read == content.Length, "IStream.Read should not read less bytes than requested, unless the end of stream is reached.");
-            return new MemoryStream(content);
+            return content;
         }
 
-        private static MemoryStream? HGlobalToStream(ref STGMEDIUM medium)
+        private static byte[]? ReadHGlobal(ref STGMEDIUM medium)
         {
             Debug.Assert(OSHelper.IsWindows && medium.tymed == TYMED.TYMED_HGLOBAL);
             IntPtr ptrStream = Kernel32.GlobalLock(medium.unionmember);
@@ -1111,24 +1212,12 @@ namespace KGySoft.Drawing.ImagingTools
                     return null;
 
                 nuint size = Kernel32.GlobalSize(medium.unionmember);
-                if (size == 0 || size >= Constants.MaxArrayLength)
+                if (size is 0 or > Constants.MaxArrayLength)
                     return null;
+
                 byte[] content = new byte[size];
                 Marshal.Copy(ptrStream, content, 0, (int)size);
-
-                // Ignoring BinaryFormatter content here
-                if (content.Length > binaryFormatterStreamPrefix.Length)
-                {
-#if NETCOREAPP3_0_OR_GREATER
-                    if (content.AsSpan().StartsWith(binaryFormatterStreamPrefix))
-                        return null;
-#else
-                    if (content.AsSection(0, binaryFormatterStreamPrefix.Length).SequenceEqual(binaryFormatterStreamPrefix))
-                        return null;
-#endif
-                }
-
-                return new MemoryStream(content);
+                return content;
             }
             finally
             {
