@@ -359,13 +359,14 @@ namespace KGySoft.Drawing.ImagingTools
                 if (TryGetImageFromStream(new[] { pngFormat, tiffFormat, gifFormat, iconFormat }.Intersect(formats), dataObject, allowedTypes, false, out imageInfo))
                     return true;
 
-                // 4. Standard Bitmap format or .NET Framework serialized Image
-                if (formats.Contains(DataFormats.Bitmap) && TryGetStandardBitmap(dataObject, allowedTypes, out imageInfo))
+                // 4. Standard Bitmap format
+                if (formats.Contains(DataFormats.Bitmap) && TryGetNativeBitmap(dataObject, allowedTypes, out imageInfo))
                     return true;
 
                 // 5. TODO - DIB
 
-                // 6. Ultimate fallback: Clipboard.GetImage - normally we should not reach this point, but on Mono the lower level interfaces may not be implemented completely.
+                // 6. Ultimate fallback: Clipboard.GetImage - it attempts to process .NET Framework serialized System.Drawing.Bitmap entries,
+                //    and also the standard Bitmap format if it wasn't processed natively above.
                 imageInfo = EnsureFormat(Clipboard.GetImage(), allowedTypes, allowMultiFrame);
                 return imageInfo != null;
             }
@@ -782,74 +783,62 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static bool TryGetStandardBitmap(IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, out ImageInfo? result)
+        private static bool TryGetNativeBitmap(IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, out ImageInfo? result)
         {
             result = null;
+            if (!OSHelper.IsWindows || dataObject is not IComDataObject comDataObject)
+                return false;
 
-            // Trying the COM way first
-            if (dataObject is IComDataObject comDataObject)
+            try
             {
+                var format = new FORMATETC
+                {
+                    cfFormat = (short)DataFormats.GetFormat(DataFormats.Bitmap).Id,
+                    dwAspect = DVASPECT.DVASPECT_CONTENT,
+                    lindex = -1,
+                    tymed = TYMED.TYMED_GDI
+                };
+
+                int hResult = comDataObject.QueryGetData(ref format);
+                if (hResult != Constants.S_OK)
+                {
+                    Debug.WriteLine($"Failed to get native {DataFormats.Bitmap} format: HRESULT is {hResult}");
+                    return false;
+                }
+
+                comDataObject.GetData(ref format, out STGMEDIUM medium);
                 try
                 {
-                    var format = new FORMATETC
+                    if (medium.tymed != TYMED.TYMED_GDI)
                     {
-                        cfFormat = (short)DataFormats.GetFormat(DataFormats.Bitmap).Id,
-                        dwAspect = DVASPECT.DVASPECT_CONTENT,
-                        lindex = -1,
-                        tymed = TYMED.TYMED_GDI
-                    };
-
-                    int hResult = comDataObject.QueryGetData(ref format);
-                    if (hResult == Constants.S_OK)
-                    {
-                        comDataObject.GetData(ref format, out STGMEDIUM medium);
-                        try
-                        {
-                            if (medium.tymed == TYMED.TYMED_GDI)
-                            {
-                                // NOTE: Image.FromHBitmap always creates a copy, so we are safe even when we don't own the handle (that is, when medium.pUnkForRelease is not null).
-                                // The managed GetData always clones the result here, but the docs says: "The FromHbitmap method makes a copy of the GDI bitmap; so you can release
-                                // the incoming GDI bitmap using the GDI DeleteObject method immediately after creating the new Image."
-                                Bitmap bitmap = Image.FromHbitmap(medium.unionmember);
-                                result = EnsureFormat(bitmap, allowedTypes, false);
-                                if (result != null)
-                                    return true;
-                            }
-                            else
-                                Debug.WriteLine($"Expected vs. actual format of {DataFormats.Bitmap}: {format.tymed} <-> {medium.tymed}");
-                        }
-                        finally
-                        {
-                            // If the type was TYMED_GDI, this may call Gdi32.DeleteObject, depending on medium.pUnkForRelease
-                            Ole32.ReleaseStgMedium(ref medium);
-                        }
+                        Debug.Fail($"Expected vs. actual format of {DataFormats.Bitmap}: {format.tymed} <-> {medium.tymed}");
+                        return false;
                     }
-                    else
-                        Debug.WriteLine($"Failed to get native {DataFormats.Bitmap} format: HRESULT is {hResult}");
+
+                    // NOTE: Image.FromHBitmap always creates a copy, so we are safe even when we don't own the handle (that is, when medium.pUnkForRelease is not null).
+                    // The managed GetData always clones the result here, but the docs says: "The FromHbitmap method makes a copy of the GDI bitmap; so you can release
+                    // the incoming GDI bitmap using the GDI DeleteObject method immediately after creating the new Image."
+                    Bitmap bitmap = Image.FromHbitmap(medium.unionmember);
+                    result = EnsureFormat(bitmap, allowedTypes, false);
+                    return result != null;
                 }
-                catch (Exception e) when (!e.IsCriticalGdi())
+                finally
                 {
-                    Debug.WriteLine($"Failed to get native {DataFormats.Bitmap} format: {e.Message}");
+                    // If the type was TYMED_GDI, this may call Gdi32.DeleteObject, depending on medium.pUnkForRelease
+                    Ole32.ReleaseStgMedium(ref medium);
                 }
             }
-
-            // 2. Trying to use the managed API - this may copy the image more times in memory than needed. It also tries to retrieve BinaryFormatter serialized System.Drawing.Bitmap entry
-#if NET10_0_OR_GREATER
-            if (dataObject.TryGetData<Image>(DataFormats.Bitmap, out Image? image))
-#else
-            if (dataObject.GetData(DataFormats.Bitmap) is Image image)
-#endif
+            catch (Exception e) when (!e.IsCriticalGdi())
             {
-                result = EnsureFormat(image, allowedTypes, false);
+                Debug.WriteLine($"Failed to get native {DataFormats.Bitmap} format: {e.Message}");
+                return false;
             }
-
-            return result != null;
         }
 
         private static bool TryGetNativeEmf(IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, out ImageInfo? result)
         {
             result = null;
-            if (dataObject is not IComDataObject comDataObject)
+            if (!OSHelper.IsWindows || dataObject is not IComDataObject comDataObject)
                 return false;
 
             try
@@ -893,7 +882,7 @@ namespace KGySoft.Drawing.ImagingTools
         private static bool TryGetNativeWmf(IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, out ImageInfo? result)
         {
             result = null;
-            if (dataObject is not IComDataObject comDataObject)
+            if (!OSHelper.IsWindows || dataObject is not IComDataObject comDataObject)
                 return false;
 
             try
@@ -1012,7 +1001,7 @@ namespace KGySoft.Drawing.ImagingTools
         private static MemoryStream? TryGetStream(string format, IWinFormsDataObject dataObject)
         {
             // 1. First, trying to use the native COM IDataObject interface
-            if (dataObject is IComDataObject comDataObject)
+            if (!OSHelper.IsWindows && dataObject is IComDataObject comDataObject)
             {
                 try
                 {
@@ -1097,7 +1086,7 @@ namespace KGySoft.Drawing.ImagingTools
 
         private static MemoryStream ComIStreamToStream(ref STGMEDIUM medium)
         {
-            Debug.Assert(medium.tymed == TYMED.TYMED_ISTREAM);
+            Debug.Assert(OSHelper.IsWindows && medium.tymed == TYMED.TYMED_ISTREAM);
             IStream comStream = (IStream)Marshal.GetObjectForIUnknown(medium.unionmember);
             Marshal.Release(medium.unionmember);
             comStream.Stat(out STATSTG stat, 0);
@@ -1114,7 +1103,7 @@ namespace KGySoft.Drawing.ImagingTools
 
         private static MemoryStream? HGlobalToStream(ref STGMEDIUM medium)
         {
-            Debug.Assert(medium.tymed == TYMED.TYMED_HGLOBAL);
+            Debug.Assert(OSHelper.IsWindows && medium.tymed == TYMED.TYMED_HGLOBAL);
             IntPtr ptrStream = Kernel32.GlobalLock(medium.unionmember);
             try
             {
