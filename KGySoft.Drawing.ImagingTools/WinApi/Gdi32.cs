@@ -162,7 +162,7 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             /// The CreateDIBSection function creates a DIB that applications can write to directly. The function gives you a pointer to the location of the bitmap bit values. You can supply a handle to a file-mapping object that the function will use to create the bitmap, or you can let the system allocate the memory for the bitmap.
             /// </summary>
             /// <param name="hdc">A handle to a device context. If the value of iUsage is DIB_PAL_COLORS, the function uses this device context's logical palette to initialize the DIB colors.</param>
-            /// <param name="pbmi">A pointer to a <see cref="BITMAPINFO"/> structure that specifies various attributes of the DIB, including the bitmap dimensions and colors.</param>
+            /// <param name="pbmi">A pointer to a BITMAPINFO structure that specifies various attributes of the DIB, including the bitmap dimensions and colors.</param>
             /// <param name="iUsage">The type of data contained in the bmiColors array member of the BITMAPINFO structure pointed to by pbmi (either logical palette indexes or literal RGB values). The following values are defined.
             /// <para>DIB_PAL_COLORS - The bmiColors member is an array of 16-bit indexes into the logical palette of the device context specified by hdc.</para>
             /// <para>DIB_RGB_COLORS - The BITMAPINFO structure contains an array of literal RGB values.</para>
@@ -173,7 +173,7 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             /// <returns>If the function succeeds, the return value is a handle to the newly created DIB, and *ppvBits points to the bitmap bit values.
             /// If the function fails, the return value is NULL, and ppvBits is NULL.</returns>
             [DllImport("gdi32.dll")]
-            internal static extern IntPtr CreateDIBSection(IntPtr hdc, [In]ref BITMAPINFO pbmi, int iUsage, out IntPtr ppvBits, IntPtr hSection, uint dwOffset);
+            internal static extern IntPtr CreateDIBSection(IntPtr hdc, IntPtr pbmi, int iUsage, out IntPtr ppvBits, IntPtr hSection, uint dwOffset);
 
             #endregion
         }
@@ -199,8 +199,8 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
         internal static IntPtr SetWinMetaFileBits(uint size, byte[] wmfData, IntPtr hdcRef, ref METAFILEPICT metafilepict)
             => NativeMethods.SetWinMetaFileBits(size, wmfData, hdcRef, ref metafilepict);
 
-        internal static IntPtr CreateDibSection(IntPtr hdc, ref BITMAPINFO bitmapInfo, out IntPtr bits)
-            => NativeMethods.CreateDIBSection(hdc, ref bitmapInfo, Constants.DIB_RGB_COLORS, out bits, IntPtr.Zero, 0);
+        internal static IntPtr CreateDibSection(IntPtr hdc, IntPtr bitmapInfo, out IntPtr bits)
+            => NativeMethods.CreateDIBSection(hdc, bitmapInfo, Constants.DIB_RGB_COLORS, out bits, IntPtr.Zero, 0);
 
         #endregion
     }

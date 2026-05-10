@@ -29,10 +29,12 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using System.Windows.Forms;
 
+using KGySoft.Collections;
+using KGySoft.CoreLibraries;
+using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.ImagingTools.View;
 using KGySoft.Drawing.ImagingTools.WinApi;
-using KGySoft.Serialization.Binary;
 using KGySoft.WinForms;
 
 #endregion
@@ -227,7 +229,7 @@ namespace KGySoft.Drawing.ImagingTools
                     return Clipboard.ContainsImage();
                 }
 
-                var formats = new HashSet<string>(dataObject.GetFormats());
+                var formats = new HashSet<string>(dataObject.GetFormats(false));
                 if ((types & (AllowedImageTypes.Bitmap | AllowedImageTypes.Icon)) != AllowedImageTypes.None
                     && formats.Overlaps([DataFormats.Bitmap, DataFormats.Dib, typeof(Bitmap).FullName!, pngFormat, gifFormat]))
                 {
@@ -839,64 +841,115 @@ namespace KGySoft.Drawing.ImagingTools
         private static bool TryGetDeviceIndependentBitmap(IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, out ImageInfo? result)
         {
             result = null;
-            if (!OSHelper.IsWindows)
+
+            // Endianness check: because we just do casts instead of actual marshaling.
+            // The layout of the structs ensure the same result on different architectures, exception with big-endian ones.
+            if (!BitConverter.IsLittleEndian)
                 return false;
 
-            int headerSize;
-            unsafe { headerSize = sizeof(BITMAPINFOHEADER); }
-
             byte[]? buf = TryGetBytes(DataFormats.Dib, dataObject);
-            if (!(buf?.Length >= headerSize))
+            if (buf == null)
                 return false;
 
             try
             {
-                BITMAPINFOHEADER header;
-                if (BitConverter.IsLittleEndian)
-                    header = BinarySerializer.DeserializeValueType<BITMAPINFOHEADER>(buf);
-                else
-                    unsafe { fixed (byte* pBuf = buf) header = (BITMAPINFOHEADER)Marshal.PtrToStructure(new IntPtr(pBuf), typeof(BITMAPINFOHEADER))!; }
-
-                if (header.biSize != headerSize || header.biPlanes != 1 || (uint)header.biWidth > UInt16.MaxValue || (uint)header.biHeight > UInt16.MaxValue)
-                    return false;
-
-                int paletteSize = (int)header.biClrUsed;
-                if (paletteSize == 0)
+                unsafe
                 {
-                    if (header.biCompression == Constants.BI_BITFIELDS)
-                        paletteSize = 3;
-                    else if (header.biBitCount is > 0 and < 16)
-                        paletteSize = 1 << header.biBitCount;
-                }
+                    int headerSize = sizeof(BITMAPINFOHEADER);
+                    if (buf.Length <= headerSize)
+                        return false;
 
-                IntPtr dcScreen = User32.GetDC(IntPtr.Zero);
-                IntPtr dcDst = Gdi32.CreateCompatibleDC(dcScreen);
-                IntPtr hBitmap = IntPtr.Zero;
-                try
-                {
-                        
-                    var bitmapInfo = new BITMAPINFO();
-                    bitmapInfo.bmiHeader = header;
-                    unsafe
+                    fixed (byte* pBuf = buf)
                     {
-                        if (paletteSize > 0)
-                            Marshal.Copy(buf, headerSize, new IntPtr(bitmapInfo.bmiColors), paletteSize * 4);
-                    }
+                        // Size is checked above, so we are safe with the cast. Some sanity checks are still performed.
+                        BITMAPINFOHEADER* header = (BITMAPINFOHEADER*)pBuf;
+                        if (header->biSize != headerSize || header->biPlanes != 1 || (uint)header->biWidth > UInt16.MaxValue || (uint)header->biHeight > UInt16.MaxValue)
+                            return false;
 
-                    hBitmap = Gdi32.CreateDibSection(dcDst, ref bitmapInfo, out IntPtr bits);
-                    int bitmapInfoSize = headerSize + paletteSize * 4;
-                    Marshal.Copy(buf, bitmapInfoSize, bits, buf.Length - bitmapInfoSize);
-                    result = EnsureFormat(Image.FromHbitmap(hBitmap), allowedTypes, false);
-                    return result != null;
-                }
-                finally
-                {
-                    if (hBitmap != IntPtr.Zero)
-                        Gdi32.DeleteObject(hBitmap);
-                    if (dcDst != IntPtr.Zero)
-                        Gdi32.DeleteDC(dcDst);
-                    if (dcScreen != IntPtr.Zero)
-                        User32.ReleaseDC(IntPtr.Zero, dcScreen);
+                        int paletteSize = (int)header->biClrUsed;
+                        if (paletteSize == 0)
+                        {
+                            if (header->biCompression == Constants.BI_BITFIELDS)
+                                paletteSize = 3;
+                            else if (header->biBitCount is > 0 and < 16)
+                                paletteSize = 1 << header->biBitCount;
+                        }
+
+                        int bitmapInfoSize = headerSize + paletteSize * 4;
+
+                        // DIB stride is always divisible by 4, that's why we calculate with +31 and not +7
+                        int stride = (((header->biWidth * header->biBitCount) + 31) & ~31) >> 3;
+                        int contentSize = (int)header->biSizeImage;
+                        if (contentSize == 0u && header->biCompression is Constants.BI_RGB or Constants.BI_BITFIELDS)
+                            contentSize = stride * header->biHeight;
+
+                        // We only checked the header size above, now validating also with BITMAPINFO.bmiColors length and the actual content size if available.
+                        if ((uint)buf.Length < (uint)(headerSize + paletteSize + contentSize))
+                            return false;
+
+                        // Special handling for 32 bpp uncompressed formats: Officially BITMAPINFO does not support uncompressed alpha bitmaps,
+                        // still, alpha information might be present at the unused bytes of the xRGB pixel data.
+                        // NOTE: we must be careful, because x might be zeroed out, even if RGB is nonzero, in which case it's better assume that the image has no alpha.
+                        //       Casting to Color32 is alright, because it has the same layout for the RGB values as the pixels in the 32-bit uncompressed DIB.
+                        if (header->biBitCount == 32 && header->biCompression is Constants.BI_RGB or Constants.BI_BITFIELDS && contentSize > 0)
+                        {
+                            CastArray<byte, Color32> pixels = buf.AsSection(bitmapInfoSize).Cast<byte, Color32>();
+                            Color32 firstPixel = pixels.GetElementReferenceUnsafe(0);
+                            PixelFormat pixelFormat = firstPixel.A is Byte.MinValue or Byte.MaxValue ? PixelFormat.Format32bppRgb : PixelFormat.Format32bppArgb;
+
+                            // First pixel is opaque: assuming no alpha unless there is a pixel with alpha
+                            // First pixel is transparent: if the whole bitmap seems to be completely transparent, we assume no alpha
+                            if (pixelFormat == PixelFormat.Format32bppRgb)
+                            {
+                                for (int i = 1; i < pixels.Length; i++)
+                                {
+                                    if (pixels.GetElementReferenceUnsafe(i).A != firstPixel.A)
+                                    {
+                                        pixelFormat = PixelFormat.Format32bppArgb;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            // Reinterpreting the buffer as a bitmap with the determined format.
+                            // Stride has to be negative due to DIBs bottom-up representation, and scan0 must point to the last row.
+                            // As the wrapper bitmap does not own the buffer (that will go out of scope anyway), we must create a clone.
+                            using var dibWrapper = new Bitmap(header->biWidth, header->biHeight, -stride, pixelFormat, (IntPtr)(pBuf + bitmapInfoSize + stride * (header->biHeight - 1)));
+                            result = EnsureFormat(dibWrapper.CloneCurrentFrame(), allowedTypes, false);
+                            return result != null;
+                        }
+
+                        // Fallback case: letting Windows create the bitmap.
+                        // We could actually process the content if the compression is BI_JPEG or BI_PNG, but they are not really expected here.
+                        if (!OSHelper.IsWindows)
+                            return false;
+
+                        IntPtr dcScreen = User32.GetDC(IntPtr.Zero);
+                        IntPtr dcDst = Gdi32.CreateCompatibleDC(dcScreen);
+                        IntPtr hBitmap = IntPtr.Zero;
+                        try
+                        {
+                            // We could use a BITMAPINFO type with an unsafe fixed uint bmiColors[256] field,
+                            // and copy the calculated bitmapInfoSize number of bytes into it, but using pBuf makes it unnecessary.
+                            hBitmap = Gdi32.CreateDibSection(dcDst, (IntPtr)pBuf, out IntPtr bits);
+#if NET46_OR_GREATER
+                            Buffer.MemoryCopy(pBuf + bitmapInfoSize, bits.ToPointer(), buf.Length - bitmapInfoSize, buf.Length - bitmapInfoSize);
+#else
+                            Marshal.Copy(buf, bitmapInfoSize, bits, buf.Length - bitmapInfoSize);
+#endif
+                            result = EnsureFormat(Image.FromHbitmap(hBitmap), allowedTypes, false);
+                            return result != null;
+                        }
+                        finally
+                        {
+                            if (hBitmap != IntPtr.Zero)
+                                Gdi32.DeleteObject(hBitmap);
+                            if (dcDst != IntPtr.Zero)
+                                Gdi32.DeleteDC(dcDst);
+                            if (dcScreen != IntPtr.Zero)
+                                User32.ReleaseDC(IntPtr.Zero, dcScreen);
+                        }
+                    }
                 }
             }
             catch (Exception e) when (!e.IsCriticalGdi())
