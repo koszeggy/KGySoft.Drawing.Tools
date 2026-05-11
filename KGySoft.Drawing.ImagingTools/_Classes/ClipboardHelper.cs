@@ -161,7 +161,6 @@ namespace KGySoft.Drawing.ImagingTools
         private const string gifFormat = "GIF";
         private const string pngFormat = "PNG";
         private const string iconFormat = "ICO";
-        private const string tiffFormat = "TIFF";
 
         #endregion
 
@@ -245,7 +244,7 @@ namespace KGySoft.Drawing.ImagingTools
                 if ((types & AllowedImageTypes.Icon) != AllowedImageTypes.None && formats.Contains(iconFormat))
                     return true;
 
-                if ((types & AllowedImageTypes.Bitmap) != AllowedImageTypes.None && formats.Contains(tiffFormat))
+                if ((types & AllowedImageTypes.Bitmap) != AllowedImageTypes.None && formats.Contains(DataFormats.Tiff))
                     return true;
 
                 return false;
@@ -342,7 +341,7 @@ namespace KGySoft.Drawing.ImagingTools
                 if (allowMultiFrame)
                 {
                     // 2.a. TIFF or Icon
-                    if (TryGetImageFromStream(formats.Intersect([tiffFormat, iconFormat]), dataObject, allowedTypes, true, out imageInfo))
+                    if (TryGetImageFromStream(formats.Intersect([DataFormats.Tiff, iconFormat]), dataObject, allowedTypes, true, out imageInfo))
                         return true;
 
                     // 2.b. [animated] GIF
@@ -358,7 +357,7 @@ namespace KGySoft.Drawing.ImagingTools
                 }
 
                 // 3. Single-frame custom encoded Bitmap or Icon. The way of the Intersect call ensures the order of the tried formats.
-                if (TryGetImageFromStream(new[] { pngFormat, tiffFormat, gifFormat, iconFormat }.Intersect(formats), dataObject, allowedTypes, false, out imageInfo))
+                if (TryGetImageFromStream(new[] { pngFormat, DataFormats.Tiff, gifFormat, iconFormat }.Intersect(formats), dataObject, allowedTypes, false, out imageInfo))
                     return true;
 
                 // 4. Standard DIB format - before standard Bitmap because we may retrieve alpha from it
@@ -680,7 +679,7 @@ namespace KGySoft.Drawing.ImagingTools
                     image.SaveAsTiff(ms, false);
                 else
                     info.Frames!.Select(f => f.Image!).SaveAsMultipageTiff(ms);
-                formats.Add(tiffFormat, ms);
+                formats.Add(DataFormats.Tiff, ms);
             }
             catch (Exception e) when (!e.IsCritical())
             {
