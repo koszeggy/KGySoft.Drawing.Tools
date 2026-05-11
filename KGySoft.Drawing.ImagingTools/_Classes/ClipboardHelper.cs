@@ -326,6 +326,7 @@ namespace KGySoft.Drawing.ImagingTools
                     return false;
 
                 var formats = new HashSet<string>(dataObject.GetFormats(false));
+                Debug.WriteLine($"Clipboard formats: {formats.Join(", ")}");
 
                 // 1. Metafile - custom encodings first, and then by standard native formats
                 if (TryGetImageFromStream(formats.Intersect([emfFormat, wmfFormat]), dataObject, allowedTypes, false, out imageInfo))
@@ -504,7 +505,7 @@ namespace KGySoft.Drawing.ImagingTools
                 return;
 
             // 2. Standard EnhancedMetafile format, which is compatible with many applications.
-            // Windows automatically generates a MetaFilePict entry as well (though pasting it does not work, at least on x64 systems).
+            // Windows automatically generates a MetaFilePict entry as well (though pasting it as non-enhanced metafile does not work, at least on XP+).
             // GetHenhmetafile makes the original image unusable, so we clone it first.
             try
             {
@@ -1005,93 +1006,28 @@ namespace KGySoft.Drawing.ImagingTools
 
         private static bool TryGetNativeWmf(IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, out ImageInfo? result)
         {
-            result = null;
-            if (!OSHelper.IsWindows || dataObject is not IComDataObject comDataObject)
-                return false;
+            // After failing in every way of getting a valid metafile handle from DataFormats.MetafilePict, it turns out that we can obtain DataFormats.EnhancedMetafile,
+            // even if it is not present on the clipboard, as Windows does the conversion for us.
+            return TryGetNativeEmf(dataObject, allowedTypes, out result);
 
-            try
-            {
-                var format = new FORMATETC
-                {
-                    cfFormat = (short)DataFormats.GetFormat(DataFormats.MetafilePict).Id,
-                    dwAspect = DVASPECT.DVASPECT_CONTENT,
-                    lindex = -1,
-                    tymed = TYMED.TYMED_MFPICT
-                };
+            // If we really wanted, we could convert the result back to WMF:
+            //TryGetNativeEmf(dataObject, allowedTypes, out result);
+            //if (result?.Image is not Metafile metafile)
+            //    return result != null;
 
-                int hResult = comDataObject.QueryGetData(ref format);
-                if (hResult != Constants.S_OK)
-                {
-                    Debug.WriteLine($"Failed to get native {DataFormats.MetafilePict} format: HRESULT is {hResult}");
-                    return false;
-                }
-
-                comDataObject.GetData(ref format, out STGMEDIUM medium);
-                if (medium.tymed != TYMED.TYMED_MFPICT)
-                {
-                    Ole32.ReleaseStgMedium(ref medium);
-                    Debug.Fail($"Expected vs. actual format of {DataFormats.MetafilePict}: {format.tymed} <-> {medium.tymed}");
-                    return false;
-                }
-
-                IntPtr ptrMetafilePict = Kernel32.GlobalLock(medium.unionmember);
-                if (ptrMetafilePict == IntPtr.Zero)
-                    return false;
-
-                IntPtr hmf = IntPtr.Zero;
-                try
-                {
-                    unsafe { hmf = ((METAFILEPICT*)ptrMetafilePict)->hMF; }
-
-                    // NOTE: Maybe it's an architectural/Windows version thing, but this always returns 0, and sets LastWin32Error to 6 (Invalid handle).
-                    // Fallback attempts (e.g. cloning the metafile first, or replaying the WMF content into a new enhanced metafile) don't work either.
-                    uint size = Gdi32.GetMetaFileBitsEx(hmf, 0, null);
-                    if (size == 0u)
-                        return false;
-                    
-                    var buffer = new byte[size];
-                    if (Gdi32.GetMetaFileBitsEx(hmf, size, buffer) == 0)
-                        return false;
-
-                    using var ms = new MemoryStream(buffer);
-                    result = EnsureFormat(new Metafile(ms), allowedTypes, false);
-                    return result != null;
-
-                    //// Fallback attempt: creating an Enhanced Metafile, and replaying the WMF content into it.
-                    //IntPtr hdc = User32.GetDC(IntPtr.Zero);
-
-                    //IntPtr hdcEmf = Gdi32.CreateEnhMetaFile(hdc, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
-                    //try
-                    //{
-                    //    bool success = Gdi32.PlayMetaFile(hdcEmf, hmf);
-                    //    IntPtr hEmf = Gdi32.CloseEnhMetaFile(hdcEmf);
-
-                    //    if (success)
-                    //        metafile = new Metafile(hEmf, true);
-                    //    else
-                    //        Gdi32.DeleteEnhMetaFile(hEmf);
-                    //    return success;
-                    //}
-                    //finally
-                    //{
-                    //    if (hdcEmf != IntPtr.Zero)
-                    //        Gdi32.DeleteDC(hdcEmf);
-                    //    User32.ReleaseDC(IntPtr.Zero, hdc);
-                    //}
-                }
-                finally
-                {
-                    // Same as calling ReleaseStgMedium. Unlike in EMF case, we always free the metafile here, because we create the result from a new stream.
-                    if (medium.pUnkForRelease == null && hmf != IntPtr.Zero)
-                        Gdi32.DeleteMetaFile(hmf);
-                    Kernel32.GlobalUnlock(medium.unionmember);
-                }
-            }
-            catch (Exception e) when (!e.IsCriticalGdi())
-            {
-                Debug.WriteLine($"Failed to get native {DataFormats.MetafilePict} format: {e.Message}");
-                return false;
-            }
+            //try
+            //{
+            //    var ms = new MemoryStream();
+            //    metafile.SaveAsWmf(ms);
+            //    ms.Position = 0L;
+            //    result.Dispose();
+            //    result = new ImageInfo(new Metafile(ms));
+            //    return true;
+            //}
+            //catch (Exception e) when (!e.IsCriticalGdi())
+            //{
+            //    return false;
+            //}
         }
 
         private static bool TryGetImageFromStream(IEnumerable<string> formats, IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, bool allowMultiFrame, out ImageInfo? imageInfo)
