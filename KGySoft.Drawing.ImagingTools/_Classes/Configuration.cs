@@ -197,7 +197,7 @@ namespace KGySoft.Drawing.ImagingTools
             // Disposing the registry key is actually the same as Close. There is no way to discard the changes of Registry keys
             // (even though Release should be called when SaveSettings was not called, but it discards the changes of Settings only).
             // Not calling Dispose here does not help: even though RegistryKey has no finalizer, the wrapped SafeRegistryHandle does have.
-            registryKey?.Dispose();
+            (registryKey as IDisposable)?.Dispose(); // the cast is needed for .NET Framework 3.5
             registryKey = null;
             forceAppSettings = false;
         }

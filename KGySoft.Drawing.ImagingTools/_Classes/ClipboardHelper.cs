@@ -161,6 +161,7 @@ namespace KGySoft.Drawing.ImagingTools
         private const string gifFormat = "GIF";
         private const string pngFormat = "PNG";
         private const string iconFormat = "ICO";
+        private const string dibV5Format = "Format17";
 
         #endregion
 
@@ -230,7 +231,7 @@ namespace KGySoft.Drawing.ImagingTools
 
                 var formats = new HashSet<string>(dataObject.GetFormats(false));
                 if ((types & (AllowedImageTypes.Bitmap | AllowedImageTypes.Icon)) != AllowedImageTypes.None
-                    && formats.Overlaps([DataFormats.Bitmap, DataFormats.Dib, typeof(Bitmap).FullName!, pngFormat, gifFormat]))
+                    && formats.Overlaps([DataFormats.Bitmap, DataFormats.Dib, typeof(Bitmap).FullName!, pngFormat, gifFormat, dibV5Format]))
                 {
                     return true;
                 }
@@ -360,8 +361,10 @@ namespace KGySoft.Drawing.ImagingTools
                 if (TryGetImageFromStream(new[] { pngFormat, DataFormats.Tiff, gifFormat, iconFormat }.Intersect(formats), dataObject, allowedTypes, false, out imageInfo))
                     return true;
 
-                // 4. Standard DIB format - before standard Bitmap because we may retrieve alpha from it
-                if (formats.Contains(DataFormats.Dib) && TryGetDeviceIndependentBitmap(dataObject, allowedTypes, out imageInfo))
+                // 4. Standard DIB formats
+                if (formats.Contains(dibV5Format) && TryGetDeviceIndependentBitmap(dibV5Format, dataObject, allowedTypes, false/*TODO*/, out imageInfo))
+                    return true;
+                if (formats.Contains(DataFormats.Dib) && TryGetDeviceIndependentBitmap(DataFormats.Dib, dataObject, allowedTypes, false/*TODO*/, out imageInfo))
                     return true;
 
                 // 5. Standard Bitmap format
@@ -388,7 +391,7 @@ namespace KGySoft.Drawing.ImagingTools
 
         private static bool PopulateClipboard(Dictionary<string, object> formats)
         {
-            bool useNativeApi = OSHelper.IsWindows && (formats.ContainsKey(DataFormats.EnhancedMetafile) || formats.ContainsKey(DataFormats.Bitmap));
+            bool useNativeApi = OSHelper.IsWindows && (formats.Values.Any(v => v is IntPtr));
             if (useNativeApi && PopulateClipboardNatively(formats))
                 return true;
 
@@ -577,7 +580,6 @@ namespace KGySoft.Drawing.ImagingTools
             Bitmap bitmap = image as Bitmap ?? new Bitmap(image);
             try
             {
-                Size size = bitmap.Size;
                 PixelFormat pixelFormat = bitmap.PixelFormat;
 
                 // 1. Custom PNG format. It is recognized by multiple applications, and unlike the standard Bitmap format, it preserves alpha.
@@ -619,7 +621,7 @@ namespace KGySoft.Drawing.ImagingTools
                 }
 
                 // 3.b. Standard Bitmap format. The clipboard expects a bitmap created by CreateCompatibleBitmap, so we cannot just return the result of GetHbitmap.
-                // When using SetClipboardData, Windows automatically generates DeviceIndependentBitmap (and Format17) entries as well.
+                // When using SetClipboardData, Windows automatically generates DeviceIndependentBitmap and Format17 (DIB/DIBv5) entries as well.
                 // This is different from the managed Clipboard/DataObject.SetImage APIs, which don't generate these additional formats,
                 // but add a BinaryFormatter-serialized System.Drawing.Bitmap entry (along with the standard Bitmap format).
                 IntPtr hbmSrc = IntPtr.Zero;
@@ -628,24 +630,7 @@ namespace KGySoft.Drawing.ImagingTools
                 {
                     try
                     {
-                        dcScreen = User32.GetDC(IntPtr.Zero);
-                        hbmSrc = bitmap.GetHbitmap();
-                        IntPtr dcSrc = Gdi32.CreateCompatibleDC(dcScreen);
-                        IntPtr prevSrc = Gdi32.SelectObject(dcSrc, hbmSrc);
-
-                        IntPtr dcDst = Gdi32.CreateCompatibleDC(dcScreen);
-                        IntPtr hbmDst = Gdi32.CreateCompatibleBitmap(dcScreen, size.Width, size.Height);
-                        IntPtr prevDst = Gdi32.SelectObject(dcDst, hbmDst);
-
-                        // copying the content and storing the result
-                        Gdi32.BitBlt(dcDst, dcSrc, size);
-                        formats.Add(DataFormats.Bitmap, hbmDst);
-
-                        // cleanup
-                        Gdi32.SelectObject(dcSrc, prevSrc);
-                        Gdi32.SelectObject(dcDst, prevDst);
-                        Gdi32.DeleteDC(dcSrc);
-                        Gdi32.DeleteDC(dcDst);
+                        formats.Add(DataFormats.Bitmap, bitmap.GetHbitmap());
                     }
                     finally
                     {
@@ -838,7 +823,7 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static bool TryGetDeviceIndependentBitmap(IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, out ImageInfo? result)
+        private static bool TryGetDeviceIndependentBitmap(string format, IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, bool detectAlpha, out ImageInfo? result)
         {
             result = null;
 
@@ -847,7 +832,7 @@ namespace KGySoft.Drawing.ImagingTools
             if (!BitConverter.IsLittleEndian)
                 return false;
 
-            byte[]? buf = TryGetBytes(DataFormats.Dib, dataObject);
+            byte[]? buf = TryGetBytes(format, dataObject);
             if (buf == null)
                 return false;
 
@@ -855,17 +840,21 @@ namespace KGySoft.Drawing.ImagingTools
             {
                 unsafe
                 {
-                    int headerSize = sizeof(BITMAPINFOHEADER);
+                    int headerSize = format == DataFormats.Dib ? sizeof(BITMAPINFOHEADER)
+                            : format == dibV5Format ? sizeof(BITMAPV5HEADER)
+                            : throw new InvalidOperationException(Res.InternalError($"Unexpected format: {format}"));
                     if (buf.Length <= headerSize)
                         return false;
 
                     fixed (byte* pBuf = buf)
                     {
-                        // Size is checked above, so we are safe with the cast. Some sanity checks are still performed.
+                        // Casting to the lowest version, which is compatible with V4 and V5 formats.
                         BITMAPINFOHEADER* header = (BITMAPINFOHEADER*)pBuf;
-                        if (header->biSize != headerSize || header->biPlanes != 1 || (uint)header->biWidth > UInt16.MaxValue || (uint)header->biHeight > UInt16.MaxValue)
+                        var size = new Size(header->biWidth, Math.Abs(header->biHeight));
+                        if (header->biSize != headerSize || header->biPlanes != 1 || (uint)size.Width > UInt16.MaxValue || (uint)size.Height > UInt16.MaxValue)
                             return false;
 
+                        // The number of RGBQUAD entries in BITMAPINFO.bmiColors that are after the header.
                         int paletteSize = (int)header->biClrUsed;
                         if (paletteSize == 0)
                         {
@@ -878,43 +867,59 @@ namespace KGySoft.Drawing.ImagingTools
                         int bitmapInfoSize = headerSize + paletteSize * 4;
 
                         // DIB stride is always divisible by 4, that's why we calculate with +31 and not +7
-                        int stride = (((header->biWidth * header->biBitCount) + 31) & ~31) >> 3;
+                        int stride = (((size.Width * header->biBitCount) + 31) & ~31) >> 3;
                         int contentSize = (int)header->biSizeImage;
                         if (contentSize == 0u && header->biCompression is Constants.BI_RGB or Constants.BI_BITFIELDS)
-                            contentSize = stride * header->biHeight;
+                            contentSize = stride * size.Height;
 
                         // We only checked the header size above, now validating also with BITMAPINFO.bmiColors length and the actual content size if available.
-                        if ((uint)buf.Length < (uint)(headerSize + paletteSize + contentSize))
-                            return false;
-
-                        // Special handling for 32 bpp uncompressed formats: Officially BITMAPINFO does not support uncompressed alpha bitmaps,
-                        // still, alpha information might be present at the unused bytes of the xRGB pixel data.
-                        // NOTE: we must be careful, because x might be zeroed out, even if RGB is nonzero, in which case it's better assume that the image has no alpha.
-                        //       Casting to Color32 is alright, because it has the same layout for the RGB values as the pixels in the 32-bit uncompressed DIB.
-                        if (header->biBitCount == 32 && header->biCompression is Constants.BI_RGB or Constants.BI_BITFIELDS && contentSize > 0)
+                        if ((uint)buf.Length < (uint)(bitmapInfoSize + contentSize))
                         {
-                            CastArray<byte, Color32> pixels = buf.AsSection(bitmapInfoSize).Cast<byte, Color32>();
-                            Color32 firstPixel = pixels.GetElementReferenceUnsafe(0);
-                            PixelFormat pixelFormat = firstPixel.A is Byte.MinValue or Byte.MaxValue ? PixelFormat.Format32bppRgb : PixelFormat.Format32bppArgb;
+                            // Workaround for DIBv5 with no bmiColors after the header (e.g. Paint.NET)
+                            if (headerSize == sizeof(BITMAPV5HEADER) && header->biCompression == Constants.BI_BITFIELDS && buf.Length == headerSize + contentSize)
+                                bitmapInfoSize = headerSize;
+                            else
+                                return false;
+                        }
 
-                            // First pixel is opaque: assuming no alpha unless there is a pixel with alpha
-                            // First pixel is transparent: if the whole bitmap seems to be completely transparent, we assume no alpha
-                            if (pixelFormat == PixelFormat.Format32bppRgb)
+                        // 24/32 bpp uncompressed formats: Creating them without Windows API
+                        if (header->biCompression is Constants.BI_RGB or Constants.BI_BITFIELDS && header->biBitCount is 24 or 32 && contentSize > 0)
+                        {
+                            bool hasAlpha = header->biBitCount == 32 && headerSize == sizeof(BITMAPV5HEADER) && ((BITMAPV5HEADER*)header)->bV5AlphaMask != 0u;
+                            PixelFormat pixelFormat = header->biBitCount is 24 ? PixelFormat.Format24bppRgb
+                                : hasAlpha ? PixelFormat.Format32bppArgb
+                                : PixelFormat.Format32bppRgb;
+
+                            if (!hasAlpha && header->biBitCount == 32 && detectAlpha)
                             {
-                                for (int i = 1; i < pixels.Length; i++)
+                                // Officially DIB does not support uncompressed alpha bitmaps, and DIBv5 header may indicate no alpha even if it is actually present.
+                                // NOTE: we must be careful, because x might be zeroed out, even if RGB is nonzero, in which case it's better assume that the image has no alpha.
+                                //       Casting to Color32 is alright, because it has the same layout for the RGB values as the pixels in the 32-bit uncompressed DIB.
+                                CastArray<byte, Color32> pixels = buf.AsSection(bitmapInfoSize).Cast<byte, Color32>();
+                                Color32 firstPixel = pixels.GetElementReferenceUnsafe(0);
+                                pixelFormat = firstPixel.A is Byte.MinValue or Byte.MaxValue ? PixelFormat.Format32bppRgb : PixelFormat.Format32bppArgb;
+
+                                // First pixel is opaque: assuming no alpha unless there is a pixel with alpha
+                                // First pixel is transparent: if the whole bitmap seems to be completely transparent, we assume no alpha
+                                if (pixelFormat == PixelFormat.Format32bppRgb)
                                 {
-                                    if (pixels.GetElementReferenceUnsafe(i).A != firstPixel.A)
+                                    for (int i = 1; i < pixels.Length; i++)
                                     {
-                                        pixelFormat = PixelFormat.Format32bppArgb;
-                                        break;
+                                        if (pixels.GetElementReferenceUnsafe(i).A != firstPixel.A)
+                                        {
+                                            pixelFormat = PixelFormat.Format32bppArgb;
+                                            break;
+                                        }
                                     }
                                 }
                             }
 
                             // Reinterpreting the buffer as a bitmap with the determined format.
-                            // Stride has to be negative due to DIBs bottom-up representation, and scan0 must point to the last row.
+                            // if height is positive, stride has to be negative due to DIBs bottom-up representation, and scan0 must point to the last row.
                             // As the wrapper bitmap does not own the buffer (that will go out of scope anyway), we must create a clone.
-                            using var dibWrapper = new Bitmap(header->biWidth, header->biHeight, -stride, pixelFormat, (IntPtr)(pBuf + bitmapInfoSize + stride * (header->biHeight - 1)));
+                            using var dibWrapper = header->biHeight > 0
+                                ? new Bitmap(size.Width, size.Height, -stride, pixelFormat, (IntPtr)(pBuf + bitmapInfoSize + stride * (size.Height - 1)))
+                                : new Bitmap(size.Width, size.Height, stride, pixelFormat, (IntPtr)(pBuf + bitmapInfoSize));
                             result = EnsureFormat(dibWrapper.CloneCurrentFrame(), allowedTypes, false);
                             return result != null;
                         }

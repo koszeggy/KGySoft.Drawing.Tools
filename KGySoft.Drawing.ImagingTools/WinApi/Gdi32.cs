@@ -17,7 +17,6 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
 using System.Runtime.InteropServices;
 
 #endregion
@@ -56,41 +55,6 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             /// To get extended error information, call GetLastError.</returns>
             [DllImport("gdi32.dll", SetLastError = true)]
             internal static extern IntPtr CreateCompatibleDC(IntPtr hdc);
-
-            /// <summary>
-            /// The SelectObject function selects an object into the specified device context (DC). The new object replaces the previous object of the same type.
-            /// </summary>
-            /// <param name="hdc">A handle to the DC.</param>
-            /// <param name="hgdiobj">A handle to the object to be selected.</param>
-            /// <returns>If the selected object is not a region and the function succeeds, the return value is a handle to the object being replaced.</returns>
-            [DllImport("gdi32.dll", SetLastError = true)]
-            internal static extern IntPtr SelectObject(IntPtr hdc, IntPtr hgdiobj);
-
-            /// <summary>
-            /// Creates a bitmap compatible with the device that is associated with the specified device context.
-            /// </summary>
-            /// <param name="hdc">A handle to a device context.</param>
-            /// <param name="nWidth">The bitmap width, in pixels.</param>
-            /// <param name="nHeight">The bitmap height, in pixels.</param>
-            /// <returns>If the function succeeds, the return value is a handle to the compatible bitmap (DDB).
-            /// If the function fails, the return value is <see cref="System.IntPtr.Zero"/>.</returns>
-            [DllImport("gdi32.dll")]
-            internal static extern IntPtr CreateCompatibleBitmap(IntPtr hdc, int nWidth, int nHeight);
-
-            /// <summary>The BitBlt function performs a bit-block transfer of the color data corresponding to a rectangle of pixels from the specified source device context into a destination device context.</summary>
-            /// <param name="hdc">Handle to the destination device context.</param>
-            /// <param name="nXDest">The leftmost x-coordinate of the destination rectangle (in pixels).</param>
-            /// <param name="nYDest">The topmost y-coordinate of the destination rectangle (in pixels).</param>
-            /// <param name="nWidth">The width of the source and destination rectangles (in pixels).</param>
-            /// <param name="nHeight">The height of the source and the destination rectangles (in pixels).</param>
-            /// <param name="hdcSrc">Handle to the source device context.</param>
-            /// <param name="nXSrc">The leftmost x-coordinate of the source rectangle (in pixels).</param>
-            /// <param name="nYSrc">The topmost y-coordinate of the source rectangle (in pixels).</param>
-            /// <param name="dwRop">A raster-operation code.</param>
-            /// <returns><see langword="true"/> if the operation succeeds, <see langword="false"/> otherwise. To get extended error information, call <see cref="Marshal.GetLastWin32Error"/>.</returns>
-            [DllImport("gdi32.dll", SetLastError = true)]
-            [return: MarshalAs(UnmanagedType.Bool)]
-            internal static extern bool BitBlt(IntPtr hdc, int nXDest, int nYDest, int nWidth, int nHeight, IntPtr hdcSrc, int nXSrc, int nYSrc, uint dwRop);
 
             /// <summary>The DeleteDC function deletes the specified device context (DC).</summary>
             /// <param name="hdc">A handle to the device context.</param>
@@ -184,12 +148,6 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
 
         internal static void DeleteObject(IntPtr handle) => NativeMethods.DeleteObject(handle);
         internal static IntPtr CreateCompatibleDC(IntPtr hdc) => NativeMethods.CreateCompatibleDC(hdc);
-        internal static IntPtr SelectObject(IntPtr hdc, IntPtr hgdiobj) => NativeMethods.SelectObject(hdc, hgdiobj);
-        internal static IntPtr CreateCompatibleBitmap(IntPtr hdc, int width, int height) => NativeMethods.CreateCompatibleBitmap(hdc, width, height);
-        
-        internal static bool BitBlt(IntPtr hdc, IntPtr hdcSrc, Size size)
-            => NativeMethods.BitBlt(hdc, 0, 0, size.Width, size.Height, hdcSrc, 0, 0, Constants.SRCCOPY);
-        
         internal static bool DeleteDC(IntPtr hdc) => NativeMethods.DeleteDC(hdc);
         internal static uint GetMetaFileBitsEx(IntPtr handle, uint size, byte[]? buf) => NativeMethods.GetMetaFileBitsEx(handle, size, buf);
         internal static void DeleteMetaFile(IntPtr handle) => NativeMethods.DeleteMetaFile(handle);

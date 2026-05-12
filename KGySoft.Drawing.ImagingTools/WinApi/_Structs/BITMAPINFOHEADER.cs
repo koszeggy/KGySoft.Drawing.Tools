@@ -27,6 +27,7 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     [SuppressMessage("ReSharper", "IdentifierTypo", Justification = "WinAPI")]
+    [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "WinAPI")]
     internal struct BITMAPINFOHEADER
     {
         #region Fields
