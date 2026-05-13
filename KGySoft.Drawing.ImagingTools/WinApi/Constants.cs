@@ -76,6 +76,11 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
         
         internal const uint BI_RGB = 0;
         internal const uint BI_BITFIELDS = 3;
+        
+        internal const int CF_DIBV5 = 17;
+
+        internal const uint LCS_sRGB = 0x73524742;
+        internal const uint LCS_GM_GRAPHICS = 2;
 
         #endregion
     }
