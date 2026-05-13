@@ -392,7 +392,7 @@ namespace KGySoft.Drawing.ImagingTools
 
         private static bool PopulateClipboard(Dictionary<string, object> formats)
         {
-            bool useNativeApi = OSHelper.IsWindows;
+            bool useNativeApi = OSHelper.IsWindows && formats.GetValueOrDefault(DataFormats.Bitmap) is not Image;
             if (useNativeApi && PopulateClipboardNatively(formats))
                 return true;
 
@@ -421,7 +421,6 @@ namespace KGySoft.Drawing.ImagingTools
                         break;
 
                     case Image image:
-                        Debug.Assert(!OSHelper.IsWindows && item.Key == DataFormats.Bitmap, "Setting an image directly is expected on non-Windows platforms only.");
                         dataObject.SetImage(image);
                         break;
 
@@ -616,7 +615,7 @@ namespace KGySoft.Drawing.ImagingTools
                     }
                 }
 
-                // 3.a. Standard Format17 (DIBv5) format
+                // 3.a. Standard Format17 (DIBv5) format: the standard way of storing alpha image on the clipboard, though not too many applications handle it.
                 // Windows check is needed, because we need to populate the clipboard natively to add the Format17 format with the standard CF_DIBV5 ID
                 // instead of a newly registered random one, and to auto generate the standard DeviceIndependentBitmap and Bitmap formats as well.
                 if (pixelFormat.HasAlpha() && BitConverter.IsLittleEndian && OSHelper.IsWindows)
@@ -659,65 +658,51 @@ namespace KGySoft.Drawing.ImagingTools
 
         private static void SaveAsDibV5(Bitmap bitmap, MemoryStream ms)
         {
-            Bitmap toSave = bitmap.PixelFormat == PixelFormat.Format32bppArgb ? bitmap : bitmap.ConvertPixelFormat(PixelFormat.Format32bppArgb);
-            try
-            {
-                Size size = bitmap.Size;
-                int stride = bitmap.Width * 4;
-                var writer = new BinaryWriter(ms); // not in using to leave the stream open (on older frameworks there is no leaveOpen parameter)
+            using IReadableBitmapData bitmapData = bitmap.GetReadableBitmapData();
+            Debug.Assert(bitmapData.PixelFormat.HasAlpha || bitmapData.Palette?.HasAlpha == true, "Saving as DIBv5 is expected only when the bitmap has alpha");
 
-                // NOTE: The SetClipboardData Windows API behaves inconsistently when it auto-generates bitmap formats:
-                // - When setting an HBitmap with CF_BITMAP, the compression of the auto-generated DIB streams will be BI_BITFIELDS, and the DIBv5 stream contains the extra 12 bytes
-                //   between the V5 header and the actual content. It seems to be consistent with the docs at https://learn.microsoft.com/en-us/windows/win32/gdi/bitmap-header-types
-                //   ("The red, green, and blue bitfield masks for BI_BITFIELD bitmaps immediately follow the BITMAPINFOHEADER, BITMAPV4HEADER, and BITMAPV5HEADER structures.
-                //   The BITMAPV4HEADER and BITMAPV5HEADER structures contain additional members for red, green, and blue masks") - but some apps handle it incorrectly, such as Paint.NET.
-                // - But when we set an HGlobal with CF_DIBV5, and we configure the BI_BITFIELDS compression and add the three bmiColors entries after the header exactly the same way
-                //   as Windows generates it, the auto generated DIB and Bitmap formats will be corrupted, containing those BITMAPINFO.bmiColors entries in the image itself.
-                //   This corrupts most applications that prefer obtaining the Bitmap/DIB formats instead of Format17 (almost every app that can paste bitmaps).
-                // Therefore, we set BI_RGB compression instead of BI_BITFIELDS to remove the ambiguity whether the 3 entries of BITMAPINFO.bmiColors are needed after the header.
-                // They are redundant anyway, as the V5 header already contains the RGBA masks. The disadvantage of this can be that now consuming apps may ignore the masks
-                // in the V5 header, treating the bitmap as if it had no alpha at all.
-                var header = new BITMAPV5HEADER
-                {
-                    bV5Width = size.Width,
-                    bV5Height = size.Height,
-                    bV5Planes = 1,
-                    bV5BitCount = 32,
-                    bV5Compression = Constants.BI_RGB,
-                    bV5SizeImage = (uint)(stride * size.Height),
-                    bV5RedMask = 0x00FF0000,
-                    bV5GreenMask = 0x0000FF00,
-                    bV5BlueMask = 0x000000FF,
-                    bV5AlphaMask = 0xFF000000,
-                    bV5CSType = Constants.LCS_sRGB,
-                    bV5Intent = Constants.LCS_GM_GRAPHICS
-                };
-                unsafe { header.bV5Size = (uint)sizeof(BITMAPV5HEADER); }
-                writer.Write(BinarySerializer.SerializeValueType(header));
+            // Not in using to leave the stream open (on older frameworks there is no leaveOpen parameter)
+            var writer = new BinaryWriter(ms);
 
-                // Locking the bitmap data and writing it to the stream directly, to avoid creating another copy by Bitmap.Save or similar.
-                BitmapData bitmapData = toSave.LockBits(new Rectangle(Point.Empty, toSave.Size), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-                try
-                {
-                    // Positive bV5Height requires to write the content from the bottom to the top
-                    IntPtr pRow = bitmapData.Stride > 0 ? (nint)bitmapData.Scan0 + stride * (size.Height - 1) : bitmapData.Scan0;
-                    byte[] row = new byte[stride];
-                    for (int y = 0; y < size.Height; y++)
-                    {
-                        Marshal.Copy(pRow, row, 0, row.Length);
-                        pRow -= (nint)bitmapData.Stride;
-                        writer.Write(row, 0, row.Length);
-                    }
-                }
-                finally
-                {
-                    toSave.UnlockBits(bitmapData);
-                }
-            }
-            finally
+            // NOTE: The SetClipboardData Windows API behaves inconsistently when it auto-generates bitmap formats:
+            // - When setting an HBitmap with CF_BITMAP, the compression of the auto-generated DIB streams will be BI_BITFIELDS, and the DIBv5 stream contains the extra 12 bytes
+            //   between the V5 header and the actual content. It seems to be consistent with the docs at https://learn.microsoft.com/en-us/windows/win32/gdi/bitmap-header-types
+            //   ("The red, green, and blue bitfield masks for BI_BITFIELD bitmaps immediately follow the BITMAPINFOHEADER, BITMAPV4HEADER, and BITMAPV5HEADER structures.
+            //   The BITMAPV4HEADER and BITMAPV5HEADER structures contain additional members for red, green, and blue masks") - but some apps handle it incorrectly, such as Paint.NET.
+            // - But when we set an HGlobal with CF_DIBV5, and we configure the BI_BITFIELDS compression and add the three bmiColors entries after the header exactly the same way
+            //   as Windows generates it, the auto generated DIB and Bitmap formats will be corrupted, containing those BITMAPINFO.bmiColors entries in the image itself.
+            //   This corrupts most applications that prefer obtaining the Bitmap/DIB formats instead of Format17 (almost every app that can paste bitmaps).
+            // Therefore, we set BI_RGB compression instead of BI_BITFIELDS to remove the ambiguity whether the 3 entries of BITMAPINFO.bmiColors are needed after the header.
+            // They are redundant anyway, as the V5 header already contains the RGBA masks. The disadvantage of this can be that now consuming apps may ignore the masks
+            // in the V5 header, treating the bitmap as if it had no alpha at all.
+            var header = new BITMAPV5HEADER
             {
-                if (!ReferenceEquals(bitmap, toSave))
-                    toSave.Dispose();
+                bV5Width = bitmapData.Width,
+                bV5Height = bitmapData.Height,
+                bV5Planes = 1,
+                bV5BitCount = 32,
+                bV5Compression = Constants.BI_RGB, // see the comments above
+                bV5SizeImage = (uint)(bitmapData.RowSize * bitmapData.Height),
+                bV5RedMask = 0x00FF0000,
+                bV5GreenMask = 0x0000FF00,
+                bV5BlueMask = 0x000000FF,
+                bV5AlphaMask = 0xFF000000,
+                bV5CSType = Constants.LCS_sRGB,
+                bV5Intent = Constants.LCS_GM_GRAPHICS
+            };
+            unsafe { header.bV5Size = (uint)sizeof(BITMAPV5HEADER); }
+            writer.Write(BinarySerializer.SerializeValueType(header));
+
+            IReadableBitmapDataRowMovable? row = null;
+            for (int y = bitmapData.Height - 1; y >= 0; y--)
+            {
+                if (row == null)
+                    row = bitmapData.GetMovableRow(y);
+                else
+                    row.MoveToRow(y);
+
+                for (int x = 0; x < bitmapData.Width; x++)
+                    writer.Write(row[x].ToArgb());
             }
         }
 
