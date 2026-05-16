@@ -44,8 +44,18 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Properties
 
-        internal ICommandState ApplyChangesCommandCommandState => Get(() => new CommandState { Enabled = false });
+        internal bool ReadOnly { get => Get<bool>(); set => Set(value); }
+        internal bool IsBusy { get => Get<bool>(); set => Set(value); }
+
+        // Binding the Accept/Discard commands are not really needed if the corresponding buttons in the view set the DialogResult.
+        // But it still can be useful as their command state may change if VM uses asynchronous operations that should not allow closing the view by the user.
+        internal ICommand AcceptWithCloseCommand => Get(() => new SimpleCommand(OnAcceptWithCloseCommand));
+        internal ICommand DiscardWithCloseCommand => Get(() => new SimpleCommand(OnDiscardWithCloseCommand));
         internal ICommand ApplyChangesCommand => Get(() => new SimpleCommand(OnApplyChangesCommand));
+
+        internal ICommandState AcceptWithCloseCommandState => Get(() => new CommandState { Enabled = false });
+        internal ICommandState DiscardWithCloseCommandState => Get(() => new CommandState());
+        internal ICommandState ApplyChangesCommandCommandState => Get(() => new CommandState { Enabled = false });
 
         #endregion
 
@@ -63,10 +73,18 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
         {
-            if (e.PropertyName is nameof(IsModified))
-                ApplyChangesCommandCommandState.Enabled = IsModified;
-
             base.OnPropertyChanged(e);
+            switch (e.PropertyName)
+            {
+                case nameof(IsModified):
+                    AcceptWithCloseCommandState.Enabled = ApplyChangesCommandCommandState.Enabled = e.NewValue is true && !IsBusy;
+                    break;
+
+                case nameof(IsBusy):
+                    AcceptWithCloseCommandState.Enabled = ApplyChangesCommandCommandState.Enabled = IsModified && e.NewValue is false;
+                    DiscardWithCloseCommandState.Enabled = e.NewValue is false;
+                    break;
+            }
         }
 
         protected void OnChangesApplied(EventArgs e) => changesAppliedHandler?.Invoke(this, e);
@@ -81,22 +99,18 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #endregion
 
-        #region Private Methods
+        #region Command Handlers
 
-        private void ApplyChanges()
+        private void OnAcceptWithCloseCommand() => CloseViewCallback?.Invoke();
+        private void OnDiscardWithCloseCommand() => CloseViewCallback?.Invoke();
+
+        private void OnApplyChangesCommand()
         {
             if (!IsModified)
                 return;
-
             SetModified(false);
             OnChangesApplied(EventArgs.Empty);
         }
-
-        #endregion
-
-        #region Command Handlers
-
-        private void OnApplyChangesCommand() => ApplyChanges();
 
         #endregion
 

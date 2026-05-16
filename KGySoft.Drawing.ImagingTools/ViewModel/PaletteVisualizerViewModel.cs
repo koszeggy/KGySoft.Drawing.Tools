@@ -40,7 +40,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract - not cloning if value is null
         internal Color[] Palette { get => Get<Color[]>(); set => Set(value?.Clone() ?? throw new ArgumentNullException(nameof(value), PublicResources.ArgumentNull)); }
         internal int Count { get => Get<int>(); private set => Set(value); }
-        internal bool ReadOnly { get => Get<bool>(); set => Set(value); }
         internal int SelectedColorIndex { get => Get(-1); set => Set(value); }
         internal ColorVisualizerViewModel? SelectedColorViewModel { get => Get<ColorVisualizerViewModel?>(); private set => Set(value); }
         internal Color SelectedColor { get => Get<Color>(); private set => Set(value); }

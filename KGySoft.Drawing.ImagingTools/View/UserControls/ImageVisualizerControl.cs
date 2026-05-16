@@ -326,7 +326,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // VM.Zoom <-> imageViewer.Zoom
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.Zoom), imageViewer, nameof(imageViewer.Zoom));
 
-            // VM.SmoothingEnabled -> btnAntiAlias.Checked
+            // VM.SmoothingEnabled -> btnAntiAlias.Checked, imageViewer.SmoothingEnabled
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SmoothZooming), nameof(btnAntiAlias.Checked), btnAntiAlias);
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SmoothZooming), nameof(imageViewer.SmoothingEnabled), imageViewer);
 
@@ -350,9 +350,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SaveFileFilter), nameof(dlgSave.Filter), dlgSave);
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SaveFileFilterIndex), nameof(dlgSave.FilterIndex), dlgSave);
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SaveFileDefaultExtension), nameof(dlgSave.DefaultExt), dlgSave);
-
-            // VM.IsModified -> OKButton.Enabled
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsModified), nameof(Enabled), buttons.OKButton);
 
             bool isInForm = ParentForm != null;
             buttons.OKButtonVisible = buttons.CancelButtonVisible = isInForm;
@@ -463,7 +460,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             CommandBindings.Add(() => miEasterEgg.Visible |= ModifierKeys == (Keys.Shift | Keys.Control))
                 .AddSource(miAbout, nameof(miAbout.MouseDown));
 
-            // ApplyButton.Click -> VM.ApplyChangesCommand
+            // OK/Cancel/Apply buttons
+            CommandBindings.Add(ViewModel.AcceptWithCloseCommand, ViewModel.AcceptWithCloseCommandState)
+                .AddSource(buttons.OKButton, nameof(buttons.OKButton.Click));
+            CommandBindings.Add(ViewModel.DiscardWithCloseCommand, ViewModel.DiscardWithCloseCommandState)
+                .AddSource(buttons.CancelButton, nameof(buttons.CancelButton.Click));
             CommandBindings.Add(ViewModel.ApplyChangesCommand, ViewModel.ApplyChangesCommandCommandState)
                 .AddSource(buttons.ApplyButton, nameof(buttons.ApplyButton.Click));
         }

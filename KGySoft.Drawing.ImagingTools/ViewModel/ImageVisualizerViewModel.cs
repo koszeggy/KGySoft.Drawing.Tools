@@ -102,7 +102,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         }
 
         internal Image? PreviewImage { get => Get<Image?>(); set => Set(value); }
-        internal bool ReadOnly { get => Get<bool>(); set => Set(value); }
         internal string? TitleCaption { get => Get<string?>(); set => Set(value); }
         internal string? InfoText { get => Get<string?>(); set => Set(value); }
         internal string? Notification { get => Get<string?>(); private set => Set(value); }

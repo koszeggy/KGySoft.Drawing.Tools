@@ -65,7 +65,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             CancelButton = okCancelButtons.CancelButton,
             ClosingCallback = (sender, _) =>
             {
-                if ((sender as Form)?.DialogResult != DialogResult.OK)
+                if ((sender as Form)?.DialogResult == DialogResult.Cancel)
                     ViewModel.SetModified(false);
             },
             ProcessKeyCallback = (parent, key) =>
@@ -190,9 +190,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // pnlPalette.SelectedColorIndex -> VM.SelectedColorIndex
             CommandBindings.AddPropertyBinding(pnlPalette, nameof(pnlPalette.SelectedColorIndex), nameof(ViewModel.SelectedColorIndex), ViewModel);
 
-            // VM.IsModified -> OKButton.Enabled
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsModified), nameof(okCancelButtons.OKButton.Enabled), okCancelButtons.OKButton);
-
             bool isInForm = ParentForm != null;
             okCancelButtons.OKButtonVisible = okCancelButtons.CancelButtonVisible = isInForm;
             okCancelButtons.ApplyButtonVisible = !isInForm;
@@ -206,20 +203,14 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private void InitCommandBindings()
         {
-            // CancelButton.Click -> OnCancelCommand
-            CommandBindings.Add(OnCancelCommand)
+            // OK/Cancel/Apply buttons
+            CommandBindings.Add(ViewModel.AcceptWithCloseCommand, ViewModel.AcceptWithCloseCommandState)
+                .AddSource(okCancelButtons.OKButton, nameof(okCancelButtons.OKButton.Click));
+            CommandBindings.Add(ViewModel.DiscardWithCloseCommand, ViewModel.DiscardWithCloseCommandState)
                 .AddSource(okCancelButtons.CancelButton, nameof(okCancelButtons.CancelButton.Click));
-
-            // ApplyButton.Click -> VM.ApplyChangesCommand
             CommandBindings.Add(ViewModel.ApplyChangesCommand, ViewModel.ApplyChangesCommandCommandState)
                 .AddSource(okCancelButtons.ApplyButton, nameof(okCancelButtons.ApplyButton.Click));
         }
-
-        #endregion
-
-        #region Command Handlers
-
-        private void OnCancelCommand() => ViewModel.SetModified(false);
 
         #endregion
 

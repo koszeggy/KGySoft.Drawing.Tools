@@ -92,7 +92,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Instance Properties
         
         internal Color Color { get => Get<Color>(); set => Set(value); }
-        internal bool ReadOnly { get => Get<bool>(); set => Set(value); }
         internal int? SelectedIndex { get => Get<int?>(); set => Set(value); }
         internal string? InfoText { get => Get<string?>(); set => Set(value); }
         internal string? TitleCaption { get => Get<string?>(); set => Set(value); }

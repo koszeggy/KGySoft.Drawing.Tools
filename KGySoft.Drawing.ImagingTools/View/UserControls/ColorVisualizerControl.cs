@@ -80,7 +80,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             CancelButton = buttons.CancelButton,
             ClosingCallback = (sender, _) =>
             {
-                if (((MvvmParentForm)sender!).DialogResult != DialogResult.OK)
+                if (((MvvmParentForm)sender!).DialogResult == DialogResult.Cancel)
                     ViewModel!.SetModified(false);
             },
             ProcessKeyCallback = (parent, key) =>
@@ -186,9 +186,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
             // !VM.ReadOnly -> buttons.Visible
             CommandBindings.AddPropertyBinding(vm, nameof(vm.ReadOnly), nameof(buttons.Visible), ro => ro is false, buttons);
-
-            // VM.IsModified -> OKButton.Enabled
-            CommandBindings.AddPropertyBinding(vm, nameof(ViewModel.IsModified), nameof(Enabled), buttons.OKButton);
         }
 
         private void InitParentViewPropertyBindings(MvvmParentForm parent)
@@ -235,11 +232,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             if (isChild)
                 return;
 
-            // CancelButton.Click -> OnCancelCommand
-            CommandBindings.Add(OnCancelCommand)
+            // OK/Cancel/Apply buttons
+            CommandBindings.Add(vm.AcceptWithCloseCommand, vm.AcceptWithCloseCommandState)
+                .AddSource(buttons.OKButton, nameof(buttons.OKButton.Click));
+            CommandBindings.Add(vm.DiscardWithCloseCommand, vm.DiscardWithCloseCommandState)
                 .AddSource(buttons.CancelButton, nameof(buttons.CancelButton.Click));
-
-            // ApplyButton.Click -> VM.ApplyChangesCommand
             CommandBindings.Add(vm.ApplyChangesCommand, vm.ApplyChangesCommandCommandState)
                 .AddSource(buttons.ApplyButton, nameof(buttons.ApplyButton.Click));
         }
@@ -450,8 +447,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             Color color = ViewModel!.Color;
             ViewModel!.Color = Color.FromArgb(color.A, color.R, color.G, tbBlue.Value);
         }
-
-        private void OnCancelCommand() => ViewModel!.SetModified(false);
 
         #endregion
 
