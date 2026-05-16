@@ -175,9 +175,10 @@ namespace KGySoft.Drawing.DebuggerVisualizers
         /// Creates a <see cref="ColorPalette"/> instance from the specified <paramref name="entries"/> and <paramref name="flags"/>.
         /// </summary>
         /// <param name="entries">The desired entries of the <see cref="ColorPalette"/> to create.</param>
-        /// <param name="flags">The desired value of the <see cref="ColorPalette.Flags"/> property of the <see cref="ColorPalette"/> to create.</param>
+        /// <param name="flags">The desired value of the <see cref="ColorPalette.Flags"/> property of the <see cref="ColorPalette"/> to create. This parameter is optional.
+        /// <br/>Default value: The bitwise zero value of <see cref="PaletteFlags"/>.</param>
         /// <returns>A new <see cref="ColorPalette"/> instance with the specified entries and flags.</returns>
-        public static ColorPalette CreateColorPalette(Color[] entries, PaletteFlags flags)
+        public static ColorPalette CreateColorPalette(Color[] entries, PaletteFlags flags = default)
         {
             if (entries == null)
                 throw new ArgumentNullException(nameof(entries), PublicResources.ArgumentNull);
@@ -185,7 +186,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers
                 throw new ArgumentException(PublicResources.ArgumentEmpty, nameof(entries));
             if (entries.Length > 256)
                 throw new ArgumentOutOfRangeException(nameof(entries));
-            if (!flags.AllFlagsDefined())
+            if (flags != default && !flags.AllFlagsDefined())
                 throw new ArgumentOutOfRangeException(nameof(flags), PublicResources.FlagsEnumOutOfRange(flags));
 
             return Accessors.CreateColorPalette(entries, flags);
