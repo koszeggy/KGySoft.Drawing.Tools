@@ -177,6 +177,7 @@ namespace KGySoft.Drawing.ImagingTools.View
                 Icon = icon,
                 Message = message,
                 ForceCompatibilityMode = true, // so we can apply theme changes
+                Options = TaskDialogOptions.AllowCancel | TaskDialogOptions.ForceShowSysMenu,
                 //Options = TaskDialogOptions.TranslateStandardButtons,
             };
 
