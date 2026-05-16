@@ -79,21 +79,18 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (IsDisposed)
                 return false;
 
-            Action<Action>? callback;
             try
             {
-                callback = SynchronizedInvokeCallback;
+                Action<Action>? callback = SynchronizedInvokeCallback;
+                if (callback == null)
+                    return false;
+                callback.Invoke(action);
+                return true;
             }
             catch (ObjectDisposedException)
             {
                 return false;
             }
-
-            if (callback == null)
-                return false;
-
-            callback.Invoke(action);
-            return true;
         }
 
         protected virtual void ApplyDisplayLanguage() { }

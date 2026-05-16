@@ -79,11 +79,23 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            if (e.CloseReason == CloseReason.UserClosing && ViewModel.IsModified)
+            if (e.CloseReason == CloseReason.UserClosing)
             {
-                e.Cancel = !ViewModel.ConfirmIfModified();
+                if (ViewModel.IsAsyncTaskRunning)
+                {
+                    e.Cancel = true;
+                    Dialogs.WarningMessage(Res.WarningMessageAsyncOperationRunning);
+                }
+                else if (ViewModel.IsModified)
+                    e.Cancel = !ViewModel.ConfirmIfModified();
+
                 if (e.Cancel)
                     DialogResult = DialogResult.None;
+            }
+            else
+            {
+                ViewModel.CancelPendingTask();
+                ViewModel.WaitForPendingTask();
             }
 
             base.OnFormClosing(e);

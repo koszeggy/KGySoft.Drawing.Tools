@@ -26,6 +26,7 @@ using System.Reflection;
 using System.Runtime.Versioning; 
 #endif
 using System.Text;
+using System.Threading;
 
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
@@ -38,6 +39,39 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
     internal class ImageVisualizerViewModel : ViewModelBase<ImageInfo>, IViewModel<Image?>, IViewModel<Icon?>, IViewModel<Bitmap?>, IViewModel<Metafile?>
     {
+        #region Nested Classes
+        
+        #region CopyTask class
+
+        private sealed class CopyTask : AsyncTaskContext
+        {
+            #region Fields
+
+            internal ImageInfoBase ToCopy = null!;
+
+            #endregion
+        }
+
+        #endregion
+
+        #region PasteTask class
+
+        private sealed class PasteTask : AsyncTaskContext
+        {
+            #region Fields
+
+            internal AllowedImageTypes AllowedTypes;
+            internal bool AllowMultiFrame;
+            internal bool PrevEnabled;
+            internal bool NextEnabled;
+
+            #endregion
+        }
+
+        #endregion
+
+        #endregion
+
         #region Constants
 
         private const string stateImage = "Image";
@@ -73,6 +107,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private int currentFrame = -1;
         private Size currentResolution;
         private string? notificationId;
+        private volatile AsyncTaskContext? activeTask;
 
         #endregion
 
@@ -84,20 +119,25 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal Image? Image
         {
-            get => imageInfo.GetCreateImage();
+            get => ImageInfo.GetCreateImage();
             set => SetImageInfo(new ImageInfo(value), true);
         }
 
         internal Icon? Icon
         {
-            get => imageInfo.Icon;
+            get => ImageInfo.Icon;
             set => SetImageInfo(new ImageInfo(value), true);
         }
 
         [AllowNull]
         internal ImageInfo ImageInfo
         {
-            get => imageInfo;
+            get
+            {
+                WaitForPendingTask();
+                return imageInfo;
+            }
+
             set => SetImageInfo(value ?? new ImageInfo(ImageInfoType.None), true);
         }
 
@@ -114,6 +154,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal string? SaveFileFilter { get => Get<string?>(); set => Set(value); }
         internal int SaveFileFilterIndex { get => Get<int>(); set => Set(value); }
         internal string? SaveFileDefaultExtension { get => Get<string?>(); set => Set(value); }
+        internal bool IsAsyncTaskRunning => activeTask != null;
 
         internal Func<Rectangle>? GetScreenRectangleCallback { get => Get<Func<Rectangle>?>(); set => Set(value); }
         internal Func<Size>? GetViewSizeCallback { get => Get<Func<Size>?>(); set => Set(value); }
@@ -251,7 +292,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         public override ImageInfo GetEditedModel()
         {
             keepAliveImageInfo = true;
-            return imageTypes == AllowedImageTypes.Icon ? imageInfo.AsIcon() : imageInfo.AsImage();
+            return imageTypes == AllowedImageTypes.Icon ? ImageInfo.AsIcon() : ImageInfo.AsImage();
         }
 
         public override bool TrySetModel(ImageInfo model) => TryInvokeSync(() => SetImageInfo(model, false));
@@ -270,10 +311,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
 
             if (!ReadOnly)
-            {
                 ClipboardHelper.ClipboardChanged += ClipboardHelper_ClipboardChanged;
-                PasteCommandState.Enabled = ClipboardHelper.HasFormat(imageTypes);
-            }
+            if (imageInfo.Type == ImageInfoType.None)
+                ResetEnabledStates();
 
             base.ViewLoaded();
         }
@@ -290,6 +330,19 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (!ReadOnly)
                 ClipboardHelper.ClipboardChanged -= ClipboardHelper_ClipboardChanged;
             Configuration.SaveSettings();
+        }
+
+        internal void CancelPendingTask() => activeTask?.Cancel();
+
+        internal void WaitForPendingTask()
+        {
+            AsyncTaskContext? task = activeTask;
+            if (task == null)
+                return;
+
+            task.WaitForCompletion();
+            task.Dispose();
+            activeTask = null;
         }
 
         #endregion
@@ -356,7 +409,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     return;
                 
                 case nameof(ReadOnly):
-                    ReadOnlyChanged();
+                    if (IsViewLoaded)
+                        ResetEnabledStates();
                     return;
                 
                 case nameof(AutoZoom):
@@ -368,6 +422,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 case nameof(SmoothZooming) when initialized:
                     PersistSmoothZooming(e.NewValue is true);
                     return;
+
+                case nameof(IsBusy):
+                    ResetEnabledStates();
+                    return;
             }
         }
 
@@ -375,6 +433,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             ValidateImageInfo(value);
 
+            CancelPendingTask();
+            WaitForPendingTask();
             currentResolution = Size.Empty;
             if (!keepAliveImageInfo)
                 imageInfo.Dispose();
@@ -519,20 +579,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             SetModified(IsDebuggerVisualizer);
         }
 
-        protected virtual void CopyToClipboard() => ClipboardHelper.CopyToClipboard(GetCurrentImageInfo());
-
-        protected virtual void PasteFromClipboard()
-        {
-            if (!ClipboardHelper.TryPasteFromClipboard(imageTypes, GetCurrentImageInfo() is ImageInfo, out ImageInfo? result))
-            {
-                ShowWarning(Res.WarningMessageCannotPasteClipboard);
-                return;
-            }
-
-            ImageInfo = result;
-            SetModified(true);
-        }
-
         protected virtual bool IsPaletteAvailable() => GetCurrentImageInfo().Palette.Length > 0;
 
         protected virtual void ShowPalette()
@@ -582,8 +628,17 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing && !keepAliveImageInfo)
-                imageInfo.Dispose();
+            if (IsDisposed)
+                return;
+            
+            if (disposing)
+            {
+                CancelPendingTask();
+                WaitForPendingTask();
+                if (!keepAliveImageInfo)
+                    imageInfo.Dispose();
+            }
+
             base.Dispose(disposing);
         }
 
@@ -656,9 +711,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             return imageInfo.Frames![0].Image ?? throw new InvalidOperationException(Res.InternalError("Frames should not be null here"));
         }
 
-        private bool IsSingleImageShown() => imageInfo.Type != ImageInfoType.None && !imageInfo.HasFrames
-            || currentFrame >= 0 && !IsAutoPlaying;
-
         private void SetCompoundViewCommandStateImage()
         {
             Func<ImageInfoType, Image>? callback = GetCompoundViewIconCallback;
@@ -667,27 +719,27 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 SetCompoundViewCommandState[stateImage] = callback.Invoke(imageInfo.Type);
         }
 
+        private void ResetEnabledStates()
+        {
+            bool isBusy = IsBusy;
+            bool isReadOnly = ReadOnly;
+            bool isLoaded = imageInfo.Type != ImageInfoType.None;
+            bool isSingleImageShown = isLoaded && !imageInfo.HasFrames || currentFrame >= 0 && !IsAutoPlaying;
+            OpenFileCommandState.Enabled = !isReadOnly && !isBusy;
+            SaveFileCommandState.Enabled = isLoaded && !isBusy;
+            ClearCommandState.Enabled = isLoaded && !isReadOnly && !isBusy;
+            CopyCommandState.Enabled = isLoaded && !isBusy;
+            PasteCommandState.Enabled = !isReadOnly && !isBusy && ClipboardHelper.HasFormat(imageTypes);
+            ShowPaletteCommandState.Enabled = !isBusy && IsPaletteAvailable();
+            EditBitmapCommandState.Enabled = isLoaded && !isReadOnly && !isBusy && !imageInfo.IsMetafile && isSingleImageShown;
+            CountColorsCommandState.Enabled = isLoaded && !isBusy && !imageInfo.IsMetafile && isSingleImageShown;
+        }
+
         private void ImageChanged()
         {
-            ShowPaletteCommandState.Enabled = IsPaletteAvailable();
-            SaveFileCommandState.Enabled = imageInfo.Type != ImageInfoType.None;
-            ClearCommandState.Enabled = imageInfo.Type != ImageInfoType.None && !ReadOnly;
-            CopyCommandState.Enabled = imageInfo.Type != ImageInfoType.None;
-            EditBitmapCommandState.Enabled = CanEditImage();
-            CountColorsCommandState.Enabled = imageInfo.Type != ImageInfoType.None && !imageInfo.IsMetafile && IsSingleImageShown();
+            ResetEnabledStates();
             UpdateInfo();
         }
-
-        private void ReadOnlyChanged()
-        {
-            bool readOnly = ReadOnly;
-            OpenFileCommandState.Enabled = !readOnly;
-            ClearCommandState.Enabled = !readOnly && imageInfo.Type != ImageInfoType.None;
-            PasteCommandState.Enabled = !readOnly && ClipboardHelper.HasFormat(imageTypes);
-            EditBitmapCommandState.Enabled = CanEditImage();
-        }
-
-        private bool CanEditImage() => imageInfo.Type != ImageInfoType.None && !ReadOnly && !imageInfo.IsMetafile && IsSingleImageShown();
 
         private string GetFrameInfo(bool singleLine)
         {
@@ -1304,6 +1356,102 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void UpdateNotification() => Notification = notificationId == null ? null : Res.Get(notificationId);
 
+        private void CopyToClipboard()
+        {
+            Debug.Assert(!IsBusy && activeTask == null);
+            IsBusy = true;
+            var task = new CopyTask { ToCopy = GetCurrentImageInfo() };
+            activeTask = task;
+            ThreadPool.QueueUserWorkItem(DoCopyToClipboard, task);
+        }
+
+        private void DoCopyToClipboard(object? state)
+        {
+            var task = (CopyTask)state!;
+            try
+            {
+                if (task.IsCanceled)
+                    return;
+                ClipboardHelper.CopyToClipboard(task.ToCopy, task);
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                task.SetCompleted(); // just to complete it before showing the message dialog
+                TryInvokeSync(() => ShowWarning(Res.WarningMessageCannotCopyClipboard));
+            }
+            finally
+            {
+                task.Dispose();
+                activeTask = null;
+                TryInvokeSync(() => IsBusy = false);
+            }
+        }
+
+        private void PasteFromClipboard()
+        {
+            Debug.Assert(!IsBusy && activeTask == null);
+            IsBusy = true;
+            ImageInfoBase currentImage = GetCurrentImageInfo();
+            var task = new PasteTask
+            {
+                AllowedTypes = currentImage is ImageInfo ? imageTypes : AllowedImageTypes.Bitmap,
+                AllowMultiFrame = currentImage is ImageInfo,
+                PrevEnabled = PrevImageCommandState.Enabled,
+                NextEnabled = NextImageCommandState.Enabled
+            };
+
+            // Unlike for other async tasks, disabling compound/prev/next for pasting so compound view or current frame remains the same until the end of the operation.
+            SetCompoundViewCommandState.Enabled = false;
+            PrevImageCommandState.Enabled = NextImageCommandState.Enabled = false;
+            activeTask = task;
+            ThreadPool.QueueUserWorkItem(DoPasteFromClipboard, task);
+        }
+
+        [SuppressMessage("ReSharper", "AccessToDisposedClosure", Justification = "False alarm, task is not accessed after disposing it")]
+        private void DoPasteFromClipboard(object? state)
+        {
+            var task = (PasteTask)state!;
+            try
+            {
+                if (task.IsCanceled)
+                    return;
+                ImageInfo? result = ClipboardHelper.TryPasteFromClipboard(task.AllowedTypes, task.AllowMultiFrame, task);
+                task.SetCompleted(); // just to complete it before possibly showing a message dialog; otherwise, it would be completed on disposing
+                TryInvokeSync(() =>
+                {
+                    if (IsDisposed)
+                        return;
+                    if (result == null)
+                    {
+                        ShowWarning(Res.WarningMessageCannotPasteClipboard);
+                        return;
+                    }
+
+                    if (task.AllowMultiFrame)
+                        ImageInfo = result;
+                    else
+                    {
+                        Debug.Assert(result.Image is Bitmap, "Pasting a frame is always expected as a bitmap");
+                        SetCurrentImage(result.Image as Bitmap);
+
+                        result.Image = null;
+                        result.Dispose();
+                    }
+
+                    SetCompoundViewCommandState.Enabled = true;
+                    PrevImageCommandState.Enabled = task.PrevEnabled;
+                    NextImageCommandState.Enabled = task.NextEnabled;
+                    SetModified(true);
+                });
+            }
+            finally
+            {
+                task.Dispose();
+                activeTask = null;
+                TryInvokeSync(() => IsBusy = false);
+            }
+        }
+
         #endregion
 
         #region Explicitly Implemented Interface Methods
@@ -1449,7 +1597,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Event Handlers
 
-        private void ClipboardHelper_ClipboardChanged(object? sender, EventArgs e) => TryInvokeSync(() => PasteCommandState.Enabled = ClipboardHelper.HasFormat(imageTypes));
+        private void ClipboardHelper_ClipboardChanged(object? sender, EventArgs e)
+        {
+            if (!IsBusy)
+                TryInvokeSync(() => PasteCommandState.Enabled = ClipboardHelper.HasFormat(imageTypes));
+        }
 
         #endregion
 

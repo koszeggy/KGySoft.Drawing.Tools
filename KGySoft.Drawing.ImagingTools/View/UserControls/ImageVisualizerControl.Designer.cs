@@ -47,8 +47,10 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.btnOpen = new KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripButton();
             this.btnSave = new KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripButton();
-            this.btnCopy = new KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripButton();
             this.btnClear = new KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripButton();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.btnCopy = new KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripButton();
+            this.btnPaste = new KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.btnColorSettings = new KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripDropDownButton();
             this.miBackColor = new System.Windows.Forms.ToolStripMenuItem();
@@ -60,8 +62,7 @@
             this.btnEdit = new KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripDropDownButton();
             this.miRotateLeft = new System.Windows.Forms.ToolStripMenuItem();
             this.miRotateRight = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnPaste = new KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripButton();
-            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.pbProgress = new KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripProgressBar();
             this.tsMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -315,7 +316,8 @@
             this.btnNext,
             this.toolStripSeparator4,
             this.btnAbout,
-            this.btnConfiguration});
+            this.btnConfiguration,
+            this.pbProgress});
             this.tsMenu.Location = new System.Drawing.Point(0, 0);
             this.tsMenu.Name = "tsMenu";
             this.tsMenu.Size = new System.Drawing.Size(364, 25);
@@ -356,6 +358,18 @@
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(23, 22);
             // 
+            // btnClear
+            // 
+            this.btnClear.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnClear.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnClear.Name = "btnClear";
+            this.btnClear.Size = new System.Drawing.Size(23, 22);
+            // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(6, 25);
+            // 
             // btnCopy
             // 
             this.btnCopy.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -363,12 +377,12 @@
             this.btnCopy.Name = "btnCopy";
             this.btnCopy.Size = new System.Drawing.Size(23, 22);
             // 
-            // btnClear
+            // btnPaste
             // 
-            this.btnClear.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnClear.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(23, 22);
+            this.btnPaste.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnPaste.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnPaste.Name = "btnPaste";
+            this.btnPaste.Size = new System.Drawing.Size(23, 22);
             // 
             // toolStripSeparator2
             // 
@@ -464,17 +478,12 @@
             this.miRotateRight.Size = new System.Drawing.Size(208, 22);
             this.miRotateRight.Text = "miRotateRight";
             // 
-            // btnPaste
+            // pbProgress
             // 
-            this.btnPaste.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnPaste.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnPaste.Name = "btnPaste";
-            this.btnPaste.Size = new System.Drawing.Size(23, 22);
-            // 
-            // toolStripSeparator5
-            // 
-            this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(6, 25);
+            this.pbProgress.BackColor = System.Drawing.Color.Transparent;
+            this.pbProgress.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pbProgress.Name = "pbProgress";
+            this.pbProgress.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
             // 
             // ImageVisualizerControl
             // 
@@ -547,5 +556,6 @@
         private Components.AdvancedToolStripButton btnCopy;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private Components.AdvancedToolStripButton btnPaste;
+        private Components.AdvancedToolStripProgressBar pbProgress;
     }
 }

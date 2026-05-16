@@ -33,7 +33,6 @@ using KGySoft.Collections;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
-using KGySoft.Drawing.ImagingTools.View;
 using KGySoft.Drawing.ImagingTools.WinApi;
 using KGySoft.Serialization.Binary;
 using KGySoft.WinForms;
@@ -257,7 +256,7 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        internal static void CopyToClipboard(ImageInfoBase info)
+        internal static void CopyToClipboard(ImageInfoBase info, AsyncTaskContext task)
         {
             // NOTE: Using SetImage as a fallback solution only, because it does not support the native metafile formats, and puts a BinaryFormatter
             // entry on the clipboard a with potentially poorly chosen encoder (supporting such formats in TryPasteFromClipboard, though).
@@ -294,7 +293,7 @@ namespace KGySoft.Drawing.ImagingTools
                 }
             }
 
-            Image? image = info.Image ?? (info as ImageInfo)?.GetCreateImage();
+            Image? image = info.Image ?? (info as ImageInfo)?.GetCreateImage(/*task TODO*/);
             Debug.Assert(image != null, "Failed to obtain an image to copy");
             if (image == null)
                 return;
@@ -302,56 +301,51 @@ namespace KGySoft.Drawing.ImagingTools
             // Standard Bitmap format, potentially along with some custom single-frame formats
             CopyBitmap(formats, image);
 
-            try
-            {
-                // If we managed to prepare some formats, we place them on the clipboard. If it fails, using Clipboard.SetImage as an ultimate fallback.
-                if (formats.Count == 0 || !PopulateClipboard(formats))
-                    Clipboard.SetImage(image);
-            }
-            catch (Exception e) when (!e.IsCritical())
-            {
-                Dialogs.WarningMessage(Res.WarningMessageCannotCopyClipboard);
-            }
+            // If we managed to prepare some formats, we place them on the clipboard. If it fails, using Clipboard.SetImage as an ultimate fallback.
+            if (formats.Count == 0 || !PopulateClipboard(formats, task))
+                task.Context.Send(_ => Clipboard.SetImage(image), null);
         }
 
-        internal static bool TryPasteFromClipboard(AllowedImageTypes allowedTypes, bool allowMultiFrame, out ImageInfo? imageInfo)
+        internal static ImageInfo? TryPasteFromClipboard(AllowedImageTypes allowedTypes, bool allowMultiFrame, AsyncTaskContext task)
         {
             Debug.Assert(allowedTypes != AllowedImageTypes.None);
-            imageInfo = null;
 
             try
             {
                 // Not using Clipboard.GetImage (or only as a fallback), because it always gets Bitmap format only, which is an RGB32 format with no alpha.
-                IWinFormsDataObject? dataObject = Clipboard.GetDataObject();
+                //IWinFormsDataObject? dataObject = Clipboard.GetDataObject();
+                IWinFormsDataObject? dataObject = null;
+                task.Context.Send(_ => dataObject = Clipboard.GetDataObject(), null);
+
                 if (dataObject == null)
-                    return false;
+                    return null;
 
                 var formats = new HashSet<string>(dataObject.GetFormats(false));
                 Debug.WriteLine($"Clipboard formats: {formats.Join(", ")}");
 
                 // 1. Metafile - custom encodings first, and then by standard native formats
-                if (TryGetImageFromStream(formats.Intersect([emfFormat, wmfFormat]), dataObject, allowedTypes, false, out imageInfo))
-                    return true;
+                if (TryGetImageFromStream(formats.Intersect([emfFormat, wmfFormat]), dataObject, allowedTypes, false, out ImageInfo? imageInfo))
+                    return imageInfo;
                 if (formats.Contains(DataFormats.EnhancedMetafile) && TryGetNativeEmf(dataObject, allowedTypes, out imageInfo))
-                    return true;
+                    return imageInfo;
                 if (formats.Contains(DataFormats.MetafilePict) && TryGetNativeWmf(dataObject, allowedTypes, out imageInfo))
-                    return true;
+                    return imageInfo;
                 if (allowedTypes == AllowedImageTypes.Metafile)
-                    return false;
+                    return null;
 
                 // 2. Multiframe Bitmap or Icon with custom encoding
                 if (allowMultiFrame)
                 {
                     // 2.a. TIFF or Icon
                     if (TryGetImageFromStream(formats.Intersect([DataFormats.Tiff, iconFormat]), dataObject, allowedTypes, true, out imageInfo))
-                        return true;
+                        return imageInfo;
 
                     // 2.b. [animated] GIF
                     if (formats.Contains(gifFormat) && TryGetImageFromStream([gifFormat], dataObject, allowedTypes, true, out imageInfo))
                     {
                         // if a single-frame GIF found, accepting it if there is no PNG on the clipboard as well
                         if (imageInfo!.Type == ImageInfoType.Animation || !formats.Contains(pngFormat))
-                            return true;
+                            return imageInfo;
 
                         // dropping the single frame GIF to obtain the PNG instead
                         imageInfo.Dispose();
@@ -360,27 +354,29 @@ namespace KGySoft.Drawing.ImagingTools
 
                 // 3. Single-frame custom encoded Bitmap or Icon. The way of the Intersect call ensures the order of the tried formats.
                 if (TryGetImageFromStream(new[] { pngFormat, DataFormats.Tiff, gifFormat, iconFormat }.Intersect(formats), dataObject, allowedTypes, false, out imageInfo))
-                    return true;
+                    return imageInfo;
 
                 // 4. Standard DIB formats
                 if (formats.Contains(dibV5Format) && TryGetDeviceIndependentBitmap(dibV5Format, dataObject, allowedTypes, false/*TODO*/, out imageInfo))
-                    return true;
+                    return imageInfo;
                 if (formats.Contains(DataFormats.Dib) && TryGetDeviceIndependentBitmap(DataFormats.Dib, dataObject, allowedTypes, false/*TODO*/, out imageInfo))
-                    return true;
+                    return imageInfo;
 
                 // 5. Standard Bitmap format
                 if (formats.Contains(DataFormats.Bitmap) && TryGetNativeBitmap(dataObject, allowedTypes, out imageInfo))
-                    return true;
+                    return imageInfo;
 
                 // 6. Ultimate fallback: Clipboard.GetImage - it attempts to process .NET Framework serialized System.Drawing.Bitmap entries,
                 //    and also the standard Bitmap format if it wasn't processed natively above.
-                imageInfo = EnsureFormat(Clipboard.GetImage(), allowedTypes, allowMultiFrame);
-                return imageInfo != null;
+                Image? image = null;
+                task.Context.Send(_ => image = Clipboard.GetImage(), null);
+                imageInfo = EnsureFormat(image, allowedTypes, allowMultiFrame);
+                return imageInfo;
             }
             catch (Exception e) when (!e.IsCriticalGdi())
             {
                 Debug.WriteLine($"Error while trying to paste image from clipboard: {e.Message}");
-                return false;
+                return null;
             }
         }
 
@@ -390,7 +386,7 @@ namespace KGySoft.Drawing.ImagingTools
 
         private static void OnClipboardChanged() => clipboardChangedHandler?.Invoke(null, EventArgs.Empty);
 
-        private static bool PopulateClipboard(Dictionary<string, object> formats)
+        private static bool PopulateClipboard(Dictionary<string, object> formats, AsyncTaskContext task)
         {
             bool useNativeApi = OSHelper.IsWindows && formats.GetValueOrDefault(DataFormats.Bitmap) is not Image;
             if (useNativeApi && PopulateClipboardNatively(formats))
@@ -421,6 +417,7 @@ namespace KGySoft.Drawing.ImagingTools
                         break;
 
                     case Image image:
+                        result = true;
                         dataObject.SetImage(image);
                         break;
 
@@ -430,7 +427,7 @@ namespace KGySoft.Drawing.ImagingTools
             }
 
             if (result)
-                Clipboard.SetDataObject(dataObject, true);
+                task.Context.Send(_ => Clipboard.SetDataObject(dataObject, true), null);
             return result;
         }
 

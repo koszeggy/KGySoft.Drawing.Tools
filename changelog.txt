@@ -23,7 +23,8 @@
 + Edit Resources form:
   + The resources of an additional dependent library has been included
 * Improved appearance with dark theme.
-- Main Form/Image Visualizer dialog:
+* Main Form/Image Visualizer dialog:
+  + Copy/paste support
   - Dragging a zoomed animated bitmap by the mouse was not quite possible while the animation was playing, because
     the dragging operation was canceled on updating the frame.
 - Debugger Visualizer Installations dialog:

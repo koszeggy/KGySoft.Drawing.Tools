@@ -78,6 +78,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             },
             ClosingCallback = (sender, _) =>
             {
+                ViewModel.CancelPendingTask();
                 if (((MvvmParentForm)sender!).DialogResult == DialogResult.Cancel)
                     ViewModel.SetModified(false);
             }
@@ -281,6 +282,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             if (IsDisposed)
                 return;
 
+            ViewModel.CancelPendingTask();
             if (disposing)
                 components?.Dispose();
 
@@ -332,6 +334,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
             // VM.IsCompoundView -> btnCompound.Checked
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsCompoundView), nameof(btnCompound.Checked), btnCompound);
+
+            // VM.IsBusy -> pbProgress.Visible
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsBusy), nameof(pbProgress.Visible), pbProgress);
 
             // VM.IsAutoPlaying -> timerPlayer.Enabled
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsAutoPlaying), nameof(timerPlayer.Enabled), timerPlayer);
