@@ -22,8 +22,8 @@ using System.Threading;
 
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
-using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Threading;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -385,13 +385,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
         }
 
-        private void CancelRunningGenerate()
-        {
-            GenerateTaskBase? runningTask = activeTask;
-            if (runningTask == null)
-                return;
-            runningTask.IsCanceled = true;
-        }
+        private void CancelRunningGenerate() => activeTask?.Cancel();
 
         private void WaitForPendingGenerate()
         {

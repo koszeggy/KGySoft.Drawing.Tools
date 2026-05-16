@@ -65,6 +65,28 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             #region Methods
 
+            #region Public Methods
+
+            public override void SetCompleted()
+            {
+                if (sourceBitmap != null)
+                {
+                    if (isSourceCloned)
+                    {
+                        sourceBitmap.Dispose();
+                        sourceBitmap = null;
+                    }
+                    else
+                        Monitor.Exit(sourceBitmap);
+                }
+
+                base.SetCompleted();
+            }
+
+            #endregion
+
+            #region Internal Methods
+
             internal override void Initialize(Bitmap source, bool isInUse)
             {
                 // Locking on source image to avoid "bitmap region is already locked" if the UI is painting the image when we clone it.
@@ -91,22 +113,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             internal override Bitmap? EndGenerate(IAsyncResult asyncResult) => asyncResult.EndConvertPixelFormat();
 
-            internal override void SetCompleted()
-            {
-                if (sourceBitmap != null)
-                {
-                    if (isSourceCloned)
-                    {
-                        sourceBitmap.Dispose();
-                        sourceBitmap = null;
-                    }
-                    else
-                        Monitor.Exit(sourceBitmap);
-                }
-
-                base.SetCompleted();
-            }
-
             protected override void Dispose(bool disposing)
             {
                 if (IsDisposed)
@@ -119,6 +125,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
                 base.Dispose(disposing);
             }
+
+            #endregion
 
             #endregion
         }

@@ -67,6 +67,17 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             #region Methods
 
+            #region Public Methods
+
+            public override void SetCompleted()
+            {
+                BitmapData?.Dispose();
+                BitmapData = null;
+                base.SetCompleted();
+            }
+
+            #endregion
+
             #region Internal Methods
 
             internal override void Initialize(Bitmap source, bool isInUse)
@@ -86,13 +97,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 Bitmap? bmp = result;
                 result = null;
                 return bmp;
-            }
-
-            internal override void SetCompleted()
-            {
-                BitmapData?.Dispose();
-                BitmapData = null;
-                base.SetCompleted();
             }
 
             #endregion

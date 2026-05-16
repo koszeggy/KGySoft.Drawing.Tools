@@ -65,6 +65,25 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             #region Methods
 
+            #region Public Methods
+
+            public override void SetCompleted()
+            {
+                sourceBitmapData?.Dispose();
+                sourceBitmapData = null;
+                if (isSourceCloned)
+                    sourceBitmap?.Dispose();
+                else if (sourceBitmap != null)
+                    Monitor.Exit(sourceBitmap);
+                sourceBitmap = null;
+
+                targetBitmapData?.Dispose();
+                targetBitmapData = null;
+                base.SetCompleted();
+            }
+
+            #endregion
+
             #region Internal Methods
 
             internal override void Initialize(Bitmap source, bool isInUse)
@@ -112,21 +131,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 Bitmap? bmp = targetBitmap;
                 targetBitmap = null;
                 return bmp;
-            }
-
-            internal override void SetCompleted()
-            {
-                sourceBitmapData?.Dispose();
-                sourceBitmapData = null;
-                if (isSourceCloned)
-                    sourceBitmap?.Dispose();
-                else if (sourceBitmap != null)
-                    Monitor.Exit(sourceBitmap);
-                sourceBitmap = null;
-
-                targetBitmapData?.Dispose();
-                targetBitmapData = null;
-                base.SetCompleted();
             }
 
             #endregion

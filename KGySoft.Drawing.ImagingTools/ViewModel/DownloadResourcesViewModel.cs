@@ -31,6 +31,7 @@ using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Resources;
 using KGySoft.Serialization.Xml;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -160,7 +161,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (t == null)
                 return;
 
-            t.IsCanceled = true;
+            t.Cancel();
             SetModified(false);
             t.WaitForCompletion();
         }
