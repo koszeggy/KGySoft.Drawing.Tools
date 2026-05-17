@@ -102,7 +102,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             t.Cancel();
             SetModified(false);
-            t.WaitForCompletion();
         }
 
         #endregion

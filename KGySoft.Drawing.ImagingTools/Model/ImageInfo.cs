@@ -289,12 +289,10 @@ namespace KGySoft.Drawing.ImagingTools.Model
             Guid[] dimensions = image.FrameDimensionsList;
             if (dimensions.Length > 0)
             {
-                if (dimensions[0] == FrameDimension.Page.Guid)
-                    dimension = FrameDimension.Page;
-                else if (dimensions[0] == FrameDimension.Time.Guid)
-                    dimension = FrameDimension.Time;
-                else if (dimensions[0] == FrameDimension.Resolution.Guid)
-                    dimension = FrameDimension.Resolution;
+                dimension = dimensions[0] == FrameDimension.Page.Guid ? FrameDimension.Page
+                    : dimensions[0] == FrameDimension.Time.Guid ? FrameDimension.Time
+                    : dimensions[0] == FrameDimension.Resolution.Guid ? FrameDimension.Resolution
+                    : null;
             }
 
             // single image, unknown dimension or not bitmap

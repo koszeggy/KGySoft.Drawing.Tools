@@ -228,13 +228,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             if (disposing)
             {
-                if (activeTask != null)
-                {
-                    CancelRunningGenerate();
-                    WaitForPendingGenerate();
-                }
-
-                Debug.Assert(activeTask == null);
+                CancelRunningGenerate();
                 Image? preview = PreviewImageViewModel.PreviewImage;
                 PreviewImageViewModel.Dispose();
 
@@ -389,7 +383,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void WaitForPendingGenerate()
         {
-            // In a non-UI thread it should be in a lock
+            // Should not be called from a non-UI thread, and otherwise it should be in a lock
             GenerateTaskBase? runningTask = activeTask;
             if (runningTask == null)
                 return;
@@ -429,9 +423,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnCancelCommand()
         {
-            // canceling any pending generate and waiting for finishing so no "image is locked elsewhere" will come from the main form for the original image
             CancelRunningGenerate();
-            WaitForPendingGenerate();
             SetModified(false);
             CloseViewCallback?.Invoke();
         }

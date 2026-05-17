@@ -134,7 +134,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             get
             {
-                WaitForPendingTask();
+                Debug.Assert(activeTask?.IsCompleted != false, "An active task is not expected here. Make sure it is completed by the time this property is accessed on the UI thread.");
                 return imageInfo;
             }
 
@@ -334,17 +334,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal void CancelPendingTask() => activeTask?.Cancel();
 
-        internal void WaitForPendingTask()
-        {
-            AsyncTaskContext? task = activeTask;
-            if (task == null)
-                return;
-
-            task.WaitForCompletion();
-            task.Dispose();
-            activeTask = null;
-        }
-
         #endregion
 
         #region Protected Methods
@@ -433,8 +422,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             ValidateImageInfo(value);
 
-            CancelPendingTask();
-            WaitForPendingTask();
+            Debug.Assert(activeTask?.IsCompleted != false, "An active task is not expected here. Make sure it is completed by the time this method is called on the UI thread.");
             currentResolution = Size.Empty;
             if (!keepAliveImageInfo)
                 imageInfo.Dispose();
@@ -634,7 +622,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (disposing)
             {
                 CancelPendingTask();
-                WaitForPendingTask();
                 if (!keepAliveImageInfo)
                     imageInfo.Dispose();
             }
@@ -1411,13 +1398,19 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void DoPasteFromClipboard(object? state)
         {
             var task = (PasteTask)state!;
+            ImageInfo? result = null;
+            bool success = false;
             try
             {
                 if (task.IsCanceled)
                     return;
-                ImageInfo? result = ClipboardHelper.TryPasteFromClipboard(task.AllowedTypes, task.AllowMultiFrame, task);
-                task.SetCompleted(); // just to complete it before possibly showing a message dialog; otherwise, it would be completed on disposing
-                TryInvokeSync(() =>
+                result = ClipboardHelper.TryPasteFromClipboard(task.AllowedTypes, task.AllowMultiFrame, task);
+
+                // It must be completed before handling the rest on the UI thread. From now on, nothing is done in the worker thread, but the nullification.
+                // UI callbacks must be expected not to be executed at all, if the UI has been closed.
+                task.SetCompleted();
+
+                success = TryInvokeSync(() =>
                 {
                     if (IsDisposed)
                         return;
@@ -1444,8 +1437,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     SetModified(true);
                 });
             }
+            catch (Exception e) when (!e.IsCriticalGdi())
+            {
+            }   
             finally
             {
+                if (!success && task.AllowMultiFrame && !ReferenceEquals(imageInfo, result))
+                    result?.Dispose();
                 task.Dispose();
                 activeTask = null;
                 TryInvokeSync(() => IsBusy = false);

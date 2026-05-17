@@ -93,10 +93,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                     DialogResult = DialogResult.None;
             }
             else
-            {
                 ViewModel.CancelPendingTask();
-                ViewModel.WaitForPendingTask();
-            }
 
             base.OnFormClosing(e);
         }

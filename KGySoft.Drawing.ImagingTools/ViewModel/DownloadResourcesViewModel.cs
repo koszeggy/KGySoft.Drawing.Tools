@@ -163,7 +163,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             t.Cancel();
             SetModified(false);
-            t.WaitForCompletion();
         }
 
         #endregion
@@ -220,10 +219,15 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 if (data == null)
                     return;
 
-                using var reader = XmlReader.Create(new StreamReader(new MemoryStream(data), Encoding.UTF8));
+                using XmlReader reader = XmlReader.Create(new StreamReader(new MemoryStream(data), Encoding.UTF8));
                 reader.ReadStartElement("manifest");
+                if (task.IsCanceled)
+                    return;
+
                 List<LocalizationInfo> itemsList = availableResources;
                 XmlSerializer.DeserializeContent(reader, itemsList);
+                if (task.IsCanceled)
+                    return;
 
                 TryInvokeSync(() =>
                 {
@@ -313,6 +317,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     downloaded += 1;
                     SetModified(true);
                 }
+
+                if (task.IsCanceled)
+                    return;
 
                 TryInvokeSync(() =>
                 {
