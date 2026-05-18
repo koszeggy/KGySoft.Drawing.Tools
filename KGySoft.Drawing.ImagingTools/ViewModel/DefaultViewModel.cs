@@ -50,8 +50,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal override void ViewLoaded()
         {
             string[]? args = CommandLineArguments;
-            if (args.IsNullOrEmpty() || !ProcessArgs(args!))
-                UpdateInfo();
+            UpdateInfo();
+            ProcessArgs(args!);
             base.ViewLoaded();
         }
 
@@ -61,20 +61,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Protected Methods
 
-        protected override void OpenFile()
-        {
-            if (!ConfirmIfModified())
-                return;
-            base.OpenFile();
-        }
-
-        protected override bool OpenFile(string path)
-        {
-            if (!base.OpenFile(path))
-                return false;
-            FileName = Path.GetFileName(path);
-            return true;
-        }
+        protected override bool OnFileOpening() => ConfirmIfModified();
+        protected override void OnFileOpened(string path) => FileName = Path.GetFileName(path);
 
         protected override bool SaveFile(string fileName, string selectedFormat)
         {
@@ -122,18 +110,16 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Private Methods
 
-        private bool ProcessArgs(string[] args)
+        private void ProcessArgs(string[] args)
         {
             if (args.Length == 0)
-                return false;
+                return;
+            
             string file = args[0];
             if (!File.Exists(file))
-            {
                 ShowError(Res.ErrorMessageFileDoesNotExist(file));
-                return false;
-            }
-
-            return OpenFile(file);
+            else
+                OpenFile(file);
         }
 
         #endregion

@@ -41,6 +41,19 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
     {
         #region Nested Classes
         
+        #region OpenTask class
+
+        private sealed class OpenTask : AsyncTaskContext
+        {
+            #region Fields
+
+            internal string FileName = null!;
+
+            #endregion
+        }
+
+        #endregion
+
         #region CopyTask class
 
         private sealed class CopyTask : AsyncTaskContext
@@ -482,36 +495,25 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             InfoText = sb.ToString();
         }
 
-        protected virtual void OpenFile()
-        {
-            SetOpenFilter();
-            string? fileName = SelectFileToOpenCallback?.Invoke();
-            if (fileName == null)
-                return;
+        protected virtual bool OnFileOpening() => true;
 
+        protected void OpenFile(string fileName)
+        {
+            IsBusy = true;
             SetNotification(null);
-            OpenFile(fileName);
+            var task = new OpenTask { FileName = fileName };
+            activeTask = task;
+            ThreadPool.QueueUserWorkItem(DoOpenFile, task);
+        }
+
+        protected virtual void OnFileOpened(string fileName)
+        {
         }
 
         protected void SetNotification(string? resourceId)
         {
             notificationId = resourceId;
             UpdateNotification();
-        }
-
-        protected virtual bool OpenFile(string path)
-        {
-            try
-            {
-                FromFile(path);
-                SetModified(IsDebuggerVisualizer);
-                return true;
-            }
-            catch (Exception e) when (!e.IsCritical())
-            {
-                ShowError(Res.ErrorMessageFailedToLoadFile(e.Message));
-                return false;
-            }
         }
 
         protected virtual bool SaveFile(string fileName, string selectedFormat)
@@ -762,116 +764,153 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             return img?.GetType().Name ?? nameof(Bitmap);
         }
 
-        private void FromFile(string fileName)
+        private void OpenFile()
         {
-            var stream = new MemoryStream(File.ReadAllBytes(fileName));
-            bool appearsIcon = Path.GetExtension(fileName).Equals(".ico", StringComparison.OrdinalIgnoreCase);
+            Debug.Assert(!IsBusy && activeTask == null);
+            if (!OnFileOpening())
+                return;
+            SetOpenFilter();
+            string? fileName = SelectFileToOpenCallback?.Invoke();
+            if (fileName != null)
+                OpenFile(fileName);
+        }
 
-            Icon? icon = null;
-
-            // icon is allowed and the content seems to be an icon
-            // (this block is needed only for Windows XP: Icon Bitmap with PNG throws an exception but initializing from icon will succeed)
-            if (appearsIcon && (imageTypes & AllowedImageTypes.Icon) == AllowedImageTypes.Icon)
+        private void DoOpenFile(object? state)
+        {
+            var task = (OpenTask)state!;
+            string fileName = task.FileName;
+            Exception? error = null;
+            try
             {
-                try
-                {
-                    icon = Icons.FromStream(stream);
-                    Icon = icon;
-                    imageInfo.FileName = fileName;
-                    return;
-                }
-                catch (Exception e) when (!e.IsCritical())
-                {
-                    // failed to open as an icon: fallback to usual paths
-                    stream.Position = 0L;
-                }
-            }
+                var stream = new MemoryStream(File.ReadAllBytes(fileName));
+                bool appearsIcon = Path.GetExtension(fileName).Equals(".ico", StringComparison.OrdinalIgnoreCase);
+                string? openedFileName = fileName;
+                string? notification = null;
+                ImageInfo? result = null;
+                bool isCustom = false;
 
-            Image? image = null;
-            string? openedFileName = fileName;
-            bool isCustom = false;
-
-            // bitmaps and metafiles are both allowed
-            if ((imageTypes & (AllowedImageTypes.Bitmap | AllowedImageTypes.Metafile)) == (AllowedImageTypes.Bitmap | AllowedImageTypes.Metafile))
-            {
-                try
+                // icon is allowed and the content seems to be an icon
+                // (this block is needed only for Windows XP: Icon Bitmap with PNG throws an exception but initializing from icon will succeed)
+                if (appearsIcon && (imageTypes & AllowedImageTypes.Icon) == AllowedImageTypes.Icon)
                 {
-                    image = LoadImage(stream, out isCustom);
-                }
-                catch (Exception e) when (!e.IsCriticalGdi())
-                {
-                    throw new ArgumentException(Res.ErrorMessageNotAnImageFile(e.Message), nameof(fileName), e);
-                }
-            }
-            // metafiles only
-            else if (imageTypes == AllowedImageTypes.Metafile)
-            {
-                try
-                {
-                    image = new Metafile(stream);
-                }
-                catch (Exception e) when (!e.IsCriticalGdi())
-                {
-                    throw new ArgumentException(Res.ErrorMessageNotAMetafile(e.Message), nameof(fileName), e);
-                }
-            }
-            // bitmaps or icons
-            else if ((imageTypes & (AllowedImageTypes.Bitmap | AllowedImageTypes.Icon)) != AllowedImageTypes.None)
-            {
-                try
-                {
-                    image = LoadImage(stream, out isCustom);
-                }
-                catch (Exception e) when (!e.IsCriticalGdi())
-                {
-                    throw new ArgumentException(Res.ErrorMessageNotABitmapFile(e.Message), nameof(fileName), e);
-                }
-
-                if (!isCustom && image.RawFormat.Guid == ImageFormat.MemoryBmp.Guid)
-                {
-                    SetNotification(Res.NotificationMetafileAsBitmapId);
-                    openedFileName = null;
-                }
-            }
-
-            // icon is allowed and an image has been loaded
-            if (image != null && (imageTypes & AllowedImageTypes.Icon) != AllowedImageTypes.None)
-            {
-                // the loaded format is icon: loading as icon
-                if (image.RawFormat.Guid == ImageFormat.Icon.Guid)
-                {
-                    stream.Position = 0L;
                     try
                     {
-                        icon = new Icon(stream);
+                        result = new ImageInfo(Icons.FromStream(stream));
                     }
-                    catch (Exception e) when (!e.IsCriticalGdi())
+                    catch (Exception e) when (!e.IsCritical())
                     {
-                        throw new ArgumentException(Res.ErrorMessageNotAnIconFile(e.Message), nameof(fileName), e);
+                        // failed to open as an icon: fallback to usual paths
+                        stream.Position = 0L;
                     }
                 }
 
-                // not icon was loaded, though icon is the only supported format: converting to icon
-                else if (imageTypes == AllowedImageTypes.Icon)
+                if (result == null)
                 {
-                    Bitmap iconImage = image as Bitmap ?? new Bitmap(image);
-                    icon = iconImage.ToIcon();
-                    iconImage.Dispose();
-                    SetNotification(Res.NotificationImageAsIconId);
-                    openedFileName = null;
+                    // bitmaps and metafiles are both allowed
+                    if ((imageTypes & (AllowedImageTypes.Bitmap | AllowedImageTypes.Metafile)) == (AllowedImageTypes.Bitmap | AllowedImageTypes.Metafile))
+                    {
+                        try
+                        {
+                            result = new ImageInfo(LoadImage(stream, out isCustom));
+                        }
+                        catch (Exception e) when (!e.IsCriticalGdi())
+                        {
+                            throw new ArgumentException(Res.ErrorMessageNotAnImageFile(e.Message), nameof(fileName), e);
+                        }
+                    }
+                    // metafiles only
+                    else if (imageTypes == AllowedImageTypes.Metafile)
+                    {
+                        try
+                        {
+                            result = new ImageInfo(new Metafile(stream));
+                        }
+                        catch (Exception e) when (!e.IsCriticalGdi())
+                        {
+                            throw new ArgumentException(Res.ErrorMessageNotAMetafile(e.Message), nameof(fileName), e);
+                        }
+                    }
+                    // bitmaps or icons
+                    else if ((imageTypes & (AllowedImageTypes.Bitmap | AllowedImageTypes.Icon)) != AllowedImageTypes.None)
+                    {
+                        try
+                        {
+                            result = new ImageInfo(LoadImage(stream, out isCustom));
+                        }
+                        catch (Exception e) when (!e.IsCriticalGdi())
+                        {
+                            throw new ArgumentException(Res.ErrorMessageNotABitmapFile(e.Message), nameof(fileName), e);
+                        }
+
+                        if (!isCustom && result.RawFormat == ImageFormat.MemoryBmp.Guid)
+                        {
+                            notification = Res.NotificationMetafileAsBitmapId;
+                            openedFileName = null;
+                        }
+                    }
+
+                    // icon is allowed and an image has been loaded
+                    if (result?.Image is Image image && (imageTypes & AllowedImageTypes.Icon) != AllowedImageTypes.None)
+                    {
+                        // the loaded format is icon: reloading as icon (can make a difference if the icon contains multiple color depths of the same resolution)
+                        if (result.RawFormat == ImageFormat.Icon.Guid)
+                        {
+                            stream.Position = 0L;
+                            try
+                            {
+                                var newResult = new ImageInfo(new Icon(stream));
+                                result.Dispose();
+                                result = newResult;
+                            }
+                            catch (Exception e) when (!e.IsCriticalGdi())
+                            {
+                                throw new ArgumentException(Res.ErrorMessageNotAnIconFile(e.Message), nameof(fileName), e);
+                            }
+                        }
+
+                        // not icon was loaded, though icon is the only supported format: converting to icon
+                        else if (imageTypes == AllowedImageTypes.Icon)
+                        {
+                            Bitmap iconImage = image as Bitmap ?? new Bitmap(image);
+                            var newResult = new ImageInfo(iconImage.ToIcon());
+                            iconImage.Dispose();
+                            result.Dispose();
+                            result = newResult;
+                            notification = Res.NotificationImageAsIconId;
+                            openedFileName = null;
+                        }
+                    }
                 }
-            }
 
-            if (icon != null)
+                // null will be assigned if the image has been converted (see notifications), or when it has a custom format so Image.FromFile cannot handle it
+                result?.FileName = !isCustom ? openedFileName : null;
+
+                task.SetCompleted();
+
+                TryInvokeSync(() =>
+                {
+                    ImageInfo = result;
+                    SetNotification(notification);
+                    SetModified(IsDebuggerVisualizer);
+                    OnFileOpened(fileName); // using the original file name here, even if it was converted internally
+                });
+            }
+            catch (Exception e) when (!e.IsCriticalGdi())
             {
-                Icon = icon;
-                image?.Dispose();
+                // As we are on a remote thread, just capturing the error here, and if the UI still exists, marshaling the handling back to the UI thread.
+                error = e;
             }
-            else
-                Image = image;
-
-            // null will be assigned if the image has been converted (see notifications), or when it has a custom format so Image.FromFile cannot handle it
-            imageInfo.FileName = !isCustom ? openedFileName : null;
+            finally
+            {
+                task.Dispose();
+                activeTask = null;
+                TryInvokeSync(() =>
+                {
+                    IsBusy = false;
+                    if (error != null)
+                        ShowError(Res.ErrorMessageFailedToLoadFile(error.Message));
+                });
+            }
         }
 
         private Image LoadImage(MemoryStream stream, out bool isCustom)
