@@ -54,6 +54,22 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #endregion
 
+        #region SaveTask class
+
+        private sealed class SaveTask : AsyncTaskContext
+        {
+            #region Fields
+
+            internal string FileName = null!;
+            internal string SelectedFormat = null!;
+            internal ImageInfoBase ToSave = null!;
+            internal int CurrentFrame; // needed when a compound image is saved in a single frame format
+
+            #endregion
+        }
+
+        #endregion
+
         #region CopyTask class
 
         private sealed class CopyTask : AsyncTaskContext
@@ -510,57 +526,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
         }
 
+        protected virtual void OnFileSaved(string fileName, string selectedFormat)
+        {
+        }
+
         protected void SetNotification(string? resourceId)
         {
             notificationId = resourceId;
             UpdateNotification();
-        }
-
-        protected virtual bool SaveFile(string fileName, string selectedFormat)
-        {
-            ImageCodecInfo? encoder = encoderCodecs.FirstOrDefault(e => selectedFormat.Equals(e.FilenameExtension, StringComparison.OrdinalIgnoreCase));
-
-            try
-            {
-                // BMP
-                if (encoder?.FormatID == ImageFormat.Bmp.Guid)
-                    GetCurrentImageOrFirst().SaveAsBmp(fileName);
-                // JPEG
-                else if (encoder?.FormatID == ImageFormat.Jpeg.Guid)
-                    GetCurrentImageOrFirst().SaveAsJpeg(fileName, 95);
-                // GIF
-                else if (encoder?.FormatID == ImageFormat.Gif.Guid)
-                    SaveGif(fileName);
-                // Tiff
-                else if (encoder?.FormatID == ImageFormat.Tiff.Guid)
-                    SaveTiff(fileName);
-                // PNG
-                else if (encoder?.FormatID == ImageFormat.Png.Guid)
-                    GetCurrentImageOrFirst().SaveAsPng(fileName);
-                // icon
-                else if (selectedFormat == "*.ico")
-                    SaveIcon(fileName);
-                // windows metafile
-                else if (selectedFormat == "*.wmf" && imageInfo.IsMetafile)
-                    ((Metafile)imageInfo.Image!).SaveAsWmf(fileName);
-                // enhanced metafile
-                else if (selectedFormat == "*.emf" && imageInfo.IsMetafile)
-                    ((Metafile)imageInfo.Image!).SaveAsEmf(fileName);
-                // Some unrecognized encoder - we assume it can handle every pixel format
-                else if (encoder != null)
-                    GetCurrentImageOrFirst().Save(fileName, encoder, null);
-                else if (selectedFormat == "*.bdat")
-                    SaveBitmapData(fileName);
-                else
-                    throw new InvalidOperationException(Res.InternalError($"Unexpected format without encoder: {selectedFormat}"));
-
-                return true;
-            }
-            catch (Exception e) when (!e.IsCriticalGdi())
-            {
-                ShowError(Res.ErrorMessageFailedToSaveImage(e.Message));
-                return false;
-            }
         }
 
         protected virtual void Clear()
@@ -680,24 +653,16 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             _ => Res.ToolTipTextCompoundMultiSize
         };
 
-        private ImageInfoBase GetCurrentImageInfo()
+        private ImageInfoBase GetCurrentImageInfo(bool preferCompoundPages = false)
         {
             if (!imageInfo.HasFrames || currentFrame < 0 || IsAutoPlaying)
                 return imageInfo;
+
+            // For pages, currentFrame is never < 0, so it depends on the use case whether we need an actual frame (display) or the whole image (save/copy)
+            if (preferCompoundPages && imageInfo.Type == ImageInfoType.Pages && IsCompoundView)
+                return imageInfo;
+
             return imageInfo.Frames![currentFrame];
-        }
-
-        private Image GetCurrentImageOrFirst()
-        {
-            ImageInfoBase frameInfo = GetCurrentImageInfo();
-            Image? result = frameInfo.Image;
-            if (result != null)
-                return result;
-
-            Debug.Assert(frameInfo == imageInfo && imageInfo.HasFrames, "A frame was null. Only the serializer should initialize such ImageInfo.");
-
-            // compound image was null: returning the first frame
-            return imageInfo.Frames![0].Image ?? throw new InvalidOperationException(Res.InternalError("Frames should not be null here"));
         }
 
         private void SetCompoundViewCommandStateImage()
@@ -1005,92 +970,202 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             UpdateInfo();
         }
 
-        private void SaveGif(string fileName)
+        private void SaveFile()
         {
-            // This includes animated GIF if there was no change since opening it
-            if (!imageInfo.HasFrames || !IsCompoundView || imageInfo.Type == ImageInfoType.Animation && imageInfo.Image != null)
-            {
-                GetCurrentImageOrFirst().SaveAsGif(fileName);
+            if (imageInfo.Type == ImageInfoType.None)
                 return;
+
+            SetSaveFilter();
+            string? fileName;
+            do
+            {
+                fileName = SelectFileToSaveCallback?.Invoke();
+                if (fileName == null)
+                    return;
+            } while (!CheckSaveExtension(fileName));
+
+            int filterIndex = SaveFileFilterIndex;
+            string selectedFormat = SaveFileFilter!.Split('|')[((filterIndex - 1) << 1) + 1];
+            IsBusy = true;
+            var task = new SaveTask
+            {
+                FileName = fileName,
+                SelectedFormat = selectedFormat,
+                ToSave = GetCurrentImageInfo(true),
+                CurrentFrame = currentFrame
+            };
+            activeTask = task;
+            ThreadPool.QueueUserWorkItem(DoSaveFile, task);
+        }
+
+        private void DoSaveFile(object? state)
+        {
+            #region Local Methods
+
+            static Image? GetImage(SaveTask task)
+            {
+                if (task.IsCanceled)
+                    return null;
+
+                if (task.ToSave is not ImageInfo info)
+                    return task.ToSave.Image;
+
+                // For TIFF, this always gets the current frame.
+                if (info.Type == ImageInfoType.Pages && task.CurrentFrame >= 0)
+                    return info.Frames![task.CurrentFrame].Image;
+
+                // For icons/GIF this gets the compound image if exists, or the first frame.
+                // Not generating the compound image here, as this method is expected to be used for single-frame formats only.
+                return info.HasFrames
+                    ? info.Image ?? info.Frames![0].Image ?? throw new InvalidOperationException(Res.InternalError("A frame was null. Only the serializer should initialize such ImageInfo."))
+                    : task.ToSave.Image;
             }
 
-            // Encoding a new GIF animation: if the image originally is not an animation, the using 1s delay for each frames
-            ImageFrameInfo[] frames = imageInfo.Frames!;
-            frames.Select(f => f.Image!).SaveAsAnimatedGif(fileName, imageInfo.Type == ImageInfoType.Animation
-                ? frames.Select(f => TimeSpan.FromMilliseconds(f.Duration))
-                : new[] { TimeSpan.FromSeconds(1) });
-        }
-
-        private void SaveTiff(string fileName)
-        {
-            if (imageInfo.HasFrames && IsCompoundView)
-                imageInfo.Frames!.Select(f => f.Image!).SaveAsMultipageTiff(fileName);
-            else
-                GetCurrentImageOrFirst().SaveAsTiff(fileName);
-        }
-
-        private void SaveIcon(string fileName)
-        {
-            using (Stream stream = File.Create(fileName))
-                SaveIcon(stream);
-        }
-
-        private void SaveIcon(Stream stream)
-        {
-            // saving as composite icon
-            if (IsCompoundView)
+            static void SaveGif(SaveTask task)
             {
-                // when used as debugger, icon is always created from stream so it has raw data and Save can be used safely.
-                // But when icon is set via Icon property it can be an unmanaged icon
-                if (imageInfo.Icon != null && !IsModified)
-                    imageInfo.Icon.SaveAsIcon(stream);
-                // multi image icon without raw data
-                else if (imageInfo.HasFrames)
+                if (task.IsCanceled)
+                    return;
+
+                if (task.ToSave.Image is Image image)
                 {
-                    using (Icon i = Icons.Combine(imageInfo.Frames!.Select(f => (Bitmap)f.Image!).ToArray()))
-                        i.Save(stream);
+                    image.SaveAsGif(task.FileName);
+                    return;
                 }
-                // single image icon without raw data
+
+                // Encoding a new GIF animation: if the image originally is not an animation, using 1s delay for each frames
+                if (task.ToSave is not ImageInfo imageInfo)
+                    return;
+
+                // TODO: cancellable iteration
+                ImageFrameInfo[] frames = imageInfo.Frames!;
+                frames.Select(f => f.Image!).SaveAsAnimatedGif(task.FileName, imageInfo.Type == ImageInfoType.Animation
+                    ? frames.Select(f => TimeSpan.FromMilliseconds(f.Duration))
+                    : new[] { TimeSpan.FromSeconds(1) });
+            }
+
+            static void SaveTiff(SaveTask task)
+            {
+                if (task.ToSave is ImageInfo imageInfo && imageInfo.HasFrames)
+                    // TODO: cancellable iteration
+                    imageInfo.Frames!.Select(f => f.Image!).SaveAsMultipageTiff(task.FileName);
+                else
+                    GetImage(task)?.SaveAsTiff(task.FileName);
+            }
+
+            static void SaveIcon(SaveTask task)
+            {
+                using Stream stream = File.Create(task.FileName);
+
+                // TODO: new ImageInfoBase.Icon property, save that in the first place
+
+                if (task.ToSave is not ImageInfo imageInfo)
+                    task.ToSave.Image!.SaveAsIcon(stream);
                 else
                 {
-                    using (Icon i = Icons.Combine((Bitmap)imageInfo.Image!))
+                    // Preferring the Icon property, if exists. SaveAsIcon ensures the good quality even if the icon has no raw stream internally.
+                    if (imageInfo.Icon is Icon icon)
+                        icon.SaveAsIcon(stream);
+                    else if (imageInfo.HasFrames)
+                    {
+                        // TODO: cancellable iterator (or combining one by one), restoring original pixel format if raw format is icon (result.Combine(frame.Icon) or use result.Combine(frame.Image, Color.Transparent))
+                        using Icon i = Icons.Combine(imageInfo.Frames!.Select(f => (Bitmap)f.Image!));
                         i.Save(stream);
+                    }
                 }
 
                 stream.Flush();
-                return;
             }
 
-            // saving a single icon image
-            if (imageInfo.Icon != null)
+            static void SaveBitmapData(SaveTask task)
             {
-                using (Icon i = imageInfo.Icon.ExtractIcon(currentFrame)!)
-                    i.Save(stream);
-            }
-            else
-            {
-                // This is single icon, combine is just to force saving a managed icon
-                using (Icon i = Icons.Combine((Bitmap)GetCurrentImageOrFirst()))
-                    i.Save(stream);
+                using Stream stream = File.Create(task.FileName);
+                Image? image = GetImage(task);
+                if (image == null)
+                    return;
+                Bitmap bmp = image as Bitmap ?? new Bitmap(image);
+                try
+                {
+                    // TODO: cancellation, Begin/End save
+                    using IReadableBitmapData bitmapData = bmp.GetReadableBitmapData();
+                    bitmapData.Save(stream);
+                }
+                finally
+                {
+                    if (!ReferenceEquals(image, bmp))
+                        bmp.Dispose();
+                }
             }
 
-            stream.Flush();
-        }
+            #endregion
 
-        private void SaveBitmapData(string fileName)
-        {
-            using Stream stream = File.Create(fileName);
-            Image image = GetCurrentImageOrFirst();
-            Bitmap bmp = image as Bitmap ?? new Bitmap(image);
+            var task = (SaveTask)state!;
+            (string fileName, string selectedFormat, ImageInfoBase toSave) = (task.FileName, task.SelectedFormat, task.ToSave);
+            Exception? error = null;
+
             try
             {
-                using IReadableBitmapData bitmapData = bmp.GetReadableBitmapData();
-                bitmapData.Save(stream);
+                ImageCodecInfo? encoder = encoderCodecs.FirstOrDefault(e => selectedFormat.Equals(e.FilenameExtension, StringComparison.OrdinalIgnoreCase));
+
+                // BMP
+                if (encoder?.FormatID == ImageFormat.Bmp.Guid)
+                    GetImage(task)?.SaveAsBmp(fileName);
+                // JPEG
+                else if (encoder?.FormatID == ImageFormat.Jpeg.Guid)
+                    GetImage(task)?.SaveAsJpeg(fileName, 95);
+                // GIF
+                else if (encoder?.FormatID == ImageFormat.Gif.Guid)
+                    SaveGif(task);
+                // Tiff
+                else if (encoder?.FormatID == ImageFormat.Tiff.Guid)
+                    SaveTiff(task);
+                // PNG
+                else if (encoder?.FormatID == ImageFormat.Png.Guid)
+                    GetImage(task)?.SaveAsPng(fileName);
+                // icon
+                else if (selectedFormat == "*.ico")
+                    SaveIcon(task);
+                // windows metafile
+                else if (selectedFormat == "*.wmf")
+                    (GetImage(task) as Metafile)?.SaveAsWmf(fileName);
+                // enhanced metafile
+                else if (selectedFormat == "*.emf")
+                    (GetImage(task) as Metafile)?.SaveAsEmf(fileName);
+                // Some unrecognized encoder - we assume it can handle every pixel format
+                else if (encoder != null)
+                    GetImage(task)?.Save(fileName, encoder, null);
+                else if (selectedFormat == "*.bdat")
+                    SaveBitmapData(task);
+                else
+                    throw new InvalidOperationException(Res.InternalError($"Unexpected format without encoder: {selectedFormat}"));
+            }
+            catch (Exception e) when (!e.IsCriticalGdi())
+            {
+                // As we are on a remote thread, just capturing the error here, and if the UI still exists, marshaling the handling back to the UI thread.
+                error = e;
             }
             finally
             {
-                if (!ReferenceEquals(image, bmp))
-                    bmp.Dispose();
+                if (task.IsCanceled && File.Exists(task.FileName))
+                {
+                    try
+                    {
+                        File.Delete(task.FileName);
+                    }
+                    catch (Exception e) when (!e.IsCritical())
+                    {
+                    }
+                }
+
+                task.Dispose();
+                activeTask = null;
+                TryInvokeSync(() =>
+                {
+                    IsBusy = false;
+                    if (error != null)
+                        ShowError(Res.ErrorMessageFailedToSaveImage(error.Message));
+                    else if (!task.IsCanceled)
+                        OnFileSaved(fileName, selectedFormat);
+                });
             }
         }
 
@@ -1316,7 +1391,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             // replacing the whole image (non-compound one)
             if (GetCurrentImageInfo() == imageInfo)
             {
-                Debug.Assert(!imageInfo.HasFrames);
+                Debug.Assert(!imageInfo.HasFrames, "To replace the whole compound image, set ImageInfo instead");
                 if (!ReferenceEquals(imageInfo.Image, image))
                     imageInfo.Dispose();
                 imageInfo = new ImageInfo(image);
@@ -1329,6 +1404,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 ImageFrameInfo[] frames = imageInfo.Frames!;
                 ImageFrameInfo origFrame = frames[currentFrame];
                 frames[currentFrame] = new ImageFrameInfo(image) { Duration = origFrame.Duration };
+                imageInfo.Icon?.Dispose();
+                imageInfo.Icon = null;
                 if (!ReferenceEquals(origFrame.Image, image))
                     origFrame.Dispose();
                 PreviewImage = frames[currentFrame].Image;
@@ -1388,7 +1465,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             Debug.Assert(!IsBusy && activeTask == null);
             IsBusy = true;
-            var task = new CopyTask { ToCopy = GetCurrentImageInfo() };
+            var task = new CopyTask { ToCopy = GetCurrentImageInfo(true) };
             activeTask = task;
             ThreadPool.QueueUserWorkItem(DoCopyToClipboard, task);
         }
@@ -1419,7 +1496,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             Debug.Assert(!IsBusy && activeTask == null);
             IsBusy = true;
-            ImageInfoBase currentImage = GetCurrentImageInfo();
+            ImageInfoBase currentImage = GetCurrentImageInfo(true);
             var task = new PasteTask
             {
                 AllowedTypes = currentImage is ImageInfo ? imageTypes : AllowedImageTypes.Bitmap,
@@ -1509,33 +1586,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Command Handlers
 
         private void OnSetAutoZoomCommand(bool newValue) => AutoZoom = newValue;
-
         private void OnSetSmoothZoomingCommand(bool newValue) => SmoothZooming = newValue;
-
         private void OnViewImagePreviewSizeChangedCommand() => UpdateIfMultiResImage();
-
         private void OnOpenFileCommand() => OpenFile();
-
-        private void OnSaveFileCommand()
-        {
-            if (imageInfo.Type == ImageInfoType.None)
-                return;
-
-            SetSaveFilter();
-            string? fileName;
-            do
-            {
-                fileName = SelectFileToSaveCallback?.Invoke();
-                if (fileName == null)
-                    return;
-            } while (!CheckSaveExtension(fileName));
-
-            int filterIndex = SaveFileFilterIndex;
-            string selectedFormat = SaveFileFilter!.Split('|')[((filterIndex - 1) << 1) + 1];
-
-            SaveFile(fileName, selectedFormat);
-        }
-
+        private void OnSaveFileCommand() => SaveFile();
         private void OnClearCommand() => Clear();
         private void OnCopyCommand() => CopyToClipboard();
         private void OnPasteCommand() => PasteFromClipboard();

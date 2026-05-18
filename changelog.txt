@@ -25,6 +25,7 @@
 * Improved appearance with dark theme.
 * Main Form/Image Visualizer dialog:
   + Copy/paste support
+  * Load/Open operations are now asynchronous so the UI remains responsive during load and save
   - Dragging a zoomed animated bitmap by the mouse was not quite possible while the animation was playing, because
     the dragging operation was canceled on updating the frame.
 - Debugger Visualizer Installations dialog:

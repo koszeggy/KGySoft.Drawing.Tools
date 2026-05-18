@@ -64,38 +64,23 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         protected override bool OnFileOpening() => ConfirmIfModified();
         protected override void OnFileOpened(string path) => FileName = Path.GetFileName(path);
 
-        protected override bool SaveFile(string fileName, string selectedFormat)
+        protected override void OnFileSaved(string fileName, string selectedFormat)
         {
-            bool success = base.SaveFile(fileName, selectedFormat);
-
-            // was not saved or just a single frame was saved
-            if (!success || ImageInfo.HasFrames && !IsCompoundView)
-                return false;
+            // just a single frame was saved
+            if (ImageInfo.HasFrames && !IsCompoundView)
+                return;
 
             // not clearing the state if the compound image was not saved by its primary format
-            if (ImageInfo.HasFrames)
+            if (ImageInfo.HasFrames
+                && (ImageInfo.Type == ImageInfoType.Pages && selectedFormat != "*.tiff"
+                    || ImageInfo.Type is ImageInfoType.MultiRes or ImageInfoType.Icon && selectedFormat != "*.ico"
+                    || ImageInfo.Type == ImageInfoType.Animation && selectedFormat != "*.gif"))
             {
-                switch (ImageInfo.Type)
-                {
-                    case ImageInfoType.Pages:
-                        if (selectedFormat != "*.tiff")
-                            return false;
-                        break;
-                    case ImageInfoType.MultiRes:
-                    case ImageInfoType.Icon:
-                        if (selectedFormat != "*.ico")
-                            return false;
-                        break;
-                    case ImageInfoType.Animation:
-                        if (selectedFormat != "*.gif")
-                            return false;
-                        break;
-                }
+                return;
             }
 
             FileName = fileName;
             SetModified(false);
-            return true;
         }
 
         protected override void Clear()
