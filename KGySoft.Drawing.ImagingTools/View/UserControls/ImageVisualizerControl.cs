@@ -127,7 +127,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Static Methods
 
-        private static Image GetCompoundViewIcon(ImageInfoType type)
+        private static Bitmap GetCompoundViewIcon(ImageInfoType type)
         {
             switch (type)
             {

@@ -401,7 +401,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
             RawFormat = ImageFormat.Icon.Guid;
         }
 
-        private Image GenerateImage()
+        private Bitmap GenerateImage()
         {
             if (!IsValid)
             {

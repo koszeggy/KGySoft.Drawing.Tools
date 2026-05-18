@@ -638,7 +638,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void ValidateImageInfo(ImageInfo value)
         {
             if (value == null)
-                throw new ArgumentNullException(PublicResources.ArgumentNull, nameof(value));
+                throw new ArgumentNullException(nameof(value), PublicResources.ArgumentNull);
 
             // validating the image info itself
             if (!value.IsValid)
@@ -775,6 +775,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 OpenFile(fileName);
         }
 
+        [SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly",
+            Justification = "False alarm, argument name 'fileName' is the actual parameter name of the caller method.")]
         private void DoOpenFile(object? state)
         {
             var task = (OpenTask)state!;
