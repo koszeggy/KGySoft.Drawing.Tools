@@ -375,6 +375,15 @@ Brightness: {5:F0}%</value>
   <data name="ErrorMessage_FileNotExpected" xml:space="preserve">
     <value>The specified path is a file but should be a directory.</value>
   </data>
+  <data name="ErrorMessage_ImageInfoEmpty" xml:space="preserve">
+    <value>Either the Image or the Icon property must be set.</value>
+  </data>
+  <data name="ErrorMessage_ImageInfoEmptyFrameImage" xml:space="preserve">
+    <value>The Image property of every frame must be set.</value>
+  </data>
+  <data name="ErrorMessage_ImageInfoEmptyFrameIcon" xml:space="preserve">
+    <value>Either the Image or the Icon property of every frame must be set.</value>
+  </data>
   <data name="ErrorMessage_FailedToSaveImageFormat" xml:space="preserve">
     <value>Could not save image due to an error: {0}</value>
   </data>

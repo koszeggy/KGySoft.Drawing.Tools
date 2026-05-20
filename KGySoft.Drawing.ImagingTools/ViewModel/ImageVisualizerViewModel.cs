@@ -556,6 +556,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 return;
 
             // apply changes
+            Debug.Assert(imageInfo.Type != ImageInfoType.Icon);
             ColorPalette palette = currentImage.Image!.Palette;
             Color[] newPalette = vmPalette.GetEditedModel();
 
@@ -910,7 +911,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 IsAutoPlaying = false;
                 NextImageCommandState.Enabled = true;
                 PrevImageCommandState.Enabled = false;
-                PreviewImage = imageInfo.Frames![0].Image;
+                PreviewImage = imageInfo.Frames![0].GetCreateImage();
                 ImageChanged();
                 return;
             }
@@ -920,7 +921,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             bool autoPlaying = imageInfo.Type == ImageInfoType.Animation;
             ICommandState timerState = AdvanceAnimationCommandState;
             IsAutoPlaying = autoPlaying;
-            PreviewImage = imageInfo.Frames![0].Image;
+            PreviewImage = imageInfo.Frames![0].GetCreateImage();
             if (autoPlaying)
             {
                 currentFrame = 0;
@@ -958,7 +959,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 => i.Size == acc.Size && i.BitsPerPixel > acc.BitsPerPixel
                 || Math.Abs(i.Size.Width * zoom - desiredSize) < Math.Abs(acc.Size.Width * zoom - desiredSize) ? i : acc);
             currentResolution = desiredImage.Size;
-            if (PreviewImage != desiredImage.Image)
+            if (PreviewImage != desiredImage.GetCreateImage())
                 PreviewImage = desiredImage.Image;
         }
 
@@ -1008,17 +1009,17 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     return null;
 
                 if (task.ToSave is not ImageInfo info)
-                    return task.ToSave.Image;
+                    return task.ToSave.GetCreateImage();
 
                 // For TIFF, this always gets the current frame.
                 if (info.Type == ImageInfoType.Pages && task.CurrentFrame >= 0)
                     return info.Frames![task.CurrentFrame].Image;
 
-                // For icons/GIF this gets the compound image if exists, or the first frame.
+                // For icons/GIF this gets the compound image if exists, or the current frame.
                 // Not generating the compound image here, as this method is expected to be used for single-frame formats only.
                 return info.HasFrames
-                    ? info.Image ?? info.Frames![0].Image ?? throw new InvalidOperationException(Res.InternalError("A frame was null. Only the serializer should initialize such ImageInfo."))
-                    : task.ToSave.Image;
+                    ? info.Image ?? info.Frames![Math.Max(0, task.CurrentFrame)].GetCreateImage() ?? throw new InvalidOperationException(Res.InternalError("A frame, or its Image and Icon properties were null. Only the serializer should initialize such ImageInfo."))
+                    : task.ToSave.GetCreateImage(); // here it has no frames, so creating is possible from a single icon only
             }
 
             static void SaveGif(SaveTask task)
@@ -1026,7 +1027,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 if (task.IsCanceled)
                     return;
 
-                if (task.ToSave.Image is Image image)
+                Image? image = task.ToSave.Image ?? (task.ToSave is ImageFrameInfo ? task.ToSave.GetCreateImage() : null);
+                if (image != null)
                 {
                     image.SaveAsGif(task.FileName);
                     return;
@@ -1038,7 +1040,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
                 // TODO: cancellable iteration
                 ImageFrameInfo[] frames = imageInfo.Frames!;
-                frames.Select(f => f.Image!).SaveAsAnimatedGif(task.FileName, imageInfo.Type == ImageInfoType.Animation
+                frames.Select(f => f.GetCreateImage()).SaveAsAnimatedGif(task.FileName, imageInfo.Type == ImageInfoType.Animation
                     ? frames.Select(f => TimeSpan.FromMilliseconds(f.Duration))
                     : new[] { TimeSpan.FromSeconds(1) });
             }
@@ -1047,7 +1049,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             {
                 if (task.ToSave is ImageInfo imageInfo && imageInfo.HasFrames)
                     // TODO: cancellable iteration
-                    imageInfo.Frames!.Select(f => f.Image!).SaveAsMultipageTiff(task.FileName);
+                    imageInfo.Frames!.Select(f => f.GetCreateImage()).SaveAsMultipageTiff(task.FileName);
                 else
                     GetImage(task)?.SaveAsTiff(task.FileName);
             }
@@ -1055,11 +1057,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             static void SaveIcon(SaveTask task)
             {
                 using Stream stream = File.Create(task.FileName);
-
-                // TODO: new ImageInfoBase.Icon property, save that in the first place
-
                 if (task.ToSave is not ImageInfo imageInfo)
-                    task.ToSave.Image!.SaveAsIcon(stream);
+                    task.ToSave.GetCreateIcon()!.SaveAsIcon(stream);
                 else
                 {
                     // Preferring the Icon property, if exists. SaveAsIcon ensures the good quality even if the icon has no raw stream internally.
@@ -1068,8 +1067,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     else if (imageInfo.HasFrames)
                     {
                         // TODO: cancellable iterator (or combining one by one), restoring original pixel format if raw format is icon (result.Combine(frame.Icon) or use result.Combine(frame.Image, Color.Transparent))
-                        using Icon i = Icons.Combine(imageInfo.Frames!.Select(f => (Bitmap)f.Image!));
-                        i.Save(stream);
+                        task.ToSave.GetCreateIcon()!.Save(stream); // simple Save is OK here, the result always will have a raw stream
                     }
                 }
 
@@ -1368,7 +1366,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             imageInfo.FileName = null;
             if (imageInfo.HasFrames)
             {
+                imageInfo.Image?.Dispose();
                 imageInfo.Image = null;
+                imageInfo.Icon?.Dispose();
                 imageInfo.Icon = null;
             }
 
@@ -1404,10 +1404,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 ImageFrameInfo[] frames = imageInfo.Frames!;
                 ImageFrameInfo origFrame = frames[currentFrame];
                 frames[currentFrame] = new ImageFrameInfo(image) { Duration = origFrame.Duration };
-                imageInfo.Icon?.Dispose();
-                imageInfo.Icon = null;
                 if (!ReferenceEquals(origFrame.Image, image))
                     origFrame.Dispose();
+                else
+                    origFrame.Icon?.Dispose();
                 PreviewImage = frames[currentFrame].Image;
             }
 
@@ -1421,21 +1421,19 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             ImageInfoBase image = GetCurrentImageInfo();
 
-            Debug.Assert(image.Image is Bitmap, "Existing bitmap image is expected");
-            using (IViewModel<Bitmap?> viewModel = createViewModel.Invoke((Bitmap)image.Image!))
-            {
-                ShowChildViewCallback?.Invoke(viewModel);
-                if (viewModel.IsModified)
-                    SetCurrentImage(viewModel.GetEditedModel());
-            }
+            Debug.Assert(image.Image is Bitmap || image.Icon != null, "Existing bitmap image or icon is expected");
+            using IViewModel<Bitmap?> viewModel = createViewModel.Invoke((Bitmap)image.GetCreateImage()!);
+            ShowChildViewCallback?.Invoke(viewModel);
+            if (viewModel.IsModified)
+                SetCurrentImage(viewModel.GetEditedModel());
         }
 
         private void RotateBitmap(RotateFlipType direction)
         {
             Debug.Assert(imageInfo.Type != ImageInfoType.None && !imageInfo.IsMetafile, "Non-metafile image is expected");
             ImageInfoBase image = GetCurrentImageInfo();
-            Debug.Assert(image.Image is Bitmap, "Existing bitmap image is expected");
-            var bmp = (Bitmap)image.Image!;
+            Debug.Assert(image.Image is Bitmap || image.Icon != null, "Existing bitmap image or icon is expected");
+            var bmp = (Bitmap)image.GetCreateImage()!;
             Bitmap? clone = null;
 
             // must be in a lock because it can be in use in the UI (where it is also locked)
@@ -1542,10 +1540,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                         ImageInfo = result;
                     else
                     {
-                        Debug.Assert(result.Image is Bitmap, "Pasting a frame is always expected as a bitmap");
-                        SetCurrentImage(result.Image as Bitmap);
+                        Debug.Assert(result.GetCreateImage() is Bitmap, "Pasting a frame is always expected as a bitmap");
+                        SetCurrentImage(result.GetCreateImage() as Bitmap);
 
-                        result.Image = null;
+                        result.Image = null; // so the image is not disposed at the next line
                         result.Dispose();
                     }
 
@@ -1619,7 +1617,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (!imageInfo.HasFrames || currentFrame <= 0)
                 return;
 
-            PreviewImage = imageInfo.Frames![--currentFrame].Image;
+            PreviewImage = imageInfo.Frames![--currentFrame].GetCreateImage();
             PrevImageCommandState.Enabled = currentFrame > 0;
             NextImageCommandState.Enabled = true;
             ImageChanged();
@@ -1631,7 +1629,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (!imageInfo.HasFrames || currentFrame >= frames.Length)
                 return;
 
-            PreviewImage = frames[++currentFrame].Image;
+            PreviewImage = frames[++currentFrame].GetCreateImage();
             PrevImageCommandState.Enabled = true;
             NextImageCommandState.Enabled = currentFrame < frames.Length - 1;
             ImageChanged();
@@ -1651,8 +1649,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             ImageInfoBase image = GetCurrentImageInfo();
 
-            Debug.Assert(image.Image is Bitmap, "Existing bitmap image is expected");
-            using IViewModel<int?> viewModel = ViewModelFactory.CreateCountColors((Bitmap)image.Image!);
+            Debug.Assert(image.Image is Bitmap || image.Icon != null, "Existing bitmap image or icon is expected");
+            using IViewModel<int?> viewModel = ViewModelFactory.CreateCountColors((Bitmap)image.GetCreateImage()!);
             ShowChildViewCallback?.Invoke(viewModel);
 
             // this prevents the viewModel from disposing until before the view is completely finished (on cancel, for example)

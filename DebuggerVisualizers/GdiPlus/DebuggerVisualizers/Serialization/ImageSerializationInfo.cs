@@ -110,7 +110,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization
                 return;
 
             // 2. How multi-frame image is saved
-            bool saveAsSingleImage = ImageInfo.Type.In(ImageInfoType.SingleImage, ImageInfoType.Icon) || ForceSaveCompoundImage();
+            bool saveAsSingleImage = ImageInfo.Type is ImageInfoType.SingleImage or ImageInfoType.Icon || ForceSaveCompoundImage();
             if (ImageInfo.Type != ImageInfoType.SingleImage)
                 bw.Write(saveAsSingleImage);
 
@@ -193,16 +193,19 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization
             if (imageType == ImageInfoType.SingleImage || imageType == ImageInfoType.Icon && ImageInfo.Icon!.GetImagesCount() <= 1)
                 return;
 
-            // 4. Frames (if any)
+            // 4. Frames
             int len = br.ReadInt32();
             var frames = new ImageFrameInfo[len];
-            Bitmap?[] frameImages = savedAsSingleImage
-                ? imageType == ImageInfoType.Icon ? ImageInfo.Icon!.ExtractBitmaps() : ((Bitmap)ImageInfo.Image!).ExtractBitmaps()
-                : new Bitmap[len];
-            Debug.Assert(frameImages.Length == frames.Length);
+            Bitmap?[] frameImages = savedAsSingleImage && imageType != ImageInfoType.Icon
+                ? ((Bitmap)ImageInfo.Image!).ExtractBitmaps()
+                : new Bitmap?[len];
+            Icon?[] iconImages = imageType == ImageInfoType.Icon
+                ? ImageInfo.Icon!.ExtractIcons()
+                : new Icon?[len];
+
             for (int i = 0; i < len; i++)
             {
-                var frame = new ImageFrameInfo(frameImages[i]);
+                var frame = new ImageFrameInfo(frameImages[i]) { Icon = iconImages[i] };
                 frames[i] = frame;
                 if (!savedAsSingleImage)
                     frame.Image = SerializationHelper.ReadImage(br);

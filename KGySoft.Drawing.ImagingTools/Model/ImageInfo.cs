@@ -53,11 +53,6 @@ namespace KGySoft.Drawing.ImagingTools.Model
         public ImageInfoType Type { get; private set; }
 
         /// <summary>
-        /// Gets or sets an <see cref="System.Drawing.Icon"/> instance associated with this <see cref="ImageInfo"/> instance.
-        /// </summary>
-        public Icon? Icon { get => Get<Icon?>(); set => Set(value); }
-
-        /// <summary>
         /// Gets or sets a file name associated with this <see cref="ImageInfo"/> instance.
         /// </summary>
         public string? FileName { get => Get<string?>(); set => Set(value); }
@@ -132,7 +127,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
         /// </summary>
         /// <param name="icon">The icon to be used for the initialization.</param>
         /// <param name="cloneImages"><see langword="true"/>to clone each frame when initializing <see cref="Frames"/>; otherwise, <see langword="false"/>.
-        /// When <see langword="false"/>, then <see cref="ImageInfoBase.Image"/> will not be set in <see cref="Frames"/> so you must extract the corresponding frames from
+        /// When <see langword="false"/>, then <see cref="ImageInfoBase.Icon"/> will not be set in <see cref="Frames"/> so you must extract the corresponding frames from
         /// the specified <paramref name="icon"/> manually to access the actual frame content.</param>
         public ImageInfo(Icon? icon, bool cloneImages)
         {
@@ -153,32 +148,30 @@ namespace KGySoft.Drawing.ImagingTools.Model
         /// <returns>An <see cref="Image"/> that represents the possible compound image of this <see cref="ImageInfo"/> instance.
         /// When a new image is created, then the return value will be the new value of the <see cref="ImageInfoBase.Image"/> property as well.</returns>
         /// <exception cref="InvalidOperationException">The object is in an invalid state (the <see cref="ValidatingObjectBase.IsValid"/> property returns <see langword="false"/>).</exception>
-        public Image? GetCreateImage()
+        public override Image? GetCreateImage()
         {
             Image? image = Image;
             if (image != null)
                 return image;
             if (Type == ImageInfoType.None || !(Type == ImageInfoType.Icon || HasFrames))
                 return null;
-            image = GenerateImage();
-            return Image = image;
+            return Image = GenerateImage();
         }
 
         /// <summary>
-        /// Gets or creates the icon if this instance represents an icon and the <see cref="Icon"/> property is <see langword="null"/>.
+        /// Gets or creates the icon if this instance represents an icon and the <see cref="ImageInfoBase.Icon"/> property is <see langword="null"/>.
         /// </summary>
         /// <returns>An <see cref="Icon"/> that represents the possible icon of this <see cref="ImageInfo"/> instance.
-        /// When a new icon is created, then the return value will be the new value of the <see cref="Icon"/> property as well.</returns>
+        /// When a new icon is created, then the return value will be the new value of the <see cref="ImageInfoBase.Icon"/> property as well.</returns>
         /// <exception cref="InvalidOperationException">The object is in an invalid state (the <see cref="ValidatingObjectBase.IsValid"/> property returns <see langword="false"/>).</exception>
-        public Icon? GetCreateIcon()
+        public override Icon? GetCreateIcon()
         {
             Icon? icon = Icon;
             if (icon != null)
                 return icon;
             if (Type == ImageInfoType.None)
                 return null;
-            icon = GenerateIcon();
-            return Icon = icon;
+            return Icon = GenerateIcon();
         }
 
         #endregion
@@ -211,22 +204,24 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
             var result = new ValidationResultsCollection();
             ImageFrameInfo[]? frames = Frames;
-            if (Type is ImageInfoType.Pages or ImageInfoType.Animation or ImageInfoType.MultiRes)
-            {
-                if (frames.IsNullOrEmpty())
-                    result.AddError(nameof(Frames), PublicResources.CollectionEmpty);
-                else if (frames!.Any(f => f.Image == null))
-                    result.AddError(nameof(Frames), PublicResources.ArgumentContainsNull);
-            }
+            bool hasFrames = !frames.IsNullOrEmpty();
 
-            bool hasFrames = HasFrames;
-            if (Type == ImageInfoType.Icon)
+            if (hasFrames)
             {
-                if (Icon == null && Image == null && !hasFrames)
-                    result.AddError(nameof(Icon), PublicResources.PropertyNull(nameof(Icon)));
+                if (frames!.Contains(null))
+                    result.AddError(nameof(Frames), PublicResources.ArgumentContainsNull);
+                else if (Type is ImageInfoType.Pages or ImageInfoType.Animation && frames!.Any(f => f.Image == null))
+                    result.AddError(nameof(Frames), Res.ErrorMessageImageInfoEmptyFrameImage);
+                else if (Type is ImageInfoType.Icon && frames!.Any(f => f.Image == null && f.Icon == null))
+                    result.AddError(nameof(Frames), Res.ErrorMessageImageInfoEmptyFrameIcon);
             }
-            else if (Image == null && !hasFrames)
-                result.AddError(nameof(Image), PublicResources.PropertyNull(nameof(Image)));
+            else
+            {
+                if (Type is ImageInfoType.Pages or ImageInfoType.Animation or ImageInfoType.MultiRes)
+                    result.AddError(nameof(Frames), PublicResources.CollectionEmpty);
+                if (Image == null && Icon == null)
+                    result.AddError(nameof(Icon), Res.ErrorMessageImageInfoEmpty);
+            }
 
             return result;
         }
@@ -236,12 +231,8 @@ namespace KGySoft.Drawing.ImagingTools.Model
         {
             if (IsDisposed)
                 return;
-
             if (disposing)
-            {
-                Icon?.Dispose();
                 FreeFrames();
-            }
 
             base.Dispose(disposing);
         }
@@ -349,11 +340,14 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
             static void InitIconMeta(IconInfo iconInfo, ImageInfoBase imageInfo)
             {
-                imageInfo.PixelFormat = iconInfo.BitsPerPixel == 1 ? PixelFormat.Format1bppIndexed
-                    : iconInfo.BitsPerPixel == 4 ? PixelFormat.Format4bppIndexed
-                    : iconInfo.BitsPerPixel == 8 ? PixelFormat.Format8bppIndexed
-                    : iconInfo.BitsPerPixel == 24 ? PixelFormat.Format24bppRgb
-                    : PixelFormat.Format32bppArgb;
+                imageInfo.PixelFormat = iconInfo.BitsPerPixel switch
+                {
+                    1 => PixelFormat.Format1bppIndexed,
+                    4 => PixelFormat.Format4bppIndexed,
+                    8 => PixelFormat.Format8bppIndexed,
+                    24 => PixelFormat.Format24bppRgb,
+                    _ => PixelFormat.Format32bppArgb
+                };
                 imageInfo.Palette = iconInfo.Palette;
                 imageInfo.Size = iconInfo.Size;
                 imageInfo.RawFormat = iconInfo.IsCompressed ? ImageFormat.Png.Guid : ImageFormat.Bmp.Guid;
@@ -380,12 +374,12 @@ namespace KGySoft.Drawing.ImagingTools.Model
                 return;
             }
 
-            Bitmap?[]? iconImages = cloneImages ? icon.ExtractBitmaps() : null;
+            Icon?[]? iconImages = cloneImages ? icon.ExtractIcons() : null;
             Debug.Assert(!cloneImages || iconInfo.Length == iconImages!.Length);
             var frames = new ImageFrameInfo[iconInfo.Length];
             for (int i = 0; i < frames.Length; i++)
             {
-                frames[i] = new ImageFrameInfo(iconImages?[i]);
+                frames[i] = new ImageFrameInfo((Image?)null) { Icon = iconImages?[i] };
                 InitIconMeta(iconInfo[i], frames[i]);
 
                 // In Windows XP all icon images are uncompressed so displaying just Icon
@@ -396,8 +390,8 @@ namespace KGySoft.Drawing.ImagingTools.Model
             Frames = frames;
 
             // determining data for the compound icon
-            Size = Frames.Aggregate(Size.Empty, (size, image) => size.Width >= image.Size.Width ? size : image.Size);
-            PixelFormat = Frames.Aggregate(PixelFormat.Undefined, (pf, image) => pf.ToBitsPerPixel() >= image.PixelFormat.ToBitsPerPixel() ? pf : image.PixelFormat);
+            Size = frames.Aggregate(Size.Empty, (size, frame) => size.Width >= frame.Size.Width ? size : frame.Size);
+            PixelFormat = Frames.Aggregate(PixelFormat.Undefined, (pf, frame) => pf.ToBitsPerPixel() >= frame.PixelFormat.ToBitsPerPixel() ? pf : frame.PixelFormat);
             RawFormat = ImageFormat.Icon.Guid;
         }
 
@@ -450,7 +444,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
                 throw new InvalidOperationException(PublicResources.PropertyMessage(error.PropertyName, error.Message));
             }
 
-            return !HasFrames ? Image!.ToIcon() : Icons.Combine(Frames!.Select(f => (Bitmap)f.Image!));
+            return !HasFrames ? Image!.ToIcon() : Icons.Combine(Frames!.Select(f => f.GetCreateIcon()!));
         }
 
         private void FreeFrames()

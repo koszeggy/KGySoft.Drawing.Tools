@@ -30,6 +30,8 @@
     the dragging operation was canceled on updating the frame.
 - Debugger Visualizer Installations dialog:
   - Handling the changed versioning of the Visual Studio folders starting with Visual Studio 2026
+- When saving a combined icon after changing one of its images, the unchanged images will not turn to 32 bpp ones
+  in the saved icon.
 
 ! API changes:
 
@@ -37,8 +39,20 @@
 -----------------------------------------
 ! ThemeColor enum: New members, some old names have now different values.
 
-+ KGySoft.Drawing.ImagingTools.Model namespace:
+! KGySoft.Drawing.ImagingTools.Model namespace:
 -----------------------------------------------
+! ImageInfo class:
+  ! ImageInfo(Icon) and ImageInfo(Icon, bool) constructors: When initialized from a combined icon, the items of the
+    Frames property are initialized with null Image. Instead, the new Icon property is set for the frames.
+  * The Icon property has been moved to the base ImageInfoBase class.
+  * GetCreateImage/GetCreateIcon methods: These are now virtual methods, overriding the newly added methods of the
+    base ImageInfoBase class.
+  * Relaxed validation for icons: either the Image or the Icon property must be set
+* ImageInfoBase class:
+  + New Icon property
+  + New GetCreateImage/GetCreateIcon methods
+  * Relaxed validation for icons: either the Image or the Icon property must be set
++ ImageFrameInfo class: new GetCreateImage/GetCreateIcon methods
 + LocalizableLibraries enum: New members for the newly added dependent libraries.
 
 + KGySoft.Drawing.DebuggerVisualizers.dll

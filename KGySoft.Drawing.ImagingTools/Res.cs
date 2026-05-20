@@ -290,6 +290,21 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>The specified path is a file but should be a directory.</summary>
         internal static string ErrorMessageFileNotExpected => Get("ErrorMessage_FileNotExpected");
 
+        /// <summary>
+        /// Either the Image or the Icon property must be set.
+        /// </summary>
+        internal static string ErrorMessageImageInfoEmpty => Get("ErrorMessage_ImageInfoEmpty");
+
+        /// <summary>
+        /// The Image property of every frame must be set.
+        /// </summary>
+        internal static string ErrorMessageImageInfoEmptyFrameImage => Get("ErrorMessage_ImageInfoEmptyFrameImage");
+
+        /// <summary>
+        /// Either the Image or the Icon property of every frame must be set.
+        /// </summary>
+        internal static string ErrorMessageImageInfoEmptyFrameIcon => Get("ErrorMessage_ImageInfoEmptyFrameIcon");
+
         /// <summary>The selected quantizer supports partial transparency, which is not supported by ditherers,
         /// so partial transparent pixels will be blended with back color.</summary>
         internal static string WarningMessageDithererNoAlphaGradient => Get("WarningMessage_DithererNoAlphaGradient");

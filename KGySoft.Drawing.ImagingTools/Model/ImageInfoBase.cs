@@ -40,9 +40,15 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         /// <summary>
         /// Gets or sets the image to be displayed or saved
-        /// when debugging the corresponding <see cref="System.Drawing.Image"/> or <see cref="Icon"/> instance.
+        /// when debugging the corresponding <see cref="System.Drawing.Image"/> or <see cref="System.Drawing.Icon"/> instance.
         /// </summary>
         public Image? Image { get => Get<Image?>(); set => Set(value); }
+
+        /// <summary>
+        /// Gets or sets an <see cref="System.Drawing.Icon"/> instance associated with this <see cref="ImageInfoBase"/> instance.
+        /// If this instance is an <see cref="ImageInfo"/>, this property may contain a multi resolution <see cref="System.Drawing.Icon"/>.
+        /// </summary>
+        public Icon? Icon { get => Get<Icon?>(); set => Set(value); }
 
         /// <summary>
         /// Gets or sets the horizontal resolution to be displayed
@@ -91,8 +97,6 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #endregion
 
-        #region Construction and Destruction
-
         #region Constructors
 
         private protected ImageInfoBase()
@@ -116,17 +120,25 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #endregion
 
-        #region Destructor
-
-
-        /// <inheritdoc/>
-        ~ImageInfoBase() => Dispose(false);
-
-        #endregion
-
-        #endregion
-
         #region Methods
+
+        #region Public Methods
+
+        /// <summary>
+        /// Gets or creates the image of this <see cref="ImageInfoBase"/>.
+        /// </summary>
+        /// <returns>An <see cref="System.Drawing.Image"/> that represents the image of this <see cref="ImageInfo"/> instance.</returns>
+        /// <exception cref="InvalidOperationException">The object is in an invalid state (the <see cref="ValidatingObjectBase.IsValid"/> property returns <see langword="false"/>).</exception>
+        public abstract Image? GetCreateImage();
+
+        /// <summary>
+        /// Gets or creates the icon of this <see cref="ImageInfoBase"/>.
+        /// </summary>
+        /// <returns>An <see cref="System.Drawing.Icon"/> that represents the icon of this <see cref="ImageInfo"/> instance.</returns>
+        /// <exception cref="InvalidOperationException">The object is in an invalid state (the <see cref="ValidatingObjectBase.IsValid"/> property returns <see langword="false"/>).</exception>
+        public abstract Icon? GetCreateIcon();
+
+        #endregion
 
         #region Protected Methods
 
@@ -138,8 +150,13 @@ namespace KGySoft.Drawing.ImagingTools.Model
         {
             if (IsDisposed)
                 return;
+
             if (disposing)
+            {
                 Image?.Dispose();
+                Icon?.Dispose();
+            }
+
             base.Dispose(disposing);
         }
 
