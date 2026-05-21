@@ -39,12 +39,6 @@ namespace KGySoft.Drawing.ImagingTools.Model
         #region Public Properties
 
         /// <summary>
-        /// Gets or sets the image to be displayed or saved
-        /// when debugging the corresponding <see cref="System.Drawing.Image"/> or <see cref="System.Drawing.Icon"/> instance.
-        /// </summary>
-        public Image? Image { get => Get<Image?>(); set => Set(value); }
-
-        /// <summary>
         /// Gets or sets an <see cref="System.Drawing.Icon"/> instance associated with this <see cref="ImageInfoBase"/> instance.
         /// If this instance is an <see cref="ImageInfo"/>, this property may contain a multi resolution <see cref="System.Drawing.Icon"/>.
         /// </summary>
@@ -97,29 +91,6 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #endregion
 
-        #region Constructors
-
-        private protected ImageInfoBase()
-        {
-        }
-
-        private protected ImageInfoBase(ImageInfoBase other)
-        {
-            if (other == null)
-                throw new ArgumentNullException(nameof(other), PublicResources.ArgumentNull);
-
-            if (other.Image is Image image)
-                Image = (Image)image.Clone();
-            if (other.Palette.Length > 0)
-                Palette = (Color[])Palette.Clone();
-            HorizontalRes = other.HorizontalRes;
-            VerticalRes = other.VerticalRes;
-            PixelFormat = other.PixelFormat;
-            RawFormat = other.RawFormat;
-        }
-
-        #endregion
-
         #region Methods
 
         #region Public Methods
@@ -127,7 +98,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
         /// <summary>
         /// Gets or creates the image of this <see cref="ImageInfoBase"/>.
         /// </summary>
-        /// <returns>An <see cref="System.Drawing.Image"/> that represents the image of this <see cref="ImageInfo"/> instance.</returns>
+        /// <returns>An <see cref="System.Drawing.Image"/> that represents the image of this <see cref="ImageInfoBase"/> instance.</returns>
         /// <exception cref="InvalidOperationException">The object is in an invalid state (the <see cref="ValidatingObjectBase.IsValid"/> property returns <see langword="false"/>).</exception>
         public abstract Image? GetCreateImage();
 
@@ -137,6 +108,13 @@ namespace KGySoft.Drawing.ImagingTools.Model
         /// <returns>An <see cref="System.Drawing.Icon"/> that represents the icon of this <see cref="ImageInfo"/> instance.</returns>
         /// <exception cref="InvalidOperationException">The object is in an invalid state (the <see cref="ValidatingObjectBase.IsValid"/> property returns <see langword="false"/>).</exception>
         public abstract Icon? GetCreateIcon();
+
+        #endregion
+
+        #region Internal Methods
+
+        internal Bitmap? GetCreateBitmap() => GetCreateImage() as Bitmap;
+        internal abstract Image? GetImage();
 
         #endregion
 
@@ -152,10 +130,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
                 return;
 
             if (disposing)
-            {
-                Image?.Dispose();
                 Icon?.Dispose();
-            }
 
             base.Dispose(disposing);
         }

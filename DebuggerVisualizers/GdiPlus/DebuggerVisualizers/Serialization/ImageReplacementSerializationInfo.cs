@@ -91,7 +91,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization
                     // the stream content before the original start position
                     using (var inner = new MemoryStream())
                     {
-                        imageInfo.Frames!.Select(f => f.Image!).SaveAsMultipageTiff(inner);
+                        imageInfo.Frames!.Select(f => (Image)f.Image!).SaveAsMultipageTiff(inner);
                         bw.Write((int)inner.Length);
                         bw.Flush();
                         inner.WriteTo(bw.BaseStream);

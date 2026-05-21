@@ -41,18 +41,25 @@
 
 ! KGySoft.Drawing.ImagingTools.Model namespace:
 -----------------------------------------------
+! ImageInfoBase class:
+  ! Removing Image property, and moving it to derived classes with different types. You can use the
+    new GetCreateImage method instead.
+  + New Icon property
+  + New GetCreateImage/GetCreateIcon methods
+  * Relaxed validation for icons: either the Image or the Icon property must be set
 ! ImageInfo class:
   ! ImageInfo(Icon) and ImageInfo(Icon, bool) constructors: When initialized from a combined icon, the items of the
     Frames property are initialized with null Image. Instead, the new Icon property is set for the frames.
+  * New Image property (moved from base)
   * The Icon property has been moved to the base ImageInfoBase class.
   * GetCreateImage/GetCreateIcon methods: These are now virtual methods, overriding the newly added methods of the
     base ImageInfoBase class.
   * Relaxed validation for icons: either the Image or the Icon property must be set
-* ImageInfoBase class:
-  + New Icon property
+! ImageFrameInfo class:
+  ! New Image property with Bitmap return type. This is a breaking change, because the original Image property from
+    the base class has been removed.
+  ! The constructor's image parameter is now a Bitmap rather than an Image.
   + New GetCreateImage/GetCreateIcon methods
-  * Relaxed validation for icons: either the Image or the Icon property must be set
-+ ImageFrameInfo class: new GetCreateImage/GetCreateIcon methods
 + LocalizableLibraries enum: New members for the newly added dependent libraries.
 
 + KGySoft.Drawing.DebuggerVisualizers.dll

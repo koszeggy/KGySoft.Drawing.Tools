@@ -293,7 +293,7 @@ namespace KGySoft.Drawing.ImagingTools
                 }
             }
 
-            Image? image = info.Image ?? (info as ImageInfo)?.GetCreateImage(/*task TODO*/);
+            Image? image = info.GetCreateImage(/*task TODO*/);
             Debug.Assert(image != null, "Failed to obtain an image to copy");
             if (image == null)
                 return;
@@ -712,7 +712,7 @@ namespace KGySoft.Drawing.ImagingTools
                 if (info.Image is Image image && image.RawFormat.Guid == ImageFormat.Tiff.Guid)
                     image.SaveAsTiff(ms, false);
                 else
-                    info.Frames!.Select(f => f.Image!).SaveAsMultipageTiff(ms);
+                    info.Frames!.Select(f => f.GetCreateImage()).SaveAsMultipageTiff(ms);
                 formats.Add(DataFormats.Tiff, ms);
             }
             catch (Exception e) when (!e.IsCritical())

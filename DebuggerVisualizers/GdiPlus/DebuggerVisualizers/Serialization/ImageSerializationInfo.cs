@@ -21,7 +21,6 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 
-using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
 
 #endregion
@@ -208,7 +207,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization
                 var frame = new ImageFrameInfo(frameImages[i]) { Icon = iconImages[i] };
                 frames[i] = frame;
                 if (!savedAsSingleImage)
-                    frame.Image = SerializationHelper.ReadImage(br);
+                    frame.Image = (Bitmap)SerializationHelper.ReadImage(br);
                 ReadMeta(br, frame);
                 if (imageType == ImageInfoType.Animation)
                     frame.Duration = br.ReadInt32();

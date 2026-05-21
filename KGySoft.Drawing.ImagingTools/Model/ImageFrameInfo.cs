@@ -33,6 +33,11 @@ namespace KGySoft.Drawing.ImagingTools.Model
         #region Properties
 
         /// <summary>
+        /// Gets or sets the image of this frame.
+        /// </summary>
+        public Bitmap? Image { get => Get<Bitmap?>(); set => Set(value); }
+
+        /// <summary>
         /// If the corresponding image represents an animation, then gets or sets the duration belongs to this frame.
         /// </summary>
         public int Duration { get => Get<int>(); set => Set(value); }
@@ -41,28 +46,15 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #region Constructors
 
-        #region Public Constructors
-        
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageFrameInfo"/> class from an <see cref="Image"/>.
         /// </summary>
         /// <param name="image">The image that contains the image of the current frame.</param>
-        public ImageFrameInfo(Image? image)
+        public ImageFrameInfo(Bitmap? image)
         {
             Image = image;
             InitMeta(image);
         }
-
-        #endregion
-
-        #region Internal Constructors
-
-        internal ImageFrameInfo(ImageFrameInfo other) : base(other)
-        {
-            Duration = other.Duration;
-        }
-
-        #endregion
 
         #endregion
 
@@ -72,10 +64,10 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         /// <summary>
         /// Gets or creates the image from the <see cref="ImageInfoBase.Icon"/> property if this instance represents an icon image
-        /// and the <see cref="ImageInfoBase.Image"/> property is <see langword="null"/>.
+        /// and the <see cref="Image"/> property is <see langword="null"/>.
         /// </summary>
-        /// <returns>An <see cref="Image"/> that represents the image of this <see cref="ImageFrameInfo"/> instance.
-        /// When a new image is created, then the return value will be the new value of the <see cref="ImageInfoBase.Image"/> property as well.</returns>
+        /// <returns>An <see cref="System.Drawing.Image"/> that represents the image of this <see cref="ImageFrameInfo"/> instance.
+        /// When a new image is created, then the return value will be the new value of the <see cref="Image"/> property as well.</returns>
         /// <exception cref="InvalidOperationException">The object is in an invalid state (the <see cref="ValidatingObjectBase.IsValid"/> property returns <see langword="false"/>).</exception>
         public override Image GetCreateImage()
         {
@@ -115,12 +107,28 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #endregion
 
+        #region Internal Methods
+
+        internal override Image? GetImage() => Image;
+
+        #endregion
+
         #region Protected Methods
 
         /// <inheritdoc/>
         protected override ValidationResultsCollection DoValidation() => Image == null && Icon == null
             ? new ValidationResultsCollection { new(nameof(Image), Res.ErrorMessageImageInfoEmpty) }
             : ValidationResultsCollection.Empty;
+
+        /// <inheritdoc/>
+        protected override void Dispose(bool disposing)
+        {
+            if (IsDisposed)
+                return;
+            if (disposing)
+                Image?.Dispose();
+            base.Dispose(disposing);
+        }
 
         #endregion
 
