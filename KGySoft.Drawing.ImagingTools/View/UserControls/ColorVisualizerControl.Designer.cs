@@ -253,7 +253,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // btnSelectColor
             // 
             this.btnSelectColor.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnSelectColor.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnSelectColor.Name = "btnSelectColor";
             this.btnSelectColor.Size = new System.Drawing.Size(21, 22);
             // 

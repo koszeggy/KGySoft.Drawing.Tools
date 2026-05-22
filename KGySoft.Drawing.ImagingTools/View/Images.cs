@@ -45,6 +45,9 @@ namespace KGySoft.Drawing.ImagingTools.View
         private static Bitmap? clear;
         private static Bitmap? copy;
         private static Bitmap? paste;
+        private static Bitmap? pasteBitmap;
+        private static Bitmap? pasteVector;
+        private static Bitmap? pasteSpecial;
         private static Bitmap? prev;
         private static Bitmap? next;
         private static Bitmap? palette;
@@ -79,6 +82,9 @@ namespace KGySoft.Drawing.ImagingTools.View
         internal static Bitmap Clear => clear ??= GetResource(nameof(Clear));
         internal static Bitmap Copy => copy ??= GetResource(nameof(Copy));
         internal static Bitmap Paste => paste ??= GetResource(nameof(Paste));
+        internal static Bitmap PasteBitmap => pasteBitmap ??= GetResource(nameof(PasteBitmap));
+        internal static Bitmap PasteVector => pasteVector ??= GetResource(nameof(PasteVector));
+        internal static Bitmap PasteSpecial => pasteSpecial ??= GetResource(nameof(PasteSpecial));
         internal static Bitmap Prev => prev ??= GetResource(nameof(Prev));
         internal static Bitmap Next => next ??= GetResource(nameof(Next));
         internal static Bitmap Palette => palette ??= GetResource(nameof(Palette));

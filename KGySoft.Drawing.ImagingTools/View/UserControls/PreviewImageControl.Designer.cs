@@ -54,7 +54,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             this.btnZoom.CheckOnClick = true;
             this.btnZoom.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnZoom.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnZoom.Name = "btnZoom";
             this.btnZoom.Size = new System.Drawing.Size(30, 20);
             // 
@@ -62,14 +61,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             this.btnAntiAlias.CheckOnClick = true;
             this.btnAntiAlias.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnAntiAlias.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnAntiAlias.Name = "btnAntiAlias";
             this.btnAntiAlias.Size = new System.Drawing.Size(30, 4);
             // 
             // btnShowOriginal
             // 
             this.btnShowOriginal.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnShowOriginal.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnShowOriginal.Name = "btnShowOriginal";
             this.btnShowOriginal.Size = new System.Drawing.Size(30, 4);
             // 

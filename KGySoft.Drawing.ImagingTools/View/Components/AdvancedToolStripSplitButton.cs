@@ -108,6 +108,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
             DefaultItem = item;
             Image = item.Image;
             Text = item.Text;
+            ToolTipText = item.ToolTipText;
         }
 
         #endregion

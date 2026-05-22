@@ -181,6 +181,15 @@
   <data name="Paste" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Paste.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="PasteBitmap" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\PasteBitmap.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PasteVector" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\PasteVector.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PasteSpecial" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\PasteSpecial.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Prev" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Prev.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>

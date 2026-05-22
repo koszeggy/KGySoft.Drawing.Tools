@@ -720,8 +720,23 @@ Harmonizing visual elements for all possible environments is never a trivial tas
   <data name="btnCopy.Text" xml:space="preserve">
     <value>Copy (Ctrl+C)</value>
   </data>
-  <data name="btnPaste.Text" xml:space="preserve">
+  <data name="miPaste.Text" xml:space="preserve">
+    <value>Paste</value>
+  </data>
+  <data name="miPaste.ToolTipText" xml:space="preserve">
     <value>Paste (Ctrl+V)</value>
+  </data>
+  <data name="miPasteSpecial.Text" xml:space="preserve">
+    <value>Paste Special...</value>
+  </data>
+  <data name="miPasteSpecial.ToolTipText" xml:space="preserve">
+    <value>Paste Special (Ctrl+Shift+V)</value>
+  </data>
+  <data name="miPastePreferBitmap.Text" xml:space="preserve">
+    <value>Paste - Prefer Bitmap Formats</value>
+  </data>
+  <data name="miPastePreferVector.Text" xml:space="preserve">
+    <value>Paste - Prefer Vector Formats</value>
   </data>
   <data name="btnColorSettings.Text" xml:space="preserve">
     <value>Color Settings</value>

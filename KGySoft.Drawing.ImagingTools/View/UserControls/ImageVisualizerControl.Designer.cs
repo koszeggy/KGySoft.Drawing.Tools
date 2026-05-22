@@ -50,7 +50,11 @@
             this.btnClear = new KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripButton();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.btnCopy = new KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripButton();
-            this.btnPaste = new KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripButton();
+            this.btnPaste = new KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripSplitButton();
+            this.miPaste = new System.Windows.Forms.ToolStripMenuItem();
+            this.miPastePreferBitmap = new System.Windows.Forms.ToolStripMenuItem();
+            this.miPastePreferVector = new System.Windows.Forms.ToolStripMenuItem();
+            this.miPasteSpecial = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.btnColorSettings = new KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripDropDownButton();
             this.miBackColor = new System.Windows.Forms.ToolStripMenuItem();
@@ -130,14 +134,12 @@
             // 
             this.btnCompound.CheckOnClick = true;
             this.btnCompound.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnCompound.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnCompound.Name = "btnCompound";
             this.btnCompound.Size = new System.Drawing.Size(23, 22);
             // 
             // btnPrev
             // 
             this.btnPrev.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnPrev.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnPrev.Name = "btnPrev";
             this.btnPrev.RightToLeftAutoMirrorImage = true;
             this.btnPrev.Size = new System.Drawing.Size(23, 22);
@@ -145,7 +147,6 @@
             // btnNext
             // 
             this.btnNext.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnNext.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnNext.Name = "btnNext";
             this.btnNext.RightToLeftAutoMirrorImage = true;
             this.btnNext.Size = new System.Drawing.Size(23, 22);
@@ -167,9 +168,8 @@
             this.miSeparatorAbout,
             this.miAbout,
             this.miEasterEgg});
-            this.btnAbout.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnAbout.Name = "btnAbout";
-            this.btnAbout.Size = new System.Drawing.Size(16, 22);
+            this.btnAbout.Size = new System.Drawing.Size(16, 4);
             this.btnAbout.Text = "btnAbout";
             // 
             // miWebSite
@@ -221,9 +221,8 @@
             this.btnConfiguration.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.miManageInstallations,
             this.miLanguageSettings});
-            this.btnConfiguration.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnConfiguration.Name = "btnConfiguration";
-            this.btnConfiguration.Size = new System.Drawing.Size(16, 22);
+            this.btnConfiguration.Size = new System.Drawing.Size(16, 4);
             // 
             // miManageInstallations
             // 
@@ -327,7 +326,6 @@
             // 
             this.btnZoom.CheckOnClick = true;
             this.btnZoom.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnZoom.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnZoom.Name = "btnZoom";
             this.btnZoom.Size = new System.Drawing.Size(32, 22);
             // 
@@ -335,7 +333,6 @@
             // 
             this.btnAntiAlias.CheckOnClick = true;
             this.btnAntiAlias.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnAntiAlias.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnAntiAlias.Name = "btnAntiAlias";
             this.btnAntiAlias.Size = new System.Drawing.Size(23, 22);
             // 
@@ -347,21 +344,18 @@
             // btnOpen
             // 
             this.btnOpen.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnOpen.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnOpen.Name = "btnOpen";
             this.btnOpen.Size = new System.Drawing.Size(23, 22);
             // 
             // btnSave
             // 
             this.btnSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnSave.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(23, 22);
             // 
             // btnClear
             // 
             this.btnClear.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnClear.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(23, 22);
             // 
@@ -373,16 +367,49 @@
             // btnCopy
             // 
             this.btnCopy.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnCopy.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnCopy.Name = "btnCopy";
             this.btnCopy.Size = new System.Drawing.Size(23, 22);
             // 
             // btnPaste
             // 
+            this.btnPaste.AutoChangeDefaultItem = true;
+            this.btnPaste.DefaultItem = this.miPaste;
             this.btnPaste.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnPaste.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnPaste.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miPaste,
+            this.miPastePreferBitmap,
+            this.miPastePreferVector,
+            this.miPasteSpecial});
             this.btnPaste.Name = "btnPaste";
-            this.btnPaste.Size = new System.Drawing.Size(23, 22);
+            this.btnPaste.Size = new System.Drawing.Size(16, 22);
+            this.btnPaste.Text = "miPaste";
+            // 
+            // miPaste
+            // 
+            this.miPaste.Name = "miPaste";
+            this.miPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
+            this.miPaste.Size = new System.Drawing.Size(226, 22);
+            this.miPaste.Text = "miPaste";
+            // 
+            // miPastePreferBitmap
+            // 
+            this.miPastePreferBitmap.Name = "miPastePreferBitmap";
+            this.miPastePreferBitmap.Size = new System.Drawing.Size(226, 22);
+            this.miPastePreferBitmap.Text = "miPastePreferBitmap";
+            // 
+            // miPastePreferVector
+            // 
+            this.miPastePreferVector.Name = "miPastePreferVector";
+            this.miPastePreferVector.Size = new System.Drawing.Size(226, 22);
+            this.miPastePreferVector.Text = "miPastePreferVector";
+            // 
+            // miPasteSpecial
+            // 
+            this.miPasteSpecial.Name = "miPasteSpecial";
+            this.miPasteSpecial.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.V)));
+            this.miPasteSpecial.Size = new System.Drawing.Size(226, 22);
+            this.miPasteSpecial.Text = "miPasteSpecial";
             // 
             // toolStripSeparator2
             // 
@@ -396,7 +423,6 @@
             this.miBackColor,
             this.miShowPalette,
             this.miCountColors});
-            this.btnColorSettings.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnColorSettings.Name = "btnColorSettings";
             this.btnColorSettings.Size = new System.Drawing.Size(13, 22);
             // 
@@ -460,7 +486,6 @@
             this.toolStripSeparator3,
             this.miColorSpace,
             this.miAdjustColors});
-            this.btnEdit.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnEdit.Name = "btnEdit";
             this.btnEdit.Size = new System.Drawing.Size(13, 22);
             // 
@@ -515,7 +540,7 @@
         private Components.AdvancedToolStripButton btnPrev;
         private Components.AdvancedToolStripButton btnNext;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
-        private KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripSplitButton btnAbout;
+        private Components.AdvancedToolStripSplitButton btnAbout;
         private System.Windows.Forms.ToolStripMenuItem miWebSite;
         private System.Windows.Forms.ToolStripMenuItem miGitHub;
         private System.Windows.Forms.ToolStripMenuItem miMarketplace;
@@ -555,7 +580,11 @@
         private System.Windows.Forms.ToolStripMenuItem miRotateRight;
         private Components.AdvancedToolStripButton btnCopy;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
-        private Components.AdvancedToolStripButton btnPaste;
+        private Components.AdvancedToolStripSplitButton btnPaste;
         private Components.AdvancedToolStripProgressBar pbProgress;
+        private System.Windows.Forms.ToolStripMenuItem miPaste;
+        private System.Windows.Forms.ToolStripMenuItem miPasteSpecial;
+        private System.Windows.Forms.ToolStripMenuItem miPastePreferBitmap;
+        private System.Windows.Forms.ToolStripMenuItem miPastePreferVector;
     }
 }

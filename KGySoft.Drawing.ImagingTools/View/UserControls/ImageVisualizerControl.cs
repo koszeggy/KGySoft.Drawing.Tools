@@ -164,7 +164,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             btnSave.Image = Images.Save;
             btnClear.Image = Images.Clear;
             btnCopy.Image = Images.Copy;
-            btnPaste.Image = Images.Paste;
+            miPaste.Image = Images.Paste;
+            miPastePreferBitmap.Image = Images.PasteBitmap;
+            miPastePreferVector.Image = Images.PasteVector;
+            miPasteSpecial.Image = Images.PasteSpecial;
+            btnPaste.SetDefaultItem(miPaste);
 
             btnColorSettings.Image = Images.Palette;
             miBackColorDefault.Image = Images.Check;
@@ -232,9 +236,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                     return true;
                 case Keys.Control | Keys.C or Keys.Control | Keys.Insert when !txtInfo.Focused:
                     btnCopy.PerformClick();
-                    return true;
-                case Keys.Control | Keys.V or Keys.Shift | Keys.Insert when !txtInfo.Focused:
-                    btnPaste.PerformClick();
                     return true;
 
                 default:
@@ -395,7 +396,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             CommandBindings.Add(ViewModel.CopyCommand, ViewModel.CopyCommandState)
                 .AddSource(btnCopy, nameof(btnCopy.Click));
             CommandBindings.Add(ViewModel.PasteCommand, ViewModel.PasteCommandState)
-                .AddSource(btnPaste, nameof(btnPaste.Click));
+                .AddSource(miPaste, nameof(miPaste.Click));
 
             // Color Settings
             CommandBindings.Add<EventArgs>(OnSetBackColorCommand)
