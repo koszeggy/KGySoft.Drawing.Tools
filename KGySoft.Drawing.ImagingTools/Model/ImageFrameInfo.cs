@@ -102,7 +102,10 @@ namespace KGySoft.Drawing.ImagingTools.Model
                 throw new InvalidOperationException(PublicResources.PropertyMessage(error.PropertyName, error.Message));
             }
 
-            return Icon = Image!.ToIcon();
+            // locking on the image, because it might be used by the UI
+            Bitmap image = Image!;
+            lock (image)
+                return Icon = image.ToIcon();
         }
 
         #endregion

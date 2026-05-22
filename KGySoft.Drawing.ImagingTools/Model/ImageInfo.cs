@@ -16,6 +16,7 @@
 #region Usings
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -408,6 +409,23 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         private Bitmap GenerateImage()
         {
+            #region Local Methods
+
+            // As a method rather than a simple lambda, just for the locking. It's needed when executing on a background thread,
+            // as the image might be accessed in the UI thread. The view cooperatively locks on it as well to avoid a "bitmap region is already locked" error.
+            static IEnumerable<Image> IterateFrames(ImageFrameInfo[] frames)
+            {
+                foreach (ImageFrameInfo frame in frames)
+                {
+                    Debug.Assert(frame.Image is not null, "Wrong validation, an Image was null in a frame");
+                    Bitmap image = frame.Image!;
+                    lock (image) // it's alright, released when moving to the next frame
+                        yield return image;
+                }
+            }
+
+            #endregion
+
             if (!IsValid)
             {
                 ValidationResult error = ValidationResults.Errors[0];
@@ -419,7 +437,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
             {
                 case ImageInfoType.Pages:
                     var ms = new MemoryStream();
-                    Frames!.Select(f => (Image)f.Image!).SaveAsMultipageTiff(ms);
+                    IterateFrames(Frames!).SaveAsMultipageTiff(ms);
                     ms.Position = 0;
                     return new Bitmap(ms);
 
@@ -435,10 +453,11 @@ namespace KGySoft.Drawing.ImagingTools.Model
                         return GetCreateIcon()!.ExtractNearestBitmap(new Size(UInt16.MaxValue, UInt16.MaxValue), PixelFormat.Format32bppArgb);
                     }
 
+                // Unlike in VM.SaveGif, we use SaveAsAnimatedGif here rather than the lower-level encoder, because this operation is not canceled
                 case ImageInfoType.Animation:
                     ms = new MemoryStream();
                     ImageFrameInfo[] frames = Frames!;
-                    frames.Select(f => (Image)f.Image!).SaveAsAnimatedGif(ms, frames.Select(f => TimeSpan.FromMilliseconds(f.Duration)));
+                    IterateFrames(frames).SaveAsAnimatedGif(ms, frames.Select(f => TimeSpan.FromMilliseconds(f.Duration)));
                     ms.Position = 0;
                     return new Bitmap(ms);
 
@@ -449,13 +468,20 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         private Icon GenerateIcon()
         {
+            Debug.Assert(Icon == null);
+
             if (!IsValid)
             {
                 ValidationResult error = ValidationResults.Errors[0];
                 throw new InvalidOperationException(PublicResources.PropertyMessage(error.PropertyName, error.Message));
             }
 
-            return !HasFrames ? Image!.ToIcon() : Icons.Combine(Frames!.Select(f => f.GetCreateIcon()));
+            if (Frames is ImageFrameInfo[] { Length: > 0 } frames)
+                return Icons.Combine(frames.Select(f => f.GetCreateIcon()));
+
+            Image image = Image!;
+            lock (image)
+                return image.ToIcon();
         }
 
         private void FreeFrames()

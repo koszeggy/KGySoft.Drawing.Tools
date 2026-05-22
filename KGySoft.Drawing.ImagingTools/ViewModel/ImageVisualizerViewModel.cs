@@ -49,6 +49,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             #region Fields
 
+            internal AllowedImageTypes AllowedTypes;
             internal string FileName = null!;
 
             #endregion
@@ -294,26 +295,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             return Res.InfoUnknownFormat(imageFormat);
         }
 
-        private static bool TryLoadCustom(MemoryStream stream, [MaybeNullWhen(false)]out Image image)
-        {
-            const int bdatHeader = 0x54414442; // "BDAT"
-            image = null;
-
-            long pos = stream.Position;
-            if (pos > stream.Length - 4)
-                return false;
-
-            var reader = new BinaryReader(stream);
-            var head = reader.ReadInt32();
-            stream.Position = pos;
-
-            if (head != bdatHeader)
-                return false;
-            using IReadWriteBitmapData bitmapData = BitmapDataFactory.Load(stream);
-            image = bitmapData.ToBitmap();
-            return true;
-        }
-
         #endregion
 
         #region Instance Methods
@@ -519,7 +500,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             IsBusy = true;
             SetNotification(null);
-            var task = new OpenTask { FileName = fileName };
+            var task = new OpenTask { AllowedTypes = imageTypes, FileName = fileName };
             activeTask = task;
             ThreadPool.QueueUserWorkItem(DoOpenFile, task);
         }
@@ -739,12 +720,62 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             Justification = "False alarm, argument name 'fileName' is the actual parameter name of the caller method.")]
         private void DoOpenFile(object? state)
         {
+            #region Local Methods
+
+            static Image? LoadImage(OpenTask task, MemoryStream stream, out bool isCustom)
+            {
+                isCustom = false;
+                if (TryLoadCustom(task, stream, out Image? image))
+                {
+                    isCustom = true;
+                    return image;
+                }
+
+                if (task.IsCanceled)
+                    return null;
+
+                // bitmaps and metafiles are both allowed
+                if ((task.AllowedTypes & (AllowedImageTypes.Bitmap | AllowedImageTypes.Metafile)) == (AllowedImageTypes.Bitmap | AllowedImageTypes.Metafile))
+                    return Image.FromStream(stream);
+
+                // as Bitmap
+                Debug.Assert(task.AllowedTypes != AllowedImageTypes.Metafile, "This method is not expected to be called if only metafiles are allowed");
+                return new Bitmap(stream);
+            }
+
+            static bool TryLoadCustom(OpenTask task, MemoryStream stream, [MaybeNullWhen(false)]out Image image)
+            {
+                const int bdatHeader = 0x54414442; // "BDAT"
+                image = null;
+
+                long pos = stream.Position;
+                if (pos > stream.Length - 4)
+                    return false;
+
+                var reader = new BinaryReader(stream);
+                int head = reader.ReadInt32();
+                stream.Position = pos;
+
+                if (head != bdatHeader)
+                    return false;
+
+                var config = new AsyncConfig { IsCancelRequestedCallback = () => task.IsCanceled, ThrowIfCanceled = false };
+                using IReadWriteBitmapData? bitmapData = BitmapDataFactory.EndLoad(BitmapDataFactory.BeginLoad(stream, config));
+                image = bitmapData?.ToBitmap();
+                return image != null;
+            }
+
+            #endregion
+
             var task = (OpenTask)state!;
             string fileName = task.FileName;
             Exception? error = null;
             try
             {
                 var stream = new MemoryStream(File.ReadAllBytes(fileName));
+                if (task.IsCanceled)
+                    return;
+
                 bool appearsIcon = Path.GetExtension(fileName).Equals(".ico", StringComparison.OrdinalIgnoreCase);
                 string? openedFileName = fileName;
                 string? notification = null;
@@ -766,14 +797,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     }
                 }
 
-                if (result == null)
+                if (result == null && !task.IsCanceled)
                 {
                     // bitmaps and metafiles are both allowed
                     if ((imageTypes & (AllowedImageTypes.Bitmap | AllowedImageTypes.Metafile)) == (AllowedImageTypes.Bitmap | AllowedImageTypes.Metafile))
                     {
                         try
                         {
-                            result = new ImageInfo(LoadImage(stream, out isCustom));
+                            result = new ImageInfo(LoadImage(task, stream, out isCustom));
                         }
                         catch (Exception e) when (!e.IsCriticalGdi())
                         {
@@ -797,7 +828,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     {
                         try
                         {
-                            result = new ImageInfo(LoadImage(stream, out isCustom));
+                            result = new ImageInfo(LoadImage(task, stream, out isCustom));
                         }
                         catch (Exception e) when (!e.IsCriticalGdi())
                         {
@@ -812,7 +843,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     }
 
                     // icon is allowed and an image has been loaded
-                    if (result?.Image is Image image && (imageTypes & AllowedImageTypes.Icon) != AllowedImageTypes.None)
+                    if (result?.Image is Image image && (imageTypes & AllowedImageTypes.Icon) != AllowedImageTypes.None && !task.IsCanceled)
                     {
                         // the loaded format is icon: reloading as icon (can make a difference if the icon contains multiple color depths of the same resolution)
                         if (result.RawFormat == ImageFormat.Icon.Guid)
@@ -847,8 +878,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 // null will be assigned if the image has been converted (see notifications), or when it has a custom format so Image.FromFile cannot handle it
                 result?.FileName = !isCustom ? openedFileName : null;
 
-                task.SetCompleted();
+                if (task.IsCanceled)
+                {
+                    result?.Dispose();
+                    return;
+                }
 
+                task.SetCompleted();
                 TryInvokeSync(() =>
                 {
                     ImageInfo = result;
@@ -873,24 +909,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                         ShowError(Res.ErrorMessageFailedToLoadFile(error.Message));
                 });
             }
-        }
-
-        private Image LoadImage(MemoryStream stream, out bool isCustom)
-        {
-            isCustom = false;
-            if (TryLoadCustom(stream, out Image? image))
-            {
-                isCustom = true;
-                return image;
-            }
-
-            // bitmaps and metafiles are both allowed
-            if ((imageTypes & (AllowedImageTypes.Bitmap | AllowedImageTypes.Metafile)) == (AllowedImageTypes.Bitmap | AllowedImageTypes.Metafile))
-                return Image.FromStream(stream);
-
-            // as Bitmap
-            Debug.Assert(imageTypes != AllowedImageTypes.Metafile, "This method is not expected to be called if only metafiles are allowed");
-            return new Bitmap(stream);
         }
 
         private void ResetCompoundState()
@@ -1019,52 +1037,146 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             static void SaveGif(SaveTask task)
             {
+                #region Local Methods
+
+                static IEnumerable<IReadableBitmapData> IterateFrames(ImageFrameInfo[] frames)
+                {
+                    foreach (ImageFrameInfo frame in frames)
+                    {
+                        // Due to yield return both the lock and the using is released when moving to the next frame. Locking is needed because the UI may repaint the image.
+                        // The view locks cooperatively on the image as well to avoid "bitmap region is already locked" errors.
+                        Bitmap bitmap = frame.GetCreateBitmap()!;
+                        lock (bitmap)
+                        {
+                            using IReadableBitmapData bitmapData = bitmap.GetReadableBitmapData();
+                            yield return bitmapData;
+                        }
+                    }
+                }
+
+                #endregion
+
                 if (task.IsCanceled)
                     return;
 
-                Image? image = task.ToSave.GetImage() ?? (task.ToSave is ImageFrameInfo ? task.ToSave.GetCreateImage() : null);
-                if (image != null)
+                // Single frame
+                if (task.ToSave is ImageFrameInfo frame)
                 {
-                    image.SaveAsGif(task.FileName);
+                    Bitmap bitmap = frame.GetCreateBitmap()!;
+                    lock (bitmap)
+                        bitmap.SaveAsGif(task.FileName);
                     return;
                 }
 
-                // Encoding a new GIF animation: if the image originally is not an animation, using 1s delay for each frames
-                if (task.ToSave is not ImageInfo imageInfo)
-                    return;
+                // Single image or already encoded GIF animation
+                ImageInfo imageInfo = (ImageInfo)task.ToSave;
+                Image? image = imageInfo.Type is ImageInfoType.SingleImage or ImageInfoType.Animation ? imageInfo.Image
+                    : imageInfo is { Type: ImageInfoType.Icon, HasFrames: false } ? imageInfo.GetCreateBitmap()
+                    : null;
 
-                // TODO: cancellable iteration
+                if (image != null)
+                {
+                    lock (image)
+                        image.SaveAsGif(task.FileName);
+                    return;
+                }
+
+                // Encoding a new GIF animation: if the image originally is not an animation, using 1s delay for each frame.
+                // We could just use ImageExtensions.SaveAsAnimatedGif, but that is not cancellable effectively (only after frames if we used a special iterator).
+                // NOTE: we save into memory first, so we can set the result in imageInfo.Image (as if we called ImageInfo.GetCreateImage)
+                var stream = new MemoryStream();
                 ImageFrameInfo[] frames = imageInfo.Frames!;
-                frames.Select(f => f.GetCreateImage()).SaveAsAnimatedGif(task.FileName, imageInfo.Type == ImageInfoType.Animation
+                var delays = imageInfo.Type == ImageInfoType.Animation
                     ? frames.Select(f => TimeSpan.FromMilliseconds(f.Duration))
-                    : new[] { TimeSpan.FromSeconds(1) });
+                    : [TimeSpan.FromSeconds(1)];
+                var config = new AnimatedGifConfiguration(IterateFrames(frames), delays)
+                {
+                    Size = imageInfo.Size,
+                    SizeHandling = AnimationFramesSizeHandling.Center
+                };
+
+                // NOTE: Begin/End like this is alright, we are already on a pool thread. We could just use an EncodeAnimation overload with ParallelConfig if existed.
+                var asyncConfig = new AsyncConfig { IsCancelRequestedCallback = () => task.IsCanceled, ThrowIfCanceled = false };
+                GifEncoder.EndEncodeAnimation(GifEncoder.BeginEncodeAnimation(config, stream, asyncConfig));
+                if (task.IsCanceled)
+                    return;
+                stream.Position = 0L;
+                imageInfo.Image = new Bitmap(stream);
+                if (task.IsCanceled)
+                    return;
+                
+                stream.Position = 0L;
+                using var fileStream = File.Create(task.FileName);
+                stream.CopyTo(fileStream);
+                fileStream.Flush();
             }
 
             static void SaveTiff(SaveTask task)
             {
-                // TODO: cancellable iteration and locking
-                if (task.ToSave is ImageInfo imageInfo && imageInfo.HasFrames)
-                    imageInfo.Frames!.Select(f => f.GetCreateImage()).SaveAsMultipageTiff(task.FileName);
-                else
-                    GetImage(task)?.SaveAsTiff(task.FileName);
+                #region Local Methods
+
+                static IEnumerable<Image> IterateFrames(ImageFrameInfo[] frames, SaveTask task)
+                {
+                    foreach (ImageFrameInfo frame in frames)
+                    {
+                        // though SaveAsMultipageTiff does not support cancellation directly, we can cancel the iteration of the frames
+                        if (task.IsCanceled)
+                            yield break;
+
+                        // Due to yield return the lock is released when moving to the next frame. Locking is needed because the UI may repaint the image.
+                        // The view locks cooperatively on the image as well to avoid "bitmap region is already locked" errors.
+                        Bitmap bitmap = frame.GetCreateBitmap()!;
+                        lock (bitmap)
+                            yield return bitmap;
+                    }
+                }
+
+                #endregion
+
+                if (task.ToSave is ImageInfo { Frames: ImageFrameInfo[] frames })
+                {
+                    IterateFrames(frames, task).SaveAsMultipageTiff(task.FileName);
+                    return;
+                }
+
+                Image? image = GetImage(task);
+                if (image == null)
+                    return;
+                lock (image)
+                    image.SaveAsTiff(task.FileName);
             }
 
             static void SaveIcon(SaveTask task)
             {
-                using Stream stream = File.Create(task.FileName);
-                if (task.ToSave is not ImageInfo imageInfo)
-                    task.ToSave.GetCreateIcon()!.SaveAsIcon(stream);
-                else
+                #region Local Methods
+
+                static IEnumerable<Icon> IterateIconImages(ImageFrameInfo[] frames, SaveTask task)
                 {
-                    // Preferring the Icon property, if exists. SaveAsIcon ensures the good quality even if the icon has no raw stream internally.
-                    if (imageInfo.Icon is Icon icon)
-                        icon.SaveAsIcon(stream);
-                    else if (imageInfo.HasFrames)
+                    foreach (ImageFrameInfo frame in frames)
                     {
-                        // TODO: cancellable iterator (or combining one by one), restoring original pixel format if raw format is icon (result.Combine(frame.Icon) or use result.Combine(frame.Image, Color.Transparent))
-                        task.ToSave.GetCreateIcon()!.Save(stream); // simple Save is OK here, the result always will have a raw stream
+                        // though icon saving does not support cancellation directly, we can cancel the iteration of the frames
+                        if (task.IsCanceled)
+                            yield break;
+                        yield return frame.GetCreateIcon();
                     }
                 }
+
+                #endregion
+
+                if (task.IsCanceled)
+                    return;
+
+                using Stream stream = File.Create(task.FileName);
+
+                // We already have an icon: just saving it. Using SaveAsIcon to ensure quality for icons with no internal raw data.
+                if (task.ToSave.Icon is Icon icon)
+                    icon.SaveAsIcon(stream);
+                // Single-image icon. Here raw data is built, so simple Save is alright.
+                else if (task.ToSave is ImageFrameInfo or ImageInfo { HasFrames: false })
+                    task.ToSave.GetCreateIcon()?.Save(stream);
+                // Multi-image icon. The combined result always has managed raw data, so simple Save is alright.
+                else
+                    Icons.Combine(IterateIconImages(((ImageInfo)task.ToSave).Frames!, task)).Save(stream);
 
                 stream.Flush();
             }
@@ -1075,16 +1187,27 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 Image? image = GetImage(task);
                 if (image == null)
                     return;
+
                 Bitmap bmp = image as Bitmap ?? new Bitmap(image);
+                if (ReferenceEquals(image, bmp))
+                    Monitor.Enter(bmp);
                 try
                 {
-                    // TODO: cancellation, Begin/End save
                     using IReadableBitmapData bitmapData = bmp.GetReadableBitmapData();
-                    bitmapData.Save(stream);
+                    var config = new AsyncConfig
+                    {
+                        ThrowIfCanceled = false,
+                        IsCancelRequestedCallback = () => task.IsCanceled
+                    };
+
+                    // Begin/end like this is alright as we are on a pool thread. Would not be needed if there was a Save overload with a ParallelConfig parameter.
+                    bitmapData.BeginSave(stream, config).EndSave();
                 }
                 finally
                 {
-                    if (!ReferenceEquals(image, bmp))
+                    if (ReferenceEquals(image, bmp))
+                        Monitor.Exit(bmp);
+                    else
                         bmp.Dispose();
                 }
             }
