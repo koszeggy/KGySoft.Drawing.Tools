@@ -1037,25 +1037,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             static void SaveGif(SaveTask task)
             {
-                #region Local Methods
-
-                static IEnumerable<IReadableBitmapData> IterateFrames(ImageFrameInfo[] frames)
-                {
-                    foreach (ImageFrameInfo frame in frames)
-                    {
-                        // Due to yield return both the lock and the using is released when moving to the next frame. Locking is needed because the UI may repaint the image.
-                        // The view locks cooperatively on the image as well to avoid "bitmap region is already locked" errors.
-                        Bitmap bitmap = frame.GetCreateBitmap()!;
-                        lock (bitmap)
-                        {
-                            using IReadableBitmapData bitmapData = bitmap.GetReadableBitmapData();
-                            yield return bitmapData;
-                        }
-                    }
-                }
-
-                #endregion
-
                 if (task.IsCanceled)
                     return;
 
@@ -1085,11 +1066,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 // We could just use ImageExtensions.SaveAsAnimatedGif, but that is not cancellable effectively (only after frames if we used a special iterator).
                 // NOTE: we save into memory first, so we can set the result in imageInfo.Image (as if we called ImageInfo.GetCreateImage)
                 var stream = new MemoryStream();
-                ImageFrameInfo[] frames = imageInfo.Frames!;
-                var delays = imageInfo.Type == ImageInfoType.Animation
-                    ? frames.Select(f => TimeSpan.FromMilliseconds(f.Duration))
+                IEnumerable<TimeSpan> delays = imageInfo.Type == ImageInfoType.Animation
+                    ? imageInfo.Frames!.Select(f => TimeSpan.FromMilliseconds(f.Duration))
                     : [TimeSpan.FromSeconds(1)];
-                var config = new AnimatedGifConfiguration(IterateFrames(frames), delays)
+                var config = new AnimatedGifConfiguration(imageInfo.IterateFramesBitmapData(task), delays)
                 {
                     Size = imageInfo.Size,
                     SizeHandling = AnimationFramesSizeHandling.Center
@@ -1113,29 +1093,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             static void SaveTiff(SaveTask task)
             {
-                #region Local Methods
-
-                static IEnumerable<Image> IterateFrames(ImageFrameInfo[] frames, SaveTask task)
+                if (task.ToSave is ImageInfo imageInfo)
                 {
-                    foreach (ImageFrameInfo frame in frames)
-                    {
-                        // though SaveAsMultipageTiff does not support cancellation directly, we can cancel the iteration of the frames
-                        if (task.IsCanceled)
-                            yield break;
-
-                        // Due to yield return the lock is released when moving to the next frame. Locking is needed because the UI may repaint the image.
-                        // The view locks cooperatively on the image as well to avoid "bitmap region is already locked" errors.
-                        Bitmap bitmap = frame.GetCreateBitmap()!;
-                        lock (bitmap)
-                            yield return bitmap;
-                    }
-                }
-
-                #endregion
-
-                if (task.ToSave is ImageInfo { Frames: ImageFrameInfo[] frames })
-                {
-                    IterateFrames(frames, task).SaveAsMultipageTiff(task.FileName);
+                    imageInfo.IterateFrameImages(task).SaveAsMultipageTiff(task.FileName);
                     return;
                 }
 
@@ -1148,21 +1108,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             static void SaveIcon(SaveTask task)
             {
-                #region Local Methods
-
-                static IEnumerable<Icon> IterateIconImages(ImageFrameInfo[] frames, SaveTask task)
-                {
-                    foreach (ImageFrameInfo frame in frames)
-                    {
-                        // though icon saving does not support cancellation directly, we can cancel the iteration of the frames
-                        if (task.IsCanceled)
-                            yield break;
-                        yield return frame.GetCreateIcon();
-                    }
-                }
-
-                #endregion
-
                 if (task.IsCanceled)
                     return;
 
@@ -1176,7 +1121,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     task.ToSave.GetCreateIcon()?.Save(stream);
                 // Multi-image icon. The combined result always has managed raw data, so simple Save is alright.
                 else
-                    Icons.Combine(IterateIconImages(((ImageInfo)task.ToSave).Frames!, task)).Save(stream);
+                    Icons.Combine(((ImageInfo)task.ToSave).IterateFrameIcons(task)).Save(stream);
 
                 stream.Flush();
             }

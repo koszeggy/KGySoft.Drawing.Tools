@@ -25,6 +25,7 @@ using System.Linq;
 
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
+using KGySoft.Drawing.Imaging;
 using KGySoft.WinForms;
 
 #endregion
@@ -199,6 +200,55 @@ namespace KGySoft.Drawing.ImagingTools.Model
             if (Type == ImageInfoType.Icon)
                 Type = HasFrames ? ImageInfoType.MultiRes : ImageInfoType.SingleImage;
             return this;
+        }
+
+        // The following methods are needed when processing frames on a background thread, as the image might be accessed in the UI thread concurrently.
+        // The view cooperatively locks on the images as well to avoid a possible "bitmap region is already locked" error.
+        // Otherwise, they could be simply replaced by a lambda, selecting the Image/Icon of the frames.
+
+        internal IEnumerable<Image> IterateFrameImages(AsyncTaskBase? task = null)
+        {
+            if (Frames is not ImageFrameInfo[] frames)
+                yield break;
+            foreach (ImageFrameInfo frame in frames)
+            {
+                if (task?.IsCanceled == true)
+                    yield break;
+                Bitmap image = frame.GetCreateBitmap()!;
+                lock (image) // it's alright, the lock is released when moving to the next frame
+                    yield return image;
+            }
+        }
+
+        internal IEnumerable<Icon> IterateFrameIcons(AsyncTaskBase task)
+        {
+            if (Frames is not ImageFrameInfo[] frames)
+                yield break;
+            foreach (ImageFrameInfo frame in frames)
+            {
+                if (task.IsCanceled)
+                    yield break;
+                yield return frame.GetCreateIcon(); // possible lock on the image occurs in the call
+            }
+        }
+
+        internal IEnumerable<IReadableBitmapData> IterateFramesBitmapData(AsyncTaskBase task)
+        {
+            if (Frames is not ImageFrameInfo[] frames)
+                yield break;
+            foreach (ImageFrameInfo frame in frames)
+            {
+                if (task.IsCanceled)
+                    yield break;
+
+                // Due to yield return both the lock and the using is released when moving to the next frame. 
+                Bitmap bitmap = frame.GetCreateBitmap()!;
+                lock (bitmap)
+                {
+                    using IReadableBitmapData bitmapData = bitmap.GetReadableBitmapData();
+                    yield return bitmapData;
+                }
+            }
         }
 
         #endregion
@@ -409,23 +459,6 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         private Bitmap GenerateImage()
         {
-            #region Local Methods
-
-            // As a method rather than a simple lambda, just for the locking. It's needed when executing on a background thread,
-            // as the image might be accessed in the UI thread. The view cooperatively locks on it as well to avoid a "bitmap region is already locked" error.
-            static IEnumerable<Image> IterateFrames(ImageFrameInfo[] frames)
-            {
-                foreach (ImageFrameInfo frame in frames)
-                {
-                    Debug.Assert(frame.Image is not null, "Wrong validation, an Image was null in a frame");
-                    Bitmap image = frame.Image!;
-                    lock (image) // it's alright, released when moving to the next frame
-                        yield return image;
-                }
-            }
-
-            #endregion
-
             if (!IsValid)
             {
                 ValidationResult error = ValidationResults.Errors[0];
@@ -437,7 +470,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
             {
                 case ImageInfoType.Pages:
                     var ms = new MemoryStream();
-                    IterateFrames(Frames!).SaveAsMultipageTiff(ms);
+                    IterateFrameImages().SaveAsMultipageTiff(ms);
                     ms.Position = 0;
                     return new Bitmap(ms);
 
@@ -456,8 +489,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
                 // Unlike in VM.SaveGif, we use SaveAsAnimatedGif here rather than the lower-level encoder, because this operation is not canceled
                 case ImageInfoType.Animation:
                     ms = new MemoryStream();
-                    ImageFrameInfo[] frames = Frames!;
-                    IterateFrames(frames).SaveAsAnimatedGif(ms, frames.Select(f => TimeSpan.FromMilliseconds(f.Duration)));
+                    IterateFrameImages().SaveAsAnimatedGif(ms, Frames!.Select(f => TimeSpan.FromMilliseconds(f.Duration)));
                     ms.Position = 0;
                     return new Bitmap(ms);
 

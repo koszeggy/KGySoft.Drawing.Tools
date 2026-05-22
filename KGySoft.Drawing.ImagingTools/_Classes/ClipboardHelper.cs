@@ -35,6 +35,7 @@ using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.ImagingTools.WinApi;
 using KGySoft.Serialization.Binary;
+using KGySoft.Threading;
 using KGySoft.WinForms;
 
 #endregion
@@ -265,45 +266,74 @@ namespace KGySoft.Drawing.ImagingTools
             // whereas byte[] is serialized in a BinaryFormatter-compatible way.
             var formats = new Dictionary<string, object>();
 
-            // compound image or single frame image
-            if (info is ImageInfo imageInfo)
+            try
             {
-                switch (imageInfo.Type)
+                // compound image or single frame image
+                if (info is ImageInfo imageInfo)
                 {
-                    case ImageInfoType.None:
-                        Debug.Fail("Copying expected to be disabled when there is no loaded image");
+                    switch (imageInfo.Type)
+                    {
+                        case ImageInfoType.None:
+                            Debug.Fail("Copying expected to be disabled when there is no loaded image");
+                            return;
+
+                        case ImageInfoType.SingleImage when imageInfo.Image is Metafile metafile:
+                            CopyMetafile(formats, metafile, task);
+                            break;
+
+                        case ImageInfoType.Pages:
+                            CopyTiff(formats, imageInfo, task);
+                            break;
+
+                        case ImageInfoType.MultiRes:
+                        case ImageInfoType.Icon:
+                            CopyIcon(formats, imageInfo, task);
+                            break;
+
+                        case ImageInfoType.Animation:
+                            CopyAnimGif(formats, imageInfo, task);
+                            break;
+                    }
+
+                    if (task.IsCanceled)
                         return;
+                }
 
-                    case ImageInfoType.SingleImage when imageInfo.Image is Metafile metafile:
-                        CopyMetafile(formats, metafile);
-                        break;
+                // GetCreateImage with no cancellation is alright here - due to the compounds format above, actual generate is expected for icon bitmaps only
+                Image? image = info.GetCreateImage();
+                Debug.Assert(image != null, "Failed to obtain an image to copy");
+                if (image == null)
+                    return;
 
-                    case ImageInfoType.Pages:
-                        CopyTiff(formats, imageInfo);
-                        break;
+                // Standard Bitmap format, potentially along with some custom single-frame formats
+                CopyBitmap(formats, image, task);
 
-                    case ImageInfoType.MultiRes:
-                    case ImageInfoType.Icon:
-                        CopyIcon(formats, imageInfo);
-                        break;
+                if (task.IsCanceled)
+                    return;
 
-                    case ImageInfoType.Animation:
-                        CopyAnimGif(formats, imageInfo);
-                        break;
+                // If we managed to prepare some formats, we place them on the clipboard. If it fails, using Clipboard.SetImage as an ultimate fallback.
+                if (formats.Count == 0 || !PopulateClipboard(formats, task))
+                {
+                    task.Context.Send(_ =>
+                    {
+                        lock (image)
+                            Clipboard.SetImage(image);
+                    }, null);
                 }
             }
-
-            Image? image = info.GetCreateImage(/*task TODO*/);
-            Debug.Assert(image != null, "Failed to obtain an image to copy");
-            if (image == null)
-                return;
-
-            // Standard Bitmap format, potentially along with some custom single-frame formats
-            CopyBitmap(formats, image);
-
-            // If we managed to prepare some formats, we place them on the clipboard. If it fails, using Clipboard.SetImage as an ultimate fallback.
-            if (formats.Count == 0 || !PopulateClipboard(formats, task))
-                task.Context.Send(_ => Clipboard.SetImage(image), null);
+            finally
+            {
+                // If the task has been canceled before actually setting the clipboard, we must free the possibly generated native objects.
+                // If the cancellation occurs after setting the clipboard, the dictionary is expected to be emptied here.
+                if (task.IsCanceled && formats.Count > 0)
+                {
+                    foreach (KeyValuePair<string, object> item in formats)
+                    {
+                        if (item.Value is IntPtr nativeHandle)
+                            FreeNativeHandle(nativeHandle, item.Key);
+                    }
+                }
+            }
         }
 
         internal static ImageInfo? TryPasteFromClipboard(AllowedImageTypes allowedTypes, bool allowMultiFrame, AsyncTaskContext task)
@@ -317,7 +347,7 @@ namespace KGySoft.Drawing.ImagingTools
                 IWinFormsDataObject? dataObject = null;
                 task.Context.Send(_ => dataObject = Clipboard.GetDataObject(), null);
 
-                if (dataObject == null)
+                if (dataObject == null || task.IsCanceled)
                     return null;
 
                 var formats = new HashSet<string>(dataObject.GetFormats(false));
@@ -330,7 +360,7 @@ namespace KGySoft.Drawing.ImagingTools
                     return imageInfo;
                 if (formats.Contains(DataFormats.MetafilePict) && TryGetNativeWmf(dataObject, allowedTypes, out imageInfo))
                     return imageInfo;
-                if (allowedTypes == AllowedImageTypes.Metafile)
+                if (allowedTypes == AllowedImageTypes.Metafile || task.IsCanceled)
                     return null;
 
                 // 2. Multiframe Bitmap or Icon with custom encoding
@@ -352,19 +382,28 @@ namespace KGySoft.Drawing.ImagingTools
                     }
                 }
 
+                if (task.IsCanceled)
+                    return null;
+
                 // 3. Single-frame custom encoded Bitmap or Icon. The way of the Intersect call ensures the order of the tried formats.
                 if (TryGetImageFromStream(new[] { pngFormat, DataFormats.Tiff, gifFormat, iconFormat }.Intersect(formats), dataObject, allowedTypes, false, out imageInfo))
                     return imageInfo;
+                if (task.IsCanceled)
+                    return null;
 
                 // 4. Standard DIB formats
                 if (formats.Contains(dibV5Format) && TryGetDeviceIndependentBitmap(dibV5Format, dataObject, allowedTypes, false/*TODO*/, out imageInfo))
                     return imageInfo;
                 if (formats.Contains(DataFormats.Dib) && TryGetDeviceIndependentBitmap(DataFormats.Dib, dataObject, allowedTypes, false/*TODO*/, out imageInfo))
                     return imageInfo;
+                if (task.IsCanceled)
+                    return null;
 
                 // 5. Standard Bitmap format
                 if (formats.Contains(DataFormats.Bitmap) && TryGetNativeBitmap(dataObject, allowedTypes, out imageInfo))
                     return imageInfo;
+                if (task.IsCanceled)
+                    return null;
 
                 // 6. Ultimate fallback: Clipboard.GetImage - it attempts to process .NET Framework serialized System.Drawing.Bitmap entries,
                 //    and also the standard Bitmap format if it wasn't processed natively above.
@@ -388,9 +427,13 @@ namespace KGySoft.Drawing.ImagingTools
 
         private static bool PopulateClipboard(Dictionary<string, object> formats, AsyncTaskContext task)
         {
+            // NOTE: Not checking cancellation while adding the items. Either none or all formats are copied to the clipboard.
             bool useNativeApi = OSHelper.IsWindows && formats.GetValueOrDefault(DataFormats.Bitmap) is not Image;
             if (useNativeApi && PopulateClipboardNatively(formats))
                 return true;
+
+            if (task.IsCanceled)
+                return true; // to prevent trying the ultimate fallback path in the caller
 
             // Here we could not populate the clipboard natively. As a fallback, we try to use the managed way.
             var dataObject = new DataObject();
@@ -407,18 +450,13 @@ namespace KGySoft.Drawing.ImagingTools
                     // If we have prepared native entries, we discard them, because DataObject.SetData would just corrupt them.
                     // As the clipboard will not take over the ownership of such items now, we must free them to prevent memory leaks.
                     case IntPtr nativeHandle:
-                        Debug.Assert(OSHelper.IsWindows);
-                        if (item.Key == DataFormats.Bitmap)
-                            Gdi32.DeleteObject(nativeHandle);
-                        else if (item.Key == DataFormats.EnhancedMetafile)
-                            Gdi32.DeleteEnhMetaFile(nativeHandle);
-                        else
-                            throw new InvalidOperationException(Res.InternalError($"Unhandled native clipboard item to free: {item.Key}"));
+                        FreeNativeHandle(nativeHandle, item.Key);
                         break;
 
                     case Image image:
                         result = true;
-                        dataObject.SetImage(image);
+                        lock (image)
+                            dataObject.SetImage(image);
                         break;
 
                     default:
@@ -426,6 +464,8 @@ namespace KGySoft.Drawing.ImagingTools
                 }
             }
 
+            // as we already freed native items, clearing the dictionary to prevent double freeing if the task gets canceled after this point
+            formats.Clear();
             if (result)
                 task.Context.Send(_ => Clipboard.SetDataObject(dataObject, true), null);
             return result;
@@ -437,6 +477,8 @@ namespace KGySoft.Drawing.ImagingTools
             {
                 if (!User32.OpenClipboard())
                     return false;
+
+                bool result = false;
                 try
                 {
                     // This is why we cannot mix native and managed APIs: without EmptyClipboard we get an error that the thread does not have an open clipboard,
@@ -461,10 +503,13 @@ namespace KGySoft.Drawing.ImagingTools
                             Debug.Fail($"Failed to add format '{item.Key}' to the clipboard natively: {new Win32Exception(Marshal.GetLastWin32Error()).Message}");
                     }
 
-                    return true;
+                    return result = true;
                 }
                 finally
                 {
+                    // clearing the formats on success, indicating that no cleanup should be performed even if the task gets canceled after this point
+                    if (result)
+                        formats.Clear();
                     User32.CloseClipboard();
                 }
             }
@@ -475,7 +520,18 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static void CopyMetafile(Dictionary<string, object> formats, Metafile metafile)
+        private static void FreeNativeHandle(IntPtr nativeHandle, string format)
+        {
+            Debug.Assert(OSHelper.IsWindows);
+            if (format == DataFormats.Bitmap)
+                Gdi32.DeleteObject(nativeHandle);
+            else if (format == DataFormats.EnhancedMetafile)
+                Gdi32.DeleteEnhMetaFile(nativeHandle);
+            else
+                throw new InvalidOperationException(Res.InternalError($"Unhandled native clipboard item to free: {format}"));
+        }
+
+        private static void CopyMetafile(Dictionary<string, object> formats, Metafile metafile, AsyncTaskBase task)
         {
             Guid rawFormat = metafile.RawFormat.Guid;
             bool? isEmf = rawFormat == ImageFormat.Emf.Guid ? true
@@ -491,10 +547,16 @@ namespace KGySoft.Drawing.ImagingTools
             var ms = new MemoryStream();
             try
             {
-                if (isEmf == true)
-                    metafile.SaveAsEmf(ms);
-                else
-                    metafile.SaveAsWmf(ms);
+                // Not sure whether metafiles are also affected by the "region is already locked" error,
+                // but using cooperative locking on them the same way as for bitmaps.
+                lock (metafile)
+                {
+                    if (isEmf == true)
+                        metafile.SaveAsEmf(ms);
+                    else
+                        metafile.SaveAsWmf(ms);
+                }
+
                 formats.Add(isEmf == true ? emfFormat : wmfFormat, ms);
             }
             catch (Exception e) when (!e.IsCritical())
@@ -502,15 +564,18 @@ namespace KGySoft.Drawing.ImagingTools
                 Debug.WriteLine($"Failed to copy as metafile stream: {e.Message}");
             }
 
-            if (!OSHelper.IsWindows)
+            if (!OSHelper.IsWindows || task.IsCanceled)
                 return;
 
             // 2. Standard EnhancedMetafile format, which is compatible with many applications.
             // Windows automatically generates a MetaFilePict entry as well (though pasting it as non-enhanced metafile does not work, at least on XP+).
             // GetHenhmetafile makes the original image unusable, so we clone it first.
+            Metafile? clone = null;
             try
             {
-                using Metafile clone = (Metafile)metafile.Clone();
+                // A clone must be created; otherwise, the original metafiles become unusable after the GetHenhmetafile call. Using the same cooperative locking as for bitmaps.
+                lock (metafile)
+                    clone = (Metafile)metafile.Clone();
 
                 // 2.a. EMF: simply putting a clone to the clipboard.
                 if (isEmf == true)
@@ -532,8 +597,8 @@ namespace KGySoft.Drawing.ImagingTools
                     }
                 }
 
-                // 2.b. WMF: cannot just put a MetaFilePict format to the clipboard with the handle, because it cannot be pasted by most applications.
-                // So converting it to EMF in memory, and putting that to the clipboard (which creates also the MetaFilePict entry, even if unusable).
+                // 2.b. WMF: not just putting a MetaFilePict format to the clipboard with the handle, because it cannot be pasted by many applications.
+                // Instead, converting it to EMF in memory, and putting that to the clipboard (which creates also the MetaFilePict entry).
                 IntPtr hmf = clone.GetHenhmetafile(); // NOTE: the method name is misleading: in this case this is NOT an enhanced metafile handle, we need to convert it
                 IntPtr hdc = IntPtr.Zero;
                 if (hmf == IntPtr.Zero)
@@ -572,9 +637,13 @@ namespace KGySoft.Drawing.ImagingTools
                 // but on non-native Windows the P/Invoke may fail otherwise.
                 Debug.WriteLine($"Failed to copy as {DataFormats.EnhancedMetafile}: {e.Message}");
             }
+            finally
+            {
+                clone?.Dispose();
+            }
         }
 
-        private static void CopyBitmap(Dictionary<string, object> formats, Image image)
+        private static void CopyBitmap(Dictionary<string, object> formats, Image image, AsyncTaskBase task)
         {
             Bitmap bitmap = image as Bitmap ?? new Bitmap(image);
             try
@@ -587,8 +656,11 @@ namespace KGySoft.Drawing.ImagingTools
                     try
                     {
                         var ms = new MemoryStream();
-                        bitmap.SaveAsPng(ms);
+                        lock (bitmap)
+                            bitmap.SaveAsPng(ms);
                         formats.Add(pngFormat, ms);
+                        if (task.IsCanceled)
+                            return;
                     }
                     catch (Exception e) when (!e.IsCritical())
                     {
@@ -599,12 +671,15 @@ namespace KGySoft.Drawing.ImagingTools
                 // 2. Custom GIF format. It is recognized by multiple applications, and unlike the standard Bitmap format, it preserves the palette.
                 if (pixelFormat.IsIndexed())
                 {
-                    Debug.Assert(!formats.ContainsKey(gifFormat), "Here only an animated GIF is expected in the formats, which don't have indexed pixel format");
+                    Debug.Assert(!formats.ContainsKey(gifFormat), "Here only an animated GIF is expected in the prepared formats, which don't have indexed pixel format");
                     try
                     {
                         var ms = new MemoryStream();
-                        bitmap.SaveAsGif(ms);
+                        lock (bitmap)
+                            bitmap.SaveAsGif(ms);
                         formats.Add(gifFormat, ms);
+                        if (task.IsCanceled)
+                            return;
                     }
                     catch (Exception e) when (!e.IsCritical())
                     {
@@ -620,7 +695,8 @@ namespace KGySoft.Drawing.ImagingTools
                     try
                     {
                         var ms = new MemoryStream();
-                        SaveAsDibV5(bitmap, ms);
+                        lock (bitmap)
+                            SaveAsDibV5(bitmap, ms);
                         formats.Add(dibV5Format, ms);
                         return;
                     }
@@ -636,7 +712,8 @@ namespace KGySoft.Drawing.ImagingTools
                 // but add a BinaryFormatter-serialized System.Drawing.Bitmap entry (along with the standard Bitmap format).
                 try
                 {
-                    formats.Add(DataFormats.Bitmap, bitmap.GetHbitmap());
+                    lock (bitmap)
+                        formats.Add(DataFormats.Bitmap, bitmap.GetHbitmap());
                 }
                 catch (Exception e) when (!e.IsCritical())
                 {
@@ -703,16 +780,19 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static void CopyTiff(Dictionary<string, object> formats, ImageInfo info)
+        private static void CopyTiff(Dictionary<string, object> formats, ImageInfo info, AsyncTaskBase task)
         {
             try
             {
                 // If the main image is already a TIFF, using that one.
                 var ms = new MemoryStream();
                 if (info.Image is Image image && image.RawFormat.Guid == ImageFormat.Tiff.Guid)
-                    image.SaveAsTiff(ms, false);
+                {
+                    lock (image)
+                        image.SaveAsTiff(ms, false);
+                }
                 else
-                    info.Frames!.Select(f => f.GetCreateImage()).SaveAsMultipageTiff(ms);
+                    info.IterateFrameImages(task).SaveAsMultipageTiff(ms);
                 formats.Add(DataFormats.Tiff, ms);
             }
             catch (Exception e) when (!e.IsCritical())
@@ -721,12 +801,12 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static void CopyIcon(Dictionary<string, object> formats, ImageInfo info)
+        private static void CopyIcon(Dictionary<string, object> formats, ImageInfo info, AsyncTaskBase task)
         {
             try
             {
                 var ms = new MemoryStream();
-                info.GetCreateIcon()!.SaveAsIcon(ms);
+                Icons.Combine(info.IterateFrameIcons(task)).Save(ms);
                 formats.Add(iconFormat, ms);
             }
             catch (Exception e) when (!e.IsCritical())
@@ -735,13 +815,29 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static void CopyAnimGif(Dictionary<string, object> formats, ImageInfo info)
+        private static void CopyAnimGif(Dictionary<string, object> formats, ImageInfo info, AsyncTaskBase task)
         {
             try
             {
-                // If the animation is not generated, this may take a lot of time (though the default quantizer is quite fast). TODO: async, and progress bar in the caller
+                // If the animation is not generated, this may take a lot of time (though the default quantizer is quite fast).
                 var ms = new MemoryStream();
-                info.GetCreateImage()!.SaveAsGif(ms);
+                Debug.Assert(info.Type == ImageInfoType.Animation);
+                var config = new AnimatedGifConfiguration(info.IterateFramesBitmapData(task), info.Frames!.Select(f => TimeSpan.FromMilliseconds(f.Duration)))
+                {
+                    Size = info.Size,
+                    SizeHandling = AnimationFramesSizeHandling.Center
+                };
+
+                // NOTE: Begin/End like this is alright, we are already on a pool thread. We could just use an EncodeAnimation overload with ParallelConfig if existed.
+                var asyncConfig = new AsyncConfig { IsCancelRequestedCallback = () => task.IsCanceled, ThrowIfCanceled = false };
+                GifEncoder.EndEncodeAnimation(GifEncoder.BeginEncodeAnimation(config, ms, asyncConfig));
+                if (task.IsCanceled)
+                    return;
+                ms.Position = 0L;
+                info.Image = new Bitmap(ms);
+                if (task.IsCanceled)
+                    return;
+
                 formats.Add(gifFormat, ms);
             }
             catch (Exception e) when (!e.IsCritical())
