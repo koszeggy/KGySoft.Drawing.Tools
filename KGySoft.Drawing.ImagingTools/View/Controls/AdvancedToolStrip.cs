@@ -541,21 +541,29 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 // - Separator width is ignored
                 // - The separator placement matches with high contrast mode. On 100% DPI this means 1 pixel shift so the image area is perfectly rectangular
                 // - Supporting AdvancedToolStripSplitButton checked state (rendering the same way as OnRenderButtonBackground does it)
+                // - Supporting AdvancedToolStripSplitButton disabled button state (highlighting the drop-down part only)
                 // - Using theme colors
                 static void DrawThemed(ToolStripItemRenderEventArgs e, ProfessionalColorTable colorTable, ButtonStyle style)
                 {
                     var button = (ToolStripSplitButton)e.Item;
                     Rectangle bounds = new Rectangle(Point.Empty, button.Size);
+                    ButtonStyle commonStyle = style & (ButtonStyle.Dropped | ButtonStyle.Selected);
+                    bool buttonDisabled = (style & ButtonStyle.Dropped) == 0 && button is AdvancedToolStripSplitButton { ButtonEnabled: false };
 
                     // common part
-                    ButtonStyle commonStyle = style & (ButtonStyle.Dropped | ButtonStyle.Selected);
-                    if (commonStyle != ButtonStyle.None)
+                    if (commonStyle != ButtonStyle.None && !buttonDisabled)
                         DrawThemedButtonBackground(e.Graphics, colorTable, bounds, commonStyle);
                     else if (button.Owner != null && button.BackColor != button.Owner.BackColor)
                         e.Graphics.FillRectangle(button.BackColor.ToThemeColor().GetBrush(), bounds);
 
+                    // drop-down part only
+                    if (buttonDisabled)
+                    {
+                        if (((AdvancedToolStripSplitButton)button).IsDropDownHovered)
+                            DrawThemedButtonBackground(e.Graphics, colorTable, button.DropDownButtonBounds, commonStyle);
+                    }
                     // button part
-                    if ((style & ButtonStyle.Pressed) != 0
+                    else if ((style & ButtonStyle.Pressed) != 0
                         || (style & ButtonStyle.Checked) != 0
                         || (style & ButtonStyle.Selected) != 0 && (style & ButtonStyle.Dropped) == 0)
                     {
@@ -581,21 +589,30 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 // - Fixed arrow color
                 // - Fixed border color when button is not dropped
                 // - Supporting AdvancedToolStripSplitButton checked state (rendering the same way as OnRenderButtonBackground does it)
+                // - Supporting AdvancedToolStripSplitButton disabled button state (highlighting the drop-down part only)
                 static void DrawHighContrast(ToolStripItemRenderEventArgs e, ButtonStyle style)
                 {
                     var button = (ToolStripSplitButton)e.Item;
                     Rectangle bounds = new Rectangle(Point.Empty, button.Size);
                     Rectangle dropBounds = button.DropDownButtonBounds;
+                    ButtonStyle commonStyle = style & (ButtonStyle.Dropped | ButtonStyle.Selected);
+                    bool buttonDisabled = (style & ButtonStyle.Dropped) == 0 && button is AdvancedToolStripSplitButton { ButtonEnabled: false };
+                    bool drawDropDownBackground = button is not AdvancedToolStripSplitButton advancedButton || advancedButton.IsDropDownHovered || advancedButton.ButtonEnabled;
 
                     // common part
-                    ButtonStyle commonStyle = style & (ButtonStyle.Dropped | ButtonStyle.Selected);
-                    if (commonStyle != ButtonStyle.None)
+                    if (commonStyle != ButtonStyle.None && !buttonDisabled)
                         DrawHighContrastButtonBackground(e.Graphics, bounds, commonStyle);
 
+                    // drop-down part only
+                    if (buttonDisabled)
+                    {
+                        if (drawDropDownBackground)
+                            DrawHighContrastButtonBackground(e.Graphics, button.DropDownButtonBounds, style);
+                    }
                     // button part
-                    if ((style & ButtonStyle.Pressed) != 0
+                    else if ((style & ButtonStyle.Pressed) != 0
                         || (style & ButtonStyle.Checked) != 0
-                        || (style & ButtonStyle.Selected) != 0 && (style & ButtonStyle.Dropped) == 0)
+                             || (style & ButtonStyle.Selected) != 0 && (style & ButtonStyle.Dropped) == 0)
                     {
                         bounds = button.ButtonBounds;
                         bounds.Width += 2;
@@ -607,7 +624,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
                     // drop down border
                     Color arrowColor = button.Enabled ? SystemColors.ControlText : SystemColors.GrayText;
-                    if ((style & ButtonStyle.Dropped) == 0 && (style & ButtonStyle.Selected) != 0)
+                    if (drawDropDownBackground && (style & ButtonStyle.Dropped) == 0 && (style & ButtonStyle.Selected) != 0)
                     {
                         e.Graphics.DrawRectangle(SystemPens.ControlLight, dropBounds.X, dropBounds.Y, dropBounds.Width - 1, dropBounds.Height - 1);
                         arrowColor = SystemColors.HighlightText;
@@ -653,8 +670,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             /// - Unlike Windows' base implementation, not drawing the checked menu item background again, which is already done by OnRenderItemCheck
             /// - [Mono]: Scaling menu item images
             /// - [HighContrast]: Shifting also clicked ToolStripSplitButton images just like for buttons
-            /// - AdvancedToolStripDropDownButton image: manually calculated image bounds. Fixes .NET 10 per-monitor DPI awareness issue,
+            /// - ToolStripDropDownButton image: manually calculated image bounds. Fixes .NET 10 per-monitor DPI awareness issue,
             ///   where e.ImageRectangle can be very distorted (e.g. 9x16) when changing DPI from 150% to 100%
+            /// - AdvancedToolStripDropDownButton: respecting the ButtonEnabled property
             /// </summary>
             protected override void OnRenderItemImage(ToolStripItemImageRenderEventArgs e)
             {
@@ -673,11 +691,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 else if (ThemeColors.HighContrast && e.Item is ToolStripButton { Pressed: true } or ToolStripSplitButton { ButtonPressed: true })
                     bounds.X += 1;
 
-                // On ToolStripSplitButtons the image originally is not quite centered
-                if (e.Item is ToolStripSplitButton)
-                    bounds.X += e.Item.RightToLeft == RightToLeft.Yes ? -1 : 1;
+                bool enabled = e.Item.Enabled;
 
-                Image image = e.Item.Enabled ? e.Image : disabledImagesCache[e.Image];
+                // On ToolStripSplitButtons the image originally is not quite centered, and the AdvancedToolStripSplitButton may have a disabled button
+                if (e.Item is ToolStripSplitButton)
+                {
+                    bounds.X += e.Item.RightToLeft == RightToLeft.Yes ? -1 : 1;
+                    if (e.Item is AdvancedToolStripSplitButton { ButtonEnabled: false })
+                        enabled = false;
+                }
+
+                Image image = enabled ? e.Image : disabledImagesCache[e.Image];
                 if (e.Item.ImageScaling == ToolStripItemImageScaling.None)
                     e.Graphics.DrawImage(image, bounds, new Rectangle(Point.Empty, bounds.Size), GraphicsUnit.Pixel);
                 else

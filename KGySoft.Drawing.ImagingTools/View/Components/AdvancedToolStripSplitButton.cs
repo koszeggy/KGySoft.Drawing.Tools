@@ -27,9 +27,16 @@ using KGySoft.WinForms;
 namespace KGySoft.Drawing.ImagingTools.View.Components
 {
     /// <summary>
-    /// A <see cref="ToolStripSplitButton"/> whose button part can be checked and the default item can automatically be changed.
+    /// A <see cref="ToolStripSplitButton"/> with some additional features and fixes:
+    /// - Checked property: the button part can be checked
+    /// - CheckOnClick property
+    /// - AutoChangeDefaultItem: clicking an item changes the default item
+    /// - ButtonEnabled: allows disabling the button part only. When DefaultItem is set, it automatically reflects the Enabled property of the default item
+    /// - DefaultItem: Like in the base, but with fixed OnDefaultItemChanged handling:
+    ///   in the base the DefaultItem still returns the old value when the OnDefaultItemChanged method executes.
+    /// - OnDefaultItemChanged: Sets button Image/Text/ToolTipText/Enabled properties from the default item
     /// </summary>
-    // NOTE: The properly scaled arrow and the checked appearance is rendered by AdvancedToolStripRenderer, while
+    // NOTE: The properly scaled arrow and the checked/disabled appearance is rendered by AdvancedToolStripRenderer, while
     // the drop-down button size is adjusted in AdvancedToolStrip for all ToolStripSplitButtons
     internal class AdvancedToolStripSplitButton : ToolStripSplitButton
     {
@@ -37,10 +44,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
 
         private bool isChecked;
         private bool autoChangeDefaultItem;
+        private bool buttonEnabled = true;
+        private bool suppressChanged;
+        private ToolStripItem? lastDefaultItem;
 
         #endregion
 
         #region Properties
+
+        #region Public Properties
 
         [DefaultValue(false)]
         public bool CheckOnClick { get; set; }
@@ -69,9 +81,48 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
                     return;
                 autoChangeDefaultItem = value;
                 if (value && DropDownItems.Count > 0)
-                    SetDefaultItem(DropDownItems[0]);
+                    DefaultItem = DropDownItems[0];
             }
         }
+
+        [DefaultValue(true)]
+        public bool ButtonEnabled
+        {
+            get => buttonEnabled;
+            set
+            {
+                if (value == buttonEnabled)
+                    return;
+                buttonEnabled = value;
+                Invalidate();
+            }
+        }
+
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public new ToolStripItem? DefaultItem
+        {
+            get => base.DefaultItem;
+            set
+            {
+                if (base.DefaultItem == value)
+                    return;
+
+                // Fixing OnDefaultItemChanged handling. In base, it is called BEFORE actually changing DefaultItem.
+                suppressChanged = true;
+                base.DefaultItem = value;
+                suppressChanged = false;
+                OnDefaultItemChanged(EventArgs.Empty);
+            }
+        }
+
+        #endregion
+
+        #region Internal Properties
+
+        internal bool IsDropDownHovered { get; set; }
+
+        #endregion
 
         #endregion
 
@@ -101,22 +152,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
 
         #endregion
 
-        #region Internal Methods
-
-        internal void SetDefaultItem(ToolStripItem item)
-        {
-            DefaultItem = item;
-            Image = item.Image;
-            Text = item.Text;
-            ToolTipText = item.ToolTipText;
-        }
-
-        #endregion
-
         #region Protected Methods
 
         protected override void OnButtonClick(EventArgs e)
         {
+            if (!ButtonEnabled)
+                return;
             if (CheckOnClick)
                 Checked = !Checked;
             if (OSHelper.IsFrameworkMono)
@@ -125,13 +166,91 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
                 base.OnButtonClick(e);
         }
 
+        protected override bool ProcessDialogKey(Keys keyData)
+        {
+            if (Enabled && keyData is Keys.Enter or Keys.Space)
+            {
+                if (ButtonEnabled)
+                    PerformButtonClick();
+                return true;
+            }
+
+            return base.ProcessDialogKey(keyData);
+        }
+
+        protected override bool ProcessMnemonic(char charCode) => !ButtonEnabled || base.ProcessMnemonic(charCode);
+
         protected virtual void OnCheckedChanged(EventArgs e) => (Events[nameof(CheckedChanged)] as EventHandler)?.Invoke(this, e);
 
         protected override void OnDropDownItemClicked(ToolStripItemClickedEventArgs e)
         {
             base.OnDropDownItemClicked(e);
             if (autoChangeDefaultItem && DefaultItem != e.ClickedItem && e.ClickedItem != null)
-                SetDefaultItem(e.ClickedItem);
+                DefaultItem = e.ClickedItem;
+        }
+
+        protected override void OnDefaultItemChanged(EventArgs e)
+        {
+            if (suppressChanged)
+                return;
+
+            lastDefaultItem?.EnabledChanged -= DefaultItemEnabledChanged;
+            lastDefaultItem = DefaultItem;
+            lastDefaultItem?.EnabledChanged += DefaultItemEnabledChanged;
+            if (lastDefaultItem != null)
+            {
+                Image = lastDefaultItem.Image;
+                Text = lastDefaultItem.Text;
+                ToolTipText = lastDefaultItem.ToolTipText;
+                ButtonEnabled = lastDefaultItem.Enabled;
+            }
+
+            base.OnDefaultItemChanged(e);
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            bool isDropDownHovered = DropDownButtonBounds.Contains(e.Location);
+            if (!ButtonEnabled && isDropDownHovered != IsDropDownHovered)
+                Invalidate(DropDownButtonBounds);
+            IsDropDownHovered = isDropDownHovered;
+            base.OnMouseMove(e);
+        }
+
+        protected override void OnMouseLeave(EventArgs e)
+        {
+            IsDropDownHovered = false;
+            base.OnMouseLeave(e);
+        }
+
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            IsDropDownHovered = DropDownButtonBounds.Contains(e.Location);
+            if (ButtonEnabled || IsDropDownHovered)
+                base.OnMouseDown(e);
+        }
+
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            IsDropDownHovered = DropDownButtonBounds.Contains(e.Location);
+            if (ButtonEnabled || IsDropDownHovered)
+                base.OnMouseUp(e);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            lastDefaultItem?.EnabledChanged -= DefaultItemEnabledChanged;
+            base.Dispose(disposing);
+        }
+
+        #endregion
+
+        #region Event Handlers
+
+        private void DefaultItemEnabledChanged(object? sender, EventArgs e)
+        {
+            Debug.Assert(DefaultItem == lastDefaultItem);
+            ButtonEnabled = DefaultItem?.Enabled == true;
         }
 
         #endregion

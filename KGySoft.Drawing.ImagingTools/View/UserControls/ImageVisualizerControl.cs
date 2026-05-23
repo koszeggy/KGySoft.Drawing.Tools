@@ -168,7 +168,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             miPastePreferBitmap.Image = Images.PasteBitmap;
             miPastePreferVector.Image = Images.PasteVector;
             miPasteSpecial.Image = Images.PasteSpecial;
-            btnPaste.SetDefaultItem(miPaste);
+            btnPaste.DefaultItem = miPaste;
 
             btnColorSettings.Image = Images.Palette;
             miBackColorDefault.Image = Images.Check;
@@ -187,9 +187,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             miManageInstallations.Image = Images.Settings;
             miLanguageSettings.Image = Images.Language;
 #if NETFRAMEWORK && !NET472_OR_GREATER
-            btnConfiguration.SetDefaultItem(miManageInstallations);
+            btnConfiguration.DefaultItem = miManageInstallations;
 #else
-            btnConfiguration.SetDefaultItem(miLanguageSettings);
+            btnConfiguration.DefaultItem = miLanguageSettings;
 #endif
 
             miEasterEgg.Image = Images.ImagingTools;
