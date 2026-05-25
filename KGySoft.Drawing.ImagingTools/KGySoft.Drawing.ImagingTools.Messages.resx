@@ -150,6 +150,9 @@
   <data name="Title_FolderDialog" xml:space="preserve">
     <value>Browse For Folder</value>
   </data>
+  <data name="Title_PasteSpecialDialog" xml:space="preserve">
+    <value>Paste Special</value>
+  </data>
   <data name="Text_Separator" xml:space="preserve">
     <value>; </value>
   </data>
@@ -236,6 +239,12 @@
   </data>
   <data name="Text_DefaultResourcesPath" xml:space="preserve">
     <value>(Default path)</value>
+  </data>
+  <data name="Text_PasteSpecialMessage" xml:space="preserve">
+    <value>Select a supported clipboard image format.</value>
+  </data>
+  <data name="Text_PasteSpecialCheckBox" xml:space="preserve">
+    <value>Try to restore transparency</value>
   </data>
   <data name="ToolTipText_CompoundAnimation" xml:space="preserve">
     <value>Toggles whether the animation is handled as a single image.
@@ -517,7 +526,10 @@ so partial transparent pixels will be blended with back color.</value>
     <value>The specified path is not an existing directory. It will be attempted to be created.</value>
   </data>
   <data name="WarningMessage_CannotPasteClipboard" xml:space="preserve">
-    <value>The clipboard does not contain an image in the required format.</value>
+    <value>The clipboard does not contain any valid image in the supported formats.</value>
+  </data>
+  <data name="WarningMessage_CannotPasteSpecial" xml:space="preserve">
+    <value>Could not paste the image in the requested format.</value>
   </data>
   <data name="WarningMessage_CannotCopyClipboard" xml:space="preserve">
     <value>Could not access the clipboard for copying. Maybe it is locked by another process.</value>

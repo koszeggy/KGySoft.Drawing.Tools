@@ -44,6 +44,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Properties
 
+        #region Internal Properties
+
         internal bool ReadOnly { get => Get<bool>(); set => Set(value); }
         internal bool IsBusy { get => Get<bool>(); set => Set(value); }
 
@@ -56,6 +58,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommandState AcceptWithCloseCommandState => Get(() => new CommandState { Enabled = false });
         internal ICommandState DiscardWithCloseCommandState => Get(() => new CommandState());
         internal ICommandState ApplyChangesCommandCommandState => Get(() => new CommandState { Enabled = false });
+
+        #endregion
+
+        #region Protected Properties
+
+        protected bool ClosedWithAccept { get; private set; }
+
+        #endregion
 
         #endregion
 
@@ -101,7 +111,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Command Handlers
 
-        private void OnAcceptWithCloseCommand() => CloseViewCallback?.Invoke();
+        private void OnAcceptWithCloseCommand()
+        {
+            ClosedWithAccept = true;
+            CloseViewCallback?.Invoke();
+        }
+
         private void OnDiscardWithCloseCommand() => CloseViewCallback?.Invoke();
 
         private void OnApplyChangesCommand()

@@ -116,6 +116,8 @@ namespace KGySoft.Drawing.ImagingTools
         internal static bool AutoShrinkLargeBitmap { get => Get(true); set => Set(value); }
         internal static bool CompoundView { get => Get(true); set => Set(value); }
         internal static Uri BaseUri => baseUri ??= new Uri(ResourceRepositoryLocation);
+        internal static string? PreferredClipboardFormat { get => Get<string?>(); set => Set(value); }
+        internal static bool TryDetectClipboardAlpha { get => Get<bool>(); set => Set(value); }
 
         #endregion
 

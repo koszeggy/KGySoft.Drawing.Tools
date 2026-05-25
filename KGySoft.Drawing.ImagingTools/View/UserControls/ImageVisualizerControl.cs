@@ -357,6 +357,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SaveFileFilterIndex), nameof(dlgSave.FilterIndex), dlgSave);
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SaveFileDefaultExtension), nameof(dlgSave.DefaultExt), dlgSave);
 
+            // VM.ViewModel.PasteCommandState.Enabled -> btnPaste.Enabled
+            CommandBindings.AddPropertyBinding(ViewModel.PasteCommandState, nameof(ViewModel.PasteCommandState.Enabled), nameof(btnPaste.Enabled), btnPaste);
+
             bool isInForm = ParentForm != null;
             buttons.OKButtonVisible = buttons.CancelButtonVisible = isInForm;
             buttons.ApplyButtonVisible = !isInForm;
@@ -397,6 +400,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 .AddSource(btnCopy, nameof(btnCopy.Click));
             CommandBindings.Add(ViewModel.PasteCommand, ViewModel.PasteCommandState)
                 .AddSource(miPaste, nameof(miPaste.Click));
+            CommandBindings.Add(ViewModel.PastePreferBitmapCommand, ViewModel.PastePreferBitmapCommandState)
+                .AddSource(miPastePreferBitmap, nameof(miPastePreferBitmap.Click));
+            CommandBindings.Add(ViewModel.PastePreferVectorCommand, ViewModel.PasteCommandState)
+                .AddSource(miPastePreferVector, nameof(miPastePreferVector.Click));
+            CommandBindings.Add(ViewModel.PasteSpecialCommand, ViewModel.PasteCommandState)
+                .AddSource(miPasteSpecial, nameof(miPasteSpecial.Click));
 
             // Color Settings
             CommandBindings.Add<EventArgs>(OnSetBackColorCommand)

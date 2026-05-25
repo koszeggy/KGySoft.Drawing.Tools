@@ -102,6 +102,7 @@ namespace KGySoft.Drawing.ImagingTools.View
         internal static Bitmap Compare => compare ??= GetResource(nameof(Compare));
 
         internal static Icon OpenIcon => GetResourceIcon(nameof(Open));
+        internal static Icon PasteSpecialIcon => GetResourceIcon(nameof(PasteSpecial));
 
         #endregion
 

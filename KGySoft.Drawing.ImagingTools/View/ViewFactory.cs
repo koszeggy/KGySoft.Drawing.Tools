@@ -63,6 +63,7 @@ namespace KGySoft.Drawing.ImagingTools.View
                 LanguageSettingsViewModel languageSettingsViewModel => new LanguageSettingsControl(languageSettingsViewModel),
                 EditResourcesViewModel editResourcesViewModel => new EditResourcesControl(editResourcesViewModel),
                 DownloadResourcesViewModel downloadResourcesViewModel => new DownloadResourcesControl(downloadResourcesViewModel),
+                PasteSpecialViewModel pasteSpecialViewModel => new PasteSpecialDialog(pasteSpecialViewModel),
                 _ => throw new InvalidOperationException(Res.InternalError($"Unexpected viewModel type: {viewModel.GetType()}"))
             };
         }

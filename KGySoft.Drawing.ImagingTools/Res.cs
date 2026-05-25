@@ -172,6 +172,9 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Browse For Folder</summary>
         internal static string TitleFolderDialog => Get("Title_FolderDialog");
 
+        /// <summary>Paste Special</summary>
+        internal static string TitlePasteSpecialDialog => Get("Title_PasteSpecialDialog");
+
         #endregion
 
         #region Texts
@@ -238,6 +241,12 @@ namespace KGySoft.Drawing.ImagingTools
 
         /// <summary>(Default path)</summary>
         internal static string TextDefaultResourcesPath => Get("Text_DefaultResourcesPath");
+
+        /// <summary>Select a supported clipboard image format.</summary>
+        internal static string TextPasteSpecialMessage => Get("Text_PasteSpecialMessage");
+
+        /// <summary>Try to restore transparency</summary>
+        internal static string TextPasteSpecialCheckBox => Get("Text_PasteSpecialCheckBox");
 
         #endregion
 
@@ -315,8 +324,11 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>The specified path is not an existing directory. It will be attempted to be created.</summary>
         internal static string WarningMessageDirectoryNotExists => Get("WarningMessage_DirectoryNotExists");
 
-        /// <summary>The clipboard does not contain an image in the required format.</summary>
+        /// <summary>The clipboard does not contain any valid image in the supported formats.</summary>
         internal static string WarningMessageCannotPasteClipboard => Get("WarningMessage_CannotPasteClipboard");
+
+        /// <summary>Could not paste the image in the requested format.</summary>
+        internal static string WarningMessageCannotPasteSpecial => Get("WarningMessage_CannotPasteSpecial");
 
         /// <summary>Could not access the clipboard for copying. Maybe it is locked by another process.</summary>
         internal static string WarningMessageCannotCopyClipboard => Get("WarningMessage_CannotCopyClipboard");

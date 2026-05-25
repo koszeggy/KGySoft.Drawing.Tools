@@ -50,6 +50,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #endregion
 
         #region Methods
+        
+        #region Public Methods
 
         /// <summary>
         /// Creates a view model for the default view without any loaded image.
@@ -283,6 +285,16 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// </summary>
         /// <returns>An <see cref="IViewModel{TResult}"/> instance that represents a view model for managing language settings.</returns>
         public static IViewModel<ICollection<LocalizationInfo>> CreateDownloadResources() => new DownloadResourcesViewModel();
+
+        #endregion
+
+        #region Internal Methods
+
+        // Not a public API, because the result is not too useful as a general use case. Some more general UserChoice response-request could be public though.
+        // This VM is more specific, because the options may change dynamically. A general user choice would only update the localization dynamically if the language changes.
+        internal static IViewModel<(string? Format, bool CustomAlphaDetection)> CreatePasteSpecial(AllowedImageTypes allowedImageTypes) => new PasteSpecialViewModel(allowedImageTypes);
+
+        #endregion
 
         #endregion
     }
