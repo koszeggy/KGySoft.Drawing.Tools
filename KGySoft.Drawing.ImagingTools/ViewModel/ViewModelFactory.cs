@@ -292,7 +292,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         // Not a public API, because the result is not too useful as a general use case. Some more general UserChoice response-request could be public though.
         // This VM is more specific, because the options may change dynamically. A general user choice would only update the localization dynamically if the language changes.
-        internal static IViewModel<(string? Format, bool CustomAlphaDetection)> CreatePasteSpecial(AllowedImageTypes allowedImageTypes) => new PasteSpecialViewModel(allowedImageTypes);
+        internal static IViewModel<(string? Format, bool CustomAlphaDetection)> CreatePasteSpecial() => new PasteSpecialViewModel();
 
         #endregion
 

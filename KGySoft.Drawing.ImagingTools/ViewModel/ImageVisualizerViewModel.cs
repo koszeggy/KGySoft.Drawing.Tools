@@ -96,7 +96,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             internal bool AllowMultiFrame;
             internal bool PrevEnabled;
             internal bool NextEnabled;
-            internal bool PreferMetafile;
 
             #endregion
         }
@@ -219,7 +218,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommandState ClearCommandState => Get(() => new CommandState { Enabled = false });
         internal ICommandState CopyCommandState => Get(() => new CommandState { Enabled = false });
         internal ICommandState PasteCommandState => Get(() => new CommandState { Enabled = false });
-        internal ICommandState PastePreferBitmapCommandState => Get(() => new CommandState());
+        internal ICommandState PasteAsBitmapCommandState => Get(() => new CommandState());
+        internal ICommandState PasteAsMetafileCommandState => Get(() => new CommandState());
         internal ICommandState SetCompoundViewCommandState => Get(() => new CommandState { [stateVisible] = false });
         internal ICommandState AdvanceAnimationCommandState => Get(() => new CommandState());
         internal ICommandState PrevImageCommandState => Get(() => new CommandState());
@@ -236,8 +236,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommand ClearCommand => Get(() => new SimpleCommand(OnClearCommand));
         internal ICommand CopyCommand => Get(() => new SimpleCommand(OnCopyCommand));
         internal ICommand PasteCommand => Get(() => new SimpleCommand(OnPasteCommand));
-        internal ICommand PastePreferBitmapCommand => Get(() => new SimpleCommand(OnPastePreferBitmapCommand));
-        internal ICommand PastePreferVectorCommand => Get(() => new SimpleCommand(OnPastePreferVectorCommand));
+        internal ICommand PasteAsBitmapCommand => Get(() => new SimpleCommand(OnPasteAsBitmapCommand));
+        internal ICommand PasteAsMetafileCommand => Get(() => new SimpleCommand(OnPasteAsMetafileCommand));
         internal ICommand PasteSpecialCommand => Get(() => new SimpleCommand(OnPasteSpecialCommand));
         internal ICommand SetCompoundViewCommand => Get(() => new SimpleCommand<bool>(OnSetCompoundViewCommand));
         internal ICommand AdvanceAnimationCommand => Get(() => new SimpleCommand(OnAdvanceAnimationCommand));
@@ -674,14 +674,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             bool isReadOnly = ReadOnly;
             bool isLoaded = imageInfo.Type != ImageInfoType.None;
             bool isSingleImageShown = isLoaded && !imageInfo.HasFrames || currentFrame >= 0 && !IsAutoPlaying;
-            AllowedImageTypes usableTypes = isBusy ? AllowedImageTypes.None : ClipboardHelper.AvailableImageTypes & imageTypes;
-            bool canPaste = !isBusy && !isReadOnly && usableTypes != AllowedImageTypes.None;
+            bool canPaste = !isBusy && !isReadOnly && ClipboardHelper.ContainsSupportedImage;
             OpenFileCommandState.Enabled = !isReadOnly && !isBusy;
             SaveFileCommandState.Enabled = isLoaded && !isBusy;
             ClearCommandState.Enabled = isLoaded && !isReadOnly && !isBusy;
             CopyCommandState.Enabled = isLoaded && !isBusy;
             PasteCommandState.Enabled = canPaste;
-            PastePreferBitmapCommandState.Enabled = canPaste && (usableTypes & (AllowedImageTypes.Bitmap | AllowedImageTypes.Icon)) != AllowedImageTypes.None;
+            PasteAsBitmapCommandState.Enabled = canPaste && (imageTypes & (AllowedImageTypes.Bitmap | AllowedImageTypes.Icon)) != AllowedImageTypes.None;
+            PasteAsMetafileCommandState.Enabled = canPaste && (imageTypes & AllowedImageTypes.Metafile) != AllowedImageTypes.None;
             ShowPaletteCommandState.Enabled = !isBusy && IsPaletteAvailable();
             EditBitmapCommandState.Enabled = isLoaded && !isReadOnly && !isBusy && !imageInfo.IsMetafile && isSingleImageShown;
             CountColorsCommandState.Enabled = isLoaded && !isBusy && !imageInfo.IsMetafile && isSingleImageShown;
@@ -1580,18 +1580,18 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
         }
 
-        private void PasteFromClipboard(bool? preferVectorFormats)
+        private void PasteFromClipboard(AllowedImageTypes? forcedFormat)
         {
             Debug.Assert(!IsBusy && activeTask == null);
+            Debug.Assert((forcedFormat & imageTypes) != AllowedImageTypes.None, "Forcing a non-allowed format is not expected here");
             IsBusy = true;
             ImageInfoBase currentImage = GetCurrentImageInfo(true);
             var task = new PasteTask
             {
-                AllowedTypes = currentImage is ImageInfo ? imageTypes : AllowedImageTypes.Bitmap | AllowedImageTypes.Icon,
+                AllowedTypes = forcedFormat ?? (currentImage is ImageInfo ? imageTypes : AllowedImageTypes.Bitmap | AllowedImageTypes.Icon),
                 AllowMultiFrame = currentImage is ImageInfo,
                 PrevEnabled = PrevImageCommandState.Enabled,
                 NextEnabled = NextImageCommandState.Enabled,
-                PreferMetafile = preferVectorFormats ?? (imageTypes & AllowedImageTypes.Metafile) != 0
             };
 
             // Unlike for other async tasks, disabling compound/prev/next for pasting so compound view or current frame remains the same until the end of the operation.
@@ -1604,7 +1604,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void PasteSpecial()
         {
             Debug.Assert(!IsBusy && activeTask == null);
-            using var viewModel = ViewModelFactory.CreatePasteSpecial(imageTypes);
+            using var viewModel = ViewModelFactory.CreatePasteSpecial();
             ShowChildViewCallback?.Invoke(viewModel);
             (string? format, bool tryDetectAlpha) = viewModel.GetEditedModel();
             if (!viewModel.IsModified || format == null)
@@ -1643,7 +1643,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
                 result = task is PasteSpecialTask pasteSpecial
                     ? ClipboardHelper.TryPasteSpecial(pasteSpecial.Format, task.AllowedTypes, task.AllowMultiFrame, pasteSpecial.TryDetectAlpha, task)
-                    : ClipboardHelper.TryPasteFromClipboard(task.AllowedTypes, task.AllowMultiFrame, task.PreferMetafile, task);
+                    : ClipboardHelper.TryPasteFromClipboard(task.AllowedTypes, task.AllowMultiFrame, task);
 
                 // It must be completed before handling the rest on the UI thread. From now on, nothing is done in the worker thread, but the nullification.
                 // UI callbacks must be expected not to be executed at all, if the UI has been closed.
@@ -1720,8 +1720,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void OnClearCommand() => Clear();
         private void OnCopyCommand() => CopyToClipboard();
         private void OnPasteCommand() => PasteFromClipboard(null);
-        private void OnPastePreferBitmapCommand() => PasteFromClipboard(false);
-        private void OnPastePreferVectorCommand() => PasteFromClipboard(true);
+        private void OnPasteAsBitmapCommand() => PasteFromClipboard(imageTypes & (AllowedImageTypes.Bitmap | AllowedImageTypes.Icon));
+        private void OnPasteAsMetafileCommand() => PasteFromClipboard(AllowedImageTypes.Metafile);
         private void OnPasteSpecialCommand() => PasteSpecial();
 
         private void OnSetCompoundViewCommand(bool isCompound) => IsCompoundView = isCompound;
@@ -1827,9 +1827,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 return;
             TryInvokeSync(() =>
             {
-                AllowedImageTypes formats = ClipboardHelper.AvailableImageTypes & imageTypes;
-                PasteCommandState.Enabled = formats != AllowedImageTypes.None;
-                PastePreferBitmapCommandState.Enabled = (formats & (AllowedImageTypes.Bitmap | AllowedImageTypes.Icon)) != AllowedImageTypes.None;
+                bool hasImage = ClipboardHelper.ContainsSupportedImage;
+                PasteCommandState.Enabled = hasImage;
+                PasteAsBitmapCommandState.Enabled = hasImage && (imageTypes & (AllowedImageTypes.Bitmap | AllowedImageTypes.Icon)) != AllowedImageTypes.None;
+                PasteAsMetafileCommandState.Enabled = hasImage && (imageTypes & AllowedImageTypes.Metafile) != AllowedImageTypes.None;
             });
         }
 

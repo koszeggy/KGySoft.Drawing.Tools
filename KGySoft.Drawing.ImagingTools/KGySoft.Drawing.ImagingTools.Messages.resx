@@ -744,11 +744,11 @@ Harmonizing visual elements for all possible environments is never a trivial tas
   <data name="miPasteSpecial.ToolTipText" xml:space="preserve">
     <value>Paste Special (Ctrl+Shift+V)</value>
   </data>
-  <data name="miPastePreferBitmap.Text" xml:space="preserve">
-    <value>Paste - Prefer Bitmap Formats</value>
+  <data name="miPasteAsBitmap.Text" xml:space="preserve">
+    <value>Paste As Bitmap</value>
   </data>
-  <data name="miPastePreferVector.Text" xml:space="preserve">
-    <value>Paste - Prefer Vector Formats</value>
+  <data name="miPasteAsMetafile.Text" xml:space="preserve">
+    <value>Paste As Metafile</value>
   </data>
   <data name="btnColorSettings.Text" xml:space="preserve">
     <value>Color Settings</value>

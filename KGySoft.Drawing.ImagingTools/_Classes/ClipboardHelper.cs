@@ -170,8 +170,17 @@ namespace KGySoft.Drawing.ImagingTools
         #region Fields
 
         private readonly static Lock syncRoot = new();
-        private readonly static string[] bitmapFormats = [DataFormats.Bitmap, DataFormats.Dib, DataFormats.Tiff, typeof(Bitmap).FullName!, pngFormat, gifFormat, dibV5Format];
-        private readonly static string[] metafileFormats = [DataFormats.EnhancedMetafile, DataFormats.MetafilePict, emfFormat, wmfFormat];
+        private readonly static string[] supportedFormats =
+        [
+            // bitmap formats
+            DataFormats.Bitmap, DataFormats.Dib, DataFormats.Tiff, typeof(Bitmap).FullName!, pngFormat, gifFormat, dibV5Format,
+
+            // metafile formats
+            DataFormats.EnhancedMetafile, DataFormats.MetafilePict, emfFormat, wmfFormat,
+
+            // icon format
+            iconFormat
+        ];
 
         private static EventHandler? clipboardChangedHandler;
         private static ClipboardListener? clipboardViewer;
@@ -218,39 +227,7 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Properties
 
-        internal static AllowedImageTypes AvailableImageTypes
-        {
-
-            get
-            {
-                try
-                {
-                    IWinFormsDataObject? dataObject = Clipboard.GetDataObject();
-
-                    // fallback path, on regular windows it should not happen
-                    if (dataObject == null)
-                    {
-                        Debug.Fail("AvailableImageTypes: Clipboard.GetDataObject returned null");
-                        return Clipboard.ContainsImage() ? AllowedImageTypes.Bitmap : AllowedImageTypes.None;
-                    }
-
-                    var result = AllowedImageTypes.None;
-                    string[] formats = dataObject.GetFormats(false);
-                    if (formats.Intersect(bitmapFormats).Any())
-                        result |= AllowedImageTypes.Bitmap;
-                    if (formats.Intersect(metafileFormats).Any())
-                        result |= AllowedImageTypes.Metafile;
-                    if (formats.Contains(iconFormat))
-                        result |= AllowedImageTypes.Icon;
-
-                    return result;
-                }
-                catch (Exception e) when (!e.IsCritical())
-                {
-                    return AllowedImageTypes.None;
-                }
-            }
-        }
+        internal static bool ContainsSupportedImage => GetImageFormats().Length > 0;
 
         #endregion
 
@@ -258,24 +235,14 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Internal Methods
 
-        internal static string[] GetImageFormats(AllowedImageTypes allowedTypes)
+        internal static string[] GetImageFormats()
         {
-            Debug.Assert(allowedTypes != AllowedImageTypes.None);
             try
             {
                 string[]? formats = Clipboard.GetDataObject()?.GetFormats(false);
-                if (formats.IsNullOrEmpty())
-                    return Reflector.EmptyArray<string>();
-
-                var allowedFormats = new List<string>();
-                if ((allowedTypes & AllowedImageTypes.Bitmap) != 0)
-                    allowedFormats.AddRange(bitmapFormats);
-                if ((allowedTypes & AllowedImageTypes.Metafile) != 0)
-                    allowedFormats.AddRange(metafileFormats);
-                if ((allowedTypes & AllowedImageTypes.Icon) != 0)
-                    allowedFormats.Add(iconFormat);
-
-                return formats!.Intersect(allowedFormats).ToArray();
+                return formats.IsNullOrEmpty()
+                    ? Reflector.EmptyArray<string>()
+                    : formats!.Intersect(supportedFormats).ToArray();
             }
             catch (Exception e) when (!e.IsCritical())
             {
@@ -363,11 +330,11 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        internal static ImageInfo? TryPasteFromClipboard(AllowedImageTypes allowedTypes, bool allowMultiFrame, bool preferMetafile, AsyncTaskContext task)
-            => DoTryPasteFromClipboard(null, allowedTypes, allowMultiFrame, preferMetafile, default, task);
+        internal static ImageInfo? TryPasteFromClipboard(AllowedImageTypes allowedTypes, bool allowMultiFrame, AsyncTaskContext task)
+            => DoTryPasteFromClipboard(null, allowedTypes, allowMultiFrame, default, task);
 
         internal static ImageInfo? TryPasteSpecial(string format, AllowedImageTypes allowedTypes, bool allowMultiFrame, bool detectAlpha, AsyncTaskContext task)
-            => DoTryPasteFromClipboard(format, allowedTypes, allowMultiFrame, default, detectAlpha, task);
+            => DoTryPasteFromClipboard(format, allowedTypes, allowMultiFrame, detectAlpha, task);
 
         #endregion
 
@@ -674,8 +641,8 @@ namespace KGySoft.Drawing.ImagingTools
                 IntPtr dcScreen = IntPtr.Zero;
                 try
                 {
-                try
-                {
+                    try
+                    {
                         Size size = bitmap.Size;
                         dcScreen = User32.GetDC(IntPtr.Zero);
                         hbmSrc = bitmap.GetHbitmap();
@@ -707,7 +674,7 @@ namespace KGySoft.Drawing.ImagingTools
                 catch (Exception e) when (!e.IsCritical())
                 {
                     Debug.WriteLine($"Failed to copy as {DataFormats.Bitmap}: {e.Message}");
-                    
+
                     // Ultimate fallback: indicating to use DataObject.SetImage when populating the clipboard
                     formats.Add(DataFormats.Bitmap, bitmap);
                 }
@@ -835,10 +802,9 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        internal static ImageInfo? DoTryPasteFromClipboard(string? format, AllowedImageTypes allowedTypes, bool allowMultiFrame, bool preferMetafile, bool detectAlpha, AsyncTaskContext task)
+        internal static ImageInfo? DoTryPasteFromClipboard(string? format, AllowedImageTypes allowedTypes, bool allowMultiFrame, bool detectAlpha, AsyncTaskContext task)
         {
             Debug.Assert(allowedTypes != AllowedImageTypes.None);
-            Debug.Assert(preferMetafile || allowedTypes != AllowedImageTypes.Metafile, "When only metafiles are allowed, it should also be preferred");
 
             try
             {
@@ -858,11 +824,12 @@ namespace KGySoft.Drawing.ImagingTools
                     return null;
 
                 Debug.WriteLine($"Clipboard formats: {formats.Join(", ")}");
+                bool preferMetafile = (allowedTypes & AllowedImageTypes.Metafile) != 0;
 
-                // 1. Metafile when preferred before bitmap formats
+                // 1. Metafile
                 if (preferMetafile && TryGetMetafile(formats, dataObject, allowedTypes, task, out ImageInfo? imageInfo))
                     return imageInfo;
-                if (allowedTypes == AllowedImageTypes.Metafile || task.IsCanceled)
+                if (task.IsCanceled)
                     return null;
 
                 // 2. Multiframe Bitmap or Icon with custom encoding
@@ -907,6 +874,10 @@ namespace KGySoft.Drawing.ImagingTools
                 if (task.IsCanceled)
                     return null;
 
+                // 6. Metafile as a fallback, when bitmaps are preferred
+                if (!preferMetafile && TryGetMetafile(formats, dataObject, allowedTypes, task, out imageInfo))
+                    return imageInfo;
+
                 // 7. Ultimate fallback: Clipboard.GetImage - it attempts to process .NET Framework serialized System.Drawing.Bitmap entries,
                 //    and also the standard Bitmap format if it wasn't processed natively above.
                 if (formats.Intersect([DataFormats.Bitmap, typeof(Bitmap).FullName!]).Any())
@@ -920,10 +891,6 @@ namespace KGySoft.Drawing.ImagingTools
                     }
                 }
 
-                // +1: Metafile when preferred after bitmap formats
-                if (!preferMetafile && TryGetMetafile(formats, dataObject, allowedTypes, task, out imageInfo))
-                    return imageInfo;
-
                 return null;
 
             }
@@ -936,6 +903,29 @@ namespace KGySoft.Drawing.ImagingTools
 
         private static ImageInfo? EnsureFormat(object? data, AllowedImageTypes allowedTypes, bool allowMultiFrame)
         {
+            #region Local Methods
+
+            static Metafile BitmapToMetafile(Bitmap bitmap)
+            {
+                using Graphics refGraph = Graphics.FromHwnd(IntPtr.Zero);
+                IntPtr hdc = refGraph.GetHdc();
+                var rect = new Rectangle(Point.Empty, bitmap.Size);
+                var result = new Metafile(hdc, rect, MetafileFrameUnit.Pixel, bitmap.PixelFormat.HasAlpha() ? EmfType.EmfPlusDual : EmfType.EmfOnly, "BitmapAsEmf");
+                using (var g = Graphics.FromImage(result))
+                    g.DrawImage(bitmap, rect);
+
+                refGraph.ReleaseHdc(hdc); //cleanup
+                return result;
+            }
+
+            static Metafile IconToMetafile(Icon icon)
+            {
+                using Bitmap bitmap = icon.ToAlphaBitmap();
+                return BitmapToMetafile(bitmap);
+            }
+
+            #endregion
+
             switch (data)
             {
                 case null:
@@ -959,7 +949,6 @@ namespace KGySoft.Drawing.ImagingTools
                     return new ImageInfo(asIcon);
 
                 case Bitmap bitmap:
-                    Debug.Assert(allowedTypes != AllowedImageTypes.Metafile, "Not expected to be called with a Bitmap if metafiles are allowed only");
                     if ((allowedTypes & AllowedImageTypes.Bitmap) != AllowedImageTypes.None)
                     {
                         if (!allowMultiFrame && bitmap.FrameDimensionsList is Guid[] { Length: > 0 } dimensions && bitmap.GetFrameCount(new FrameDimension(dimensions[0])) > 1)
@@ -981,11 +970,12 @@ namespace KGySoft.Drawing.ImagingTools
                         return new ImageInfo(icon);
                     }
 
+                    Debug.Assert((allowedTypes & AllowedImageTypes.Metafile) != 0);
+                    Metafile asMetafile = BitmapToMetafile(bitmap);
                     bitmap.Dispose();
-                    return null;
+                    return new ImageInfo(asMetafile);
 
                 case Icon icon:
-                    Debug.Assert(allowedTypes != AllowedImageTypes.Metafile, "Not expected to be called with an Icon if metafiles are allowed only");
                     if ((allowedTypes & AllowedImageTypes.Icon) != AllowedImageTypes.None)
                         return new ImageInfo(icon);
 
@@ -996,8 +986,10 @@ namespace KGySoft.Drawing.ImagingTools
                         return new ImageInfo(bitmap);
                     }
 
+                    Debug.Assert((allowedTypes & AllowedImageTypes.Metafile) != 0);
+                    asMetafile = IconToMetafile(icon);
                     icon.Dispose();
-                    return null;
+                    return new ImageInfo(asMetafile);
 
                 default:
                     throw new InvalidOperationException(Res.InternalError($"Unexpected type in EnsureFormat: {data.GetType()}"));

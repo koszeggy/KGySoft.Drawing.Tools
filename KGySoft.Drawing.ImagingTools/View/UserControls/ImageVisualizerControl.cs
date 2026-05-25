@@ -165,8 +165,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             btnClear.Image = Images.Clear;
             btnCopy.Image = Images.Copy;
             miPaste.Image = Images.Paste;
-            miPastePreferBitmap.Image = Images.PasteBitmap;
-            miPastePreferVector.Image = Images.PasteVector;
+            miPasteAsBitmap.Image = Images.PasteBitmap;
+            miPasteAsMetafile.Image = Images.PasteVector;
             miPasteSpecial.Image = Images.PasteSpecial;
             btnPaste.DefaultItem = miPaste;
 
@@ -400,10 +400,10 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 .AddSource(btnCopy, nameof(btnCopy.Click));
             CommandBindings.Add(ViewModel.PasteCommand, ViewModel.PasteCommandState)
                 .AddSource(miPaste, nameof(miPaste.Click));
-            CommandBindings.Add(ViewModel.PastePreferBitmapCommand, ViewModel.PastePreferBitmapCommandState)
-                .AddSource(miPastePreferBitmap, nameof(miPastePreferBitmap.Click));
-            CommandBindings.Add(ViewModel.PastePreferVectorCommand, ViewModel.PasteCommandState)
-                .AddSource(miPastePreferVector, nameof(miPastePreferVector.Click));
+            CommandBindings.Add(ViewModel.PasteAsBitmapCommand, ViewModel.PasteAsBitmapCommandState)
+                .AddSource(miPasteAsBitmap, nameof(miPasteAsBitmap.Click));
+            CommandBindings.Add(ViewModel.PasteAsMetafileCommand, ViewModel.PasteAsMetafileCommandState)
+                .AddSource(miPasteAsMetafile, nameof(miPasteAsMetafile.Click));
             CommandBindings.Add(ViewModel.PasteSpecialCommand, ViewModel.PasteCommandState)
                 .AddSource(miPasteSpecial, nameof(miPasteSpecial.Click));
 

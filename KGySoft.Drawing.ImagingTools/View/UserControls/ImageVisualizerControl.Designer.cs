@@ -52,8 +52,8 @@
             this.btnCopy = new KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripButton();
             this.btnPaste = new KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripSplitButton();
             this.miPaste = new System.Windows.Forms.ToolStripMenuItem();
-            this.miPastePreferBitmap = new System.Windows.Forms.ToolStripMenuItem();
-            this.miPastePreferVector = new System.Windows.Forms.ToolStripMenuItem();
+            this.miPasteAsBitmap = new System.Windows.Forms.ToolStripMenuItem();
+            this.miPasteAsMetafile = new System.Windows.Forms.ToolStripMenuItem();
             this.miPasteSpecial = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.btnColorSettings = new KGySoft.Drawing.ImagingTools.View.Components.AdvancedToolStripDropDownButton();
@@ -376,8 +376,8 @@
             this.btnPaste.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnPaste.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.miPaste,
-            this.miPastePreferBitmap,
-            this.miPastePreferVector,
+            this.miPasteAsBitmap,
+            this.miPasteAsMetafile,
             this.miPasteSpecial});
             this.btnPaste.Name = "btnPaste";
             this.btnPaste.Size = new System.Drawing.Size(16, 22);
@@ -390,17 +390,17 @@
             this.miPaste.Size = new System.Drawing.Size(226, 22);
             this.miPaste.Text = "miPaste";
             // 
-            // miPastePreferBitmap
+            // miPasteAsBitmap
             // 
-            this.miPastePreferBitmap.Name = "miPastePreferBitmap";
-            this.miPastePreferBitmap.Size = new System.Drawing.Size(226, 22);
-            this.miPastePreferBitmap.Text = "miPastePreferBitmap";
+            this.miPasteAsBitmap.Name = "miPasteAsBitmap";
+            this.miPasteAsBitmap.Size = new System.Drawing.Size(226, 22);
+            this.miPasteAsBitmap.Text = "miPasteAsBitmap";
             // 
-            // miPastePreferVector
+            // miPasteAsMetafile
             // 
-            this.miPastePreferVector.Name = "miPastePreferVector";
-            this.miPastePreferVector.Size = new System.Drawing.Size(226, 22);
-            this.miPastePreferVector.Text = "miPastePreferVector";
+            this.miPasteAsMetafile.Name = "miPasteAsMetafile";
+            this.miPasteAsMetafile.Size = new System.Drawing.Size(226, 22);
+            this.miPasteAsMetafile.Text = "miPasteAsMetafile";
             // 
             // miPasteSpecial
             // 
@@ -583,7 +583,7 @@
         private Components.AdvancedToolStripProgressBar pbProgress;
         private System.Windows.Forms.ToolStripMenuItem miPaste;
         private System.Windows.Forms.ToolStripMenuItem miPasteSpecial;
-        private System.Windows.Forms.ToolStripMenuItem miPastePreferBitmap;
-        private System.Windows.Forms.ToolStripMenuItem miPastePreferVector;
+        private System.Windows.Forms.ToolStripMenuItem miPasteAsBitmap;
+        private System.Windows.Forms.ToolStripMenuItem miPasteAsMetafile;
     }
 }

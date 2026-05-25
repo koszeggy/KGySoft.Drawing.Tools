@@ -29,12 +29,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 {
     internal class PasteSpecialViewModel : ViewModelBase<(string? Format, bool CustomAlphaDetection)>
     {
-        #region Fields
-
-        private readonly AllowedImageTypes allowedImageTypes;
-
-        #endregion
-
         #region Properties
 
         internal string[] Formats { get => Get(Reflector.EmptyArray<string>()); set => Set(value); }
@@ -45,10 +39,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Constructors
 
-        internal PasteSpecialViewModel(AllowedImageTypes allowedImageTypes)
+        internal PasteSpecialViewModel()
         {
-            Debug.Assert(allowedImageTypes != AllowedImageTypes.None);
-            this.allowedImageTypes = allowedImageTypes;
             ClipboardHelper.ClipboardChanged += ClipboardHelper_ClipboardChanged;
             SelectedFormat = Configuration.PreferredClipboardFormat;
             CustomAlphaDetection = Configuration.TryDetectClipboardAlpha;
@@ -119,13 +111,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Private Methods
 
-        private void ResetFormats() => Formats = ClipboardHelper.GetImageFormats(allowedImageTypes);
+        private void ResetFormats() => Formats = ClipboardHelper.GetImageFormats();
 
         #endregion
 
         #region Event handlers
 
-        private void ClipboardHelper_ClipboardChanged(object sender, EventArgs e) => ResetFormats();
+        private void ClipboardHelper_ClipboardChanged(object? sender, EventArgs e) => ResetFormats();
 
         #endregion
 
