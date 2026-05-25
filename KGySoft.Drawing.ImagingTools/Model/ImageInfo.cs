@@ -222,8 +222,14 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         internal IEnumerable<Icon> IterateFrameIcons(AsyncTaskBase task)
         {
+            // single icon
             if (Frames is not ImageFrameInfo[] frames)
+            {
+                yield return GetCreateIcon()!;
                 yield break;
+            }
+
+            // multi-res icon
             foreach (ImageFrameInfo frame in frames)
             {
                 if (task.IsCanceled)

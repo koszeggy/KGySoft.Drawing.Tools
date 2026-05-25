@@ -81,6 +81,7 @@ namespace KGySoft.Drawing.ImagingTools.View
 
             // not in InitCommandBindings, because without this we cannot init the other commands
             TaskDialog.Created += TaskDialog_Created;
+            ApplyStringResources();
         }
 
         #endregion
@@ -143,6 +144,30 @@ namespace KGySoft.Drawing.ImagingTools.View
         {
         }
 
+        protected void ApplyTheme()
+        {
+            if (TaskDialog.Handle == IntPtr.Zero || IsDisposed || !ThemeColors.RenderWithVisualStyles || ThemeColors.HighContrast || !ThemeColors.IsBaseThemeEverChanged)
+                return;
+
+            Control? form = Control.FromHandle(TaskDialog.Handle);
+            if (form == null)
+                return;
+
+            // header, root colors
+            form.ApplyTheme();
+
+            // These controls have explicitly set colors that we need to override
+            form.Controls["pnlDividerMainBottom"]?.BackColor = ThemeColors.TaskDialogDivider;
+            Control? pnlMain = form.Controls["pnlMain"];
+            Debug.Assert(pnlMain != null);
+            if (pnlMain != null)
+            {
+                pnlMain.BackColor = ThemeColors.Window;
+                pnlMain.ForeColor = ThemeColors.WindowText;
+                pnlMain.Controls["pnlMainIcon"]?.Controls["pnlMainIconBackground"]?.BackColor = ThemeColors.Window;
+            }
+        }
+
         protected void InvokeOnUIThread(Action action)
         {
             if (IsDisposed)
@@ -203,30 +228,6 @@ namespace KGySoft.Drawing.ImagingTools.View
                 .AddSource(typeof(Res), nameof(Res.DisplayLanguageChanged));
         }
 
-        private void ApplyTheme()
-        {
-            if (TaskDialog.Handle == IntPtr.Zero || IsDisposed || !ThemeColors.RenderWithVisualStyles || ThemeColors.HighContrast || !ThemeColors.IsBaseThemeEverChanged)
-                return;
-
-            Control? form = Control.FromHandle(TaskDialog.Handle);
-            if (form == null)
-                return;
-
-            // header, root colors
-            form.ApplyTheme();
-
-            // These controls have explicitly set colors that we need to override
-            form.Controls["pnlDividerMainBottom"]?.BackColor = ThemeColors.TaskDialogDivider;
-            Control? pnlMain = form.Controls["pnlMain"];
-            Debug.Assert(pnlMain != null);
-            if (pnlMain != null)
-            {
-                pnlMain.BackColor = ThemeColors.Window;
-                pnlMain.ForeColor = ThemeColors.WindowText;
-                pnlMain.Controls["pnlMainIcon"]?.Controls["pnlMainIconBackground"]?.BackColor = ThemeColors.Window;
-            }
-        }
-
         private void ApplyRightToLeft()
         {
             if (IsDisposed)
@@ -257,7 +258,6 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         private void TaskDialog_Created(object? sender, EventArgs e)
         {
-            ApplyStringResources();
             ApplyTheme();
             ApplyViewModel();
             ViewModel.ViewShown(); // though actually it's not shown yet

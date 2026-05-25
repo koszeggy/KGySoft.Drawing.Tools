@@ -637,10 +637,18 @@ namespace KGySoft.Drawing.ImagingTools
                     }
                 }
 
+                // 3. Standard formats
+                if (!OSHelper.IsWindows)
+                {
+                    // Manged fallback on non-windows platforms
+                    formats.Add(DataFormats.Bitmap, bitmap);
+                    return;
+                }
+
                 // 3.a. Standard Format17 (DIBv5) format: the standard way of storing alpha image on the clipboard, though not too many applications handle it.
-                // Windows check is needed, because we need to populate the clipboard natively to add the Format17 format with the standard CF_DIBV5 ID
+                // Only on Windows, because we need to populate the clipboard natively to add the Format17 format with the standard CF_DIBV5 ID
                 // instead of a newly registered random one, and to auto generate the standard DeviceIndependentBitmap and Bitmap formats as well.
-                if (pixelFormat.HasAlpha() && BitConverter.IsLittleEndian && OSHelper.IsWindows)
+                if (BitConverter.IsLittleEndian && pixelFormat.HasAlpha())
                 {
                     try
                     {
@@ -656,14 +664,45 @@ namespace KGySoft.Drawing.ImagingTools
                     }
                 }
 
-                // 3.b. Standard Bitmap format.
+                // 3.b. Standard Bitmap format. The clipboard expects a bitmap created by CreateCompatibleBitmap. If we just returned the result of GetHbitmap,
+                // retrieving the Bitmap format may cause even out of memory exception (sometimes just after restarting the application),
+                // and the DIB format (if it doesn't throw - may depend on the pixel format) might be interpreted incorrectly.
                 // When using SetClipboardData, Windows automatically generates DeviceIndependentBitmap and Format17 (DIB/DIBv5) entries as well.
                 // This is different from the managed Clipboard/DataObject.SetImage APIs, which don't generate these additional formats,
                 // but add a BinaryFormatter-serialized System.Drawing.Bitmap entry (along with the standard Bitmap format).
+                IntPtr hbmSrc = IntPtr.Zero;
+                IntPtr dcScreen = IntPtr.Zero;
                 try
                 {
-                    lock (bitmap)
-                        formats.Add(DataFormats.Bitmap, bitmap.GetHbitmap());
+                try
+                {
+                        Size size = bitmap.Size;
+                        dcScreen = User32.GetDC(IntPtr.Zero);
+                        hbmSrc = bitmap.GetHbitmap();
+                        IntPtr dcSrc = Gdi32.CreateCompatibleDC(dcScreen);
+                        IntPtr prevSrc = Gdi32.SelectObject(dcSrc, hbmSrc);
+
+                        IntPtr dcDst = Gdi32.CreateCompatibleDC(dcScreen);
+                        IntPtr hbmDst = Gdi32.CreateCompatibleBitmap(dcScreen, size.Width, size.Height);
+                        IntPtr prevDst = Gdi32.SelectObject(dcDst, hbmDst);
+
+                        // copying the content and storing the result
+                        Gdi32.BitBlt(dcDst, dcSrc, size);
+                        formats.Add(DataFormats.Bitmap, hbmDst);
+
+                        // cleanup
+                        Gdi32.SelectObject(dcSrc, prevSrc);
+                        Gdi32.SelectObject(dcDst, prevDst);
+                        Gdi32.DeleteDC(dcSrc);
+                        Gdi32.DeleteDC(dcDst);
+                    }
+                    finally
+                    {
+                        if (hbmSrc != IntPtr.Zero)
+                            Gdi32.DeleteObject(hbmSrc);
+                        if (dcScreen != IntPtr.Zero)
+                            User32.ReleaseDC(IntPtr.Zero, dcScreen);
+                    }
                 }
                 catch (Exception e) when (!e.IsCritical())
                 {
@@ -806,12 +845,18 @@ namespace KGySoft.Drawing.ImagingTools
                 // Not using Clipboard.GetImage (or only as a fallback), because it always gets Bitmap format only, which is an RGB32 format with no alpha.
                 //IWinFormsDataObject? dataObject = Clipboard.GetDataObject();
                 IWinFormsDataObject? dataObject = null;
-                task.Context.Send(_ => dataObject = Clipboard.GetDataObject(), null);
+                HashSet<string>? formats = null;
+                task.Context.Send(_ =>
+                {
+                    // though GetFormats would not throw from a worker thread, it does not always return native formats from non UI-threads
+                    dataObject = Clipboard.GetDataObject();
+                    if (dataObject != null)
+                        formats = new(format == null ? dataObject.GetFormats(false) : [format]);
+                }, null);
 
-                if (dataObject == null || task.IsCanceled)
+                if (dataObject == null || formats == null || task.IsCanceled)
                     return null;
 
-                var formats = new HashSet<string>(format == null ? dataObject.GetFormats(false) : [format]);
                 Debug.WriteLine($"Clipboard formats: {formats.Join(", ")}");
 
                 // 1. Metafile when preferred before bitmap formats
@@ -857,7 +902,7 @@ namespace KGySoft.Drawing.ImagingTools
                     return null;
 
                 // 5. Standard Bitmap format
-                if (formats.Contains(DataFormats.Bitmap) && TryGetNativeBitmap(dataObject, allowedTypes, out imageInfo))
+                if (formats.Contains(DataFormats.Bitmap) && TryGetNativeBitmap(dataObject, allowedTypes, task, out imageInfo))
                     return imageInfo;
                 if (task.IsCanceled)
                     return null;
@@ -959,13 +1004,11 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static bool TryGetNativeBitmap(IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, out ImageInfo? result)
+        private static bool TryGetNativeBitmap(IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, AsyncTaskContext task, out ImageInfo? result)
         {
-            result = null;
-            if (!OSHelper.IsWindows || dataObject is not IComDataObject comDataObject)
-                return false;
+            #region Local Methods
 
-            try
+            static Bitmap? DoTryGetNativeBitmap(IComDataObject comDataObject)
             {
                 var format = new FORMATETC
                 {
@@ -979,7 +1022,7 @@ namespace KGySoft.Drawing.ImagingTools
                 if (hResult != Constants.S_OK)
                 {
                     Debug.WriteLine($"Failed to get native {DataFormats.Bitmap} format: HRESULT is {hResult}");
-                    return false;
+                    return null;
                 }
 
                 comDataObject.GetData(ref format, out STGMEDIUM medium);
@@ -988,21 +1031,33 @@ namespace KGySoft.Drawing.ImagingTools
                     if (medium.tymed != TYMED.TYMED_GDI)
                     {
                         Debug.Fail($"Expected vs. actual format of {DataFormats.Bitmap}: {format.tymed} <-> {medium.tymed}");
-                        return false;
+                        return null;
                     }
 
                     // NOTE: Image.FromHBitmap always creates a copy, so we are safe even when we don't own the handle (that is, when medium.pUnkForRelease is not null).
                     // The managed GetData always clones the result here, but the docs says: "The FromHbitmap method makes a copy of the GDI bitmap; so you can release
                     // the incoming GDI bitmap using the GDI DeleteObject method immediately after creating the new Image."
-                    Bitmap bitmap = Image.FromHbitmap(medium.unionmember);
-                    result = EnsureFormat(bitmap, allowedTypes, false);
-                    return result != null;
+                    return Image.FromHbitmap(medium.unionmember);
                 }
                 finally
                 {
                     // If the type was TYMED_GDI, this may call Gdi32.DeleteObject, depending on medium.pUnkForRelease
                     Ole32.ReleaseStgMedium(ref medium);
                 }
+            }
+
+            #endregion
+
+            result = null;
+            if (!OSHelper.IsWindows || dataObject is not IComDataObject comDataObject)
+                return false;
+
+            try
+            {
+                Bitmap? bitmap = null;
+                task.Context.Send(_ => bitmap = DoTryGetNativeBitmap(comDataObject), null);
+                result = EnsureFormat(bitmap, allowedTypes, false);
+                return result != null;
             }
             catch (Exception e) when (!e.IsCriticalGdi())
             {
@@ -1157,7 +1212,7 @@ namespace KGySoft.Drawing.ImagingTools
             // custom encodings first, and then by standard native formats
             if (TryGetImageFromStream(formats.Intersect([emfFormat, wmfFormat]), dataObject, allowedTypes, false, out result))
                 return true;
-            if (formats.Contains(DataFormats.EnhancedMetafile) && TryGetNativeEmf(dataObject, allowedTypes, out result))
+            if (formats.Contains(DataFormats.EnhancedMetafile) && TryGetNativeEmf(dataObject, allowedTypes, task, out result))
                 return true;
             if (formats.Contains(DataFormats.MetafilePict) && TryGetNativeWmf(dataObject, allowedTypes, task, out result))
                 return true;
@@ -1165,13 +1220,11 @@ namespace KGySoft.Drawing.ImagingTools
             return false;
         }
 
-        private static bool TryGetNativeEmf(IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, out ImageInfo? result)
+        private static bool TryGetNativeEmf(IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, AsyncTaskContext task, out ImageInfo? result)
         {
-            result = null;
-            if (!OSHelper.IsWindows || dataObject is not IComDataObject comDataObject)
-                return false;
+            #region Local Methods
 
-            try
+            static Metafile? DoTryGetNativeMetafile(IComDataObject comDataObject)
             {
                 var format = new FORMATETC
                 {
@@ -1185,7 +1238,7 @@ namespace KGySoft.Drawing.ImagingTools
                 if (hResult != Constants.S_OK)
                 {
                     Debug.WriteLine($"Failed to get native {DataFormats.EnhancedMetafile} format: HRESULT is {hResult}");
-                    return false;
+                    return null;
                 }
 
                 comDataObject.GetData(ref format, out STGMEDIUM medium);
@@ -1193,13 +1246,26 @@ namespace KGySoft.Drawing.ImagingTools
                 {
                     Ole32.ReleaseStgMedium(ref medium);
                     Debug.Fail($"Expected vs. actual format of {DataFormats.EnhancedMetafile}: {format.tymed} <-> {medium.tymed}");
-                    return false;
+                    return null;
                 }
 
                 // If we do not own the medium, we create a copy to prevent the metafile from becoming unusable when the owner frees it up.
                 // Disposing the result metafile calls DeleteEnhancedMetafile due to the deleteEmf parameter, so not calling ReleaseStgMedium here.
                 IntPtr hEmf = medium.pUnkForRelease == null ? medium.unionmember : Gdi32.CopyEnhMetaFile(medium.unionmember);
-                result = EnsureFormat(new Metafile(hEmf, true), allowedTypes, false);
+                return new Metafile(hEmf, true);
+            }
+
+            #endregion
+
+            result = null;
+            if (!OSHelper.IsWindows || dataObject is not IComDataObject comDataObject)
+                return false;
+
+            try
+            {
+                Metafile? metafile = null;
+                task.Context.Send(_ => metafile = DoTryGetNativeMetafile(comDataObject), null);
+                result = EnsureFormat(metafile, allowedTypes, false);
                 return result != null;
             }
             catch (Exception e) when (!e.IsCriticalGdi())
@@ -1213,10 +1279,7 @@ namespace KGySoft.Drawing.ImagingTools
         {
             // After failing in every way of getting a valid metafile handle from DataFormats.MetafilePict, it turns out that we can obtain DataFormats.EnhancedMetafile,
             // even if it is not present on the clipboard, as Windows does the conversion for us. It's just we must do that on the UI thread to avoid "Invalid FORMATETC structure" error.
-            ImageInfo? wmf = null;
-            task.Context.Send(_ => TryGetNativeEmf(dataObject, allowedTypes, out wmf), null);
-            result = wmf;
-            return wmf != null;
+            return TryGetNativeEmf(dataObject, allowedTypes, task, out result);
 
             // If we really wanted, we could convert the result back to WMF:
             //TryGetNativeEmf(dataObject, allowedTypes, out result);

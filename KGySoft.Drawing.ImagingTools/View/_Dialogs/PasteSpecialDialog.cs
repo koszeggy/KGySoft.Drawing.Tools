@@ -97,19 +97,25 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         private void ResetRadioButtons()
         {
+            string[] formats = ViewModel.Formats;
+            if (formats.SequenceEqual(TaskDialog.RadioButtons.Select(rb => rb.Text)))
+                return;
+
             // this removes the previous subscriptions
             foreach (TaskDialogRadioButton radioButton in TaskDialog.RadioButtons)
                 radioButton.Dispose();
 
-            string[] formats = ViewModel.Formats;
             TaskDialog.RadioButtons.ReplaceRange(0, TaskDialog.RadioButtons.Count, formats.Select(f => new TaskDialogRadioButton(f)));
             foreach (TaskDialogRadioButton radioButton in TaskDialog.RadioButtons)
-                radioButton.Selected += (sender, _) => ViewModel.SelectedFormat = ((TaskDialogRadioButton)sender).Text;
+                radioButton.Selected += (sender, _) => ViewModel.SelectedFormat = ((TaskDialogRadioButton)sender!).Text;
             int selectedIndex = Array.IndexOf(formats, ViewModel.SelectedFormat);
             if (selectedIndex >= 0)
                 TaskDialog.RadioButtons[selectedIndex].Checked = true;
             else
                 ViewModel.SelectedFormat = null;
+
+            if (formats.Length > 0 && TaskDialog.Handle != IntPtr.Zero && ThemeColors.IsDarkBaseTheme)
+                ApplyTheme();
         }
 
         #endregion

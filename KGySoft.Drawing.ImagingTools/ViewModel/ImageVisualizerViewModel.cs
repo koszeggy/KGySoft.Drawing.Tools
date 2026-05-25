@@ -674,7 +674,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             bool isReadOnly = ReadOnly;
             bool isLoaded = imageInfo.Type != ImageInfoType.None;
             bool isSingleImageShown = isLoaded && !imageInfo.HasFrames || currentFrame >= 0 && !IsAutoPlaying;
-            AllowedImageTypes usableTypes = ClipboardHelper.AvailableImageTypes & imageTypes;
+            AllowedImageTypes usableTypes = isBusy ? AllowedImageTypes.None : ClipboardHelper.AvailableImageTypes & imageTypes;
             bool canPaste = !isBusy && !isReadOnly && usableTypes != AllowedImageTypes.None;
             OpenFileCommandState.Enabled = !isReadOnly && !isBusy;
             SaveFileCommandState.Enabled = isLoaded && !isBusy;
@@ -1556,6 +1556,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void DoCopyToClipboard(object? state)
         {
             var task = (CopyTask)state!;
+            string? warning = null;
             try
             {
                 if (task.IsCanceled)
@@ -1564,14 +1565,18 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
             catch (Exception e) when (!e.IsCritical())
             {
-                task.SetCompleted(); // just to complete it before showing the message dialog
-                TryInvokeSync(() => ShowWarning(Res.WarningMessageCannotCopyClipboard));
+                warning = Res.WarningMessageCannotCopyClipboard;
             }
             finally
             {
                 task.Dispose();
                 activeTask = null;
-                TryInvokeSync(() => IsBusy = false);
+                TryInvokeSync(() =>
+                {
+                    IsBusy = false;
+                    if (warning != null)
+                        ShowWarning(warning);
+                });
             }
         }
 
@@ -1630,6 +1635,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             var task = (PasteTask)state!;
             ImageInfo? result = null;
             bool success = false;
+            string? warning = null;
             try
             {
                 if (task.IsCanceled)
@@ -1649,7 +1655,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                         return;
                     if (result == null)
                     {
-                        ShowWarning(task is PasteSpecialTask ? Res.WarningMessageCannotPasteSpecial : Res.WarningMessageCannotPasteClipboard);
+                        IsBusy = false; // turn off the progress bar before showing the dialog
+                        warning = task is PasteSpecialTask ? Res.WarningMessageCannotPasteSpecial : Res.WarningMessageCannotPasteClipboard;
                         return;
                     }
 
@@ -1679,7 +1686,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     result?.Dispose();
                 task.Dispose();
                 activeTask = null;
-                TryInvokeSync(() => IsBusy = false);
+                TryInvokeSync(() =>
+                {
+                    IsBusy = false;
+                    if (warning != null)
+                        ShowWarning(warning);
+                });
             }
         }
 
