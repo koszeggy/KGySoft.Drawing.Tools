@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -909,10 +910,19 @@ namespace KGySoft.Drawing.ImagingTools
             {
                 using Graphics refGraph = Graphics.FromHwnd(IntPtr.Zero);
                 IntPtr hdc = refGraph.GetHdc();
-                var rect = new Rectangle(Point.Empty, bitmap.Size);
-                var result = new Metafile(hdc, rect, MetafileFrameUnit.Pixel, bitmap.PixelFormat.HasAlpha() ? EmfType.EmfPlusDual : EmfType.EmfOnly, "BitmapAsEmf");
+                var rect = new RectangleF(Point.Empty, bitmap.Size);
+
+                // NOTE: Using EmfOnly type would allow to select the interpolation at rendering time, but if the bitmap has alpha, it may cause ugly black edges when
+                //       drawing into a larger bitmap. Also, drawing an enlarged metafile of EmfOnly type clips the rightmost column and the bottom row.
+                //       On the other hand, EmfPlusDual stores the interpolation mode in the metafile, which cannot be changed at rendering time.
+                //       Using NN interpolation here, because others look blurry even on 100% zoom.
+                //       This the way an enlarged result will remain pixelated even with smoothing, but at least the rendering will be faster. Smoothing will still work for shrinking.
+                var result = new Metafile(hdc, rect, MetafileFrameUnit.Pixel, EmfType.EmfPlusDual, "BitmapAsEmf");
                 using (var g = Graphics.FromImage(result))
+                {
+                    g.InterpolationMode = InterpolationMode.NearestNeighbor;
                     g.DrawImage(bitmap, rect);
+                }
 
                 refGraph.ReleaseHdc(hdc); //cleanup
                 return result;
