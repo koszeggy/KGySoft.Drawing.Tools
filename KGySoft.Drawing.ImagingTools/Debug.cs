@@ -15,11 +15,10 @@
 
 #region Usings
 
-using System.Configuration;
-
 #region Used Namespaces
 
 using System;
+using System.Configuration;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 

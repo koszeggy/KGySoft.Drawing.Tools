@@ -837,11 +837,11 @@ namespace KGySoft.Drawing.ImagingTools
                 if (allowMultiFrame)
                 {
                     // 2.a. TIFF or Icon
-                    if (TryGetImageFromStream(formats.Intersect([DataFormats.Tiff, iconFormat]), dataObject, allowedTypes, true, out imageInfo))
+                    if (TryGetImageFromStream(formats.Intersect([DataFormats.Tiff, iconFormat]), dataObject, allowedTypes, true, task, out imageInfo))
                         return imageInfo;
 
                     // 2.b. [animated] GIF
-                    if (formats.Contains(gifFormat) && TryGetImageFromStream([gifFormat], dataObject, allowedTypes, true, out imageInfo))
+                    if (formats.Contains(gifFormat) && TryGetImageFromStream([gifFormat], dataObject, allowedTypes, true, task, out imageInfo))
                     {
                         // if a single-frame GIF found, accepting it if there is no PNG on the clipboard as well
                         if (imageInfo!.Type == ImageInfoType.Animation || !formats.Contains(pngFormat))
@@ -856,15 +856,15 @@ namespace KGySoft.Drawing.ImagingTools
                     return null;
 
                 // 3. Single-frame custom encoded Bitmap or Icon. The way of the Intersect call ensures the order of the tried formats.
-                if (TryGetImageFromStream(new[] { pngFormat, DataFormats.Tiff, gifFormat, iconFormat }.Intersect(formats), dataObject, allowedTypes, false, out imageInfo))
+                if (TryGetImageFromStream(new[] { pngFormat, DataFormats.Tiff, gifFormat, iconFormat }.Intersect(formats), dataObject, allowedTypes, false, task, out imageInfo))
                     return imageInfo;
                 if (task.IsCanceled)
                     return null;
 
                 // 4. Standard DIB formats
-                if (formats.Contains(dibV5Format) && TryGetDeviceIndependentBitmap(dibV5Format, dataObject, allowedTypes, detectAlpha, out imageInfo))
+                if (formats.Contains(dibV5Format) && TryGetDeviceIndependentBitmap(dibV5Format, dataObject, allowedTypes, detectAlpha, task, out imageInfo))
                     return imageInfo;
-                if (formats.Contains(DataFormats.Dib) && TryGetDeviceIndependentBitmap(DataFormats.Dib, dataObject, allowedTypes, detectAlpha, out imageInfo))
+                if (formats.Contains(DataFormats.Dib) && TryGetDeviceIndependentBitmap(DataFormats.Dib, dataObject, allowedTypes, detectAlpha, task, out imageInfo))
                     return imageInfo;
                 if (task.IsCanceled)
                     return null;
@@ -1068,7 +1068,7 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static bool TryGetDeviceIndependentBitmap(string format, IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, bool detectAlpha, out ImageInfo? result)
+        private static bool TryGetDeviceIndependentBitmap(string format, IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, bool detectAlpha, AsyncTaskContext task, out ImageInfo? result)
         {
             result = null;
 
@@ -1077,7 +1077,7 @@ namespace KGySoft.Drawing.ImagingTools
             if (!BitConverter.IsLittleEndian)
                 return false;
 
-            byte[]? buf = TryGetBytes(format, dataObject);
+            byte[]? buf = TryGetBytes(format, dataObject, task);
             if (buf == null)
                 return false;
 
@@ -1212,7 +1212,7 @@ namespace KGySoft.Drawing.ImagingTools
         private static bool TryGetMetafile(HashSet<string> formats, IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, AsyncTaskContext task, out ImageInfo? result)
         {
             // custom encodings first, and then by standard native formats
-            if (TryGetImageFromStream(formats.Intersect([emfFormat, wmfFormat]), dataObject, allowedTypes, false, out result))
+            if (TryGetImageFromStream(formats.Intersect([emfFormat, wmfFormat]), dataObject, allowedTypes, false, task, out result))
                 return true;
             if (formats.Contains(DataFormats.EnhancedMetafile) && TryGetNativeEmf(dataObject, allowedTypes, task, out result))
                 return true;
@@ -1303,13 +1303,13 @@ namespace KGySoft.Drawing.ImagingTools
             //}
         }
 
-        private static bool TryGetImageFromStream(IEnumerable<string> formats, IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, bool allowMultiFrame, out ImageInfo? imageInfo)
+        private static bool TryGetImageFromStream(IEnumerable<string> formats, IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, bool allowMultiFrame, AsyncTaskContext task, out ImageInfo? imageInfo)
         {
             Debug.Assert(allowedTypes != AllowedImageTypes.None);
 
             foreach (string format in formats)
             {
-                MemoryStream? stream = TryGetStream(format, dataObject);
+                MemoryStream? stream = TryGetStream(format, dataObject, task);
                 if (stream == null)
                     continue;
 
@@ -1331,36 +1331,71 @@ namespace KGySoft.Drawing.ImagingTools
             return false;
         }
 
-        private static MemoryStream? TryGetStream(string format, IWinFormsDataObject dataObject)
+        private static MemoryStream? TryGetStream(string format, IWinFormsDataObject dataObject, AsyncTaskContext task)
         {
-            // 1. First, trying to use the native COM IDataObject interface
-            if (OSHelper.IsWindows && dataObject is IComDataObject comDataObject)
+            // 1. First, trying to use the native COM IDataObject interface on the current background thread.
+            // This way we can only get HGlobal content, because IStream is usable on the UI thread only.
+            IComDataObject? comDataObject = dataObject as IComDataObject;
+            if (comDataObject != null && OSHelper.IsWindows)
             {
-                if (TryGetBytesNative(format, comDataObject) is byte[] buf)
+                if (TryGetBytesNative(format, comDataObject, TYMED.TYMED_HGLOBAL) is byte[] buf)
                     return new MemoryStream(buf);
             }
 
-            // 2. Trying to use the managed IDataObject interface
-            return TryGetStreamManaged(format, dataObject);
+            // 2. Switching to the UI thread
+            MemoryStream? result = null;
+            task.Context.Send(_ =>
+            {
+                // 2.a. IStream via native COM IDataObject
+                if (OSHelper.IsWindows && comDataObject != null)
+                {
+                    if (TryGetBytesNative(format, comDataObject, TYMED.TYMED_ISTREAM) is byte[] buf)
+                    {
+                        result = new MemoryStream(buf);
+                        return;
+                    }
+                }
+
+                // 2.b. Trying to use the managed IDataObject interface. This will attempt to obtain both HGlobal and IStream on the UI thread.
+                result = TryGetStreamManaged(format, dataObject);
+            }, null);
+
+            return result is MemoryStream { Length: > 0L } ? result : null;
         }
 
-        private static byte[]? TryGetBytes(string format, IWinFormsDataObject dataObject)
+        private static byte[]? TryGetBytes(string format, IWinFormsDataObject dataObject, AsyncTaskContext task)
         {
-            // 1. First, trying to use the native COM IDataObject interface
-            if (OSHelper.IsWindows && dataObject is IComDataObject comDataObject)
+            // 1. First, trying to use the native COM IDataObject interface on the current background thread.
+            // This way we can only get HGlobal content, because IStream is usable on the UI thread only.
+            IComDataObject? comDataObject = dataObject as IComDataObject;
+            if (comDataObject != null && OSHelper.IsWindows)
             {
-                if (TryGetBytesNative(format, comDataObject) is byte[] buf)
+                if (TryGetBytesNative(format, comDataObject, TYMED.TYMED_HGLOBAL) is byte[] buf)
                     return buf;
             }
 
-            // 2. Trying to use the managed IDataObject interface
-            if (TryGetStreamManaged(format, dataObject) is not MemoryStream ms || ms.Length == 0)
-                return null;
+            // 2. Switching to the UI thread
+            byte[]? result = null;
+            task.Context.Send(_ =>
+            {
+                // 2.a. IStream via native COM IDataObject
+                if (OSHelper.IsWindows && comDataObject != null)
+                {
+                    if (TryGetBytesNative(format, comDataObject, TYMED.TYMED_ISTREAM) is byte[] buf)
+                    {
+                        result = buf;
+                        return;
+                    }
+                }
 
-            return ms.ToArray();
+                // 2.b. Trying to use the managed IDataObject interface. This will attempt to obtain both HGlobal and IStream on the UI thread.
+                result = TryGetStreamManaged(format, dataObject) is MemoryStream { Length: > 0L } ms ? ms.ToArray() : null;
+            }, null);
+
+            return result;
         }
 
-        private static byte[]? TryGetBytesNative(string format, IComDataObject comDataObject)
+        private static byte[]? TryGetBytesNative(string format, IComDataObject comDataObject, TYMED mediumType)
         {
             Debug.Assert(OSHelper.IsWindows);
             try
@@ -1370,7 +1405,7 @@ namespace KGySoft.Drawing.ImagingTools
                     cfFormat = (short)DataFormats.GetFormat(format).Id,
                     dwAspect = DVASPECT.DVASPECT_CONTENT,
                     lindex = -1,
-                    tymed = TYMED.TYMED_ISTREAM | TYMED.TYMED_HGLOBAL
+                    tymed = mediumType
                 };
 
                 int hResult = comDataObject.QueryGetData(ref comFormat);
