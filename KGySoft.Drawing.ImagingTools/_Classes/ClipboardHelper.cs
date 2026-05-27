@@ -1012,6 +1012,14 @@ namespace KGySoft.Drawing.ImagingTools
 
             #endregion
 
+            // Special handling if the metafile has a bitmap raw format (may happen on deserialization on .NET Runtime 2.x).
+            // In such case the actual type switches to Bitmap after cloning
+            if (data is Metafile mf && !mf.RawFormat.In(ImageFormat.Wmf, ImageFormat.Emf))
+            {
+                data = mf.Clone();
+                mf.Dispose();
+            }
+
             switch (data)
             {
                 case null:
