@@ -870,7 +870,7 @@ namespace KGySoft.Drawing.ImagingTools
                     return null;
 
                 // 5. Standard Bitmap format
-                if (formats.Contains(DataFormats.Bitmap) && TryGetNativeBitmap(dataObject, allowedTypes, task, out imageInfo))
+                if (formats.Contains(DataFormats.Bitmap) && TryGetNativeBitmap(dataObject, allowedTypes, detectAlpha, task, out imageInfo))
                     return imageInfo;
                 if (task.IsCanceled)
                     return null;
@@ -887,7 +887,7 @@ namespace KGySoft.Drawing.ImagingTools
                     task.Context.Send(_ => image = Clipboard.GetImage(), null);
                     if (image != null)
                     {
-                        imageInfo = EnsureFormat(image, allowedTypes, allowMultiFrame);
+                        imageInfo = EnsureFormat(image, allowedTypes, allowMultiFrame, detectAlpha);
                         return imageInfo;
                     }
                 }
@@ -902,9 +902,54 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static ImageInfo? EnsureFormat(object? data, AllowedImageTypes allowedTypes, bool allowMultiFrame)
+        private static ImageInfo? EnsureFormat(object? data, AllowedImageTypes allowedTypes, bool allowMultiFrame, bool detectAlpha = false)
         {
             #region Local Methods
+
+            static void TryRestoreAlpha(ref Bitmap bitmap)
+            {
+                Debug.Assert(bitmap.PixelFormat == PixelFormat.Format32bppRgb);
+                Bitmap? result = null;
+                
+                // Using BitmapDataFactory rather than GetReadableBitmapData, so we can reinterpret the pixel format.
+                // It's important that we lock with the actual format so the content is not copied.
+                //using IReadableBitmapData bitmapData = bitmap.GetReadableBitmapData();
+                var bitmapData = bitmap.LockBits(new Rectangle(Point.Empty, bitmap.Size), ImageLockMode.ReadOnly, bitmap.PixelFormat);
+                try
+                {
+                    using IReadableBitmapData reinterpretedBitmapData = BitmapDataFactory.CreateBitmapData(bitmapData.Scan0, bitmap.Size, bitmapData.Stride, KnownPixelFormat.Format32bppArgb);
+                    Color32 firstPixel = reinterpretedBitmapData.GetColor32(0, 0);
+                    if (firstPixel.A is not (Byte.MinValue or Byte.MaxValue))
+                    {
+                        result = reinterpretedBitmapData.ToBitmap();
+                        return;
+                    }
+
+                    // First pixel is opaque: assuming no alpha unless there is a pixel with alpha
+                    // First pixel is transparent: if the whole bitmap seems to be completely transparent, we assume no alpha
+                    IReadableBitmapDataRowMovable row = reinterpretedBitmapData.FirstRow;
+                    do
+                    {
+                        for (int x = 0; x < row.Width; x++)
+                        {
+                            if (row[x].A != firstPixel.A)
+                            {
+                                result = reinterpretedBitmapData.ToBitmap();
+                                return;
+                            }
+                        }
+                    } while (row.MoveNextRow());
+                }
+                finally
+                {
+                    bitmap.UnlockBits(bitmapData);
+                    if (result != null)
+                    {
+                        bitmap.Dispose();
+                        bitmap = result;
+                    }
+                }
+            }
 
             static Metafile BitmapToMetafile(Bitmap bitmap)
             {
@@ -959,6 +1004,9 @@ namespace KGySoft.Drawing.ImagingTools
                     return new ImageInfo(asIcon);
 
                 case Bitmap bitmap:
+                    if (detectAlpha && bitmap.PixelFormat == PixelFormat.Format32bppRgb)
+                        TryRestoreAlpha(ref bitmap);
+
                     if ((allowedTypes & AllowedImageTypes.Bitmap) != AllowedImageTypes.None)
                     {
                         if (!allowMultiFrame && bitmap.FrameDimensionsList is Guid[] { Length: > 0 } dimensions && bitmap.GetFrameCount(new FrameDimension(dimensions[0])) > 1)
@@ -1006,7 +1054,7 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static bool TryGetNativeBitmap(IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, AsyncTaskContext task, out ImageInfo? result)
+        private static bool TryGetNativeBitmap(IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, bool detectAlpha, AsyncTaskContext task, out ImageInfo? result)
         {
             #region Local Methods
 
@@ -1058,7 +1106,7 @@ namespace KGySoft.Drawing.ImagingTools
             {
                 Bitmap? bitmap = null;
                 task.Context.Send(_ => bitmap = DoTryGetNativeBitmap(comDataObject), null);
-                result = EnsureFormat(bitmap, allowedTypes, false);
+                result = EnsureFormat(bitmap, allowedTypes, false, detectAlpha);
                 return result != null;
             }
             catch (Exception e) when (!e.IsCriticalGdi())
