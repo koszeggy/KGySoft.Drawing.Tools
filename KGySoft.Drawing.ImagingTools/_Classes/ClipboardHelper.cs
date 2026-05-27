@@ -164,7 +164,12 @@ namespace KGySoft.Drawing.ImagingTools
         private const string gifFormat = "GIF";
         private const string pngFormat = "PNG";
         private const string iconFormat = "ICO";
+        private const string jpegFormat = "JFIF";
         private const string dibV5Format = "Format17";
+
+        private const string pngAliasFormat = "image/png";
+        private const string gifAliasFormat = "image/gif";
+        private const string jpegAliasFormat = "image/jpeg";
 
         #endregion
 
@@ -174,7 +179,10 @@ namespace KGySoft.Drawing.ImagingTools
         private readonly static string[] supportedFormats =
         [
             // bitmap formats
-            DataFormats.Bitmap, DataFormats.Dib, DataFormats.Tiff, typeof(Bitmap).FullName!, pngFormat, gifFormat, dibV5Format,
+            DataFormats.Bitmap, DataFormats.Dib, DataFormats.Tiff, typeof(Bitmap).FullName!, pngFormat, gifFormat, dibV5Format, jpegFormat,
+
+            // bitmap aliases
+            pngAliasFormat, gifAliasFormat, jpegAliasFormat,
 
             // metafile formats
             DataFormats.EnhancedMetafile, DataFormats.MetafilePict, emfFormat, wmfFormat,
@@ -412,6 +420,7 @@ namespace KGySoft.Drawing.ImagingTools
                         {
                             IntPtr handle => handle,
                             MemoryStream ms => StreamToHGlobal(ms),
+                            //GlobalHandleStream gs => gs.HGlobal == IntPtr.Zero ? gs.HGlobal = StreamToHGlobal(gs.Stream) : gs.HGlobal, // sharing a HGlobal under multiple formats does not work, the main thread crashes with heap corruption detection
                             _ => throw new InvalidOperationException(Res.InternalError($"Unhandled clipboard format to populate natively: {item.Key}: {item.Value.GetType()}"))
                         };
 
@@ -574,10 +583,12 @@ namespace KGySoft.Drawing.ImagingTools
                 {
                     try
                     {
+                        // var sharedGlobal = new GlobalHandleStream(); // sharing a HGlobal under multiple formats does not work, the main thread crashes with heap corruption detection
                         var ms = new MemoryStream();
                         lock (bitmap)
-                            bitmap.SaveAsPng(ms);
+                            bitmap.SaveAsPng(ms); // bitmap.SaveAsPng(sharedGlobal.Stream);
                         formats.Add(pngFormat, ms);
+                        //formats.Add(pngAliasFormat, sharedGlobal);
                         if (task.IsCanceled)
                             return;
                     }
@@ -870,7 +881,7 @@ namespace KGySoft.Drawing.ImagingTools
                     return null;
 
                 // 3. Single-frame custom encoded Bitmap or Icon. The way of the Intersect call ensures the order of the tried formats.
-                if (TryGetImageFromStream(new[] { pngFormat, DataFormats.Tiff, gifFormat, iconFormat }.Intersect(formats), dataObject, allowedTypes, false, task, out imageInfo))
+                if (TryGetImageFromStream(new[] { pngFormat, pngAliasFormat, DataFormats.Tiff, gifFormat, gifAliasFormat, iconFormat, jpegFormat, jpegAliasFormat }.Intersect(formats), dataObject, allowedTypes, false, task, out imageInfo))
                     return imageInfo;
                 if (task.IsCanceled)
                     return null;
