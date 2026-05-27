@@ -410,7 +410,7 @@ namespace KGySoft.Drawing.ImagingTools
                     {
                         IntPtr hMem = item.Value switch
                         {
-                            IntPtr pointer => pointer,
+                            IntPtr handle => handle,
                             MemoryStream ms => StreamToHGlobal(ms),
                             _ => throw new InvalidOperationException(Res.InternalError($"Unhandled clipboard format to populate natively: {item.Key}: {item.Value.GetType()}"))
                         };
@@ -567,9 +567,10 @@ namespace KGySoft.Drawing.ImagingTools
             try
             {
                 PixelFormat pixelFormat = bitmap.PixelFormat;
+                bool hasAlpha = pixelFormat.HasAlpha() || (pixelFormat.IsIndexed() && bitmap.Palette.Entries.Any(c => c.A != Byte.MaxValue));
 
                 // 1. Custom PNG format. It is recognized by multiple applications, and unlike the standard Bitmap format, it preserves alpha.
-                if (pixelFormat.HasAlpha())
+                if (hasAlpha)
                 {
                     try
                     {
@@ -608,7 +609,7 @@ namespace KGySoft.Drawing.ImagingTools
                 // 3. Standard formats
                 if (!OSHelper.IsWindows)
                 {
-                    // Manged fallback on non-windows platforms
+                    // Manged fallback when Windows API cannot be used
                     formats.Add(DataFormats.Bitmap, bitmap);
                     return;
                 }
@@ -616,7 +617,7 @@ namespace KGySoft.Drawing.ImagingTools
                 // 3.a. Standard Format17 (DIBv5) format: the standard way of storing alpha image on the clipboard, though not too many applications handle it.
                 // Only on Windows, because we need to populate the clipboard natively to add the Format17 format with the standard CF_DIBV5 ID
                 // instead of a newly registered random one, and to auto generate the standard DeviceIndependentBitmap and Bitmap formats as well.
-                if (BitConverter.IsLittleEndian && pixelFormat.HasAlpha())
+                if (hasAlpha && BitConverter.IsLittleEndian)
                 {
                     try
                     {
@@ -632,58 +633,71 @@ namespace KGySoft.Drawing.ImagingTools
                     }
                 }
 
-                // 3.b. Standard Bitmap format. The clipboard expects a bitmap created by CreateCompatibleBitmap. If we just returned the result of GetHbitmap,
-                // retrieving the Bitmap format may cause even out of memory exception (sometimes just after restarting the application),
-                // and the DIB format (if it doesn't throw - may depend on the pixel format) might be interpreted incorrectly.
+                // 3.b. Standard Bitmap format.
                 // When using SetClipboardData, Windows automatically generates DeviceIndependentBitmap and Format17 (DIB/DIBv5) entries as well.
                 // This is different from the managed Clipboard/DataObject.SetImage APIs, which don't generate these additional formats,
                 // but add a BinaryFormatter-serialized System.Drawing.Bitmap entry (along with the standard Bitmap format).
                 IntPtr hbmSrc = IntPtr.Zero;
-                IntPtr dcScreen = IntPtr.Zero;
+                IntPtr hbmDst = IntPtr.Zero;
                 try
                 {
-                    try
-                    {
-                        Size size = bitmap.Size;
-                        dcScreen = User32.GetDC(IntPtr.Zero);
+                    lock (bitmap)
                         hbmSrc = bitmap.GetHbitmap();
-                        IntPtr dcSrc = Gdi32.CreateCompatibleDC(dcScreen);
-                        IntPtr prevSrc = Gdi32.SelectObject(dcSrc, hbmSrc);
-
-                        IntPtr dcDst = Gdi32.CreateCompatibleDC(dcScreen);
-                        IntPtr hbmDst = Gdi32.CreateCompatibleBitmap(dcScreen, size.Width, size.Height);
-                        IntPtr prevDst = Gdi32.SelectObject(dcDst, hbmDst);
-
-                        // copying the content and storing the result
-                        Gdi32.BitBlt(dcDst, dcSrc, size);
+                    if (hbmSrc != IntPtr.Zero && (hbmDst = CreateCompatibleBitmap(hbmSrc, bitmap.Size)) != IntPtr.Zero)
                         formats.Add(DataFormats.Bitmap, hbmDst);
-
-                        // cleanup
-                        Gdi32.SelectObject(dcSrc, prevSrc);
-                        Gdi32.SelectObject(dcDst, prevDst);
-                        Gdi32.DeleteDC(dcSrc);
-                        Gdi32.DeleteDC(dcDst);
-                    }
-                    finally
-                    {
-                        if (hbmSrc != IntPtr.Zero)
-                            Gdi32.DeleteObject(hbmSrc);
-                        if (dcScreen != IntPtr.Zero)
-                            User32.ReleaseDC(IntPtr.Zero, dcScreen);
-                    }
                 }
-                catch (Exception e) when (!e.IsCritical())
+                catch (Exception e)
                 {
                     Debug.WriteLine($"Failed to copy as {DataFormats.Bitmap}: {e.Message}");
+                }
+                finally
+                {
+                    if (hbmSrc != IntPtr.Zero)
+                        Gdi32.DeleteObject(hbmSrc);
 
                     // Ultimate fallback: indicating to use DataObject.SetImage when populating the clipboard
-                    formats.Add(DataFormats.Bitmap, bitmap);
+                    if (hbmDst == IntPtr.Zero)
+                        formats.Add(DataFormats.Bitmap, bitmap);
                 }
             }
             finally
             {
                 if (!ReferenceEquals(bitmap, image))
                     bitmap.Dispose();
+            }
+        }
+
+        private static IntPtr CreateCompatibleBitmap(IntPtr hbmSrc, Size size)
+        {
+            // The clipboard expects a bitmap created by CreateCompatibleBitmap. If we just returned the result of GetHbitmap,
+            // retrieving the Bitmap format may cause even out of memory exception (sometimes just after terminating the source process),
+            // and the generated DIB format (if it doesn't throw - may depend on the pixel format) might be interpreted incorrectly.
+            IntPtr dcScreen = IntPtr.Zero;
+            try
+            {
+                dcScreen = User32.GetDC(IntPtr.Zero);
+                IntPtr dcSrc = Gdi32.CreateCompatibleDC(dcScreen);
+                IntPtr prevSrc = Gdi32.SelectObject(dcSrc, hbmSrc);
+
+                IntPtr dcDst = Gdi32.CreateCompatibleDC(dcScreen);
+                IntPtr hbmDst = Gdi32.CreateCompatibleBitmap(dcScreen, size.Width, size.Height);
+                IntPtr prevDst = Gdi32.SelectObject(dcDst, hbmDst);
+
+                // copying the content and storing the result
+                Gdi32.BitBlt(dcDst, dcSrc, size);
+
+                // cleanup
+                Gdi32.SelectObject(dcSrc, prevSrc);
+                Gdi32.SelectObject(dcDst, prevDst);
+                Gdi32.DeleteDC(dcSrc);
+                Gdi32.DeleteDC(dcDst);
+
+                return hbmDst;
+            }
+            finally
+            {
+                if (dcScreen != IntPtr.Zero)
+                    User32.ReleaseDC(IntPtr.Zero, dcScreen);
             }
         }
 
