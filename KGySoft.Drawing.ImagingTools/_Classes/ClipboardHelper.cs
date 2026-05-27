@@ -738,7 +738,7 @@ namespace KGySoft.Drawing.ImagingTools
                 bV5Planes = 1,
                 bV5BitCount = 32,
                 bV5Compression = Constants.BI_RGB, // see the comments above
-                bV5SizeImage = (uint)(bitmapData.RowSize * bitmapData.Height),
+                bV5SizeImage = (uint)(bitmapData.Width * bitmapData.Height * 4),
                 bV5RedMask = 0x00FF0000,
                 bV5GreenMask = 0x0000FF00,
                 bV5BlueMask = 0x000000FF,
