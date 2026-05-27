@@ -301,6 +301,9 @@ namespace KGySoft.Drawing.ImagingTools
                     if (task.IsCanceled)
                         return;
                 }
+                // single icon frame
+                else if (info.Icon is Icon icon)
+                    CopyIcon(formats, info, task);
 
                 // GetCreateImage with no cancellation is alright here - due to the compounds format above, actual generate is expected for icon bitmaps only
                 Image? image = info.GetCreateImage();
@@ -783,12 +786,15 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static void CopyIcon(Dictionary<string, object> formats, ImageInfo info, AsyncTaskBase task)
+        private static void CopyIcon(Dictionary<string, object> formats, ImageInfoBase info, AsyncTaskBase task)
         {
             try
             {
                 var ms = new MemoryStream();
-                Icons.Combine(info.IterateFrameIcons(task)).Save(ms);
+                if (info is ImageInfo imageInfo)
+                    Icons.Combine(imageInfo.IterateFrameIcons(task)).Save(ms);
+                else
+                    info.GetCreateIcon()!.SaveAsIcon(ms);
                 formats.Add(iconFormat, ms);
             }
             catch (Exception e) when (!e.IsCritical())
