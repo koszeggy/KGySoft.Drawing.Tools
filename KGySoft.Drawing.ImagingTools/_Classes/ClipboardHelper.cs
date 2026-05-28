@@ -575,7 +575,7 @@ namespace KGySoft.Drawing.ImagingTools
 
         private static void CopyBitmap(Dictionary<string, object> formats, Image image, AsyncTaskBase task)
         {
-            Bitmap bitmap = image as Bitmap ?? new Bitmap(image);
+            Bitmap bitmap = image.AsBitmap();
             try
             {
                 PixelFormat pixelFormat = bitmap.PixelFormat;

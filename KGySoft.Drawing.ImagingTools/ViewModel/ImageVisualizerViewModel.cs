@@ -886,9 +886,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                         // not icon was loaded, though icon is the only supported format: converting to icon
                         else if (imageTypes == AllowedImageTypes.Icon)
                         {
-                            Bitmap iconImage = image as Bitmap ?? new Bitmap(image);
-                            var newResult = new ImageInfo(iconImage.ToIcon());
-                            iconImage.Dispose();
+                            Size size = result.Size;
+                            var newResult = new ImageInfo(image.ToIcon(Math.Min(256, Math.Max(size.Width, size.Height)), true));
                             result.Dispose();
                             result = newResult;
                             notification = Res.NotificationImageAsIconId;
@@ -1155,7 +1154,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 if (image == null)
                     return;
 
-                Bitmap bmp = image as Bitmap ?? new Bitmap(image);
+                Bitmap bmp = image.AsBitmap();
                 if (ReferenceEquals(image, bmp))
                     Monitor.Enter(bmp);
                 try
