@@ -276,15 +276,26 @@
   <data name="InfoText_SizeFormat" xml:space="preserve">
     <value>{{Width={0}, Height={1}}}</value>
   </data>
-  <data name="InfoText_ImageFormat" xml:space="preserve">
-    <value>Type: {0}
-Size: {1}x{2} pixels
-{7}Pixel Format: {3}
-Raw format: {4}
-Resolution: {5}x{6} DPI</value>
+  <data name="Info_TypeFormat" xml:space="preserve">
+    <value>Type: {0}</value>
+  </data>
+  <data name="Info_SizeInPixelsFormat" xml:space="preserve">
+    <value>Size: {0} x {1} pixels</value>
+  </data>
+  <data name="Info_PixelFormatFormat" xml:space="preserve">
+    <value>Pixel Format: {0}</value>
+  </data>
+  <data name="Info_RawFormatFormat" xml:space="preserve">
+    <value>Raw Format: {0}</value>
+  </data>
+  <data name="Info_MetafileTypeFormat" xml:space="preserve">
+    <value>Metafile Type: {0}</value>
+  </data>
+  <data name="Info_ResolutionFormat" xml:space="preserve">
+    <value>Resolution: {0} x {1} DPI</value>
   </data>
   <data name="InfoText_BitmapDataFormat" xml:space="preserve">
-    <value>Size: {0}x{1} pixels
+    <value>Size: {0} x {1} pixels
 Stride: {2} bytes
 Pixel Format: {3}</value>
   </data>
@@ -302,7 +313,7 @@ Pixel Format: {3}</value>
     <value>Images: {0}</value>
   </data>
   <data name="InfoText_CurrentFrameFormat" xml:space="preserve">
-    <value>Current Image: {0}/{1}</value>
+    <value>Current Image: {0} / {1}</value>
   </data>
   <data name="InfoText_SelectedIndexFormat" xml:space="preserve">
     <value>Selected index: {0}</value>
@@ -337,16 +348,13 @@ Brightness: {5:F0}%</value>
     <value>Vertical zoom: {0}</value>
   </data>
   <data name="InfoText_VisibleClipFormat" xml:space="preserve">
-    <value>Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2}x{3} pixels}}</value>
+    <value>Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2} x {3} pixels}}</value>
   </data>
   <data name="InfoText_OriginalVisibleClipFormat" xml:space="preserve">
-    <value>Original Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2}x{3} pixels}}</value>
+    <value>Original Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2} x {3} pixels}}</value>
   </data>
   <data name="InfoText_TransformedVisibleClipFormat" xml:space="preserve">
-    <value>Transformed Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2}x{3} (Page Unit: {4})}}</value>
-  </data>
-  <data name="InfoText_ResolutionFormat" xml:space="preserve">
-    <value>Resolution: {0}x{1} DPI</value>
+    <value>Transformed Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2} x {3} (Page Unit: {4})}}</value>
   </data>
   <data name="Notification_MetafileAsBitmap" xml:space="preserve">
     <value>The loaded metafile has been converted to Bitmap. To load it as a Metafile, choose the Image Debugger Visualizer instead.</value>

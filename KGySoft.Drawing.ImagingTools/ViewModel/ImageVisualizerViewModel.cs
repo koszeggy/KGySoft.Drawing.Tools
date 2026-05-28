@@ -478,6 +478,18 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         protected virtual void UpdateInfo()
         {
+            #region Local Methods
+
+            string GetFrameInfo()
+            {
+                Debug.Assert(imageInfo.HasFrames);
+                return currentFrame != -1 && !IsAutoPlaying
+                    ? Res.InfoCurrentFrame(currentFrame + 1, imageInfo.Frames!.Length)
+                    : Res.InfoFramesCount(imageInfo.Frames!.Length);
+            }
+
+            #endregion
+
             if (imageInfo.Type == ImageInfoType.None)
             {
                 TitleCaption = Res.TitleNoImage;
@@ -486,29 +498,40 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
 
             ImageInfoBase currentImage = GetCurrentImageInfo();
+            bool isMetafile = imageInfo.IsMetafile;
+            bool hasFrames = imageInfo.HasFrames;
+
+            // title
             var sb = new StringBuilder();
             sb.Append(Res.TitleType(GetTypeName()));
-            if (!imageInfo.IsMetafile)
+            if (!isMetafile)
             {
                 sb.Append(Res.TextSeparator);
                 sb.Append(Res.TitleSize(GetSize()));
             }
-            sb.Append(GetFrameInfo(true));
+            if (hasFrames)
+            {
+                sb.Append(Res.TextSeparator);
+                sb.Append(GetFrameInfo());
+            }
 
             TitleCaption = sb.ToString();
-            sb.Length = 0;
-            sb.Append(Res.InfoImage(GetTypeName(),
-                GetSize(),
-                currentImage.PixelFormat == PixelFormatExtensions.Format32bppCmyk ? nameof(PixelFormatExtensions.Format32bppCmyk) : currentImage.PixelFormat.ToString<PixelFormat>(),
-                RawFormatToString(currentImage.RawFormat),
-                currentImage.HorizontalRes, currentImage.VerticalRes,
-                GetFrameInfo(false)));
 
-            if (!imageInfo.IsMetafile)
-            {
-                sb.AppendLine();
-                sb.Append(Res.InfoPalette(currentImage.Palette.Length));
-            }
+            // detailed info
+            sb.Length = 0;
+            sb.AppendLine(Res.InfoType(GetTypeName()));
+            sb.AppendLine(Res.InfoSizeInPixels(GetSize()));
+            if (!isMetafile)
+                sb.AppendLine(Res.InfoPixelFormat(currentImage.PixelFormat == PixelFormatExtensions.Format32bppCmyk ? nameof(PixelFormatExtensions.Format32bppCmyk) : currentImage.PixelFormat.ToString<PixelFormat>()));
+            sb.AppendLine(Res.InfoRawFormat(RawFormatToString(currentImage.RawFormat)));
+            if (isMetafile)
+                sb.AppendLine(Res.InfoMetafileType(imageInfo.MetafileType));
+            if (imageInfo.Type != ImageInfoType.Icon)
+                sb.AppendLine(Res.InfoResolution(new PointF(currentImage.HorizontalRes, currentImage.VerticalRes)));
+            if (hasFrames)
+                sb.AppendLine(GetFrameInfo());
+            if (!isMetafile)
+                sb.AppendLine(Res.InfoPalette(currentImage.Palette.Length));
 
             InfoText = sb.ToString();
         }
@@ -691,25 +714,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             ResetEnabledStates();
             UpdateInfo();
-        }
-
-        private string GetFrameInfo(bool singleLine)
-        {
-            if (!imageInfo.HasFrames)
-                return String.Empty;
-
-            var result = new StringBuilder();
-            if (singleLine)
-                result.Append("; ");
-
-            if (currentFrame != -1 && !IsAutoPlaying)
-                result.Append(Res.InfoCurrentFrame(currentFrame + 1, imageInfo.Frames!.Length));
-            else
-                result.Append(Res.InfoFramesCount(imageInfo.Frames!.Length));
-
-            if (!singleLine)
-                result.AppendLine();
-            return result.ToString();
         }
 
         private Size GetSize()

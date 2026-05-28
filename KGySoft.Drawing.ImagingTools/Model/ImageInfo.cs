@@ -45,6 +45,12 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #endregion
 
+        #region Fields
+
+        private MetafileType? metafileType;
+
+        #endregion
+
         #region Properties
 
         #region Public Properties
@@ -81,6 +87,27 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         internal bool IsMultiRes => !Frames.IsNullOrEmpty() && Type is ImageInfoType.MultiRes or ImageInfoType.Icon;
         internal bool IsMetafile => Image is Metafile;
+        
+        // Not like other properties, because it always can be restored from the metafile, even after (de)serialization
+        internal MetafileType MetafileType
+        {
+            get
+            {
+                if (metafileType == null)
+                {
+                    try
+                    {
+                        metafileType = (Image as Metafile)?.GetMetafileHeader().Type ?? default;
+                    }
+                    catch (Exception e) when (!e.IsCriticalGdi())
+                    {
+                        metafileType = MetafileType.Invalid;
+                    }
+                }
+
+                return metafileType.Value;
+            }
+        }
 
         #endregion
 
@@ -289,6 +316,14 @@ namespace KGySoft.Drawing.ImagingTools.Model
             }
 
             return result;
+        }
+
+        /// <inheritdoc/>
+        protected override void OnPropertyChanged(PropertyChangedExtendedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+            if (e.PropertyName == nameof(Image))
+                metafileType = null;
         }
 
         /// <inheritdoc/>

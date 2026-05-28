@@ -26,7 +26,8 @@
 * Main Form/Image Visualizer dialog:
   + Copy/paste support
   + Larger enabled zoom for metafiles. Anti-aliasing might be turned off automatically on larger zoom levels.
-  * Load/Open operations are now asynchronous so the UI remains responsive during load and save
+  * Load/Open operations are now asynchronous so the UI remains responsive during load and save.
+  * Improved information details of the loaded image, depending on its type.
   - Dragging a zoomed animated bitmap by the mouse was not quite possible while the animation was playing, because
     the dragging operation was canceled on updating the frame.
 - Debugger Visualizer Installations dialog:
