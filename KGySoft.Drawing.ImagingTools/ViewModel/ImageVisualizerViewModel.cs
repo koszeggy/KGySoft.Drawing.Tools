@@ -67,6 +67,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             internal string SelectedFormat = null!;
             internal ImageInfoBase ToSave = null!;
             internal int CurrentFrame; // needed when a compound image is saved in a single frame format
+            internal ImageInfoType Type;
 
             #endregion
         }
@@ -80,6 +81,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             #region Fields
 
             internal ImageInfoBase ToCopy = null!;
+            internal ImageInfoType Type;
 
             #endregion
         }
@@ -1031,7 +1033,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 FileName = fileName,
                 SelectedFormat = selectedFormat,
                 ToSave = GetCurrentImageInfo(true),
-                CurrentFrame = currentFrame
+                CurrentFrame = currentFrame,
+                Type = imageInfo.Type
             };
             activeTask = task;
             ThreadPool.QueueUserWorkItem(DoSaveFile, task);
@@ -1186,8 +1189,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             #endregion
 
             var task = (SaveTask)state!;
-            (string fileName, string selectedFormat) = (task.FileName, task.SelectedFormat);
+            (string fileName, string selectedFormat, ImageInfoType type) = (task.FileName, task.SelectedFormat, task.Type);
             Exception? error = null;
+            string? notification = null;
+            bool isFrame = task.ToSave is ImageFrameInfo;
 
             try
             {
@@ -1224,6 +1229,24 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     SaveBitmapData(task);
                 else
                     throw new InvalidOperationException(Res.InternalError($"Unexpected format without encoder: {selectedFormat}"));
+
+                if (isFrame)
+                {
+                    notification = type switch
+                    {
+                        ImageInfoType.Pages => Res.NotificationPageSavedId,
+                        ImageInfoType.Animation => Res.NotificationFrameSavedId,
+                        ImageInfoType.Icon or ImageInfoType.MultiRes => Res.NotificationIconImageSavedId,
+                        _ => throw new InvalidOperationException(Res.InternalError($"Unexpected frame type: {type}"))
+                    };
+                }
+                else if (task.ToSave is ImageInfo { HasFrames: true })
+                {
+                    notification = type == ImageInfoType.Animation && encoder?.FormatID != ImageFormat.Gif.Guid ? Res.NotificationSaveAsGifRecommendedId
+                        : type == ImageInfoType.Pages && encoder?.FormatID != ImageFormat.Tiff.Guid ? Res.NotificationSaveAsTiffRecommendedId
+                        : type is ImageInfoType.Icon or ImageInfoType.MultiRes && selectedFormat != "*.ico" ? Res.NotificationSaveAsIconRecommendedId
+                        : null;
+                }
             }
             catch (Exception e) when (!e.IsCriticalGdi())
             {
@@ -1232,14 +1255,18 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
             finally
             {
-                if (task.IsCanceled && File.Exists(fileName))
+                if (task.IsCanceled)
                 {
-                    try
+                    notification = null;
+                    if (File.Exists(fileName))
                     {
-                        File.Delete(fileName);
-                    }
-                    catch (Exception e) when (!e.IsCritical())
-                    {
+                        try
+                        {
+                            File.Delete(fileName);
+                        }
+                        catch (Exception e) when (!e.IsCritical())
+                        {
+                        }
                     }
                 }
 
@@ -1248,6 +1275,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 TryInvokeSync(() =>
                 {
                     IsBusy = false;
+                    SetNotification(notification);
                     if (error != null)
                         ShowError(Res.ErrorMessageFailedToSaveImage(error.Message));
                     else if (!task.IsCanceled)
@@ -1553,7 +1581,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             Debug.Assert(!IsBusy && activeTask == null);
             IsBusy = true;
-            var task = new CopyTask { ToCopy = GetCurrentImageInfo(true) };
+            var task = new CopyTask { ToCopy = GetCurrentImageInfo(true), Type = imageInfo.Type };
             activeTask = task;
             ThreadPool.QueueUserWorkItem(DoCopyToClipboard, task);
         }
@@ -1562,11 +1590,22 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             var task = (CopyTask)state!;
             string? warning = null;
+            string? notification = null;
             try
             {
                 if (task.IsCanceled)
                     return;
                 ClipboardHelper.CopyToClipboard(task.ToCopy, task);
+                if (task.ToCopy is ImageFrameInfo)
+                {
+                    notification = task.Type switch
+                    {
+                        ImageInfoType.Pages => Res.NotificationPageCopiedId,
+                        ImageInfoType.Animation => Res.NotificationFrameCopiedId,
+                        ImageInfoType.Icon or ImageInfoType.MultiRes => Res.NotificationIconImageCopiedId,
+                        _ => throw new InvalidOperationException(Res.InternalError($"Unexpected frame type: {task.Type}"))
+                    };
+                }
             }
             catch (Exception e) when (!e.IsCritical())
             {
@@ -1574,11 +1613,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
             finally
             {
+                if (task.IsCanceled)
+                    notification = null;
                 task.Dispose();
                 activeTask = null;
                 TryInvokeSync(() =>
                 {
                     IsBusy = false;
+                    SetNotification(notification);
                     if (warning != null)
                         ShowWarning(warning);
                 });

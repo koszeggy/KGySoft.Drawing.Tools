@@ -271,6 +271,36 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>The palette of an indexed BitmapData cannot be reconstructed, therefore a default palette is used. You can change palette colors in the menu.</summary>
         internal static string NotificationPaletteCannotBeRestoredId => "Notification_PaletteCannotBeRestored";
 
+        /// <summary>The current page has been saved. To save the whole image instead, check the compound view button, and save the image in TIFF format.</summary>
+        internal static string NotificationPageSavedId => "Notification_PageSaved";
+
+        /// <summary>The current page has been copied to the clipboard. To copy the whole image instead, check the compound view button first.
+        /// Note that most applications may not support pasting multiple pages though.</summary>
+        internal static string NotificationPageCopiedId => "Notification_PageCopied";
+
+        /// <summary>To properly save a multipage image, make sure you save it in TIFF format as well.</summary>
+        internal static string NotificationSaveAsTiffRecommendedId => "Notification_SaveAsTiffRecommended";
+
+        /// <summary>The current frame has been saved. To save the whole animation instead, check the animation mode button, and save the image in GIF format.</summary>
+        internal static string NotificationFrameSavedId => "Notification_FrameSaved";
+
+        /// <summary>The current frame has been copied to the clipboard. To copy the whole animation instead, check the animation mode button first.
+        /// Note that most applications may not support pasting multiple frames though.</summary>
+        internal static string NotificationFrameCopiedId => "Notification_FrameCopied";
+
+        /// <summary>To properly save the whole animation make sure you save the image in GIF format as well.</summary>
+        internal static string NotificationSaveAsGifRecommendedId => "Notification_SaveAsGifRecommended";
+
+        /// <summary>The current icon image has been saved. To save the icon with all of its images, check the combined view button, and save it in Icon format.</summary>
+        internal static string NotificationIconImageSavedId => "Notification_IconImageSaved";
+
+        /// <summary>The current icon image has been copied to the clipboard. To copy it with all of its images, check the combined view button first.
+        /// Note that most applications may not support pasting multi-resolution icons though.</summary>
+        internal static string NotificationIconImageCopiedId => "Notification_IconImageCopied";
+
+        /// <summary>To properly save a combined icon make sure you save it in Icon format as well.</summary>
+        internal static string NotificationSaveAsIconRecommendedId => "Notification_SaveAsIconRecommended";
+
         #endregion
 
         #region Messages

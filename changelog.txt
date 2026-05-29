@@ -26,6 +26,8 @@
 * Main Form/Image Visualizer dialog:
   + Copy/paste support
   + Larger enabled zoom for metafiles. Anti-aliasing might be turned off automatically on larger zoom levels.
+  + When saving/copying just a frame of a multipage image, or not using the best format for saving, displaying a
+    notification with the recommended action.
   * Load/Open operations are now asynchronous so the UI remains responsive during load and save.
   * Improved information details of the loaded image, depending on its type.
   * The auto zoom/smooth zooming buttons do not turn disabled when the loaded image is cleared.
