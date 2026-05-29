@@ -374,14 +374,14 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         private void InitCommandBindings()
         {
             // View
-            CommandBindings.Add(ViewModel.SetAutoZoomCommand, ViewModel.SetAutoZoomCommandState)
+            CommandBindings.Add(ViewModel.SetAutoZoomCommand)
                 .WithParameter(() => btnZoom.Checked)
                 .AddSource(btnZoom, nameof(btnZoom.CheckedChanged));
-            CommandBindings.Add(imageViewer.IncreaseZoom)
+            CommandBindings.Add(imageViewer.IncreaseZoom, ViewModel.ChangeZoomCommandState)
                 .AddSource(btnZoom.IncreaseZoomMenuItem, nameof(btnZoom.IncreaseZoomMenuItem.Click));
-            CommandBindings.Add(imageViewer.DecreaseZoom)
+            CommandBindings.Add(imageViewer.DecreaseZoom, ViewModel.ChangeZoomCommandState)
                 .AddSource(btnZoom.DecreaseZoomMenuItem, nameof(btnZoom.DecreaseZoomMenuItem.Click));
-            CommandBindings.Add(imageViewer.ResetZoom)
+            CommandBindings.Add(imageViewer.ResetZoom, ViewModel.ChangeZoomCommandState)
                 .AddSource(btnZoom.ResetZoomMenuItem, nameof(btnZoom.ResetZoomMenuItem.Click));
             CommandBindings.Add(ViewModel.SetSmoothZoomingCommand, ViewModel.SetSmoothZoomingCommandState)
                 .WithParameter(() => btnAntiAlias.Checked)

@@ -211,8 +211,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal Action? UpdatePreviewImageCallback { get => Get<Action?>(); set => Set(value); }
         internal Func<ImageInfoType, Image>? GetCompoundViewIconCallback { get => Get<Func<ImageInfoType, Image>?>(); set => Set(value); }
 
-        internal ICommandState SetAutoZoomCommandState => Get(() => new CommandState());
-        internal ICommandState SetSmoothZoomingCommandState => Get(() => new CommandState());
+        internal ICommandState ChangeZoomCommandState => Get(() => new CommandState());
+        internal ICommandState SetSmoothZoomingCommandState => Get(() => new CommandState()); // always enabled, for ToolTipText only
         internal ICommandState OpenFileCommandState => Get(() => new CommandState());
         internal ICommandState SaveFileCommandState => Get(() => new CommandState { Enabled = false });
         internal ICommandState ClearCommandState => Get(() => new CommandState { Enabled = false });
@@ -383,37 +383,39 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             void PersistAutoZoom(bool value)
             {
-                if (imageInfo.Type == ImageInfoType.None || imageInfo.IsMetafile)
-                    return;
-                if (imageInfo.IsMultiRes && IsCompoundView)
-                    Configuration.AutoZoomMultiResIcon = value;
-                else if (value)
+                if (imageInfo.Type != ImageInfoType.None && !imageInfo.IsMetafile)
                 {
-                    Configuration.AutoZoomBitmap = true;
-                    Configuration.AutoShrinkLargeBitmap = true;
-                }
-                else
-                {
-                    Configuration.AutoZoomBitmap = false;
+                    if (imageInfo.IsMultiRes && IsCompoundView)
+                        Configuration.AutoZoomMultiResIcon = value;
+                    if (value)
+                    {
+                        Configuration.AutoZoomBitmap = true;
+                        Configuration.AutoShrinkLargeBitmap = true;
+                    }
+                    else
+                    {
+                        Configuration.AutoZoomBitmap = false;
 
-                    // turning off auto zoom: separating the preference for small and large bitmaps
-                    Size size = GetSize(); // it's never a compound icon here
-                    Size imageViewerSize = GetImagePreviewSizeCallback?.Invoke() ?? size;
-                    if (size.Width > imageViewerSize.Width || size.Height > imageViewerSize.Height)
-                        Configuration.AutoShrinkLargeBitmap = false;
+                        // turning off auto zoom: separating the preference for small and large bitmaps
+                        Size size = GetSize(); // it's never a compound icon here
+                        Size imageViewerSize = GetImagePreviewSizeCallback?.Invoke() ?? size;
+                        if (size.Width > imageViewerSize.Width || size.Height > imageViewerSize.Height)
+                            Configuration.AutoShrinkLargeBitmap = false;
+                    }
                 }
+
+                Configuration.AutoZoomDefault = value;
             }
 
             void PersistSmoothZooming(bool value)
             {
-                if (imageInfo.Type == ImageInfoType.None)
-                    Configuration.SmoothZoomingDefault = value;
-                else if (imageInfo.IsMetafile)
+                if (imageInfo.IsMetafile)
                     Configuration.SmoothZoomingMetafile = value;
                 else if (imageInfo.IsMultiRes && IsCompoundView)
                     Configuration.SmoothZoomingMultiResIcon = value;
-                else
+                else if (imageInfo.Type != ImageInfoType.None)
                     Configuration.SmoothZoomingBitmap = value;
+                Configuration.SmoothZoomingDefault = value;
             }
 
             #endregion
@@ -434,8 +436,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     return;
                 
                 case nameof(AutoZoom):
-                    UpdateMultiResImage();
-                    if (initialized && imageInfo.Type != ImageInfoType.None && !imageInfo.IsMetafile)
+                    if (imageInfo.Type != ImageInfoType.None)
+                        UpdateMultiResImage();
+                    if (initialized)
                         PersistAutoZoom(e.NewValue is true);
                     return;
 
@@ -464,9 +467,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 PreviewImage = null;
 
             UpdateSmoothZoomingTooltip();
-            SetAutoZoomCommandState.Enabled = SetSmoothZoomingCommandState.Enabled = imageInfo.Type != ImageInfoType.None;
+            ChangeZoomCommandState.Enabled = imageInfo.Type != ImageInfoType.None;
             if (IsViewLoaded)
-                AdjustZoom(resetPreview);
+                AdjustZoom();
             else
                 IsCompoundView = Configuration.CompoundView;
 
@@ -1362,24 +1365,23 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// <summary>
         /// Similar to InitDefaults, but executed when a new file is loaded or the image is updated
         /// </summary>
-        private void AdjustZoom(bool resetZoom)
+        private void AdjustZoom()
         {
             if (imageInfo.Type == ImageInfoType.None)
             {
-                SetAutoZoomCommandState.Enabled = AutoZoom = false;
+                ChangeZoomCommandState.Enabled = false;
                 return;
             }
 
             // metafile: turning on auto zoom for a new file, and preserving current smooth zooming
             if (imageInfo.IsMetafile)
             {
-                if (resetZoom)
-                    AutoZoom = true;
+                AutoZoom = true;
                 return;
             }
 
             // if we are just opening a new image we don't auto toggle AutoZoom and SmoothZooming anymore
-            if (!AutoZoom && resetZoom)
+            if (!AutoZoom)
                 Zoom = 1f;
         }
 
@@ -1391,7 +1393,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             Debug.Assert(!initialized);
             if (imageInfo.Type == ImageInfoType.None)
             {
-                SetAutoZoomCommandState.Enabled = AutoZoom = false;
+                ChangeZoomCommandState.Enabled = false;
+                AutoZoom = Configuration.AutoZoomDefault;
                 SmoothZooming = Configuration.SmoothZoomingDefault;
                 return;
             }

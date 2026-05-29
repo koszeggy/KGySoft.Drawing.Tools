@@ -178,5 +178,17 @@ namespace KGySoft.Drawing.ImagingTools.Properties {
                 this["TryDetectClipboardAlpha"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AutoZoomDefault {
+            get {
+                return ((bool)(this["AutoZoomDefault"]));
+            }
+            set {
+                this["AutoZoomDefault"] = value;
+            }
+        }
     }
 }

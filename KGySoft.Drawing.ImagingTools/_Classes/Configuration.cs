@@ -111,6 +111,7 @@ namespace KGySoft.Drawing.ImagingTools
         internal static bool SmoothZoomingMetafile { get => Get<bool>(); set => Set(value); }
         internal static bool SmoothZoomingMultiResIcon { get => Get(true); set => Set(value); }
         internal static bool SmoothZoomingBitmap { get => Get<bool>(); set => Set(value); }
+        internal static bool AutoZoomDefault { get => Get<bool>(); set => Set(value); }
         internal static bool AutoZoomMultiResIcon { get => Get(true); set => Set(value); }
         internal static bool AutoZoomBitmap { get => Get<bool>(); set => Set(value); }
         internal static bool AutoShrinkLargeBitmap { get => Get(true); set => Set(value); }
