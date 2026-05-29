@@ -188,8 +188,11 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>All files</summary>
         internal static string TextAllFiles => Get("Text_AllFiles");
 
-        /// <summary>Metafiles</summary>
-        internal static string TextMetafiles => Get("Text_Metafiles");
+        /// <summary>Bitmap Image Formats</summary>
+        internal static string TextBitmapTypes => Get("Text_BitmapTypes");
+
+        /// <summary>Vector Image Formats</summary>
+        internal static string TextMetafileTypes => Get("Text_MetafileTypes");
 
         /// <summary>Icon</summary>
         internal static string TextIcon => Get("Text_Icon");
@@ -197,8 +200,8 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Raw Bitmap Data</summary>
         internal static string TextRaw => Get("Text_Raw");
 
-        /// <summary>Images</summary>
-        internal static string TextImages => Get("Text_Images");
+        /// <summary>All Supported Image Types</summary>
+        internal static string TextImageTypes => Get("Text_ImageTypes");
 
         /// <summary>File Format</summary>
         internal static string TextFileFormat => Get("Text_FileFormat");
@@ -207,18 +210,21 @@ namespace KGySoft.Drawing.ImagingTools
         internal static string TextUnnamed => Get("Text_Unnamed");
 
         /// <summary>Toggles whether the animation is handled as a single image.
-        /// • When checked, animation will play and saving as GIF saves the whole animation.
-        /// • When not checked, frame navigation will be enabled and saving saves only the selected frame.</summary>
+        /// • When checked, the animation plays, copy/save as GIF saves the animation, and paste replaces the whole image.
+        /// • When not checked, frame navigation gets enabled, and copy/paste/save operations affect the selected frame only.
+        /// </summary>
         internal static string ToolTipTextCompoundAnimation => Get("ToolTipText_CompoundAnimation");
 
         /// <summary>Toggles whether the icon is handled as a multi-resolution image.
-        /// • When checked, always the best fitting image is displayed and saving as Icon saves every image.
-        /// • When not checked, icon images can be explored by navigation and saving saves the selected image only.</summary>
+        /// • When checked, always the best fitting image is displayed, copy/save as Icon saves a combined icon, and paste replaces the whole image.
+        /// • When not checked, icon images can be explored by navigation, and copy/paste/save operations affect the selected image only.
+        /// </summary>
         internal static string ToolTipTextCompoundMultiSize => Get("ToolTipText_CompoundMultiSize");
 
         /// <summary>Toggles whether the pages are handled as a compound image.
-        /// • When checked, saving as TIFF saves every page.
-        /// • When not checked, saving saves always the selected page only.</summary>
+        /// • When checked, copy/save as TIFF saves every page, and paste replaces the whole image.
+        /// • When not checked, copy/paste/save operations affect the selected page only.
+        /// </summary>
         internal static string ToolTipTextCompoundMultiPage => Get("ToolTipText_CompoundMultiPage");
 
         /// <summary>Smoothing Edges (Alt+S)</summary>
@@ -262,10 +268,13 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Notifications
 
-        /// <summary>The loaded metafile has been converted to Bitmap. To load it as a Metafile, choose the Image Debugger Visualizer instead.</summary>
+        /// <summary>The loaded image has been converted to a Bitmap. To load it as a Metafile, choose the Image Debugger Visualizer instead.</summary>
         internal static string NotificationMetafileAsBitmapId => "Notification_MetafileAsBitmap";
 
-        /// <summary>The loaded image has been converted to Icon</summary>
+        /// <summary>The loaded image has been converted to a Metafile. To load it as a Bitmap, choose the Image Debugger Visualizer instead.</summary>
+        internal static string NotificationBitmapAsMetafileId => "Notification_BitmapAsMetafile";
+
+        /// <summary>The loaded image has been converted to an Icon</summary>
         internal static string NotificationImageAsIconId => "Notification_ImageAsIcon";
 
         /// <summary>The palette of an indexed BitmapData cannot be reconstructed, therefore a default palette is used. You can change palette colors in the menu.</summary>
@@ -686,17 +695,8 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>File does not exist: {0}</summary>
         internal static string ErrorMessageFileDoesNotExist(string file) => Get("ErrorMessage_FileDoesNotExistFormat", file);
 
-        /// <summary>Could not open the file as an Image: {0}</summary>
-        internal static string ErrorMessageNotAnImageFile(string message) => Get("ErrorMessage_NotAnImageFileFormat", message);
-
-        /// <summary>Could not open the file as a Metafile: {0}</summary>
-        internal static string ErrorMessageNotAMetafile(string message) => Get("ErrorMessage_NotAMetafileFormat", message);
-
-        /// <summary>Could not open the file as a Bitmap: {0}</summary>
-        internal static string ErrorMessageNotABitmapFile(string message) => Get("ErrorMessage_NotABitmapFileFormat", message);
-
-        /// <summary>Could not open the file as an Icon: {0}</summary>
-        internal static string ErrorMessageNotAnIconFile(string message) => Get("ErrorMessage_NotAnIconFileFormat", message);
+        /// <summary>Could not recognize the file as a supported image format: {0}</summary>
+        internal static string ErrorMessageDecodeFailed(string message) => Get("ErrorMessage_DecodeFailedFormat", message);
 
         /// <summary>Installation failed: {0}</summary>
         internal static string ErrorMessageInstallationFailed(string error) => Get("ErrorMessage_InstallationFailedFormat", error);

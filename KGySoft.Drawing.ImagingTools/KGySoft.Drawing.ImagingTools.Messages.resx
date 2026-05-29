@@ -186,8 +186,11 @@
   <data name="Text_AllFiles" xml:space="preserve">
     <value>All files</value>
   </data>
-  <data name="Text_Metafiles" xml:space="preserve">
-    <value>Metafiles</value>
+  <data name="Text_BitmapTypes" xml:space="preserve">
+    <value>Bitmap Image Formats</value>
+  </data>
+  <data name="Text_MetafileTypes" xml:space="preserve">
+    <value>Vector Image Formats</value>
   </data>
   <data name="Text_Icon" xml:space="preserve">
     <value>Icon</value>
@@ -195,8 +198,8 @@
   <data name="Text_Raw" xml:space="preserve">
     <value>Raw Bitmap Data</value>
   </data>
-  <data name="Text_Images" xml:space="preserve">
-    <value>Images</value>
+  <data name="Text_ImageTypes" xml:space="preserve">
+    <value>All Supported Image Types</value>
   </data>
   <data name="Text_FileFormat" xml:space="preserve">
     <value>File Format</value>
@@ -360,10 +363,13 @@ Brightness: {5:F0}%</value>
     <value>Transformed Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2} x {3} (Page Unit: {4})}}</value>
   </data>
   <data name="Notification_MetafileAsBitmap" xml:space="preserve">
-    <value>The loaded metafile has been converted to Bitmap. To load it as a Metafile, choose the Image Debugger Visualizer instead.</value>
+    <value>The loaded metafile has been converted to a Bitmap. To load it as a Metafile, choose the Image Debugger Visualizer instead.</value>
+  </data>
+  <data name="Notification_BitmapAsMetafile" xml:space="preserve">
+    <value>The loaded image has been converted to a Metafile. To load it as a Bitmap, choose the Image Debugger Visualizer instead.</value>
   </data>
   <data name="Notification_ImageAsIcon" xml:space="preserve">
-    <value>The loaded image has been converted to Icon</value>
+    <value>The loaded image has been converted to an Icon</value>
   </data>
   <data name="Notification_PaletteCannotBeRestored" xml:space="preserve">
     <value>The palette of an indexed BitmapData cannot be reconstructed, therefore a default palette is used. You can change palette colors in the menu.</value>
@@ -440,17 +446,8 @@ Note that most applications may not support pasting multi-resolution icons thoug
   <data name="ErrorMessage_FileDoesNotExistFormat" xml:space="preserve">
     <value>File does not exist: {0}</value>
   </data>
-  <data name="ErrorMessage_NotAnImageFileFormat" xml:space="preserve">
-    <value>Could not open the file as an Image: {0}</value>
-  </data>
-  <data name="ErrorMessage_NotAMetafileFormat" xml:space="preserve">
-    <value>Could not open the file as a Metafile: {0}</value>
-  </data>
-  <data name="ErrorMessage_NotABitmapFileFormat" xml:space="preserve">
-    <value>Could not open the file as a Bitmap: {0}</value>
-  </data>
-  <data name="ErrorMessage_NotAnIconFileFormat" xml:space="preserve">
-    <value>Could not open the file as an Icon: {0}</value>
+  <data name="ErrorMessage_DecodeFailedFormat" xml:space="preserve">
+    <value>Could not recognize the file as a supported image format: {0}</value>
   </data>
   <data name="ErrorMessage_InstallationFailedFormat" xml:space="preserve">
     <value>Installation failed: {0}</value>

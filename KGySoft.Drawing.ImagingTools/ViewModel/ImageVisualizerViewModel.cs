@@ -764,12 +764,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     return null;
 
                 // bitmaps and metafiles are both allowed
-                if ((task.AllowedTypes & (AllowedImageTypes.Bitmap | AllowedImageTypes.Metafile)) == (AllowedImageTypes.Bitmap | AllowedImageTypes.Metafile))
-                    return Image.FromStream(stream);
-
-                // as Bitmap
-                Debug.Assert(task.AllowedTypes != AllowedImageTypes.Metafile, "This method is not expected to be called if only metafiles are allowed");
-                return new Bitmap(stream);
+                return Image.FromStream(stream);
             }
 
             static bool TryLoadCustom(OpenTask task, MemoryStream stream, [MaybeNullWhen(false)]out Image image)
@@ -808,6 +803,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 bool appearsIcon = Path.GetExtension(fileName).Equals(".ico", StringComparison.OrdinalIgnoreCase);
                 string? openedFileName = fileName;
                 string? notification = null;
+                object? imageOrIcon = null;
                 ImageInfo? result = null;
                 bool isCustom = false;
 
@@ -817,7 +813,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 {
                     try
                     {
-                        result = new ImageInfo(Icons.FromStream(stream));
+                        imageOrIcon = Icons.FromStream(stream);
                     }
                     catch (Exception e) when (!e.IsCritical())
                     {
@@ -826,80 +822,53 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     }
                 }
 
-                if (result == null && !task.IsCanceled)
+                if (imageOrIcon == null && !task.IsCanceled)
                 {
-                    // bitmaps and metafiles are both allowed
-                    if ((imageTypes & (AllowedImageTypes.Bitmap | AllowedImageTypes.Metafile)) == (AllowedImageTypes.Bitmap | AllowedImageTypes.Metafile))
+                    try
                     {
-                        try
-                        {
-                            result = new ImageInfo(LoadImage(task, stream, out isCustom));
-                        }
-                        catch (Exception e) when (!e.IsCriticalGdi())
-                        {
-                            throw new ArgumentException(Res.ErrorMessageNotAnImageFile(e.Message), nameof(fileName), e);
-                        }
+                        imageOrIcon = LoadImage(task, stream, out isCustom);
                     }
-                    // metafiles only
-                    else if (imageTypes == AllowedImageTypes.Metafile)
+                    catch (Exception e) when (!e.IsCriticalGdi())
                     {
-                        try
-                        {
-                            result = new ImageInfo(new Metafile(stream));
-                        }
-                        catch (Exception e) when (!e.IsCriticalGdi())
-                        {
-                            throw new ArgumentException(Res.ErrorMessageNotAMetafile(e.Message), nameof(fileName), e);
-                        }
-                    }
-                    // bitmaps or icons
-                    else if ((imageTypes & (AllowedImageTypes.Bitmap | AllowedImageTypes.Icon)) != AllowedImageTypes.None)
-                    {
-                        try
-                        {
-                            result = new ImageInfo(LoadImage(task, stream, out isCustom));
-                        }
-                        catch (Exception e) when (!e.IsCriticalGdi())
-                        {
-                            throw new ArgumentException(Res.ErrorMessageNotABitmapFile(e.Message), nameof(fileName), e);
-                        }
-
-                        if (!isCustom && result.RawFormat == ImageFormat.MemoryBmp.Guid)
-                        {
-                            notification = Res.NotificationMetafileAsBitmapId;
-                            openedFileName = null;
-                        }
+                        throw new ArgumentException(Res.ErrorMessageDecodeFailed(e.Message), nameof(fileName), e);
                     }
 
-                    // icon is allowed and an image has been loaded
-                    if (result?.Image is Image image && (imageTypes & AllowedImageTypes.Icon) != AllowedImageTypes.None && !task.IsCanceled)
+                    // icon is allowed and an image has been loaded with icon format
+                    if ((imageTypes & AllowedImageTypes.Icon) != AllowedImageTypes.None && imageOrIcon is Image image && image.RawFormat.Equals(ImageFormat.Icon) && !task.IsCanceled)
                     {
-                        // the loaded format is icon: reloading as icon (can make a difference if the icon contains multiple color depths of the same resolution)
-                        if (result.RawFormat == ImageFormat.Icon.Guid)
+                        stream.Position = 0L;
+                        Icon? icon = null;
+                        try
                         {
-                            stream.Position = 0L;
-                            try
+                            icon = new Icon(stream);
+                        }
+                        catch (Exception e) when (!e.IsCriticalGdi())
+                        {
+                        }
+                        finally
+                        {
+                            if (icon != null)
                             {
-                                var newResult = new ImageInfo(new Icon(stream));
-                                result.Dispose();
-                                result = newResult;
-                            }
-                            catch (Exception e) when (!e.IsCriticalGdi())
-                            {
-                                throw new ArgumentException(Res.ErrorMessageNotAnIconFile(e.Message), nameof(fileName), e);
+                                image.Dispose();
+                                imageOrIcon = icon;
                             }
                         }
+                    }
+                }
 
-                        // not icon was loaded, though icon is the only supported format: converting to icon
-                        else if (imageTypes == AllowedImageTypes.Icon)
+                if (!task.IsCanceled && imageOrIcon != null)
+                {
+                    result = ImageInfo.EnsureFormat(imageOrIcon, imageTypes);
+                    if (imageOrIcon is Icon && !ReferenceEquals(imageOrIcon, result.Icon) || imageOrIcon is Image && !ReferenceEquals(imageOrIcon, result.Image))
+                    {
+                        openedFileName = null;
+                        notification = ((object?)result.Icon ?? result.Image) switch
                         {
-                            Size size = result.Size;
-                            var newResult = new ImageInfo(image.ToIcon(Math.Min(256, Math.Max(size.Width, size.Height)), true));
-                            result.Dispose();
-                            result = newResult;
-                            notification = Res.NotificationImageAsIconId;
-                            openedFileName = null;
-                        }
+                            System.Drawing.Icon => Res.NotificationImageAsIconId,
+                            Bitmap => Res.NotificationMetafileAsBitmapId,
+                            Metafile => Res.NotificationBitmapAsMetafileId,
+                            _ => null
+                        };
                     }
                 }
 
@@ -1289,28 +1258,40 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (isOpenFilterUpToDate || imageTypes == AllowedImageTypes.None)
                 return;
 
-            StringBuilder sb = new StringBuilder();
-            StringBuilder sbImages = new StringBuilder();
+            var sbResult = new StringBuilder();
+            var sbImageExtensions = new StringBuilder();
+            var sbBitmapExtensions = new StringBuilder();
+            var sbMetafileExtensions = new StringBuilder();
             foreach (ImageCodecInfo codecInfo in decoderCodecs)
             {
-                if (imageTypes == AllowedImageTypes.Metafile && codecInfo.FormatID != ImageFormat.Wmf.Guid && codecInfo.FormatID != ImageFormat.Emf.Guid)
-                    continue;
+                if (sbResult.Length != 0)
+                    sbResult.Append('|');
+                sbResult.Append($"{codecInfo.FormatDescription} {Res.TextFiles}|{codecInfo.FilenameExtension?.ToLowerInvariant()}");
 
-                if (sb.Length != 0)
-                    sb.Append('|');
-                sb.Append($"{codecInfo.FormatDescription} {Res.TextFiles}|{codecInfo.FilenameExtension?.ToLowerInvariant()}");
-                if (sbImages.Length != 0)
-                    sbImages.Append(';');
-                sbImages.Append(codecInfo.FilenameExtension?.ToLowerInvariant());
+                if (codecInfo.FormatID.In(ImageFormat.Wmf.Guid, ImageFormat.Emf.Guid))
+                {
+                    if (sbMetafileExtensions.Length != 0)
+                        sbMetafileExtensions.Append(';');
+                    sbMetafileExtensions.Append(codecInfo.FilenameExtension?.ToLowerInvariant());
+                }
+                else
+                {
+                    if (sbBitmapExtensions.Length != 0)
+                        sbBitmapExtensions.Append(';');
+                    sbBitmapExtensions.Append(codecInfo.FilenameExtension?.ToLowerInvariant());
+                }
+
+                if (sbImageExtensions.Length != 0)
+                    sbImageExtensions.Append(';');
+                sbImageExtensions.Append(codecInfo.FilenameExtension?.ToLowerInvariant());
             }
 
-            if ((imageTypes & AllowedImageTypes.Bitmap) != AllowedImageTypes.None)
-            {
-                sb.Append($"|{Res.TextRaw} {Res.TextFileFormat}|*.bdat");
-                sbImages.Append(";*.bdat");
-            }
+            sbResult.Append($"|{Res.TextRaw} {Res.TextFileFormat}|*.bdat");
+            sbImageExtensions.Append(";*.bdat");
 
-            OpenFileFilter = $"{(imageTypes == AllowedImageTypes.Metafile ? Res.TextMetafiles : Res.TextImages)} ({sbImages})|{sbImages}|{sb}|{Res.TextAllFiles} (*.*)|*.*";
+            OpenFileFilter = $"{Res.TextImageTypes} ({sbImageExtensions})|{sbImageExtensions}|" +
+                $"{(sbMetafileExtensions.Length > 0 ? $"{Res.TextBitmapTypes} ({sbBitmapExtensions})|{sbBitmapExtensions}|{Res.TextMetafileTypes} ({sbMetafileExtensions})|{sbMetafileExtensions}|" : null)}" +
+                $"{sbResult}|{Res.TextAllFiles} (*.*)|*.*";
             isOpenFilterUpToDate = true;
         }
 

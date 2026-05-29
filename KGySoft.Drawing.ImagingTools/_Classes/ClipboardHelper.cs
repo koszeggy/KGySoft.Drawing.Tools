@@ -21,7 +21,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -302,7 +301,7 @@ namespace KGySoft.Drawing.ImagingTools
                         return;
                 }
                 // single icon frame
-                else if (info.Icon is Icon icon)
+                else if (info.Icon is not null)
                     CopyIcon(formats, info, task);
 
                 // GetCreateImage with no cancellation is alright here - due to the compounds format above, actual generate is expected for icon bitmaps only
@@ -918,7 +917,7 @@ namespace KGySoft.Drawing.ImagingTools
                     task.Context.Send(_ => image = Clipboard.GetImage(), null);
                     if (image != null)
                     {
-                        imageInfo = EnsureFormat(image, allowedTypes, allowMultiFrame, detectAlpha);
+                        imageInfo = ImageInfo.EnsureFormat(image, allowedTypes, allowMultiFrame, detectAlpha);
                         return imageInfo;
                     }
                 }
@@ -930,166 +929,6 @@ namespace KGySoft.Drawing.ImagingTools
             {
                 Debug.WriteLine($"Error while trying to paste image from clipboard: {e.Message}");
                 return null;
-            }
-        }
-
-        private static ImageInfo? EnsureFormat(object? data, AllowedImageTypes allowedTypes, bool allowMultiFrame, bool detectAlpha = false)
-        {
-            #region Local Methods
-
-            static void TryRestoreAlpha(ref Bitmap bitmap)
-            {
-                Debug.Assert(bitmap.PixelFormat == PixelFormat.Format32bppRgb);
-                Bitmap? result = null;
-                
-                // Using BitmapDataFactory rather than GetReadableBitmapData, so we can reinterpret the pixel format.
-                // It's important that we lock with the actual format so the content is not copied.
-                //using IReadableBitmapData bitmapData = bitmap.GetReadableBitmapData();
-                var bitmapData = bitmap.LockBits(new Rectangle(Point.Empty, bitmap.Size), ImageLockMode.ReadOnly, bitmap.PixelFormat);
-                try
-                {
-                    using IReadableBitmapData reinterpretedBitmapData = BitmapDataFactory.CreateBitmapData(bitmapData.Scan0, bitmap.Size, bitmapData.Stride, KnownPixelFormat.Format32bppArgb);
-                    Color32 firstPixel = reinterpretedBitmapData.GetColor32(0, 0);
-                    if (firstPixel.A is not (Byte.MinValue or Byte.MaxValue))
-                    {
-                        result = reinterpretedBitmapData.ToBitmap();
-                        return;
-                    }
-
-                    // First pixel is opaque: assuming no alpha unless there is a pixel with alpha
-                    // First pixel is transparent: if the whole bitmap seems to be completely transparent, we assume no alpha
-                    IReadableBitmapDataRowMovable row = reinterpretedBitmapData.FirstRow;
-                    do
-                    {
-                        for (int x = 0; x < row.Width; x++)
-                        {
-                            if (row[x].A != firstPixel.A)
-                            {
-                                result = reinterpretedBitmapData.ToBitmap();
-                                return;
-                            }
-                        }
-                    } while (row.MoveNextRow());
-                }
-                finally
-                {
-                    bitmap.UnlockBits(bitmapData);
-                    if (result != null)
-                    {
-                        bitmap.Dispose();
-                        bitmap = result;
-                    }
-                }
-            }
-
-            static Metafile BitmapToMetafile(Bitmap bitmap)
-            {
-                using Graphics refGraph = Graphics.FromHwnd(IntPtr.Zero);
-                IntPtr hdc = refGraph.GetHdc();
-                var rect = new RectangleF(Point.Empty, bitmap.Size);
-
-                // NOTE: Using EmfOnly type would allow to select the interpolation at rendering time, but if the bitmap has alpha, it may cause ugly black edges when
-                //       drawing into a larger bitmap. Also, drawing an enlarged metafile of EmfOnly type clips the rightmost column and the bottom row.
-                //       On the other hand, EmfPlusDual stores the interpolation mode in the metafile, which cannot be changed at rendering time.
-                //       Using NN interpolation here, because others look blurry even on 100% zoom.
-                //       This the way an enlarged result will remain pixelated even with smoothing, but at least the rendering will be faster. Smoothing will still work for shrinking.
-                var result = new Metafile(hdc, rect, MetafileFrameUnit.Pixel, EmfType.EmfPlusDual, "BitmapAsEmf");
-                using (var g = Graphics.FromImage(result))
-                {
-                    g.InterpolationMode = InterpolationMode.NearestNeighbor;
-                    g.DrawImage(bitmap, rect);
-                }
-
-                refGraph.ReleaseHdc(hdc); //cleanup
-                return result;
-            }
-
-            static Metafile IconToMetafile(Icon icon)
-            {
-                using Bitmap bitmap = icon.ToAlphaBitmap();
-                return BitmapToMetafile(bitmap);
-            }
-
-            #endregion
-
-            // Special handling if the metafile has a bitmap raw format (may happen on deserialization on .NET Runtime 2.x).
-            // In such case the actual type switches to Bitmap after cloning
-            if (data is Metafile mf && !mf.RawFormat.In(ImageFormat.Wmf, ImageFormat.Emf))
-            {
-                data = mf.Clone();
-                mf.Dispose();
-            }
-
-            switch (data)
-            {
-                case null:
-                    return null;
-
-                case Metafile metafile:
-                    if ((allowedTypes & AllowedImageTypes.Metafile) != AllowedImageTypes.None)
-                        return new ImageInfo(metafile);
-
-                    Size size = metafile.Size;
-                    if ((allowedTypes & AllowedImageTypes.Bitmap) != AllowedImageTypes.None)
-                    {
-                        Bitmap bitmap = metafile.ToBitmap(size);
-                        metafile.Dispose();
-                        return new ImageInfo(bitmap);
-                    }
-
-                    Debug.Assert((allowedTypes & AllowedImageTypes.Icon) != 0);
-                    Icon asIcon = metafile.ToIcon(Math.Min(256, Math.Max(size.Width, size.Height)), true);
-                    metafile.Dispose();
-                    return new ImageInfo(asIcon);
-
-                case Bitmap bitmap:
-                    if (detectAlpha && bitmap.PixelFormat == PixelFormat.Format32bppRgb)
-                        TryRestoreAlpha(ref bitmap);
-
-                    if ((allowedTypes & AllowedImageTypes.Bitmap) != AllowedImageTypes.None)
-                    {
-                        if (!allowMultiFrame && bitmap.FrameDimensionsList is Guid[] { Length: > 0 } dimensions && bitmap.GetFrameCount(new FrameDimension(dimensions[0])) > 1)
-                        {
-                            Bitmap frame = bitmap.CloneCurrentFrame();
-                            bitmap.Dispose();
-                            return new ImageInfo(frame);
-                        }
-
-                        Debug.Assert(bitmap.RawFormat.Guid != ImageFormat.Icon.Guid);
-                        return new ImageInfo(bitmap);
-                    }
-
-                    size = bitmap.Size;
-                    if ((allowedTypes & AllowedImageTypes.Icon) != 0)
-                    {
-                        Icon icon = bitmap.ToIcon(Math.Min(256, Math.Max(size.Width, size.Height)), true);
-                        bitmap.Dispose();
-                        return new ImageInfo(icon);
-                    }
-
-                    Debug.Assert((allowedTypes & AllowedImageTypes.Metafile) != 0);
-                    Metafile asMetafile = BitmapToMetafile(bitmap);
-                    bitmap.Dispose();
-                    return new ImageInfo(asMetafile);
-
-                case Icon icon:
-                    if ((allowedTypes & AllowedImageTypes.Icon) != AllowedImageTypes.None)
-                        return new ImageInfo(icon);
-
-                    if ((allowedTypes & AllowedImageTypes.Bitmap) != AllowedImageTypes.None)
-                    {
-                        Bitmap bitmap = OSHelper.IsWindows && allowMultiFrame ? icon.ToMultiResBitmap() : icon.ToAlphaBitmap();
-                        icon.Dispose();
-                        return new ImageInfo(bitmap);
-                    }
-
-                    Debug.Assert((allowedTypes & AllowedImageTypes.Metafile) != 0);
-                    asMetafile = IconToMetafile(icon);
-                    icon.Dispose();
-                    return new ImageInfo(asMetafile);
-
-                default:
-                    throw new InvalidOperationException(Res.InternalError($"Unexpected type in EnsureFormat: {data.GetType()}"));
             }
         }
 
@@ -1145,7 +984,7 @@ namespace KGySoft.Drawing.ImagingTools
             {
                 Bitmap? bitmap = null;
                 task.Context.Send(_ => bitmap = DoTryGetNativeBitmap(comDataObject), null);
-                result = EnsureFormat(bitmap, allowedTypes, false, detectAlpha);
+                result = ImageInfo.EnsureFormat(bitmap, allowedTypes, false, detectAlpha);
                 return result != null;
             }
             catch (Exception e) when (!e.IsCriticalGdi())
@@ -1252,8 +1091,8 @@ namespace KGySoft.Drawing.ImagingTools
                             using var dibWrapper = header->biHeight > 0
                                 ? new Bitmap(size.Width, size.Height, -stride, pixelFormat, (IntPtr)(pBuf + bitmapInfoSize + stride * (size.Height - 1)))
                                 : new Bitmap(size.Width, size.Height, stride, pixelFormat, (IntPtr)(pBuf + bitmapInfoSize));
-                            result = EnsureFormat(dibWrapper.CloneCurrentFrame(), allowedTypes, false);
-                            return result != null;
+                            result = ImageInfo.EnsureFormat(dibWrapper.CloneCurrentFrame(), allowedTypes, false);
+                            return true;
                         }
 
                         // Fallback case: letting Windows create the bitmap.
@@ -1274,8 +1113,8 @@ namespace KGySoft.Drawing.ImagingTools
 #else
                             Marshal.Copy(buf, bitmapInfoSize, bits, buf.Length - bitmapInfoSize);
 #endif
-                            result = EnsureFormat(Image.FromHbitmap(hBitmap), allowedTypes, false);
-                            return result != null;
+                            result = ImageInfo.EnsureFormat(Image.FromHbitmap(hBitmap), allowedTypes, false);
+                            return true;
                         }
                         finally
                         {
@@ -1354,7 +1193,7 @@ namespace KGySoft.Drawing.ImagingTools
             {
                 Metafile? metafile = null;
                 task.Context.Send(_ => metafile = DoTryGetNativeMetafile(comDataObject), null);
-                result = EnsureFormat(metafile, allowedTypes, false);
+                result = ImageInfo.EnsureFormat(metafile, allowedTypes, false);
                 return result != null;
             }
             catch (Exception e) when (!e.IsCriticalGdi())
@@ -1402,7 +1241,7 @@ namespace KGySoft.Drawing.ImagingTools
 
                 try
                 {
-                    imageInfo = EnsureFormat(format is iconFormat ? Icons.FromStream(stream) : Image.FromStream(stream), allowedTypes, allowMultiFrame);
+                    imageInfo = ImageInfo.EnsureFormat(format is iconFormat ? Icons.FromStream(stream) : Image.FromStream(stream), allowedTypes, allowMultiFrame);
                     if (imageInfo != null)
                         return true;
 
