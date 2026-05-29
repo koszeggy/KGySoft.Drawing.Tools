@@ -470,8 +470,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             ChangeZoomCommandState.Enabled = imageInfo.Type != ImageInfoType.None;
             if (IsViewLoaded)
                 AdjustZoom();
-            else
-                IsCompoundView = Configuration.CompoundView;
 
             if (value.HasFrames)
                 InitMultiImage();
@@ -1391,6 +1389,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void InitDefaults()
         {
             Debug.Assert(!initialized);
+            IsCompoundView = Configuration.CompoundView;
             if (imageInfo.Type == ImageInfoType.None)
             {
                 ChangeZoomCommandState.Enabled = false;
