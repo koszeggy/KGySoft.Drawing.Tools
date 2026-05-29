@@ -248,24 +248,27 @@
   </data>
   <data name="ToolTipText_CompoundAnimation" xml:space="preserve">
     <value>Toggles whether the animation is handled as a single image.
-• When checked, animation will play and saving as GIF saves the whole animation.
-• When not checked, frame navigation will be enabled and saving saves only the selected frame.</value>
+• When checked, the animation plays, copy/save as GIF saves the animation, and paste replaces the whole image.
+• When not checked, frame navigation gets enabled, and copy/paste/save operations affect the selected frame only.</value>
   </data>
   <data name="ToolTipText_CompoundMultiSize" xml:space="preserve">
     <value>Toggles whether the icon is handled as a multi-resolution image.
-• When checked, always the best fitting image is displayed and saving as Icon saves every image.
-• When not checked, icon images can be explored by navigation and saving saves the selected image only.</value>
+• When checked, always the best fitting image is displayed, copy/save as Icon saves a combined icon, and paste replaces the whole image.
+• When not checked, icon images can be explored by navigation, and copy/paste/save operations affect the selected image only.</value>
   </data>
   <data name="ToolTipText_CompoundMultiPage" xml:space="preserve">
     <value>Toggles whether the pages are handled as a compound image.
-• When checked, saving as TIFF saves every page.
-• When not checked, saving saves always the selected page only.</value>
+• When checked, copy/save as TIFF saves every page, and paste replaces the whole image.
+• When not checked, copy/paste/save operations affect the selected page only.</value>
   </data>
   <data name="ToolTipText_SmoothMetafile" xml:space="preserve">
-    <value>Smoothing Edges (Alt+S)</value>
+    <value>Smooth Edges (Alt+S)
+    
+Applies antialiasing to the metafile. It may turn off automatically for performance reasons.
+May not be needed if the metafile already contains drawing records with antialiasing.</value>
   </data>
   <data name="ToolTipText_SmoothBitmap" xml:space="preserve">
-    <value>Smoothing Resized Image (Alt+S)</value>
+    <value>Smooth Resized Image (Alt+S)</value>
   </data>
   <data name="Text_Auto" xml:space="preserve">
     <value>Auto</value>
@@ -494,17 +497,17 @@ Make sure every running debugger is closed. Removal will be tried again on resta
   <data name="WarningMessage_CouldNotCreateNetCoreDirectoryFormat" xml:space="preserve">
     <value>Could not create directory {0}: {1}
 
-The debugger visualizer may will not work for .NET Core projects.</value>
+The debugger visualizer may not work for .NET Core projects.</value>
   </data>
   <data name="WarningMessage_CouldNotCreateNetCoreLinkFormat" xml:space="preserve">
     <value>Could not create a link for file {0}: {1}
 
-The debugger visualizer may will not work for .NET Core projects.</value>
+The debugger visualizer may not work for .NET Core projects.</value>
   </data>
   <data name="WarningMessage_CouldNotCopyFileNetCoreFormat" xml:space="preserve">
     <value>Could not copy file {0}: {1}
 
-The debugger visualizer may will not work for .NET Core projects.</value>
+The debugger visualizer may not work for .NET Core projects.</value>
   </data>
   <data name="WarningMessage_InstallationWarningFormat" xml:space="preserve">
     <value>The installation finished with a warning: {0}</value>
@@ -515,8 +518,8 @@ then colors will be quantized to the 32 bit ARGB color space during the conversi
   </data>
   <data name="WarningMessage_QuantizerTooWideFormat" xml:space="preserve">
     <value>The selected quantizer uses more colors than the original or selected pixel format '{0}' supports.
-Either select at least {1} pixel format or use another quantizer that uses no more colors than '{0}' can represent;
-otherwise, the result might not be optimal even with dithering.</value>
+Either select at a pixel format with higher color depth (e.g. {1}), or use another quantizer that uses no more colors
+than '{0}' can represent; otherwise, the result might not be optimal even with dithering.</value>
   </data>
   <data name="WarningMessage_DownloadCompletedWithUnsupportedCulturesFormat" xml:space="preserve">
     <value>{0} file(s) have been downloaded.
@@ -531,7 +534,7 @@ so partial transparent pixels will be blended with back color.</value>
     <value>This language is not supported on this platform or by the executing framework.</value>
   </data>
   <data name="WarningMessage_DirectoryNotExists" xml:space="preserve">
-    <value>The specified path is not an existing directory. It will be attempted to be created.</value>
+    <value>The specified path is not an existing directory. An attempt will be made to create it.</value>
   </data>
   <data name="WarningMessage_CannotPasteClipboard" xml:space="preserve">
     <value>The clipboard does not contain any valid image in the supported formats.</value>
@@ -549,7 +552,7 @@ so partial transparent pixels will be blended with back color.</value>
     <value>Are you sure you want to overwrite this installation?</value>
   </data>
   <data name="ConfirmMessage_InstallClassicVisualizers" xml:space="preserve">
-    <value>For Visual Studio 2022 version 17.9 Preview 1 or higher it is not required to install the classic visualizers at this path if you use the KGy SOFT Image DebuggerVisualizers x64 package from Visual Studio Marketplace. The package offers modern non-dialog visualizers that can remain open while stepping through the code.
+    <value>For Visual Studio 2022 version 17.9 Preview 1 or higher, it is not required to install the classic visualizers at this path if you use the KGy SOFT Image DebuggerVisualizers x64 package from Visual Studio Marketplace. The package offers modern non-dialog visualizers that can remain open while stepping through the code.
 
 Do you really want to install the classic visualizers at this path?
 
@@ -558,7 +561,7 @@ No: Close the dialog and navigate to the Visual Studio Marketplace.
 Cancel: Do nothing.</value>
   </data>
   <data name="ConfirmMessage_SaveFileExtensionFormat" xml:space="preserve">
-    <value>The extension of the provided filename '{0}' does not match to the selected format ({1}).
+    <value>The extension of the provided filename '{0}' does not match the selected format ({1}).
 
 Are you sure you want to save the file with the provided extension?</value>
   </data>
@@ -587,7 +590,7 @@ Do you want to visit the Visual Studio Marketplace where you can download the in
 Do you want to visit the GitHub page where you can download various builds for different target platforms?</value>
   </data>
   <data name="ConfirmMessage_DiscardChanges" xml:space="preserve">
-    <value>There are unsaved modifications. Are sure to discard the changes?</value>
+    <value>There are unsaved modifications. Are you sure you want to discard the changes?</value>
   </data>
   <data name="ConfirmMessage_ResourceVersionMismatch" xml:space="preserve">
     <value>One or more selected items are for a different Imaging Tools version.
@@ -598,11 +601,10 @@ Are you sure you want to continue?</value>
 Are you sure you want to continue? If so, the resources for the unknown libraries will be skipped.</value>
   </data>
   <data name="InfoMessage_QuantizerMayHaveNoEffect" xml:space="preserve">
-    <value>The selected quantizer uses more colors than the original image.
-It is possible that is has no effect.</value>
+    <value>The selected quantizer uses more colors than the original image, and it may have no effect.</value>
   </data>
   <data name="InfoMessage_ArgbQuantizerHasNoEffect" xml:space="preserve">
-    <value>The selected quantizer can only remove partial transparency, but it has practically no effect as source has no alpha.</value>
+    <value>The selected quantizer can only remove partial transparency, but it has practically no effect, because the source has no alpha.</value>
   </data>
   <data name="InfoMessage_SamePixelFormat" xml:space="preserve">
     <value>The selected pixel format is the same as the original one.</value>
@@ -615,11 +617,11 @@ By selecting a quantizer you can specify a different back color.</value>
     <value>This item is for a different Imaging Tools version.</value>
   </data>
   <data name="InfoMessage_QuantizerAutoSelectedFormat" xml:space="preserve">
-    <value>A quantizer has been auto selected for pixel format '{0}' using default settings.
+    <value>A quantizer has been auto-selected for pixel format '{0}' using default settings.
 Use a specific instance to adjust parameters.</value>
   </data>
   <data name="InfoMessage_PaletteAutoSelectedFormat" xml:space="preserve">
-    <value>A system default palette of {0} colors has been auto selected for pixel format '{1}'.
+    <value>A system default palette of {0} colors has been auto-selected for pixel format '{1}'.
 Select a quantizer to use specific colors and settings.</value>
   </data>
   <data name="InfoMessage_DithererIgnoredFormat" xml:space="preserve">
@@ -726,7 +728,7 @@ Harmonizing visual elements for all possible environments is never a trivial tas
     <value>Actual Size</value>
   </data>
   <data name="btnAntiAlias.Text" xml:space="preserve">
-    <value>Smoothing Resized Image (Alt+S)</value>
+    <value>Smooth Resized Image (Alt+S)</value>
   </data>
   <data name="btnOpen.Text" xml:space="preserve">
     <value>Open... (Ctrl+O)</value>

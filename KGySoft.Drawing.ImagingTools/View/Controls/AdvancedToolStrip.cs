@@ -961,13 +961,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             toolTip = this.TryGetToolTip();
             if (toolTip == null)
                 return;
-#if !NET35
-            if (!OSHelper.IsWindows11OrLater) 
-#endif
-            {
-                toolTip.AutoPopDelay = Int16.MaxValue;
-            }
-
+            toolTip.AutoPopDelay = Int16.MaxValue; // for the tool strip it must be set explicitly
             toolTip.Draw += ToolTip_Draw;
         }
 

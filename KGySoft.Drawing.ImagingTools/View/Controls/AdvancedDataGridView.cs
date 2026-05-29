@@ -233,7 +233,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         InitialDelay = 0,
                         UseFading = false,
                         UseAnimation = false,
-                        AutoPopDelay = 0,
+                        AutoPopDelay = Int16.MaxValue,
                     });
 
                     isToolTipInitialized = true;
