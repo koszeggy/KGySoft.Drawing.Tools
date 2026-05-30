@@ -15,6 +15,8 @@
 
 #region Usings
 
+using System.Drawing;
+
 #region Used Namespaces
 
 using System;
@@ -146,26 +148,39 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         protected void ApplyTheme()
         {
-            if (TaskDialog.Handle == IntPtr.Zero || IsDisposed || !ThemeColors.RenderWithVisualStyles || ThemeColors.HighContrast || !ThemeColors.IsBaseThemeEverChanged)
+            // NOTE: this executes only on Dark<->Light/HighContrast theme change, and not when switching from light to high contrast theme, for example.
+            if (TaskDialog.Handle == IntPtr.Zero || IsDisposed || !ThemeColors.IsBaseThemeEverChanged)
                 return;
 
             Control? form = Control.FromHandle(TaskDialog.Handle);
             if (form == null)
                 return;
 
-            // header, root colors
+            // Form header, parent colors, theme for children.
+            // Should be called also when switching to themed high contrast theme, for example, so the dark UxTheme is removed from the child controls
             form.ApplyTheme();
 
-            // These controls have explicitly set colors that we need to override
-            form.Controls["pnlDividerMainBottom"]?.BackColor = ThemeColors.TaskDialogDivider;
-            Control? pnlMain = form.Controls["pnlMain"];
-            Debug.Assert(pnlMain != null);
-            if (pnlMain != null)
+            if (ThemeColors.IsDarkBaseTheme)
             {
-                pnlMain.BackColor = ThemeColors.Window;
-                pnlMain.ForeColor = ThemeColors.WindowText;
-                pnlMain.Controls["pnlMainIcon"]?.Controls["pnlMainIconBackground"]?.BackColor = ThemeColors.Window;
+                // These controls have explicitly set colors that we need to override. As TaskDialogForm subscribes earlier to theme changes
+                // (from its constructor), we can be sure that these execute after TaskDialogForm applied the theme.
+                // TODO: other explicitly set colors by TaskDialogForm for pnlDividerControlsBottom, pnlDividerFooterTop, pnlDividerFooterBottom, pnlDividerDetailsFooterTop, lblMainInstruction, pnlCommandLinks
+                form.Controls["pnlDividerMainBottom"]?.BackColor = ThemeColors.TaskDialogDivider;
+                Control? pnlMain = form.Controls["pnlMain"];
+                Debug.Assert(pnlMain != null);
+                if (pnlMain != null)
+                {
+                    pnlMain.BackColor = ThemeColors.Window;
+                    pnlMain.ForeColor = ThemeColors.WindowText;
+                    pnlMain.Controls["pnlMainIcon"]?.Controls["pnlMainIconBackground"]?.BackColor = ThemeColors.Window;
+                }
+
+                return;
             }
+
+            // If the current theme is not dark, we must reset the colors that are not set by TaskDialogForm, so further visual style changes without theme change will work properly.
+            form.BackColor = form.ForeColor = Color.Empty;
+            // TODO: other explicitly set colors by ControlExtensions.ApplyTheme for AdvancedButton (disabled color), AdvancedRadioButton (disabled color), AdvancedProgressBar
         }
 
         protected void InvokeOnUIThread(Action action)

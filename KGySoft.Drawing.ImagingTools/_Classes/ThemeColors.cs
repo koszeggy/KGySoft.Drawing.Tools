@@ -325,8 +325,13 @@ namespace KGySoft.Drawing.ImagingTools
         #region Events
 
         /// <summary>
-        /// Occurs when the theme has changed.
+        /// Occurs when the theme has changed either by the <see cref="SetBaseTheme"/> method or by switching the system Dark/Light theme
+        /// and the current base theme is <see cref="DefaultTheme.System"/>.
         /// </summary>
+        /// <remarks>
+        /// <note>This event is not raised when the current operating system does not support modern light/dark themes,
+        /// or when switching between two high contrast themes, for example. To capture such changes use the <see cref="VisualStyleHelper.VisualStylesChanged"/> event instead.</note>
+        /// </remarks>
         public static event EventHandler? ThemeChanged
         {
             add => value.AddSafe(ref themeChangedHandler);
