@@ -180,7 +180,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
             catch (Exception e) when (!e.IsCritical())
             {
-                ShowError(Res.ErrorMessageCouldNotAccessOnlineResources(e.Message));
+                ShowError(Res.ErrorMessageCouldNotAccessOnlineResourcesId, e.Message);
                 CloseViewCallback?.Invoke();
             }
         }
@@ -239,7 +239,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             {
                 TryInvokeSync(() =>
                 {
-                    ShowError(Res.ErrorMessageCouldNotAccessOnlineResources(e.Message));
+                    ShowError(Res.ErrorMessageCouldNotAccessOnlineResourcesId, e.Message);
                     CloseViewCallback?.Invoke();
                 });
             }
@@ -327,9 +327,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     if (downloadedCultures.Count > 0)
                         ApplyResources();
                     if (downloadedCultures.All(i => ResHelper.TryGetCulture(i.CultureName, out var _)))
-                        ShowInfo(Res.InfoMessageDownloadCompleted(downloaded));
+                        ShowInfo(Res.InfoMessageDownloadCompletedId, downloaded);
                     else
-                        ShowWarning(Res.WarningMessageDownloadCompletedWithUnsupportedCultures(downloaded));
+                        ShowWarning(Res.WarningMessageDownloadCompletedWithUnsupportedCulturesId, downloaded);
                     CloseViewCallback?.Invoke();
                 });
             }
@@ -342,7 +342,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     if (downloadedCultures.Count > 0)
                         ApplyResources();
                     DownloadCommandState.Enabled = Items?.Any(i => i.Selected) == true;
-                    ShowError(Res.ErrorMessageFailedToDownloadResource(current, e.Message));
+                    ShowError(Res.ErrorMessageFailedToDownloadResourceId, current, e.Message);
                 });
             }
             finally
@@ -446,7 +446,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
                 if (!ignoreVersionMismatch && !selfVersion.NormalizedEquals(item.Info.Version))
                 {
-                    if (Confirm(Res.ConfirmMessageResourceVersionMismatch, false))
+                    if (Confirm(Res.ConfirmMessageResourceVersionMismatchId, [], false))
                         ignoreVersionMismatch = true;
                     else
                         return;
@@ -468,13 +468,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 }
             }
 
-            if (unsupportedLibrary && !Confirm(Res.ConfirmMessageResourceUnknownLibraries, false))
+            if (unsupportedLibrary && !Confirm(Res.ConfirmMessageResourceUnknownLibrariesId, [], false))
                 return;
 
             bool overwrite = false;
             if (existingFiles.Count > 0)
             {
-                bool? confirmResult = CancellableConfirm(Res.ConfirmMessageOverwriteResources(existingFiles.Join(Environment.NewLine)), 1);
+                bool? confirmResult = CancellableConfirm(Res.ConfirmMessageOverwriteResourcesId, [existingFiles.Join(Environment.NewLine)], 1);
                 if (confirmResult == null)
                     return;
 

@@ -28,26 +28,26 @@ namespace KGySoft.Drawing.ImagingTools.View
 {
     internal class PasteSpecialDialog : MvvmTaskDialogBase
     {
-        #region Fields
+        #region Properties
 
-        private readonly TaskDialogButton btnOK = new();
-        private readonly TaskDialogButton btnCancel = new();
+        #region Protected Properties
+
+        protected override TaskDialogStandardButtons Buttons => TaskDialogStandardButtons.OK | TaskDialogStandardButtons.Cancel;
 
         #endregion
 
-        #region Properties
+        #region Private Properties
 
         private new PasteSpecialViewModel ViewModel => (PasteSpecialViewModel)base.ViewModel;
 
+        #endregion
+        
         #endregion
 
         #region Constructors
 
         internal PasteSpecialDialog(PasteSpecialViewModel viewModel) : base(viewModel)
         {
-            // We could just use TaskDialog.StandardButtons = TaskDialogStandardButtonFlags.OK | TaskDialogStandardButtonFlags.Cancel,
-            // but then the localization comes from the KGySoft.WinForms library rather than this one, and we cannot set the Enabled state either.
-            TaskDialog.Buttons.AddRange([btnOK, btnCancel]);
             ResetRadioButtons();
             TaskDialog.CustomIcon = Images.PasteSpecialIcon;
         }
@@ -71,8 +71,6 @@ namespace KGySoft.Drawing.ImagingTools.View
             TaskDialog.Caption = Res.TitlePasteSpecialDialog;
             TaskDialog.Message = Res.TextPasteSpecialMessage;
             TaskDialog.CheckBoxText = Res.TextPasteSpecialCheckBox;
-            btnOK.Text = Res.Get($"{nameof(btnOK)}.Text");
-            btnCancel.Text = Res.Get($"{nameof(btnCancel)}.Text");
         }
 
         #endregion
@@ -86,7 +84,7 @@ namespace KGySoft.Drawing.ImagingTools.View
 
             // btnOK.Click -> ViewModel.AcceptWithCloseCommand - NOTE: needed only to adjust the Enabled state. The dialog would automatically close without handling the event.
             CommandBindings.Add(ViewModel.AcceptWithCloseCommand, ViewModel.AcceptWithCloseCommandState)
-                .AddSource(btnOK, nameof(btnOK.Click));
+                .AddSource(GetButton(TaskDialogStandardButton.OK)!, nameof(TaskDialogButton.Click));
         }
 
         private void InitPropertyBindings()

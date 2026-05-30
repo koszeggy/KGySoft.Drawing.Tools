@@ -214,7 +214,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             if (!TryReadResources(library, out IList<ResourceEntry>? set, out Exception? error))
             {
-                if (!Confirm(Res.ConfirmMessageTryRegenerateResource(ToFileName(library), error.Message)))
+                if (!Confirm(Res.ConfirmMessageTryRegenerateResourceId, [ToFileName(library), error.Message]))
                 {
                     ApplyFilter(Reflector.EmptyArray<ResourceEntry>());
                     return;
@@ -226,14 +226,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 }
                 catch (Exception e) when (!e.IsCritical())
                 {
-                    ShowError(Res.ErrorMessageFailedToRegenerateResource(ToFileName(library), error.Message));
+                    ShowError(Res.ErrorMessageFailedToRegenerateResourceId, ToFileName(library), error.Message);
                     ApplyFilter(Reflector.EmptyArray<ResourceEntry>());
                     return;
                 }
 
                 if (!TryReadResources(library, out set, out error))
                 {
-                    ShowError(Res.ErrorMessageFailedToRegenerateResource(ToFileName(library), error.Message));
+                    ShowError(Res.ErrorMessageFailedToRegenerateResourceId, ToFileName(library), error.Message);
                     ApplyFilter(Reflector.EmptyArray<ResourceEntry>());
                     return;
                 }
@@ -377,7 +377,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 if (TrySaveResources(set.Key, set.Value.ResourceSet, out Exception? error))
                     continue;
 
-                ShowError(Res.ErrorMessageFailedToSaveResource(ToFileName(set.Key), error.Message));
+                ShowError(Res.ErrorMessageFailedToSaveResourceId, ToFileName(set.Key), error.Message);
                 return false;
             }
 
@@ -471,7 +471,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
             catch (Exception e) when (!e.IsCritical())
             {
-                ShowError(Res.ErrorMessageCannotOpenFolder(e.Message));
+                ShowError(Res.ErrorMessageCannotOpenFolderId, e.Message);
             }
         }
 

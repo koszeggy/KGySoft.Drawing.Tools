@@ -84,7 +84,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 if (ViewModel.IsAsyncTaskRunning)
                 {
                     e.Cancel = true;
-                    Dialogs.WarningMessage(Res.WarningMessageAsyncOperationRunning);
+                    Dialogs.WarningMessage(MvvmChild, Res.WarningMessageAsyncOperationRunningId, null);
                 }
                 else if (ViewModel.IsModified)
                     e.Cancel = !ViewModel.ConfirmIfModified();

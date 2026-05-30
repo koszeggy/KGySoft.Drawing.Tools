@@ -304,6 +304,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (!UseCustomResourcePath)
                 ResourceCustomPath = Res.TextDefaultResourcesPath;
             UpdateApplyCommandState();
+            Validate();
         }
 
         protected override void Dispose(bool disposing)
@@ -389,7 +390,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         {
             if (!IsValid)
             {
-                ShowError(Res.ErrorMessageCannotApplyLanguageSettings(ValidationResults.Errors.Message));
+                ShowError(Res.ErrorMessageCannotApplyLanguageSettingsId, () => ValidationResults.Errors.Message);
                 return;
             }
 
@@ -410,7 +411,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     {
                         customPathError = e.Message;
                         Validate();
-                        ShowError(Res.ErrorMessageCannotApplyLanguageSettings(e.Message));
+                        ShowError(Res.ErrorMessageCannotApplyLanguageSettingsId, e.Message);
                         return;
                     }
                 }
@@ -438,7 +439,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             {
                 customPathError = e.Message;
                 Validate();
-                ShowError(Res.ErrorMessageCannotApplyLanguageSettings(e.Message));
+                ShowError(Res.ErrorMessageCannotApplyLanguageSettingsId, e.Message);
             }
             finally
             {
@@ -465,7 +466,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
             catch (Exception e) when (!e.IsCritical())
             {
-                ShowError(Res.ErrorMessageFailedToSaveSettings(e.Message));
+                ShowError(Res.ErrorMessageFailedToSaveSettingsId, e.Message);
             }
         }
 

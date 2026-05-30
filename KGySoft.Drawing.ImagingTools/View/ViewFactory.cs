@@ -64,6 +64,11 @@ namespace KGySoft.Drawing.ImagingTools.View
                 EditResourcesViewModel editResourcesViewModel => new EditResourcesControl(editResourcesViewModel),
                 DownloadResourcesViewModel downloadResourcesViewModel => new DownloadResourcesControl(downloadResourcesViewModel),
                 PasteSpecialViewModel pasteSpecialViewModel => new PasteSpecialDialog(pasteSpecialViewModel),
+                ErrorMessageViewModel errorMessageViewModel => new ErrorMessageDialog(errorMessageViewModel),
+                InfoMessageViewModel infoMessageViewModel => new InfoMessageDialog(infoMessageViewModel),
+                WarningMessageViewModel warningMessageViewModel => new WarningMessageDialog(warningMessageViewModel),
+                ConfirmMessageViewModel confirmMessageViewModel => new ConfirmMessageDialog(confirmMessageViewModel),
+                CancellableConfirmMessageViewModel cancellableConfirmMessageViewModel => new CancellableConfirmMessageDialog(cancellableConfirmMessageViewModel),
                 _ => throw new InvalidOperationException(Res.InternalError($"Unexpected viewModel type: {viewModel.GetType()}"))
             };
         }

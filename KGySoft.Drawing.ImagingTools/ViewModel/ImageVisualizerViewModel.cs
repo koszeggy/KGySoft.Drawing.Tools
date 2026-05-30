@@ -261,7 +261,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         internal ICommand VisitGitHubCommand => Get(() => new SimpleCommand(() => PathHelper.OpenUrl("https://github.com/koszeggy/KGySoft.Drawing.Tools")));
         internal ICommand VisitMarketplaceCommand => Get(() => new SimpleCommand(() => PathHelper.OpenUrl("https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers")));
         internal ICommand SubmitResourcesCommand => Get(() => new SimpleCommand(() => PathHelper.OpenUrl("https://github.com/koszeggy/KGySoft.Drawing.Tools/issues/new?assignees=&labels=&template=submit-resources.md&title=%5BRes%5D")));
-        internal ICommand ShowEasterEggCommand => Get(() => new SimpleCommand(() => ShowInfo(Res.InfoMessageEasterEgg)));
+        internal ICommand ShowEasterEggCommand => Get(() => new SimpleCommand(() => ShowInfo(Res.InfoMessageEasterEggId)));
 
         #endregion
 
@@ -858,7 +858,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
                 if (!task.IsCanceled && imageOrIcon != null)
                 {
-                    result = ImageInfo.EnsureFormat(imageOrIcon, imageTypes);
+                    result = ImageInfo.EnsureFormat(imageOrIcon, task.AllowedTypes);
                     if (imageOrIcon is Icon && !ReferenceEquals(imageOrIcon, result.Icon) || imageOrIcon is Image && !ReferenceEquals(imageOrIcon, result.Image))
                     {
                         openedFileName = null;
@@ -903,7 +903,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 {
                     IsBusy = false;
                     if (error != null)
-                        ShowError(Res.ErrorMessageFailedToLoadFile(error.Message));
+                        ShowError(Res.ErrorMessageFailedToLoadFileId, error.Message);
                 });
             }
         }
@@ -1246,7 +1246,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     IsBusy = false;
                     SetNotification(notification);
                     if (error != null)
-                        ShowError(Res.ErrorMessageFailedToSaveImage(error.Message));
+                        ShowError(Res.ErrorMessageFailedToSaveImageId, error.Message);
                     else if (!task.IsCanceled)
                         OnFileSaved(fileName, selectedFormat);
                 });
@@ -1482,7 +1482,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             string suggestedExt = filters[((filterIndex - 1) << 1) + 1].ToUpperInvariant();
             if (suggestedExt.Split(';').Contains('*' + actualExt))
                 return true;
-            return Confirm(Res.ConfirmMessageSaveFileExtension(Path.GetFileName(fileName), filters[(filterIndex - 1) << 1]), false);
+            return Confirm(Res.ConfirmMessageSaveFileExtensionId, [Path.GetFileName(fileName), filters[(filterIndex - 1) << 1]], false);
         }
 
         private void SetCurrentImage(Bitmap? image)
@@ -1590,7 +1590,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
             catch (Exception e) when (!e.IsCritical())
             {
-                warning = Res.WarningMessageCannotCopyClipboard;
+                warning = Res.WarningMessageCannotCopyClipboardId;
             }
             finally
             {
@@ -1684,7 +1684,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     if (result == null)
                     {
                         IsBusy = false; // turn off the progress bar before showing the dialog
-                        warning = task is PasteSpecialTask ? Res.WarningMessageCannotPasteSpecial : Res.WarningMessageCannotPasteClipboard;
+                        warning = task is PasteSpecialTask ? Res.WarningMessageCannotPasteSpecialId : Res.WarningMessageCannotPasteClipboardId;
                         return;
                     }
 
@@ -1841,7 +1841,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             TargetFrameworkAttribute attr = (TargetFrameworkAttribute)Attribute.GetCustomAttribute(asm, typeof(TargetFrameworkAttribute))!;
             string frameworkName = attr.FrameworkDisplayName is { Length: > 0 } name ? name : attr.FrameworkName;
 #endif
-            ShowInfo(Res.InfoMessageAbout(asm.GetName().Version!, frameworkName, DateTime.Now.Year));
+            ShowInfo(Res.InfoMessageAboutId, asm.GetName().Version!, frameworkName, DateTime.Now.Year);
         }
 
         #endregion

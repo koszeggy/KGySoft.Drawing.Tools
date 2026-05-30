@@ -55,7 +55,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             base.ViewLoaded();
         }
 
-        internal bool ConfirmIfModified() => !IsModified || Confirm(Res.ConfirmMessageDiscardChanges, false);
+        internal bool ConfirmIfModified() => !IsModified || Confirm(Res.ConfirmMessageDiscardChangesId, [], false);
 
         #endregion
 
@@ -102,7 +102,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             
             string file = args[0];
             if (!File.Exists(file))
-                ShowError(Res.ErrorMessageFileDoesNotExist(file));
+                ShowError(Res.ErrorMessageFileDoesNotExistId, file);
             else
                 OpenFile(file);
         }

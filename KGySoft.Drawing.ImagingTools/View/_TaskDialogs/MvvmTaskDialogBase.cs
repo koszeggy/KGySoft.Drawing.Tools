@@ -15,15 +15,15 @@
 
 #region Usings
 
-using System.Drawing;
-
 #region Used Namespaces
 
 using System;
+using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
+using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 using KGySoft.Drawing.ImagingTools.WinApi;
 using KGySoft.WinForms.Components;
@@ -33,6 +33,7 @@ using KGySoft.WinForms.Components;
 #region Used Aliases
 
 using TaskDialog = KGySoft.WinForms.Components.TaskDialog;
+using TaskDialogButton = KGySoft.WinForms.Components.TaskDialogButton;
 
 #endregion
 
@@ -66,6 +67,15 @@ namespace KGySoft.Drawing.ImagingTools.View
         protected ViewModelBase ViewModel { get; }
         protected WinFormsCommandBindingsCollection CommandBindings { get; } = new();
 
+        /// <summary>
+        /// Gets the standard buttons of this task dialog. They actually will be created as custom buttons to be able to
+        /// use localization from this project, and to use enabled/disabled state, so they cannot be mixed with command link buttons.
+        /// Can return <see cref="TaskDialogStandardButtons.None"/> to create the buttons in a derived class, but if the button has name,
+        /// language change will automatically apply the Text for manually created buttons as well (not the descriptions though).
+        /// </summary>
+        protected virtual TaskDialogStandardButtons Buttons => TaskDialogStandardButtons.None;
+        protected virtual int DefaultButtonIndex => 0;
+
         #endregion
 
         #endregion
@@ -83,6 +93,7 @@ namespace KGySoft.Drawing.ImagingTools.View
 
             // not in InitCommandBindings, because without this we cannot init the other commands
             TaskDialog.Created += TaskDialog_Created;
+            InitButtons();
             ApplyStringResources();
         }
 
@@ -111,7 +122,7 @@ namespace KGySoft.Drawing.ImagingTools.View
             {
                 // Trying to obtain the form of the owner if owner is just a control.
                 // This provides better dialog handling, such bringing the form on top or blinking the form when the owner is clicked.
-                Control? ownerControl = owner as Control;
+                Control? ownerControl = owner as Control ?? Control.FromHandle(ownerWindow.Handle);
                 if (ownerControl != null)
                     ownerControl = ownerControl as Form ?? ownerControl.FindForm() ?? ownerControl;
                 Execute(ownerControl ?? ownerWindow);
@@ -128,11 +139,11 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         protected virtual void ApplyViewModel()
         {
-            ViewModel.ShowInfoCallback = Dialogs.InfoMessage;
-            ViewModel.ShowWarningCallback = Dialogs.WarningMessage;
-            ViewModel.ShowErrorCallback = Dialogs.ErrorMessage;
-            ViewModel.ConfirmCallback = Dialogs.ConfirmMessage;
-            ViewModel.CancellableConfirmCallback = Dialogs.CancellableConfirmMessage;
+            ViewModel.ShowInfoCallback = (id, args) => Dialogs.InfoMessage(this, id, args);
+            ViewModel.ShowWarningCallback = (id, args) => Dialogs.WarningMessage(this, id, args);
+            ViewModel.ShowErrorCallback = (id, args) => Dialogs.ErrorMessage(this, id, args);
+            ViewModel.ConfirmCallback = (id, args, isYesDefault) => Dialogs.ConfirmMessage(this, id, args, isYesDefault);
+            ViewModel.CancellableConfirmCallback = (id, args, defaultButton) => Dialogs.CancellableConfirmMessage(this, id, args, defaultButton);
             ViewModel.ShowChildViewCallback = ShowChildView;
             ViewModel.SynchronizedInvokeCallback = InvokeOnUIThread;
             ViewModel.CloseViewCallback = () => InvokeOnUIThread(TaskDialog.Close);
@@ -144,6 +155,11 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         protected virtual void ApplyStringResources()
         {
+            foreach (TaskDialogButton button in TaskDialog.Buttons)
+            {
+                if (button.Name is string { Length: > 0 } name)
+                    button.Text = Res.Get($"{name}.Text");
+            }
         }
 
         protected void ApplyTheme()
@@ -181,6 +197,18 @@ namespace KGySoft.Drawing.ImagingTools.View
             // If the current theme is not dark, we must reset the colors that are not set by TaskDialogForm, so further visual style changes without theme change will work properly.
             form.BackColor = form.ForeColor = Color.Empty;
             // TODO: other explicitly set colors by ControlExtensions.ApplyTheme for AdvancedButton (disabled color), AdvancedRadioButton (disabled color), AdvancedProgressBar
+        }
+
+        /// <summary>
+        /// Can be used if <see cref="Buttons"/> is not <see cref="TaskDialogStandardButtons.None"/>, so standard buttons are actually mapped to custom buttons.
+        /// </summary>
+        protected TaskDialogButton? GetButton(TaskDialogStandardButton standardButton)
+        {
+            if (standardButton == TaskDialogStandardButton.None)
+                return null;
+
+            string name = $"btn{standardButton}";
+            return TaskDialog.Buttons[name];
         }
 
         protected void InvokeOnUIThread(Action action)
@@ -226,6 +254,26 @@ namespace KGySoft.Drawing.ImagingTools.View
         #endregion
 
         #region Private Methods
+
+        private void InitButtons()
+        {
+            TaskDialogStandardButtons buttons = Buttons;
+            if (buttons == TaskDialogStandardButtons.None)
+                return;
+
+            // We could just use TaskDialog.StandardButtons = TaskDialogStandardButtonFlags.OK | TaskDialogStandardButtonFlags.Cancel,
+            // but then the localization comes from the KGySoft.WinForms library rather than this one, and we cannot set the Enabled state either.
+            // Adding the buttons as custom ones. This makes possible to use local resources instead of the ones in KGySoft.WinForms
+            foreach (TaskDialogStandardButtons flag in buttons.GetFlags())
+            {
+                string name = $"btn{flag}";
+                TaskDialog.Buttons.Add(new TaskDialogButton(name, Res.Get($"{name}.Text")));
+            }
+
+            int defaultIndex = DefaultButtonIndex;
+            if ((uint)defaultIndex < TaskDialog.Buttons.Count)
+                TaskDialog.Buttons[defaultIndex].IsDefault = true;
+        }
 
         private void Execute(IWin32Window? owner)
         {

@@ -250,19 +250,19 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             #endregion
 
-            if (currentStatus.Installed && !Confirm(Res.ConfirmMessageOverwriteInstallation, currentStatus.Version != null && InstallationManager.AvailableVersion.Version > currentStatus.Version))
+            if (currentStatus.Installed && !Confirm(Res.ConfirmMessageOverwriteInstallationId, [], currentStatus.Version != null && InstallationManager.AvailableVersion.Version > currentStatus.Version))
                 return;
 #if NETCOREAPP
-            if (Confirm(Res.ConfirmMessageNetCoreDebuggerVisualizers))
+            if (Confirm(Res.ConfirmMessageNetCoreDebuggerVisualizersId))
                 PathHelper.OpenUrl(urlMarketplace);
 #elif NET472_OR_GREATER
-            if (Confirm(Res.ConfirmMessageNet472DebuggerVisualizers))
+            if (Confirm(Res.ConfirmMessageNet472DebuggerVisualizersId))
                 PathHelper.OpenUrl(urlGitHubDownload);
 #else
             // < 2000: starting with VS2026, the version in folder name reflects the major version rather than the year (i.e. Visual Studio 18 rather than Visual Studio 2026)
             if (TryGetVisualStudioVersion() is >= 2022 or < 2000)
             {
-                switch (CancellableConfirm(Res.ConfirmMessageInstallClassicVisualizers))
+                switch (CancellableConfirm(Res.ConfirmMessageInstallClassicVisualizersId))
                 {
                     case null:
                         return;
@@ -277,20 +277,20 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             InstallationManager.Install(currentStatus.Path, out string? error, out string? warning);
             if (error != null)
-                ShowError(Res.ErrorMessageInstallationFailed(error));
+                ShowError(Res.ErrorMessageInstallationFailedId, error);
             else if (warning != null)
-                ShowWarning(Res.WarningMessageInstallationWarning(warning));
+                ShowWarning(Res.WarningMessageInstallationWarningId, warning);
             UpdateStatus(currentStatus.Path);
 #endif
         }
 
         private void OnRemoveCommand()
         {
-            if (!Confirm(Res.ConfirmMessageRemoveInstallation, false))
+            if (!Confirm(Res.ConfirmMessageRemoveInstallationId, [], false))
                 return;
             InstallationManager.Uninstall(currentStatus.Path, out string? error);
             if (error != null)
-                ShowError(Res.ErrorMessageRemoveInstallationFailed(error));
+                ShowError(Res.ErrorMessageRemoveInstallationFailedId, error);
             UpdateStatus(currentStatus.Path);
         }
 
