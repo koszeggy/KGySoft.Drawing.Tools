@@ -373,6 +373,7 @@
             // btnPaste
             // 
             this.btnPaste.AutoChangeDefaultItem = true;
+            this.btnPaste.AutoSetToolTip = true;
             this.btnPaste.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnPaste.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.miPaste,

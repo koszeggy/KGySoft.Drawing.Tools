@@ -86,6 +86,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
             }
         }
 
+        // Whether to set ToolTip along with Text and Image when AutoChangeDefaultItem is true.
+        // Recommended be false when the button has a fix tooltip the does not change with changing the default item.
+        [DefaultValue(false)]
+        public bool AutoSetToolTip { get; set; }
+
         [DefaultValue(true)]
         public bool ButtonEnabled
         {
@@ -151,6 +156,46 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
             return new Size(result.Width + Owner.ScaleWidth(2), result.Height);
         }
 
+        public void UpdateDefaultItem()
+        {
+            #region Local Methods
+
+            static string ShortcutToString(ToolStripMenuItem menuItem)
+            {
+                Debug.Assert(menuItem.ShortcutKeys != Keys.NoName);
+                return menuItem.ShortcutKeyDisplayString is string { Length: > 0 } displayString
+                    ? displayString
+                    : new KeysConverter().ConvertToString(null, Res.DisplayLanguage, menuItem.ShortcutKeys)!;
+            }
+
+            #endregion
+
+            // can only occur when base.DefaultItem is set independently. In this case taking the base.
+            if (DefaultItem != lastDefaultItem)
+            {
+                ToolStripItem? toSet = base.DefaultItem;
+                base.DefaultItem = null;
+                DefaultItem = toSet;
+                return;
+            }
+
+            if (lastDefaultItem == null)
+                return;
+            Image = lastDefaultItem.Image;
+            Text = lastDefaultItem.Text;
+            if (AutoSetToolTip)
+            {
+                // Putting the shortcut in ToolTipText if lastDefaultItem has no tooltip. This is the recommended way
+                // if we don't want to show a tooltip for the menu item itself, just for the button.
+                string? tooltip = lastDefaultItem.ToolTipText;
+                if (tooltip == null && lastDefaultItem is ToolStripMenuItem mi && mi.ShortcutKeys != Keys.None)
+                    tooltip = $"{Text} ({ShortcutToString(mi)})";
+                ToolTipText = tooltip;
+            }
+
+            ButtonEnabled = lastDefaultItem.Enabled;
+        }
+
         #endregion
 
         #region Protected Methods
@@ -192,18 +237,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
 
         protected override void OnDefaultItemChanged(EventArgs e)
         {
-            #region Local Methods
-
-            static string ShortcutToString(ToolStripMenuItem menuItem)
-            {
-                Debug.Assert(menuItem.ShortcutKeys != Keys.NoName);
-                return menuItem.ShortcutKeyDisplayString is string { Length: > 0 } displayString
-                    ? displayString
-                    : new KeysConverter().ConvertToString(null, Res.DisplayLanguage, menuItem.ShortcutKeys)!;
-            }
-
-            #endregion
-
             if (suppressChanged)
                 return;
 
@@ -211,15 +244,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
             lastDefaultItem = DefaultItem;
             lastDefaultItem?.EnabledChanged += DefaultItemEnabledChanged;
             if (lastDefaultItem != null)
-            {
-                Image = lastDefaultItem.Image;
-                Text = lastDefaultItem.Text;
-                string? tooltip = lastDefaultItem.ToolTipText;
-                if (tooltip == null && lastDefaultItem is ToolStripMenuItem mi && mi.ShortcutKeys != Keys.None)
-                    tooltip = $"{Text} ({ShortcutToString(mi)})";
-                ToolTipText = tooltip;
-                ButtonEnabled = lastDefaultItem.Enabled;
-            }
+                UpdateDefaultItem();
 
             base.OnDefaultItemChanged(e);
         }

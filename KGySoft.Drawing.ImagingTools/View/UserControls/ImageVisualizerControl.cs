@@ -201,6 +201,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             base.ApplyStringResources();
             dlgOpen.Title = Res.TitleOpenFileDialog;
             dlgSave.Title = Res.TitleSaveFileDialog;
+            btnPaste.UpdateDefaultItem(); // only for paste, because other split buttons have explicit ToolTipText
         }
 
         protected override void ApplyViewModel()
