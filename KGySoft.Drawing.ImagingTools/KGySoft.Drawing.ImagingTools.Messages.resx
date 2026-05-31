@@ -772,14 +772,8 @@ Harmonizing visual elements for all possible environments is never a trivial tas
   <data name="miPaste.Text" xml:space="preserve">
     <value>Paste</value>
   </data>
-  <data name="miPaste.ToolTipText" xml:space="preserve">
-    <value>Paste (Ctrl+V)</value>
-  </data>
   <data name="miPasteSpecial.Text" xml:space="preserve">
     <value>Paste Special...</value>
-  </data>
-  <data name="miPasteSpecial.ToolTipText" xml:space="preserve">
-    <value>Paste Special (Ctrl+Shift+V)</value>
   </data>
   <data name="miPasteAsBitmap.Text" xml:space="preserve">
     <value>Paste As Bitmap</value>

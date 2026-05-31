@@ -34,7 +34,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
     /// - ButtonEnabled: allows disabling the button part only. When DefaultItem is set, it automatically reflects the Enabled property of the default item
     /// - DefaultItem: Like in the base, but with fixed OnDefaultItemChanged handling:
     ///   in the base the DefaultItem still returns the old value when the OnDefaultItemChanged method executes.
-    /// - OnDefaultItemChanged: Sets button Image/Text/ToolTipText/Enabled properties from the default item
+    /// - OnDefaultItemChanged: Sets button Image/Text/ToolTipText/Enabled properties from the default item.
+    ///   If the original ToolTipText is null but the default item has a shortcut, a ToolTipText is synthesized from the text and the shortcut.
     /// </summary>
     // NOTE: The properly scaled arrow and the checked/disabled appearance is rendered by AdvancedToolStripRenderer, while
     // the drop-down button size is adjusted in AdvancedToolStrip for all ToolStripSplitButtons
@@ -191,6 +192,18 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
 
         protected override void OnDefaultItemChanged(EventArgs e)
         {
+            #region Local Methods
+
+            static string ShortcutToString(ToolStripMenuItem menuItem)
+            {
+                Debug.Assert(menuItem.ShortcutKeys != Keys.NoName);
+                return menuItem.ShortcutKeyDisplayString is string { Length: > 0 } displayString
+                    ? displayString
+                    : new KeysConverter().ConvertToString(null, Res.DisplayLanguage, menuItem.ShortcutKeys)!;
+            }
+
+            #endregion
+
             if (suppressChanged)
                 return;
 
@@ -201,7 +214,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
             {
                 Image = lastDefaultItem.Image;
                 Text = lastDefaultItem.Text;
-                ToolTipText = lastDefaultItem.ToolTipText;
+                string? tooltip = lastDefaultItem.ToolTipText;
+                if (tooltip == null && lastDefaultItem is ToolStripMenuItem mi && mi.ShortcutKeys != Keys.None)
+                    tooltip = $"{Text} ({ShortcutToString(mi)})";
+                ToolTipText = tooltip;
                 ButtonEnabled = lastDefaultItem.Enabled;
             }
 
