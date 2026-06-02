@@ -1485,29 +1485,48 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             return Confirm(Res.ConfirmMessageSaveFileExtensionId, [Path.GetFileName(fileName), filters[(filterIndex - 1) << 1]], false);
         }
 
-        private void SetCurrentImage(Bitmap? image)
+        private void SetCurrentImage(object? imageObject)
         {
             // replacing the whole image (non-compound one)
             if (GetCurrentImageInfo() == imageInfo)
             {
                 Debug.Assert(!imageInfo.HasFrames, "To replace the whole compound image, set ImageInfo instead");
-                if (!ReferenceEquals(imageInfo.Image, image))
+                if (!ReferenceEquals(imageInfo.Image, imageObject))
                     imageInfo.Dispose();
-                imageInfo = new ImageInfo(image);
+                imageInfo = imageObject switch
+                {
+                    ImageInfo info => info,
+                    Image image => new ImageInfo(image),
+                    Icon icon => new ImageInfo(icon),
+                    null => new ImageInfo(ImageInfoType.None),
+                    _ => throw new InvalidOperationException(Res.InternalError($"Unexpected imageObject type: {imageObject.GetType()}"))
+                };
                 PreviewImage = imageInfo.GetCreateImage();
             }
             // replacing the current frame only
             else
             {
-                Debug.Assert(currentFrame >= 0 && !IsAutoPlaying);
+                Debug.Assert(currentFrame >= 0 && !IsAutoPlaying && imageObject != null);
                 ImageFrameInfo[] frames = imageInfo.Frames!;
                 ImageFrameInfo origFrame = frames[currentFrame];
-                frames[currentFrame] = new ImageFrameInfo(image) { Duration = origFrame.Duration };
-                if (!ReferenceEquals(origFrame.Image, image))
+
+                ImageFrameInfo frame = imageObject switch
+                {
+                    ImageInfo { Image: Bitmap bitmap } => new ImageFrameInfo(bitmap),
+                    ImageInfo { Icon: Icon icon } => new ImageFrameInfo(icon),
+                    Bitmap image => new ImageFrameInfo(image),
+                    Icon icon => new ImageFrameInfo(icon),
+                    ImageInfo { Image: null or Metafile } => throw new InvalidOperationException(Res.InternalError("Invalid frame image type")),
+                    _ => throw new InvalidOperationException(Res.InternalError($"Unexpected imageObject type: {imageObject.GetType()}"))
+                };
+                frame.Duration = origFrame.Duration;
+
+                frames[currentFrame] = frame;
+                if (!ReferenceEquals(origFrame.Image, imageObject))
                     origFrame.Dispose();
                 else
                     origFrame.Icon?.Dispose();
-                PreviewImage = frames[currentFrame].Image;
+                PreviewImage = frames[currentFrame].GetCreateImage();
             }
 
             InvalidateImage();
@@ -1616,7 +1635,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             ImageInfoBase currentImage = GetCurrentImageInfo(true);
             var task = new PasteTask
             {
-                AllowedTypes = forcedFormat ?? (currentImage is ImageInfo ? imageTypes : AllowedImageTypes.Bitmap | AllowedImageTypes.Icon),
+                // For an icon frame we allow icons only, which causes the possible too large bitmaps to be converted to 256x256 icons. Not doing this for bitmaps in icon format though.
+                AllowedTypes = forcedFormat ?? (currentImage is ImageInfo ? imageTypes : imageInfo.Type is ImageInfoType.Icon ? AllowedImageTypes.Icon : AllowedImageTypes.Bitmap | AllowedImageTypes.Icon),
                 AllowMultiFrame = currentImage is ImageInfo,
                 PrevEnabled = PrevImageCommandState.Enabled,
                 NextEnabled = NextImageCommandState.Enabled,
@@ -1642,7 +1662,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             ImageInfoBase currentImage = GetCurrentImageInfo(true);
             var task = new PasteSpecialTask
             {
-                AllowedTypes = currentImage is ImageInfo ? imageTypes : AllowedImageTypes.Bitmap | AllowedImageTypes.Icon,
+                AllowedTypes = currentImage is ImageInfo ? imageTypes : imageInfo.Type is ImageInfoType.Icon ? AllowedImageTypes.Icon : AllowedImageTypes.Bitmap | AllowedImageTypes.Icon,
                 AllowMultiFrame = currentImage is ImageInfo,
                 PrevEnabled = PrevImageCommandState.Enabled,
                 NextEnabled = NextImageCommandState.Enabled,
@@ -1692,10 +1712,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                         ImageInfo = result;
                     else
                     {
-                        Debug.Assert(result.GetImage() is Bitmap, "Pasting a frame is always expected as a bitmap");
-                        SetCurrentImage(result.GetCreateBitmap());
-
-                        result.Image = null; // so the image is not disposed at the next line
+                        SetCurrentImage(result);
+                        result.Image = null; // so the image is not disposed at the end
+                        if (result.Icon != null && ReferenceEquals(result.Icon, GetCurrentImageInfo().Icon))
+                            result.Icon = null; // so the icon is not disposed at the next line (equality above fails if it was a multi-res icon)
                         result.Dispose();
                     }
 

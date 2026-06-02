@@ -301,7 +301,7 @@ namespace KGySoft.Drawing.ImagingTools
                         return;
                 }
                 // single icon frame
-                else if (info.Icon is not null)
+                else if (info.Icon is not null || info.RawFormat == ImageFormat.Icon.Guid)
                     CopyIcon(formats, info, task);
 
                 // GetCreateImage with no cancellation is alright here - due to the compounds format above, actual generate is expected for icon bitmaps only
@@ -881,6 +881,9 @@ namespace KGySoft.Drawing.ImagingTools
                         imageInfo.Dispose();
                     }
                 }
+                // 2.c. icon frame
+                else if (allowedTypes == AllowedImageTypes.Icon && formats.Contains(iconFormat) && TryGetImageFromStream([iconFormat], dataObject, allowedTypes, false, task, out imageInfo))
+                    return imageInfo;
 
                 if (task.IsCanceled)
                     return null;

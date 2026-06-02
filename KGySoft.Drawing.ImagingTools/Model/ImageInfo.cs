@@ -629,25 +629,6 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         private void InitFromIcon(Icon? icon, bool cloneImages)
         {
-            #region Local Methods
-
-            static void InitIconMeta(IconInfo iconInfo, ImageInfoBase imageInfo)
-            {
-                imageInfo.PixelFormat = iconInfo.BitsPerPixel switch
-                {
-                    1 => PixelFormat.Format1bppIndexed,
-                    4 => PixelFormat.Format4bppIndexed,
-                    8 => PixelFormat.Format8bppIndexed,
-                    24 => PixelFormat.Format24bppRgb,
-                    _ => PixelFormat.Format32bppArgb
-                };
-                imageInfo.Palette = iconInfo.Palette;
-                imageInfo.Size = iconInfo.Size;
-                imageInfo.RawFormat = iconInfo.IsCompressed ? ImageFormat.Png.Guid : ImageFormat.Bmp.Guid;
-            }
-
-            #endregion
-
             if (icon == null)
                 return;
 
@@ -662,7 +643,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
             if (iconInfo.Length == 1)
             {
-                InitIconMeta(iconInfo[0], this);
+                InitIconMeta(iconInfo[0]);
                 RawFormat = ImageFormat.Icon.Guid;
                 return;
             }
@@ -672,12 +653,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
             var frames = new ImageFrameInfo[iconInfo.Length];
             for (int i = 0; i < frames.Length; i++)
             {
-                frames[i] = new ImageFrameInfo(null) { Icon = iconImages?[i] };
-                InitIconMeta(iconInfo[i], frames[i]);
-
-                // In Windows XP all icon images are uncompressed so displaying just Icon
-                if (!OSHelper.IsWindowsVistaOrLater)
-                    RawFormat = ImageFormat.Icon.Guid;
+                frames[i] = new ImageFrameInfo(iconImages?[i], iconInfo[i]);
             }
 
             Frames = frames;

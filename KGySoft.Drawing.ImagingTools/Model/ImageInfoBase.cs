@@ -152,6 +152,22 @@ namespace KGySoft.Drawing.ImagingTools.Model
             RawFormat = image.RawFormat.Guid;
         }
 
+        private protected void InitIconMeta(IconInfo iconInfo)
+        {
+            PixelFormat = iconInfo.BitsPerPixel switch
+            {
+                1 => PixelFormat.Format1bppIndexed,
+                4 => PixelFormat.Format4bppIndexed,
+                8 => PixelFormat.Format8bppIndexed,
+                24 => PixelFormat.Format24bppRgb,
+                _ => PixelFormat.Format32bppArgb
+            };
+
+            Palette = iconInfo.Palette;
+            Size = iconInfo.Size;
+            RawFormat = iconInfo.IsCompressed ? ImageFormat.Png.Guid : ImageFormat.Bmp.Guid;
+        }
+
         #endregion
 
         #endregion

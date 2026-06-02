@@ -46,6 +46,8 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #region Constructors
 
+        #region Public Constructors
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageFrameInfo"/> class from an <see cref="Image"/>.
         /// </summary>
@@ -55,6 +57,34 @@ namespace KGySoft.Drawing.ImagingTools.Model
             Image = image;
             InitMeta(image);
         }
+
+        #endregion
+
+        #region Internal Constructors
+
+        internal ImageFrameInfo(Icon? icon, IconInfo? iconInfo = null)
+        {
+            if (icon == null && iconInfo == null)
+                throw new InvalidOperationException(Res.InternalError("Both icon and iconInfo should not be null"));
+
+            if (iconInfo == null)
+            {
+                IconInfo[] imagesInfo = icon!.GetIconInfo();
+                if (imagesInfo.Length == 0)
+                    throw new ArgumentException(PublicResources.ArgumentEmpty, nameof(icon));
+                iconInfo = imagesInfo[0];
+                Icon = imagesInfo.Length == 1 ? icon : icon!.ExtractIcon(0);
+            }
+            else
+            {
+                Debug.Assert(icon == null || icon.GetImagesCount() == 1);
+                Icon = icon;
+            }
+
+            InitIconMeta(iconInfo);
+        }
+
+        #endregion
 
         #endregion
 
