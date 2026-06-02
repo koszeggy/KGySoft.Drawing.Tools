@@ -16,6 +16,7 @@
 #region Usings
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -23,6 +24,8 @@ using System.Drawing.Text;
 using System.Windows.Forms;
 
 using KGySoft.Collections;
+using KGySoft.CoreLibraries;
+using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Reflection;
 using KGySoft.Drawing.ImagingTools.View.Components;
 using KGySoft.Drawing.ImagingTools.WinApi;
@@ -77,15 +80,42 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 #endif
             private static readonly Size referenceOverflowButtonSize = new Size(12, 12);
             private static readonly Size referenceOverflowArrowSize = new Size(9, 5);
-            private static readonly Cache<Image, Image> disabledImagesCache = new(CreateDisabledImage, 8) { DisposeDroppedValues = true };
+
+            // not an IThreadSafeCacheAccessor, because we need to clear the cache when dark/light theme changes
+            private static readonly LockingDictionary<(Size, Image), Image> disabledImagesCache = new Cache<(Size, Image), Image>(GenerateDisabledImage, 16)
+            {
+                DisposeDroppedValues = true
+            }.AsThreadSafe();
 
             #endregion
 
             #region Constructors
+            
+            #region Static Constructors
+
+            static AdvancedToolStripRenderer()
+            {
+                if (OSHelper.IsWindows10OrLater)
+                {
+                    ThemeColors.ThemeChanged += (_, _) =>
+                    {
+                        ICollection<Image> toDispose = disabledImagesCache.Values;
+                        disabledImagesCache.Clear();
+                        foreach (Image image in toDispose)
+                            image.Dispose();
+                    };
+                }
+            }
+
+            #endregion
+
+            #region Instance Constructors
 
             internal AdvancedToolStripRenderer() : base(ThemeColors.ColorTable)
             {
             }
+
+            #endregion
 
             #endregion
 
@@ -351,6 +381,27 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     using Brush b = new LinearGradientBrush(bounds, beginColor, endColor, mode);
                     g.FillRectangle(b, bounds);
                 }
+            }
+
+            private static Bitmap GenerateDisabledImage((Size, Image) key)
+            {
+                (Size boundsSize, Image image) = key;
+                if (image.RawFormat.Equals(ImageFormat.Icon) && image.Size != boundsSize)
+                {
+                    // Icons only: if the desired size does not match, drawing the icon into a temp bitmap of the desired size first.
+                    // If the icon has multiple resolutions, it may change the value of its Size property. We can discard the temp bitmap immediately.
+                    using var resized = new Bitmap(image, boundsSize);
+                }
+
+                // when system dark mode is enabled, this returns a way too dark/faint image in .NET 9+
+                //return ToolStripRenderer.CreateDisabledImage(image);
+
+                var result = new Bitmap(image);
+                using IReadWriteBitmapData bitmapData = result.GetReadWriteBitmapData(); // sRGB color space is alright for grayscale transformations
+                bitmapData.MakeGrayscale();
+                bitmapData.AdjustBrightness(ThemeColors.IsDarkBaseTheme ? 0.1f : -0.1f); // darker for light theme and vice versa, so white/black becomes a bit grayer
+                bitmapData.TransformColors(c => Color32.FromArgb((byte)(c.A * 0.5f), c));
+                return result;
             }
 
             #endregion
@@ -668,6 +719,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             /// <summary>
             /// Changes to original:
             /// - Unlike Windows' base implementation, not drawing the checked menu item background again, which is already done by OnRenderItemCheck
+            /// - Fixing the size of a disabled image when the raw format of the image is icon.
+            /// - Slightly different disabled image coloring, adjusted to light/dark theme
             /// - [Mono]: Scaling menu item images
             /// - [HighContrast]: Shifting also clicked ToolStripSplitButton images just like for buttons
             /// - ToolStripDropDownButton image: manually calculated image bounds. Fixes .NET 10 per-monitor DPI awareness issue,
@@ -701,7 +754,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         enabled = false;
                 }
 
-                Image image = enabled ? e.Image : disabledImagesCache[e.Image];
+                Image image = enabled ? e.Image : disabledImagesCache[(bounds.Size, e.Image)];
                 if (e.Item.ImageScaling == ToolStripItemImageScaling.None)
                     e.Graphics.DrawImage(image, bounds, new Rectangle(Point.Empty, bounds.Size), GraphicsUnit.Pixel);
                 else
