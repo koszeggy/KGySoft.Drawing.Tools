@@ -426,8 +426,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             switch (e.PropertyName)
             {
                 case nameof(IsCompoundView):
-                    if (imageInfo.HasFrames && imageInfo.Type != ImageInfoType.Pages)
-                        ResetCompoundState();
+                    if (imageInfo.HasFrames)
+                    {
+                        if (imageInfo.Type != ImageInfoType.Pages)
+                            ResetCompoundState();
+                        else
+                            ResetEnabledStates();
+                    }
+
                     if (initialized)
                         PersistCompoundView();
                     return;
@@ -707,7 +713,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             CopyCommandState.Enabled = isLoaded && !isBusy;
             PasteCommandState.Enabled = canPaste;
             PasteAsBitmapCommandState.Enabled = canPaste && (imageTypes & (AllowedImageTypes.Bitmap | AllowedImageTypes.Icon)) != AllowedImageTypes.None;
-            PasteAsMetafileCommandState.Enabled = canPaste && (imageTypes & AllowedImageTypes.Metafile) != AllowedImageTypes.None;
+            PasteAsMetafileCommandState.Enabled = canPaste && (imageTypes & AllowedImageTypes.Metafile) != AllowedImageTypes.None && (IsCompoundView || !imageInfo.HasFrames);
             ShowPaletteCommandState.Enabled = !isBusy && IsPaletteAvailable();
             EditBitmapCommandState.Enabled = isLoaded && !isReadOnly && !isBusy && !imageInfo.IsMetafile && isSingleImageShown;
             CountColorsCommandState.Enabled = isLoaded && !isBusy && !imageInfo.IsMetafile && isSingleImageShown;
@@ -1631,13 +1637,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void PasteFromClipboard(AllowedImageTypes? forcedFormat)
         {
             Debug.Assert(!IsBusy && activeTask == null);
-            Debug.Assert((forcedFormat & imageTypes) != AllowedImageTypes.None, "Forcing a non-allowed format is not expected here");
             IsBusy = true;
             ImageInfoBase currentImage = GetCurrentImageInfo(true);
+            var allowedTypes = currentImage is ImageInfo ? imageTypes : imageInfo.Type is ImageInfoType.Icon ? AllowedImageTypes.Icon : AllowedImageTypes.Bitmap | AllowedImageTypes.Icon;
+            Debug.Assert((forcedFormat & allowedTypes) != AllowedImageTypes.None, "Forcing a non-allowed format is not expected here");
             var task = new PasteTask
             {
                 // For an icon frame we allow icons only, which causes the possible too large bitmaps to be converted to 256x256 icons. Not doing this for bitmaps in icon format though.
-                AllowedTypes = forcedFormat ?? (currentImage is ImageInfo ? imageTypes : imageInfo.Type is ImageInfoType.Icon ? AllowedImageTypes.Icon : AllowedImageTypes.Bitmap | AllowedImageTypes.Icon),
+                AllowedTypes = forcedFormat ?? allowedTypes,
                 AllowMultiFrame = currentImage is ImageInfo,
                 PrevEnabled = PrevImageCommandState.Enabled,
                 NextEnabled = NextImageCommandState.Enabled,
@@ -1728,14 +1735,12 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     }
 
                     SetNotification(notification);
-                    SetCompoundViewCommandState.Enabled = true;
-                    PrevImageCommandState.Enabled = task.PrevEnabled;
-                    NextImageCommandState.Enabled = task.NextEnabled;
                     SetModified(true);
                 });
             }
             catch (Exception e) when (!e.IsCriticalGdi())
             {
+                warning = Res.WarningMessageCannotPasteSpecialId;
             }   
             finally
             {
@@ -1745,6 +1750,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 activeTask = null;
                 TryInvokeSync(() =>
                 {
+                    SetCompoundViewCommandState.Enabled = true;
+                    PrevImageCommandState.Enabled = task.PrevEnabled;
+                    NextImageCommandState.Enabled = task.NextEnabled;
                     IsBusy = false;
                     if (warning != null)
                         ShowWarning(warning);
