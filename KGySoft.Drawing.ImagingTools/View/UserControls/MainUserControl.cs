@@ -39,6 +39,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             BorderStyle = FormBorderStyle.Sizable,
             Icon = Properties.Resources.ImagingTools,
             MinimumSize = new Size(200, 200),
+            ClosingCallback = (_, _) => ViewModel.CancelPendingTask()
         };
 
         internal new DefaultViewModel ViewModel => (DefaultViewModel)base.ViewModel!;

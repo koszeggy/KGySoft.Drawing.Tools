@@ -78,9 +78,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             },
             ClosingCallback = (sender, _) =>
             {
-                ViewModel.CancelPendingTask();
-                if (((MvvmParentForm)sender!).DialogResult == DialogResult.Cancel)
+                if (sender is not MvvmParentForm parent)
+                    return;
+                if (parent.DialogResult == DialogResult.Cancel)
                     ViewModel.SetModified(false);
+                if (parent.DialogResult != DialogResult.Retry) // Retry signals that it's being reopened due to RTL change
+                    ViewModel.CancelPendingTask();
             }
         };
 

@@ -277,7 +277,7 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         private void Execute(IWin32Window? owner)
         {
-            // If the handle is null here, the dialog is shown as a non-modal window. The call is still blocking until the dialog is closed.
+            // If the owner is null here, the dialog is shown as a non-modal window. The call is still blocking until the dialog is closed.
             TaskDialogResult result = TaskDialog.Show(owner);
             ViewModel.ViewUnloading();
             OnClosed(result);
