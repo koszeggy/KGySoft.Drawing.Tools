@@ -66,7 +66,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             #region Constants
 
             private const int referenceOverflowArrowOffsetY = 8;
-            private const int referenceOverflowButtonWidth = 12;
             private const int referenceMenuItemPaddingWidth = 1;
 
             #endregion
@@ -75,10 +74,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             private static readonly Size referenceOffset = new Size(2, 2);
             private static readonly Size referenceOffsetDouble = new Size(4, 4);
-#if NETFRAMEWORK
-            private static readonly Size referenceOverflowButtonBounds = new Size(16, 16);
-#endif
-            private static readonly Size referenceOverflowButtonSize = new Size(12, 12);
+            private static readonly Size referenceOverflowButtonSize = new Size(16, 16);
+            private static readonly Size referenceOverflowButtonThemedSize = new Size(12, 12);
             private static readonly Size referenceOverflowArrowSize = new Size(9, 5);
 
             // not an IThreadSafeCacheAccessor, because we need to clear the cache when dark/light theme changes
@@ -782,10 +779,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
                     // fill in the background colors
                     bool rightToLeft = item.RightToLeft == RightToLeft.Yes;
-                    PointF scale = e.Graphics.GetScale();
+                    PointF scale = e.ToolStrip?.GetScale() ?? ScaleHelper.SystemScale;
                     Size overflowArrowSize = referenceOverflowArrowSize.Scale(scale);
                     int overflowArrowOffsetY = referenceOverflowArrowOffsetY.Scale(scale.Y);
-                    int overflowButtonWidth = referenceOverflowButtonWidth.Scale(scale.X);
+                    int overflowButtonWidth = referenceOverflowButtonSize.Scale(scale).Width;
 
                     RenderOverflowBackground(e, colorTable);
 
@@ -813,19 +810,38 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 // Changes to original:
                 // - Fixing selected arrow color (good in .NET 9)
                 // - Fixed bounds (bad in .NET 9 - selection rectangle clashes with border, good in .NET 6 and earlier versions)
+                // - Proper scaling for DPI (known issue on .NET Core: mouse events still may reflect to the original size)
                 static void DrawHighContrast(ToolStripItemRenderEventArgs e)
                 {
                     var button = (ToolStripOverflowButton)e.Item;
+                    Size overflowButtonSize = e.ToolStrip!.ScaleSize(referenceOverflowButtonSize);
                     Rectangle bounds = new Rectangle(Point.Empty, button.Size);
+                    if (e.ToolStrip!.Orientation is Orientation.Horizontal)
+                    {
+                        if (bounds.Width != overflowButtonSize.Width)
+                        {
+                            bounds.Width = overflowButtonSize.Width;
+                            if (e.Item.RightToLeft != RightToLeft.Yes)
+                                bounds.X = Math.Max(0, button.Width - overflowButtonSize.Width);
+                        }
+                    }
+                    else if (bounds.Height != overflowButtonSize.Height)
+                    {
+                        bounds.Height = overflowButtonSize.Height;
+                        bounds.Y = Math.Max(0, button.Height - overflowButtonSize.Height);
+                    }
+
                     ButtonStyle style = (button.Pressed ? ButtonStyle.Dropped : 0)
                         | (button.Selected ? ButtonStyle.Selected : 0);
                     DrawHighContrastButtonBackground(e.Graphics, bounds, style);
                     DrawArrow(e.ToolStrip!, e.Graphics, style == ButtonStyle.Selected ? SystemColors.HighlightText : SystemColors.ControlText, bounds, ArrowDirection.Down);
                 }
 
+                // Changes to original:
+                // - Proper scaling for DPI
                 static void RenderOverflowBackground(ToolStripItemRenderEventArgs e, ProfessionalColorTable colorTable)
                 {
-                    Size overflowButtonSize = e.ToolStrip!.ScaleSize(referenceOverflowButtonSize);
+                    Size overflowButtonSize = e.ToolStrip!.ScaleSize(referenceOverflowButtonThemedSize);
 
                     Graphics g = e.Graphics;
                     var item = (ToolStripOverflowButton)e.Item;
@@ -938,31 +954,36 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
                 #endregion
 
-#if NETFRAMEWORK
                 // The scaling is wrong also in Mono, but it is not possible to fix it
                 if (!OSHelper.IsFrameworkMono)
                 {
-                    // On Windows the fix is also tricky, especially in .NET Framework 3.5 because the bounds
+                    // On Windows the fix is also tricky, especially in .NET Framework 3.5, because the bounds
                     // are forcibly maxed with a constant 16, but fortunately we can exploit the fact that the
                     // Padding is respected, it's public, and it's actually not used for anything else.
+                    // .NET Core is problematic in a different way, because it forcibly scales based on the primary display.
+                    // The padding trick works if the current display has a larger DPI; otherwise, using the original (larger) size,
+                    // but rendering with the scaled (smaller) size. The only visible issue is that mouse events work for a larger size.
                     var button = (ToolStripOverflowButton)e.Item;
-                    var scaledSize = e.ToolStrip.ScaleSize(referenceOverflowButtonBounds);
-                    if (e.ToolStrip.Orientation == Orientation.Horizontal && scaledSize.Width > button.Width)
+                    var scaledSize = e.ToolStrip.ScaleSize(referenceOverflowButtonSize);
+                    bool horizontal = e.ToolStrip.Orientation == Orientation.Horizontal;
+                    if (horizontal && scaledSize.Width != button.Width || !horizontal && scaledSize.Height != button.Height)
                     {
                         var padding = button.Padding;
-                        padding.Left = scaledSize.Width - referenceOverflowButtonBounds.Width;
-                        button.Padding = padding;
-                        return; // setting the padding invalidates the layout so a new paint event will be triggered
-                    }
-                    if (e.ToolStrip.Orientation == Orientation.Vertical && scaledSize.Height > button.Height)
-                    {
-                        var padding = button.Padding;
-                        padding.Top = scaledSize.Height - referenceOverflowButtonBounds.Height;
-                        button.Padding = padding;
-                        return; // setting the padding invalidates the layout so a new paint event will be triggered
+                        if (horizontal)
+                            padding.Left = Math.Max(0, scaledSize.Width - button.Width);
+                        else
+                            padding.Top = Math.Max(0, scaledSize.Height - button.Height);
+
+                        // Preventing endless repaint loops: repainting only when applying the padding adjustment for the first time.
+                        // Note: setting the padding invalidates the button, but the size is changed only when performing the layout explicitly
+                        if (button.Padding != padding)
+                        {
+                            button.Padding = padding;
+                            e.ToolStrip.PerformLayout();
+                            return;
+                        }
                     }
                 }
-#endif
 
                 if (ThemeColors.HighContrast)
                     DrawHighContrast(e);

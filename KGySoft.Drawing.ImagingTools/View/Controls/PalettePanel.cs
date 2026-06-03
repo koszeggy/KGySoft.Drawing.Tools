@@ -196,7 +196,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             }
 
             var clientSize = ClientSize;
-            float minScale = e.Graphics.GetScale().X;
+            float minScale = this.GetScale().X;
             float maxScale = Math.Max(Math.Min(clientSize.Width / 240f, clientSize.Height / (distanceUnit.Y + paddingUnit.Y * 2f)), 0.25f);
             int colorRows = Math.Min(16, (int)Math.Ceiling(palette!.Count / 16d));
             float actualScale = maxScale <= minScale
