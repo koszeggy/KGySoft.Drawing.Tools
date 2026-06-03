@@ -369,7 +369,16 @@ Brightness: {5:F0}%</value>
     <value>The loaded image has been converted to a Metafile. To load it as a Bitmap, choose the Image Debugger Visualizer instead.</value>
   </data>
   <data name="Notification_ImageAsIcon" xml:space="preserve">
-    <value>The loaded image has been converted to an Icon</value>
+    <value>The loaded image has been converted to an Icon.</value>
+  </data>
+  <data name="Notification_PastedAsBitmap" xml:space="preserve">
+    <value>The selected image format has been converted to a Bitmap.</value>
+  </data>
+  <data name="Notification_PastedAsMetafile" xml:space="preserve">
+    <value>The selected image format has been converted to a Metafile.</value>
+  </data>
+  <data name="Notification_PastedAsIcon" xml:space="preserve">
+    <value>The selected image format has been converted to an Icon.</value>
   </data>
   <data name="Notification_PaletteCannotBeRestored" xml:space="preserve">
     <value>The palette of an indexed BitmapData cannot be reconstructed, therefore a default palette is used. You can change palette colors in the menu.</value>

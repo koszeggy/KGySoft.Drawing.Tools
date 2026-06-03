@@ -175,20 +175,14 @@ namespace KGySoft.Drawing.ImagingTools
         #region Fields
 
         private readonly static Lock syncRoot = new();
-        private readonly static string[] supportedFormats =
+        private readonly static HashSet<string> bitmapFormats =
         [
-            // bitmap formats
             DataFormats.Bitmap, DataFormats.Dib, DataFormats.Tiff, typeof(Bitmap).FullName!, pngFormat, gifFormat, dibV5Format, jpegFormat,
-
-            // bitmap aliases
             pngAliasFormat, gifAliasFormat, jpegAliasFormat,
-
-            // metafile formats
-            DataFormats.EnhancedMetafile, DataFormats.MetafilePict, emfFormat, wmfFormat,
-
-            // icon format
-            iconFormat
         ];
+        private readonly static string[] metafileFormats = [DataFormats.EnhancedMetafile, DataFormats.MetafilePict, emfFormat, wmfFormat];
+        private readonly static string[] iconFormats = [iconFormat];
+        private readonly static string[] supportedFormats = [..bitmapFormats, ..metafileFormats, ..iconFormats];
 
         private static EventHandler? clipboardChangedHandler;
         private static ClipboardListener? clipboardViewer;
@@ -243,6 +237,10 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Internal Methods
 
+        internal static bool IsBitmap(string format) => bitmapFormats.Contains(format);
+        internal static bool IsMetafile(string format) => metafileFormats.Contains(format);
+        internal static bool IsIcon(string format) => iconFormats.Contains(format);
+
         internal static string[] GetImageFormats()
         {
             try
@@ -264,6 +262,7 @@ namespace KGySoft.Drawing.ImagingTools
             // NOTE: Using SetImage as a fallback solution only, because it does not support the native metafile formats, and puts a BinaryFormatter
             // entry on the clipboard a with potentially poorly chosen encoder (supporting such formats in TryPasteFromClipboard, though).
             // Instead, preparing the native Bitmap format as a well-known fallback (which is supported by the managed clipboard API as well) explicitly.
+            
             // Value is IntPtr or MemoryStream. Using Stream is better than byte[], because in the managed API Stream is just converted to a byte[],
             // whereas byte[] is serialized in a BinaryFormatter-compatible way.
             var formats = new Dictionary<string, object>();
@@ -304,7 +303,7 @@ namespace KGySoft.Drawing.ImagingTools
                 else if (info.Icon is not null || info.RawFormat == ImageFormat.Icon.Guid)
                     CopyIcon(formats, info, task);
 
-                // GetCreateImage with no cancellation is alright here - due to the compounds format above, actual generate is expected for icon bitmaps only
+                // GetCreateImage with no cancellation is alright here - due to the compound formats above, actual generate is expected for icon bitmaps only
                 Image? image = info.GetCreateImage();
                 Debug.Assert(image != null, "Failed to obtain an image to copy");
                 if (image == null)
@@ -840,7 +839,6 @@ namespace KGySoft.Drawing.ImagingTools
             try
             {
                 // Not using Clipboard.GetImage (or only as a fallback), because it always gets Bitmap format only, which is an RGB32 format with no alpha.
-                //IWinFormsDataObject? dataObject = Clipboard.GetDataObject();
                 IWinFormsDataObject? dataObject = null;
                 HashSet<string>? formats = null;
                 task.Context.Send(_ =>
@@ -882,14 +880,16 @@ namespace KGySoft.Drawing.ImagingTools
                     }
                 }
                 // 2.c. icon frame
-                else if (allowedTypes == AllowedImageTypes.Icon && formats.Contains(iconFormat) && TryGetImageFromStream([iconFormat], dataObject, allowedTypes, false, task, out imageInfo))
+                else if (allowedTypes == AllowedImageTypes.Icon && TryGetImageFromStream(formats.Intersect(iconFormats), dataObject, allowedTypes, false, task, out imageInfo))
                     return imageInfo;
 
                 if (task.IsCanceled)
                     return null;
 
                 // 3. Single-frame custom encoded Bitmap or Icon. The way of the Intersect call ensures the order of the tried formats.
-                if (TryGetImageFromStream(new[] { pngFormat, pngAliasFormat, DataFormats.Tiff, gifFormat, gifAliasFormat, iconFormat, jpegFormat, jpegAliasFormat }.Intersect(formats), dataObject, allowedTypes, false, task, out imageInfo))
+                //    Not using bitmapFormats here because we include icon and exclude some other bitmap formats.
+                string[] customBitmapFormats = [pngFormat, pngAliasFormat, DataFormats.Tiff, gifFormat, gifAliasFormat, iconFormat, jpegFormat, jpegAliasFormat];
+                if (TryGetImageFromStream(customBitmapFormats.Intersect(formats), dataObject, allowedTypes, false, task, out imageInfo))
                     return imageInfo;
                 if (task.IsCanceled)
                     return null;

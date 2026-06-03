@@ -1517,6 +1517,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     Bitmap image => new ImageFrameInfo(image),
                     Icon icon => new ImageFrameInfo(icon),
                     ImageInfo { Image: null or Metafile } => throw new InvalidOperationException(Res.InternalError("Invalid frame image type")),
+                    null => throw new InvalidOperationException(Res.InternalError("null is not expected as replacement imageObject frame")),
                     _ => throw new InvalidOperationException(Res.InternalError($"Unexpected imageObject type: {imageObject.GetType()}"))
                 };
                 frame.Duration = origFrame.Duration;
@@ -1681,6 +1682,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void DoPasteFromClipboard(object? state)
         {
             var task = (PasteTask)state!;
+            var pasteSpecial = state as PasteSpecialTask;
             ImageInfo? result = null;
             bool success = false;
             string? warning = null;
@@ -1689,9 +1691,15 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 if (task.IsCanceled)
                     return;
 
-                result = task is PasteSpecialTask pasteSpecial
+                result = pasteSpecial != null
                     ? ClipboardHelper.TryPasteSpecial(pasteSpecial.Format, task.AllowedTypes, task.AllowMultiFrame, pasteSpecial.TryDetectAlpha, task)
                     : ClipboardHelper.TryPasteFromClipboard(task.AllowedTypes, task.AllowMultiFrame, task);
+
+                string? notification = pasteSpecial == null || result == null || result.Type == ImageInfoType.None ? null
+                    : result.Icon != null && !ClipboardHelper.IsIcon(pasteSpecial.Format) ? Res.NotificationPastedAsIconId
+                    : result.Image is Bitmap && !ClipboardHelper.IsBitmap(pasteSpecial.Format) ? Res.NotificationPastedAsBitmapId
+                    : result.Image is Metafile && !ClipboardHelper.IsMetafile(pasteSpecial.Format) ? Res.NotificationPastedAsMetafileId
+                    : null;
 
                 // It must be completed before handling the rest on the UI thread. From now on, nothing is done in the worker thread, but the nullification.
                 // UI callbacks must be expected not to be executed at all, if the UI has been closed.
@@ -1719,6 +1727,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                         result.Dispose();
                     }
 
+                    SetNotification(notification);
                     SetCompoundViewCommandState.Enabled = true;
                     PrevImageCommandState.Enabled = task.PrevEnabled;
                     NextImageCommandState.Enabled = task.NextEnabled;

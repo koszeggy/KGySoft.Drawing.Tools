@@ -274,8 +274,17 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>The loaded image has been converted to a Metafile. To load it as a Bitmap, choose the Image Debugger Visualizer instead.</summary>
         internal static string NotificationBitmapAsMetafileId => "Notification_BitmapAsMetafile";
 
-        /// <summary>The loaded image has been converted to an Icon</summary>
+        /// <summary>The loaded image has been converted to an Icon.</summary>
         internal static string NotificationImageAsIconId => "Notification_ImageAsIcon";
+
+        /// <summary>The selected image format has been converted to a Bitmap.</summary>
+        internal static string NotificationPastedAsBitmapId => "Notification_PastedAsBitmap";
+
+        /// <summary>The selected image format has been converted to a Metafile.</summary>
+        internal static string NotificationPastedAsMetafileId => "Notification_PastedAsMetafile";
+
+        /// <summary>The selected image format has been converted to an Icon.</summary>
+        internal static string NotificationPastedAsIconId => "Notification_PastedAsIcon";
 
         /// <summary>The palette of an indexed BitmapData cannot be reconstructed, therefore a default palette is used. You can change palette colors in the menu.</summary>
         internal static string NotificationPaletteCannotBeRestoredId => "Notification_PaletteCannotBeRestored";
