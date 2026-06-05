@@ -782,7 +782,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     PointF scale = e.ToolStrip?.GetScale() ?? ScaleHelper.SystemScale;
                     Size overflowArrowSize = referenceOverflowArrowSize.Scale(scale);
                     int overflowArrowOffsetY = referenceOverflowArrowOffsetY.Scale(scale.Y);
-                    int overflowButtonWidth = referenceOverflowButtonSize.Scale(scale).Width;
+                    int overflowButtonWidth = referenceOverflowButtonThemedSize.Scale(scale).Width;
 
                     RenderOverflowBackground(e, colorTable);
 
