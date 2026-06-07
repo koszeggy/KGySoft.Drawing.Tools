@@ -763,7 +763,8 @@ namespace KGySoft.Drawing.ImagingTools
                 bool hasAlpha = pixelFormat.HasAlpha() || (pixelFormat.IsIndexed() && bitmap.Palette.Entries.Any(c => c.A != Byte.MaxValue));
 
                 // 1. Custom PNG format. It is recognized by multiple applications, and unlike the standard Bitmap format, it preserves alpha.
-                if (hasAlpha)
+                // On Linux/Mono always adding this format, because the standard Bitmap format is not supported, and Clipboard.SetImage/GetImage does not work either.
+                if (hasAlpha || OSHelper.IsLinuxMono)
                 {
                     try
                     {
@@ -805,7 +806,11 @@ namespace KGySoft.Drawing.ImagingTools
                 if (!OSHelper.IsWindows)
                 {
                     // Manged fallback when Windows API cannot be used. It forces using IDataObject.SetImage in PopulateClipboard.
-                    formats.Add(bitmapFormat, bitmap);
+                    // Not doing this on Linux/Mono, because it makes IDataObject.GetFormats to throw an exception.
+                    // Adding a clone here would prevent the exception, but the Bitmap format will not appear among the clipboard formats.
+                    // And though Clipboard.Contains image will return true, Clipboard.GetImage would still return null.
+                    if (!OSHelper.IsLinuxMono)
+                        formats.Add(bitmapFormat, bitmap);
                     return;
                 }
 
