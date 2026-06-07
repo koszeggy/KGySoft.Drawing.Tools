@@ -417,7 +417,7 @@ Note that most applications may not support pasting multi-resolution icons thoug
     <value>Error: {0}</value>
   </data>
   <data name="ErrorMessage_FailedToLoadFileFormat" xml:space="preserve">
-    <value>Could not load file due to an error: {0}</value>
+    <value>Could not load the file due to an error: {0}</value>
   </data>
   <data name="ErrorMessage_InstallationCannotBeOverwritten" xml:space="preserve">
     <value>The current installation is being executed, which cannot be overwritten</value>

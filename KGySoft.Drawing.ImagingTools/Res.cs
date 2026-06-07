@@ -362,7 +362,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// </summary>
         internal static string ErrorMessageImageInfoEmptyFrameIcon => Get("ErrorMessage_ImageInfoEmptyFrameIcon");
 
-        /// <summary>Could not load file due to an error: {0}</summary>
+        /// <summary>Could not load the file due to an error: {0}</summary>
         internal static string ErrorMessageFailedToLoadFileId => "ErrorMessage_FailedToLoadFileFormat";
 
         /// <summary>Could not save image due to an error: {0}</summary>

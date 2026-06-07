@@ -322,14 +322,23 @@ namespace KGySoft.Drawing.ImagingTools.Model
                             return new ImageInfo(frame);
                         }
 
-                        Debug.Assert(bitmap.RawFormat.Guid != ImageFormat.Icon.Guid);
+                        Debug.Assert(bitmap.RawFormat.Guid != ImageFormat.Icon.Guid || OSHelper.IsMono);
                         return new ImageInfo(bitmap);
                     }
 
                     Size size = bitmap.Size;
                     if ((allowedTypes & AllowedImageTypes.Icon) != 0)
                     {
-                        Icon icon = bitmap.ToIcon(Math.Min(256, Math.Max(size.Width, size.Height)), true);
+                        int iconSize = Math.Min(256, Math.Max(size.Width, size.Height));
+                        if (iconSize == 256 && OSHelper.IsMono)
+                        {
+                            Bitmap resized = size is { Width: 256, Height: 256 } ? bitmap : bitmap.Resize(new Size(iconSize, iconSize), ScalingMode.Auto, true);
+                            if (!ReferenceEquals(bitmap, resized))
+                                bitmap.Dispose();
+                            return new ImageInfo(resized);
+                        }
+
+                        Icon icon = bitmap.ToIcon(iconSize, scalingMode: ScalingMode.Auto, true);
                         bitmap.Dispose();
                         return new ImageInfo(icon);
                     }
@@ -653,7 +662,10 @@ namespace KGySoft.Drawing.ImagingTools.Model
             var frames = new ImageFrameInfo[iconInfo.Length];
             for (int i = 0; i < frames.Length; i++)
             {
+                Debug.Assert(iconImages?[i] == null || iconImages[i]!.Size == iconInfo[i].Size);
                 frames[i] = new ImageFrameInfo(iconImages?[i], iconInfo[i]);
+                if (frames[i].Icon == null)
+                    frames[i].Image = icon.ExtractBitmap(i);
             }
 
             Frames = frames;
@@ -685,12 +697,21 @@ namespace KGySoft.Drawing.ImagingTools.Model
                 case ImageInfoType.Icon:
                     try
                     {
-                        return GetCreateIcon()!.ToMultiResBitmap();
+                        // Mono actually more-or-less supports multi res bitmaps, but they don't always work well. For example, saving one as a PNG may throw an exception:
+                        // libpng error: Invalid IHDR data (Image width/height is zero in IHDR)
+                        Icon icon = GetCreateIcon()!;
+                        return OSHelper.IsMono
+                            ? icon.ExtractNearestBitmap(new Size(UInt16.MaxValue, UInt16.MaxValue), PixelFormat.Format32bppArgb)
+                            : icon.ToMultiResBitmap();
                     }
-                    catch (ArgumentException)
+                    catch (Exception e) when (!e.IsCriticalGdi())
                     {
-                        // In Windows XP it can happen that multi-res bitmap throws an exception even if PNG images are uncompressed
-                        return GetCreateIcon()!.ExtractNearestBitmap(new Size(UInt16.MaxValue, UInt16.MaxValue), PixelFormat.Format32bppArgb);
+                        // In Windows XP it can happen that a multi-res bitmap throws an exception even if PNG images are uncompressed.
+                        // Or, GetCreateIcon throws, because all frames are too large. Returning the largest frame with the highest bit-depth, without creating an icon.
+                        return Frames!.OrderByDescending(f => f.Size.Width)
+                            .ThenByDescending(f => f.Size.Height)
+                            .ThenByDescending(f => f.BitsPerPixel)
+                            .First().GetCreateBitmap()!;
                     }
 
                 // Unlike in VM.SaveGif, we use SaveAsAnimatedGif here rather than the lower-level encoder, because this operation is not canceled
@@ -716,7 +737,26 @@ namespace KGySoft.Drawing.ImagingTools.Model
             }
 
             if (Frames is ImageFrameInfo[] { Length: > 0 } frames)
-                return Icons.Combine(frames.Select(f => f.GetCreateIcon()));
+            {
+                if (!OSHelper.IsMono)
+                    return Icons.Combine(frames.Select(f => f.GetCreateIcon()));
+
+                // Mono (both Framework and Wine): standalone huge icons are not supported. First, trying to combine the images in a single shot.
+                if (frames.All(f => f.BitsPerPixel >= 32))
+                    return Icons.Combine(frames.Select(f => f.GetCreateBitmap()!));
+
+                // Some icon images are low-bpp ones. We must preserve their original format. We do the save in two sessions, in the 1st one we combine the smaller icons, and then add the large ones.
+                // NOTE: this may be breaking, because it may reorder the images, and the low bit-depth can be lost for large images. We must start with the small icons,
+                //       because Mono can't handle an Icon that has only 256x256 images (255 is alright though, because it can be encoded regularly in ICONDIRENTRY).
+                ImageFrameInfo[] smallFrames = frames.Where(f => f.Size.Width <= Byte.MaxValue || f.Size.Height <= Byte.MaxValue).ToArray();
+                
+                // Now this is a problem. We fall back to combine from image, and let it throw if it happens
+                if (smallFrames.Length == 0)
+                    return Icons.Combine(frames.Select(f => f.GetCreateBitmap()!));
+
+                Icon result = Icons.Combine(smallFrames.Select(f => f.GetCreateIcon()));
+                return result.Combine(frames.Except(smallFrames).Select(f => f.GetCreateBitmap()!));
+            }
 
             Image image = Image!;
             lock (image)

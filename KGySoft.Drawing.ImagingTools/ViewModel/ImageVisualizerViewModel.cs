@@ -34,6 +34,7 @@ using KGySoft.CoreLibraries;
 using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Threading;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -819,12 +820,20 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 {
                     try
                     {
-                        imageOrIcon = Icons.FromStream(stream);
+                        imageOrIcon = Icons.FromStream(stream, false);
                     }
                     catch (Exception e) when (!e.IsCritical())
                     {
-                        // failed to open as an icon: fallback to usual paths
-                        stream.Position = 0L;
+                        // Maybe the icon contains a single 256x256 image, which is not supported on some platforms (Windows XP, Framework Mono)
+                        try
+                        {
+                            imageOrIcon = Icons.FromStream(stream, true);
+                        }
+                        catch (Exception ex) when (!ex.IsCritical())
+                        {
+                            // Still does not work to open as an icon: fallback to usual paths (on Windows/Mono, loading the icon as Bitmap still may work)
+                            stream.Position = 0L;
+                        }
                     }
                 }
 
@@ -1115,19 +1124,29 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 if (task.IsCanceled)
                     return;
 
-                using Stream stream = File.Create(task.FileName);
+                try
+                {
+                    using Stream stream = File.Create(task.FileName);
 
-                // We already have an icon: just saving it. Using SaveAsIcon to ensure quality for icons with no internal raw data.
-                if (task.ToSave.Icon is Icon icon)
-                    icon.SaveAsIcon(stream);
-                // Single-image icon. Here raw data is built, so simple Save is alright.
-                else if (task.ToSave is ImageFrameInfo or ImageInfo { HasFrames: false })
-                    task.ToSave.GetCreateIcon()?.Save(stream);
-                // Multi-image icon. The combined result always has managed raw data, so simple Save is alright.
-                else
-                    Icons.Combine(((ImageInfo)task.ToSave).IterateFrameIcons(task)).Save(stream);
-
-                stream.Flush();
+                    // We already have an icon: just saving it. Using SaveAsIcon to ensure quality for icons with no internal raw data.
+                    if (task.ToSave.Icon is Icon icon)
+                        icon.SaveAsIcon(stream);
+                    // Single-image icon. Here raw data is built, so simple Save is alright.
+                    // Mono: not iterating Icons but using GetCreateIcon to avoid issues with large icon images - save is not cancellable this way
+                    else if (task.ToSave is ImageFrameInfo or ImageInfo { HasFrames: false } || OSHelper.IsMono)
+                        task.ToSave.GetCreateIcon()?.Save(stream);
+                    // Multi-image icon. The combined result always has managed raw data, so simple Save is alright.
+                    else
+                        Icons.Combine(((ImageInfo)task.ToSave).IterateFrameIcons(task)).Save(stream);
+                    stream.Flush();
+                }
+                catch (Exception e) when (!e.IsCriticalGdi() && OSHelper.IsMono)
+                {
+                    // Mono: maybe the icon consists of large images only - trying to save a single bitmap as icon
+                    using Stream stream = File.Create(task.FileName);
+                    task.ToSave.GetCreateImage()?.SaveAsIcon(stream);
+                    stream.Flush();
+                }
             }
 
             static void SaveBitmapData(SaveTask task)

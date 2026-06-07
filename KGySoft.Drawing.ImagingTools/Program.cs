@@ -69,6 +69,8 @@ namespace KGySoft.Drawing.ImagingTools
 #if NET471_OR_GREATER || NETCOREAPP
             Console.WriteLine($"RuntimeInformation.FrameworkDescription: {RuntimeInformation.FrameworkDescription}");
 #endif  
+            Console.WriteLine($"System scale: {ScaleHelper.SystemScale}");
+            Console.WriteLine($"Per-monitor DPI awareness version: {ScaleHelper.PerMonitorDpiAwarenessVersion}");
         }
 
         #endregion

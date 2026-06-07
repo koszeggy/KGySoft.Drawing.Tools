@@ -975,8 +975,9 @@ namespace KGySoft.Drawing.ImagingTools
         {
             try
             {
+                // Mono (both Framework and Wine): single-frame huge icons are not supported, so avoiding combining icon frames
                 var ms = new MemoryStream();
-                if (info is ImageInfo imageInfo)
+                if (info is ImageInfo imageInfo && !OSHelper.IsMono)
                     Icons.Combine(imageInfo.IterateFrameIcons(task)).Save(ms);
                 else
                     info.GetCreateIcon()!.SaveAsIcon(ms);
@@ -1661,6 +1662,7 @@ namespace KGySoft.Drawing.ImagingTools
                 switch (data)
                 {
                     case MemoryStream stream:
+                        stream.Position = 0L; // needed on Linux/Mono
                         return stream;
 
                     case null:
