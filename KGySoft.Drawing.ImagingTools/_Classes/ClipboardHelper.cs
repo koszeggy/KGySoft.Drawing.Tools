@@ -435,8 +435,7 @@ namespace KGySoft.Drawing.ImagingTools
         internal static bool IsBitmap(string format) => bitmapFormats.Contains(format);
         internal static bool IsMetafile(string format) => metafileFormats.Contains(format);
         internal static bool IsIcon(string format) => iconFormats.Contains(format);
-
-        internal static string[] GetImageFormats() => GetClipboardFormats().Intersect(supportedFormats).ToArray();
+        internal static string[] GetImageFormats() => GetClipboardFormats(true).Intersect(supportedFormats).ToArray();
 
         internal static void CopyToClipboard(ImageInfoBase info, AsyncTaskContext task)
         {
@@ -763,7 +762,7 @@ namespace KGySoft.Drawing.ImagingTools
                 bool hasAlpha = pixelFormat.HasAlpha() || (pixelFormat.IsIndexed() && bitmap.Palette.Entries.Any(c => c.A != Byte.MaxValue));
 
                 // 1. Custom PNG format. It is recognized by multiple applications, and unlike the standard Bitmap format, it preserves alpha.
-                // On Linux/Mono always adding this format, because the standard Bitmap format is not supported, and Clipboard.SetImage/GetImage does not work either.
+                // On Linux/Mono always adding this format, because the standard Bitmap format is not supported, and Clipboard.SetImage/GetImage do not work either.
                 if (hasAlpha || OSHelper.IsLinuxMono)
                 {
                     try
@@ -1023,20 +1022,32 @@ namespace KGySoft.Drawing.ImagingTools
         internal static ImageInfo? DoTryPasteFromClipboard(string? format, AllowedImageTypes allowedTypes, bool allowMultiFrame, bool detectAlpha, AsyncTaskContext task)
         {
             Debug.Assert(allowedTypes != AllowedImageTypes.None);
+            bool isClipboardOpen = false;
 
             try
             {
                 // Not using Clipboard.GetImage (or only as a fallback), because it always gets Bitmap format only, which is an RGB32 format with no alpha.
                 IWinFormsDataObject? dataObject = null;
                 HashSet<string>? formats = null;
+                
+                // Native Open/Close clipboard requires to be executed in the UI thread.
+                // And though IDataObject.GetFormats would not throw from a worker thread, it does not always return native formats from non UI-threads.
                 task.Context.Send(_ =>
                 {
-                    // Though GetFormats would not throw from a worker thread, it does not always return native formats from non UI-threads.
-                    formats = new(format != null ? [format] : GetClipboardFormats());
-                    dataObject = Clipboard.GetDataObject();
+                    // On Windows/Mono Clipboard.GetDataObject() may crash the runtime if there is an image on the clipboard, so using fully native WinAPI instead.
+                    // On Wine, IDataObject works more-or-less, but some formats cannot be accessed (e.g. DIB and DIBv5 throw COMException, or return null via the managed interface).
+                    dataObject = OSHelper.IsWindowsMono || OSHelper.IsWine ? null : Clipboard.GetDataObject();
+                    if (dataObject == null)
+                    {
+                        if (!User32.OpenClipboard())
+                            return;
+                        isClipboardOpen = true;
+                    }
+
+                    formats = new HashSet<string>(format != null ? [format] : GetClipboardFormats(!isClipboardOpen));
                 }, null);
 
-                if (dataObject == null || formats == null || task.IsCanceled)
+                if (formats == null || formats.Count == 0 || task.IsCanceled)
                     return null;
 
                 Debug.WriteLine($"Clipboard formats: {formats.Join(", ")}");
@@ -1101,10 +1112,17 @@ namespace KGySoft.Drawing.ImagingTools
 
                 // 7. Ultimate fallback: Clipboard.GetImage - it attempts to process .NET Framework serialized System.Drawing.Bitmap entries,
                 //    and also the standard Bitmap format if it wasn't processed natively above.
-                if (formats.Intersect([bitmapFormat, typeof(Bitmap).FullName!]).Any())
+                //    On Framework Mono the Clipboard API is completely broken, so using it only on real Windows or Wine.
+                if (!OSHelper.IsFrameworkMono && formats.Intersect([bitmapFormat, typeof(Bitmap).FullName!]).Any())
                 {
                     Image? image = null;
-                    task.Context.Send(_ => image = Clipboard.GetImage(), null);
+                    task.Context.Send(_ =>
+                    {
+                        if (isClipboardOpen)
+                            User32.CloseClipboard();
+                        isClipboardOpen = false;
+                        image = Clipboard.GetImage();
+                    }, null);
                     if (image != null)
                     {
                         imageInfo = ImageInfo.EnsureFormat(image, allowedTypes, allowMultiFrame, detectAlpha);
@@ -1120,13 +1138,18 @@ namespace KGySoft.Drawing.ImagingTools
                 Debug.WriteLine($"Error while trying to paste image from clipboard: {e.Message}");
                 return null;
             }
+            finally
+            {
+                if (isClipboardOpen)
+                    task.Context.Send(_ => User32.CloseClipboard(), null);
+            }
         }
 
-        private static bool TryGetNativeBitmap(IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, bool detectAlpha, AsyncTaskContext task, out ImageInfo? result)
+        private static bool TryGetNativeBitmap(IWinFormsDataObject? dataObject, AllowedImageTypes allowedTypes, bool detectAlpha, AsyncTaskContext task, out ImageInfo? result)
         {
             #region Local Methods
 
-            static Bitmap? DoTryGetNativeBitmap(IComDataObject comDataObject)
+            static Bitmap? GetBitmapCom(IComDataObject comDataObject)
             {
                 var format = new FORMATETC
                 {
@@ -1164,16 +1187,26 @@ namespace KGySoft.Drawing.ImagingTools
                 }
             }
 
+            static Bitmap? GetBitmapNative()
+            {
+                IntPtr hBitmap = User32.GetClipboardData(ClipboardFormat.CF_BITMAP);
+                if (hBitmap != IntPtr.Zero)
+                    return Image.FromHbitmap(hBitmap);
+
+                Debug.WriteLine($"Failed to get native {ClipboardFormat.CF_BITMAP} format: {new Win32Exception(Marshal.GetLastWin32Error()).Message}");
+                return null;
+            }
+
             #endregion
 
             result = null;
-            if (!OSHelper.IsWindows || dataObject is not IComDataObject comDataObject)
+            if (!OSHelper.IsWindows)
                 return false;
 
             try
             {
                 Bitmap? bitmap = null;
-                task.Context.Send(_ => bitmap = DoTryGetNativeBitmap(comDataObject), null);
+                task.Context.Send(_ => bitmap = dataObject is IComDataObject comDataObject ? GetBitmapCom(comDataObject) : GetBitmapNative(), null);
                 result = ImageInfo.EnsureFormat(bitmap, allowedTypes, false, detectAlpha);
                 return result != null;
             }
@@ -1184,7 +1217,7 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static bool TryGetDeviceIndependentBitmap(string format, IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, bool detectAlpha, AsyncTaskContext task, out ImageInfo? result)
+        private static bool TryGetDeviceIndependentBitmap(string format, IWinFormsDataObject? dataObject, AllowedImageTypes allowedTypes, bool detectAlpha, AsyncTaskContext task, out ImageInfo? result)
         {
             result = null;
 
@@ -1325,7 +1358,7 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static bool TryGetMetafile(HashSet<string> formats, IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, AsyncTaskContext task, out ImageInfo? result)
+        private static bool TryGetMetafile(HashSet<string> formats, IWinFormsDataObject? dataObject, AllowedImageTypes allowedTypes, AsyncTaskContext task, out ImageInfo? result)
         {
             // custom encodings first, and then by standard native formats
             if (TryGetImageFromStream(formats.Intersect([emfFormat, wmfFormat]), dataObject, allowedTypes, false, task, out result))
@@ -1338,11 +1371,11 @@ namespace KGySoft.Drawing.ImagingTools
             return false;
         }
 
-        private static bool TryGetNativeEmf(IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, AsyncTaskContext task, out ImageInfo? result)
+        private static bool TryGetNativeEmf(IWinFormsDataObject? dataObject, AllowedImageTypes allowedTypes, AsyncTaskContext task, out ImageInfo? result)
         {
             #region Local Methods
 
-            static Metafile? DoTryGetNativeMetafile(IComDataObject comDataObject)
+            static IntPtr GetHEmfCom(IComDataObject comDataObject)
             {
                 var format = new FORMATETC
                 {
@@ -1355,36 +1388,48 @@ namespace KGySoft.Drawing.ImagingTools
                 int hResult = comDataObject.QueryGetData(ref format);
                 if (hResult != Constants.S_OK)
                 {
-                    Debug.WriteLine($"Failed to get native {enhMetafileFormat} format: HRESULT is {hResult}");
-                    return null;
+                    Debug.WriteLine($"Failed to get COM {ClipboardFormat.CF_ENHMETAFILE} format: HRESULT is {hResult}");
+                    return IntPtr.Zero;
                 }
 
                 comDataObject.GetData(ref format, out STGMEDIUM medium);
                 if (medium.tymed != TYMED.TYMED_ENHMF)
                 {
                     Ole32.ReleaseStgMedium(ref medium);
-                    Debug.Fail($"Expected vs. actual format of {enhMetafileFormat}: {format.tymed} <-> {medium.tymed}");
-                    return null;
+                    Debug.Fail($"Expected vs. actual format of {ClipboardFormat.CF_ENHMETAFILE}: {format.tymed} <-> {medium.tymed}");
+                    return IntPtr.Zero;
                 }
 
                 // If we do not own the medium, we create a copy to prevent the metafile from becoming unusable when the owner frees it up.
                 // Disposing the result metafile calls DeleteEnhancedMetafile due to the deleteEmf parameter, so not calling ReleaseStgMedium here.
                 IntPtr hEmf = medium.pUnkForRelease == null ? medium.unionmember : Gdi32.CopyEnhMetaFile(medium.unionmember);
-                return new Metafile(hEmf, true);
+                return hEmf;
+            }
+
+            static IntPtr GetHEmfNative()
+            {
+                IntPtr hEmf = User32.GetClipboardData(ClipboardFormat.CF_ENHMETAFILE);
+                if (hEmf != IntPtr.Zero)
+                    return Gdi32.CopyEnhMetaFile(hEmf);
+
+                Debug.WriteLine($"Failed to get native {ClipboardFormat.CF_ENHMETAFILE} format: {new Win32Exception(Marshal.GetLastWin32Error()).Message}");
+                return IntPtr.Zero;
             }
 
             #endregion
 
             result = null;
-            if (!OSHelper.IsWindows || dataObject is not IComDataObject comDataObject)
+            if (!OSHelper.IsWindows)
                 return false;
 
             try
             {
-                Metafile? metafile = null;
-                task.Context.Send(_ => metafile = DoTryGetNativeMetafile(comDataObject), null);
-                result = ImageInfo.EnsureFormat(metafile, allowedTypes, false);
-                return result != null;
+                IntPtr hEmf = IntPtr.Zero;
+                task.Context.Send(_ => hEmf = dataObject is IComDataObject comDataObject ? GetHEmfCom(comDataObject) : GetHEmfNative(), null);
+                if (hEmf == IntPtr.Zero)
+                    return false;
+                result = ImageInfo.EnsureFormat(new Metafile(hEmf, true), allowedTypes, false);
+                return true;
             }
             catch (Exception e) when (!e.IsCriticalGdi())
             {
@@ -1393,7 +1438,7 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static bool TryGetNativeWmf(IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, AsyncTaskContext task, out ImageInfo? result)
+        private static bool TryGetNativeWmf(IWinFormsDataObject? dataObject, AllowedImageTypes allowedTypes, AsyncTaskContext task, out ImageInfo? result)
         {
             // After failing in every way of getting a valid metafile handle from CF_METAFILEPICT, it turns out that we can obtain CF_ENHMETAFILE,
             // even if it is not present on the clipboard, as Windows does the conversion for us. It's just we must do that on the UI thread to avoid "Invalid FORMATETC structure" error.
@@ -1419,7 +1464,7 @@ namespace KGySoft.Drawing.ImagingTools
             //}
         }
 
-        private static bool TryGetImageFromStream(IEnumerable<string> formats, IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, bool allowMultiFrame, AsyncTaskContext task, out ImageInfo? imageInfo)
+        private static bool TryGetImageFromStream(IEnumerable<string> formats, IWinFormsDataObject? dataObject, AllowedImageTypes allowedTypes, bool allowMultiFrame, AsyncTaskContext task, out ImageInfo? imageInfo)
         {
             Debug.Assert(allowedTypes != AllowedImageTypes.None);
 
@@ -1447,71 +1492,91 @@ namespace KGySoft.Drawing.ImagingTools
             return false;
         }
 
-        private static MemoryStream? TryGetStream(string format, IWinFormsDataObject dataObject, AsyncTaskContext task)
+        private static MemoryStream? TryGetStream(string format, IWinFormsDataObject? dataObject, AsyncTaskContext task)
         {
-            // 1. First, trying to use the native COM IDataObject interface on the current background thread.
+            // 1. First, trying to use the COM IDataObject interface on the current background thread.
             // This way we can only get HGlobal content, because IStream is usable on the UI thread only.
             IComDataObject? comDataObject = dataObject as IComDataObject;
             if (comDataObject != null && OSHelper.IsWindows)
             {
-                if (TryGetBytesNative(format, comDataObject, TYMED.TYMED_HGLOBAL) is byte[] buf)
+                if (TryGetBytesCom(format, comDataObject, TYMED.TYMED_HGLOBAL) is byte[] buf)
                     return new MemoryStream(buf);
             }
 
-            // 2. Switching to the UI thread
+            // Doing the rest on the UI thread
             MemoryStream? result = null;
             task.Context.Send(_ =>
             {
-                // 2.a. IStream via native COM IDataObject
-                if (OSHelper.IsWindows && comDataObject != null)
+                if (OSHelper.IsWindows)
                 {
-                    if (TryGetBytesNative(format, comDataObject, TYMED.TYMED_ISTREAM) is byte[] buf)
+                    // 2. IStream via COM IDataObject
+                    if (comDataObject != null)
+                    {
+                        if (TryGetBytesCom(format, comDataObject, TYMED.TYMED_ISTREAM) is byte[] buf)
+                        {
+                            result = new MemoryStream(buf);
+                            return;
+                        }
+                    }
+                    // 3. Native GetClipboardContent call
+                    else if (TryGetBytesNative(format) is byte[] buf)
                     {
                         result = new MemoryStream(buf);
                         return;
                     }
                 }
 
-                // 2.b. Trying to use the managed IDataObject interface. This will attempt to obtain both HGlobal and IStream on the UI thread.
-                result = TryGetStreamManaged(format, dataObject);
+                // 4. Trying to use the managed IDataObject interface. This will attempt to obtain both HGlobal and IStream on the UI thread.
+                if (dataObject != null)
+                    result = TryGetStreamManaged(format, dataObject);
             }, null);
 
             return result is MemoryStream { Length: > 0L } ? result : null;
         }
 
-        private static byte[]? TryGetBytes(string format, IWinFormsDataObject dataObject, AsyncTaskContext task)
+        private static byte[]? TryGetBytes(string format, IWinFormsDataObject? dataObject, AsyncTaskContext task)
         {
-            // 1. First, trying to use the native COM IDataObject interface on the current background thread.
+            // 1. First, trying to use the COM IDataObject interface on the current background thread.
             // This way we can only get HGlobal content, because IStream is usable on the UI thread only.
             IComDataObject? comDataObject = dataObject as IComDataObject;
             if (comDataObject != null && OSHelper.IsWindows)
             {
-                if (TryGetBytesNative(format, comDataObject, TYMED.TYMED_HGLOBAL) is byte[] buf)
+                if (TryGetBytesCom(format, comDataObject, TYMED.TYMED_HGLOBAL) is byte[] buf)
                     return buf;
             }
 
-            // 2. Switching to the UI thread
+            // Doing the rest on the UI thread
             byte[]? result = null;
             task.Context.Send(_ =>
             {
-                // 2.a. IStream via native COM IDataObject
-                if (OSHelper.IsWindows && comDataObject != null)
+                // 2. IStream via COM IDataObject
+                if (OSHelper.IsWindows)
                 {
-                    if (TryGetBytesNative(format, comDataObject, TYMED.TYMED_ISTREAM) is byte[] buf)
+                    if (comDataObject != null)
+                    {
+                        if (TryGetBytesCom(format, comDataObject, TYMED.TYMED_ISTREAM) is byte[] buf)
+                        {
+                            result = buf;
+                            return;
+                        }
+                    }
+                    // 3. Native GetClipboardContent call
+                    else if (TryGetBytesNative(format) is byte[] buf)
                     {
                         result = buf;
                         return;
                     }
                 }
 
-                // 2.b. Trying to use the managed IDataObject interface. This will attempt to obtain both HGlobal and IStream on the UI thread.
-                result = TryGetStreamManaged(format, dataObject) is MemoryStream { Length: > 0L } ms ? ms.ToArray() : null;
+                // 4. Trying to use the managed IDataObject interface. This will attempt to obtain both HGlobal and IStream on the UI thread.
+                if (dataObject != null)
+                    result = TryGetStreamManaged(format, dataObject) is MemoryStream { Length: > 0L } ms ? ms.ToArray() : null;
             }, null);
 
             return result;
         }
 
-        private static byte[]? TryGetBytesNative(string format, IComDataObject comDataObject, TYMED mediumType)
+        private static byte[]? TryGetBytesCom(string format, IComDataObject comDataObject, TYMED mediumType)
         {
             Debug.Assert(OSHelper.IsWindows);
             try
@@ -1537,10 +1602,10 @@ namespace KGySoft.Drawing.ImagingTools
                     switch (medium.tymed)
                     {
                         case TYMED.TYMED_ISTREAM:
-                            return ReadComIStream(ref medium);
+                            return ReadComIStream(medium.unionmember);
 
                         case TYMED.TYMED_HGLOBAL:
-                            return ReadHGlobal(ref medium);
+                            return ReadHGlobal(medium.unionmember);
 
                         default:
                             // Not failing this time, so we can still try the fallback with the non-COM interface
@@ -1558,6 +1623,26 @@ namespace KGySoft.Drawing.ImagingTools
             catch (Exception e) when (!e.IsCriticalGdi())
             {
                 Debug.WriteLine($"Failed to get COM {format} data: {e.Message}");
+                return null;
+            }
+        }
+
+        private static byte[]? TryGetBytesNative(string format)
+        {
+            Debug.Assert(OSHelper.IsWindows);
+            try
+            {
+                IntPtr hGlobal = User32.GetClipboardData(new ClipboardFormatId(format).Id);
+                if (hGlobal != IntPtr.Zero)
+                    return ReadHGlobal(hGlobal);
+
+                Debug.WriteLine($"Failed to get {format} data natively: {new Win32Exception(Marshal.GetLastWin32Error()).Message}");
+                return null;
+
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine($"Failed to get {format} data natively: {e.Message}");
                 return null;
             }
         }
@@ -1595,11 +1680,10 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static byte[]? ReadComIStream(ref STGMEDIUM medium)
+        private static byte[]? ReadComIStream(IntPtr pStream)
         {
-            Debug.Assert(OSHelper.IsWindows && medium.tymed == TYMED.TYMED_ISTREAM);
-            IStream comStream = (IStream)Marshal.GetObjectForIUnknown(medium.unionmember);
-            Marshal.Release(medium.unionmember);
+            IStream comStream = (IStream)Marshal.GetObjectForIUnknown(pStream);
+            Marshal.Release(pStream);
             comStream.Stat(out STATSTG stat, 0);
             if (stat.cbSize is <= 0 or > Constants.MaxArrayLength)
                 return null;
@@ -1615,26 +1699,25 @@ namespace KGySoft.Drawing.ImagingTools
             return content;
         }
 
-        private static byte[]? ReadHGlobal(ref STGMEDIUM medium)
+        private static byte[]? ReadHGlobal(IntPtr hGlobal)
         {
-            Debug.Assert(OSHelper.IsWindows && medium.tymed == TYMED.TYMED_HGLOBAL);
-            IntPtr ptrStream = Kernel32.GlobalLock(medium.unionmember);
+            IntPtr ptrMem = Kernel32.GlobalLock(hGlobal);
             try
             {
-                if (ptrStream == IntPtr.Zero)
+                if (ptrMem == IntPtr.Zero)
                     return null;
 
-                nuint size = Kernel32.GlobalSize(medium.unionmember);
+                nuint size = Kernel32.GlobalSize(hGlobal);
                 if (size is 0 or > Constants.MaxArrayLength)
                     return null;
 
                 byte[] content = new byte[size];
-                Marshal.Copy(ptrStream, content, 0, (int)size);
+                Marshal.Copy(ptrMem, content, 0, (int)size);
                 return content;
             }
             finally
             {
-                Kernel32.GlobalUnlock(medium.unionmember);
+                Kernel32.GlobalUnlock(hGlobal);
             }
         }
 
@@ -1667,7 +1750,7 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static string[] GetClipboardFormats()
+        private static string[] GetClipboardFormats(bool openCloseClipboard)
         {
             try
             {
@@ -1681,7 +1764,7 @@ namespace KGySoft.Drawing.ImagingTools
                 // - Clipboard.GetDataObject() may crash the runtime, not even try-catch helps. Callstack is unknown, only "Error: 6" is printed to the console.
                 // - Clipboard.ContainsImage may cause that other processes cannot access the clipboard until the application is closed: OpenClipboard() returns ERROR_ACCESS_DENIED
                 // - Calling DataFormats.GetFormat(format) with non-standard format closes the clipboard
-                if (!User32.OpenClipboard())
+                if (openCloseClipboard && !User32.OpenClipboard())
                     throw new Win32Exception(Marshal.GetLastWin32Error());
 
                 try
@@ -1700,7 +1783,8 @@ namespace KGySoft.Drawing.ImagingTools
                 }
                 finally
                 {
-                    User32.CloseClipboard();
+                    if (openCloseClipboard)
+                        User32.CloseClipboard();
                 }
             }
             catch (Exception e) when (!e.IsCritical())

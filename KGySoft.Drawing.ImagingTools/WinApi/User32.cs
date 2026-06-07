@@ -457,6 +457,15 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             [DllImport("user32.dll", SetLastError = true)]
             internal static extern IntPtr SetClipboardData(uint uFormat, IntPtr hMem);
 
+            /// <summary>
+            /// Retrieves data from the clipboard in a specified format. The clipboard must have been opened previously.
+            /// </summary>
+            /// <param name="uFormat">A clipboard format. For a description of the standard clipboard formats, see Standard Clipboard Formats.</param>
+            /// <returns>If the function succeeds, the return value is the handle to a clipboard object in the specified format.
+            /// If the function fails, the return value is NULL. To get extended error information, call GetLastError.</returns>
+            [DllImport("user32.dll", SetLastError = true)]
+            internal static extern IntPtr GetClipboardData(uint uFormat);
+
             #endregion
         }
 
@@ -606,6 +615,7 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
         internal static bool CloseClipboard() => NativeMethods.CloseClipboard();
         internal static bool SetClipboardData(ClipboardFormat format, IntPtr hMem) => NativeMethods.SetClipboardData((uint)format, hMem) == hMem;
         internal static ClipboardFormat RegisterClipboardFormat(string name) => (ClipboardFormat)NativeMethods.RegisterClipboardFormat(name);
+        internal static IntPtr GetClipboardData(ClipboardFormat format) => NativeMethods.GetClipboardData((uint)format);
 
         internal unsafe static string? GetClipboardFormatName(ClipboardFormat format)
         {
