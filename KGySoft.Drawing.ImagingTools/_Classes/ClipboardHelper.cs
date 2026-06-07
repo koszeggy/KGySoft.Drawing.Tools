@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -46,6 +47,7 @@ using KGySoft.WinForms;
 using IComDataObject = System.Runtime.InteropServices.ComTypes.IDataObject;
 using IWinFormsDataObject = System.Windows.Forms.IDataObject;
 using STATSTG = System.Runtime.InteropServices.ComTypes.STATSTG;
+using Timer = System.Windows.Forms.Timer;
 
 #endregion
 
@@ -57,21 +59,37 @@ namespace KGySoft.Drawing.ImagingTools
     {
         #region Nested Classes
 
+        #region ClipboardListener class
+
         private sealed class ClipboardListener : Control
         {
             #region Fields
 
+            private readonly Timer? timer;
+
             private IntPtr nextListener;
+            private string[]? lastFormats;
 
             #endregion
 
             #region Constructors
 
-            internal ClipboardListener() => CreateHandle();
+            internal ClipboardListener()
+            {
+                if (!OSHelper.IsWindows)
+                {
+                    timer = new Timer { Interval = 250 };
+                    timer.Tick += Timer_Tick;
+                }
+
+                CreateHandle();
+            }
 
             #endregion
 
             #region Methods
+            
+            #region Protected Methods
 
             protected override void CreateHandle()
             {
@@ -83,8 +101,16 @@ namespace KGySoft.Drawing.ImagingTools
                         return;
                 }
 
-                // Fallback to legacy solution (works also on Windows XP)
-                nextListener = User32.SetClipboardViewer(Handle);
+                // Legacy solution (works also on Windows XP)
+                if (OSHelper.IsWindows)
+                {
+                    nextListener = User32.SetClipboardViewer(Handle);
+                    return;
+                }
+
+                // Fallback for non-Windows platforms: polling by managed API
+                lastFormats = GetImageFormats();
+                timer?.Enabled = true;
             }
 
             protected override void DestroyHandle()
@@ -92,11 +118,13 @@ namespace KGySoft.Drawing.ImagingTools
                 Debug.Assert(IsHandleCreated);
                 if (OSHelper.IsWindowsVistaOrLater && nextListener == IntPtr.Zero)
                     User32.RemoveClipboardFormatListener(Handle);
-                else
+                else if (OSHelper.IsWindows)
                 {
                     User32.ChangeClipboardChain(Handle, nextListener);
                     nextListener = IntPtr.Zero;
                 }
+                else
+                    timer?.Enabled = false;
 
                 base.DestroyHandle();
             }
@@ -151,20 +179,187 @@ namespace KGySoft.Drawing.ImagingTools
                 }
             }
 
+            protected override void Dispose(bool disposing)
+            {
+                if (disposing)
+                    timer?.Dispose();
+                base.Dispose(disposing);
+            }
+
+            #endregion
+
+            #region Event Handlers
+
+            private void Timer_Tick(object sender, EventArgs e)
+            {
+                string[] formats = GetImageFormats();
+                if (formats.SequenceEqual(lastFormats ?? Reflector.EmptyArray<string>()))
+                    return;
+
+                lastFormats = formats;
+                OnClipboardChanged();
+            }
+
+            #endregion
+
             #endregion
         }
 
         #endregion
 
+        #region ClipboardFormatId class
+
+        /// <summary>
+        /// Like <see cref="DataFormats"/> and <see cref="DataFormats.Format"/> in WinForms.
+        /// The problems with DataFormats:
+        /// - It does not recognize DIBv5: it returns the name "Format17" for it, whereas GetFormat("Format17").Id returns a random newly registered number instead of CF_DIBV5.
+        /// - For such unrecognised standard formats it's not possible to get the original standard id, or at least differentiate standard and registered formats.
+        /// - On top of those, on Mono/Windows DataFormats.GetFormat closes the clipboard, making SetClipboardData fail if we try to retrieve the id by it, for example.
+        /// </summary>
+        internal sealed class ClipboardFormatId
+        {
+            #region Constants
+
+            private const string clipboardFormatPrefix = "CF_";
+
+            #endregion
+
+            #region Properties
+
+            internal ClipboardFormat Id { get; }
+            internal string? RegisteredName { get; }
+            internal string Name { get; }
+
+            #endregion
+
+            #region Constructors
+
+            internal ClipboardFormatId(ClipboardFormat format)
+            {
+                if (format == ClipboardFormat.None)
+                    throw new ArgumentOutOfRangeException(PublicResources.ArgumentOutOfRange, nameof(format));
+
+                Id = format;
+
+                // Returning a friendly name for the known image formats only. Using the CF_* enum names for other predefined formats.
+                string? name = format switch
+                {
+                    ClipboardFormat.CF_BITMAP => bitmapFormat,
+                    ClipboardFormat.CF_METAFILEPICT => metafilePictFormat,
+                    ClipboardFormat.CF_TIFF => tiffFormat,
+                    ClipboardFormat.CF_DIB => dibFormat,
+                    ClipboardFormat.CF_ENHMETAFILE => enhMetafileFormat,
+                    ClipboardFormat.CF_DIBV5 => dibV5Format,
+                    _ => Enum<ClipboardFormat>.GetName(format)
+                };
+
+                if (name != null)
+                {
+                    Name = name;
+                    return;
+                }
+
+                // RegisteredName will be null if a standard format is not defined in ClipboardFormat
+                RegisteredName = OSHelper.IsWindows ? User32.GetClipboardFormatName(format) : DataFormats.GetFormat((int)format).Name;
+                Name = RegisteredName ?? (Name = $"{clipboardFormatPrefix}{format}");
+            }
+
+            internal ClipboardFormatId(string name)
+            {
+                if (name == null)
+                    throw new ArgumentNullException(nameof(name), PublicResources.ArgumentNull);
+                if (name.Length == 0)
+                    throw new ArgumentException(PublicResources.ArgumentEmpty, nameof(name));
+
+                Name = name;
+                Id = name switch
+                {
+                    bitmapFormat => ClipboardFormat.CF_BITMAP,
+                    metafilePictFormat => ClipboardFormat.CF_METAFILEPICT,
+                    tiffFormat => ClipboardFormat.CF_TIFF,
+                    dibFormat => ClipboardFormat.CF_DIB,
+                    enhMetafileFormat => ClipboardFormat.CF_ENHMETAFILE,
+                    dibV5Format => ClipboardFormat.CF_DIBV5,
+                    _ => ClipboardFormat.None //User32.GetClipboardFormat(name)
+                };
+
+                if (Id != ClipboardFormat.None)
+                    return;
+
+                // Further standard names here are resolved from CF_*.
+                if (name.StartsWith(clipboardFormatPrefix, StringComparison.Ordinal))
+                {
+                    if (Enum<ClipboardFormat>.TryParse(name, out var result))
+                    {
+                        Id = result;
+                        return;
+                    }
+
+                    if (UInt32.TryParse(name.Substring(clipboardFormatPrefix.Length), NumberStyles.None, NumberFormatInfo.InvariantInfo, out uint id))
+                    {
+                        Id = (ClipboardFormat)id;
+                        return;
+                    }
+                }
+
+                RegisteredName = Name;
+                Id = OSHelper.IsWindows ? User32.RegisterClipboardFormat(RegisteredName) : (ClipboardFormat)DataFormats.GetFormat(name).Id;
+            }
+
+            #endregion
+
+            #region Methods
+
+            #region Static Methods
+
+            internal static string FromWinFormsFormat(string format)
+                => format is null ? throw new ArgumentNullException(nameof(format), PublicResources.ArgumentNull)
+                : format == DataFormats.Bitmap ? bitmapFormat
+                : format == DataFormats.MetafilePict ? metafilePictFormat
+                : format == DataFormats.Tiff ? tiffFormat
+                : format == DataFormats.Dib ? dibFormat
+                : format == DataFormats.EnhancedMetafile ? enhMetafileFormat
+                : format == "Format17" ? dibV5Format
+                : new ClipboardFormatId((ClipboardFormat)DataFormats.GetFormat(format).Id).Name;
+
+            internal static string ToWinFormsFormat(string format)
+            {
+                var formatId = new ClipboardFormatId(format);
+                return formatId.RegisteredName ?? DataFormats.GetFormat((int)formatId.Id).Name;
+            }
+
+            #endregion
+
+            #region Instance Methods
+
+            public override string ToString() => Name;
+
+            #endregion
+
+            #endregion
+        }
+
+        #endregion
+
+        #endregion
+
         #region Constants
 
+        // standard format names
+        private const string bitmapFormat = "Bitmap"; // CF_BITMAP - using the same name as WinForms, because this is handled also by WinForms
+        private const string metafilePictFormat = "MetaFilePict"; // CF_METAFILEPICT
+        private const string dibFormat = "DIB"; // CF_DIB
+        private const string tiffFormat = "TIFF"; // CF_TIFF
+        private const string enhMetafileFormat = "EnhancedMetafile"; // CF_ENHMETAFILE
+        private const string dibV5Format = "DIB V5"; // CF_DIBV5
+
+        // custom formats
         private const string emfFormat = "EMF";
         private const string wmfFormat = "WMF";
         private const string gifFormat = "GIF";
         private const string pngFormat = "PNG";
         private const string iconFormat = "ICO";
         private const string jpegFormat = "JFIF";
-        private const string dibV5Format = "Format17";
 
         private const string pngAliasFormat = "image/png";
         private const string gifAliasFormat = "image/gif";
@@ -177,10 +372,10 @@ namespace KGySoft.Drawing.ImagingTools
         private readonly static Lock syncRoot = new();
         private readonly static HashSet<string> bitmapFormats =
         [
-            DataFormats.Bitmap, DataFormats.Dib, DataFormats.Tiff, typeof(Bitmap).FullName!, pngFormat, gifFormat, dibV5Format, jpegFormat,
+            bitmapFormat, dibFormat, tiffFormat, typeof(Bitmap).FullName!, pngFormat, gifFormat, dibV5Format, jpegFormat,
             pngAliasFormat, gifAliasFormat, jpegAliasFormat,
         ];
-        private readonly static string[] metafileFormats = [DataFormats.EnhancedMetafile, DataFormats.MetafilePict, emfFormat, wmfFormat];
+        private readonly static string[] metafileFormats = [enhMetafileFormat, metafilePictFormat, emfFormat, wmfFormat];
         private readonly static string[] iconFormats = [iconFormat];
         private readonly static string[] supportedFormats = [..bitmapFormats, ..metafileFormats, ..iconFormats];
 
@@ -241,21 +436,7 @@ namespace KGySoft.Drawing.ImagingTools
         internal static bool IsMetafile(string format) => metafileFormats.Contains(format);
         internal static bool IsIcon(string format) => iconFormats.Contains(format);
 
-        internal static string[] GetImageFormats()
-        {
-            try
-            {
-                string[]? formats = Clipboard.GetDataObject()?.GetFormats(false);
-                return formats.IsNullOrEmpty()
-                    ? Reflector.EmptyArray<string>()
-                    : formats!.Intersect(supportedFormats).ToArray();
-            }
-            catch (Exception e) when (!e.IsCritical())
-            {
-                Debug.WriteLine($"Failed to obtain clipboard formats: {e.Message}");
-                return Reflector.EmptyArray<string>();
-            }
-        }
+        internal static string[] GetImageFormats() => GetClipboardFormats().Intersect(supportedFormats).ToArray();
 
         internal static void CopyToClipboard(ImageInfoBase info, AsyncTaskContext task)
         {
@@ -355,7 +536,7 @@ namespace KGySoft.Drawing.ImagingTools
         private static bool PopulateClipboard(Dictionary<string, object> formats, AsyncTaskContext task)
         {
             // NOTE: Not checking cancellation while adding the items. Either none or all formats are copied to the clipboard.
-            bool useNativeApi = OSHelper.IsWindows && formats.GetValueOrDefault(DataFormats.Bitmap) is not Image;
+            bool useNativeApi = OSHelper.IsWindows && formats.GetValueOrDefault(bitmapFormat) is not Image;
             if (useNativeApi && PopulateClipboardNatively(formats))
                 return true;
 
@@ -371,7 +552,7 @@ namespace KGySoft.Drawing.ImagingTools
                 {
                     case MemoryStream ms:
                         result = true;
-                        dataObject.SetData(item.Key, false, ms);
+                        dataObject.SetData(ClipboardFormatId.ToWinFormsFormat(item.Key), false, ms);
                         break;
 
                     // If we have prepared native entries, we discard them, because DataObject.SetData would just corrupt them.
@@ -425,10 +606,9 @@ namespace KGySoft.Drawing.ImagingTools
                             _ => throw new InvalidOperationException(Res.InternalError($"Unhandled clipboard format to populate natively: {item.Key}: {item.Value.GetType()}"))
                         };
 
-                        // NOTE: WinForms does not recognize Format17 as a standard one, so DataFormats.GetFormat would return a random, newly registered ID
-                        int id = item.Key == dibV5Format ? Constants.CF_DIBV5 : DataFormats.GetFormat(item.Key).Id;
-                        if (hMem != IntPtr.Zero && !User32.SetClipboardData(id, hMem))
-                            Debug.Fail($"Failed to add format '{item.Key}' to the clipboard natively: {new Win32Exception(Marshal.GetLastWin32Error()).Message}");
+                        ClipboardFormat format = new ClipboardFormatId(item.Key).Id;
+                        if (hMem != IntPtr.Zero && !User32.SetClipboardData(format, hMem))
+                            Debug.Fail($"Failed to add format '{item.Key}' ({format}) to the clipboard natively: {new Win32Exception(Marshal.GetLastWin32Error()).Message}");
                     }
 
                     return result = true;
@@ -451,9 +631,9 @@ namespace KGySoft.Drawing.ImagingTools
         private static void FreeNativeHandle(IntPtr nativeHandle, string format)
         {
             Debug.Assert(OSHelper.IsWindows);
-            if (format == DataFormats.Bitmap)
+            if (format == bitmapFormat)
                 Gdi32.DeleteObject(nativeHandle);
-            else if (format == DataFormats.EnhancedMetafile)
+            else if (format == enhMetafileFormat)
                 Gdi32.DeleteEnhMetaFile(nativeHandle);
             else
                 throw new InvalidOperationException(Res.InternalError($"Unhandled native clipboard item to free: {format}"));
@@ -461,6 +641,9 @@ namespace KGySoft.Drawing.ImagingTools
 
         private static void CopyMetafile(Dictionary<string, object> formats, Metafile metafile, AsyncTaskBase task)
         {
+            if (!OSHelper.IsWindows)
+                return;
+
             Guid rawFormat = metafile.RawFormat.Guid;
             bool? isEmf = rawFormat == ImageFormat.Emf.Guid ? true
                 : rawFormat == ImageFormat.Wmf.Guid ? false
@@ -516,7 +699,7 @@ namespace KGySoft.Drawing.ImagingTools
                         // We create another copy, which goes to the clipboard. The original handle that belongs to the managed clone will be deleted (and its owner disposed).
                         IntPtr hEmfCopy = Gdi32.CopyEnhMetaFile(hEmf);
                         if (hEmfCopy != IntPtr.Zero)
-                            formats.Add(DataFormats.EnhancedMetafile, hEmfCopy);
+                            formats.Add(enhMetafileFormat, hEmfCopy);
                         return;
                     }
                     finally
@@ -550,7 +733,7 @@ namespace KGySoft.Drawing.ImagingTools
                     hdc = User32.GetDC(IntPtr.Zero);
                     IntPtr hEmf = Gdi32.SetWinMetaFileBits(size, wmfData, hdc, ref mp);
                     if (hEmf != IntPtr.Zero)
-                        formats.Add(DataFormats.EnhancedMetafile, hEmf);
+                        formats.Add(enhMetafileFormat, hEmf);
                 }
                 finally
                 {
@@ -563,7 +746,7 @@ namespace KGySoft.Drawing.ImagingTools
             {
                 // NOTE: normally we should not reach this point, because the WinAPI calls only use SetLastError,
                 // but on non-native Windows the P/Invoke may fail otherwise.
-                Debug.WriteLine($"Failed to copy as {DataFormats.EnhancedMetafile}: {e.Message}");
+                Debug.WriteLine($"Failed to copy as {enhMetafileFormat}: {e.Message}");
             }
             finally
             {
@@ -621,8 +804,8 @@ namespace KGySoft.Drawing.ImagingTools
                 // 3. Standard formats
                 if (!OSHelper.IsWindows)
                 {
-                    // Manged fallback when Windows API cannot be used
-                    formats.Add(DataFormats.Bitmap, bitmap);
+                    // Manged fallback when Windows API cannot be used. It forces using IDataObject.SetImage in PopulateClipboard.
+                    formats.Add(bitmapFormat, bitmap);
                     return;
                 }
 
@@ -656,11 +839,11 @@ namespace KGySoft.Drawing.ImagingTools
                     lock (bitmap)
                         hbmSrc = bitmap.GetHbitmap();
                     if (hbmSrc != IntPtr.Zero && (hbmDst = CreateCompatibleBitmap(hbmSrc, bitmap.Size)) != IntPtr.Zero)
-                        formats.Add(DataFormats.Bitmap, hbmDst);
+                        formats.Add(bitmapFormat, hbmDst);
                 }
                 catch (Exception e)
                 {
-                    Debug.WriteLine($"Failed to copy as {DataFormats.Bitmap}: {e.Message}");
+                    Debug.WriteLine($"Failed to copy as {bitmapFormat}: {e.Message}");
                 }
                 finally
                 {
@@ -669,7 +852,7 @@ namespace KGySoft.Drawing.ImagingTools
 
                     // Ultimate fallback: indicating to use DataObject.SetImage when populating the clipboard
                     if (hbmDst == IntPtr.Zero)
-                        formats.Add(DataFormats.Bitmap, bitmap);
+                        formats.Add(bitmapFormat, bitmap);
                 }
             }
             finally
@@ -776,7 +959,7 @@ namespace KGySoft.Drawing.ImagingTools
                 }
                 else
                     info.IterateFrameImages(task).SaveAsMultipageTiff(ms);
-                formats.Add(DataFormats.Tiff, ms);
+                formats.Add(tiffFormat, ms);
             }
             catch (Exception e) when (!e.IsCritical())
             {
@@ -843,10 +1026,9 @@ namespace KGySoft.Drawing.ImagingTools
                 HashSet<string>? formats = null;
                 task.Context.Send(_ =>
                 {
-                    // though GetFormats would not throw from a worker thread, it does not always return native formats from non UI-threads
+                    // Though GetFormats would not throw from a worker thread, it does not always return native formats from non UI-threads.
+                    formats = new(format != null ? [format] : GetClipboardFormats());
                     dataObject = Clipboard.GetDataObject();
-                    if (dataObject != null)
-                        formats = new(format == null ? dataObject.GetFormats(false) : [format]);
                 }, null);
 
                 if (dataObject == null || formats == null || task.IsCanceled)
@@ -865,7 +1047,7 @@ namespace KGySoft.Drawing.ImagingTools
                 if (allowMultiFrame)
                 {
                     // 2.a. TIFF or Icon
-                    if (TryGetImageFromStream(formats.Intersect([DataFormats.Tiff, iconFormat]), dataObject, allowedTypes, true, task, out imageInfo))
+                    if (TryGetImageFromStream(formats.Intersect([tiffFormat, iconFormat]), dataObject, allowedTypes, true, task, out imageInfo))
                         return imageInfo;
 
                     // 2.b. [animated] GIF
@@ -888,7 +1070,7 @@ namespace KGySoft.Drawing.ImagingTools
 
                 // 3. Single-frame custom encoded Bitmap or Icon. The way of the Intersect call ensures the order of the tried formats.
                 //    Not using bitmapFormats here because we include icon and exclude some other bitmap formats.
-                string[] customBitmapFormats = [pngFormat, pngAliasFormat, DataFormats.Tiff, gifFormat, gifAliasFormat, iconFormat, jpegFormat, jpegAliasFormat];
+                string[] customBitmapFormats = [pngFormat, pngAliasFormat, tiffFormat, gifFormat, gifAliasFormat, iconFormat, jpegFormat, jpegAliasFormat];
                 if (TryGetImageFromStream(customBitmapFormats.Intersect(formats), dataObject, allowedTypes, false, task, out imageInfo))
                     return imageInfo;
                 if (task.IsCanceled)
@@ -897,13 +1079,13 @@ namespace KGySoft.Drawing.ImagingTools
                 // 4. Standard DIB formats
                 if (formats.Contains(dibV5Format) && TryGetDeviceIndependentBitmap(dibV5Format, dataObject, allowedTypes, detectAlpha, task, out imageInfo))
                     return imageInfo;
-                if (formats.Contains(DataFormats.Dib) && TryGetDeviceIndependentBitmap(DataFormats.Dib, dataObject, allowedTypes, detectAlpha, task, out imageInfo))
+                if (formats.Contains(dibFormat) && TryGetDeviceIndependentBitmap(dibFormat, dataObject, allowedTypes, detectAlpha, task, out imageInfo))
                     return imageInfo;
                 if (task.IsCanceled)
                     return null;
 
                 // 5. Standard Bitmap format
-                if (formats.Contains(DataFormats.Bitmap) && TryGetNativeBitmap(dataObject, allowedTypes, detectAlpha, task, out imageInfo))
+                if (formats.Contains(bitmapFormat) && TryGetNativeBitmap(dataObject, allowedTypes, detectAlpha, task, out imageInfo))
                     return imageInfo;
                 if (task.IsCanceled)
                     return null;
@@ -914,7 +1096,7 @@ namespace KGySoft.Drawing.ImagingTools
 
                 // 7. Ultimate fallback: Clipboard.GetImage - it attempts to process .NET Framework serialized System.Drawing.Bitmap entries,
                 //    and also the standard Bitmap format if it wasn't processed natively above.
-                if (formats.Intersect([DataFormats.Bitmap, typeof(Bitmap).FullName!]).Any())
+                if (formats.Intersect([bitmapFormat, typeof(Bitmap).FullName!]).Any())
                 {
                     Image? image = null;
                     task.Context.Send(_ => image = Clipboard.GetImage(), null);
@@ -943,7 +1125,7 @@ namespace KGySoft.Drawing.ImagingTools
             {
                 var format = new FORMATETC
                 {
-                    cfFormat = (short)DataFormats.GetFormat(DataFormats.Bitmap).Id,
+                    cfFormat = (short)ClipboardFormat.CF_BITMAP,
                     dwAspect = DVASPECT.DVASPECT_CONTENT,
                     lindex = -1,
                     tymed = TYMED.TYMED_GDI
@@ -952,7 +1134,7 @@ namespace KGySoft.Drawing.ImagingTools
                 int hResult = comDataObject.QueryGetData(ref format);
                 if (hResult != Constants.S_OK)
                 {
-                    Debug.WriteLine($"Failed to get native {DataFormats.Bitmap} format: HRESULT is {hResult}");
+                    Debug.WriteLine($"Failed to get native {bitmapFormat} format: HRESULT is {hResult}");
                     return null;
                 }
 
@@ -961,7 +1143,7 @@ namespace KGySoft.Drawing.ImagingTools
                 {
                     if (medium.tymed != TYMED.TYMED_GDI)
                     {
-                        Debug.Fail($"Expected vs. actual format of {DataFormats.Bitmap}: {format.tymed} <-> {medium.tymed}");
+                        Debug.Fail($"Expected vs. actual format of {bitmapFormat}: {format.tymed} <-> {medium.tymed}");
                         return null;
                     }
 
@@ -992,7 +1174,7 @@ namespace KGySoft.Drawing.ImagingTools
             }
             catch (Exception e) when (!e.IsCriticalGdi())
             {
-                Debug.WriteLine($"Failed to get native {DataFormats.Bitmap} format: {e.Message}");
+                Debug.WriteLine($"Failed to get native {bitmapFormat} format: {e.Message}");
                 return false;
             }
         }
@@ -1014,7 +1196,7 @@ namespace KGySoft.Drawing.ImagingTools
             {
                 unsafe
                 {
-                    int headerSize = format == DataFormats.Dib ? sizeof(BITMAPINFOHEADER)
+                    int headerSize = format == dibFormat ? sizeof(BITMAPINFOHEADER)
                             : format == dibV5Format ? sizeof(BITMAPV5HEADER)
                             : throw new InvalidOperationException(Res.InternalError($"Unexpected format: {format}"));
                     if (buf.Length <= headerSize)
@@ -1133,7 +1315,7 @@ namespace KGySoft.Drawing.ImagingTools
             }
             catch (Exception e) when (!e.IsCriticalGdi())
             {
-                Debug.WriteLine($"Failed to get native {DataFormats.Dib} format: {e.Message}");
+                Debug.WriteLine($"Failed to get native {dibFormat} format: {e.Message}");
                 return false;
             }
         }
@@ -1143,9 +1325,9 @@ namespace KGySoft.Drawing.ImagingTools
             // custom encodings first, and then by standard native formats
             if (TryGetImageFromStream(formats.Intersect([emfFormat, wmfFormat]), dataObject, allowedTypes, false, task, out result))
                 return true;
-            if (formats.Contains(DataFormats.EnhancedMetafile) && TryGetNativeEmf(dataObject, allowedTypes, task, out result))
+            if (formats.Contains(enhMetafileFormat) && TryGetNativeEmf(dataObject, allowedTypes, task, out result))
                 return true;
-            if (formats.Contains(DataFormats.MetafilePict) && TryGetNativeWmf(dataObject, allowedTypes, task, out result))
+            if (formats.Contains(metafilePictFormat) && TryGetNativeWmf(dataObject, allowedTypes, task, out result))
                 return true;
 
             return false;
@@ -1159,7 +1341,7 @@ namespace KGySoft.Drawing.ImagingTools
             {
                 var format = new FORMATETC
                 {
-                    cfFormat = (short)DataFormats.GetFormat(DataFormats.EnhancedMetafile).Id,
+                    cfFormat = (short)ClipboardFormat.CF_ENHMETAFILE,
                     dwAspect = DVASPECT.DVASPECT_CONTENT,
                     lindex = -1,
                     tymed = TYMED.TYMED_ENHMF
@@ -1168,7 +1350,7 @@ namespace KGySoft.Drawing.ImagingTools
                 int hResult = comDataObject.QueryGetData(ref format);
                 if (hResult != Constants.S_OK)
                 {
-                    Debug.WriteLine($"Failed to get native {DataFormats.EnhancedMetafile} format: HRESULT is {hResult}");
+                    Debug.WriteLine($"Failed to get native {enhMetafileFormat} format: HRESULT is {hResult}");
                     return null;
                 }
 
@@ -1176,7 +1358,7 @@ namespace KGySoft.Drawing.ImagingTools
                 if (medium.tymed != TYMED.TYMED_ENHMF)
                 {
                     Ole32.ReleaseStgMedium(ref medium);
-                    Debug.Fail($"Expected vs. actual format of {DataFormats.EnhancedMetafile}: {format.tymed} <-> {medium.tymed}");
+                    Debug.Fail($"Expected vs. actual format of {enhMetafileFormat}: {format.tymed} <-> {medium.tymed}");
                     return null;
                 }
 
@@ -1201,14 +1383,14 @@ namespace KGySoft.Drawing.ImagingTools
             }
             catch (Exception e) when (!e.IsCriticalGdi())
             {
-                Debug.WriteLine($"Failed to get native {DataFormats.EnhancedMetafile} format: {e.Message}");
+                Debug.WriteLine($"Failed to get native {enhMetafileFormat} format: {e.Message}");
                 return false;
             }
         }
 
         private static bool TryGetNativeWmf(IWinFormsDataObject dataObject, AllowedImageTypes allowedTypes, AsyncTaskContext task, out ImageInfo? result)
         {
-            // After failing in every way of getting a valid metafile handle from DataFormats.MetafilePict, it turns out that we can obtain DataFormats.EnhancedMetafile,
+            // After failing in every way of getting a valid metafile handle from CF_METAFILEPICT, it turns out that we can obtain CF_ENHMETAFILE,
             // even if it is not present on the clipboard, as Windows does the conversion for us. It's just we must do that on the UI thread to avoid "Invalid FORMATETC structure" error.
             return TryGetNativeEmf(dataObject, allowedTypes, task, out result);
 
@@ -1331,7 +1513,7 @@ namespace KGySoft.Drawing.ImagingTools
             {
                 var comFormat = new FORMATETC
                 {
-                    cfFormat = (short)DataFormats.GetFormat(format).Id,
+                    cfFormat = (short)new ClipboardFormatId(format).Id,
                     dwAspect = DVASPECT.DVASPECT_CONTENT,
                     lindex = -1,
                     tymed = mediumType
@@ -1380,12 +1562,12 @@ namespace KGySoft.Drawing.ImagingTools
             try
             {
 #if NET10_0_OR_GREATER
-                if (dataObject.TryGetData<MemoryStream>(format, out MemoryStream? stream))
+                if (dataObject.TryGetData<MemoryStream>(ClipboardFormatId.ToWinFormsFormat(format), out MemoryStream? stream))
                     return stream;
                 Debug.WriteLine($"Failed to get a stream for format {format}");
                 return null;
 #else
-                object? data = dataObject.GetData(format);
+                object? data = dataObject.GetData(ClipboardFormatId.ToWinFormsFormat(format));
                 switch (data)
                 {
                     case MemoryStream stream:
@@ -1477,6 +1659,49 @@ namespace KGySoft.Drawing.ImagingTools
                     if (hMem == IntPtr.Zero)
                         Kernel32.GlobalFree(hGlobal);
                 }
+            }
+        }
+
+        private static string[] GetClipboardFormats()
+        {
+            try
+            {
+                // Using Clipboard.GetDataObject on non-Windows platforms only.
+                // On Linux/Mono this still may throw an exception (as well as Clipboard.ContainsImage) if we tried to use Clipboard/IDataObject.SetImage earlier:
+                // XplatUI11.ClipboardAvailableFormats->BinaryFormatter.Serialize->Image.GetObjectData->Image.RawFormat->GDI+ error
+                if (!OSHelper.IsWindows)
+                    return Clipboard.GetDataObject()?.GetFormats(false).Select(ClipboardFormatId.FromWinFormsFormat).ToArray() ?? Reflector.EmptyArray<string>();
+
+                // On Windows using pure WinAPI due to issues with DataFormats (see the description of ClipboardFormatId). Windows/Mono has also further issues:
+                // - Clipboard.GetDataObject() may crash the runtime, not even try-catch helps. Callstack is unknown, only "Error: 6" is printed to the console.
+                // - Clipboard.ContainsImage may cause that other processes cannot access the clipboard until the application is closed: OpenClipboard() returns ERROR_ACCESS_DENIED
+                // - Calling DataFormats.GetFormat(format) with non-standard format closes the clipboard
+                if (!User32.OpenClipboard())
+                    throw new Win32Exception(Marshal.GetLastWin32Error());
+
+                try
+                {
+                    string[] formats = new string[User32.CountClipboardFormats()];
+                    ClipboardFormat format = ClipboardFormat.None;
+                    for (int i = 0; i < formats.Length; i++)
+                    {
+                        format = User32.EnumClipboardFormats(format);
+                        Debug.Assert(format != ClipboardFormat.None);
+                        formats[i] = new ClipboardFormatId(format).Name;
+                    }
+
+                    Debug.WriteLine($"Clipboard formats: {formats.Join(", ")}");
+                    return formats;
+                }
+                finally
+                {
+                    User32.CloseClipboard();
+                }
+            }
+            catch (Exception e) when (!e.IsCritical())
+            {
+                Debug.WriteLine($"Failed to obtain clipboard formats: {e.Message}");
+                return Reflector.EmptyArray<string>();
             }
         }
 

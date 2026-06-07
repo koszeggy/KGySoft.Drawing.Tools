@@ -21,6 +21,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Threading;
 
 using KGySoft.WinForms;
 
@@ -97,8 +98,8 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             /// The buffer must be large enough to include the terminating null character; otherwise, the class name string is truncated to nMaxCount-1 characters.</param>
             /// <returns>If the function succeeds, the return value is the number of characters copied to the buffer, not including the terminating null character.
             /// If the function fails, the return value is zero. To get extended error information, call GetLastError function.</returns>
-            [DllImport("user32.dll", SetLastError = true)]
-            internal static extern int GetClassName(IntPtr hWnd, [Out]char[] lpClassName, int nMaxCount);
+            [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+            internal static extern int GetClassName(IntPtr hWnd, IntPtr lpClassName, int nMaxCount);
 
             /// <summary>
             /// Enumerates the child windows that belong to the specified parent window by passing the handle to each child window, in turn, to an application-defined callback function.
@@ -182,6 +183,15 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             /// <returns>The return value specifies the result of the message processing; it depends on the message sent.</returns>
             [DllImport("user32.dll", SetLastError = true)]
             internal static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+
+            /// <summary>
+            /// The GetDC function retrieves a handle to a device context(DC) for the client area of a specified window or for the entire screen.You can use the returned handle in subsequent GDI functions to draw in the DC.The device context is an opaque data structure, whose values are used internally by GDI.
+            /// </summary>
+            /// <param name = "hWnd" > A handle to the window whose DC is to be retrieved.If this value is NULL, GetDC retrieves the DC for the entire screen.</param>
+            /// <returns>If the function succeeds, the return value is a handle to the DC for the specified window's client area.
+            /// If the function fails, the return value is NULL.</returns>
+            [DllImport("user32.dll")]
+            internal static extern IntPtr GetDC(IntPtr hWnd);
 
             /// <summary>
             /// The GetWindowDC function retrieves the device context (DC) for the entire window, including title bar, menus, and scroll bars.
@@ -380,6 +390,56 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             [return: MarshalAs(UnmanagedType.Bool)]
             internal static extern bool CloseClipboard();
 
+            /// <summary>
+            /// Retrieves the number of different data formats currently on the clipboard.
+            /// </summary>
+            /// <returns>If the function succeeds, the return value is the number of different data formats currently on the clipboard.
+            /// If the function fails, the return value is zero. To get extended error information, call GetLastError.</returns>
+            [DllImport("user32.dll", SetLastError = true)]
+            internal static extern int CountClipboardFormats();
+
+            /// <summary>
+            /// Enumerates the data formats currently available on the clipboard.
+            /// Clipboard data formats are stored in an ordered list. To perform an enumeration of clipboard data formats, you make a series of calls to the EnumClipboardFormats function.
+            /// For each call, the format parameter specifies an available clipboard format, and the function returns the next available clipboard format.
+            /// </summary>
+            /// <param name="format">A clipboard format that is known to be available.
+            /// To start an enumeration of clipboard formats, set format to zero. When format is zero, the function retrieves the first available clipboard format.
+            /// For subsequent calls during an enumeration, set format to the result of the previous EnumClipboardFormats call.
+            /// </param>
+            /// <returns>If the function succeeds, the return value is the clipboard format that follows the specified format, namely the next available clipboard format.
+            /// If the function fails, the return value is zero. To get extended error information, call GetLastError. If the clipboard is not open, the function fails.
+            /// If there are no more clipboard formats to enumerate, the return value is zero. In this case, the GetLastError function returns the value ERROR_SUCCESS. This lets you distinguish between function failure and the end of enumeration.
+            /// </returns>
+            [DllImport("user32.dll", SetLastError = true)]
+            internal static extern uint EnumClipboardFormats(uint format);
+
+            /// <summary>
+            /// Retrieves from the clipboard the name of the specified registered format. The function copies the name to the specified buffer.
+            /// </summary>
+            /// <param name="format">The type of format to be retrieved. This parameter must not specify any of the predefined clipboard formats.</param>
+            /// <param name="lpszFormatName">The buffer that is to receive the format name.</param>
+            /// <param name="cchMaxCount">The maximum length, in characters, of the string to be copied to the buffer. If the name exceeds this limit, it is truncated.</param>
+            /// <returns>If the function succeeds, the return value is the length, in characters, of the string copied to the buffer.
+            /// If the function fails, the return value is zero, indicating that the requested format does not exist or is predefined. To get extended error information, call GetLastError.</returns>
+            [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+            internal static extern int GetClipboardFormatName(uint format, IntPtr lpszFormatName, int cchMaxCount);
+
+            /// <summary>
+            /// Registers a new clipboard format. This format can then be used as a valid clipboard format.
+            /// </summary>
+            /// <param name="lpszFormatName">The name of the new format.</param>
+            /// <returns>If the function succeeds, the return value identifies the registered clipboard format.
+            /// If the function fails, the return value is zero. To get extended error information, call GetLastError.</returns>
+            /// <remarks>If a registered format with the specified name already exists, a new format is not registered and the return value identifies the existing format. This enables more than one application to copy and paste data using the same registered clipboard format. Note that the format name comparison is case-insensitive.</remarks>
+            [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+            internal static extern int RegisterClipboardFormat([MarshalAs(UnmanagedType.LPWStr)]string lpszFormatName);
+
+            /// <summary>
+            /// Empties the clipboard and frees handles to data in the clipboard. The function then assigns ownership of the clipboard to the window that currently has the clipboard open.
+            /// </summary>
+            /// <returns>If the function succeeds, the return value is nonzero.
+            /// If the function fails, the return value is zero. To get extended error information, call GetLastError.</returns>
             [DllImport("user32.dll", SetLastError = true)]
             [return: MarshalAs(UnmanagedType.Bool)]
             internal static extern bool EmptyClipboard();
@@ -397,26 +457,18 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
             [DllImport("user32.dll", SetLastError = true)]
             internal static extern IntPtr SetClipboardData(uint uFormat, IntPtr hMem);
 
-            /// <summary>
-            /// The GetDC function retrieves a handle to a device context(DC) for the client area of a specified window or for the entire screen.You can use the returned handle in subsequent GDI functions to draw in the DC.The device context is an opaque data structure, whose values are used internally by GDI.
-            /// </summary>
-            /// <param name = "hWnd" > A handle to the window whose DC is to be retrieved.If this value is NULL, GetDC retrieves the DC for the entire screen.</param>
-            /// <returns>If the function succeeds, the return value is a handle to the DC for the specified window's client area.
-            /// If the function fails, the return value is NULL.</returns>
-            [DllImport("user32.dll")]
-            internal static extern IntPtr GetDC(IntPtr hWnd);
-
             #endregion
         }
 
         #endregion
 
-        #region Fields
+        #region Constants
 
-        /// <summary>
-        /// Used in <see cref="GetClassName"/>, length is enough for the longest possible name with null terminator as described here: https://docs.microsoft.com/en-us/windows/win32/winmsg/about-window-classes
-        /// </summary>
-        private static readonly char[] classNameBuf = new char[11];
+        // length is enough for the longest possible name with null terminator as described here: https://docs.microsoft.com/en-us/windows/win32/winmsg/about-window-classes
+        private const int maxClassNameLength = 11;
+        private const int maxClipboardFormatNameLength = 256;
+        private const int clipboardAccessRetryCount = 10;
+        private const int clipboardAccessRetryDelay = 25;
 
         #endregion
 
@@ -434,10 +486,14 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
         {
             if (handle == IntPtr.Zero)
                 throw new ArgumentNullException(nameof(handle), PublicResources.ArgumentNull);
-            int length = NativeMethods.GetClassName(handle, classNameBuf, classNameBuf.Length);
-            if (length == 0)
-                throw new Win32Exception(Marshal.GetLastWin32Error());
-            return new String(classNameBuf, 0, length);
+            unsafe
+            {
+                var classNameBuf = stackalloc char[maxClassNameLength];
+                int length = NativeMethods.GetClassName(handle, new IntPtr(classNameBuf), maxClassNameLength);
+                if (length == 0)
+                    throw new Win32Exception(Marshal.GetLastWin32Error());
+                return new String(classNameBuf, 0, length);
+            }
         }
 
         internal static void EnumChildWindows(IntPtr handle, EnumChildProc enumProc) => NativeMethods.EnumChildWindows(handle, enumProc, IntPtr.Zero);
@@ -522,16 +578,41 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
 
         internal static bool IsWindow(IntPtr hWnd) => hWnd != IntPtr.Zero && NativeMethods.IsWindow(hWnd);
         internal static IntPtr GetActiveWindow() => NativeMethods.GetActiveWindow();
+        internal static IntPtr GetDC(IntPtr hWnd) => NativeMethods.GetDC(hWnd);
         
         internal static bool AddClipboardFormatListener(IntPtr handle) => NativeMethods.AddClipboardFormatListener(handle);
         internal static void RemoveClipboardFormatListener(IntPtr handle) => NativeMethods.RemoveClipboardFormatListener(handle);
         internal static IntPtr SetClipboardViewer(IntPtr handle) => NativeMethods.SetClipboardViewer(handle);
         internal static void ChangeClipboardChain(IntPtr handleRemove, IntPtr handleNext) => NativeMethods.ChangeClipboardChain(handleRemove, handleNext);
-        internal static bool OpenClipboard() => NativeMethods.OpenClipboard(IntPtr.Zero);
+        
+        internal static bool OpenClipboard()
+        {
+            for (int i = 1; i <= clipboardAccessRetryCount; i++)
+            {
+                if (NativeMethods.OpenClipboard(IntPtr.Zero))
+                    return true;
+
+                // yes, a blocking Sleep on the UI thread, this is how Clipboard.GetDataObject also does it, but that waits for even more time (1 sec with all retries rather than 250 ms)
+                Debug.WriteLine($"Failed open clipboard attempt #{i} ({new Win32Exception(Marshal.GetLastWin32Error()).Message})");
+                Thread.Sleep(clipboardAccessRetryDelay);
+            }
+
+            return false;
+        }
+
+        internal static int CountClipboardFormats() => NativeMethods.CountClipboardFormats();
+        internal static ClipboardFormat EnumClipboardFormats(ClipboardFormat format) => (ClipboardFormat)NativeMethods.EnumClipboardFormats((uint)format);
         internal static bool EmptyClipboard() => NativeMethods.EmptyClipboard();
         internal static bool CloseClipboard() => NativeMethods.CloseClipboard();
-        internal static bool SetClipboardData(int format, IntPtr hMem) => NativeMethods.SetClipboardData((uint)format, hMem) == hMem;
-        internal static IntPtr GetDC(IntPtr hWnd) => NativeMethods.GetDC(hWnd);
+        internal static bool SetClipboardData(ClipboardFormat format, IntPtr hMem) => NativeMethods.SetClipboardData((uint)format, hMem) == hMem;
+        internal static ClipboardFormat RegisterClipboardFormat(string name) => (ClipboardFormat)NativeMethods.RegisterClipboardFormat(name);
+
+        internal unsafe static string? GetClipboardFormatName(ClipboardFormat format)
+        {
+            char* buf = stackalloc char[maxClipboardFormatNameLength];
+            int length = NativeMethods.GetClipboardFormatName((uint)format, new IntPtr(buf), maxClipboardFormatNameLength);
+            return length == 0 ? null : new String(buf, 0, length);
+        }
 
         #endregion
     }
