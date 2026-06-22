@@ -206,8 +206,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
                 return;
             if (CheckOnClick)
                 Checked = !Checked;
-            if (OSHelper.IsFrameworkMono)
-                DefaultItem?.PerformClick();
+            if (OSHelper.IsFrameworkMono && DefaultItem is ToolStripItem defaultItem)
+                defaultItem.PerformClick();
             else
                 base.OnButtonClick(e);
         }
