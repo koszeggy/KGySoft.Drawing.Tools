@@ -77,7 +77,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
                 bounds.Inflate(-1, -1);
                 Size imageSize = Owner?.ImageScalingSize ?? referenceImageSize;
                 Rectangle imageRect = new Rectangle(bounds.X + bounds.Width / 2 - imageSize.Width / 2, bounds.Y + bounds.Height / 2 - imageSize.Height / 2, imageSize.Width, imageSize.Height);
-                return Rectangle.Intersect(bounds, imageRect);
+                return bounds.IntersectSafe(imageRect);
             }
         }
 

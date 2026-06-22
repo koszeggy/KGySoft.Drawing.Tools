@@ -521,7 +521,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 bounds.Top + ((bounds.Height >> 1) - (size.Height >> 1)),
                 size.Width, size.Height);
 
-            Rectangle iconBounds = Rectangle.Intersect(bounds, iconRect);
+            Rectangle iconBounds = bounds.IntersectSafe(iconRect);
             if (iconBounds.IsEmpty)
                 return;
 
