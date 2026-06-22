@@ -127,10 +127,12 @@ namespace KGySoft.Drawing.ImagingTools.View
                 throw new ArgumentNullException(nameof(icon), PublicResources.ArgumentNull);
             try
             {
-                if (OSHelper.IsWindowsVistaOrLater)
+                if (OSHelper.IsWindowsVistaOrLater && OSHelper.IsRealWindows)
                     return icon.ToMultiResBitmap();
 
-                // In Windows XP the multi resolution bitmap can be ugly if it has not completely transparent pixels
+                // On Windows XP the multi resolution bitmap can be ugly if it has not completely transparent pixels,
+                // and on Wine always the largest image is rendered, no matter the target rectangle size.
+                // Framework Mono is mainly alright, though it may never render the largest icons.
                 return icon.ToScaledBitmap(ScaleHelper.SystemScale);
             }
             finally

@@ -34,7 +34,9 @@ namespace KGySoft.Drawing.ImagingTools
 
             internal static bool IsWindows10Build1903OrLater
                 => isWindows10Build1903OrLater ??= OSHelper.GetWindowsVersion() is Version version && version >= new Version(10, 0, 18362);
-            
+
+            internal static bool IsRealWindows => OSHelper.IsWindows && !OSHelper.IsMono && !OSHelper.IsWine;
+
             #endregion
         }
 
