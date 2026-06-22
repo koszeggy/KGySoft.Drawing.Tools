@@ -45,14 +45,21 @@ using KGySoft.WinForms;
 namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
     /// <summary>
-    /// Just a DataGridView that
-    /// - provides some default styles/colors with a few fixed issues
+    /// Changes to the original:
+    /// - provides some default styles/colors with a few fixed issues (e.g. fixed foreground/background color pairs)
     /// - scales the columns and rows automatically
     /// - provides scaling error/warning/info icons, which appear also on Linux/Mono
     /// - supports dark mode
     /// </summary>
     internal class AdvancedDataGridView : DataGridView
     {
+        #region Constants
+
+        // dynamic height is font-dependent, but for checkbox columns we also need a fixed minimum size (which is only DPI-dependent)
+        private const int minRowHeightReference = 20;
+
+        #endregion
+
         #region Fields
 
         private readonly DataGridViewCellStyle defaultDefaultCellStyle;
@@ -355,7 +362,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         protected override void OnHandleCreated(EventArgs e)
         {
             base.OnHandleCreated(e);
-            RowTemplate.Height = ColumnHeadersHeight;
+            RowTemplate.Height = GetColumnHeadersHeight();
 
             // Trying to avoid double invocation of ApplyTheme
             if (ThemeColors.IsThemeEverChanged && !ThemeColors.HighContrast)
@@ -488,7 +495,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         {
             base.OnFontChanged(e);
             if (ColumnHeadersHeightSizeMode == DataGridViewColumnHeadersHeightSizeMode.AutoSize)
-                RowTemplate.Height = ColumnHeadersHeight;
+                RowTemplate.Height = GetColumnHeadersHeight();
         }
 
         protected override void Dispose(bool disposing)
@@ -599,6 +606,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     User32.ReleaseDC(hWnd, hDC);
             }
         }
+
+        private int GetColumnHeadersHeight() => Math.Max(ColumnHeadersHeight, this.ScaleHeight(minRowHeightReference));
 
         private void ReleaseIcons()
         {
