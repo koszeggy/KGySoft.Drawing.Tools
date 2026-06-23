@@ -45,7 +45,6 @@
             this.previewImage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.previewImage.Location = new System.Drawing.Point(3, 56);
             this.previewImage.Name = "previewImage";
-            this.previewImage.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.previewImage.Size = new System.Drawing.Size(242, 100);
             this.previewImage.TabIndex = 1;
             // 

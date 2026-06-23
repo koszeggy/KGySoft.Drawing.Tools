@@ -65,7 +65,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.colorVisualizerControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.colorVisualizerControl.Location = new System.Drawing.Point(3, 16);
             this.colorVisualizerControl.Name = "colorVisualizerControl";
-            this.colorVisualizerControl.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.colorVisualizerControl.Size = new System.Drawing.Size(238, 197);
             this.colorVisualizerControl.TabIndex = 0;
             // 
