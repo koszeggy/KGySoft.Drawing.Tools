@@ -16,16 +16,12 @@
 #region Usings
 
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.Windows.Forms;
 
-using KGySoft.Collections;
-using KGySoft.CoreLibraries;
-using KGySoft.Drawing.Imaging;
 using KGySoft.Drawing.ImagingTools.Reflection;
 using KGySoft.Drawing.ImagingTools.View.Components;
 using KGySoft.Drawing.ImagingTools.WinApi;
@@ -65,46 +61,21 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             #region Constants
 
-            private const int referenceOverflowArrowOffsetY = 8;
             private const int referenceMenuItemPaddingWidth = 1;
+            private const int referenceUpDownArrowHeight = 3;
+            private const int referenceLeftRightArrowWidth = 4;
+            private const int referenceOverflowButtonArrowWidth = 3;
 
             #endregion
 
             #region Fields
 
-            private static readonly Size referenceOffset = new Size(2, 2);
-            private static readonly Size referenceOffsetDouble = new Size(4, 4);
             private static readonly Size referenceOverflowButtonSize = new Size(16, 16);
             private static readonly Size referenceOverflowButtonThemedSize = new Size(12, 12);
-            private static readonly Size referenceOverflowArrowSize = new Size(9, 5);
-
-            // not an IThreadSafeCacheAccessor, because we need to clear the cache when dark/light theme changes
-            private static readonly LockingDictionary<(Size, Image), Image> disabledImagesCache = new Cache<(Size, Image), Image>(GenerateDisabledImage, 16)
-            {
-                DisposeDroppedValues = true
-            }.AsThreadSafe();
 
             #endregion
 
             #region Constructors
-            
-            #region Static Constructors
-
-            static AdvancedToolStripRenderer()
-            {
-                if (OSHelper.IsWindows10OrLater)
-                {
-                    ThemeColors.ThemeChanged += (_, _) =>
-                    {
-                        ICollection<Image> toDispose = disabledImagesCache.Values;
-                        disabledImagesCache.Clear();
-                        foreach (Image image in toDispose)
-                            image.Dispose();
-                    };
-                }
-            }
-
-            #endregion
 
             #region Instance Constructors
 
@@ -131,110 +102,37 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 }
             }
 
+            // Changes to original: using ControlPaintHelper instead of Graphics.FillPolygon to ensure the same result on all platforms (real Windows/Mono/Wine)
             private static void DrawArrow(ToolStrip owner, Graphics g, Color color, Rectangle bounds, ArrowDirection direction)
             {
-                var middle = new Point(bounds.Left + bounds.Width / 2, bounds.Top + bounds.Height / 2);
+                int arrowSize = direction is ArrowDirection.Up or ArrowDirection.Down
+                    ? owner.ScaleHeight(referenceUpDownArrowHeight)
+                    : owner.ScaleWidth(referenceLeftRightArrowWidth);
 
-                Point[] arrow;
-                PointF scale = owner.GetScale();
-                Size offset =  referenceOffset.Scale(scale);
-                Size offsetDouble = referenceOffsetDouble.Scale(scale);
-
-                switch (direction)
-                {
-                    case ArrowDirection.Up:
-                        arrow =
-                        [
-                            new Point(middle.X - offset.Width - 1, middle.Y + 1),
-                            new Point(middle.X + offset.Width + 1, middle.Y + 1),
-                            new Point(middle.X, middle.Y - offset.Height - 1)
-                        ];
-                        break;
-                    case ArrowDirection.Left:
-                        arrow =
-                        [
-                            new Point(middle.X + offset.Width, middle.Y - offsetDouble.Height),
-                            new Point(middle.X + offset.Width, middle.Y + offsetDouble.Height),
-                            new Point(middle.X - offset.Width, middle.Y)
-                        ];
-                        break;
-                    case ArrowDirection.Right:
-                        arrow =
-                        [
-                            new Point(middle.X - offset.Width, middle.Y - offsetDouble.Height),
-                            new Point(middle.X - offset.Width, middle.Y + offsetDouble.Height),
-                            new Point(middle.X + offset.Width, middle.Y)
-                        ];
-                        break;
-                    default:
-                        arrow =
-                        [
-                            new Point(middle.X - offset.Width, middle.Y - 1),
-                            new Point(middle.X + offset.Width + (OSHelper.IsLinuxMono ? 2 : 1), middle.Y - 1),
-                            new Point(middle.X, middle.Y + offset.Height)
-                        ];
-                        break;
-                }
-
-                g.FillPolygon(color.GetBrush(), arrow);
+                var bitmap = ControlPaintHelper.GetArrowImage(direction, arrowSize);
+                Rectangle rect = RectangleExtensions.FromCenter(bounds.GetCenter(), bitmap.Size);
+                g.DrawImageColorized(bitmap, rect, color);
             }
 
             /// <summary>
             /// In original, this is RenderArrowInternal. Changes to original:
+            /// - using ControlPaintHelper instead of Graphics.FillPolygon/DrawLine to ensure the same result on all platforms (real Windows/Mono/Wine)
             /// - Moving line drawing here from the caller.
             /// - .NET Framework 4.5.2-: Fixed scaling
             /// - Fixing arrow direction and line position in RTL mode, vertical orientation
             /// </summary>
             private static void DrawOverflowArrow(ToolStrip owner, Graphics g, Rectangle arrowRect, ArrowDirection direction, Color color)
             {
-                var middle = new Point(arrowRect.Left + arrowRect.Width / 2, arrowRect.Top + arrowRect.Height / 2);
+                int arrowSize = owner.ScaleHeight(referenceOverflowButtonArrowWidth);
 
-                // if the width is odd - favor pushing it over one pixel right.
-                middle.X += arrowRect.Width % 2;
-                Size offset = owner.ScaleSize(referenceOffset);
+                var bitmap = ControlPaintHelper.GetOverflowArrowImage(direction, arrowSize);
+                Point middle = arrowRect.GetCenter();
 
-                Point[] arrow = direction switch
-                {
-                    ArrowDirection.Up =>
-                    [
-                        new(middle.X - offset.Width, middle.Y + 1),
-                        new(middle.X + offset.Width + 1, middle.Y + 1),
-                        new(middle.X, middle.Y - offset.Height)
-                    ],
-                    ArrowDirection.Left =>
-                    [
-                        new(middle.X + offset.Width, middle.Y - offset.Height - 1),
-                        new(middle.X + offset.Width, middle.Y + offset.Height + 1),
-                        new(middle.X - 1, middle.Y)
-                    ],
-                    ArrowDirection.Right =>
-                    [
-                        new(middle.X - offset.Width, middle.Y - offset.Height - 1),
-                        new(middle.X - offset.Width, middle.Y + offset.Height + 1),
-                        new(middle.X + 1, middle.Y)
-                    ],
-                    _ =>
-                    [
-                        new(middle.X - offset.Width, middle.Y - 1),
-                        new(middle.X + offset.Width + 1, middle.Y - 1),
-                        new(middle.X, middle.Y + offset.Height)
-                    ],
-                };
+                //// if the width is odd pushing it over one pixel right.
+                //middle.X += arrowRect.Width & 1;
 
-                g.FillPolygon(color.GetBrush(), arrow);
-
-                // horizontal line
-                if (direction is ArrowDirection.Up or ArrowDirection.Down)
-                {
-                    g.DrawLine(color.GetPen(), middle.X - offset.Width, arrowRect.Y - offset.Height, middle.X + offset.Width, arrowRect.Y - offset.Height);
-                    return;
-                }
-
-                // vertical line
-                if (direction is ArrowDirection.Right)
-                    g.DrawLine(color.GetPen(), arrowRect.X, middle.Y - offset.Height, arrowRect.X, middle.Y + offset.Height);
-                else
-                    g.DrawLine(color.GetPen(), middle.X + offset.Width * 2, middle.Y - offset.Height, middle.X + offset.Width * 2, middle.Y + offset.Height);
+                Rectangle rect = RectangleExtensions.FromCenter(middle, bitmap.Size);
+                g.DrawImageColorized(bitmap, rect, color);
             }
 
             private static void DrawThemedButtonBackground(Graphics g, ProfessionalColorTable colorTable, Rectangle bounds, ButtonStyle style)
@@ -378,27 +276,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     using Brush b = new LinearGradientBrush(bounds, beginColor, endColor, mode);
                     g.FillRectangle(b, bounds);
                 }
-            }
-
-            private static Bitmap GenerateDisabledImage((Size, Image) key)
-            {
-                (Size boundsSize, Image image) = key;
-                if (image.RawFormat.Equals(ImageFormat.Icon) && image.Size != boundsSize)
-                {
-                    // Icons only: if the desired size does not match, drawing the icon into a temp bitmap of the desired size first.
-                    // If the icon has multiple resolutions, it may change the value of its Size property. We can discard the temp bitmap immediately.
-                    using var resized = new Bitmap(image, boundsSize);
-                }
-
-                // when system dark mode is enabled, this returns a way too dark/faint image in .NET 9+
-                //return ToolStripRenderer.CreateDisabledImage(image);
-
-                var result = new Bitmap(image);
-                using IReadWriteBitmapData bitmapData = result.GetReadWriteBitmapData(); // sRGB color space is alright for grayscale transformations
-                bitmapData.MakeGrayscale();
-                bitmapData.AdjustBrightness(ThemeColors.IsDarkBaseTheme ? 0.1f : -0.1f); // darker for light theme and vice versa, so white/black becomes a bit grayer
-                bitmapData.TransformColors(c => Color32.FromArgb((byte)(c.A * 0.5f), c));
-                return result;
             }
 
             #endregion
@@ -751,7 +628,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         enabled = false;
                 }
 
-                Image image = enabled ? e.Image : disabledImagesCache[(bounds.Size, e.Image)];
+                Image image = enabled ? e.Image : ControlPaintHelper.GetDisabledImage(e.Image, bounds.Size);
                 if (e.Item.ImageScaling == ToolStripItemImageScaling.None)
                     e.Graphics.DrawImage(image, bounds, new Rectangle(Point.Empty, bounds.Size), GraphicsUnit.Pixel);
                 else
@@ -778,18 +655,18 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     Graphics g = e.Graphics;
 
                     // fill in the background colors
-                    bool rightToLeft = item.RightToLeft == RightToLeft.Yes;
-                    PointF scale = e.ToolStrip?.GetScale() ?? ScaleHelper.SystemScale;
-                    Size overflowArrowSize = referenceOverflowArrowSize.Scale(scale);
-                    int overflowArrowOffsetY = referenceOverflowArrowOffsetY.Scale(scale.Y);
-                    int overflowButtonWidth = referenceOverflowButtonThemedSize.Scale(scale).Width;
-
                     RenderOverflowBackground(e, colorTable);
 
                     bool horizontal = e.ToolStrip is not null && e.ToolStrip.Orientation == Orientation.Horizontal;
+                    PointF scale = e.ToolStrip?.GetScale() ?? ScaleHelper.SystemScale;
+                    bool rightToLeft = item.RightToLeft == RightToLeft.Yes;
+                    Size overflowArrowSize = referenceOverflowButtonThemedSize.Scale(scale);
+
                     Rectangle overflowArrowRect = rightToLeft
-                        ? new Rectangle(0, item.Height - overflowArrowOffsetY, overflowArrowSize.Width, overflowArrowSize.Height)
-                        : new Rectangle(item.Width - overflowButtonWidth, item.Height - overflowArrowOffsetY, overflowArrowSize.Width, overflowArrowSize.Height);
+                        ? new Rectangle(horizontal ? -2 : 2, item.Height - overflowArrowSize.Height, overflowArrowSize.Width, overflowArrowSize.Height)
+                        : new Rectangle(item.Width - overflowArrowSize.Width, item.Height - overflowArrowSize.Height, overflowArrowSize.Width, overflowArrowSize.Height);
+                    if (!horizontal)
+                        overflowArrowRect.Offset(rightToLeft ? 0 : -1, 1);
 
                     ArrowDirection direction = horizontal ? ArrowDirection.Down
                         : rightToLeft ? ArrowDirection.Left
@@ -799,7 +676,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     int rightToLeftShift = (rightToLeft && horizontal) ? -1 : 1;
 
                     // draw highlight
-                    overflowArrowRect.Offset(1 * rightToLeftShift, 1);
                     DrawOverflowArrow(e.ToolStrip!, g, overflowArrowRect, direction, ThemeColors.ControlHighlight);
 
                     // draw black triangle
