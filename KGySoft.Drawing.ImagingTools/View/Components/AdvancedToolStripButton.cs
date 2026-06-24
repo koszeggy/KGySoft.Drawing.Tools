@@ -54,6 +54,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
 
         #endregion
 
+        #region Protected Methods
+
+        protected override void OnEnabledChanged(EventArgs e)
+        {
+            base.OnEnabledChanged(e);
+            if (OSHelper.IsFrameworkMono && Enabled && Owner is ToolStrip ts && !Bounds.Contains(ts.PointToClient(Cursor.Position)))
+                OnMouseLeave(EventArgs.Empty); // making sure that the button does not remain selected when the button is enabled
+        }
+
+        #endregion
+
         #endregion
     }
 }
