@@ -16,8 +16,6 @@
 ! The standard message boxes have been replaced, using the TaskDialog class from the KGySoft.WinForms package.
   Task dialogs work better with per-monitor DPI awareness and with Windows 10+ dark theme. This is a breaking change
   only in terms of localization of the buttons.
-! The .NET Framework 4.7.2 build is no longer compatible with Framework Mono (as of the release of this version).
-  You still can use the .NET Framework 4.6.2 build though. Wine Mono is not affected by this change.
 + Persisting auto zoom, smooth zooming and compound view preferences
 + Per-monitor DPI awareness support
 + Edit Resources form:
@@ -35,6 +33,9 @@
   * The auto zoom/smooth zooming buttons do not turn disabled when the loaded image is cleared.
   - Dragging a zoomed animated bitmap by the mouse was not quite possible while the animation was playing, because
     the dragging operation was canceled on updating the frame.
+- Menu item hotkeys were not always working when their parent button had been moved to the overflow area due to
+  shrinking the container form.
+- Several Mono and Wine-specific issues have been fixed.
 - Debugger Visualizer Installations dialog:
   - Handling the changed versioning of the Visual Studio folders starting with Visual Studio 2026
 - When saving a combined icon after changing one of its images, the unchanged images will not turn to 32 bpp ones

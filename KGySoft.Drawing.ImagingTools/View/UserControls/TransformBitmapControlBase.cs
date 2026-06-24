@@ -139,16 +139,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        {
-            switch (keyData)
-            {
-                case Keys.Alt | Keys.S:
-                    previewImage.SmoothZooming = !previewImage.SmoothZooming;
-                    return true;
-                default:
-                    return base.ProcessCmdKey(ref msg, keyData);
-            }
-        }
+            => base.ProcessCmdKey(ref msg, keyData) || previewImage.ProcessCmdKeyInternal(ref msg, keyData);
 
         protected override void ApplySizeAdjustments(PointF? dynamicSizesScale)
         {

@@ -896,6 +896,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         private DockStyle explicitDock = DockStyle.Top;
         private bool isAdjustingRtl;
+        private bool isProcessingCmdKey;
 
         #endregion
 
@@ -931,6 +932,21 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         // Needed only for the tooltip, as every other rendering applies the theme colors automatically
         internal void ApplyTheme() => ResetToolTipAppearance();
+
+        internal bool ProcessCmdKeyInternal(ref Message m, Keys keyData)
+        {
+            if (isProcessingCmdKey)
+                return false;
+            isProcessingCmdKey = true;
+            try
+            {
+                return ProcessCmdKey(ref m, keyData);
+            }
+            finally
+            {
+                isProcessingCmdKey = false;
+            }
+        }
 
         #endregion
 

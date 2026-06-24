@@ -243,7 +243,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                     return true;
 
                 default:
-                    return base.ProcessCmdKey(ref msg, keyData);
+                    bool result = base.ProcessCmdKey(ref msg, keyData);
+
+                    // Workaround: ToolStrip hotkeys may stop working when their parent is moved to the overflow area, and the overflow button was dropped down since then.
+                    if (!result && ToolStripManager.IsShortcutDefined(keyData))
+                        result = tsMenu.ProcessCmdKeyInternal(ref msg, keyData);
+                    return result;
             }
         }
 

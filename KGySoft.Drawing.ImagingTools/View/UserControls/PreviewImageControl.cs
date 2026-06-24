@@ -27,42 +27,18 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
     internal partial class PreviewImageControl : MvvmBaseUserControl
     {
+        #region Fields
+
+        private bool isProcessingCmdKey;
+
+        #endregion
+
         #region Properties
 
         internal new PreviewImageViewModel? ViewModel
         {
             get => (PreviewImageViewModel?)base.ViewModel;
             set => base.ViewModel = value;
-        }
-
-        internal Image? Image
-        {
-            get => ViewModel?.PreviewImage;
-            set
-            {
-                if (ViewModel is PreviewImageViewModel vm)
-                    vm.PreviewImage = value;
-            }
-        }
-
-        internal bool AutoZoom
-        {
-            get => ViewModel?.AutoZoom ?? false;
-            set
-            {
-                if (ViewModel is PreviewImageViewModel vm)
-                    vm.AutoZoom = value;
-            }
-        }
-
-        internal bool SmoothZooming
-        {
-            get => ViewModel?.SmoothZooming ?? false;
-            set
-            {
-                if (ViewModel is PreviewImageViewModel vm)
-                    vm.SmoothZooming = value;
-            }
         }
 
         internal ImageViewer ImageViewer => ivPreview;
@@ -79,6 +55,25 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         #endregion
 
         #region Methods
+
+        #region Internal Methods
+
+        internal bool ProcessCmdKeyInternal(ref Message m, Keys keyData)
+        {
+            if (isProcessingCmdKey)
+                return false;
+            isProcessingCmdKey = true;
+            try
+            {
+                return ProcessCmdKey(ref m, keyData);
+            }
+            finally
+            {
+                isProcessingCmdKey = false;
+            }
+        }
+
+        #endregion
 
         #region Protected Methods
 
@@ -108,6 +103,24 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             base.ApplyTheme();
             ivPreview.BackColor = ThemeColors.Control;
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            switch (keyData)
+            {
+                case Keys.Alt | Keys.S:
+                    ViewModel?.SmoothZooming = !ViewModel.SmoothZooming;
+                    return true;
+
+                default:
+                    bool result = base.ProcessCmdKey(ref msg, keyData);
+
+                    // Workaround: ToolStrip hotkeys may stop working when their parent is moved to the overflow area, and the overflow button was dropped down since then.
+                    if (!result && ToolStripManager.IsShortcutDefined(keyData))
+                        result = tsMenu.ProcessCmdKeyInternal(ref msg, keyData);
+                    return result;
+            }
         }
 
         #endregion
