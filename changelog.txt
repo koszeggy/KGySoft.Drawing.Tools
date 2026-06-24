@@ -18,6 +18,7 @@
   only in terms of localization of the buttons.
 + Persisting auto zoom, smooth zooming and compound view preferences
 + Per-monitor DPI awareness support
++ WMF files can be saved in EMF format as well.
 + Edit Resources form:
   + The resources of an additional dependent library has been included
 * Improved appearance with dark theme.

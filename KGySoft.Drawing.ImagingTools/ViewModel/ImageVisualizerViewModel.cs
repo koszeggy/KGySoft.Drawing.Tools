@@ -1343,15 +1343,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 sb.Append($"{codecInfo.FormatDescription} {Res.TextFileFormat}|{codecInfo.FilenameExtension?.ToLowerInvariant()}");
             }
 
-            bool isEmf = false;
             sb.Append($"|{Res.TextIcon} {Res.TextFileFormat}|*.ico");
             if (imageInfo.IsMetafile)
-            {
-                sb.Append($"|WMF {Res.TextFileFormat}|*.wmf");
-                isEmf = imageInfo.RawFormat == ImageFormat.Emf.Guid;
-                if (isEmf)
-                    sb.Append($"|EMF {Res.TextFileFormat}|*.emf");
-            }
+                sb.Append($"|WMF {Res.TextFileFormat}|*.wmf|EMF {Res.TextFileFormat}|*.emf");
 
             sb.Append($"|{Res.TextRaw} {Res.TextFileFormat}|*.bdat");
             string filter = sb.ToString();
@@ -1361,7 +1355,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (imageInfo.IsMultiRes)
                 ext = "ico";
             else if (imageInfo.IsMetafile)
-                ext = isEmf ? "emf" : "wmf";
+                ext = imageInfo.RawFormat == ImageFormat.Emf.Guid ? "emf" : "wmf";
             else
             {
                 // looking for a matching built-in encoder
