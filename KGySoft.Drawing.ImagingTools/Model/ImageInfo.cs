@@ -255,28 +255,6 @@ namespace KGySoft.Drawing.ImagingTools.Model
                 return BitmapToMetafile(bitmap);
             }
 
-            static Icon MetafileToIcon(Metafile metafile)
-            {
-                Size size = metafile.Size;
-                int max = Math.Max(size.Width, size.Height);
-                if (max > 256)
-                {
-                    float scale = 256f / max;
-                    size = size.Scale(scale);
-                    if (size.Width < 1)
-                        size.Width = 1;
-                    if (size.Height < 1)
-                        size.Height = 1;
-                }
-
-                // not using the Bitmap(Image, Size) constructor, see the details in AsBitmap
-                var bitmap = new Bitmap(size.Width, size.Height);
-                using var g = Graphics.FromImage(bitmap);
-                g.InterpolationMode = InterpolationMode.NearestNeighbor;
-                g.DrawImage(metafile, new Rectangle(Point.Empty, size));
-                return bitmap.ToIcon(Math.Min(256, max), true);
-            }
-
             #endregion
 
             // Special handling if the metafile has a bitmap raw format (may happen on deserialization on .NET Runtime 2.x).
@@ -304,8 +282,8 @@ namespace KGySoft.Drawing.ImagingTools.Model
                     }
 
                     Debug.Assert((allowedTypes & AllowedImageTypes.Icon) != 0);
-                    //Icon asIcon = metafile.ToIcon(Math.Min(256, Math.Max(size.Width, size.Height)), true); - TODO: now this fails for huge metafiles
-                    Icon asIcon = MetafileToIcon(metafile);
+                    Size size = metafile.Size;
+                    Icon asIcon = metafile.ToIcon(Math.Min(256, Math.Max(size.Width, size.Height)), true);
                     metafile.Dispose();
                     return new ImageInfo(asIcon);
 
@@ -326,7 +304,7 @@ namespace KGySoft.Drawing.ImagingTools.Model
                         return new ImageInfo(bitmap);
                     }
 
-                    Size size = bitmap.Size;
+                    size = bitmap.Size;
                     if ((allowedTypes & AllowedImageTypes.Icon) != 0)
                     {
                         int iconSize = Math.Min(256, Math.Max(size.Width, size.Height));
