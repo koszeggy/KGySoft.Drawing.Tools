@@ -87,7 +87,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test
 
             Reflector.InvokeMethod(visualizerTarget, "RaiseStateChangedAsync", VisualizerTargetStateNotification.Available);
             var handle = GCHandle.FromIntPtr((IntPtr)localControlWrapper.GetGCHandleAsync(CancellationToken.None).Result);
-            new Window { Title = cfg.Targets.FirstOrDefault(t => Reflector.ResolveType(t.TargetType)?.IsInstanceOfType(targetObject) == true)?.VisualizerDisplayName, Content = handle.Target }.ShowDialog();
+            var window = new Window
+            {
+                Title = cfg.Targets.FirstOrDefault(t => Reflector.ResolveType(t.TargetType)?.IsInstanceOfType(targetObject) == true)?.VisualizerDisplayName, 
+                Content = handle.Target,
+            };
+            window.Closed += (_, _) => (handle.Target as IDisposable)?.Dispose();
+            window.ShowDialog();
         }
 #endif
 
