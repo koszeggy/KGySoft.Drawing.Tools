@@ -15,10 +15,11 @@
 
 #region Usings
 
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
-using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.Reflection;
 
 #endregion
 
@@ -30,7 +31,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Internal Properties
         
-        internal string[]? CommandLineArguments { get => Get<string[]?>(); init => Set(value); }
+        [AllowNull]
+        internal string[] CommandLineArguments { get => Get(Reflector.EmptyArray<string>()); init => Set(value ?? Reflector.EmptyArray<string>()); }
+        
         internal string? FileName { get => Get<string?>(); set => Set(value); }
 
         #endregion
@@ -49,9 +52,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal override void ViewLoaded()
         {
-            string[]? args = CommandLineArguments;
+            string[] args = CommandLineArguments;
             UpdateInfo();
-            ProcessArgs(args!);
+            ProcessArgs(args);
             base.ViewLoaded();
         }
 
