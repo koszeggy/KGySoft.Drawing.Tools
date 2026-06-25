@@ -50,7 +50,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             if (IsDesignMode)
                 return;
 
-            if (ThemeColors.IsThemeEverChanged)
+            if (ThemeColors.IsThemeEverChanged || ParentForm is null)
                 ApplyTheme();
         }
 
