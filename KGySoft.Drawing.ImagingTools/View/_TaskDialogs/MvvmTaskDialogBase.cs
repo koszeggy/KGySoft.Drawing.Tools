@@ -26,6 +26,7 @@ using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 using KGySoft.Drawing.ImagingTools.WinApi;
+using KGySoft.WinForms;
 using KGySoft.WinForms.Components;
 
 #endregion
@@ -111,24 +112,36 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         public void ShowDialog(IntPtr ownerWindowHandle = default)
         {
-            if (ownerWindowHandle == IntPtr.Zero)
+            if (ownerWindowHandle == IntPtr.Zero && OSHelper.IsWindows)
                 ownerWindowHandle = User32.GetActiveWindow();
             Execute(ownerWindowHandle == IntPtr.Zero ? null : new OwnerWindowHandle(ownerWindowHandle));
         }
 
         public void ShowDialog(IView? owner)
         {
-            if (owner is IWin32Window ownerWindow)
+            if (owner is not IWin32Window ownerWindow)
             {
-                // Trying to obtain the form of the owner if owner is just a control.
-                // This provides better dialog handling, such bringing the form on top or blinking the form when the owner is clicked.
-                Control? ownerControl = owner as Control ?? Control.FromHandle(ownerWindow.Handle);
-                if (ownerControl != null)
-                    ownerControl = ownerControl as Form ?? ownerControl.FindForm() ?? ownerControl;
-                Execute(ownerControl ?? ownerWindow);
-            }
-            else
                 ShowDialog();
+                return;
+            }
+
+            // Trying to obtain the form of the owner if owner is just a control.
+            // This provides better dialog handling, such bringing the form on top or blinking the form when the owner is clicked.
+            Control? ownerControl = owner as Control ?? Control.FromHandle(ownerWindow.Handle);
+            if (ownerControl != null)
+            {
+                ownerControl = ownerControl as Form ?? ownerControl.FindForm();
+                if (ownerControl != null)
+                {
+                    Execute(ownerControl);
+                    return;
+                }
+            }
+
+            // No Form was found. Maybe the owner is embedded into a WPF host. Using just Execute(ownerWindow) provides
+            // a poor experience as described above, so trying to get the active handle of the thread in the first place.
+            IntPtr activeWindowHandle = OSHelper.IsWindows ? User32.GetActiveWindow() : IntPtr.Zero;
+            Execute(activeWindowHandle == IntPtr.Zero ? ownerWindow : new OwnerWindowHandle(activeWindowHandle));
         }
 
         public void Show() => Execute(null);
