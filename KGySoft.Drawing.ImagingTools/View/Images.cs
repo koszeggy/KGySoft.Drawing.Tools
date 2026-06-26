@@ -152,7 +152,7 @@ namespace KGySoft.Drawing.ImagingTools.View
                 Size size = referenceSize.Scale(scale);
                 Icon result = icon.Resize(size);
                 int mod;
-                if (!OSHelper.IsWindows || (mod = result.Width & 0xF) == 0)
+                if (!OSHelper.IsRealWindows || (mod = result.Width & 0xF) == 0)
                     return result;
 
 #if !NET35
@@ -162,7 +162,7 @@ namespace KGySoft.Drawing.ImagingTools.View
 
                 // .NET 3.5 or Windows XP-Windows 7 with legacy scaling: we need to make sure that icon size is divisible by 16
                 // so it will not be corrupted (e.g. ErrorProvider)
-                using Bitmap iconImage = icon.ExtractBitmap(result.Size)!;
+                using Bitmap iconImage = result.ExtractBitmap(0)!;
                 result.Dispose();
 
                 // returning a larger icon without scaling so apparently it will have the same size as the original one
