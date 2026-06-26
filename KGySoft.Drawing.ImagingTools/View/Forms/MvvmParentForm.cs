@@ -64,11 +64,12 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
 #if NETFRAMEWORK
             // In every child user control the AutoScaleMode is Font, which ensures the correct scaling of the controls themselves.
-            // Still, the container control is not scaled in .NET Framework, so doing that here manually.
+            // Still, the container control is not scaled on real Windows, so doing that here manually.
             // NOTE: Setting None in user controls and Font for the parent form is wrong for two reasons:
             // - The scaling of the controls is quite random in many cases in that case
             // - The user controls must be scaled because as an embedded visualizer in VS2022+ the controls have no parent form
-            mvvmChild.Size = mvvmChild.ScaleSize(mvvmChild.Size);
+            if (OSHelper.IsRealWindows)
+                mvvmChild.Size = mvvmChild.ScaleSize(mvvmChild.Size);
 #endif
             this.mvvmChild = mvvmChild;
             ApplyRightToLeft();
@@ -78,7 +79,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // Note that we should set the Font for the Form only, because setting it also for the user controls would cause double scaling.
             // Not setting it for the user controls is alright even when docking them into a WPF host, because its default font is correct.
             // Also note that setting it in BaseForm would sometimes cause wrong scaling when opening a view from Visual Studio extension.
-            if (!IsDesignMode && !OSHelper.IsMono && SystemFonts.MessageBoxFont is Font font)
+            if (!IsDesignMode && !OSHelper.IsMono && !OSHelper.IsWine && SystemFonts.MessageBoxFont is Font font)
                 base.Font = font;
 
             StartPosition = OSHelper.IsWindowsMono ? FormStartPosition.WindowsDefaultLocation : FormStartPosition.CenterParent;

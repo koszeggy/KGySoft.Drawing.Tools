@@ -42,7 +42,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View
         {
             InitializeComponent();
             gbFile.AutoSize = !OSHelper.IsFrameworkMono;
-            if (!IsDesignMode && !OSHelper.IsMono && SystemFonts.MessageBoxFont is Font font)
+            if (!IsDesignMode && !OSHelper.IsMono && !OSHelper.IsWine && SystemFonts.MessageBoxFont is Font font)
                 Font = font;
         }
 

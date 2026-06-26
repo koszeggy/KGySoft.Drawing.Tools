@@ -182,8 +182,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             base.OnHandleCreated(e);
             lastScale = this.GetScale();
-            if (Parent is not Form)
-                AdjustFont();
+            if (ParentForm is null)
+                AdjustFontNonFormParent();
         }
 
         protected override void OnLoad(EventArgs e)
@@ -252,7 +252,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
                     // embedded into a WPF host (visualizer extension): adjusting the font
                     if (Parent is not Form)
-                        AdjustFont();
+                        AdjustFontNonFormParent();
 
                     return;
 
@@ -374,11 +374,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private MvvmParentForm? TryGetCreateParent() => mvvmParent ??= ViewFactory.TryGetForm(this) as MvvmParentForm;
 
-        private void AdjustFont()
+        private void AdjustFontNonFormParent()
         {
             if (IsDesignMode)
                 return;
-            Debug.Assert(Parent is not BaseForm, "Adjusting font in needed when the view in embedded into a WPF host");
+            Debug.Assert(ParentForm is null, "Adjusting font is needed when the view in embedded into a WPF host");
             Font? font = SystemFonts.MessageBoxFont;
             if (font == null)
                 return;
