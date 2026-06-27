@@ -47,77 +47,6 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Fields
 
-        private static readonly Color[] defaultThemeColors =
-        [
-            SystemColors.Control,
-            SystemColors.ControlText,
-            SystemColors.ControlDarkDark, // ControlTextDisabled
-            SystemColors.ButtonHighlight, // ControlHighlight
-            SystemColors.Window,
-            SystemColors.WindowText,
-            SystemColors.GrayText, // WindowTextDisabled
-            SystemColors.ControlLight, // WindowAlternate
-            SystemColors.ControlText, // WindowTextAlternate
-            SystemColors.Highlight,
-            SystemColors.HighlightText,
-            SystemColors.ControlText, // GroupBoxText - NOTE: with visual styles enabled it's returned by VisualStyleRenderer
-            SystemColors.WindowFrame, // GridLine
-            SystemColors.AppWorkspace, // Workspace
-            SystemColors.Info, // ToolTip - NOTE: with visual styles enabled it is Window in Windows Vista and later
-            SystemColors.InfoText, // ToolTipText - NOTE: with visual styles enabled it is WindowText in Windows Vista and later
-            SystemColors.WindowFrame, // ToolTipBorder - NOTE: with visual styles enabled it is WindowText in Windows Vista and later
-            ProfessionalColors.ToolStripGradientBegin,
-            ProfessionalColors.ToolStripGradientMiddle,
-            ProfessionalColors.ToolStripGradientEnd, // ButtonFace
-            ProfessionalColors.ToolStripBorder, // ToolStripBorderBottom
-            ProfessionalColors.ToolStripDropDownBackground,
-            ProfessionalColors.ButtonSelectedHighlight, // ToolStripButtonSelectedHighlight
-            ProfessionalColors.ButtonPressedHighlight, // ToolStripButtonPressedHighlight
-            ProfessionalColors.ButtonCheckedHighlight, // ToolStripButtonCheckedHighlight
-#if NET35
-            SystemColors.Highlight, // ToolStripButtonSelectedBorder - In .NET Framework 3.5 ButtonSelectedBorder returns ButtonCheckedGradientBegin
-            SystemColors.Highlight, // ToolStripButtonPressedBorder - In .NET Framework 3.5 ButtonSelectedBorder returns ButtonCheckedGradientBegin
-            SystemColors.Highlight, // ToolStripButtonCheckedBorder - In .NET Framework 3.5 ButtonSelectedBorder returns ButtonCheckedGradientBegin
-#else
-            ProfessionalColors.ButtonSelectedBorder, // ToolStripButtonSelectedBorder (Highlight)  
-            ProfessionalColors.ButtonSelectedBorder, // ToolStripButtonPressedBorder (Highlight)  
-            ProfessionalColors.ButtonSelectedBorder, // ToolStripButtonCheckedBorder (Highlight)  
-#endif
-            SystemColors.ControlDarkDark, // ToolStripMenuItemTextDisabled - Light explorer theme: 0x9F9F9F
-            ProfessionalColors.MenuItemBorder, // ToolStripMenuItemSelectedBorder (Highlight)
-            ProfessionalColors.MenuItemBorder, // ToolStripMenuItemOpenedBorder (Highlight)
-            ProfessionalColors.MenuItemBorder, // ToolStripMenuItemDisabledBorder (Highlight)
-            Color.Empty, // ToolStripMenuItemDisabledBackground
-            ProfessionalColors.MenuBorder, // ToolStripMenuBorder
-            ProfessionalColors.MenuItemSelectedGradientBegin, // ToolStripMenuItemSelectedGradientBegin
-            ProfessionalColors.MenuItemSelectedGradientEnd, // ToolStripMenuItemSelectedGradientEnd
-            ProfessionalColors.MenuItemPressedGradientBegin, // ToolStripMenuItemPressedGradientBegin
-            ProfessionalColors.MenuItemPressedGradientEnd, // ToolStripMenuItemPressedGradientEnd
-            ProfessionalColors.MenuItemSelectedGradientBegin, // ToolStripMenuItemOpenedGradientBegin
-            ProfessionalColors.MenuItemSelectedGradientEnd, // ToolStripMenuItemOpenedGradientEnd
-            ProfessionalColors.ButtonSelectedGradientBegin, // ToolStripButtonSelectedGradientBegin
-            ProfessionalColors.ButtonSelectedGradientMiddle, // ToolStripButtonSelectedGradientMiddle
-            ProfessionalColors.ButtonSelectedGradientEnd, // ToolStripButtonSelectedGradientEnd
-            ProfessionalColors.ButtonPressedGradientBegin, // ToolStripButtonPressedGradientBegin
-            ProfessionalColors.ButtonPressedGradientMiddle, // ToolStripButtonPressedGradientMiddle
-            ProfessionalColors.ButtonPressedGradientEnd, // ToolStripButtonPressedGradientEnd
-            ProfessionalColors.ButtonCheckedHighlight, // ToolStripButtonCheckedGradientBegin (Original: Empty)
-            ProfessionalColors.ButtonCheckedHighlight, // ToolStripButtonCheckedGradientEnd (Original: Empty)
-            ProfessionalColors.OverflowButtonGradientBegin, // ToolStripOverflowButtonGradientBegin
-            ProfessionalColors.OverflowButtonGradientMiddle, // ToolStripOverflowButtonGradientMiddle
-            ProfessionalColors.OverflowButtonGradientEnd, // ToolStripOverflowButtonGradientEnd (ButtonShadow)
-            ProfessionalColors.ImageMarginGradientMiddle, // ToolStripImageMarginGradientMiddle
-            ProfessionalColors.OverflowButtonGradientMiddle, // ToolStripOverflowButtonGradientMiddle
-            ProfessionalColors.ImageMarginGradientEnd, // ToolStripImageMarginGradientEnd (Control)
-            ProfessionalColors.GripDark, // ToolStripGripDark
-            ProfessionalColors.GripLight, // ToolStripGripLight (Window)
-            ProfessionalColors.SeparatorDark, // ToolStripSeparatorDark
-            ProfessionalColors.SeparatorLight, // ToolStripSeparatorLight (ButtonHighlight)
-            SystemColors.Control, // ProgressBarBackground (actually not applied with visual styles, default theming)
-            SystemColors.Highlight, // ProgressBar (actually not applied with visual styles, default theming)
-            Color.FromArgb((unchecked((int)0xFFDFDFDF))), // TaskDialogDivider (only with visual styles; otherwise, has system colors)
-        ];
-
         private static readonly Color[] darkThemeColors =
         [
             // Explorer / Gray Window / Gray Highlight / Context menu-like gray ToolStrip menu items / same control/window colors / different disabled colors for control/window/menu texts (reflecting system default rendering)
@@ -310,6 +239,9 @@ namespace KGySoft.Drawing.ImagingTools
             //Color.FromArgb((unchecked((int)0xFF525252))), // TaskDialogDivider
         ];
 
+        // unlike dark theme colors, this cannot be readonly, because it may contain OS theme-dependent non-system colors (e.g. ProfessionalColorTable entries)
+        private static Color[] defaultThemeColors = null!;
+
         private static volatile bool isDarkBaseTheme;
         private static volatile bool isBaseThemeEverChanged;
         private static volatile bool isCustomThemeEverChanged;
@@ -499,6 +431,8 @@ namespace KGySoft.Drawing.ImagingTools
             catch (Exception e) when (e is InvalidOperationException or ExternalException)
             {
             }
+
+            ResetDefaultColors();
         }
 
         #endregion
@@ -650,6 +584,82 @@ namespace KGySoft.Drawing.ImagingTools
             OnThemeChanged(EventArgs.Empty);
         }
 
+        private static void ResetDefaultColors()
+        {
+            Color[] newColors =
+            [
+                SystemColors.Control,
+                SystemColors.ControlText,
+                SystemColors.ControlDarkDark, // ControlTextDisabled
+                SystemColors.ButtonHighlight, // ControlHighlight
+                SystemColors.Window,
+                SystemColors.WindowText,
+                SystemColors.GrayText, // WindowTextDisabled
+                SystemColors.ControlLight, // WindowAlternate
+                SystemColors.ControlText, // WindowTextAlternate
+                SystemColors.Highlight,
+                SystemColors.HighlightText,
+                SystemColors.ControlText, // GroupBoxText - NOTE: with visual styles enabled it's returned by VisualStyleRenderer
+                SystemColors.WindowFrame, // GridLine
+                SystemColors.AppWorkspace, // Workspace
+                SystemColors.Info, // ToolTip - NOTE: with visual styles enabled it is Window in Windows Vista and later
+                SystemColors.InfoText, // ToolTipText - NOTE: with visual styles enabled it is WindowText in Windows Vista and later
+                SystemColors.WindowFrame, // ToolTipBorder - NOTE: with visual styles enabled it is WindowText in Windows Vista and later
+                ProfessionalColors.ToolStripGradientBegin,
+                ProfessionalColors.ToolStripGradientMiddle,
+                ProfessionalColors.ToolStripGradientEnd, // ButtonFace
+                ProfessionalColors.ToolStripBorder, // ToolStripBorderBottom
+                ProfessionalColors.ToolStripDropDownBackground,
+                ProfessionalColors.ButtonSelectedHighlight, // ToolStripButtonSelectedHighlight
+                ProfessionalColors.ButtonPressedHighlight, // ToolStripButtonPressedHighlight
+                ProfessionalColors.ButtonCheckedHighlight, // ToolStripButtonCheckedHighlight (Special handling if Empty, e.g. on Wine Mono)
+#if NET35
+                SystemColors.Highlight, // ToolStripButtonSelectedBorder - In .NET Framework 3.5 ButtonSelectedBorder returns ButtonCheckedGradientBegin
+                SystemColors.Highlight, // ToolStripButtonPressedBorder - In .NET Framework 3.5 ButtonSelectedBorder returns ButtonCheckedGradientBegin
+                SystemColors.Highlight, // ToolStripButtonCheckedBorder - In .NET Framework 3.5 ButtonSelectedBorder returns ButtonCheckedGradientBegin
+#else
+                ProfessionalColors.ButtonSelectedBorder, // ToolStripButtonSelectedBorder (Highlight)  
+                ProfessionalColors.ButtonSelectedBorder, // ToolStripButtonPressedBorder (Highlight)  
+                ProfessionalColors.ButtonSelectedBorder, // ToolStripButtonCheckedBorder (Highlight)  
+#endif
+                SystemColors.ControlDarkDark, // ToolStripMenuItemTextDisabled - Light explorer theme: 0x9F9F9F
+                ProfessionalColors.MenuItemBorder, // ToolStripMenuItemSelectedBorder (Highlight)
+                ProfessionalColors.MenuItemBorder, // ToolStripMenuItemOpenedBorder (Highlight)
+                ProfessionalColors.MenuItemBorder, // ToolStripMenuItemDisabledBorder (Highlight)
+                Color.Empty, // ToolStripMenuItemDisabledBackground
+                ProfessionalColors.MenuBorder, // ToolStripMenuBorder
+                ProfessionalColors.MenuItemSelectedGradientBegin, // ToolStripMenuItemSelectedGradientBegin
+                ProfessionalColors.MenuItemSelectedGradientEnd, // ToolStripMenuItemSelectedGradientEnd
+                ProfessionalColors.MenuItemPressedGradientBegin, // ToolStripMenuItemPressedGradientBegin
+                ProfessionalColors.MenuItemPressedGradientEnd, // ToolStripMenuItemPressedGradientEnd
+                ProfessionalColors.MenuItemSelectedGradientBegin, // ToolStripMenuItemOpenedGradientBegin
+                ProfessionalColors.MenuItemSelectedGradientEnd, // ToolStripMenuItemOpenedGradientEnd
+                ProfessionalColors.ButtonSelectedGradientBegin, // ToolStripButtonSelectedGradientBegin
+                ProfessionalColors.ButtonSelectedGradientMiddle, // ToolStripButtonSelectedGradientMiddle
+                ProfessionalColors.ButtonSelectedGradientEnd, // ToolStripButtonSelectedGradientEnd
+                ProfessionalColors.ButtonPressedGradientBegin, // ToolStripButtonPressedGradientBegin
+                ProfessionalColors.ButtonPressedGradientMiddle, // ToolStripButtonPressedGradientMiddle
+                ProfessionalColors.ButtonPressedGradientEnd, // ToolStripButtonPressedGradientEnd
+                ProfessionalColors.ButtonCheckedGradientBegin, // ToolStripButtonCheckedGradientBegin (Special handling if Empty, e.g. on Windows 7+)
+                ProfessionalColors.ButtonCheckedGradientEnd, // ToolStripButtonCheckedGradientEnd (Special handling if Empty, e.g. on Windows 7+)
+                ProfessionalColors.OverflowButtonGradientBegin, // ToolStripOverflowButtonGradientBegin
+                ProfessionalColors.OverflowButtonGradientMiddle, // ToolStripOverflowButtonGradientMiddle
+                ProfessionalColors.OverflowButtonGradientEnd, // ToolStripOverflowButtonGradientEnd (ButtonShadow)
+                ProfessionalColors.ImageMarginGradientMiddle, // ToolStripImageMarginGradientMiddle
+                ProfessionalColors.OverflowButtonGradientMiddle, // ToolStripOverflowButtonGradientMiddle
+                ProfessionalColors.ImageMarginGradientEnd, // ToolStripImageMarginGradientEnd (Control)
+                ProfessionalColors.GripDark, // ToolStripGripDark
+                ProfessionalColors.GripLight, // ToolStripGripLight (Window)
+                ProfessionalColors.SeparatorDark, // ToolStripSeparatorDark
+                ProfessionalColors.SeparatorLight, // ToolStripSeparatorLight (ButtonHighlight)
+                SystemColors.Control, // ProgressBarBackground (actually not applied with visual styles, default theming)
+                SystemColors.Highlight, // ProgressBar (actually not applied with visual styles, default theming)
+                Color.FromArgb((unchecked((int)0xFFDFDFDF))), // TaskDialogDivider (only with visual styles; otherwise, has system colors)
+            ];
+
+            Interlocked.Exchange(ref defaultThemeColors, newColors);
+        }
+
         private static Color Get(ThemeColor key)
         {
             if (customColors?.TryGetValue(key, out Color result) == true)
@@ -686,7 +696,37 @@ namespace KGySoft.Drawing.ImagingTools
                 }
             }
 
-            return isDarkBaseTheme ? darkThemeColors[(int)key] : defaultThemeColors[(int)key];
+            if (isDarkBaseTheme)
+                return darkThemeColors[(int)key];
+            
+            result = defaultThemeColors[(int)key];
+            if (result.A == 0) // Not using IsEmpty, because it may return false for practically empty colors (e.g. on Wine/Mono)
+            {
+                // Special handling if the color is empty when it shouldn't (may occur for entries from ProfessionalColorTable).
+                // Not handling ToolStripMenuItemDisabledBackground, which is intentionally empty in the default colors table.
+                switch (key)
+                {
+                    // Occurs on Windows Vista+
+                    case ThemeColor.ToolStripButtonCheckedGradientBegin:
+                    case ThemeColor.ToolStripButtonCheckedGradientEnd:
+                        result = defaultThemeColors[(int)ThemeColor.ToolStripButtonCheckedHighlight];
+
+                        if (result.A != 0)
+                            return result;
+
+                        // On Wine/Mono the fallback can be empty as well, in which case we explicitly fall through to the next case.
+                        goto case ThemeColor.ToolStripButtonCheckedHighlight;
+
+                    // Under Wine/Mono ToolStripButton*Highlight AND ButtonCheckedGradient* are all empty, so using ButtonSelectedGradientMiddle as a fallback.
+                    // Theoretically the fallback color can be also empty, in which case we just accept that. But it does not occur in any tested environments.
+                    case ThemeColor.ToolStripButtonCheckedHighlight:
+                    case ThemeColor.ToolStripButtonSelectedHighlight:
+                    case ThemeColor.ToolStripButtonPressedHighlight:
+                        return defaultThemeColors[(int)ThemeColor.ToolStripButtonSelectedGradientMiddle];
+                }
+            }
+
+            return result;
         }
 
         private static void OnThemeChanged(EventArgs e)
@@ -705,11 +745,17 @@ namespace KGySoft.Drawing.ImagingTools
             {
                 useVisualStyles = Application.RenderWithVisualStyles;
                 isHighContrast = SystemInformation.HighContrast;
-                if (e.Category == UserPreferenceCategory.General)
+                switch (e.Category)
                 {
-                    isDarkSystemTheme = null;
-                    if (currentBaseTheme == DefaultTheme.System)
-                        SetBaseTheme(DefaultTheme.System, false);
+                    case UserPreferenceCategory.General:
+                        isDarkSystemTheme = null;
+                        if (currentBaseTheme == DefaultTheme.System)
+                            SetBaseTheme(DefaultTheme.System, false);
+                        break;
+
+                    case UserPreferenceCategory.VisualStyle:
+                        ResetDefaultColors();
+                        break;
                 }
             }
         }
