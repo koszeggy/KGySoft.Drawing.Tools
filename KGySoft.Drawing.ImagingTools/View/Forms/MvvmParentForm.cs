@@ -64,11 +64,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         {
 #if NETFRAMEWORK
             // In every child user control the AutoScaleMode is Font, which ensures the correct scaling of the controls themselves.
-            // Still, the container control is not scaled on real Windows, so doing that here manually.
+            // Still, the container control is not scaled on real Windows in .NET Framework and Framework Mono (but scaled in Wine), so doing that here manually.
             // NOTE: Setting None in user controls and Font for the parent form is wrong for two reasons:
             // - The scaling of the controls is quite random in many cases in that case
             // - The user controls must be scaled because as an embedded visualizer in VS2022+ the controls have no parent form
-            if (OSHelper.IsRealWindows)
+            if (!OSHelper.IsWine)
                 mvvmChild.Size = mvvmChild.ScaleSize(mvvmChild.Size);
 #endif
             this.mvvmChild = mvvmChild;
