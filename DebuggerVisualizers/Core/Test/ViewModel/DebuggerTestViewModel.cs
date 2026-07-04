@@ -615,7 +615,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.ViewModel
 
             try
             {
-                DebuggerVisualizerHelper.ShowExtensionVisualizer(provider, testObject, default, o => TestObject = o);
+                DebuggerVisualizerHelper.ShowExtensionVisualizer(provider, targetType, testObject, default, o => TestObject = o);
             }
             catch (Exception e) when (e is not StackOverflowException)
             {

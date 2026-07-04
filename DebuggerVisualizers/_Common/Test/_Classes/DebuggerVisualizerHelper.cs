@@ -67,10 +67,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test
         }
 
 #if NET472_OR_GREATER
-        internal static void ShowExtensionVisualizer(IDebuggerVisualizerProvider provider, object targetObject, bool isReplaceable, Action<object?> applyReplacedObject)
+        internal static void ShowExtensionVisualizer(IDebuggerVisualizerProvider provider, Type targetType, object targetObject, bool isReplaceable, Action<object?> applyReplacedObject)
         {
             EnsureThreadHelperInitialized();
-            Type targetType = targetObject.GetType();
             DebuggerVisualizerProviderConfiguration cfg = provider.DebuggerVisualizerProviderConfiguration;
             VisualizerObjectSource serializer = cfg.VisualizerObjectSourceType is null
                 ? new VisualizerObjectSource()

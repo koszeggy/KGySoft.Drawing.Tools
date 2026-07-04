@@ -523,7 +523,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.ViewModel
 
             try
             {
-                DebuggerVisualizerHelper.ShowExtensionVisualizer(provider, testObject, !AsReadOnly, o => TestObject = o);
+                DebuggerVisualizerHelper.ShowExtensionVisualizer(provider, targetType, testObject, !AsReadOnly, o => TestObject = o);
             }
             catch (Exception e) when (e is not StackOverflowException)
             {
