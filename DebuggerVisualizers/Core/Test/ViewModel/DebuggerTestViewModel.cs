@@ -226,10 +226,10 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.ViewModel
                 RowSetColorIndex = (r, x, i) => r.UnsafeGetRefAs<ushort>(x) = (ushort)i,
                 Palette = Palette16Bpp
             },
-            _ => throw new ArgumentException()
+            _ => throw new InvalidOperationException()
         };
 
-        private static Image FromPalette(Palette palette)
+        private static Bitmap FromPalette(Palette palette)
         {
             int count = palette.Count;
             int width = count % 256;
@@ -402,7 +402,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.ViewModel
             return result;
         }
 
-        private Image? GetPreviewImage(object? obj)
+        private Bitmap? GetPreviewImage(object? obj)
         {
             try
             {

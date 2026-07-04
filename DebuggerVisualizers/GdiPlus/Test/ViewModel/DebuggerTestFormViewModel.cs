@@ -45,9 +45,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.ViewModel
         #region Fields
 
         private static readonly HashSet<string>[] radioGroups =
-        {
-            new HashSet<string>
-            {
+        [
+            [
                 nameof(Bitmap),
                 nameof(Metafile),
                 nameof(HIcon), nameof(ManagedIcon),
@@ -55,9 +54,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.ViewModel
                 nameof(BitmapData),
                 nameof(Palette), nameof(SingleColor),
                 nameof(ImageFromFile)
-            },
-            new HashSet<string> { nameof(FileAsImage), nameof(FileAsBitmap), nameof(FileAsMetafile),nameof(FileAsIcon) },
-        };
+            ],
+            [nameof(FileAsImage), nameof(FileAsBitmap), nameof(FileAsMetafile), nameof(FileAsIcon)]
+        ];
 
         private static readonly Dictionary<Type, DebuggerVisualizerAttribute> classicDebuggerVisualizers = GdiPlusDebuggerHelper.GetDebuggerVisualizers();
 
@@ -121,9 +120,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.ViewModel
 
         #region Static Methods
 
-        private static Image? FromPalette(IList<Color> palette)
+        private static Bitmap? FromPalette(Color[] palette)
         {
-            int size = palette.Count;
+            int size = palette.Length;
             if (size == 0)
                 return null;
             var result = new Bitmap(size, size, PixelFormat.Format32bppArgb);
@@ -306,7 +305,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.ViewModel
                     case ColorPalette palette:
                         return FromPalette(palette.Entries);
                     case Color color:
-                        return FromPalette(new[] { color });
+                        return FromPalette([color]);
                     default:
                         return null;
                 }

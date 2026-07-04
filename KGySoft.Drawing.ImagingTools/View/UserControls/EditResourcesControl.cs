@@ -224,8 +224,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.HideDependentResources), chbHideDependencies, nameof(chbHideDependencies.Checked));
 
             // VM.ResourceFiles -> cmbResourceFiles.DataSource
-            cmbResourceFiles.ValueMember = nameof(KeyValuePair<LocalizableLibraries, string>.Key);
-            cmbResourceFiles.DisplayMember = nameof(KeyValuePair<LocalizableLibraries, string>.Value);
+            cmbResourceFiles.ValueMember = nameof(KeyValuePair<,>.Key);
+            cmbResourceFiles.DisplayMember = nameof(KeyValuePair<,>.Value);
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.ResourceFiles), nameof(cmbResourceFiles.DataSource), cmbResourceFiles);
 
             // VM.SelectedLibrary <-> cmbResourceFiles.SelectedValue

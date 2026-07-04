@@ -724,7 +724,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     Rectangle overflowBoundsFill = new(Point.Empty, e.Item.Size);
                     Rectangle bounds = overflowBoundsFill;
 
-                    bool drawCurve = (e.ToolStrip?.Renderer as ToolStripProfessionalRenderer)?.RoundedEdges == true && (item.GetCurrentParent() is not MenuStrip);
+                    bool drawCurve = e.ToolStrip?.Renderer is ToolStripProfessionalRenderer { RoundedEdges: true } && (item.GetCurrentParent() is not MenuStrip);
                     bool horizontal = e.ToolStrip?.Orientation == Orientation.Horizontal;
                     bool rightToLeft = item.RightToLeft == RightToLeft.Yes;
 
@@ -831,7 +831,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 #endregion
 
                 // The scaling is wrong also in Mono, but it is not possible to fix it
-                if (!OSHelper.IsFrameworkMono)
+                if (!OSHelper.IsFrameworkMono && e.ToolStrip != null)
                 {
                     // On Windows the fix is also tricky, especially in .NET Framework 3.5, because the bounds
                     // are forcibly maxed with a constant 16, but fortunately we can exploit the fact that the
@@ -1025,10 +1025,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-            {
-                if (toolTip != null)
-                    toolTip.Draw -= ToolTip_Draw;
-            }
+                toolTip?.Draw -= ToolTip_Draw;
 
             base.Dispose(disposing);
         }

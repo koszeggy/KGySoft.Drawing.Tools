@@ -190,7 +190,7 @@ namespace KGySoft.Drawing.ImagingTools
 
             #region Event Handlers
 
-            private void Timer_Tick(object sender, EventArgs e)
+            private void Timer_Tick(object? sender, EventArgs e)
             {
                 string[] formats = GetImageFormats();
                 if (formats.SequenceEqual(lastFormats ?? Reflector.EmptyArray<string>()))
@@ -237,7 +237,7 @@ namespace KGySoft.Drawing.ImagingTools
             internal ClipboardFormatId(ClipboardFormat format)
             {
                 if (format == ClipboardFormat.None)
-                    throw new ArgumentOutOfRangeException(PublicResources.ArgumentOutOfRange, nameof(format));
+                    throw new ArgumentOutOfRangeException(nameof(format), PublicResources.ArgumentOutOfRange);
 
                 Id = format;
 
@@ -289,7 +289,7 @@ namespace KGySoft.Drawing.ImagingTools
                 // Further standard names here are resolved from CF_*.
                 if (name.StartsWith(clipboardFormatPrefix, StringComparison.Ordinal))
                 {
-                    if (Enum<ClipboardFormat>.TryParse(name, out var result))
+                    if (Enum<ClipboardFormat>.TryParse(name, out ClipboardFormat result))
                     {
                         Id = result;
                         return;

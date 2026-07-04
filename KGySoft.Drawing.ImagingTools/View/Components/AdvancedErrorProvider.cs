@@ -29,6 +29,15 @@ using KGySoft.WinForms;
 
 #endregion
 
+#region Suppressions
+
+#if NETFRAMEWORK
+#pragma warning disable CS8601 // Possible null reference assignment - false alarm, older frameworks handle String.IsNullOrEmpty incorrectly
+#pragma warning disable CS8604 // Possible null reference argument - false alarm, older frameworks handle String.IsNullOrEmpty incorrectly
+#endif
+
+#endregion
+
 namespace KGySoft.Drawing.ImagingTools.View.Components
 {
     /// <summary>

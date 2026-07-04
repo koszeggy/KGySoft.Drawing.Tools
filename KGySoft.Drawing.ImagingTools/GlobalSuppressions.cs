@@ -14,4 +14,6 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Style", "IDE0130:Namespace does not match folder structure", Justification = "False alarm, Namespace Provider property is set to false to for folders that are not namespace providers")]
 [assembly: SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Decided individually")]
 [assembly: SuppressMessage("Style", "IDE0305:Use collection expression for fluent", Justification = "Decided individually")]
+[assembly: SuppressMessage("Style", "IDE0306:Simplify collection initialization", Justification = "Decided individually")]
 [assembly: SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "False alarm, in this project System.Drawing types CAN be used on non-Windows platforms")]
+[assembly: SuppressMessage("Performance", "CA1846:Prefer 'AsSpan' over 'Substring'", Justification = "Spans are not available on all targeted platforms")]
