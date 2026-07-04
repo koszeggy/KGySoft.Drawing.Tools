@@ -38,14 +38,97 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
     {
         #region Nested classes
 
-        #region ToolTipInfo class
+        #region ToolTipWindow class
 
-        private sealed class ToolTipInfo
+        private sealed class ToolTipWindow : NativeWindow
         {
             #region Fields
 
-            internal string? Message;
-            internal IntPtr Hook;
+            private Font? toolTipFont;
+
+            #endregion
+
+            #region Properties
+
+            internal string Message { get; set; }
+
+            #endregion
+
+            #region Constructors
+
+            internal ToolTipWindow(IntPtr handle, string message)
+            {
+                Message = message;
+                AssignHandle(handle);
+            }
+
+            #endregion
+
+            #region Methods
+
+            #region Public Methods
+
+            public override void ReleaseHandle()
+            {
+                base.ReleaseHandle();
+                toolTipFont?.Dispose();
+                toolTipFont = null;
+            }
+
+            #endregion
+
+            #region Protected Methods
+
+            protected override void WndProc(ref Message m)
+            {
+                switch (m.Msg)
+                {
+                    case Constants.WM_PAINT:
+                        Debug.Assert(m.HWnd == Handle);
+                        base.WndProc(ref m);
+                        using (Graphics g = Graphics.FromHwnd(Handle))
+                        {
+                            new DrawToolTipEventArgs(g, null, null, User32.GetClientRect(Handle), Message,
+                                default, default, GetFont(Handle)).DrawToolTipAdvanced();
+                            break;
+                        }
+
+                    case Constants.WM_DPICHANGED:
+                        base.WndProc(ref m);
+                        toolTipFont?.Dispose();
+                        toolTipFont = null;
+                        break;
+
+                    default:
+                        base.WndProc(ref m);
+                        return;
+                }
+            }
+
+            #endregion
+
+            #region Private Methods
+
+            private Font GetFont(IntPtr hwnd)
+            {
+                if (toolTipFont == null)
+                {
+                    try
+                    {
+                        toolTipFont = Font.FromHfont(User32.SendMessage(hwnd, Constants.WM_GETFONT, IntPtr.Zero, IntPtr.Zero));
+                    }
+                    catch (ArgumentException)
+                    {
+                        // If the current default tooltip font is a non-TrueType font, then
+                        // Font.FromHfont throws this exception, so fall back to the default control font.
+                        toolTipFont = SystemFonts.MessageBoxFont ?? (Font)ScaleHelper.DefaultFont.Clone();
+                    }
+                }
+
+                return toolTipFont;
+            }
+
+            #endregion
 
             #endregion
         }
@@ -56,13 +139,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
 
         #region Fields
 
-        // This delegate is stored as a field to prevent its possible garbage collection while used by P/Invoke call.
-        private readonly HOOKPROC callWndRetProc;
-        private readonly Dictionary<Control, NativeWindow> errorWindows = new();
-        private readonly Dictionary<IntPtr, ToolTipInfo> toolTipInfo = new();
-
+        private Dictionary<Control, ToolTipWindow>? customToolTipWindow;
         private bool isCustomRendering;
-        private Font? toolTipFont;
 
         #endregion
 
@@ -77,7 +155,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
         internal AdvancedErrorProvider(IContainer container)
             : base(container)
         {
-            callWndRetProc = ToolTipWindowHookProc;
             ResetAppearance();
         }
 
@@ -89,10 +166,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
 
         public new void SetError(Control control, string? value)
         {
+            ToolTipWindow? customWindow;
             if (String.IsNullOrEmpty(value))
             {
-                if (errorWindows.TryRemove(control, out var oldWindow))
-                    RemoveHook(oldWindow);
+                if (customToolTipWindow?.TryRemove(control, out customWindow) == true)
+                    customWindow.ReleaseHandle();
 
                 base.SetError(control, value);
                 return;
@@ -108,36 +186,19 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
             if (this.TryGetNativeWindow(control.Parent) is not NativeWindow tipWindow)
                 return;
 
-            errorWindows.AddOrUpdate(control, InitHook, UpdateHook);
-
-            #region Local Methods
-
-            NativeWindow InitHook(Control _)
+            customToolTipWindow ??= new Dictionary<Control, ToolTipWindow>();
+            if (customToolTipWindow.TryGetValue(control, out customWindow))
             {
-                IntPtr hook = User32.HookCallWndRetProc(callWndRetProc);
-                toolTipInfo[tipWindow.Handle] = new ToolTipInfo { Message = value, Hook = hook };
-                return tipWindow;
-            }
-
-            NativeWindow UpdateHook(Control key, NativeWindow oldWindow)
-            {
-                if (oldWindow != tipWindow)
+                if (tipWindow.Handle != customWindow.Handle)
                 {
-                    RemoveHook(oldWindow);
-                    return InitHook(key);
+                    customWindow.ReleaseHandle();
+                    customWindow.AssignHandle(tipWindow.Handle);
                 }
 
-                toolTipInfo[tipWindow.Handle].Message = value;
-                return tipWindow;
+                customWindow.Message = value;
             }
-
-            void RemoveHook(NativeWindow nativeWindow)
-            {
-                if (toolTipInfo.TryRemove(nativeWindow.Handle, out var info))
-                    User32.UnhookWindowsHook(info.Hook);
-            }
-
-            #endregion
+            else
+                customToolTipWindow.Add(control, new ToolTipWindow(tipWindow.Handle, value));
         }
 
         #endregion
@@ -151,9 +212,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
             if (isCustomRendering == customToolTip)
                 return;
 
-            Debug.Assert(isCustomRendering || toolTipInfo.Count == 0 && errorWindows.Count == 0);
+            Debug.Assert(isCustomRendering || (customToolTipWindow?.Count).GetValueOrDefault() == 0);
             isCustomRendering = customToolTip;
-            toolTipFont = null;
 
             // turning custom tooltips on/off: resetting all tooltips
             IDictionary? items = Items;
@@ -166,9 +226,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
                 if (!String.IsNullOrEmpty(message))
                     SetError(control, message);
             }
-
-            toolTipInfo.Clear();
-            errorWindows.Clear();
         }
 
         #endregion
@@ -180,66 +237,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
             base.Dispose(disposing);
             if (disposing)
             {
-                foreach (var item in toolTipInfo)
-                    User32.UnhookWindowsHook(item.Value.Hook);
-                errorWindows.Clear();
-                toolTipInfo.Clear();
+                Dictionary<Control, ToolTipWindow>? customToolTips = customToolTipWindow;
+                if (customToolTips == null)
+                    return;
+                foreach (ToolTipWindow customWindow in customToolTips.Values)
+                    customWindow.ReleaseHandle();
+                customToolTipWindow = null;
             }
-        }
-
-        #endregion
-
-        #region Private Methods
-
-        private unsafe IntPtr ToolTipWindowHookProc(int nCode, IntPtr wParam, IntPtr lParam)
-        {
-            if (nCode >= 0)
-            {
-                var msg = (CWPRETSTRUCT*)lParam; 
-                Debug.WriteLine($"{Message.Create(msg->hwnd, (int)msg->message, msg->wParam, msg->lParam)}");
-
-                // NOTE: we may receive the messages even for the associated parent control of the tooltip, so checking toolTipInfo
-                // is not just for getting the tooltip text, but also to ensure that we handle only the tooltip window.
-                if (toolTipInfo.TryGetValue(msg->hwnd, out ToolTipInfo? info))
-                {
-                    switch (msg->message)
-                    {
-                        case Constants.WM_PAINT:
-                            {
-                                using Graphics g = Graphics.FromHwnd(msg->hwnd);
-                                new DrawToolTipEventArgs(g, null, null, User32.GetClientRect(msg->hwnd), info.Message,
-                                    default, default, GetFont(msg->hwnd)).DrawToolTipAdvanced();
-                                break;
-                            }
-
-                        case Constants.WM_DPICHANGED:
-                            toolTipFont?.Dispose();
-                            toolTipFont = null;
-                            break;
-                    }
-                }
-            }
-
-            return User32.CallNextHook(nCode, wParam, lParam);
-        }
-
-        private Font GetFont(IntPtr hwnd)
-        {
-            if (toolTipFont == null)
-            {
-                try
-                {
-                    toolTipFont = Font.FromHfont(User32.SendMessage(hwnd, Constants.WM_GETFONT, IntPtr.Zero, IntPtr.Zero));
-                }
-                catch (ArgumentException)
-                {
-                    // If the current default tooltip font is a non-TrueType font, then
-                    // Font.FromHfont throws this exception, so fall back to the default control font.
-                    toolTipFont = SystemFonts.MessageBoxFont;
-                }
-            }
-
-            return toolTipFont!;
         }
 
         #endregion
