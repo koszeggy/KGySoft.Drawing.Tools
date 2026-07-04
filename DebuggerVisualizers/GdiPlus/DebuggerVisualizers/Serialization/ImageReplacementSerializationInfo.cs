@@ -50,7 +50,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization
 
         public void Dispose()
         {
-            imageInfo?.Dispose();
+            // Not disposing imageInfo here, it should be done by the caller if the replacement image is not used anymore.
 #if NET35
             (reader as IDisposable)?.Dispose();
 #else
