@@ -458,7 +458,8 @@ namespace KGySoft.Drawing.ImagingTools
             if (theme == DefaultTheme.Classic && !isBaseThemeEverChanged && (customColors is null || !resetCustomColors))
                 return;
 
-            if (!OSHelper.IsWindows10OrLater)
+            // Dark theme functionally work on Wine as well, but the standard controls don't to a dark appearance, so it's just better not applying it.
+            if (!OSHelper.IsWindows10OrLater || !OSHelper.IsRealWindows)
                 return;
 
             bool isNewThemeDark = (theme == DefaultTheme.Dark || theme == DefaultTheme.System && IsDarkSystemTheme) && useVisualStyles;

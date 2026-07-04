@@ -102,14 +102,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             InitializeComponent();
             BackColor = Color.Transparent; // to make the resize grip in the parent form visible
 
-            // For Linux/Mono adding an empty column in the middle so the error provider icon will not appear in a new row
-            if (OSHelper.IsLinuxMono)
-            {
-                pnlEditResourceEntry.ColumnCount = 3;
-                pnlEditResourceEntry.SetColumn(gbTranslatedText, 2);
-                pnlEditResourceEntry.ColumnStyles.Insert(1, new ColumnStyle(SizeType.AutoSize));
-            }
-
             if (!IsDesignMode)
                 gridResources.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
         }
@@ -139,7 +131,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         protected override void OnLoad(EventArgs e)
         {
-            if (!IsLoaded)
+            // On Windows Mono it would work anyway, whereas on Linux the icon would appear under the text box. Inserting a new column between the groupboxes doesn't work anymore.
+            if (!IsLoaded && !OSHelper.IsFrameworkMono)
             {
                 ErrorProvider.SetIconAlignment(gbTranslatedText, ErrorIconAlignment.MiddleLeft);
                 WarningProvider.SetIconAlignment(gbTranslatedText, ErrorIconAlignment.MiddleLeft);
