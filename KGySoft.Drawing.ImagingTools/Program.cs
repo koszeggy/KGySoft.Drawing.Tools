@@ -17,6 +17,8 @@
 
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 #if NET471_OR_GREATER || NETCOREAPP
 using System.Runtime.InteropServices;
 #endif
@@ -53,6 +55,7 @@ namespace KGySoft.Drawing.ImagingTools
         }
 
         [Conditional("DEBUG")]
+        [SuppressMessage("ReSharper", "LocalizableElement", Justification = "Debug info")]
         private static void DumpDebugInfo()
         {
 #if NET35
@@ -71,6 +74,9 @@ namespace KGySoft.Drawing.ImagingTools
 #endif  
             Console.WriteLine($"System scale: {ScaleHelper.SystemScale}");
             Console.WriteLine($"Per-monitor DPI awareness version: {ScaleHelper.PerMonitorDpiAwarenessVersion}");
+            Console.WriteLine($"ScaleHelper.DefaultFont: {ScaleHelper.DefaultFont}");
+            Console.WriteLine($"SystemFonts.DefaultFont: {SystemFonts.DefaultFont}");
+            Console.WriteLine($"SystemFonts.MessageBoxFont: {SystemFonts.MessageBoxFont}");
         }
 
         #endregion
