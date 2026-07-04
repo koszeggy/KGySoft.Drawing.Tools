@@ -34,7 +34,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
     /// <summary>
     /// An error provider that supports custom rendering of tooltips.
     /// </summary>
-    internal class AdvancedErrorProvider : ErrorProvider
+    internal class AdvancedErrorProvider : KGySoft.WinForms.Components.AdvancedErrorProvider
     {
         #region Nested classes
 
@@ -195,15 +195,28 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
         {
             if (nCode >= 0)
             {
-                var msg = (CWPRETSTRUCT*)lParam;
+                var msg = (CWPRETSTRUCT*)lParam; 
+                Debug.WriteLine($"{Message.Create(msg->hwnd, (int)msg->message, msg->wParam, msg->lParam)}");
 
-                // NOTE: we may receive the messages even for the associated parent control of the tooltip checking toolTipInfo
-                // is not just for getting the tooltip text, but also to ensure that we paint only the tooltip window.
-                if (msg->message == Constants.WM_PAINT && toolTipInfo.TryGetValue(msg->hwnd, out ToolTipInfo? info))
+                // NOTE: we may receive the messages even for the associated parent control of the tooltip, so checking toolTipInfo
+                // is not just for getting the tooltip text, but also to ensure that we handle only the tooltip window.
+                if (toolTipInfo.TryGetValue(msg->hwnd, out ToolTipInfo? info))
                 {
-                    using Graphics g = Graphics.FromHwnd(msg->hwnd);
-                    new DrawToolTipEventArgs(g, null, null, User32.GetClientRect(msg->hwnd), info.Message,
-                        default, default, GetFont(msg->hwnd)).DrawToolTipAdvanced();
+                    switch (msg->message)
+                    {
+                        case Constants.WM_PAINT:
+                            {
+                                using Graphics g = Graphics.FromHwnd(msg->hwnd);
+                                new DrawToolTipEventArgs(g, null, null, User32.GetClientRect(msg->hwnd), info.Message,
+                                    default, default, GetFont(msg->hwnd)).DrawToolTipAdvanced();
+                                break;
+                            }
+
+                        case Constants.WM_DPICHANGED:
+                            toolTipFont?.Dispose();
+                            toolTipFont = null;
+                            break;
+                    }
                 }
             }
 

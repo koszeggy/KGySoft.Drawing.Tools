@@ -160,11 +160,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 if (ParentViewProperties?.MinimumSize is Size { IsEmpty: false } size && mvvmParent is MvvmParentForm parent)
                     parent.MinimumSize = size.Scale(parent.GetScale());
                 ApplySizeAdjustments(dynamicSizesScale);
-                if (dynamicSizesScale == null)
-                    return;
-                UpdateProviderIcon(errorProvider, ValidationSeverity.Error);
-                UpdateProviderIcon(warningProvider, ValidationSeverity.Warning);
-                UpdateProviderIcon(infoProvider, ValidationSeverity.Information);
             }
             finally
             {
@@ -251,7 +246,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                     base.WndProc(ref m);
 
                     // embedded into a WPF host (visualizer extension): adjusting the font
-                    if (Parent is not Form)
+                    if (ParentForm is null)
                         AdjustFontNonFormParent();
 
                     return;
@@ -323,26 +318,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             ContainerControl = this,
             Icon = level switch
             {
-                ValidationSeverity.Error => Icons.SystemError.ToScaledIcon(this.GetScale()),
-                ValidationSeverity.Warning => Icons.SystemWarning.ToScaledIcon(this.GetScale()),
-                _ => Icons.SystemInformation.ToScaledIcon(this.GetScale()),
+                ValidationSeverity.Error => Icons.SystemError,
+                ValidationSeverity.Warning => Icons.SystemWarning,
+                _ => Icons.SystemInformation
             }
         };
-
-        private void UpdateProviderIcon(AdvancedErrorProvider? provider, ValidationSeverity level)
-        {
-            if (provider == null)
-                return;
-
-            var prevIcon = provider.Icon;
-            provider.Icon = level switch
-            {
-                ValidationSeverity.Error => Icons.SystemError.ToScaledIcon(this.GetScale()),
-                ValidationSeverity.Warning => Icons.SystemWarning.ToScaledIcon(this.GetScale()),
-                _ => Icons.SystemInformation.ToScaledIcon(this.GetScale()),
-            };
-            prevIcon.Dispose();
-        }
 
         private void ShowChildView(IViewModel vm) => ViewFactory.ShowDialog(vm, this);
 
