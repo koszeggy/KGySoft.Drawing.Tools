@@ -165,7 +165,7 @@ Alternatively, you can download the installer package from the VisualStudio Mark
   - `net40` contains the .NET Framework 4.0 build. It requires at least Visual Studio 2010, but it's compatible even with Windows XP and ReactOS. Cannot be used to debug images of .NET Framework 2.0-3.5 and .NET Core projects.
   - `net45` contains the .NET Framework 4.5 build. It requires at least Windows Vista SP2 and Visual Studio 2012. Its debugger visualizers support .NET Framework 4.x, .NET Core 2.1+ and .NET 5+ projects.
   - `net462` contains the .NET Framework 4.6.2 build. It requires at least Windows 7 SP1 and Visual Studio 2012. It contains also the SkiaSharp debugger visualizers, which is not included into the other builds. It can be used to debug images of .NET Framework 4.x, .NET Core 2.1+ and .NET 5+ projects.
-  - `net9.0-windows` contains the .NET 9.0 binaries of the Imaging Tools application. It can be used as a standalone application only, as it does not contain any debugger visualizers (because Visual Studio would not recognize the .NET build of the visualizers).
+  - `net10.0-windows` contains the .NET 10.0 binaries of the Imaging Tools application. It can be used as a standalone application only, as it does not contain any debugger visualizers (because Visual Studio would not recognize the .NET build of the visualizers).
 3. Execute `KGySoft.Drawing.ImagingTools.exe` from one of the folders listed above. Click the _Manage Debugger Visualizer Installations..._ button (the gear icon) on the toolbar.
 
 <p align="center">
