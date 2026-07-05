@@ -40,7 +40,7 @@ The Imaging Tools application makes possible to load images and icons from file,
 <details>
 <summary><strong>Compatibility</strong><a id="compatibility"/></summary><p/>
 
-KGy SOFT Imaging Tools supports a wide range of platforms. Windows is supported starting with Windows XP but by using [Mono](https://www.mono-project.com/download/stable/) you can execute it also on Linux. See the [downloads](#download) for details.
+KGy SOFT Imaging Tools supports a wide range of platforms. Windows is supported starting with Windows XP but by using [Mono](https://www.mono-project.com/download/stable/) or [Wine](https://gitlab.winehq.org/wine/wine) you can execute it also on Linux or macOS. See the [downloads](#download) for details.
 
 <p align="center">
   <img alt="KGy SOFT Imaging Tools on Ubuntu Linux, using dark theme" src="https://user-images.githubusercontent.com/27336165/124265526-157a8500-db36-11eb-8d3a-84e66259ce03.png"/>
@@ -50,6 +50,11 @@ KGy SOFT Imaging Tools supports a wide range of platforms. Windows is supported 
 <p align="center">
   <img alt="KGy SOFT Imaging Tools on ReactOS" src="https://github.com/koszeggy/KGySoft.Drawing.Tools/assets/27336165/0eef286a-2bb6-4639-b775-b6f75c0e7fba"/>
   <br/><em>KGy SOFT Imaging Tools on ReactOS</em>
+</p>
+
+<p align="center">
+  <img alt="KGy SOFT ImagingTools on macOS" src="https://github.com/user-attachments/assets/10c8f62e-aa7f-4ff6-9007-96896f4c60a9" />
+  <br/><em>KGy SOFT Imaging Tools on macOS</em>
 </p>
 </details>
 
