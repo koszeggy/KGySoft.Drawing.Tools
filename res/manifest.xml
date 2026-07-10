@@ -5,7 +5,7 @@
     <ResourceSets>ImagingTools,CoreLibraries,DrawingLibraries,DrawingCoreLibraries</ResourceSets>
     <ImagingToolsVersion>3.1.0</ImagingToolsVersion>
     <Author>György Kőszeg</Author>
-  </item>-->
+  </item>
   <item>
     <CultureName>hu</CultureName>
     <Description>Complete Hungarian translation for ImagingTools and other dependent libraries.</Description>
@@ -13,7 +13,7 @@
     <ImagingToolsVersion>4.0.0</ImagingToolsVersion>
     <Author>György Kőszeg</Author>
   </item>
-  <!--<item>
+  <item>
     <CultureName>hu</CultureName>
     <Description>Complete Hungarian translation for ImagingTools and other dependent libraries.</Description>
     <ResourceSets>ImagingTools,CoreLibraries,DrawingLibraries,DrawingCoreLibraries</ResourceSets>
@@ -25,6 +25,13 @@
     <Description>Complete Hungarian translation for ImagingTools and other dependent libraries.</Description>
     <ResourceSets>ImagingTools,CoreLibraries,DrawingLibraries,DrawingCoreLibraries</ResourceSets>
     <ImagingToolsVersion>5.1.0</ImagingToolsVersion>
+    <Author>György Kőszeg</Author>
+  </item>
+  <item>
+    <CultureName>hu</CultureName>
+    <Description>Complete Hungarian translation for ImagingTools and other dependent libraries.</Description>
+    <ResourceSets>31</ResourceSets>
+    <ImagingToolsVersion>6.0.0</ImagingToolsVersion>
     <Author>György Kőszeg</Author>
   </item>
 </manifest>

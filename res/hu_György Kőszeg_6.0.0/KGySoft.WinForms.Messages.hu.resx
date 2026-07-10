@@ -1,0 +1,168 @@
+<?xml version="1.0"?>
+<root>
+  <data name="Accessors_MethodDoesNotExistFormat">
+    <value>A(z) „{1}” típusnak nincs „{0}” nevű metódusa.</value>
+  </data>
+  <data name="Accessors_PropertyDoesNotExistFormat">
+    <value>A(z) „{1}” típusnak nincs „{0}” nevű tulajdonsága.</value>
+  </data>
+  <data name="BaseForm_AlreadySuspended">
+    <value>Ezt a formot egy másik MDI gyermek már felfüggesztette.</value>
+  </data>
+  <data name="BaseForm_CannotSuspendMdiParent">
+    <value>MDI szülő nem függeszthető fel.</value>
+  </data>
+  <data name="BaseForm_MdiContainerNotFound">
+    <value>Ennek a formnak MDI szülőnek vagy gyermeknek kell lennie.</value>
+  </data>
+  <data name="BaseForm_NotMdiContainer">
+    <value>A formnak MDI konténernek kell lennie. A hívás előtt be kell állítani az IsMdiContainer tulajdonságot.</value>
+  </data>
+  <data name="DecimalTextBox_InvalidTextFormat">
+    <value>A szöveg nem értelmezhető decimális számként: {0}</value>
+  </data>
+  <data name="DecimalTextBox_InvalidValueFormat">
+    <value>Az érték megsérti a Range tulajdonságban beállított tartományt: {0}</value>
+  </data>
+  <data name="DecimalTextBox_OverflowFormat">
+    <value>Az érték túl nagy vagy kicsi ahhoz, hogy decimal típusként lehessen ábrázolni: '{0}'</value>
+  </data>
+  <data name="Dialogs_AbortButtonText">
+    <value>Megsz&amp;akít</value>
+  </data>
+  <data name="Dialogs_ApplyButtonText">
+    <value>&amp;Alkalmaz</value>
+  </data>
+  <data name="Dialogs_CancelButtonText">
+    <value>&amp;Mégsem</value>
+  </data>
+  <data name="Dialogs_ConfirmationCaption">
+    <value>Megerősítés</value>
+  </data>
+  <data name="Dialogs_DefaultPrompt">
+    <value>Érték:</value>
+  </data>
+  <data name="Dialogs_ErrorCaption">
+    <value>Hiba</value>
+  </data>
+  <data name="Dialogs_IgnoreButtonText">
+    <value>&amp;Kihagy</value>
+  </data>
+  <data name="Dialogs_InfoCaption">
+    <value>Információ</value>
+  </data>
+  <data name="Dialogs_NoButtonText">
+    <value>&amp;Nem</value>
+  </data>
+  <data name="Dialogs_OKButtonText">
+    <value>&amp;OK</value>
+  </data>
+  <data name="Dialogs_RetryButtonText">
+    <value>&amp;Ismét</value>
+  </data>
+  <data name="Dialogs_WarningCaption">
+    <value>Figyelmeztetés</value>
+  </data>
+  <data name="Dialogs_YesButtonText">
+    <value>&amp;Igen</value>
+  </data>
+  <data name="General_InternalErrorFormat">
+    <value>Belső hiba: {0}</value>
+  </data>
+  <data name="General_NoVisualStyles">
+    <value>A vizuális stílusok nem elérhetők.</value>
+  </data>
+  <data name="General_WindowsOnly">
+    <value>Ez a metódus csak Windowson támogatott.</value>
+  </data>
+  <data name="InvokeMarshaller_NoSynchronizationContext">
+    <value>A UI szálon futtatás nem lehetséges, mert nem volt rögzített SynchronizationContext.</value>
+  </data>
+  <data name="Localization_InvalidResourceFormat">
+    <value>A(z) „{0}” kulcs lokalizációja sikertelen volt a megadott {1} elemmel. Formátumstring: {2}</value>
+  </data>
+  <data name="SaveDialog_CannotShowFormat">
+    <value>A fájl mentés párbeszédpanelt nem sikerült megjeleníteni. Hibakód: #{0}</value>
+  </data>
+  <data name="TaskDialog_ButtonCommandLinkFormat">
+    <value>[-&gt; {0}]</value>
+  </data>
+  <data name="TaskDialog_ButtonCustomIconFormat">
+    <value>[# {0}]</value>
+  </data>
+  <data name="TaskDialog_ButtonElevatedFormat">
+    <value>[U {0}]</value>
+  </data>
+  <data name="TaskDialog_ButtonFormat">
+    <value>[{0}]</value>
+  </data>
+  <data name="TaskDialog_Caption">
+    <value>[Ablak felirat]</value>
+  </data>
+  <data name="TaskDialog_CheckBoxCheckedFormat">
+    <value>[X] {0}</value>
+  </data>
+  <data name="TaskDialog_CheckBoxUncheckedFormat">
+    <value>[ ] {0}</value>
+  </data>
+  <data name="TaskDialog_Details">
+    <value>[Bővebb információ]</value>
+  </data>
+  <data name="TaskDialog_ExpandoButtonCollapsedFormat">
+    <value>[V] {0}</value>
+  </data>
+  <data name="TaskDialog_ExpandoButtonExpandedFormat">
+    <value>[^] {0}</value>
+  </data>
+  <data name="TaskDialog_Footer">
+    <value>[Lábléc]</value>
+  </data>
+  <data name="TaskDialog_HasParentFormat">
+    <value>A(z) „{0}” nevű feladat párbeszéldpanel vezérlőnek már van szülője.</value>
+  </data>
+  <data name="TaskDialog_HideDetails">
+    <value>Részletek &amp;elrejtése</value>
+  </data>
+  <data name="TaskDialog_Initializing">
+    <value>Ez a tulajdonság nem változtatható meg a feladat párbeszédpanel inicializálása közben.</value>
+  </data>
+  <data name="TaskDialog_InvalidState">
+    <value>Ez a tulajdonság nem változtatható meg a feladat párbeszédpanel jelen állapotában.</value>
+  </data>
+  <data name="TaskDialog_MainInstruction">
+    <value>[Főcím]</value>
+  </data>
+  <data name="TaskDialog_Message">
+    <value>[Tartalom]</value>
+  </data>
+  <data name="TaskDialog_PropertyChangeFormat">
+    <value>A(z) „{0}” tulajdonság nem változtatható meg a feladat párbeszédpanel látható állapotában.</value>
+  </data>
+  <data name="TaskDialog_RadioButtonCheckedFormat">
+    <value>(O) {0}</value>
+  </data>
+  <data name="TaskDialog_RadioButtonUncheckedFormat">
+    <value>( ) {0}</value>
+  </data>
+  <data name="TaskDialog_ShowDetails">
+    <value>&amp;Részletek mutatása</value>
+  </data>
+  <data name="TaskDialogStandardButtons.Cancel">
+    <value>&amp;Mégsem</value>
+  </data>
+  <data name="TaskDialogStandardButtons.Close">
+    <value>&amp;Bezár</value>
+  </data>
+  <data name="TaskDialogStandardButtons.No">
+    <value>&amp;Nem</value>
+  </data>
+  <data name="TaskDialogStandardButtons.OK">
+    <value>&amp;OK</value>
+  </data>
+  <data name="TaskDialogStandardButtons.Retry">
+    <value>&amp;Ismét</value>
+  </data>
+  <data name="TaskDialogStandardButtons.Yes">
+    <value>&amp;Igen</value>
+  </data>
+</root>
