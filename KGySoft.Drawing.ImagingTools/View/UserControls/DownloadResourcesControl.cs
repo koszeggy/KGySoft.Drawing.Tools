@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: DownloadResourcesControl.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -19,6 +19,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.ViewModel;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -28,8 +29,18 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
     {
         #region Fields
 
+        #region Static Fields
+
+        private static readonly Padding referencePadding = new Padding(3);
+
+        #endregion
+
+        #region Instance Fields
+
         private ParentViewProperties? parentProperties;
 
+        #endregion
+        
         #endregion
 
         #region Properties
@@ -90,6 +101,17 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             InitCommandBindings();
             InitPropertyBindings();
             base.ApplyViewModel();
+        }
+
+        protected override void ApplySizeAdjustments(PointF? dynamicSizesScale)
+        {
+            PointF scale = this.GetScale();
+            Padding = referencePadding.Scale(scale);
+            progress.AdjustSizes();
+            gridDownloadableResources.Font = Font;
+            if (dynamicSizesScale is PointF factor)
+                gridDownloadableResources.AdjustSizes(factor);
+            okCancelButtons.EnsureSize();
         }
 
         protected override void Dispose(bool disposing)

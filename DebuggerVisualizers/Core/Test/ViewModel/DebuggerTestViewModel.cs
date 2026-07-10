@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: DebuggerTestViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -226,10 +226,10 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.ViewModel
                 RowSetColorIndex = (r, x, i) => r.UnsafeGetRefAs<ushort>(x) = (ushort)i,
                 Palette = Palette16Bpp
             },
-            _ => throw new ArgumentException()
+            _ => throw new InvalidOperationException()
         };
 
-        private static Image FromPalette(Palette palette)
+        private static Bitmap FromPalette(Palette palette)
         {
             int count = palette.Count;
             int width = count % 256;
@@ -402,7 +402,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.ViewModel
             return result;
         }
 
-        private Image? GetPreviewImage(object? obj)
+        private Bitmap? GetPreviewImage(object? obj)
         {
             try
             {
@@ -615,7 +615,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Core.Test.ViewModel
 
             try
             {
-                DebuggerVisualizerHelper.ShowExtensionVisualizer(provider, testObject, default, o => TestObject = o);
+                DebuggerVisualizerHelper.ShowExtensionVisualizer(provider, targetType, testObject, default, o => TestObject = o);
             }
             catch (Exception e) when (e is not StackOverflowException)
             {

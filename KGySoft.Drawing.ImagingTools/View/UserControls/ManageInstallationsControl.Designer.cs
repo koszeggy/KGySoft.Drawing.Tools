@@ -1,6 +1,4 @@
-﻿using System.Windows.Forms;
-
-namespace KGySoft.Drawing.ImagingTools.View.UserControls
+﻿namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
     partial class ManageInstallationsControl
     {
@@ -19,17 +17,17 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             this.gbInstallation = new System.Windows.Forms.GroupBox();
             this.pnlStatus = new KGySoft.Drawing.ImagingTools.View.Controls.AutoMirrorPanel();
-            this.lblStatusText = new System.Windows.Forms.Label();
-            this.lblStatus = new System.Windows.Forms.Label();
+            this.lblStatusText = new KGySoft.WinForms.Controls.AdvancedLabel();
+            this.lblStatus = new KGySoft.WinForms.Controls.AdvancedLabel();
             this.pnlButtons = new System.Windows.Forms.FlowLayoutPanel();
-            this.btnRemove = new System.Windows.Forms.Button();
-            this.btnInstall = new System.Windows.Forms.Button();
+            this.btnRemove = new KGySoft.WinForms.Controls.AdvancedButton();
+            this.btnInstall = new KGySoft.WinForms.Controls.AdvancedButton();
             this.tbPath = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox();
-            this.lblPath = new System.Windows.Forms.Label();
+            this.lblPath = new KGySoft.WinForms.Controls.AdvancedLabel();
             this.gbVisualStudioVersions = new System.Windows.Forms.GroupBox();
-            this.cmbInstallations = new System.Windows.Forms.ComboBox();
+            this.cmbInstallations = new KGySoft.WinForms.Controls.AdvancedComboBox();
             this.gbAvailableVersion = new System.Windows.Forms.GroupBox();
-            this.lblAvailableVersion = new System.Windows.Forms.Label();
+            this.lblAvailableVersion = new KGySoft.WinForms.Controls.AdvancedLabel();
             this.gbInstallation.SuspendLayout();
             this.pnlStatus.SuspendLayout();
             this.pnlButtons.SuspendLayout();
@@ -65,7 +63,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // lblStatusText
             // 
             this.lblStatusText.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblStatusText.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.lblStatusText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.lblStatusText.Location = new System.Drawing.Point(47, 3);
             this.lblStatusText.Name = "lblStatusText";
@@ -77,10 +74,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             this.lblStatus.AutoSize = true;
             this.lblStatus.Dock = System.Windows.Forms.DockStyle.Left;
-            this.lblStatus.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.lblStatus.Location = new System.Drawing.Point(0, 3);
             this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(47, 13);
+            this.lblStatus.Size = new System.Drawing.Size(47, 29);
             this.lblStatus.TabIndex = 0;
             this.lblStatus.Text = "lblStatus";
             // 
@@ -92,7 +88,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.pnlButtons.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
             this.pnlButtons.Location = new System.Drawing.Point(3, 81);
             this.pnlButtons.Name = "pnlButtons";
-            this.pnlButtons.Padding = new System.Windows.Forms.Padding(3);
+            this.pnlButtons.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
             this.pnlButtons.Size = new System.Drawing.Size(392, 35);
             this.pnlButtons.TabIndex = 3;
             // 
@@ -100,10 +96,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             this.btnRemove.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.btnRemove.AutoSize = true;
-            this.btnRemove.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnRemove.Location = new System.Drawing.Point(307, 6);
+            this.btnRemove.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.btnRemove.Location = new System.Drawing.Point(308, 6);
+            this.btnRemove.MinimumSize = new System.Drawing.Size(75, 23);
             this.btnRemove.Name = "btnRemove";
-            this.btnRemove.Size = new System.Drawing.Size(76, 23);
+            this.btnRemove.Size = new System.Drawing.Size(75, 23);
             this.btnRemove.TabIndex = 1;
             this.btnRemove.Text = "btnRemove";
             this.btnRemove.UseVisualStyleBackColor = true;
@@ -112,8 +109,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             this.btnInstall.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.btnInstall.AutoSize = true;
-            this.btnInstall.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnInstall.Location = new System.Drawing.Point(226, 6);
+            this.btnInstall.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.btnInstall.Location = new System.Drawing.Point(227, 6);
+            this.btnInstall.MinimumSize = new System.Drawing.Size(75, 23);
             this.btnInstall.Name = "btnInstall";
             this.btnInstall.Size = new System.Drawing.Size(75, 23);
             this.btnInstall.TabIndex = 0;
@@ -134,7 +132,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // lblPath
             // 
             this.lblPath.Dock = System.Windows.Forms.DockStyle.Top;
-            this.lblPath.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.lblPath.Location = new System.Drawing.Point(3, 16);
             this.lblPath.Name = "lblPath";
             this.lblPath.Size = new System.Drawing.Size(392, 13);
@@ -156,7 +153,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             this.cmbInstallations.Dock = System.Windows.Forms.DockStyle.Top;
             this.cmbInstallations.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbInstallations.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.cmbInstallations.FormattingEnabled = true;
             this.cmbInstallations.Location = new System.Drawing.Point(3, 16);
             this.cmbInstallations.Name = "cmbInstallations";
@@ -177,7 +173,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // lblAvailableVersion
             // 
             this.lblAvailableVersion.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblAvailableVersion.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.lblAvailableVersion.Location = new System.Drawing.Point(3, 16);
             this.lblAvailableVersion.Name = "lblAvailableVersion";
             this.lblAvailableVersion.Size = new System.Drawing.Size(392, 21);
@@ -188,12 +183,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Size = new System.Drawing.Size(404, 211);
             this.Controls.Add(this.gbInstallation);
             this.Controls.Add(this.gbVisualStudioVersions);
             this.Controls.Add(this.gbAvailableVersion);
             this.Name = "ManageInstallationsControl";
-            this.Padding = new System.Windows.Forms.Padding(3);
+            this.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.Size = new System.Drawing.Size(404, 211);
             this.gbInstallation.ResumeLayout(false);
             this.gbInstallation.PerformLayout();
             this.pnlStatus.ResumeLayout(false);
@@ -203,21 +198,22 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             this.gbVisualStudioVersions.ResumeLayout(false);
             this.gbAvailableVersion.ResumeLayout(false);
             this.ResumeLayout(false);
+
         }
 
         #endregion
         private System.Windows.Forms.GroupBox gbInstallation;
         private System.Windows.Forms.FlowLayoutPanel pnlButtons;
-        private System.Windows.Forms.Button btnRemove;
-        private System.Windows.Forms.Button btnInstall;
+        private KGySoft.WinForms.Controls.AdvancedButton btnRemove;
+        private KGySoft.WinForms.Controls.AdvancedButton btnInstall;
         private Controls.AutoMirrorPanel pnlStatus;
-        private System.Windows.Forms.Label lblStatusText;
-        private System.Windows.Forms.Label lblStatus;
+        private KGySoft.WinForms.Controls.AdvancedLabel lblStatusText;
+        private KGySoft.WinForms.Controls.AdvancedLabel lblStatus;
         private Controls.AdvancedTextBox tbPath;
-        private System.Windows.Forms.Label lblPath;
-        private GroupBox gbVisualStudioVersions;
-        private ComboBox cmbInstallations;
-        private GroupBox gbAvailableVersion;
-        private Label lblAvailableVersion;
+        private KGySoft.WinForms.Controls.AdvancedLabel lblPath;
+        private System.Windows.Forms.GroupBox gbVisualStudioVersions;
+        private KGySoft.WinForms.Controls.AdvancedComboBox cmbInstallations;
+        private System.Windows.Forms.GroupBox gbAvailableVersion;
+        private KGySoft.WinForms.Controls.AdvancedLabel lblAvailableVersion;
     }
 }

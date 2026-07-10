@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: Res.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -16,21 +16,17 @@
 #region Usings
 
 using System;
-using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Resources;
 using System.Threading;
 
-using KGySoft.Collections;
 using KGySoft.CoreLibraries;
-using KGySoft.Reflection;
 using KGySoft.Resources;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -60,10 +56,6 @@ namespace KGySoft.Drawing.ImagingTools
             SafeMode = true,
             UseLanguageSettings = true,
         };
-
-        // Note: No need to use ThreadSafeCacheFactory here because used only from the UI thread when applying resources
-        // ReSharper disable once CollectionNeverUpdated.Local
-        private static readonly Cache<Type, PropertyInfo[]?> localizableStringPropertiesCache = new Cache<Type, PropertyInfo[]?>(GetLocalizableStringProperties);
 
         private static string? resourcesDir;
         private static CultureInfo displayLanguage;
@@ -122,7 +114,7 @@ namespace KGySoft.Drawing.ImagingTools
         }
 
         /// <summary>
-        /// Represents the current display language. Similar to <see cref="Thread.CurrentUICulture"/> and <see cref="LanguageSettings.DisplayLanguage"/>
+        /// Represents the current display language. Similar to <see cref="Thread.CurrentUICulture"/> and <see cref="LanguageSettings.DisplayLanguage"/>,
         /// but this property is not thread-bounded and can be used reliably even when running as a debugger visualizer where Visual Studio always resets
         /// the <see cref="Thread.CurrentUICulture"/> property on every keystroke.
         /// </summary>
@@ -136,7 +128,7 @@ namespace KGySoft.Drawing.ImagingTools
             }
             set
             {
-                // Always setting also the current thread because when running from debugger visualizer VS may change it independently from the this code base.
+                // Always setting also the current thread because when running from debugger visualizer VS may change it independently of this code base.
                 // It is also needed for DynamicResourceManager instances of the different KGy SOFT libraries to save content automatically on language change.
                 LanguageSettings.DisplayLanguage = value;
                 if (Equals(displayLanguage, value))
@@ -147,6 +139,8 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
+        internal static bool IsRightToLeft => DisplayLanguage.TextInfo.IsRightToLeft;
+
         #endregion
 
         #region Title Captions
@@ -155,16 +149,16 @@ namespace KGySoft.Drawing.ImagingTools
         internal static string TitleNoImage => Get("Title_NoImage");
 
         /// <summary>Error</summary>
-        internal static string TitleError => Get("Title_Error");
+        internal static string TitleErrorId => "Title_Error";
 
         /// <summary>Information</summary>
-        internal static string TitleInformation => Get("Title_Information");
+        internal static string TitleInformationId => "Title_Information";
 
         /// <summary>Warning</summary>
-        internal static string TitleWarning => Get("Title_Warning");
+        internal static string TitleWarningId => "Title_Warning";
 
         /// <summary>Confirmation</summary>
-        internal static string TitleConfirmation => Get("Title_Confirmation");
+        internal static string TitleConfirmationId => "Title_Confirmation";
 
         /// <summary>Open Image</summary>
         internal static string TitleOpenFileDialog => Get("Title_OpenFileDialog");
@@ -177,6 +171,9 @@ namespace KGySoft.Drawing.ImagingTools
 
         /// <summary>Browse For Folder</summary>
         internal static string TitleFolderDialog => Get("Title_FolderDialog");
+
+        /// <summary>Paste Special</summary>
+        internal static string TitlePasteSpecialDialog => Get("Title_PasteSpecialDialog");
 
         #endregion
 
@@ -191,8 +188,11 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>All files</summary>
         internal static string TextAllFiles => Get("Text_AllFiles");
 
-        /// <summary>Metafiles</summary>
-        internal static string TextMetafiles => Get("Text_Metafiles");
+        /// <summary>Bitmap Image Formats</summary>
+        internal static string TextBitmapTypes => Get("Text_BitmapTypes");
+
+        /// <summary>Vector Image Formats</summary>
+        internal static string TextMetafileTypes => Get("Text_MetafileTypes");
 
         /// <summary>Icon</summary>
         internal static string TextIcon => Get("Text_Icon");
@@ -200,8 +200,8 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Raw Bitmap Data</summary>
         internal static string TextRaw => Get("Text_Raw");
 
-        /// <summary>Images</summary>
-        internal static string TextImages => Get("Text_Images");
+        /// <summary>All Supported Image Types</summary>
+        internal static string TextImageTypes => Get("Text_ImageTypes");
 
         /// <summary>File Format</summary>
         internal static string TextFileFormat => Get("Text_FileFormat");
@@ -210,18 +210,21 @@ namespace KGySoft.Drawing.ImagingTools
         internal static string TextUnnamed => Get("Text_Unnamed");
 
         /// <summary>Toggles whether the animation is handled as a single image.
-        /// • When checked, animation will play and saving as GIF saves the whole animation.
-        /// • When not checked, frame navigation will be enabled and saving saves only the selected frame.</summary>
+        /// • When checked, the animation plays, copy/save as GIF saves the animation, and paste replaces the whole image.
+        /// • When not checked, frame navigation gets enabled, and copy/paste/save operations affect the selected frame only.
+        /// </summary>
         internal static string ToolTipTextCompoundAnimation => Get("ToolTipText_CompoundAnimation");
 
         /// <summary>Toggles whether the icon is handled as a multi-resolution image.
-        /// • When checked, always the best fitting image is displayed and saving as Icon saves every image.
-        /// • When not checked, icon images can be explored by navigation and saving saves the selected image only.</summary>
+        /// • When checked, always the best fitting image is displayed, copy/save as Icon saves a combined icon, and paste replaces the whole image.
+        /// • When not checked, icon images can be explored by navigation, and copy/paste/save operations affect the selected image only.
+        /// </summary>
         internal static string ToolTipTextCompoundMultiSize => Get("ToolTipText_CompoundMultiSize");
 
         /// <summary>Toggles whether the pages are handled as a compound image.
-        /// • When checked, saving as TIFF saves every page.
-        /// • When not checked, saving saves always the selected page only.</summary>
+        /// • When checked, copy/save as TIFF saves every page, and paste replaces the whole image.
+        /// • When not checked, copy/paste/save operations affect the selected page only.
+        /// </summary>
         internal static string ToolTipTextCompoundMultiPage => Get("ToolTipText_CompoundMultiPage");
 
         /// <summary>Smoothing Edges (Alt+S)</summary>
@@ -245,6 +248,12 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>(Default path)</summary>
         internal static string TextDefaultResourcesPath => Get("Text_DefaultResourcesPath");
 
+        /// <summary>Select a supported clipboard image format.</summary>
+        internal static string TextPasteSpecialMessage => Get("Text_PasteSpecialMessage");
+
+        /// <summary>Try to restore transparency</summary>
+        internal static string TextPasteSpecialCheckBox => Get("Text_PasteSpecialCheckBox");
+
         #endregion
 
         #region Info Texts
@@ -259,14 +268,56 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Notifications
 
-        /// <summary>The loaded metafile has been converted to Bitmap. To load it as a Metafile, choose the Image Debugger Visualizer instead.</summary>
+        /// <summary>The loaded image has been converted to a Bitmap. To load it as a Metafile, choose the Image Debugger Visualizer instead.</summary>
         internal static string NotificationMetafileAsBitmapId => "Notification_MetafileAsBitmap";
 
-        /// <summary>The loaded image has been converted to Icon</summary>
+        /// <summary>The loaded image has been converted to a Metafile. To load it as a Bitmap, choose the Image Debugger Visualizer instead.</summary>
+        internal static string NotificationBitmapAsMetafileId => "Notification_BitmapAsMetafile";
+
+        /// <summary>The loaded image has been converted to an Icon.</summary>
         internal static string NotificationImageAsIconId => "Notification_ImageAsIcon";
+
+        /// <summary>The selected image format has been converted to a Bitmap.</summary>
+        internal static string NotificationPastedAsBitmapId => "Notification_PastedAsBitmap";
+
+        /// <summary>The selected image format has been converted to a Metafile.</summary>
+        internal static string NotificationPastedAsMetafileId => "Notification_PastedAsMetafile";
+
+        /// <summary>The selected image format has been converted to an Icon.</summary>
+        internal static string NotificationPastedAsIconId => "Notification_PastedAsIcon";
 
         /// <summary>The palette of an indexed BitmapData cannot be reconstructed, therefore a default palette is used. You can change palette colors in the menu.</summary>
         internal static string NotificationPaletteCannotBeRestoredId => "Notification_PaletteCannotBeRestored";
+
+        /// <summary>The current page has been saved. To save the whole image instead, check the compound view button, and save the image in TIFF format.</summary>
+        internal static string NotificationPageSavedId => "Notification_PageSaved";
+
+        /// <summary>The current page has been copied to the clipboard. To copy the whole image instead, check the compound view button first.
+        /// Note that most applications may not support pasting multiple pages though.</summary>
+        internal static string NotificationPageCopiedId => "Notification_PageCopied";
+
+        /// <summary>To properly save a multipage image, make sure you save it in TIFF format as well.</summary>
+        internal static string NotificationSaveAsTiffRecommendedId => "Notification_SaveAsTiffRecommended";
+
+        /// <summary>The current frame has been saved. To save the whole animation instead, check the animation mode button, and save the image in GIF format.</summary>
+        internal static string NotificationFrameSavedId => "Notification_FrameSaved";
+
+        /// <summary>The current frame has been copied to the clipboard. To copy the whole animation instead, check the animation mode button first.
+        /// Note that most applications may not support pasting multiple frames though.</summary>
+        internal static string NotificationFrameCopiedId => "Notification_FrameCopied";
+
+        /// <summary>To properly save the whole animation make sure you save the image in GIF format as well.</summary>
+        internal static string NotificationSaveAsGifRecommendedId => "Notification_SaveAsGifRecommended";
+
+        /// <summary>The current icon image has been saved. To save the icon with all of its images, check the combined view button, and save it in Icon format.</summary>
+        internal static string NotificationIconImageSavedId => "Notification_IconImageSaved";
+
+        /// <summary>The current icon image has been copied to the clipboard. To copy it with all of its images, check the combined view button first.
+        /// Note that most applications may not support pasting multi-resolution icons though.</summary>
+        internal static string NotificationIconImageCopiedId => "Notification_IconImageCopied";
+
+        /// <summary>To properly save a combined icon make sure you save it in Icon format as well.</summary>
+        internal static string NotificationSaveAsIconRecommendedId => "Notification_SaveAsIconRecommended";
 
         #endregion
 
@@ -296,6 +347,57 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>The specified path is a file but should be a directory.</summary>
         internal static string ErrorMessageFileNotExpected => Get("ErrorMessage_FileNotExpected");
 
+        /// <summary>
+        /// Either the Image or the Icon property must be set.
+        /// </summary>
+        internal static string ErrorMessageImageInfoEmpty => Get("ErrorMessage_ImageInfoEmpty");
+
+        /// <summary>
+        /// The Image property of every frame must be set.
+        /// </summary>
+        internal static string ErrorMessageImageInfoEmptyFrameImage => Get("ErrorMessage_ImageInfoEmptyFrameImage");
+
+        /// <summary>
+        /// Either the Image or the Icon property of every frame must be set.
+        /// </summary>
+        internal static string ErrorMessageImageInfoEmptyFrameIcon => Get("ErrorMessage_ImageInfoEmptyFrameIcon");
+
+        /// <summary>Could not load the file due to an error: {0}</summary>
+        internal static string ErrorMessageFailedToLoadFileId => "ErrorMessage_FailedToLoadFileFormat";
+
+        /// <summary>Could not save image due to an error: {0}</summary>
+        internal static string ErrorMessageFailedToSaveImageId => "ErrorMessage_FailedToSaveImageFormat";
+
+        /// <summary>File does not exist: {0}</summary>
+        internal static string ErrorMessageFileDoesNotExistId => "ErrorMessage_FileDoesNotExistFormat";
+
+        /// <summary>Failed to access online resources: {0}</summary>
+        internal static string ErrorMessageCouldNotAccessOnlineResourcesId => "ErrorMessage_CouldNotAccessOnlineResourcesFormat";
+
+        /// <summary>Failed to download resource file {0}: {1}</summary>
+        internal static string ErrorMessageFailedToDownloadResourceId => "ErrorMessage_FailedToDownloadResourceFormat";
+
+        /// <summary>Failed to regenerate resource file {0}: {1}</summary>
+        internal static string ErrorMessageFailedToRegenerateResourceId => "ErrorMessage_FailedToRegenerateResourceFormat";
+
+        /// <summary>Could not open folder: {0}</summary>
+        internal static string ErrorMessageCannotOpenFolderId => "ErrorMessage_CannotOpenFolderFormat";
+
+        /// <summary>Failed to save resource file {0}: {1}</summary>
+        internal static string ErrorMessageFailedToSaveResourceId => "ErrorMessage_FailedToSaveResourceFormat";
+
+        /// <summary>Language settings cannot be applied: {0}</summary>
+        internal static string ErrorMessageCannotApplyLanguageSettingsId => "ErrorMessage_CannotApplyLanguageSettingsFormat";
+
+        /// <summary>Failed to save settings: {0}</summary>
+        internal static string ErrorMessageFailedToSaveSettingsId => "ErrorMessage_FailedToSaveSettingsFormat";
+
+        /// <summary>Installation failed: {0}</summary>
+        internal static string ErrorMessageInstallationFailedId => "ErrorMessage_InstallationFailedFormat";
+
+        /// <summary>Removing failed: {0}</summary>
+        internal static string ErrorMessageRemoveInstallationFailedId => "ErrorMessage_RemoveInstallationFailedFormat";
+
         /// <summary>The selected quantizer supports partial transparency, which is not supported by ditherers,
         /// so partial transparent pixels will be blended with back color.</summary>
         internal static string WarningMessageDithererNoAlphaGradient => Get("WarningMessage_DithererNoAlphaGradient");
@@ -306,8 +408,28 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>The specified path is not an existing directory. It will be attempted to be created.</summary>
         internal static string WarningMessageDirectoryNotExists => Get("WarningMessage_DirectoryNotExists");
 
+        /// <summary>The clipboard does not contain any valid image in the supported formats.</summary>
+        internal static string WarningMessageCannotPasteClipboardId => "WarningMessage_CannotPasteClipboard";
+
+        /// <summary>Could not paste the image in the requested format.</summary>
+        internal static string WarningMessageCannotPasteSpecialId => "WarningMessage_CannotPasteSpecial";
+
+        /// <summary>Could not access the clipboard for copying. Maybe it is locked by another process.</summary>
+        internal static string WarningMessageCannotCopyClipboardId => "WarningMessage_CannotCopyClipboard";
+
+        /// <summary>An operation is still executing. Please do not close the application until it finishes.</summary>
+        internal static string WarningMessageAsyncOperationRunningId => "WarningMessage_AsyncOperationRunning";
+
+        /// <summary>{0} file(s) have been downloaded.
+        ///
+        /// The culture of one or more downloaded localizations is not supported on this platform. Those languages will not appear among the selectable languages.</summary>
+        internal static string WarningMessageDownloadCompletedWithUnsupportedCulturesId => "WarningMessage_DownloadCompletedWithUnsupportedCulturesFormat";
+
+        /// <summary>The installation finished with a warning: {0}</summary>
+        internal static string WarningMessageInstallationWarningId => "WarningMessage_InstallationWarningFormat";
+
         /// <summary>Are you sure you want to overwrite this installation?</summary>
-        internal static string ConfirmMessageOverwriteInstallation => Get("ConfirmMessage_OverwriteInstallation");
+        internal static string ConfirmMessageOverwriteInstallationId => "ConfirmMessage_OverwriteInstallation";
 
         /// <summary>For Visual Studio 2022 version 17.9 Preview 1 or higher it is not required to install the classic visualizers at this path if you use the KGy SOFT Image DebuggerVisualizers x64 package from Visual Studio Marketplace. The package offers modern non-dialog visualizers that can remain open while stepping through the code.
         ///
@@ -316,35 +438,51 @@ namespace KGySoft.Drawing.ImagingTools
         /// Yes: Install the classic visualizers.
         /// No: Close the dialog and navigate to the Visual Studio Marketplace.
         /// Cancel: Do nothing.</summary>
-        internal static string ConfirmMessageInstallClassicVisualizers => Get("ConfirmMessage_InstallClassicVisualizers");
+        internal static string ConfirmMessageInstallClassicVisualizersId => "ConfirmMessage_InstallClassicVisualizers";
 
         /// <summary>Are you sure you want to remove this installation?</summary>
-        internal static string ConfirmMessageRemoveInstallation => Get("ConfirmMessage_RemoveInstallation");
+        internal static string ConfirmMessageRemoveInstallationId => "ConfirmMessage_RemoveInstallation";
 
         /// <summary>There are unsaved modifications. Are sure to discard the changes?</summary>
-        internal static string ConfirmMessageDiscardChanges => Get("ConfirmMessage_DiscardChanges");
+        internal static string ConfirmMessageDiscardChangesId => "ConfirmMessage_DiscardChanges";
 
         /// <summary>One or more selected items are for a different Imaging Tools version.
         /// Are you sure you want to continue?</summary>
-        internal static string ConfirmMessageResourceVersionMismatch => Get("ConfirmMessage_ResourceVersionMismatch");
+        internal static string ConfirmMessageResourceVersionMismatchId => "ConfirmMessage_ResourceVersionMismatch";
 
         /// <summary>One or more selected items contain resources for unknown libraries. This may occur if a selected item is for a newer Imaging Tools version.
         /// Are you sure you want to continue? If so, the resources for the unknown libraries will be skipped.</summary>
-        internal static string ConfirmMessageResourceUnknownLibraries => Get("ConfirmMessage_ResourceUnknownLibraries");
+        internal static string ConfirmMessageResourceUnknownLibrariesId => "ConfirmMessage_ResourceUnknownLibraries";
 
 #if NETCOREAPP
         /// <summary>This is the .NET Core build of KGy SOFT Imaging Tools. To install debugger visualizers you need to use a .NET Framework build.
         ///
         /// Do you want to visit the Visual Studio Marketplace where you can download the installer of the debugger visualizers?</summary>
-        internal static string ConfirmMessageNetCoreDebuggerVisualizers => Get("ConfirmMessage_NetCoreDebuggerVisualizers");
+        internal static string ConfirmMessageNetCoreDebuggerVisualizersId => "ConfirmMessage_NetCoreDebuggerVisualizers";
 #endif
 
 #if NET472_OR_GREATER
         /// <summary>This is the .NET Framework 4.7.2 build of KGy SOFT Imaging Tools. To install the classic debugger visualizers you need to use a build targeting .NET Framework 4.6.2 or lower.
         ///
         /// Do you want to visit the GitHub page where you can download various builds for different target platforms?</summary>
-        internal static string ConfirmMessageNet472DebuggerVisualizers => Get("ConfirmMessage_Net472DebuggerVisualizers"); 
+        internal static string ConfirmMessageNet472DebuggerVisualizersId => "ConfirmMessage_Net472DebuggerVisualizers";
 #endif
+
+        /// <summary>Failed to read resource file {0}: {1}
+        /// 
+        /// Do you want to try to regenerate it? The current file will be deleted.</summary>
+        internal static string ConfirmMessageTryRegenerateResourceId => "ConfirmMessage_TryRegenerateResourceFormat";
+
+        /// <summary>The extension of the provided filename '{0}' does not match to the selected format ({1}).
+        /// 
+        /// Are you sure you want to save the file with the provided extension?</summary>
+        internal static string ConfirmMessageSaveFileExtensionId => "ConfirmMessage_SaveFileExtensionFormat";
+
+        /// <summary>The following files already exist:
+        /// {0}
+        /// 
+        /// Do you want to overwrite them?</summary>
+        internal static string ConfirmMessageOverwriteResourcesId => "ConfirmMessage_MessageOverwriteResourcesFormat";
 
         /// <summary>The selected quantizer uses more colors than the original image.
         /// It is possible that is has no effect.</summary>
@@ -363,12 +501,26 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>This item is for a different ImagingTools version.</summary>
         internal static string InfoMessageResourceVersionMismatch => Get("InfoMessage_ResourceVersionMismatch");
 
+        /// <summary>{0} file(s) have been downloaded.</summary>
+        internal static string InfoMessageDownloadCompletedId => "InfoMessage_DownloadCompletedFormat";
+
+        /// <summary>About KGy SOFT Imaging Tools
+        /// 
+        /// Version: v{0}
+        /// Author: György Kőszeg
+        /// Target Platform: {1}
+        ///
+        /// You are now using the compiled English resources.
+        /// Copyright © {2} KGy SOFT. All rights reserved.
+        /// </summary>
+        internal static string InfoMessageAboutId => "InfoMessage_AboutFormat";
+
         /// <summary>Just a regular ToolStrip menu, eh?
         ///
         /// Now imagine every combination of target platforms (from .NET Framework 3.5 to .NET 5), operating systems (from Windows XP to Linux/Mono), different DPI settings, enabled/disabled visual styles and high contrast mode, right-to-left layout...
         ///
         /// Harmonizing visual elements for all possible environments is never a trivial task, but OMG, the ToolStrip wasn't a cakewalk. Would you believe that each and every combination had at least one rendering issue? My custom-zoomable ImageViewer control with the asynchronously generated resized interpolated images on multiple cores was an easy-peasy compared to that...</summary>
-        internal static string InfoMessageEasterEgg => Get("InfoMessage_EasterEgg");
+        internal static string InfoMessageEasterEggId => "InfoMessage_EasterEgg";
 
 #if NET472_OR_GREATER
         /// <summary>
@@ -405,7 +557,7 @@ namespace KGySoft.Drawing.ImagingTools
             DefaultLanguage = (Attribute.GetCustomAttribute(typeof(Res).Assembly, typeof(NeutralResourcesLanguageAttribute)) is NeutralResourcesLanguageAttribute attr
                 ? CultureInfo.GetCultureInfo(attr.CultureName)
                 : CultureInfo.InvariantCulture).GetClosestNeutralCulture();
-            DrawingModule.Initialize(); // This implicitly initializes DrawingCoreModule, too
+            WinFormsModule.Initialize(); // This implicitly initializes DrawingModule and DrawingCoreModule, too
 
             string? desiredResXPath = Configuration.ResXResourcesCustomPath;
             if (PathHelper.HasInvalidChars(desiredResXPath))
@@ -430,6 +582,7 @@ namespace KGySoft.Drawing.ImagingTools
             Configuration.Release();
 
             LanguageSettings.DynamicResourceManagersSource = ResourceManagerSources.CompiledAndResX;
+            LocalizationHelper.LocalizationRequested += LocalizationHelper_LocalizationRequested;
         }
 
         #endregion
@@ -474,27 +627,10 @@ namespace KGySoft.Drawing.ImagingTools
         internal static string Get(string id, params object?[]? args)
         {
             string format = Get(id);
-            return args == null ? format : SafeFormat(format, args);
+            return args == null || args.Length == 0 ? format : SafeFormat(format, args);
         }
 
         internal static string Get<TEnum>(TEnum value) where TEnum : struct, Enum => Get($"{value.GetType().Name}.{Enum<TEnum>.ToString(value)}");
-
-        internal static void ApplyStringResources(object target, string? name)
-        {
-            // Unlike ComponentResourceManager we don't go by ResourceSet because that would kill resource fallback traversal
-            // so we go by localizable properties
-            PropertyInfo[]? properties = localizableStringPropertiesCache[target.GetType()];
-            if (properties == null)
-                return;
-
-            foreach (PropertyInfo property in properties)
-            {
-                string? value = GetStringOrNull(name + "." + property.Name);
-                if (value == null)
-                    continue;
-                Reflector.SetProperty(target, property, value);
-            }
-        }
 
         /// <summary>Internal Error: {0}</summary>
         internal static string InternalError(string msg) => Get("General_InternalErrorFormat", msg);
@@ -553,15 +689,25 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Info Texts
 
-        /// <summary>Type: {0}
-        /// Size: {1}x{2} pixels
-        /// {7}Pixel Format: {3}
-        /// Raw format: {4}
-        /// Resolution: {5}x{6} DPI</summary>
-        internal static string InfoImage(string type, Size size, string pixelFormat, string rawFormat, float hres, float vres, string frameInfo)
-            => Get("InfoText_ImageFormat", type, size.Width, size.Height, pixelFormat, rawFormat, hres, vres, frameInfo);
+        /// <summary>Type: {0}</summary>
+        internal static string InfoType(string type) => Get("Info_TypeFormat", type);
 
-        /// <summary>Size: {0}x{1} pixels
+        /// <summary>Size: {0} x {1} pixels</summary>
+        internal static string InfoSizeInPixels(Size size) => Get("Info_SizeInPixelsFormat", size.Width, size.Height);
+
+        /// <summary>Pixel Format: {0}</summary>
+        internal static string InfoPixelFormat(string pixelFormat) => Get("Info_PixelFormatFormat", pixelFormat);
+
+        /// <summary>Raw Format: {0}</summary>
+        internal static string InfoRawFormat(string rawFormat) => Get("Info_RawFormatFormat", rawFormat);
+
+        /// <summary>Metafile Type: {0}</summary>
+        internal static string InfoMetafileType(MetafileType metafileType) => Get("Info_MetafileTypeFormat", metafileType); // NOTE: not localized, but could use Get(metafileType) as the 2nd parameter
+
+        /// <summary>Resolution: {0} x {1} DPI</summary>
+        internal static string InfoResolution(PointF dpi) => Get("Info_ResolutionFormat", dpi.X, dpi.Y);
+
+        /// <summary>Size: {0} x {1} pixels
         /// Stride: {2} bytes
         /// Pixel Format: {3}</summary>
         internal static string InfoBitmapData(Size size, int stride, PixelFormat pixelFormat)
@@ -580,7 +726,7 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Images: {0}</summary>
         internal static string InfoFramesCount(int count) => Get("InfoText_FramesCountFormat", count);
 
-        /// <summary>Current Image: {0}/{1}</summary>
+        /// <summary>Current Image: {0} / {1}</summary>
         internal static string InfoCurrentFrame(int current, int count) => Get("InfoText_CurrentFrameFormat", current, count);
 
         /// <summary>Selected index: {0}</summary>
@@ -610,48 +756,21 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Vertical zoom: {0}</summary>
         internal static string InfoVerticalZoom(float zoom) => Get("InfoText_VerticalZoomFormat", zoom);
 
-        /// <summary>Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2}x{3} pixels}}</summary>
+        /// <summary>Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2} x {3} pixels}}</summary>
         internal static string InfoVisibleClip(Rectangle rect) => Get("InfoText_VisibleClipFormat", rect.X, rect.Y, rect.Width, rect.Height);
 
-        /// <summary>Original Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2}x{3} pixels}}</summary>
+        /// <summary>Original Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2} x {3} pixels}}</summary>
         internal static string InfoOriginalVisibleClip(Rectangle rect) => Get("InfoText_OriginalVisibleClipFormat", rect.X, rect.Y, rect.Width, rect.Height);
 
-        /// <summary>Transformed Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2}x{3} (Page Unit: {4})}}</summary>
+        /// <summary>Transformed Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2} x {3} (Page Unit: {4})}}</summary>
         internal static string InfoTransformedVisibleClip(RectangleF rect, GraphicsUnit unit) => Get("InfoText_TransformedVisibleClipFormat", rect.X, rect.Y, rect.Width, rect.Height, unit);
-
-        /// <summary>Resolution: {0}x{1} DPI</summary>
-        internal static string InfoResolution(PointF dpi) => Get("InfoText_ResolutionFormat", dpi.X, dpi.Y);
 
         #endregion
 
         #region Messages
 
-        /// <summary>Could not load file due to an error: {0}</summary>
-        internal static string ErrorMessageFailedToLoadFile(string error) => Get("ErrorMessage_FailedToLoadFileFormat", error);
-
-        /// <summary>Could not save image due to an error: {0}</summary>
-        internal static string ErrorMessageFailedToSaveImage(string error) => Get("ErrorMessage_FailedToSaveImageFormat", error);
-
-        /// <summary>File does not exist: {0}</summary>
-        internal static string ErrorMessageFileDoesNotExist(string file) => Get("ErrorMessage_FileDoesNotExistFormat", file);
-
-        /// <summary>Could not open the file as an Image: {0}</summary>
-        internal static string ErrorMessageNotAnImageFile(string message) => Get("ErrorMessage_NotAnImageFileFormat", message);
-
-        /// <summary>Could not open the file as a Metafile: {0}</summary>
-        internal static string ErrorMessageNotAMetafile(string message) => Get("ErrorMessage_NotAMetafileFormat", message);
-
-        /// <summary>Could not open the file as a Bitmap: {0}</summary>
-        internal static string ErrorMessageNotABitmapFile(string message) => Get("ErrorMessage_NotABitmapFileFormat", message);
-
-        /// <summary>Could not open the file as an Icon: {0}</summary>
-        internal static string ErrorMessageNotAnIconFile(string message) => Get("ErrorMessage_NotAnIconFileFormat", message);
-
-        /// <summary>Installation failed: {0}</summary>
-        internal static string ErrorMessageInstallationFailed(string error) => Get("ErrorMessage_InstallationFailedFormat", error);
-
-        /// <summary>Removing failed: {0}</summary>
-        internal static string ErrorMessageRemoveInstallationFailed(string error) => Get("ErrorMessage_RemoveInstallationFailedFormat", error);
+        /// <summary>Could not recognize the file as a supported image format: {0}</summary>
+        internal static string ErrorMessageDecodeFailed(string message) => Get("ErrorMessage_DecodeFailedFormat", message);
 
         /// <summary>Could not create directory {0}: {1}</summary>
         internal static string ErrorMessageCouldNotCreateDirectory(string path, string message) => Get("ErrorMessage_CouldNotCreateDirectoryFormat", path, message);
@@ -684,29 +803,8 @@ namespace KGySoft.Drawing.ImagingTools
         /// <summary>Value must be greater than {0}</summary>
         internal static string ErrorMessageValueMustBeGreaterThan<T>(T value) where T : struct => Get("ErrorMessage_ValueMustBeGreaterThanFormat", value);
 
-        /// <summary>Failed to save settings: {0}</summary>
-        internal static string ErrorMessageFailedToSaveSettings(string message) => Get("ErrorMessage_FailedToSaveSettingsFormat", message);
-
-        /// <summary>Failed to regenerate resource file {0}: {1}</summary>
-        internal static string ErrorMessageFailedToRegenerateResource(string fileName, string message) => Get("ErrorMessage_FailedToRegenerateResourceFormat", fileName, message);
-
-        /// <summary>Failed to save resource file {0}: {1}</summary>
-        internal static string ErrorMessageFailedToSaveResource(string fileName, string message) => Get("ErrorMessage_FailedToSaveResourceFormat", fileName, message);
-
-        /// <summary>Failed to access online resources: {0}</summary>
-        internal static string ErrorMessageCouldNotAccessOnlineResources(string message) => Get("ErrorMessage_CouldNotAccessOnlineResourcesFormat", message);
-
-        /// <summary>Failed to download resource file {0}: {1}</summary>
-        internal static string ErrorMessageFailedToDownloadResource(string fileName, string message) => Get("ErrorMessage_FailedToDownloadResourceFormat", fileName, message);
-
         /// <summary>Index '{0}' is invalid in the translated resource format string.</summary>
         internal static string ErrorMessageResourcePlaceholderIndexInvalid(int index) => Get("ErrorMessage_ResourcePlaceholderIndexInvalidFormat", index);
-
-        /// <summary>Language settings cannot be applied: {0}</summary>
-        internal static string ErrorMessageCannotApplyLanguageSettings(string message) => Get("ErrorMessage_CannotApplyLanguageSettingsFormat", message);
-
-        /// <summary>Could not open folder: {0}</summary>
-        internal static string ErrorMessageCannotOpenFolder(string message) => Get("ErrorMessage_CannotOpenFolderFormat", message);
 
 #if NET45_OR_GREATER
         /// <summary>Could not create directory {0}: {1}
@@ -725,9 +823,6 @@ namespace KGySoft.Drawing.ImagingTools
         internal static string WarningMessageCouldNotCopyFileNetCore(string path, string message) => Get("WarningMessage_CouldNotCopyFileNetCoreFormat", path, message); 
 #endif
 
-        /// <summary>The installation finished with a warning: {0}</summary>
-        internal static string WarningMessageInstallationWarning(string warning) => Get("WarningMessage_InstallationWarningFormat", warning);
-
         /// <summary>When converting an image with wide pixel format '{0}' to another wide format,
         /// then colors will be quantized to the 32 bit ARGB color space during the conversion even if there is no quantizer used.</summary>
         internal static string WarningMessageWideConversionLoss(PixelFormat pixelFormat) => Get("WarningMessage_WideConversionLossFormat", pixelFormat);
@@ -736,27 +831,6 @@ namespace KGySoft.Drawing.ImagingTools
         /// Either select at least {1} pixel format or use another quantizer that uses no more colors than '{0}' can represent;
         /// otherwise, the result might not be optimal even with dithering.</summary>
         internal static string WarningMessageQuantizerTooWide(PixelFormat selectedPixelFormat, PixelFormat pixelFormatHint) => Get("WarningMessage_QuantizerTooWideFormat", selectedPixelFormat, pixelFormatHint);
-
-        /// <summary>{0} file(s) have been downloaded.
-        ///
-        /// The culture of one or more downloaded localizations is not supported on this platform. Those languages will not appear among the selectable languages.</summary>
-        internal static string WarningMessageDownloadCompletedWithUnsupportedCultures(int count) => Get("WarningMessage_DownloadCompletedWithUnsupportedCulturesFormat", count);
-
-        /// <summary>The extension of the provided filename '{0}' does not match to the selected format ({1}).
-        /// 
-        /// Are you sure you want to save the file with the provided extension?</summary>
-        internal static string ConfirmMessageSaveFileExtension(string fileName, string format) => Get("ConfirmMessage_SaveFileExtensionFormat", fileName, format);
-
-        /// <summary>Failed to read resource file {0}: {1}
-        /// 
-        /// Do you want to try to regenerate it? The current file will be deleted.</summary>
-        internal static string ConfirmMessageTryRegenerateResource(string fileName, string message) => Get("ConfirmMessage_TryRegenerateResourceFormat", fileName, message);
-
-        /// <summary>The following files already exist:
-        /// {0}
-        /// 
-        /// Do you want to overwrite them?</summary>
-        internal static string ConfirmMessageOverwriteResources(string files) => Get("ConfirmMessage_MessageOverwriteResourcesFormat", files);
 
         /// <summary>{0} is the lowest compatible pixel format, which still supports the selected quantizer.</summary>
         internal static string InfoMessagePixelFormatUnnecessarilyWide(PixelFormat pixelFormat) => Get("InfoMessage_PixelFormatUnnecessarilyWideFormat", pixelFormat);
@@ -779,20 +853,6 @@ namespace KGySoft.Drawing.ImagingTools
 
         /// <summary>The ditherer is ignored for pixel format '{0}' if there is no quantizer specified.</summary>
         internal static string InfoMessageDithererIgnored(PixelFormat pixelFormat) => Get("InfoMessage_DithererIgnoredFormat", pixelFormat);
-
-        /// <summary>{0} file(s) have been downloaded.</summary>
-        internal static string InfoMessageDownloadCompleted(int count) => Get("InfoMessage_DownloadCompletedFormat", count);
-
-        /// <summary>About KGy SOFT Imaging Tools
-        /// 
-        /// Version: v{0}
-        /// Author: György Kőszeg
-        /// Target Platform: {1}
-        ///
-        /// You are now using the compiled English resources.
-        /// Copyright © {2} KGy SOFT. All rights reserved.
-        /// </summary>
-        internal static string InfoMessageAbout(Version version, string platform, int year) => Get("InfoMessage_About", version, platform, year);
 
 #if NET472_OR_GREATER
         /// <summary>
@@ -844,12 +904,13 @@ namespace KGySoft.Drawing.ImagingTools
         {
             try
             {
-                int i = Array.IndexOf(args, null);
-                if (i >= 0)
+                // evaluating possible dynamic arguments, and replacing null to prevent formatting exceptions
+                for (int i = 0; i < args.Length; i++)
                 {
-                    string nullRef = PublicResources.Null;
-                    for (; i < args.Length; i++)
-                        args[i] ??= nullRef;
+                    if (args[i] is Func<string> f)
+                        args[i] = f.Invoke();
+                    args[i] ??= PublicResources.Null;
+                    Debug.Assert(args[i] is not Delegate, $"Unresolved delegate type in arguments: {args[i]!.GetType()}");
                 }
 
                 return String.Format(LanguageSettings.FormattingLanguage, format, args);
@@ -858,15 +919,6 @@ namespace KGySoft.Drawing.ImagingTools
             {
                 return String.Format(CultureInfo.InvariantCulture, invalidResource, args.Length, format);
             }
-        }
-
-        private static PropertyInfo[]? GetLocalizableStringProperties(Type type)
-        {
-            // Getting string properties only. The resource manager in this class works in safe mode anyway.
-            var result = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(p => p.PropertyType == typeof(string)
-                    && Attribute.GetCustomAttribute(p, typeof(LocalizableAttribute)) is LocalizableAttribute la && la.IsLocalizable).ToArray();
-            return result.Length == 0 ? null : result;
         }
 
         private static CultureInfo GetClosestNeutralCulture(this CultureInfo culture)
@@ -878,6 +930,16 @@ namespace KGySoft.Drawing.ImagingTools
                 culture = culture.Parent;
 
             return culture;
+        }
+
+        #endregion
+
+        #region Event Handlers
+
+        private static void LocalizationHelper_LocalizationRequested(object? sender, LocalizationRequestedEventArgs e)
+        {
+            Debug.Assert(e.Value is null, "Multiple handlers of LocalizationHelper.LocalizationRequested");
+            e.Value = GetStringOrNull(e.Key);
         }
 
         #endregion

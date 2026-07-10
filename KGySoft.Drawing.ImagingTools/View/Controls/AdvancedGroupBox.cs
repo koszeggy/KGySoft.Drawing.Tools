@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: AdvancedGroupBox.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -33,7 +33,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         protected override void OnPaint(PaintEventArgs e)
         {
             // Customizing only the disabled text color in dark mode. Not including the FlatStyle check here, because System FlatStyle is drawn in WM_PAINT
-            if (!ThemeColors.IsDarkBaseTheme || Enabled || !Application.RenderWithVisualStyles || Width < 10 || Height < 10)
+            if (!ThemeColors.IsDarkBaseTheme || Enabled || !ThemeColors.RenderWithVisualStyles || Width < 10 || Height < 10)
             {
                 base.OnPaint(e);
                 return;

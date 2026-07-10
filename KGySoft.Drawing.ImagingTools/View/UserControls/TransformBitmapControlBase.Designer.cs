@@ -16,7 +16,7 @@
         private void InitializeComponent()
         {
             this.progress = new KGySoft.Drawing.ImagingTools.View.Controls.DrawingProgressFooter();
-            this.okCancelButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
+            this.okCancelButtons = new KGySoft.WinForms.Controls.OkCancelButtons();
             this.previewImage = new KGySoft.Drawing.ImagingTools.View.UserControls.PreviewImageControl();
             this.pnlSettings = new KGySoft.Drawing.ImagingTools.View.Controls.AutoMirrorPanel();
             this.SuspendLayout();
@@ -25,16 +25,16 @@
             // 
             this.progress.BackColor = System.Drawing.Color.Transparent;
             this.progress.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.progress.Location = new System.Drawing.Point(3, 189);
+            this.progress.Location = new System.Drawing.Point(3, 191);
             this.progress.Name = "progress";
-            this.progress.Size = new System.Drawing.Size(242, 22);
+            this.progress.Size = new System.Drawing.Size(242, 20);
             this.progress.TabIndex = 3;
             // 
             // okCancelButtons
             // 
             this.okCancelButtons.BackColor = System.Drawing.Color.Transparent;
             this.okCancelButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.okCancelButtons.Location = new System.Drawing.Point(3, 154);
+            this.okCancelButtons.Location = new System.Drawing.Point(3, 156);
             this.okCancelButtons.Name = "okCancelButtons";
             this.okCancelButtons.Size = new System.Drawing.Size(242, 35);
             this.okCancelButtons.TabIndex = 2;
@@ -45,7 +45,7 @@
             this.previewImage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.previewImage.Location = new System.Drawing.Point(3, 56);
             this.previewImage.Name = "previewImage";
-            this.previewImage.Size = new System.Drawing.Size(242, 98);
+            this.previewImage.Size = new System.Drawing.Size(242, 100);
             this.previewImage.TabIndex = 1;
             // 
             // pnlSettings
@@ -75,7 +75,7 @@
         #endregion
 
         private Controls.DrawingProgressFooter progress;
-        private UserControls.OkCancelButtons okCancelButtons;
+        private KGySoft.WinForms.Controls.OkCancelButtons okCancelButtons;
         private UserControls.PreviewImageControl previewImage;
         protected Controls.AutoMirrorPanel pnlSettings;
     }

@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ManageInstallationsViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -17,9 +17,7 @@
 
 using System;
 using System.Collections.Generic;
-#if NETFRAMEWORK && !NET472_OR_GREATER
 using System.Globalization;
-#endif
 using System.IO;
 using System.Linq;
 
@@ -148,10 +146,22 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void InitInstallations()
         {
+            #region Local Methods
+
+            static int CompareNames(string name1, string name2) => String.CompareOrdinal(AdjustName(name1), AdjustName(name2));
+
+            // Making sure that Visual Studio 18 comes after Visual Studio 2022
+            static string AdjustName(string name) => name.StartsWith(visualStudioName, StringComparison.OrdinalIgnoreCase)
+                && Int32.TryParse(name.Substring(visualStudioName.Length), NumberStyles.AllowLeadingWhite, CultureInfo.InvariantCulture, out int ver)
+                    ? $"{visualStudioName} {(ver >= 2000 ? null : "v")}{ver}"
+                    : name;
+
+            #endregion
+
             string docsDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             var list = new List<KeyValuePair<string, string>>();
             list.AddRange(Directory.GetDirectories(docsDir, installDirsPattern).Select(d => new KeyValuePair<string, string>(d, Path.GetFileName(d))));
-            list.Sort((d1, d2) => String.CompareOrdinal(d1.Value, d2.Value));
+            list.Sort((d1, d2) => CompareNames(d1.Value, d2.Value));
             list.Add(new KeyValuePair<string, string>(String.Empty, Res.InstallationsCustomDir));
             Installations = list;
         }
@@ -229,10 +239,10 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     return null;
 
                 string? name = Installations.FirstOrDefault(i => i.Key == selected).Value;
-                if (name?.StartsWith(visualStudioName) != true)
+                if (name?.StartsWith(visualStudioName, StringComparison.OrdinalIgnoreCase) != true)
                     return null;
 
-                if (Int32.TryParse(name.Substring(name.Length - 4, 4), NumberStyles.None, CultureInfo.InvariantCulture, out int ver))
+                if (Int32.TryParse(name.Substring(visualStudioName.Length), NumberStyles.AllowLeadingWhite, CultureInfo.InvariantCulture, out int ver))
                     return ver;
                 return null;
             }
@@ -240,18 +250,19 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             #endregion
 
-            if (currentStatus.Installed && !Confirm(Res.ConfirmMessageOverwriteInstallation, currentStatus.Version != null && InstallationManager.AvailableVersion.Version > currentStatus.Version))
+            if (currentStatus.Installed && !Confirm(Res.ConfirmMessageOverwriteInstallationId, [], currentStatus.Version != null && InstallationManager.AvailableVersion.Version > currentStatus.Version))
                 return;
 #if NETCOREAPP
-            if (Confirm(Res.ConfirmMessageNetCoreDebuggerVisualizers))
+            if (Confirm(Res.ConfirmMessageNetCoreDebuggerVisualizersId))
                 PathHelper.OpenUrl(urlMarketplace);
 #elif NET472_OR_GREATER
-            if (Confirm(Res.ConfirmMessageNet472DebuggerVisualizers))
+            if (Confirm(Res.ConfirmMessageNet472DebuggerVisualizersId))
                 PathHelper.OpenUrl(urlGitHubDownload);
 #else
-            if (TryGetVisualStudioVersion() >= 2022)
+            // < 2000: starting with VS2026, the version in folder name reflects the major version rather than the year (i.e. Visual Studio 18 rather than Visual Studio 2026)
+            if (TryGetVisualStudioVersion() is >= 2022 or < 2000)
             {
-                switch (CancellableConfirm(Res.ConfirmMessageInstallClassicVisualizers))
+                switch (CancellableConfirm(Res.ConfirmMessageInstallClassicVisualizersId))
                 {
                     case null:
                         return;
@@ -266,20 +277,20 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             InstallationManager.Install(currentStatus.Path, out string? error, out string? warning);
             if (error != null)
-                ShowError(Res.ErrorMessageInstallationFailed(error));
+                ShowError(Res.ErrorMessageInstallationFailedId, error);
             else if (warning != null)
-                ShowWarning(Res.WarningMessageInstallationWarning(warning));
+                ShowWarning(Res.WarningMessageInstallationWarningId, warning);
             UpdateStatus(currentStatus.Path);
 #endif
         }
 
         private void OnRemoveCommand()
         {
-            if (!Confirm(Res.ConfirmMessageRemoveInstallation, false))
+            if (!Confirm(Res.ConfirmMessageRemoveInstallationId, [], false))
                 return;
             InstallationManager.Uninstall(currentStatus.Path, out string? error);
             if (error != null)
-                ShowError(Res.ErrorMessageRemoveInstallationFailed(error));
+                ShowError(Res.ErrorMessageRemoveInstallationFailedId, error);
             UpdateStatus(currentStatus.Path);
         }
 

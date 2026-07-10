@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: DebuggerTestViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -50,15 +50,15 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Test.ViewModel
     {
         #region Fields
 
-        private static readonly HashSet<string> radioButtons = new HashSet<string>
-        {
+        private static readonly HashSet<string> radioButtons =
+        [
             nameof(BitmapSource),
             nameof(ImageSource),
             nameof(Palette),
             nameof(SingleColorSrgb),
             nameof(SingleColorLinear),
-            nameof(SingleColorFromProfile),
-        };
+            nameof(SingleColorFromProfile)
+        ];
 
         private static readonly Dictionary<Type, DebuggerVisualizerAttribute> debuggerVisualizers = WpfDebuggerHelper.GetDebuggerVisualizers();
 
@@ -113,7 +113,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Test.ViewModel
 
         #region Static Methods
 
-        private static ImageSource GenerateDrawingImage()
+        private static DrawingImage GenerateDrawingImage()
         {
             var result = new DrawingGroup();
             var pen = new System.Windows.Media.Pen();
@@ -125,7 +125,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Test.ViewModel
             return new DrawingImage(result);
         }
 
-        private static BitmapSource FromPalette(BitmapPalette palette, PixelFormat format)
+        private static WriteableBitmap FromPalette(BitmapPalette palette, PixelFormat format)
         {
             int size = palette.Colors.Count;
             var result = new WriteableBitmap(size, size, 96, 96, format, palette);
@@ -268,17 +268,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Test.ViewModel
         {
             try
             {
-                switch (obj)
+                return obj switch
                 {
-                    case ImageSource image:
-                        return image;
-                    case BitmapPalette palette:
-                        return FromPalette(palette, SelectedFormat);
-                    case Color color:
-                        return FromPalette(new BitmapPalette(new[] { color }), System.Windows.Media.PixelFormats.Indexed1);
-                    default:
-                        return null;
-                }
+                    ImageSource image => image,
+                    BitmapPalette palette => FromPalette(palette, SelectedFormat),
+                    Color color => FromPalette(new BitmapPalette(new[] { color }), System.Windows.Media.PixelFormats.Indexed1),
+                    _ => null
+                };
             }
             catch (Exception e) when (e is not StackOverflowException)
             {
@@ -402,7 +398,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Wpf.Test.ViewModel
 
             try
             {
-                DebuggerVisualizerHelper.ShowExtensionVisualizer(provider, testObject, default, o => TestObject = o);
+                DebuggerVisualizerHelper.ShowExtensionVisualizer(provider, targetType, testObject, default, o => TestObject = o);
             }
             catch (Exception e) when (e is not StackOverflowException)
             {

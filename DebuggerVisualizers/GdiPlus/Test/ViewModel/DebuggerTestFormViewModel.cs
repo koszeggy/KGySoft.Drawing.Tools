@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: DebuggerTestFormViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -28,6 +28,7 @@ using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.DebuggerVisualizers.Test;
 using KGySoft.Drawing.Imaging;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -44,9 +45,8 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.ViewModel
         #region Fields
 
         private static readonly HashSet<string>[] radioGroups =
-        {
-            new HashSet<string>
-            {
+        [
+            [
                 nameof(Bitmap),
                 nameof(Metafile),
                 nameof(HIcon), nameof(ManagedIcon),
@@ -54,9 +54,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.ViewModel
                 nameof(BitmapData),
                 nameof(Palette), nameof(SingleColor),
                 nameof(ImageFromFile)
-            },
-            new HashSet<string> { nameof(FileAsImage), nameof(FileAsBitmap), nameof(FileAsMetafile),nameof(FileAsIcon) },
-        };
+            ],
+            [nameof(FileAsImage), nameof(FileAsBitmap), nameof(FileAsMetafile), nameof(FileAsIcon)]
+        ];
 
         private static readonly Dictionary<Type, DebuggerVisualizerAttribute> classicDebuggerVisualizers = GdiPlusDebuggerHelper.GetDebuggerVisualizers();
 
@@ -120,9 +120,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.ViewModel
 
         #region Static Methods
 
-        private static Image? FromPalette(IList<Color> palette)
+        private static Bitmap? FromPalette(Color[] palette)
         {
-            int size = palette.Count;
+            int size = palette.Length;
             if (size == 0)
                 return null;
             var result = new Bitmap(size, size, PixelFormat.Format32bppArgb);
@@ -289,7 +289,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.ViewModel
             {
                 static Image ToSupportedFormat(Image image) =>
                     image.PixelFormat == PixelFormat.Format16bppGrayScale ? image.ConvertPixelFormat(PixelFormat.Format24bppRgb)
-                    : !OSUtils.IsWindows && image.PixelFormat.In(PixelFormat.Format16bppRgb555, PixelFormat.Format16bppRgb565) ? image.ConvertPixelFormat(PixelFormat.Format24bppRgb)
+                    : !OSHelper.IsWindows && image.PixelFormat.In(PixelFormat.Format16bppRgb555, PixelFormat.Format16bppRgb565) ? image.ConvertPixelFormat(PixelFormat.Format24bppRgb)
                     : image;
 
                 switch (obj)
@@ -305,7 +305,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.ViewModel
                     case ColorPalette palette:
                         return FromPalette(palette.Entries);
                     case Color color:
-                        return FromPalette(new[] { color });
+                        return FromPalette([color]);
                     default:
                         return null;
                 }
@@ -522,7 +522,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.ViewModel
 
             try
             {
-                DebuggerVisualizerHelper.ShowExtensionVisualizer(provider, testObject, !AsReadOnly, o => TestObject = o);
+                DebuggerVisualizerHelper.ShowExtensionVisualizer(provider, targetType, testObject, !AsReadOnly, o => TestObject = o);
             }
             catch (Exception e) when (e is not StackOverflowException)
             {

@@ -1,5 +1,4 @@
-[![KGy SOFT .net](https://user-images.githubusercontent.com/27336165/124292367-c93f3d00-db55-11eb-8003-6d943ee7d7fa.png)](https://kgysoft.net)
-
+<!--[![KGy SOFT .net](https://user-images.githubusercontent.com/27336165/124292367-c93f3d00-db55-11eb-8003-6d943ee7d7fa.png)](https://kgysoft.net)-->
 # KGy SOFT Drawing Tools
 
 The KGy SOFT Drawing Tools repository contains the [KGy SOFT Imaging Tools](#kgy-soft-imaging-tools) application and some [Debugger Visualizers](#debugger-visualizers) for several GDI+, WPF and SkiaSharp types such as `Bitmap`, `Metafile`, `Icon`, `BitmapData`, `Graphics`, `ImageSource`, `SKBitmap`, etc. (see also below). The visualizers use [KGy SOFT Imaging Tools](#kgy-soft-imaging-tools) to display these types visually that can be executed as a standalone application as well.
@@ -41,7 +40,7 @@ The Imaging Tools application makes possible to load images and icons from file,
 <details>
 <summary><strong>Compatibility</strong><a id="compatibility"/></summary><p/>
 
-KGy SOFT Imaging Tools supports a wide range of platforms. Windows is supported starting with Windows XP but by using [Mono](https://www.mono-project.com/download/stable/) you can execute it also on Linux. See the [downloads](#download) for details.
+KGy SOFT Imaging Tools supports a wide range of platforms. Windows is supported starting with Windows XP but by using [Mono](https://www.mono-project.com/download/stable/) or [Wine](https://gitlab.winehq.org/wine/wine) you can execute it also on Linux or macOS. See the [downloads](#download) for details.
 
 <p align="center">
   <img alt="KGy SOFT Imaging Tools on Ubuntu Linux, using dark theme" src="https://user-images.githubusercontent.com/27336165/124265526-157a8500-db36-11eb-8d3a-84e66259ce03.png"/>
@@ -51,6 +50,11 @@ KGy SOFT Imaging Tools supports a wide range of platforms. Windows is supported 
 <p align="center">
   <img alt="KGy SOFT Imaging Tools on ReactOS" src="https://github.com/koszeggy/KGySoft.Drawing.Tools/assets/27336165/0eef286a-2bb6-4639-b775-b6f75c0e7fba"/>
   <br/><em>KGy SOFT Imaging Tools on ReactOS</em>
+</p>
+
+<p align="center">
+  <img alt="KGy SOFT ImagingTools on macOS" src="https://github.com/user-attachments/assets/10c8f62e-aa7f-4ff6-9007-96896f4c60a9" />
+  <br/><em>KGy SOFT Imaging Tools on macOS</em>
 </p>
 </details>
 
@@ -141,7 +145,7 @@ For older Visual Studio versions the classic debugger visualizers are still avai
 ### Installing Debugger Visualizers
 
 <details>
-<summary><strong>By VSIX Installer</strong></summary><p/>
+<summary><strong>By VSIX Installer</strong><a id="by-vsix-installer"/></summary><p/>
 
 If you use Visual Studio 2013 or newer, then you can perform the install directly from Visual Studio by the _Extensions/Manage Extensions_ (older Visual Studio versions: _Tools/Extensions and Updates..._) menu if you search for the "_KGy SOFT Image DebuggerVisualizers_" extension.
 
@@ -153,23 +157,21 @@ Alternatively, you can download the installer package from the VisualStudio Mark
 <details>
 <summary><strong>Manual Install</strong><a id="manual-install"/></summary><p/>
 
-> ⚠️ _Important:_ The installers below contain the classic debugger visualizers. If you want to use the new embeddable visualizers that can remain open while stepping through the code, use the [64-bit VSIX package](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) for Visual Studio 2022.
+> ⚠️ _Important:_ The installers below contain the classic debugger visualizers. If you want to use the new embeddable visualizers that can remain open while stepping through the code, use the [64-bit VSIX package](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) for Visual Studio 2022-2026.
 
 1. [Download](#download) the binaries and extract the .7z archive to any folder.
 2. Open the folder with the extracted content. You will find five folders there:
-  - `net35` contains the .NET Framework 3.5 build. Compatible with all Visual Studio versions starting with Visual Studio 2008 (tested with versions 2008-2019). Cannot be used to debug .NET Core applications. 
-  - `net40` contains the .NET Framework 4.0 build. It requires at least Visual Studio 2010 but it's compatible even with Windows XP and ReactOS. Cannot be used to debug .NET Core applications.
-  - `net45` contains the .NET Framework 4.5 build. It requires at least Windows Vista SP2 and Visual Studio 2012. With some limitations supports also .NET Core/.NET projects (in case of issues see the [Troubleshooting](#Troubleshooting) section).
-  - `net462` contains the .NET Framework 4.6.2 build. It requires at least Windows 7 SP1 and Visual Studio 2012. It contains also the SkiaSharp debugger visualizers, which is not included into the other builds. With some limitations supports also .NET Core/.NET projects (in case of issues see the [Troubleshooting](#Troubleshooting) section).
-  - `net9.0-windows` contains the .NET 9.0 binaries of the Imaging Tools application. Debugger visualizers are not included because it would not be recognized by Visual Studio anyway.
+  - `net35` contains the .NET Framework 3.5 build. Compatible with all Visual Studio versions starting with Visual Studio 2008 (tested with versions 2008-2026). This is the only version that supports debugging .NET Framework 2.0-3.5 projects, and it supports .NET Framework 4.x as well. You cannot use this version as a debugger visualizer for .NET Core projects.
+  - `net40` contains the .NET Framework 4.0 build. It requires at least Visual Studio 2010, but it's compatible even with Windows XP and ReactOS. Cannot be used to debug images of .NET Framework 2.0-3.5 and .NET Core projects.
+  - `net45` contains the .NET Framework 4.5 build. It requires at least Windows Vista SP2 and Visual Studio 2012. Its debugger visualizers support .NET Framework 4.x, .NET Core 2.1+ and .NET 5+ projects.
+  - `net462` contains the .NET Framework 4.6.2 build. It requires at least Windows 7 SP1 and Visual Studio 2012. It contains also the SkiaSharp debugger visualizers, which is not included into the other builds. It can be used to debug images of .NET Framework 4.x, .NET Core 2.1+ and .NET 5+ projects.
+  - `net10.0-windows` contains the .NET 10.0 binaries of the Imaging Tools application. It can be used as a standalone application only, as it does not contain any debugger visualizers (because Visual Studio would not recognize the .NET build of the visualizers).
 3. Execute `KGySoft.Drawing.ImagingTools.exe` from one of the folders listed above. Click the _Manage Debugger Visualizer Installations..._ button (the gear icon) on the toolbar.
 
 <p align="center">
   <img alt="Installing Debugger Visualizers from Imaging Tools" src="https://user-images.githubusercontent.com/27336165/124270600-b53b1180-db3c-11eb-92d2-fcbdcbc76ca8.png"/>
   <br/><em>Installing Debugger Visualizers from Imaging Tools</em>
 </p>
-
-> 📝 _Note:_ Starting with version 2.1.0 the debugger visualizers can be used also for .NET Core projects from Visual Studio 2019, even though no .NET Core binaries are used.
 
 4. In the drop down list you will see the identified Visual Studio versions in your Documents folder. You can select either one of them or the _&lt;Custom Path...&gt;_ menu item to install the visualizer debuggers into a custom folder.
 
@@ -207,6 +209,7 @@ If Visual Studio cannot load the visualizer or you have other debugger visualize
 | The Color visualizer appears in read-only, even though the debugged value is in a read-write context (eg. local variable).<br/>![Color visualizer appears as read-only.](https://kgysoft.net/images/DebuggerVisualizerTrShColorReadOnly.png) | Occurs with some specific builds of Visual Studio 2019<br/>The bug has been [reported](https://developercommunity.visualstudio.com/content/problem/1142584/visual-sudio-2019-throws-a-nullreferenceexception-1.html) to the VisualStudio team as part of another issue. |
 | Unable to load the custom visualizer. (Exception of type 'System.Exception' was thrown)<br/>![Exception of type 'System.Exception' was thrown.](https://kgysoft.net/images/DebuggerVisualizerTrShExceptionVS2019.png) | Occurs when you debug a project that targets .NET Framework 3.5 or earlier versions. You can either target at least .NET Framework 4.0 (at least temporarily, for debugging), or you can manually [install](#installing-debugger-visualizers) the .NET Framework 3.5 version of the Debugger Visualizers (which cannot be used to debug the .NET Core targets, though). |
 | Unable to load the custom visualizer. (The debuggee-side visualizer assembly 'KGySoft.Drawing.DebuggerVisualizers, Version=[...]' was not found at path '&lt;Documents&gt;\Visual Studio &lt;version&gt;\Visualizers\netstandard2.0'.)<br/>![The debuggee-side visualizer assembly 'KGySoft.Drawing.DebuggerVisualizers, Version=[...]' was not found.](https://kgysoft.net/images/DebuggerVisualizerTrShNotFoundStandard20.png) | Occurs when you try to debug a .NET Core project with the .NET Framework 3.5/4.0 builds installed. To debug .NET Core projects you need to [install](#installing-debugger-visualizers) the .NET Framework 4.5 version. |
+| Exception of type **Microsoft.VisualStudio. DebuggerVisualizers.VisualizerObjectSourceException** was thrown: The debuggee-side visualizer assembly ''KGySoft.Drawing.DebuggerVisualizers.Core, Version=[...]' was not found.<br/>![Trying to debug an `IReadableBitmapData` instance in an UWP application](https://github.com/user-attachments/assets/6d660eb1-6f1c-4898-9eac-6c54ba4f34f1) | May occur when the runtime of the project type is not compatible with the visualizer assemblies, e.g. you try to debug an `IReadableBitmapData` instance in an UWP application. |
 | An unhandled exception of type 'System.TypeInitializationException' was thrown by the custom visualizer component in the process being debugged. (The type initializer for 'KGySoft.CoreLibraries.XXXX' threw an exception.)<br/>![Exception of type 'System.TypeInitializerException' was thrown.](https://kgysoft.net/images/DebuggerVisualizerTrShExceptionTypeInitialization.png) | Occurs when you try to debug a .NET Core project while the .NET Framework 3.5 binaries of the debugger visualizers are deployed in the `netstandard2.0` subfolder. To debug .NET Core projects you need to [install](#installing-debugger-visualizers) the .NET Framework 4.5 version. |
 | An unhandled exception of type 'System.IO.FileLoadException' was thrown by the custom visualizer component in the process being debugged. (Could not load file or assembly 'KGySoft.CoreLibraries / KGySoft.Drawing, Version=####'.)<br/>![Could not load file or assembly 'KGySoft.CoreLibraries'.](https://kgysoft.net/images/DebuggerVisualizerTrShExceptionFileLoad.png) | If you debug a .NET Core project that also references KGySoft assemblies, then the versions referenced by the debugger visualizers and your project must match; otherwise, you get this error. If the version in the message is higher than the one your project references, then simply upgrade the references of your project. Otherwise, as the issue does not occur when targeting .NET Framework, you can try to change the targeted framework in the .csproj file for the debugging. |
 | An unhandled exception of type 'System.Exception' was thrown by the UI-side custom visualizer component.<br/>![An unhandled exception of type 'System.Exception' was thrown by the UI-side custom visualizer component.](https://kgysoft.net/images/DebuggerVisualizerTrShException.png) | Occurs when you clear the debugged image in Visual Studio 2017, which does not support nullifying the debugged value. |
@@ -217,14 +220,13 @@ If Visual Studio cannot load the visualizer or you have other debugger visualize
 | Could not load file or assembly 'KGySoft.​Drawing.​DebuggerVisualizers.dll' or one of its dependencies.<br/>![Could not load file or assembly 'KGySoft.Drawing.DebuggerVisualizers.dll'.](https://kgysoft.net/images/DebuggerVisualizerTrShCouldNotLoadVisualizer.png) | Visual Studio 2008 supports the .NET 3.5 version only. A similar error may occur even if some files are missing. Just [install](#installing-debugger-visualizers) a correct version again. |
 | Value does not fall within the expected range.<br/>![Value does not fall within the expected range.](https://kgysoft.net/images/DebuggerVisualizerTrShValueUnexpectedRange.png) | Windows XP does not support the .NET 4.5 version. |
 | The app looks blurry. | If you changed the DPI settins, you need to restart the application. Per-monitor DPI awareness is not supported. |
-| The visual elements are scaled incorrectly.<br/>![Incorrectly scaled image](https://user-images.githubusercontent.com/27336165/124148578-0e993700-da90-11eb-9c67-4e06e522795b.png) | May happen if you use Imaging Tools from debugger visualizers, and you have just changed the DPI settings without signing out/in. However, signing in and out is not required if you execute the app directly. |
-| I edited the language resource files but I cannot find them (or they appear to be gone) | The _Visual Studio/Tools/KGy SOFT Image Debugger Visualizers_ and clicking the magnifier icon executes the Imaging Tools from different locations. If you edit the language resources at one place they will not be automatically applied at the other place. Therefore, the saved resources might be at different possible locations:<br/>• If you execute a manually deployed version the resources will be in a `Resources` subfolder in the folder you executed the Imaging Tools from.<br/>• During debugging the tool is executed from the debugger visualizers folder: `Documents\​Visual Studio <version>\Visualizers`<br/>• If you launch the tool from the Visual Studio Tools menu, then it is located under `ProgramData\​Microsoft\​VisualStudio\​Packages\...` |
+| I edited the language resource files but I cannot find them | On the _Edit Resources_ dialog click the button next to the drop down control with the folder icon to open the folder that contains the resource file(s). |
 </details>
 
 ## Download
 
 <details>
-<summary><strong>Details</strong><a id="by-vsix-installer"/></summary><p/>
+<summary><strong>Details</strong></summary><p/>
 
 > 💡 _Tip:_ See [above](#by-vsix-installer) how to download the debugger visualizer installers
 
@@ -234,8 +236,8 @@ To support the widest possible range of platforms the binaries archive contains 
 * `net35`: This contains the .NET Framework 3.5 build and though it works on every platform supported by Imaging Tools, it is not really recommended to use as a standalone application. If you use Imaging Tools as [debugger visualizers](#installing-debugger-visualizers), then this is the only version you can use for Visual Studio 2008. For newer Visual Studio versions use it only if you want to debug a .NET Framework 2.0-3.5 application.
 * `net40`: This is the .NET Framework 4.0 build. As a standalone application, it's basically recommended for Windows XP and ReactOS only. As a debugger visualizer you need this one for Visual Studio 2010 to debug .NET Framework 4.0 projects.
 * `net45`: This is the .NET Framework 4.5 build. Requires Windows Vista or later. As a debugger visualizer works both for .NET Framework 4.x and .NET Core projects (including .NET 5 and newer platforms) but does not support debugging SkiaSharp types.
-* `net462`: This is the .NET Framework 4.6.2 build. Requires Windows 7 or greater, and this is the recommended version to use as a debugger visualizer for .NET Framework 4.x and .NET Core projects (including .NET 5 and newer platforms). As a standalone application, this is also the recommended version for Linux (requires Mono).
-* `net6.0-windows`: This folder contains the .NET 6.0 build. As a standalone application this is the recommended version for Windows 7 and above. On the other hand, this one cannot be used as a debugger visualizer (even for .NET or .NET Core projects) and cannot be executed on Linux either.
+* `net462`: This is the .NET Framework 4.6.2 build. Requires Windows 7 or greater, and this is the recommended version to use as a debugger visualizer for .NET Framework 4.x and .NET Core projects (including .NET 5 and newer platforms). As a standalone application, this is also the recommended version for Linux or macOS (requires Mono or Wine).
+* `net10.0-windows`: This folder contains the .NET 10.0 build. As a standalone application this is the recommended version for Windows 7 and above. On the other hand, this one cannot be used as a debugger visualizer (even for .NET or .NET Core projects). By using Wine, it can be executed on Linux and macOS as well.
 </details>
 
 ## Release Notes

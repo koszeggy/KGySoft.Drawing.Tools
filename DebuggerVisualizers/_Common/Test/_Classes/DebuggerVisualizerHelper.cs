@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: DebuggerVisualizerHelper.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -67,10 +67,9 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test
         }
 
 #if NET472_OR_GREATER
-        internal static void ShowExtensionVisualizer(IDebuggerVisualizerProvider provider, object targetObject, bool isReplaceable, Action<object?> applyReplacedObject)
+        internal static void ShowExtensionVisualizer(IDebuggerVisualizerProvider provider, Type targetType, object targetObject, bool isReplaceable, Action<object?> applyReplacedObject)
         {
             EnsureThreadHelperInitialized();
-            Type targetType = targetObject.GetType();
             DebuggerVisualizerProviderConfiguration cfg = provider.DebuggerVisualizerProviderConfiguration;
             VisualizerObjectSource serializer = cfg.VisualizerObjectSourceType is null
                 ? new VisualizerObjectSource()
@@ -87,7 +86,13 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test
 
             Reflector.InvokeMethod(visualizerTarget, "RaiseStateChangedAsync", VisualizerTargetStateNotification.Available);
             var handle = GCHandle.FromIntPtr((IntPtr)localControlWrapper.GetGCHandleAsync(CancellationToken.None).Result);
-            new Window { Title = cfg.Targets.FirstOrDefault(t => Reflector.ResolveType(t.TargetType)?.IsInstanceOfType(targetObject) == true)?.VisualizerDisplayName, Content = handle.Target }.ShowDialog();
+            var window = new Window
+            {
+                Title = cfg.Targets.FirstOrDefault(t => Reflector.ResolveType(t.TargetType)?.IsInstanceOfType(targetObject) == true)?.VisualizerDisplayName, 
+                Content = handle.Target,
+            };
+            window.Closed += (_, _) => (handle.Target as IDisposable)?.Dispose();
+            window.ShowDialog();
         }
 #endif
 

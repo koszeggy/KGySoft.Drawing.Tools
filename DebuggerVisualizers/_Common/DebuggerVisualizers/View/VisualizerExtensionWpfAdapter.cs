@@ -4,7 +4,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: VisualizerExtensionWpfAdapter.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -28,6 +28,7 @@ using System.Windows.Forms;
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.ImagingTools;
 using KGySoft.Drawing.ImagingTools.View;
+using KGySoft.Drawing.ImagingTools.View.UserControls;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
 using Microsoft.VisualStudio.Extensibility.DebuggerVisualizers;
@@ -55,6 +56,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.View
         private TModel? lastAppliedModel;
         private bool suppressNextAvailable;
         private bool isMessagingAvailable;
+        private bool hostShown;
 
         #endregion
 
@@ -102,12 +104,23 @@ namespace KGySoft.Drawing.DebuggerVisualizers.View
             }
             else
                 Unloaded += WpfVisualizerAdapter_Unloaded;
-
         }
 
         #endregion
 
         #region Protected Methods
+
+        /// <inheritdoc />
+        protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+            if (hostShown || e.Property != ActualHeightProperty || host.Child is not MvvmBaseUserControl view)
+                return;
+
+            hostShown = true;
+            view.AdjustSizes(null);
+            view.OnHostShown();
+        }
 
         /// <inheritdoc />
         protected override void Dispose(bool disposing)
@@ -164,6 +177,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.View
                         goto case VisualizerTargetStateNotification.ValueUpdated;
                     }
 
+                    hostShown = false;
                     IView? view = null;
                     try
                     {

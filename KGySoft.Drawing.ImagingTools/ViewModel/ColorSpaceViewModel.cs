@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ColorSpaceViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -65,11 +65,33 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             #region Methods
 
+            #region Public Methods
+
+            public override void SetCompleted()
+            {
+                if (sourceBitmap != null)
+                {
+                    if (isSourceCloned)
+                    {
+                        sourceBitmap.Dispose();
+                        sourceBitmap = null;
+                    }
+                    else
+                        Monitor.Exit(sourceBitmap);
+                }
+
+                base.SetCompleted();
+            }
+
+            #endregion
+
+            #region Internal Methods
+
             internal override void Initialize(Bitmap source, bool isInUse)
             {
                 // Locking on source image to avoid "bitmap region is already locked" if the UI is painting the image when we clone it.
                 // This works this way because UI can repaint the image any time and is also locks the image for that period.
-                // Another solution could be if we used a clone of the original image but it is better to avoid using multiple clones.
+                // Another solution could be if we used a clone of the original image, but it is better to avoid using multiple clones.
                 isSourceCloned = isInUse;
                 if (isInUse)
                 {
@@ -91,22 +113,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             internal override Bitmap? EndGenerate(IAsyncResult asyncResult) => asyncResult.EndConvertPixelFormat();
 
-            internal override void SetCompleted()
-            {
-                if (sourceBitmap != null)
-                {
-                    if (isSourceCloned)
-                    {
-                        sourceBitmap.Dispose();
-                        sourceBitmap = null;
-                    }
-                    else
-                        Monitor.Exit(sourceBitmap);
-                }
-
-                base.SetCompleted();
-            }
-
             protected override void Dispose(bool disposing)
             {
                 if (IsDisposed)
@@ -119,6 +125,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
                 base.Dispose(disposing);
             }
+
+            #endregion
 
             #endregion
         }

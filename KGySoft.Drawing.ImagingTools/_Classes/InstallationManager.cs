@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: InstallationManager.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -26,6 +26,7 @@ using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
 #if NET45_OR_GREATER
 using KGySoft.Drawing.ImagingTools.WinApi;
+using KGySoft.WinForms;
 #endif
 
 #endregion
@@ -51,6 +52,7 @@ namespace KGySoft.Drawing.ImagingTools
             "KGySoft.Drawing.ImagingTools.exe",
             "KGySoft.Drawing.Core.dll",
             "KGySoft.Drawing.dll",
+            "KGySoft.WinForms.dll",
             "KGySoft.Drawing.Wpf.dll",
             "KGySoft.CoreLibraries.dll",
             "KGySoft.Drawing.DebuggerVisualizers.Core.dll",
@@ -160,7 +162,7 @@ namespace KGySoft.Drawing.ImagingTools
 
 #if NET45_OR_GREATER
             // .NET Core support: the visualizer must be in a netstandard2.0 subdirectory.
-            // And actually it can contain framework assemblies so we just create a symbolic link to it
+            // And actually it can contain framework assemblies so we just create a hard link to it
             // NOTE: It must be the .NET 4.5 or greater build, others do not work (even a Core build itself, even in netcoreapp folder)
             string netCorePath = Path.Combine(directory, netCoreSubdirectory);
             try
@@ -191,7 +193,7 @@ namespace KGySoft.Drawing.ImagingTools
                 {
                     string source = Path.Combine(directory, file);
                     string target = Path.Combine(netCorePath, file);
-                    if (isNtfs && OSUtils.IsWindows)
+                    if (isNtfs && OSHelper.IsWindows)
                     {
                         if (File.Exists(target))
                             File.Delete(target);

@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: QuantizerSelectorControl.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -16,7 +16,6 @@
 #region Usings
 
 using System.Drawing;
-using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.ViewModel;
 
@@ -24,7 +23,7 @@ using KGySoft.Drawing.ImagingTools.ViewModel;
 
 namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
-    internal sealed partial class QuantizerSelectorControl : MvvmBaseUserControl
+    internal sealed partial class QuantizerSelectorControl : SelectorControlBase
     {
         #region Properties
 
@@ -146,23 +145,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 ViewModel.BackColor = result.Value;
         }
 
-        private void OnResetParentSizeCommand()
-        {
-            Control? parent = Parent?.Parent;
-            if (parent == null)
-                return;
-
-            int height = 0;
-            foreach (Control control in Controls)
-            {
-                if (!control.Visible)
-                    continue;
-
-                height += control.Height;
-            }
-
-            parent.Height = height + (parent.Height - parent.DisplayRectangle.Height);
-        }
+        private void OnResetParentSizeCommand() => ResetParentSize();
 
         #endregion
 

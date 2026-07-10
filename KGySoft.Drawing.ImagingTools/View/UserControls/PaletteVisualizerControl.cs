@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: PaletteVisualizerControl.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -21,6 +21,7 @@ using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.View.Forms;
 using KGySoft.Drawing.ImagingTools.ViewModel;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -28,10 +29,27 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
     internal partial class PaletteVisualizerControl : MvvmBaseUserControl
     {
+        #region Constants
+
+        // Adjusted for Segoe UI 9 font on 100% DPI
+        private const int gbSelectedColorRefHeight = 248;
+
+        #endregion
+
         #region Fields
+
+        #region Static Fields
+
+        private static readonly Padding referencePadding = new Padding(3);
+
+        #endregion
+        
+        #region Instance Fields
 
         private ParentViewProperties? parentProperties;
 
+        #endregion
+        
         #endregion
 
         #region Properties
@@ -42,12 +60,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             BorderStyle = FormBorderStyle.SizableToolWindow,
             Icon = Properties.Resources.Palette,
-            MinimumSize = new Size(240, 335),
+            MinimumSize = new Size(240, 360),
             AcceptButton = okCancelButtons.OKButton,
             CancelButton = okCancelButtons.CancelButton,
             ClosingCallback = (sender, _) =>
             {
-                if ((sender as Form)?.DialogResult != DialogResult.OK)
+                if ((sender as Form)?.DialogResult == DialogResult.Cancel)
                     ViewModel.SetModified(false);
             },
             ProcessKeyCallback = (parent, key) =>
@@ -106,13 +124,19 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             // Fixing high DPI appearance on Mono
             PointF scale;
-            if (OSUtils.IsMono && (scale = this.GetScale()) != new PointF(1f, 1f) && ParentForm is MvvmParentForm parent)
+            if (OSHelper.IsFrameworkMono && (scale = this.GetScale()) != new PointF(1f, 1f) && ParentForm is MvvmParentForm parent)
             {
                 parent.MinimumSize = new Size(255, 335).Scale(scale);
                 parent.MaximumSize = new Size((int)(280 * scale.X), Int16.MaxValue);
             }
 
             base.OnLoad(e);
+        }
+
+        protected override void OnCreateControl()
+        {
+            base.OnCreateControl();
+            colorVisualizerControl.AdjustSizes(null);
         }
 
         protected override void ApplyTheme()
@@ -127,6 +151,14 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             InitPropertyBindings();
             InitCommandBindings();
             base.ApplyViewModel();
+        }
+
+        protected override void ApplySizeAdjustments(PointF? dynamicSizesScale)
+        {
+            PointF scale = this.GetScale();
+            Padding = gbPalette.Padding = gbSelectedColor.Padding = referencePadding.Scale(scale);
+            gbSelectedColor.Height = gbSelectedColorRefHeight.Scale(scale.Y);
+            okCancelButtons.EnsureSize();
         }
 
         protected override void Dispose(bool disposing)
@@ -158,11 +190,8 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // pnlPalette.SelectedColorIndex -> VM.SelectedColorIndex
             CommandBindings.AddPropertyBinding(pnlPalette, nameof(pnlPalette.SelectedColorIndex), nameof(ViewModel.SelectedColorIndex), ViewModel);
 
-            // VM.IsModified -> OKButton.Enabled
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsModified), nameof(okCancelButtons.OKButton.Enabled), okCancelButtons.OKButton);
-
             bool isInForm = ParentForm != null;
-            okCancelButtons.DefaultButtonsVisible = isInForm;
+            okCancelButtons.OKButtonVisible = okCancelButtons.CancelButtonVisible = isInForm;
             okCancelButtons.ApplyButtonVisible = !isInForm;
         }
 
@@ -174,20 +203,14 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private void InitCommandBindings()
         {
-            // CancelButton.Click -> OnCancelCommand
-            CommandBindings.Add(OnCancelCommand)
+            // OK/Cancel/Apply buttons
+            CommandBindings.Add(ViewModel.AcceptWithCloseCommand, ViewModel.AcceptWithCloseCommandState)
+                .AddSource(okCancelButtons.OKButton, nameof(okCancelButtons.OKButton.Click));
+            CommandBindings.Add(ViewModel.DiscardWithCloseCommand, ViewModel.DiscardWithCloseCommandState)
                 .AddSource(okCancelButtons.CancelButton, nameof(okCancelButtons.CancelButton.Click));
-
-            // ApplyButton.Click -> VM.ApplyChangesCommand
             CommandBindings.Add(ViewModel.ApplyChangesCommand, ViewModel.ApplyChangesCommandCommandState)
                 .AddSource(okCancelButtons.ApplyButton, nameof(okCancelButtons.ApplyButton.Click));
         }
-
-        #endregion
-
-        #region Command Handlers
-
-        private void OnCancelCommand() => ViewModel.SetModified(false);
 
         #endregion
 

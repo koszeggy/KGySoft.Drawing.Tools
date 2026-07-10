@@ -17,9 +17,9 @@
         {
             this.components = new System.ComponentModel.Container();
             this.bindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.okCancelButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
+            this.okCancelButtons = new KGySoft.WinForms.Controls.OkCancelButtons();
             this.gridDownloadableResources = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedDataGridView();
-            this.colSelected = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.colSelected = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedDataGridViewCheckBoxColumn();
             this.colLanguage = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colAuthor = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colImagingToolsVersion = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -102,7 +102,7 @@
             this.progress.BackColor = System.Drawing.Color.Transparent;
             this.progress.Location = new System.Drawing.Point(3, 201);
             this.progress.Name = "progress";
-            this.progress.Size = new System.Drawing.Size(358, 22);
+            this.progress.Size = new System.Drawing.Size(358, 20);
             this.progress.TabIndex = 2;
             // 
             // DownloadResourcesControl
@@ -127,8 +127,8 @@
         private Controls.DownloadProgressFooter progress;
         private Controls.AdvancedDataGridView gridDownloadableResources;
         private System.Windows.Forms.BindingSource bindingSource;
-        private UserControls.OkCancelButtons okCancelButtons;
-        private System.Windows.Forms.DataGridViewCheckBoxColumn colSelected;
+        private KGySoft.WinForms.Controls.OkCancelButtons okCancelButtons;
+        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedDataGridViewCheckBoxColumn colSelected;
         private System.Windows.Forms.DataGridViewTextBoxColumn colLanguage;
         private System.Windows.Forms.DataGridViewTextBoxColumn colAuthor;
         private System.Windows.Forms.DataGridViewTextBoxColumn colImagingToolsVersion;

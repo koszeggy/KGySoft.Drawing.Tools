@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ViewModelFactory.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -15,7 +15,9 @@
 
 #region Usings
 
+#if NETFRAMEWORK
 using System;
+#endif
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -50,6 +52,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #endregion
 
         #region Methods
+        
+        #region Public Methods
 
         /// <summary>
         /// Creates a view model for the default view without any loaded image.
@@ -283,6 +287,24 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         /// </summary>
         /// <returns>An <see cref="IViewModel{TResult}"/> instance that represents a view model for managing language settings.</returns>
         public static IViewModel<ICollection<LocalizationInfo>> CreateDownloadResources() => new DownloadResourcesViewModel();
+
+        #endregion
+
+        #region Internal Methods
+
+        // Not a public API, because the result is not too useful as a general use case. Some more general UserChoice response-request could be public though.
+        // This VM is more specific, because the options may change dynamically. A general user choice would only update the localization dynamically if the language changes.
+        internal static IViewModel<(string? Format, bool CustomAlphaDetection)> CreatePasteSpecial() => new PasteSpecialViewModel();
+
+        // These are not public either because of the resource IDs. A user still can use the public Dialogs from KGySoft.WinForms.
+        // NOTE: If an argument is Func<string>, it is also reevaluated on language change.
+        internal static IViewModel CreateInfoMessage(string resourceId, params object[]? args) => new InfoMessageViewModel(resourceId, args);
+        internal static IViewModel CreateWarningMessage(string resourceId, params object[]? args) => new WarningMessageViewModel(resourceId, args);
+        internal static IViewModel CreateErrorMessage(string resourceId, params object[]? args) => new ErrorMessageViewModel(resourceId, args);
+        internal static IViewModel<int> CreateConfirmMessage(string resourceId, object[]? args, bool isYesDefault) => new ConfirmMessageViewModel(resourceId, args, isYesDefault);
+        internal static IViewModel<int> CreateCancellableConfirmMessage(string resourceId, object[]? args, int defaultButton) => new CancellableConfirmMessageViewModel(resourceId, args, defaultButton);
+
+        #endregion
 
         #endregion
     }

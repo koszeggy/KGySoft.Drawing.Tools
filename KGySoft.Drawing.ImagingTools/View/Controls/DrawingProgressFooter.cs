@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: DrawingProgressFooter.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -14,8 +14,6 @@
 #endregion
 
 #region Usings
-
-using System.Windows.Forms;
 
 using KGySoft.Threading;
 
@@ -42,10 +40,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (displayedProgress?.OperationType != progress.OperationType)
                 ProgressText = Res.Get(progress.OperationType);
             if (progress.MaximumValue == 0)
-                ProgressStyle = ProgressBarStyle.Marquee;
+                IsMarquee = true;
             else
             {
-                ProgressStyle = ProgressBarStyle.Blocks;
+                IsMarquee = false;
                 Maximum = progress.MaximumValue;
                 Value = progress.CurrentValue;
             }

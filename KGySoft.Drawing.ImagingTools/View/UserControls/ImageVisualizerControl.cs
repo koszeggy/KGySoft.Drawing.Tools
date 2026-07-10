@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ImageVisualizerControl.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -24,6 +24,7 @@ using KGySoft.ComponentModel;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Drawing.ImagingTools.View.Forms;
 using KGySoft.Drawing.ImagingTools.ViewModel;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -40,9 +41,17 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
     internal partial class ImageVisualizerControl : MvvmBaseUserControl
     {
+        #region Constants
+
+        private const int refSplitterMinHeight = 16;
+        private const int refSplitterWidth = 4;
+
+        #endregion
+
         #region Fields
 
         private ParentViewProperties? parentProperties;
+        private int lastInfoHeight;
 
         #endregion
 
@@ -69,8 +78,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             },
             ClosingCallback = (sender, _) =>
             {
-                if (((MvvmParentForm)sender!).DialogResult == DialogResult.Cancel)
+                if (sender is not MvvmParentForm parent)
+                    return;
+                if (parent.DialogResult == DialogResult.Cancel)
                     ViewModel.SetModified(false);
+                if (parent.DialogResult != DialogResult.Retry) // Retry signals that it's being reopened due to RTL change
+                    ViewModel.CancelPendingTask();
             }
         };
 
@@ -117,7 +130,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Static Methods
 
-        private static Image GetCompoundViewIcon(ImageInfoType type)
+        private static Bitmap GetCompoundViewIcon(ImageInfoType type)
         {
             switch (type)
             {
@@ -137,6 +150,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Instance Methods
 
+        #region Internal Methods
+
+        internal override void StoreDynamicSizes() => lastInfoHeight = txtInfo.Height;
+
+        #endregion
+
         #region Protected Methods
 
         protected override void ApplyResources()
@@ -147,6 +166,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             btnOpen.Image = Images.Open;
             btnSave.Image = Images.Save;
             btnClear.Image = Images.Clear;
+            btnCopy.Image = Images.Copy;
+            miPaste.Image = Images.Paste;
+            miPasteAsBitmap.Image = Images.PasteBitmap;
+            miPasteAsMetafile.Image = Images.PasteVector;
+            miPasteSpecial.Image = Images.PasteSpecial;
+            btnPaste.DefaultItem = miPaste;
 
             btnColorSettings.Image = Images.Palette;
             miBackColorDefault.Image = Images.Check;
@@ -165,13 +190,13 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             miManageInstallations.Image = Images.Settings;
             miLanguageSettings.Image = Images.Language;
 #if NETFRAMEWORK && !NET472_OR_GREATER
-            btnConfiguration.SetDefaultItem(miManageInstallations);
+            btnConfiguration.DefaultItem = miManageInstallations;
 #else
-            btnConfiguration.SetDefaultItem(miLanguageSettings);
+            btnConfiguration.DefaultItem = miLanguageSettings;
 #endif
 
             miEasterEgg.Image = Images.ImagingTools;
-            btnAbout.Image = miAbout.Image = Icons.SystemInformation.ToScaledBitmap();
+            btnAbout.Image = miAbout.Image = Icons.SystemInformation.AsBitmap(true);
         }
 
         protected override void ApplyStringResources()
@@ -179,6 +204,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             base.ApplyStringResources();
             dlgOpen.Title = Res.TitleOpenFileDialog;
             dlgSave.Title = Res.TitleSaveFileDialog;
+            btnPaste.UpdateDefaultItem(); // only for paste, because other split buttons have explicit ToolTipText
         }
 
         protected override void ApplyViewModel()
@@ -186,7 +212,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             InitViewModelDependencies();
             InitPropertyBindings();
             InitCommandBindings();
-            base.ApplyViewModel(); //Apply is Enabled, OK is Disabled. Why?
+            base.ApplyViewModel();
             imageViewer.Focus();
         }
 
@@ -212,9 +238,17 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 case Keys.Shift | Keys.Left:
                     (RightToLeft == RightToLeft.Yes ? btnNext : btnPrev).PerformClick();
                     return true;
+                case Keys.Control | Keys.C or Keys.Control | Keys.Insert when !txtInfo.Focused:
+                    btnCopy.PerformClick();
+                    return true;
 
                 default:
-                    return base.ProcessCmdKey(ref msg, keyData);
+                    bool result = base.ProcessCmdKey(ref msg, keyData);
+
+                    // Workaround: ToolStrip hotkeys may stop working when their parent is moved to the overflow area, and the overflow button was dropped down since then.
+                    if (!result && ToolStripManager.IsShortcutDefined(keyData))
+                        result = tsMenu.ProcessCmdKeyInternal(ref msg, keyData);
+                    return result;
             }
         }
 
@@ -238,11 +272,27 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 imageViewer.BackColor = ThemeColors.Control;
         }
 
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+            if (Created)
+                AdjustInfoSize();
+        }
+
+        protected override void ApplySizeAdjustments(PointF? dynamicSizesScale)
+        {
+            splitter.Height = splitter.ScaleHeight(refSplitterWidth);
+            if (dynamicSizesScale is PointF scale)
+                txtInfo.Height = lastInfoHeight.Scale(scale.Y);
+            AdjustInfoSize();
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (IsDisposed)
                 return;
 
+            ViewModel.CancelPendingTask();
             if (disposing)
                 components?.Dispose();
 
@@ -261,7 +311,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             ViewModel.GetImagePreviewSizeCallback = () => imageViewer.ClientSize;
             ViewModel.SelectFileToOpenCallback = SelectFileToOpen;
             ViewModel.SelectFileToSaveCallback = SelectFileToSave;
-            ViewModel.ApplyViewSizeCallback = ApplySize;
+            ViewModel.ApplyViewSizeCallback = TryApplyViewSize;
             ViewModel.UpdatePreviewImageCallback = () => imageViewer.UpdateImage();
             ViewModel.GetCompoundViewIconCallback = GetCompoundViewIcon;
         }
@@ -288,12 +338,15 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             // VM.Zoom <-> imageViewer.Zoom
             CommandBindings.AddTwoWayPropertyBinding(ViewModel, nameof(ViewModel.Zoom), imageViewer, nameof(imageViewer.Zoom));
 
-            // VM.SmoothZooming -> btnAntiAlias.Checked
+            // VM.SmoothingEnabled -> btnAntiAlias.Checked, imageViewer.SmoothingEnabled
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SmoothZooming), nameof(btnAntiAlias.Checked), btnAntiAlias);
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SmoothZooming), nameof(imageViewer.SmoothZooming), imageViewer);
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SmoothZooming), nameof(imageViewer.SmoothingEnabled), imageViewer);
 
             // VM.IsCompoundView -> btnCompound.Checked
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsCompoundView), nameof(btnCompound.Checked), btnCompound);
+
+            // VM.IsBusy -> pbProgress.Visible
+            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsBusy), nameof(pbProgress.Visible), pbProgress);
 
             // VM.IsAutoPlaying -> timerPlayer.Enabled
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsAutoPlaying), nameof(timerPlayer.Enabled), timerPlayer);
@@ -313,11 +366,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SaveFileFilterIndex), nameof(dlgSave.FilterIndex), dlgSave);
             CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.SaveFileDefaultExtension), nameof(dlgSave.DefaultExt), dlgSave);
 
-            // VM.IsModified -> OKButton.Enabled
-            CommandBindings.AddPropertyBinding(ViewModel, nameof(ViewModel.IsModified), nameof(Enabled), buttons.OKButton);
+            // VM.ViewModel.PasteCommandState.Enabled -> btnPaste.Enabled
+            CommandBindings.AddPropertyBinding(ViewModel.PasteCommandState, nameof(ViewModel.PasteCommandState.Enabled), nameof(btnPaste.Enabled), btnPaste);
 
             bool isInForm = ParentForm != null;
-            buttons.DefaultButtonsVisible = isInForm;
+            buttons.OKButtonVisible = buttons.CancelButtonVisible = isInForm;
             buttons.ApplyButtonVisible = !isInForm;
         }
 
@@ -330,14 +383,14 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         private void InitCommandBindings()
         {
             // View
-            CommandBindings.Add(ViewModel.SetAutoZoomCommand, ViewModel.SetAutoZoomCommandState)
+            CommandBindings.Add(ViewModel.SetAutoZoomCommand)
                 .WithParameter(() => btnZoom.Checked)
                 .AddSource(btnZoom, nameof(btnZoom.CheckedChanged));
-            CommandBindings.Add(imageViewer.IncreaseZoom)
+            CommandBindings.Add(imageViewer.IncreaseZoom, ViewModel.ChangeZoomCommandState)
                 .AddSource(btnZoom.IncreaseZoomMenuItem, nameof(btnZoom.IncreaseZoomMenuItem.Click));
-            CommandBindings.Add(imageViewer.DecreaseZoom)
+            CommandBindings.Add(imageViewer.DecreaseZoom, ViewModel.ChangeZoomCommandState)
                 .AddSource(btnZoom.DecreaseZoomMenuItem, nameof(btnZoom.DecreaseZoomMenuItem.Click));
-            CommandBindings.Add(imageViewer.ResetZoom)
+            CommandBindings.Add(imageViewer.ResetZoom, ViewModel.ChangeZoomCommandState)
                 .AddSource(btnZoom.ResetZoomMenuItem, nameof(btnZoom.ResetZoomMenuItem.Click));
             CommandBindings.Add(ViewModel.SetSmoothZoomingCommand, ViewModel.SetSmoothZoomingCommandState)
                 .WithParameter(() => btnAntiAlias.Checked)
@@ -350,6 +403,18 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 .AddSource(btnSave, nameof(btnSave.Click));
             CommandBindings.Add(ViewModel.ClearCommand, ViewModel.ClearCommandState)
                 .AddSource(btnClear, nameof(btnClear.Click));
+
+            // Clipboard
+            CommandBindings.Add(ViewModel.CopyCommand, ViewModel.CopyCommandState)
+                .AddSource(btnCopy, nameof(btnCopy.Click));
+            CommandBindings.Add(ViewModel.PasteCommand, ViewModel.PasteCommandState)
+                .AddSource(miPaste, nameof(miPaste.Click));
+            CommandBindings.Add(ViewModel.PasteAsBitmapCommand, ViewModel.PasteAsBitmapCommandState)
+                .AddSource(miPasteAsBitmap, nameof(miPasteAsBitmap.Click));
+            CommandBindings.Add(ViewModel.PasteAsMetafileCommand, ViewModel.PasteAsMetafileCommandState)
+                .AddSource(miPasteAsMetafile, nameof(miPasteAsMetafile.Click));
+            CommandBindings.Add(ViewModel.PasteSpecialCommand, ViewModel.PasteCommandState)
+                .AddSource(miPasteSpecial, nameof(miPasteSpecial.Click));
 
             // Color Settings
             CommandBindings.Add<EventArgs>(OnSetBackColorCommand)
@@ -414,14 +479,16 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 .AddSource(miEasterEgg, nameof(miEasterEgg.Click));
 
             // View commands
-            CommandBindings.Add(OnResizeCommand)
-                .AddSource(this, nameof(Resize));
             CommandBindings.Add(OnPreviewImageResizedCommand)
                 .AddSource(imageViewer, nameof(imageViewer.SizeChanged));
             CommandBindings.Add(() => miEasterEgg.Visible |= ModifierKeys == (Keys.Shift | Keys.Control))
                 .AddSource(miAbout, nameof(miAbout.MouseDown));
 
-            // ApplyButton.Click -> VM.ApplyChangesCommand
+            // OK/Cancel/Apply buttons
+            CommandBindings.Add(ViewModel.AcceptWithCloseCommand, ViewModel.AcceptWithCloseCommandState)
+                .AddSource(buttons.OKButton, nameof(buttons.OKButton.Click));
+            CommandBindings.Add(ViewModel.DiscardWithCloseCommand, ViewModel.DiscardWithCloseCommandState)
+                .AddSource(buttons.CancelButton, nameof(buttons.CancelButton.Click));
             CommandBindings.Add(ViewModel.ApplyChangesCommand, ViewModel.ApplyChangesCommandCommandState)
                 .AddSource(buttons.ApplyButton, nameof(buttons.ApplyButton.Click));
         }
@@ -443,22 +510,28 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             return dlgSave.FileName;
         }
 
-        private void AdjustSize()
+        private void AdjustInfoSize()
         {
-            int minHeight = new Size(16, 16).Scale(this.GetScale()).Height + SystemInformation.HorizontalScrollBarHeight;
+            int minHeight = this.ScaleHeight(refSplitterMinHeight) + this.GetScrollBarSize().Height;
             if (imageViewer.Height >= minHeight)
+            {
+                ViewModel.SuspendChanges();
+                txtInfo.EnsureSize();
+                ViewModel.ResumeChanges();
                 return;
+            }
+
             int buttonsHeight = buttons.Visible ? buttons.Height : 0;
             int notificationHeight = lblNotification.Visible ? lblNotification.Height : 0;
             txtInfo.Height = ClientSize.Height - Padding.Vertical - tsMenu.Height - splitter.Height - buttonsHeight - notificationHeight - minHeight;
             PerformLayout();
         }
 
-        private void ApplySize(Size size)
+        private bool TryApplyViewSize(Size size)
         {
             Form? parent = ParentForm;
             if (parent == null)
-                return;
+                return false;
 
             parent.Size = size;
             Rectangle workingArea = GetScreenRectangle();
@@ -470,6 +543,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 parent.Top = workingArea.Bottom - Height;
             if (parent.Right > workingArea.Right)
                 parent.Left = workingArea.Right - Width;
+            return true;
         }
 
         #endregion
@@ -490,9 +564,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 imageViewer.BackColor = Color.Black;
         }
 
-        private void OnPreviewImageResizedCommand() => AdjustSize();
-
-        private void OnResizeCommand() => AdjustSize();
+        private void OnPreviewImageResizedCommand() => AdjustInfoSize();
 
         #endregion
 

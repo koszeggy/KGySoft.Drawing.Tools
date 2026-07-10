@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ColorVisualizerControl.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -24,6 +24,7 @@ using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.View.Forms;
 using KGySoft.Drawing.ImagingTools.ViewModel;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -34,6 +35,24 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
     /// </summary>
     internal partial class ColorVisualizerControl : MvvmBaseUserControl
     {
+        #region Constants
+
+        // Adjusted for Segoe UI 9 font on 100% DPI
+        private const int tableRowRefHeight = 23;
+        private const float labelColumnRefWidth = 60f;
+        private const float sliderColumnRefWidth = 90f;
+
+        #endregion
+
+        #region Fields
+
+        private static readonly Padding pnlControlsRefPadding = new Padding(0, 0, 0, 3);
+        private static readonly Padding labelRefMargin = new Padding(4, 0, 0, 0);
+        private static readonly Padding sliderPanelRefMargin = new Padding(1);
+        private static readonly Padding colorPanelRefMargin = new Padding(4, 1, 4, 1);
+
+        #endregion
+
         #region Fields
 
         private readonly bool isChild;
@@ -61,7 +80,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             CancelButton = buttons.CancelButton,
             ClosingCallback = (sender, _) =>
             {
-                if (((MvvmParentForm)sender!).DialogResult != DialogResult.OK)
+                if (((MvvmParentForm)sender!).DialogResult == DialogResult.Cancel)
                     ViewModel!.SetModified(false);
             },
             ProcessKeyCallback = (parent, key) =>
@@ -121,7 +140,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             // Fixing high DPI appearance on Mono
             PointF scale;
-            if (OSUtils.IsMono && (scale = this.GetScale()) != new PointF(1f, 1f))
+            if (OSHelper.IsFrameworkMono && (scale = this.GetScale()) != new PointF(1f, 1f))
             {
                 tblColor.ColumnStyles[0].Width = (int)(50 * scale.X);
                 tblColor.ColumnStyles[1].Width = (int)(80 * scale.X);
@@ -162,14 +181,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 return;
 
             bool isInForm = ParentForm != null;
-            buttons.DefaultButtonsVisible = isInForm;
+            buttons.OKButtonVisible = buttons.CancelButtonVisible = isInForm;
             buttons.ApplyButtonVisible = !isInForm;
 
             // !VM.ReadOnly -> buttons.Visible
             CommandBindings.AddPropertyBinding(vm, nameof(vm.ReadOnly), nameof(buttons.Visible), ro => ro is false, buttons);
-
-            // VM.IsModified -> OKButton.Enabled
-            CommandBindings.AddPropertyBinding(vm, nameof(ViewModel.IsModified), nameof(Enabled), buttons.OKButton);
         }
 
         private void InitParentViewPropertyBindings(MvvmParentForm parent)
@@ -216,11 +232,11 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             if (isChild)
                 return;
 
-            // CancelButton.Click -> OnCancelCommand
-            CommandBindings.Add(OnCancelCommand)
+            // OK/Cancel/Apply buttons
+            CommandBindings.Add(vm.AcceptWithCloseCommand, vm.AcceptWithCloseCommandState)
+                .AddSource(buttons.OKButton, nameof(buttons.OKButton.Click));
+            CommandBindings.Add(vm.DiscardWithCloseCommand, vm.DiscardWithCloseCommandState)
                 .AddSource(buttons.CancelButton, nameof(buttons.CancelButton.Click));
-
-            // ApplyButton.Click -> VM.ApplyChangesCommand
             CommandBindings.Add(vm.ApplyChangesCommand, vm.ApplyChangesCommandCommandState)
                 .AddSource(buttons.ApplyButton, nameof(buttons.ApplyButton.Click));
         }
@@ -257,6 +273,33 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             tblColor.SetColumnSpan(lblRed, 2);
             tblColor.SetColumnSpan(lblGreen, 2);
             tblColor.SetColumnSpan(lblBlue, 2);
+        }
+
+        protected override void ApplyStringResources()
+        {
+            base.ApplyStringResources();
+            if (ViewModel is { CustomColorComponents: null })
+                UpdateColor();
+        }
+
+        protected override void ApplySizeAdjustments(PointF? dynamicSizesScale)
+        {
+            PointF scale = this.GetScale();
+            pnlControls.Padding = pnlControlsRefPadding.Scale(scale);
+            foreach (Control control in Controls)
+            {
+                control.Margin = control switch
+                {
+                    Label => labelRefMargin.Scale(scale),
+                    Panel => (control == pnlColor ? colorPanelRefMargin : sliderPanelRefMargin).Scale(scale),
+                    _ => control.Margin
+                };
+            }
+
+            tblColor.ColumnStyles[0].Width = labelColumnRefWidth * scale.X;
+            tblColor.ColumnStyles[1].Width = sliderColumnRefWidth * scale.X;
+            pnlControls.Height = (tableRowRefHeight * tblColor.RowCount + pnlControlsRefPadding.Vertical).Scale(scale.Y);
+            buttons.EnsureSize();
         }
 
         protected override void Dispose(bool disposing)
@@ -404,8 +447,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             Color color = ViewModel!.Color;
             ViewModel!.Color = Color.FromArgb(color.A, color.R, color.G, tbBlue.Value);
         }
-
-        private void OnCancelCommand() => ViewModel!.SetModified(false);
 
         #endregion
 

@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: GraphicsExtensions.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -15,8 +15,8 @@
 
 #region Usings
 
-using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 
 #endregion
 
@@ -26,15 +26,26 @@ namespace KGySoft.Drawing.ImagingTools
     {
         #region Methods
 
-        internal static PointF GetScale(this Graphics graphics)
+        // The same as in KGySoft.WinForms. Remove if AdvancedToolStrip/ControlPaintHelper will be migrated there.
+        internal static void DrawImageColorized(this Graphics graphics, Image image, Rectangle destRect, Color targetColor)
         {
-            if (graphics == null)
-                throw new ArgumentNullException(nameof(graphics));
-            return new PointF(graphics.DpiX / 96f, graphics.DpiY / 96f);
-        }
+            ImageAttributes? attr = null;
+            try
+            {
+                if (targetColor.ToArgb() != Color.Black.ToArgb())
+                {
+                    attr = new ImageAttributes();
+                    var map = new ColorMap { OldColor = Color.Black, NewColor = targetColor };
+                    attr.SetRemapTable([map], ColorAdjustType.Bitmap);
+                }
 
-        internal static Size ScaleSize(this Graphics graphics, Size size) => size.Scale(graphics.GetScale());
-        internal static int ScaleWidth(this Graphics graphics, int width) => width.Scale(graphics.GetScale().X);
+                graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, attr);
+            }
+            finally
+            {
+                attr?.Dispose();
+            }
+        }
 
         #endregion
     }

@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: DrawingProgressManager.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -16,6 +16,7 @@
 #region Usings
 
 using System;
+using System.Threading;
 
 using KGySoft.Threading;
 
@@ -28,7 +29,7 @@ namespace KGySoft.Drawing.ImagingTools
         #region Fields
 
         private readonly Action<AsyncProgress<DrawingOperation>> reportCallback;
-        private readonly object syncRoot = new object();
+        private readonly Lock syncRoot = new();
 
         private AsyncProgress<DrawingOperation> current;
 

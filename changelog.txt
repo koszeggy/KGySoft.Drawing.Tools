@@ -6,6 +6,79 @@
 ===============================================================================
 
 ~~~~~~~~~
+! v6.0.0:
+~~~~~~~~~
+
+! KGySoft.Drawing.ImagingTools.exe
+==================================
+! UI/Functional changes:
+
+! The standard message boxes have been replaced, using the TaskDialog class from the KGySoft.WinForms package.
+  Task dialogs work better with per-monitor DPI awareness and with Windows 10+ dark theme. This is a breaking change
+  only in terms of localization of the buttons.
++ Persisting auto zoom, smooth zooming and compound view preferences
++ Per-monitor DPI awareness support
++ WMF files can be saved in EMF format as well.
++ Edit Resources form:
+  + The resources of an additional dependent library has been included
+* Improved appearance with dark theme.
+* Main Form/Image Visualizer dialog:
+  + Copy/paste support
+  + Larger enabled zoom for metafiles. Anti-aliasing might be turned off automatically on larger zoom levels.
+  + When saving/copying just a frame of a multipage image, or not using the best format for saving, displaying a
+    notification with the recommended action.
+  + Always allowing to load every supported image format, even when the debugged type allows only bitmaps, metafiles
+    or icons. The loaded image is automatically converted to the allowed format.
+  * Load/Open operations are now asynchronous so the UI remains responsive during load and save.
+  * Improved information details of the loaded image, depending on its type.
+  * The auto zoom/smooth zooming buttons do not turn disabled when the loaded image is cleared.
+  - Dragging a zoomed animated bitmap by the mouse was not quite possible while the animation was playing, because
+    the dragging operation was canceled on updating the frame.
+- Menu item hotkeys were not always working when their parent button had been moved to the overflow area due to
+  shrinking the container form.
+- Several Mono and Wine-specific issues have been fixed.
+- Debugger Visualizer Installations dialog:
+  - Handling the changed versioning of the Visual Studio folders starting with Visual Studio 2026
+- When saving a combined icon after changing one of its images, the unchanged images will not turn to 32 bpp ones
+  in the saved icon.
+- Fixing visual style changes and toolbar rendering on Windows XP.
+
+! API changes:
+
+! KGySoft.Drawing.ImagingTools namespace:
+-----------------------------------------
+! ThemeColor enum: New members, some old names have now different values.
+
+! KGySoft.Drawing.ImagingTools.Model namespace:
+-----------------------------------------------
+! ImageInfoBase class:
+  ! Removing Image property, and moving it to derived classes with different types. You can use the
+    new GetCreateImage method instead.
+  + New Icon property
+  + New GetCreateImage/GetCreateIcon methods
+  * Relaxed validation for icons: either the Image or the Icon property must be set
+! ImageInfo class:
+  ! ImageInfo(Icon) and ImageInfo(Icon, bool) constructors: When initialized from a combined icon, the items of the
+    Frames property are initialized with null Image. Instead, the new Icon property is set for the frames.
+  * New Image property (moved from base)
+  * The Icon property has been moved to the base ImageInfoBase class.
+  * GetCreateImage/GetCreateIcon methods: These are now virtual methods, overriding the newly added methods of the
+    base ImageInfoBase class.
+  * Relaxed validation for icons: either the Image or the Icon property must be set
+! ImageFrameInfo class:
+  ! New Image property with Bitmap return type. This is a breaking change, because the original Image property from
+    the base class has been removed.
+  ! The constructor's image parameter is now a Bitmap rather than an Image.
+  + New GetCreateImage/GetCreateIcon methods
++ LocalizableLibraries enum: New members for the newly added dependent libraries.
+
++ KGySoft.Drawing.DebuggerVisualizers.dll
+=========================================
++ DebuggerHelper class:
+  + New CreateColorPalette method
+
+
+~~~~~~~~~
 * v5.1.0:
 ~~~~~~~~~
 

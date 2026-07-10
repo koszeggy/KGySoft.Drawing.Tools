@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: LanguageSettingsViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -24,6 +24,7 @@ using System.IO;
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -178,8 +179,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         internal void FinalizePath()
         {
+            Debug.Assert(UseCustomResourcePath || OSHelper.IsFrameworkMono);
+            if (!UseCustomResourcePath)
+                return;
+
             customPathError = null;
-            Debug.Assert(UseCustomResourcePath);
             string path = ResourceCustomPath;
             
             if (PathHelper.HasInvalidChars(path))
@@ -300,6 +304,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (!UseCustomResourcePath)
                 ResourceCustomPath = Res.TextDefaultResourcesPath;
             UpdateApplyCommandState();
+            Validate();
         }
 
         protected override void Dispose(bool disposing)
@@ -378,16 +383,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             ApplyCommandState.Enabled = !Equals(selected, Res.DisplayLanguage)
                 // or when path has been changed
                 || ((String.IsNullOrEmpty(lastSavedResourcesPath) ^ !UseCustomResourcePath)
-                    || (!String.IsNullOrEmpty(lastSavedResourcesPath) && lastSavedResourcesPath != ResourceCustomPath))
-                // or when turning on/off .resx resources for the default language matters because it also has a resource file
-                || (Equals(selected, Res.DefaultLanguage) && AvailableLanguages.Contains(Res.DefaultLanguage));
+                    || (!String.IsNullOrEmpty(lastSavedResourcesPath) && lastSavedResourcesPath != ResourceCustomPath));
         }
 
         private void ApplyAndSave()
         {
             if (!IsValid)
             {
-                ShowError(Res.ErrorMessageCannotApplyLanguageSettings(ValidationResults.Errors.Message));
+                ShowError(Res.ErrorMessageCannotApplyLanguageSettingsId, () => ValidationResults.Errors.Message);
                 return;
             }
 
@@ -408,7 +411,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     {
                         customPathError = e.Message;
                         Validate();
-                        ShowError(Res.ErrorMessageCannotApplyLanguageSettings(e.Message));
+                        ShowError(Res.ErrorMessageCannotApplyLanguageSettingsId, e.Message);
                         return;
                     }
                 }
@@ -436,7 +439,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             {
                 customPathError = e.Message;
                 Validate();
-                ShowError(Res.ErrorMessageCannotApplyLanguageSettings(e.Message));
+                ShowError(Res.ErrorMessageCannotApplyLanguageSettingsId, e.Message);
             }
             finally
             {
@@ -463,7 +466,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
             catch (Exception e) when (!e.IsCritical())
             {
-                ShowError(Res.ErrorMessageFailedToSaveSettings(e.Message));
+                ShowError(Res.ErrorMessageFailedToSaveSettingsId, e.Message);
             }
         }
 
@@ -484,7 +487,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         // Both Save and Apply do the same thing.
         // The only differences are that Apply has an Enabled state,
-        // and that the View may bind Save to a button that closes the view is there was no error
+        // and that the View may bind Save to a button that closes the view if there was no error
         private void OnApplyCommand() => ApplyAndSave();
         private void OnSaveConfigCommand(ICommandState state)
         {
@@ -495,7 +498,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         private void OnEditResourcesCommand()
         {
             using IViewModel viewModel = ViewModelFactory.CreateEditResources(CurrentLanguage,
-                ResourceCustomPath != (lastSavedResourcesPath.Length == 0 ? Res.DefaultResourcesPath : lastSavedResourcesPath));
+                UseCustomResourcePath && ResourceCustomPath != (lastSavedResourcesPath.Length == 0 ? Res.DefaultResourcesPath : lastSavedResourcesPath));
             if (viewModel is EditResourcesViewModel vm)
                 vm.SaveConfigurationCallback = SaveConfiguration;
             ShowChildViewCallback?.Invoke(viewModel);

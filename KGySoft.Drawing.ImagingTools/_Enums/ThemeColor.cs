@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ThemeColor.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -170,6 +170,11 @@ namespace KGySoft.Drawing.ImagingTools
         ToolStripButtonCheckedBorder,
 
         /// <summary>
+        /// Represents the foreground color of a <see cref="ToolStripMenuItem"/> when it is disabled.
+        /// </summary>
+        ToolStripMenuItemTextDisabled,
+
+        /// <summary>
         /// Represents the border color of a <see cref="ToolStripMenuItem"/> when it is selected.
         /// </summary>
         ToolStripMenuItemSelectedBorder,
@@ -323,5 +328,10 @@ namespace KGySoft.Drawing.ImagingTools
         /// Represents the foreground color of a <see cref="ProgressBar"/>.
         /// </summary>
         ProgressBar,
+
+        /// <summary>
+        /// Represents the color of the message/buttons divider in a task dialog.
+        /// </summary>
+        TaskDialogDivider,
     }
 }

@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: LanguageSettingsControl.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -23,6 +23,7 @@ using System.Windows.Forms;
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.ImagingTools.View.Forms;
 using KGySoft.Drawing.ImagingTools.ViewModel;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -30,11 +31,28 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
     internal partial class LanguageSettingsControl : MvvmBaseUserControl
     {
+        #region Constants
+
+        private const int gbResXPathRefHeight = 52; // Adjusted for Segoe UI 9 font on 100% DPI.
+
+        #endregion
+
         #region Fields
+
+        #region Static Fields
+
+        private static readonly Size referenceSize = new Size(400, 225); // Adjusted for Segoe UI 9 font on 100% DPI.
+        private static readonly Padding referencePadding = new Padding(3);
+
+        #endregion
+        
+        #region Instance Fields
 
         private ParentViewProperties? parentProperties;
         private ICommandBinding? saveCommandBinding;
 
+        #endregion
+        
         #endregion
 
         #region Properties
@@ -74,7 +92,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         internal LanguageSettingsControl(LanguageSettingsViewModel viewModel) : base(viewModel)
         {
             InitializeComponent();
-            btnEditResources.Height = cmbLanguages.Height + 2; // helps aligning better for higher DPIs
         }
 
         #endregion
@@ -104,13 +121,19 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Instance Methods
 
+        #region Internal Methods
+
+        internal override Size? GetDesiredSize(PointF scale) => referenceSize.Scale(scale);
+
+        #endregion
+
         #region Protected Methods
 
         protected override void OnLoad(EventArgs e)
         {
             // Fixing high DPI appearance on Mono
             PointF scale;
-            if (OSUtils.IsMono && (scale = this.GetScale()) != new PointF(1f, 1f))
+            if (OSHelper.IsFrameworkMono && (scale = this.GetScale()) != new PointF(1f, 1f))
             {
                 btnEditResources.Size = new Size(105, 23).Scale(scale);
                 btnDownloadResources.Height = (int)(23 * scale.Y);
@@ -118,7 +141,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
             // Mono/Windows: ignoring because ToolTips throw an exception if set for an embedded control and
             // since they don't appear for negative padding there is simply no place for them.
-            if (!IsLoaded && !(OSUtils.IsMono && OSUtils.IsWindows))
+            if (!IsLoaded && !OSHelper.IsWindowsMono)
             {
                 ValidationMapping[nameof(ViewModel.ResourceCustomPath)] = gbResxResourcesPath.CheckBox;
                 ErrorProvider.SetIconAlignment(gbResxResourcesPath.CheckBox, ErrorIconAlignment.TopRight);
@@ -133,6 +156,16 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             InitCommandBindings();
             InitPropertyBindings();
             base.ApplyViewModel();
+        }
+
+        protected override void ApplySizeAdjustments(PointF? dynamicSizesScale)
+        {
+            PointF scale = this.GetScale();
+            Padding = gbResxResourcesPath.Padding = gbDisplayLanguage.Padding = referencePadding.Scale(scale);
+            gbResxResourcesPath.Height = gbResXPathRefHeight.Scale(scale.Y);
+            btnEditResources.MinimumSize = new Size(0, cmbLanguages.Height + 2);
+            btnEditResources.Height = btnDownloadResources.Height = cmbLanguages.Height + 2;
+            okCancelApplyButtons.EnsureSize();
         }
 
         protected override void Dispose(bool disposing)

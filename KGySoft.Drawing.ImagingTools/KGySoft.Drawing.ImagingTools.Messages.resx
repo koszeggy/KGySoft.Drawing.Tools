@@ -150,6 +150,9 @@
   <data name="Title_FolderDialog" xml:space="preserve">
     <value>Browse For Folder</value>
   </data>
+  <data name="Title_PasteSpecialDialog" xml:space="preserve">
+    <value>Paste Special</value>
+  </data>
   <data name="Text_Separator" xml:space="preserve">
     <value>; </value>
   </data>
@@ -183,8 +186,11 @@
   <data name="Text_AllFiles" xml:space="preserve">
     <value>All files</value>
   </data>
-  <data name="Text_Metafiles" xml:space="preserve">
-    <value>Metafiles</value>
+  <data name="Text_BitmapTypes" xml:space="preserve">
+    <value>Bitmap Image Formats</value>
+  </data>
+  <data name="Text_MetafileTypes" xml:space="preserve">
+    <value>Vector Image Formats</value>
   </data>
   <data name="Text_Icon" xml:space="preserve">
     <value>Icon</value>
@@ -192,8 +198,8 @@
   <data name="Text_Raw" xml:space="preserve">
     <value>Raw Bitmap Data</value>
   </data>
-  <data name="Text_Images" xml:space="preserve">
-    <value>Images</value>
+  <data name="Text_ImageTypes" xml:space="preserve">
+    <value>All Supported Image Types</value>
   </data>
   <data name="Text_FileFormat" xml:space="preserve">
     <value>File Format</value>
@@ -237,26 +243,35 @@
   <data name="Text_DefaultResourcesPath" xml:space="preserve">
     <value>(Default path)</value>
   </data>
+  <data name="Text_PasteSpecialMessage" xml:space="preserve">
+    <value>Select a supported clipboard image format.</value>
+  </data>
+  <data name="Text_PasteSpecialCheckBox" xml:space="preserve">
+    <value>Try to restore transparency</value>
+  </data>
   <data name="ToolTipText_CompoundAnimation" xml:space="preserve">
     <value>Toggles whether the animation is handled as a single image.
-• When checked, animation will play and saving as GIF saves the whole animation.
-• When not checked, frame navigation will be enabled and saving saves only the selected frame.</value>
+• When checked, the animation plays, copy/save as GIF saves the animation, and paste replaces the whole image.
+• When not checked, frame navigation gets enabled, and copy/paste/save operations affect the selected frame only.</value>
   </data>
   <data name="ToolTipText_CompoundMultiSize" xml:space="preserve">
     <value>Toggles whether the icon is handled as a multi-resolution image.
-• When checked, always the best fitting image is displayed and saving as Icon saves every image.
-• When not checked, icon images can be explored by navigation and saving saves the selected image only.</value>
+• When checked, always the best fitting image is displayed, copy/save as Icon saves a combined icon, and paste replaces the whole image.
+• When not checked, icon images can be explored by navigation, and copy/paste/save operations affect the selected image only.</value>
   </data>
   <data name="ToolTipText_CompoundMultiPage" xml:space="preserve">
     <value>Toggles whether the pages are handled as a compound image.
-• When checked, saving as TIFF saves every page.
-• When not checked, saving saves always the selected page only.</value>
+• When checked, copy/save as TIFF saves every page, and paste replaces the whole image.
+• When not checked, copy/paste/save operations affect the selected page only.</value>
   </data>
   <data name="ToolTipText_SmoothMetafile" xml:space="preserve">
-    <value>Smoothing Edges (Alt+S)</value>
+    <value>Smooth Edges (Alt+S)
+    
+Applies antialiasing to the metafile. It may turn off automatically for performance reasons.
+May not be needed if the metafile already contains drawing records with antialiasing.</value>
   </data>
   <data name="ToolTipText_SmoothBitmap" xml:space="preserve">
-    <value>Smoothing Resized Image (Alt+S)</value>
+    <value>Smooth Resized Image (Alt+S)</value>
   </data>
   <data name="Text_Auto" xml:space="preserve">
     <value>Auto</value>
@@ -267,15 +282,26 @@
   <data name="InfoText_SizeFormat" xml:space="preserve">
     <value>{{Width={0}, Height={1}}}</value>
   </data>
-  <data name="InfoText_ImageFormat" xml:space="preserve">
-    <value>Type: {0}
-Size: {1}x{2} pixels
-{7}Pixel Format: {3}
-Raw format: {4}
-Resolution: {5}x{6} DPI</value>
+  <data name="Info_TypeFormat" xml:space="preserve">
+    <value>Type: {0}</value>
+  </data>
+  <data name="Info_SizeInPixelsFormat" xml:space="preserve">
+    <value>Size: {0} x {1} pixels</value>
+  </data>
+  <data name="Info_PixelFormatFormat" xml:space="preserve">
+    <value>Pixel Format: {0}</value>
+  </data>
+  <data name="Info_RawFormatFormat" xml:space="preserve">
+    <value>Raw Format: {0}</value>
+  </data>
+  <data name="Info_MetafileTypeFormat" xml:space="preserve">
+    <value>Metafile Type: {0}</value>
+  </data>
+  <data name="Info_ResolutionFormat" xml:space="preserve">
+    <value>Resolution: {0} x {1} DPI</value>
   </data>
   <data name="InfoText_BitmapDataFormat" xml:space="preserve">
-    <value>Size: {0}x{1} pixels
+    <value>Size: {0} x {1} pixels
 Stride: {2} bytes
 Pixel Format: {3}</value>
   </data>
@@ -293,7 +319,7 @@ Pixel Format: {3}</value>
     <value>Images: {0}</value>
   </data>
   <data name="InfoText_CurrentFrameFormat" xml:space="preserve">
-    <value>Current Image: {0}/{1}</value>
+    <value>Current Image: {0} / {1}</value>
   </data>
   <data name="InfoText_SelectedIndexFormat" xml:space="preserve">
     <value>Selected index: {0}</value>
@@ -328,31 +354,70 @@ Brightness: {5:F0}%</value>
     <value>Vertical zoom: {0}</value>
   </data>
   <data name="InfoText_VisibleClipFormat" xml:space="preserve">
-    <value>Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2}x{3} pixels}}</value>
+    <value>Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2} x {3} pixels}}</value>
   </data>
   <data name="InfoText_OriginalVisibleClipFormat" xml:space="preserve">
-    <value>Original Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2}x{3} pixels}}</value>
+    <value>Original Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2} x {3} pixels}}</value>
   </data>
   <data name="InfoText_TransformedVisibleClipFormat" xml:space="preserve">
-    <value>Transformed Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2}x{3} (Page Unit: {4})}}</value>
-  </data>
-  <data name="InfoText_ResolutionFormat" xml:space="preserve">
-    <value>Resolution: {0}x{1} DPI</value>
+    <value>Transformed Visible Clip Bounds: {{X = {0}, Y = {1}, Size = {2} x {3} (Page Unit: {4})}}</value>
   </data>
   <data name="Notification_MetafileAsBitmap" xml:space="preserve">
-    <value>The loaded metafile has been converted to Bitmap. To load it as a Metafile, choose the Image Debugger Visualizer instead.</value>
+    <value>The loaded metafile has been converted to a Bitmap. To load it as a Metafile, choose the Image Debugger Visualizer instead.</value>
+  </data>
+  <data name="Notification_BitmapAsMetafile" xml:space="preserve">
+    <value>The loaded image has been converted to a Metafile. To load it as a Bitmap, choose the Image Debugger Visualizer instead.</value>
   </data>
   <data name="Notification_ImageAsIcon" xml:space="preserve">
-    <value>The loaded image has been converted to Icon</value>
+    <value>The loaded image has been converted to an Icon.</value>
+  </data>
+  <data name="Notification_PastedAsBitmap" xml:space="preserve">
+    <value>The selected image format has been converted to a Bitmap.</value>
+  </data>
+  <data name="Notification_PastedAsMetafile" xml:space="preserve">
+    <value>The selected image format has been converted to a Metafile.</value>
+  </data>
+  <data name="Notification_PastedAsIcon" xml:space="preserve">
+    <value>The selected image format has been converted to an Icon.</value>
   </data>
   <data name="Notification_PaletteCannotBeRestored" xml:space="preserve">
     <value>The palette of an indexed BitmapData cannot be reconstructed, therefore a default palette is used. You can change palette colors in the menu.</value>
+  </data>
+  <data name="Notification_PageSaved" xml:space="preserve">
+    <value>The current page has been saved. To save the whole image instead, check the compound view button, and save the image in TIFF format.</value>
+  </data>
+  <data name="Notification_PageCopied" xml:space="preserve">
+    <value>The current page has been copied to the clipboard. To copy the whole image instead, check the compound view button first.
+Note that most applications may not support pasting multiple pages though.</value>
+  </data>
+  <data name="Notification_SaveAsTiffRecommended" xml:space="preserve">
+    <value>To properly save a multipage image, make sure you save it in TIFF format as well.</value>
+  </data>
+  <data name="Notification_FrameSaved" xml:space="preserve">
+    <value>The current frame has been saved. To save the whole animation instead, check the animation mode button, and save the image in GIF format.</value>
+  </data>
+  <data name="Notification_FrameCopied" xml:space="preserve">
+    <value>The current frame has been copied to the clipboard. To copy the whole animation instead, check the animation mode button first.
+Note that most applications may not support pasting multiple frames though.</value>
+  </data>
+  <data name="Notification_SaveAsGifRecommended" xml:space="preserve">
+    <value>To properly save the whole animation make sure you save the image in GIF format as well.</value>
+  </data>
+  <data name="Notification_IconImageSaved" xml:space="preserve">
+    <value>The current icon image has been saved. To save the icon with all of its images, check the combined view button, and save it in Icon format.</value>
+  </data>
+  <data name="Notification_IconImageCopied" xml:space="preserve">
+    <value>The current icon image has been copied to the clipboard. To copy it with all of its images, check the combined view button first.
+Note that most applications may not support pasting multi-resolution icons though.</value>
+  </data>
+  <data name="Notification_SaveAsIconRecommended" xml:space="preserve">
+    <value>To properly save a combined icon make sure you save it in Icon format as well.</value>
   </data>
   <data name="ErrorMessageFormat" xml:space="preserve">
     <value>Error: {0}</value>
   </data>
   <data name="ErrorMessage_FailedToLoadFileFormat" xml:space="preserve">
-    <value>Could not load file due to an error: {0}</value>
+    <value>Could not load the file due to an error: {0}</value>
   </data>
   <data name="ErrorMessage_InstallationCannotBeOverwritten" xml:space="preserve">
     <value>The current installation is being executed, which cannot be overwritten</value>
@@ -375,23 +440,23 @@ Brightness: {5:F0}%</value>
   <data name="ErrorMessage_FileNotExpected" xml:space="preserve">
     <value>The specified path is a file but should be a directory.</value>
   </data>
+  <data name="ErrorMessage_ImageInfoEmpty" xml:space="preserve">
+    <value>Either the Image or the Icon property must be set.</value>
+  </data>
+  <data name="ErrorMessage_ImageInfoEmptyFrameImage" xml:space="preserve">
+    <value>The Image property of every frame must be set.</value>
+  </data>
+  <data name="ErrorMessage_ImageInfoEmptyFrameIcon" xml:space="preserve">
+    <value>Either the Image or the Icon property of every frame must be set.</value>
+  </data>
   <data name="ErrorMessage_FailedToSaveImageFormat" xml:space="preserve">
     <value>Could not save image due to an error: {0}</value>
   </data>
   <data name="ErrorMessage_FileDoesNotExistFormat" xml:space="preserve">
     <value>File does not exist: {0}</value>
   </data>
-  <data name="ErrorMessage_NotAnImageFileFormat" xml:space="preserve">
-    <value>Could not open the file as an Image: {0}</value>
-  </data>
-  <data name="ErrorMessage_NotAMetafileFormat" xml:space="preserve">
-    <value>Could not open the file as a Metafile: {0}</value>
-  </data>
-  <data name="ErrorMessage_NotABitmapFileFormat" xml:space="preserve">
-    <value>Could not open the file as a Bitmap: {0}</value>
-  </data>
-  <data name="ErrorMessage_NotAnIconFileFormat" xml:space="preserve">
-    <value>Could not open the file as an Icon: {0}</value>
+  <data name="ErrorMessage_DecodeFailedFormat" xml:space="preserve">
+    <value>Could not recognize the file as a supported image format: {0}</value>
   </data>
   <data name="ErrorMessage_InstallationFailedFormat" xml:space="preserve">
     <value>Installation failed: {0}</value>
@@ -468,17 +533,17 @@ Make sure every running debugger is closed. Removal will be tried again on resta
   <data name="WarningMessage_CouldNotCreateNetCoreDirectoryFormat" xml:space="preserve">
     <value>Could not create directory {0}: {1}
 
-The debugger visualizer may will not work for .NET Core projects.</value>
+The debugger visualizer may not work for .NET Core projects.</value>
   </data>
   <data name="WarningMessage_CouldNotCreateNetCoreLinkFormat" xml:space="preserve">
     <value>Could not create a link for file {0}: {1}
 
-The debugger visualizer may will not work for .NET Core projects.</value>
+The debugger visualizer may not work for .NET Core projects.</value>
   </data>
   <data name="WarningMessage_CouldNotCopyFileNetCoreFormat" xml:space="preserve">
     <value>Could not copy file {0}: {1}
 
-The debugger visualizer may will not work for .NET Core projects.</value>
+The debugger visualizer may not work for .NET Core projects.</value>
   </data>
   <data name="WarningMessage_InstallationWarningFormat" xml:space="preserve">
     <value>The installation finished with a warning: {0}</value>
@@ -489,8 +554,8 @@ then colors will be quantized to the 32 bit ARGB color space during the conversi
   </data>
   <data name="WarningMessage_QuantizerTooWideFormat" xml:space="preserve">
     <value>The selected quantizer uses more colors than the original or selected pixel format '{0}' supports.
-Either select at least {1} pixel format or use another quantizer that uses no more colors than '{0}' can represent;
-otherwise, the result might not be optimal even with dithering.</value>
+Either select at a pixel format with higher color depth (e.g. {1}), or use another quantizer that uses no more colors
+than '{0}' can represent; otherwise, the result might not be optimal even with dithering.</value>
   </data>
   <data name="WarningMessage_DownloadCompletedWithUnsupportedCulturesFormat" xml:space="preserve">
     <value>{0} file(s) have been downloaded.
@@ -505,13 +570,25 @@ so partial transparent pixels will be blended with back color.</value>
     <value>This language is not supported on this platform or by the executing framework.</value>
   </data>
   <data name="WarningMessage_DirectoryNotExists" xml:space="preserve">
-    <value>The specified path is not an existing directory. It will be attempted to be created.</value>
+    <value>The specified path is not an existing directory. An attempt will be made to create it.</value>
+  </data>
+  <data name="WarningMessage_CannotPasteClipboard" xml:space="preserve">
+    <value>The clipboard does not contain any valid image in the supported formats.</value>
+  </data>
+  <data name="WarningMessage_CannotPasteSpecial" xml:space="preserve">
+    <value>Could not paste the image in the requested format.</value>
+  </data>
+  <data name="WarningMessage_CannotCopyClipboard" xml:space="preserve">
+    <value>Could not access the clipboard for copying. Maybe it is locked by another process.</value>
+  </data>
+  <data name="WarningMessage_AsyncOperationRunning" xml:space="preserve">
+    <value>An operation is still executing. Please do not close the application until it finishes.</value>
   </data>
   <data name="ConfirmMessage_OverwriteInstallation" xml:space="preserve">
     <value>Are you sure you want to overwrite this installation?</value>
   </data>
   <data name="ConfirmMessage_InstallClassicVisualizers" xml:space="preserve">
-    <value>For Visual Studio 2022 version 17.9 Preview 1 or higher it is not required to install the classic visualizers at this path if you use the KGy SOFT Image DebuggerVisualizers x64 package from Visual Studio Marketplace. The package offers modern non-dialog visualizers that can remain open while stepping through the code.
+    <value>For Visual Studio 2022 version 17.9 Preview 1 or higher, it is not required to install the classic visualizers at this path if you use the KGy SOFT Image DebuggerVisualizers x64 package from Visual Studio Marketplace. The package offers modern non-dialog visualizers that can remain open while stepping through the code.
 
 Do you really want to install the classic visualizers at this path?
 
@@ -520,7 +597,7 @@ No: Close the dialog and navigate to the Visual Studio Marketplace.
 Cancel: Do nothing.</value>
   </data>
   <data name="ConfirmMessage_SaveFileExtensionFormat" xml:space="preserve">
-    <value>The extension of the provided filename '{0}' does not match to the selected format ({1}).
+    <value>The extension of the provided filename '{0}' does not match the selected format ({1}).
 
 Are you sure you want to save the file with the provided extension?</value>
   </data>
@@ -549,7 +626,7 @@ Do you want to visit the Visual Studio Marketplace where you can download the in
 Do you want to visit the GitHub page where you can download various builds for different target platforms?</value>
   </data>
   <data name="ConfirmMessage_DiscardChanges" xml:space="preserve">
-    <value>There are unsaved modifications. Are sure to discard the changes?</value>
+    <value>There are unsaved modifications. Are you sure you want to discard the changes?</value>
   </data>
   <data name="ConfirmMessage_ResourceVersionMismatch" xml:space="preserve">
     <value>One or more selected items are for a different Imaging Tools version.
@@ -560,11 +637,10 @@ Are you sure you want to continue?</value>
 Are you sure you want to continue? If so, the resources for the unknown libraries will be skipped.</value>
   </data>
   <data name="InfoMessage_QuantizerMayHaveNoEffect" xml:space="preserve">
-    <value>The selected quantizer uses more colors than the original image.
-It is possible that is has no effect.</value>
+    <value>The selected quantizer uses more colors than the original image, and it may have no effect.</value>
   </data>
   <data name="InfoMessage_ArgbQuantizerHasNoEffect" xml:space="preserve">
-    <value>The selected quantizer can only remove partial transparency, but it has practically no effect as source has no alpha.</value>
+    <value>The selected quantizer can only remove partial transparency, but it has practically no effect, because the source has no alpha.</value>
   </data>
   <data name="InfoMessage_SamePixelFormat" xml:space="preserve">
     <value>The selected pixel format is the same as the original one.</value>
@@ -577,11 +653,11 @@ By selecting a quantizer you can specify a different back color.</value>
     <value>This item is for a different Imaging Tools version.</value>
   </data>
   <data name="InfoMessage_QuantizerAutoSelectedFormat" xml:space="preserve">
-    <value>A quantizer has been auto selected for pixel format '{0}' using default settings.
+    <value>A quantizer has been auto-selected for pixel format '{0}' using default settings.
 Use a specific instance to adjust parameters.</value>
   </data>
   <data name="InfoMessage_PaletteAutoSelectedFormat" xml:space="preserve">
-    <value>A system default palette of {0} colors has been auto selected for pixel format '{1}'.
+    <value>A system default palette of {0} colors has been auto-selected for pixel format '{1}'.
 Select a quantizer to use specific colors and settings.</value>
   </data>
   <data name="InfoMessage_DithererIgnoredFormat" xml:space="preserve">
@@ -601,7 +677,7 @@ Dithering may help to preserve more details.</value>
   <data name="InfoMessage_DownloadCompletedFormat" xml:space="preserve">
     <value>{0} file(s) have been downloaded.</value>
   </data>
-  <data name="InfoMessage_About" xml:space="preserve">
+  <data name="InfoMessage_AboutFormat" xml:space="preserve">
     <value>About KGy SOFT Imaging Tools
 
 Version: v{0}
@@ -688,7 +764,7 @@ Harmonizing visual elements for all possible environments is never a trivial tas
     <value>Actual Size</value>
   </data>
   <data name="btnAntiAlias.Text" xml:space="preserve">
-    <value>Smoothing Resized Image (Alt+S)</value>
+    <value>Smooth Resized Image (Alt+S)</value>
   </data>
   <data name="btnOpen.Text" xml:space="preserve">
     <value>Open... (Ctrl+O)</value>
@@ -698,6 +774,21 @@ Harmonizing visual elements for all possible environments is never a trivial tas
   </data>
   <data name="btnClear.Text" xml:space="preserve">
     <value>Clear (Ctrl+Del)</value>
+  </data>
+  <data name="btnCopy.Text" xml:space="preserve">
+    <value>Copy (Ctrl+C)</value>
+  </data>
+  <data name="miPaste.Text" xml:space="preserve">
+    <value>Paste</value>
+  </data>
+  <data name="miPasteSpecial.Text" xml:space="preserve">
+    <value>Paste Special...</value>
+  </data>
+  <data name="miPasteAsBitmap.Text" xml:space="preserve">
+    <value>Paste As Bitmap</value>
+  </data>
+  <data name="miPasteAsMetafile.Text" xml:space="preserve">
+    <value>Paste As Metafile</value>
   </data>
   <data name="btnColorSettings.Text" xml:space="preserve">
     <value>Color Settings</value>
@@ -1045,6 +1136,12 @@ Using a specific seed disables parallel processing, which impacts performance on
   <data name="btnOK.Text" xml:space="preserve">
     <value>&amp;OK</value>
   </data>
+  <data name="btnYes.Text" xml:space="preserve">
+    <value>&amp;Yes</value>
+  </data>
+  <data name="btnNo.Text" xml:space="preserve">
+    <value>&amp;No</value>
+  </data>
   <data name="btnCancel.Text" xml:space="preserve">
     <value>&amp;Cancel</value>
   </data>
@@ -1074,6 +1171,15 @@ Using a specific seed disables parallel processing, which impacts performance on
   </data>
   <data name="DrawingOperation.Saving" xml:space="preserve">
     <value>Saving...</value>
+  </data>
+  <data name="CheckState.Checked" xml:space="preserve">
+    <value>Selected</value>
+  </data>
+  <data name="CheckState.Unchecked" xml:space="preserve">
+    <value>Not Selected</value>
+  </data>
+  <data name="CheckState.Indeterminate" xml:space="preserve">
+    <value>Indeterminate</value>
   </data>
   <data name="DrawingOperation.Loading" xml:space="preserve">
     <value>Loading...</value>
@@ -1250,12 +1356,6 @@ Tip: use '[T]' to filter untranslated texts.</value>
   </data>
   <data name="Button.2" xml:space="preserve">
     <value>&amp;Cancel</value>
-  </data>
-  <data name="Button.6" xml:space="preserve">
-    <value>&amp;Yes</value>
-  </data>
-  <data name="Button.7" xml:space="preserve">
-    <value>&amp;No</value>
   </data>
   <data name="ColorDialog.Static.-1" xml:space="preserve">
     <value>&amp;Basic Colors:</value>

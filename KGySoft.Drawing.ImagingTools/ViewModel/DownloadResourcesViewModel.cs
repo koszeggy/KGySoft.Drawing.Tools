@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: DownloadResourcesViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -31,6 +31,7 @@ using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Resources;
 using KGySoft.Serialization.Xml;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -160,9 +161,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (t == null)
                 return;
 
-            t.IsCanceled = true;
+            t.Cancel();
             SetModified(false);
-            t.WaitForCompletion();
         }
 
         #endregion
@@ -180,7 +180,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
             catch (Exception e) when (!e.IsCritical())
             {
-                ShowError(Res.ErrorMessageCouldNotAccessOnlineResources(e.Message));
+                ShowError(Res.ErrorMessageCouldNotAccessOnlineResourcesId, e.Message);
                 CloseViewCallback?.Invoke();
             }
         }
@@ -219,10 +219,15 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 if (data == null)
                     return;
 
-                using var reader = XmlReader.Create(new StreamReader(new MemoryStream(data), Encoding.UTF8));
+                using XmlReader reader = XmlReader.Create(new StreamReader(new MemoryStream(data), Encoding.UTF8));
                 reader.ReadStartElement("manifest");
+                if (task.IsCanceled)
+                    return;
+
                 List<LocalizationInfo> itemsList = availableResources;
                 XmlSerializer.DeserializeContent(reader, itemsList);
+                if (task.IsCanceled)
+                    return;
 
                 TryInvokeSync(() =>
                 {
@@ -234,7 +239,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             {
                 TryInvokeSync(() =>
                 {
-                    ShowError(Res.ErrorMessageCouldNotAccessOnlineResources(e.Message));
+                    ShowError(Res.ErrorMessageCouldNotAccessOnlineResourcesId, e.Message);
                     CloseViewCallback?.Invoke();
                 });
             }
@@ -313,15 +318,18 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     SetModified(true);
                 }
 
+                if (task.IsCanceled)
+                    return;
+
                 TryInvokeSync(() =>
                 {
                     IsProcessing = false;
                     if (downloadedCultures.Count > 0)
                         ApplyResources();
                     if (downloadedCultures.All(i => ResHelper.TryGetCulture(i.CultureName, out var _)))
-                        ShowInfo(Res.InfoMessageDownloadCompleted(downloaded));
+                        ShowInfo(Res.InfoMessageDownloadCompletedId, downloaded);
                     else
-                        ShowWarning(Res.WarningMessageDownloadCompletedWithUnsupportedCultures(downloaded));
+                        ShowWarning(Res.WarningMessageDownloadCompletedWithUnsupportedCulturesId, downloaded);
                     CloseViewCallback?.Invoke();
                 });
             }
@@ -334,7 +342,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                     if (downloadedCultures.Count > 0)
                         ApplyResources();
                     DownloadCommandState.Enabled = Items?.Any(i => i.Selected) == true;
-                    ShowError(Res.ErrorMessageFailedToDownloadResource(current, e.Message));
+                    ShowError(Res.ErrorMessageFailedToDownloadResourceId, current, e.Message);
                 });
             }
             finally
@@ -438,7 +446,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
                 if (!ignoreVersionMismatch && !selfVersion.NormalizedEquals(item.Info.Version))
                 {
-                    if (Confirm(Res.ConfirmMessageResourceVersionMismatch, false))
+                    if (Confirm(Res.ConfirmMessageResourceVersionMismatchId, [], false))
                         ignoreVersionMismatch = true;
                     else
                         return;
@@ -460,13 +468,13 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 }
             }
 
-            if (unsupportedLibrary && !Confirm(Res.ConfirmMessageResourceUnknownLibraries, false))
+            if (unsupportedLibrary && !Confirm(Res.ConfirmMessageResourceUnknownLibrariesId, [], false))
                 return;
 
             bool overwrite = false;
             if (existingFiles.Count > 0)
             {
-                bool? confirmResult = CancellableConfirm(Res.ConfirmMessageOverwriteResources(existingFiles.Join(Environment.NewLine)), 1);
+                bool? confirmResult = CancellableConfirm(Res.ConfirmMessageOverwriteResourcesId, [existingFiles.Join(Environment.NewLine)], 1);
                 if (confirmResult == null)
                     return;
 

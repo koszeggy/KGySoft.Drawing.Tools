@@ -6,3 +6,4 @@
 using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "False alarm, in this project System.Drawing types CAN be used on non-Windows platforms")]
+[assembly: SuppressMessage("Style", "IDE0305:Simplify collection initialization", Justification = "Decided individually")]

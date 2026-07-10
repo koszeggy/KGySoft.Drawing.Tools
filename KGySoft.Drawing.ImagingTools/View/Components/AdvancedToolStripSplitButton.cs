@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: AdvancedToolStripSplitButton.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -20,25 +20,40 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
+using KGySoft.WinForms;
+
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.View.Components
 {
     /// <summary>
-    /// A <see cref="ToolStripSplitButton"/> whose button part can be checked and the default item can automatically be changed.
+    /// A <see cref="ToolStripSplitButton"/> with some additional features and fixes:
+    /// - Checked property: the button part can be checked
+    /// - CheckOnClick property
+    /// - AutoChangeDefaultItem: clicking an item changes the default item
+    /// - ButtonEnabled: allows disabling the button part only. When DefaultItem is set, it automatically reflects the Enabled property of the default item
+    /// - DefaultItem: Like in the base, but with fixed OnDefaultItemChanged handling:
+    ///   in the base the DefaultItem still returns the old value when the OnDefaultItemChanged method executes.
+    /// - OnDefaultItemChanged: Sets button Image/Text/ToolTipText/Enabled properties from the default item.
+    ///   If the original ToolTipText is null but the default item has a shortcut, a ToolTipText is synthesized from the text and the shortcut.
     /// </summary>
-    // NOTE: The properly scaled arrow and the checked appearance is rendered by AdvancedToolStripRenderer, while
-    // the drop-down button size is adjusted in ScalingToolStrip for all ToolStripSplitButtons
+    // NOTE: The properly scaled arrow and the checked/disabled appearance is rendered by AdvancedToolStripRenderer, while
+    // the drop-down button size is adjusted in AdvancedToolStrip for all ToolStripSplitButtons
     internal class AdvancedToolStripSplitButton : ToolStripSplitButton
     {
         #region Fields
 
         private bool isChecked;
         private bool autoChangeDefaultItem;
+        private bool buttonEnabled = true;
+        private bool suppressChanged;
+        private ToolStripItem? lastDefaultItem;
 
         #endregion
 
         #region Properties
+
+        #region Public Properties
 
         [DefaultValue(false)]
         public bool CheckOnClick { get; set; }
@@ -67,9 +82,53 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
                     return;
                 autoChangeDefaultItem = value;
                 if (value && DropDownItems.Count > 0)
-                    SetDefaultItem(DropDownItems[0]);
+                    DefaultItem = DropDownItems[0];
             }
         }
+
+        // Whether to set ToolTip along with Text and Image when AutoChangeDefaultItem is true.
+        // Recommended be false when the button has a fix tooltip the does not change with changing the default item.
+        [DefaultValue(false)]
+        public bool AutoSetToolTip { get; set; }
+
+        [DefaultValue(true)]
+        public bool ButtonEnabled
+        {
+            get => buttonEnabled;
+            set
+            {
+                if (value == buttonEnabled)
+                    return;
+                buttonEnabled = value;
+                Invalidate();
+            }
+        }
+
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public new ToolStripItem? DefaultItem
+        {
+            get => base.DefaultItem;
+            set
+            {
+                if (base.DefaultItem == value)
+                    return;
+
+                // Fixing OnDefaultItemChanged handling. In base, it is called BEFORE actually changing DefaultItem.
+                suppressChanged = true;
+                base.DefaultItem = value;
+                suppressChanged = false;
+                OnDefaultItemChanged(EventArgs.Empty);
+            }
+        }
+
+        #endregion
+
+        #region Internal Properties
+
+        internal bool IsDropDownHovered { get; set; }
+
+        #endregion
 
         #endregion
 
@@ -97,15 +156,44 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
             return new Size(result.Width + Owner.ScaleWidth(2), result.Height);
         }
 
-        #endregion
-
-        #region Internal Methods
-
-        internal void SetDefaultItem(ToolStripItem item)
+        public void UpdateDefaultItem()
         {
-            DefaultItem = item;
-            Image = item.Image;
-            Text = item.Text;
+            #region Local Methods
+
+            static string ShortcutToString(ToolStripMenuItem menuItem)
+            {
+                Debug.Assert(menuItem.ShortcutKeys != Keys.NoName);
+                return menuItem.ShortcutKeyDisplayString is string { Length: > 0 } displayString
+                    ? displayString
+                    : new KeysConverter().ConvertToString(null, Res.DisplayLanguage, menuItem.ShortcutKeys)!;
+            }
+
+            #endregion
+
+            // can only occur when base.DefaultItem is set independently. In this case taking the base.
+            if (DefaultItem != lastDefaultItem)
+            {
+                ToolStripItem? toSet = base.DefaultItem;
+                base.DefaultItem = null;
+                DefaultItem = toSet;
+                return;
+            }
+
+            if (lastDefaultItem == null)
+                return;
+            Image = lastDefaultItem.Image;
+            Text = lastDefaultItem.Text;
+            if (AutoSetToolTip)
+            {
+                // Putting the shortcut in ToolTipText if lastDefaultItem has no tooltip. This is the recommended way
+                // if we don't want to show a tooltip for the menu item itself, just for the button.
+                string? tooltip = lastDefaultItem.ToolTipText;
+                if (tooltip == null && lastDefaultItem is ToolStripMenuItem mi && mi.ShortcutKeys != Keys.None)
+                    tooltip = $"{Text} ({ShortcutToString(mi)})";
+                ToolTipText = tooltip;
+            }
+
+            ButtonEnabled = lastDefaultItem.Enabled;
         }
 
         #endregion
@@ -114,13 +202,29 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
 
         protected override void OnButtonClick(EventArgs e)
         {
+            if (!ButtonEnabled)
+                return;
             if (CheckOnClick)
                 Checked = !Checked;
-            if (OSUtils.IsMono)
-                DefaultItem?.PerformClick();
+            if (OSHelper.IsFrameworkMono && DefaultItem is ToolStripItem defaultItem)
+                defaultItem.PerformClick();
             else
                 base.OnButtonClick(e);
         }
+
+        protected override bool ProcessDialogKey(Keys keyData)
+        {
+            if (Enabled && keyData is Keys.Enter or Keys.Space)
+            {
+                if (ButtonEnabled)
+                    PerformButtonClick();
+                return true;
+            }
+
+            return base.ProcessDialogKey(keyData);
+        }
+
+        protected override bool ProcessMnemonic(char charCode) => !ButtonEnabled || base.ProcessMnemonic(charCode);
 
         protected virtual void OnCheckedChanged(EventArgs e) => (Events[nameof(CheckedChanged)] as EventHandler)?.Invoke(this, e);
 
@@ -128,7 +232,73 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
         {
             base.OnDropDownItemClicked(e);
             if (autoChangeDefaultItem && DefaultItem != e.ClickedItem && e.ClickedItem != null)
-                SetDefaultItem(e.ClickedItem);
+                DefaultItem = e.ClickedItem;
+        }
+
+        protected override void OnDefaultItemChanged(EventArgs e)
+        {
+            if (suppressChanged)
+                return;
+
+            lastDefaultItem?.EnabledChanged -= DefaultItemEnabledChanged;
+            lastDefaultItem = DefaultItem;
+            lastDefaultItem?.EnabledChanged += DefaultItemEnabledChanged;
+            if (lastDefaultItem != null)
+                UpdateDefaultItem();
+
+            base.OnDefaultItemChanged(e);
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            bool isDropDownHovered = DropDownButtonBounds.Contains(e.Location);
+            if (!ButtonEnabled && isDropDownHovered != IsDropDownHovered)
+                Invalidate(DropDownButtonBounds);
+            IsDropDownHovered = isDropDownHovered;
+            base.OnMouseMove(e);
+        }
+
+        protected override void OnMouseLeave(EventArgs e)
+        {
+            IsDropDownHovered = false;
+            base.OnMouseLeave(e);
+        }
+
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            IsDropDownHovered = DropDownButtonBounds.Contains(e.Location);
+            if (ButtonEnabled || IsDropDownHovered)
+                base.OnMouseDown(e);
+        }
+
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            IsDropDownHovered = DropDownButtonBounds.Contains(e.Location);
+            if (ButtonEnabled || IsDropDownHovered)
+                base.OnMouseUp(e);
+        }
+
+        protected override void OnEnabledChanged(EventArgs e)
+        {
+            base.OnEnabledChanged(e);
+            if (OSHelper.IsFrameworkMono && Enabled && Owner is ToolStrip ts && !Bounds.Contains(ts.PointToClient(Cursor.Position)))
+                OnMouseLeave(EventArgs.Empty); // making sure that the button does not remain selected when the button is enabled
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            lastDefaultItem?.EnabledChanged -= DefaultItemEnabledChanged;
+            base.Dispose(disposing);
+        }
+
+        #endregion
+
+        #region Event Handlers
+
+        private void DefaultItemEnabledChanged(object? sender, EventArgs e)
+        {
+            Debug.Assert(DefaultItem == lastDefaultItem);
+            ButtonEnabled = DefaultItem?.Enabled == true;
         }
 
         #endregion

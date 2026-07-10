@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: Dialogs.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -20,7 +20,9 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
+using KGySoft.Drawing.ImagingTools.ViewModel;
 using KGySoft.Drawing.ImagingTools.WinApi;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -34,8 +36,8 @@ namespace KGySoft.Drawing.ImagingTools.View
         
         private enum DialogType
         {
-            SingleButtonMessageBox,
-            MultiButtonMessageBox,
+            //SingleButtonMessageBox,
+            //MultiButtonMessageBox,
             ColorDialog,
             FolderDialog
         }
@@ -75,20 +77,45 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         #region Internal Methods
 
-        internal static void ErrorMessage(string message) => ShowMessageBox(message, Res.TitleError, MessageBoxButtons.OK, MessageBoxIcon.Error);
-        internal static void InfoMessage(string message) => ShowMessageBox(message, Res.TitleInformation, MessageBoxButtons.OK, MessageBoxIcon.Information);
-        internal static void WarningMessage(string message) => ShowMessageBox(message, Res.TitleWarning, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        
-        internal static bool ConfirmMessage(string message, bool isYesDefault = true)
-            => ShowMessageBox(message, Res.TitleConfirmation, MessageBoxButtons.YesNo, MessageBoxIcon.Question, isYesDefault ? MessageBoxDefaultButton.Button1 : MessageBoxDefaultButton.Button2) == DialogResult.Yes;
+        // The following message dialogs use KGySoft.WinForms TaskDialogs to support theming and dynamic localization.
+        // If an argument is Func<string>, it is also reevaluated on language change.
 
-        internal static bool? CancellableConfirmMessage(string message, MessageBoxDefaultButton defaultButton = MessageBoxDefaultButton.Button1)
-            => ShowMessageBox(message, Res.TitleConfirmation, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, defaultButton) switch
+        internal static void ErrorMessage(IView? owner, string resourceId, object[]? args)
+        {
+            using IViewModel vm = ViewModelFactory.CreateErrorMessage(resourceId, args);
+            ViewFactory.ShowDialog(vm, owner);
+        }
+
+        internal static void InfoMessage(IView? owner, string resourceId, object[]? args)
+        {
+            using IViewModel vm = ViewModelFactory.CreateInfoMessage(resourceId, args);
+            ViewFactory.ShowDialog(vm, owner);
+        }
+
+        internal static void WarningMessage(IView? owner, string resourceId, object[]? args)
+        {
+            using IViewModel vm = ViewModelFactory.CreateWarningMessage(resourceId, args);
+            ViewFactory.ShowDialog(vm, owner);
+        }
+
+        internal static bool ConfirmMessage(IView? owner, string resourceId, object[]? args, bool isYesDefault)
+        {
+            using IViewModel<int> vm = ViewModelFactory.CreateConfirmMessage(resourceId, args, isYesDefault);
+            ViewFactory.ShowDialog(vm, owner);
+            return vm.GetEditedModel() == 0;
+        }
+
+        internal static bool? CancellableConfirmMessage(IView? owner, string resourceId, object[]? args, int defaultButton)
+        {
+            using IViewModel<int> vm = ViewModelFactory.CreateCancellableConfirmMessage(resourceId, args, defaultButton);
+            ViewFactory.ShowDialog(vm, owner);
+            return vm.GetEditedModel() switch
             {
-                DialogResult.Yes => true,
-                DialogResult.No => false,
+                0 => true,
+                1 => false,
                 _ => null
             };
+        }
 
         internal static Color? PickColor(Color? selectedColor = default)
         {
@@ -98,7 +125,7 @@ namespace KGySoft.Drawing.ImagingTools.View
 
             // On Windows hooking messages to be able to localize the dialog texts
             IntPtr windowHook = IntPtr.Zero;
-            if (OSUtils.IsWindows && !OSUtils.IsMono)
+            if (OSHelper.IsWindows && !OSHelper.IsFrameworkMono)
             {
                 windowHook = User32.HookCallWndRetProc(callWndRetProc);
                 dialogContext = new DialogContext
@@ -124,7 +151,7 @@ namespace KGySoft.Drawing.ImagingTools.View
 
             // On Windows hooking messages to be able to localize the dialog texts
             IntPtr windowHook = IntPtr.Zero;
-            if (OSUtils.IsWindows && !OSUtils.IsMono)
+            if (OSHelper.IsWindows && !OSHelper.IsFrameworkMono)
             {
                 windowHook = User32.HookCallWndRetProc(callWndRetProc);
                 dialogContext = new DialogContext
@@ -145,29 +172,6 @@ namespace KGySoft.Drawing.ImagingTools.View
         #endregion
 
         #region Private Methods
-
-        private static DialogResult ShowMessageBox(string message, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton defaultButton = MessageBoxDefaultButton.Button1)
-        {
-            MessageBoxOptions options = Res.DisplayLanguage.TextInfo.IsRightToLeft ? MessageBoxOptions.RightAlign | MessageBoxOptions.RtlReading : default;
-            IntPtr windowHook = IntPtr.Zero;
-
-            // On Windows hooking messages to be able to localize the buttons
-            if (OSUtils.IsWindows && !OSUtils.IsMono)
-            {
-                windowHook = User32.HookCallWndRetProc(callWndRetProc);
-                dialogContext = new DialogContext
-                {
-                    DialogType = buttons == MessageBoxButtons.OK ? DialogType.SingleButtonMessageBox : DialogType.MultiButtonMessageBox
-                };
-            }
-
-            DialogResult result = MessageBox.Show(message, caption, buttons, icon, defaultButton, options);
-
-            if (windowHook != IntPtr.Zero)
-                User32.UnhookWindowsHook(windowHook);
-
-            return result;
-        }
 
         private static IntPtr CallWndRetProc(int nCode, IntPtr wParam, IntPtr lParam)
         {
@@ -209,9 +213,10 @@ namespace KGySoft.Drawing.ImagingTools.View
                     return true;
                 id = --dialogContext.CustomStaticId;
             }
-            // If there is a single OK button in a MessageBox it has the same id as a Cancel button.
-            else if (dialogContext.DialogType == DialogType.SingleButtonMessageBox && id == Constants.IDCANCEL && className == Constants.ClassNameButton)
-                id = Constants.IDOK;
+            //// Needed for classic MessageBoxes. Restore if reverting from TaskDialogs
+            //// If there is a single OK button in a MessageBox it has the same id as a Cancel button.
+            //else if (dialogContext.DialogType == DialogType.SingleButtonMessageBox && id == Constants.IDCANCEL && className == Constants.ClassNameButton)
+            //    id = Constants.IDOK;
 
             string? text = Res.GetStringOrNull($"{dialogContext.DialogType}.{className}.{id}") ?? Res.GetStringOrNull($"{className}.{id}");
             if (text != null)

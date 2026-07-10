@@ -15,28 +15,28 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.cmbQuantizer = new System.Windows.Forms.ComboBox();
+            this.cmbQuantizer = new KGySoft.WinForms.Controls.AdvancedComboBox();
             this.tblWhiteThreshold = new System.Windows.Forms.TableLayoutPanel();
-            this.lblWhiteThreshold = new System.Windows.Forms.Label();
-            this.lblWhiteThresholdValue = new System.Windows.Forms.Label();
+            this.lblWhiteThreshold = new KGySoft.WinForms.Controls.AdvancedLabel();
+            this.lblWhiteThresholdValue = new KGySoft.WinForms.Controls.AdvancedLabel();
             this.tbWhiteThreshold = new System.Windows.Forms.TrackBar();
             this.tblBackColor = new System.Windows.Forms.TableLayoutPanel();
-            this.lblBackColor = new System.Windows.Forms.Label();
             this.pnlBackColor = new System.Windows.Forms.Panel();
-            this.btnBackColor = new System.Windows.Forms.Button();
+            this.btnBackColor = new KGySoft.WinForms.Controls.AdvancedButton();
+            this.lblBackColor = new KGySoft.WinForms.Controls.AdvancedLabel();
             this.tblAlphaThreshold = new System.Windows.Forms.TableLayoutPanel();
-            this.lblAlphaThreshold = new System.Windows.Forms.Label();
-            this.lblAlphaThresholdValue = new System.Windows.Forms.Label();
+            this.lblAlphaThreshold = new KGySoft.WinForms.Controls.AdvancedLabel();
+            this.lblAlphaThresholdValue = new KGySoft.WinForms.Controls.AdvancedLabel();
             this.tbAlphaThreshold = new System.Windows.Forms.TrackBar();
-            this.chbLinearColorSpace = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
+            this.chbLinearColorSpace = new KGySoft.WinForms.Controls.AdvancedCheckBox();
             this.tblNumColors = new System.Windows.Forms.TableLayoutPanel();
-            this.lblNumColors = new System.Windows.Forms.Label();
-            this.lblNumColorsValue = new System.Windows.Forms.Label();
+            this.lblNumColors = new KGySoft.WinForms.Controls.AdvancedLabel();
+            this.lblNumColorsValue = new KGySoft.WinForms.Controls.AdvancedLabel();
             this.tbNumColors = new System.Windows.Forms.TrackBar();
-            this.chbDirectMapping = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
+            this.chbDirectMapping = new KGySoft.WinForms.Controls.AdvancedCheckBox();
             this.tblBitLevel = new System.Windows.Forms.TableLayoutPanel();
-            this.lblBitLevel = new System.Windows.Forms.Label();
-            this.lblBitLevelValue = new System.Windows.Forms.Label();
+            this.lblBitLevel = new KGySoft.WinForms.Controls.AdvancedLabel();
+            this.lblBitLevelValue = new KGySoft.WinForms.Controls.AdvancedLabel();
             this.tbBitLevel = new System.Windows.Forms.TrackBar();
             this.tblWhiteThreshold.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbWhiteThreshold)).BeginInit();
@@ -53,7 +53,6 @@
             // 
             this.cmbQuantizer.Dock = System.Windows.Forms.DockStyle.Top;
             this.cmbQuantizer.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbQuantizer.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.cmbQuantizer.FormattingEnabled = true;
             this.cmbQuantizer.Location = new System.Drawing.Point(0, 0);
             this.cmbQuantizer.Name = "cmbQuantizer";
@@ -81,24 +80,23 @@
             // 
             this.lblWhiteThreshold.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblWhiteThreshold.AutoSize = true;
-            this.lblWhiteThreshold.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.lblWhiteThreshold.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lblWhiteThreshold.Location = new System.Drawing.Point(3, 4);
+            this.lblWhiteThreshold.Location = new System.Drawing.Point(3, 0);
             this.lblWhiteThreshold.Name = "lblWhiteThreshold";
-            this.lblWhiteThreshold.Size = new System.Drawing.Size(92, 13);
+            this.lblWhiteThreshold.Size = new System.Drawing.Size(114, 22);
             this.lblWhiteThreshold.TabIndex = 0;
             this.lblWhiteThreshold.Text = "lblWhiteThreshold";
+            this.lblWhiteThreshold.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblWhiteThresholdValue
             // 
             this.lblWhiteThresholdValue.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblWhiteThresholdValue.AutoSize = true;
-            this.lblWhiteThresholdValue.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.lblWhiteThresholdValue.Location = new System.Drawing.Point(243, 4);
+            this.lblWhiteThresholdValue.Location = new System.Drawing.Point(243, 0);
             this.lblWhiteThresholdValue.Name = "lblWhiteThresholdValue";
-            this.lblWhiteThresholdValue.Size = new System.Drawing.Size(13, 13);
+            this.lblWhiteThresholdValue.Size = new System.Drawing.Size(74, 22);
             this.lblWhiteThresholdValue.TabIndex = 2;
             this.lblWhiteThresholdValue.Text = "0";
+            this.lblWhiteThresholdValue.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // tbWhiteThreshold
             // 
@@ -118,9 +116,9 @@
             this.tblBackColor.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F));
             this.tblBackColor.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F));
             this.tblBackColor.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tblBackColor.Controls.Add(this.lblBackColor, 0, 0);
             this.tblBackColor.Controls.Add(this.pnlBackColor, 1, 0);
             this.tblBackColor.Controls.Add(this.btnBackColor, 2, 0);
+            this.tblBackColor.Controls.Add(this.lblBackColor, 0, 0);
             this.tblBackColor.Dock = System.Windows.Forms.DockStyle.Top;
             this.tblBackColor.Location = new System.Drawing.Point(0, 43);
             this.tblBackColor.Name = "tblBackColor";
@@ -129,20 +127,9 @@
             this.tblBackColor.Size = new System.Drawing.Size(320, 22);
             this.tblBackColor.TabIndex = 2;
             // 
-            // lblBackColor
-            // 
-            this.lblBackColor.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.lblBackColor.AutoSize = true;
-            this.lblBackColor.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.lblBackColor.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lblBackColor.Location = new System.Drawing.Point(3, 4);
-            this.lblBackColor.Name = "lblBackColor";
-            this.lblBackColor.Size = new System.Drawing.Size(66, 13);
-            this.lblBackColor.TabIndex = 0;
-            this.lblBackColor.Text = "lblBackColor";
-            // 
             // pnlBackColor
             // 
+            this.pnlBackColor.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlBackColor.Location = new System.Drawing.Point(123, 3);
             this.pnlBackColor.Name = "pnlBackColor";
             this.pnlBackColor.Size = new System.Drawing.Size(114, 16);
@@ -152,7 +139,6 @@
             // 
             this.btnBackColor.AutoSize = true;
             this.btnBackColor.Dock = System.Windows.Forms.DockStyle.Left;
-            this.btnBackColor.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.btnBackColor.Location = new System.Drawing.Point(240, 0);
             this.btnBackColor.Margin = new System.Windows.Forms.Padding(0);
             this.btnBackColor.Name = "btnBackColor";
@@ -160,6 +146,17 @@
             this.btnBackColor.TabIndex = 2;
             this.btnBackColor.Text = "btnBackColor";
             this.btnBackColor.UseVisualStyleBackColor = true;
+            // 
+            // lblBackColor
+            // 
+            this.lblBackColor.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lblBackColor.AutoSize = true;
+            this.lblBackColor.Location = new System.Drawing.Point(3, 0);
+            this.lblBackColor.Name = "lblBackColor";
+            this.lblBackColor.Size = new System.Drawing.Size(114, 22);
+            this.lblBackColor.TabIndex = 0;
+            this.lblBackColor.Text = "lblBackColor";
+            this.lblBackColor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // tblAlphaThreshold
             // 
@@ -182,24 +179,23 @@
             // 
             this.lblAlphaThreshold.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblAlphaThreshold.AutoSize = true;
-            this.lblAlphaThreshold.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.lblAlphaThreshold.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lblAlphaThreshold.Location = new System.Drawing.Point(3, 4);
+            this.lblAlphaThreshold.Location = new System.Drawing.Point(3, 0);
             this.lblAlphaThreshold.Name = "lblAlphaThreshold";
-            this.lblAlphaThreshold.Size = new System.Drawing.Size(91, 13);
+            this.lblAlphaThreshold.Size = new System.Drawing.Size(114, 22);
             this.lblAlphaThreshold.TabIndex = 0;
             this.lblAlphaThreshold.Text = "lblAlphaThreshold";
+            this.lblAlphaThreshold.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblAlphaThresholdValue
             // 
             this.lblAlphaThresholdValue.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblAlphaThresholdValue.AutoSize = true;
-            this.lblAlphaThresholdValue.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.lblAlphaThresholdValue.Location = new System.Drawing.Point(243, 4);
+            this.lblAlphaThresholdValue.Location = new System.Drawing.Point(243, 0);
             this.lblAlphaThresholdValue.Name = "lblAlphaThresholdValue";
-            this.lblAlphaThresholdValue.Size = new System.Drawing.Size(13, 13);
+            this.lblAlphaThresholdValue.Size = new System.Drawing.Size(74, 22);
             this.lblAlphaThresholdValue.TabIndex = 2;
             this.lblAlphaThresholdValue.Text = "0";
+            this.lblAlphaThresholdValue.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // tbAlphaThreshold
             // 
@@ -216,7 +212,6 @@
             // chbLinearColorSpace
             // 
             this.chbLinearColorSpace.Dock = System.Windows.Forms.DockStyle.Top;
-            this.chbLinearColorSpace.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.chbLinearColorSpace.Location = new System.Drawing.Point(0, 21);
             this.chbLinearColorSpace.Name = "chbLinearColorSpace";
             this.chbLinearColorSpace.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
@@ -247,24 +242,23 @@
             // 
             this.lblNumColors.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblNumColors.AutoSize = true;
-            this.lblNumColors.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.lblNumColors.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lblNumColors.Location = new System.Drawing.Point(3, 4);
+            this.lblNumColors.Location = new System.Drawing.Point(3, 0);
             this.lblNumColors.Name = "lblNumColors";
-            this.lblNumColors.Size = new System.Drawing.Size(68, 13);
+            this.lblNumColors.Size = new System.Drawing.Size(114, 22);
             this.lblNumColors.TabIndex = 0;
             this.lblNumColors.Text = "lblNumColors";
+            this.lblNumColors.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblNumColorsValue
             // 
             this.lblNumColorsValue.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblNumColorsValue.AutoSize = true;
-            this.lblNumColorsValue.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.lblNumColorsValue.Location = new System.Drawing.Point(243, 4);
+            this.lblNumColorsValue.Location = new System.Drawing.Point(243, 0);
             this.lblNumColorsValue.Name = "lblNumColorsValue";
-            this.lblNumColorsValue.Size = new System.Drawing.Size(13, 13);
+            this.lblNumColorsValue.Size = new System.Drawing.Size(74, 22);
             this.lblNumColorsValue.TabIndex = 2;
             this.lblNumColorsValue.Text = "0";
+            this.lblNumColorsValue.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // tbNumColors
             // 
@@ -283,7 +277,6 @@
             // chbDirectMapping
             // 
             this.chbDirectMapping.Dock = System.Windows.Forms.DockStyle.Top;
-            this.chbDirectMapping.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.chbDirectMapping.Location = new System.Drawing.Point(0, 131);
             this.chbDirectMapping.Name = "chbDirectMapping";
             this.chbDirectMapping.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
@@ -313,24 +306,23 @@
             // 
             this.lblBitLevel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblBitLevel.AutoSize = true;
-            this.lblBitLevel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.lblBitLevel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lblBitLevel.Location = new System.Drawing.Point(3, 4);
+            this.lblBitLevel.Location = new System.Drawing.Point(3, 0);
             this.lblBitLevel.Name = "lblBitLevel";
-            this.lblBitLevel.Size = new System.Drawing.Size(55, 13);
+            this.lblBitLevel.Size = new System.Drawing.Size(114, 22);
             this.lblBitLevel.TabIndex = 0;
             this.lblBitLevel.Text = "lblBitLevel";
+            this.lblBitLevel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblBitLevelValue
             // 
             this.lblBitLevelValue.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblBitLevelValue.AutoSize = true;
-            this.lblBitLevelValue.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.lblBitLevelValue.Location = new System.Drawing.Point(243, 4);
+            this.lblBitLevelValue.Location = new System.Drawing.Point(243, 0);
             this.lblBitLevelValue.Name = "lblBitLevelValue";
-            this.lblBitLevelValue.Size = new System.Drawing.Size(13, 13);
+            this.lblBitLevelValue.Size = new System.Drawing.Size(74, 22);
             this.lblBitLevelValue.TabIndex = 2;
             this.lblBitLevelValue.Text = "0";
+            this.lblBitLevelValue.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // tbBitLevel
             // 
@@ -377,28 +369,28 @@
         }
 
         #endregion
-        private System.Windows.Forms.ComboBox cmbQuantizer;
+        private KGySoft.WinForms.Controls.AdvancedComboBox cmbQuantizer;
         private System.Windows.Forms.TableLayoutPanel tblWhiteThreshold;
-        private System.Windows.Forms.Label lblWhiteThreshold;
-        private System.Windows.Forms.Label lblWhiteThresholdValue;
+        private KGySoft.WinForms.Controls.AdvancedLabel lblWhiteThreshold;
+        private KGySoft.WinForms.Controls.AdvancedLabel lblWhiteThresholdValue;
         private System.Windows.Forms.TrackBar tbWhiteThreshold;
         private System.Windows.Forms.TableLayoutPanel tblBackColor;
-        private System.Windows.Forms.Label lblBackColor;
+        private KGySoft.WinForms.Controls.AdvancedLabel lblBackColor;
         private System.Windows.Forms.Panel pnlBackColor;
-        private System.Windows.Forms.Button btnBackColor;
+        private KGySoft.WinForms.Controls.AdvancedButton btnBackColor;
         private System.Windows.Forms.TableLayoutPanel tblAlphaThreshold;
-        private System.Windows.Forms.Label lblAlphaThreshold;
-        private System.Windows.Forms.Label lblAlphaThresholdValue;
+        private KGySoft.WinForms.Controls.AdvancedLabel lblAlphaThreshold;
+        private KGySoft.WinForms.Controls.AdvancedLabel lblAlphaThresholdValue;
         private System.Windows.Forms.TrackBar tbAlphaThreshold;
-        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox chbLinearColorSpace;
+        private KGySoft.WinForms.Controls.AdvancedCheckBox chbLinearColorSpace;
         private System.Windows.Forms.TableLayoutPanel tblNumColors;
-        private System.Windows.Forms.Label lblNumColors;
-        private System.Windows.Forms.Label lblNumColorsValue;
+        private KGySoft.WinForms.Controls.AdvancedLabel lblNumColors;
+        private KGySoft.WinForms.Controls.AdvancedLabel lblNumColorsValue;
         private System.Windows.Forms.TrackBar tbNumColors;
-        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox chbDirectMapping;
+        private KGySoft.WinForms.Controls.AdvancedCheckBox chbDirectMapping;
         private System.Windows.Forms.TableLayoutPanel tblBitLevel;
-        private System.Windows.Forms.Label lblBitLevel;
-        private System.Windows.Forms.Label lblBitLevelValue;
+        private KGySoft.WinForms.Controls.AdvancedLabel lblBitLevel;
+        private KGySoft.WinForms.Controls.AdvancedLabel lblBitLevelValue;
         private System.Windows.Forms.TrackBar tbBitLevel;
     }
 }

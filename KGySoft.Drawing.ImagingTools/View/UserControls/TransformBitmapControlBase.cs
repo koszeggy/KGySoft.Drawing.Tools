@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: TransformBitmapControlBase.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -20,6 +20,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.ViewModel;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -29,7 +30,17 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
     {
         #region Fields
 
+        #region Static Fields
+
+        private static readonly Padding referencePadding = new Padding(3, 0, 3, 0);
+
+        #endregion
+        
+        #region Instance Fields
+
         private ParentViewProperties? parentProperties;
+
+        #endregion
 
         #endregion
 
@@ -128,15 +139,14 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+            => base.ProcessCmdKey(ref msg, keyData) || previewImage.ProcessCmdKeyInternal(ref msg, keyData);
+
+        protected override void ApplySizeAdjustments(PointF? dynamicSizesScale)
         {
-            switch (keyData)
-            {
-                case Keys.Alt | Keys.S:
-                    previewImage.SmoothZooming = !previewImage.SmoothZooming;
-                    return true;
-                default:
-                    return base.ProcessCmdKey(ref msg, keyData);
-            }
+            PointF scale = this.GetScale();
+            Padding = referencePadding.Scale(scale);
+            progress.AdjustSizes();
+            okCancelButtons.EnsureSize();
         }
 
         protected override void Dispose(bool disposing)

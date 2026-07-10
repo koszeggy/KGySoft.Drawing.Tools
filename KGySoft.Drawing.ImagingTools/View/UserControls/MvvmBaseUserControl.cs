@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: MvvmBaseUserControl.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -26,6 +27,7 @@ using KGySoft.Drawing.ImagingTools.View.Components;
 using KGySoft.Drawing.ImagingTools.View.Forms;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 using KGySoft.Drawing.ImagingTools.WinApi;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -42,7 +44,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private ViewModelBase? viewModel;
         private MvvmParentForm? mvvmParent;
-        private bool isLoaded;
+        private PointF lastScale;
 
         #endregion
 
@@ -60,7 +62,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Internal Properties
 
-        internal CommandBindingsCollection CommandBindings { get; } = new WinFormsCommandBindingsCollection();
         internal virtual ParentViewProperties? ParentViewProperties => null;
         internal virtual Action<MvvmParentForm>? ParentViewPropertyBindingsInitializer => null;
         internal virtual Action<MvvmParentForm>? ParentViewCommandBindingsInitializer => null;
@@ -85,7 +86,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             }
         }
 
-        protected bool IsLoaded => isLoaded;
         protected AdvancedErrorProvider ErrorProvider => errorProvider ??= CreateProvider(ValidationSeverity.Error);
         protected AdvancedErrorProvider WarningProvider => warningProvider ??= CreateProvider(ValidationSeverity.Warning);
         protected AdvancedErrorProvider InfoProvider => infoProvider ??= CreateProvider(ValidationSeverity.Information);
@@ -106,9 +106,10 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             ApplyRightToLeft();
             InitializeComponent();
+            lastScale = ScaleHelper.SystemScale;
 
 #if !NET35
-            if (!OSUtils.IsWindows11OrLater)
+            if (!OSHelper.IsWindows11OrLater)
 #endif
             {
                 toolTip.AutoPopDelay = Int16.MaxValue;
@@ -128,18 +129,65 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         #region Methods
 
+        #region Internal Methods
+
+        /// <summary>
+        /// Recommended to override for views with fixed size form border to avoid bad scaling on different platforms.
+        /// </summary>
+        internal virtual Size? GetDesiredSize(PointF scale) => null;
+
+        /// <summary>
+        /// This method is called before applying a new DPI. Use it to store the sizes of dynamically resizable controls if it is desirable to maintain their ratio.
+        /// The new sizes should be applied in the <see cref="AdjustSizes"/> method.
+        /// </summary>
+        internal virtual void StoreDynamicSizes()
+        {
+        }
+
+        /// <summary>
+        /// This method is called the view is initialized in a host parent, or after applying a new DPI.
+        /// If <paramref name="dynamicSizesScale"/> is not <see langword="null"/>, the provided scale can be applied to dynamically resizable controls,
+        /// whose sizes could be stored in a previous call of the <see cref="StoreDynamicSizes"/> method.
+        /// </summary>
+        /// <param name="dynamicSizesScale">The scale factor to apply to the dynamically resizable controls. It is <see langword="null"/>,
+        /// if this method is called on initializing the host view for the first time or in RTL layout change. If it has a value, the method is called due to a DPI change,
+        /// in which case the <see cref="StoreDynamicSizes"/> method had been also called previously.</param>
+        internal void AdjustSizes(PointF? dynamicSizesScale)
+        {
+            SuspendLayout();
+            try
+            {
+                if (ParentViewProperties?.MinimumSize is Size { IsEmpty: false } size && mvvmParent is MvvmParentForm parent)
+                    parent.MinimumSize = size.Scale(parent.GetScale());
+                ApplySizeAdjustments(dynamicSizesScale);
+            }
+            finally
+            {
+                ResumeLayout();
+            }
+        }
+
+        internal void OnHostShown() => viewModel?.ViewShown();
+
+        #endregion
+
         #region Protected Methods
+
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            lastScale = this.GetScale();
+            if (ParentForm is null)
+                AdjustFontNonFormParent();
+        }
 
         protected override void OnLoad(EventArgs e)
         {
-            base.OnLoad(e);
-
             // isLoaded can be true if handle was recreated
+            bool isLoaded = IsLoaded;
+            base.OnLoad(e);
             if (isLoaded)
                 return;
-
-            isLoaded = true;
-            ApplyResources();
 
             // Null VM occurs in design mode
             if (viewModel != null)
@@ -155,22 +203,23 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             infoProvider?.ResetAppearance();
         }
 
-        protected virtual void ApplyResources() => ApplyStringResources();
-
-        protected virtual void ApplyStringResources() => this.ApplyStringResources(toolTip);
+        protected override void ApplyStringResources() => LocalizationHelper.ApplyStringResources(this);
 
         protected virtual void ApplyViewModel()
         {
             if (viewModel == null)
                 return;
 
-            viewModel.ShowInfoCallback = Dialogs.InfoMessage;
-            viewModel.ShowWarningCallback = Dialogs.WarningMessage;
-            viewModel.ShowErrorCallback = Dialogs.ErrorMessage;
-            viewModel.ConfirmCallback = Dialogs.ConfirmMessage;
-            viewModel.CancellableConfirmCallback = (msg, btn) => Dialogs.CancellableConfirmMessage(msg, btn switch { 0 => MessageBoxDefaultButton.Button1, 1 => MessageBoxDefaultButton.Button2, _ => MessageBoxDefaultButton.Button3 });
+            viewModel.ShowInfoCallback = (id, args) => Dialogs.InfoMessage(this, id, args);
+            viewModel.ShowWarningCallback = (id, args) => Dialogs.WarningMessage(this, id, args);
+            viewModel.ShowErrorCallback = (id, args) => Dialogs.ErrorMessage(this, id, args);
+            viewModel.ConfirmCallback = (id, args, isYesDefault) => Dialogs.ConfirmMessage(this, id, args, isYesDefault);
+            viewModel.CancellableConfirmCallback = (id, args, defaultButton) => Dialogs.CancellableConfirmMessage(this, id, args, defaultButton);
             viewModel.ShowChildViewCallback = ShowChildView;
-            viewModel.SynchronizedInvokeCallback = InvokeIfRequired;
+            viewModel.SynchronizedInvokeCallback = InvokeOnUIThread;
+
+            // Using BeginInvoke instead of InvokeOnUIThread is intended. It defers the invoke after other UI events, preventing possible infinite recursion
+            // when ClosingCallback calls Close again.
             if (viewModel is ViewModelBase vm && mvvmParent is MvvmParentForm parent)
                 vm.CloseViewCallback = () => BeginInvoke(new Action(parent.Close));
 
@@ -188,6 +237,45 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
                 vm.CloseViewCallback = () => BeginInvoke(new Action(parent.Close));
         }
 
+        protected override void WndProc(ref Message m)
+        {
+            switch (m.Msg)
+            {
+                case Constants.WM_DPICHANGED_BEFOREPARENT:
+                    StoreDynamicSizes();
+                    base.WndProc(ref m);
+
+                    // embedded into a WPF host (visualizer extension): adjusting the font
+                    if (ParentForm is null)
+                        AdjustFontNonFormParent();
+
+                    return;
+
+                case Constants.WM_DPICHANGED_AFTERPARENT:
+                    base.WndProc(ref m);
+                    PointF newScale = this.GetScale();
+                    AdjustSizes(new PointF(newScale.X / lastScale.X, newScale.Y / lastScale.Y));
+                    lastScale = newScale;
+                    return;
+
+                default:
+                    base.WndProc(ref m);
+                    return;
+            }
+        }
+
+        /// <summary>
+        /// Override this method to apply size adjustments after the view is initialized in a host parent, or after applying a new DPI.
+        /// The layout is suspended when executing this method. If <paramref name="dynamicSizesScale"/> is not <see langword="null"/>,
+        /// the provided scale can be applied to dynamically resizable controls, whose sizes could be stored in a previous call of the <see cref="StoreDynamicSizes"/> method.
+        /// </summary>
+        /// <param name="dynamicSizesScale">The scale factor to apply to the dynamically resizable controls. It is <see langword="null"/>,
+        /// if this method is called on initializing the host view for the first time or in RTL layout change. If it has a value, the method is called due to a DPI change,
+        /// in which case the <see cref="StoreDynamicSizes"/> method had been also called previously.</param>
+        protected virtual void ApplySizeAdjustments(PointF? dynamicSizesScale)
+        {
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (IsDisposed)
@@ -195,6 +283,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
             if (disposing)
             {
+                // Unloading should be called from here rather than MvvmParentForm.Closing for example,
+                // because this way it works even when embedded into a WPF host (as a modern visualizer extension).
+                viewModel?.ViewUnloading();
                 components?.Dispose();
                 CommandBindings.Dispose();
             }
@@ -227,9 +318,9 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             ContainerControl = this,
             Icon = level switch
             {
-                ValidationSeverity.Error => Icons.SystemError.ToScaledIcon(this.GetScale()),
-                ValidationSeverity.Warning => Icons.SystemWarning.ToScaledIcon(this.GetScale()),
-                _ => Icons.SystemInformation.ToScaledIcon(this.GetScale()),
+                ValidationSeverity.Error => Icons.SystemError,
+                ValidationSeverity.Warning => Icons.SystemWarning,
+                _ => Icons.SystemInformation
             }
         };
 
@@ -237,14 +328,22 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         private void ApplyRightToLeft()
         {
-            RightToLeft rtl = Res.DisplayLanguage.TextInfo.IsRightToLeft ? RightToLeft.Yes : RightToLeft.No;
-            RightToLeft = rtl;
+            RightToLeft rtl = Res.IsRightToLeft ? RightToLeft.Yes : RightToLeft.No;
+            try
+            {
+                RightToLeft = rtl;
+            }
+            catch (ArgumentException)
+            {
+                // Preventing sporadic argument exception on some platforms
+            }
+
             toolTip?.ResetAppearance();
         }
 
         private void OnViewModelChanged(EventArgs e)
         {
-            if (!isLoaded)
+            if (!IsLoaded)
                 return;
 
             CommandBindings.Clear();
@@ -253,11 +352,36 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             Events.GetHandler<EventHandler>(nameof(ViewModelChanged))?.Invoke(this, e);
         }
 
+        private MvvmParentForm? TryGetCreateParent() => mvvmParent ??= ViewFactory.TryGetForm(this) as MvvmParentForm;
+
+        private void AdjustFontNonFormParent()
+        {
+            if (IsDesignMode)
+                return;
+            Debug.Assert(ParentForm is null, "Adjusting font is needed when the view in embedded into a WPF host");
+            Font? font = SystemFonts.MessageBoxFont;
+            if (font == null)
+                return;
+
+            PointF systemScale = ScaleHelper.SystemScale;
+            PointF scale = this.GetScale();
+            if (scale == systemScale)
+            {
+                Font = font;
+                return;
+            }
+
+            float ratio = scale.Y / systemScale.Y;
+            Font = new Font(font.FontFamily, font.SizeInPoints * ratio, font.Style, GraphicsUnit.Point, font.GdiCharSet, font.GdiVerticalFont);
+            font.Dispose();
+        }
+
+
         #endregion
 
         #region Command Handlers
 
-        private void OnDisplayLanguageChangedCommand() => InvokeIfRequired(() =>
+        private void OnDisplayLanguageChangedCommand() => InvokeOnUIThread(() =>
         {
             ApplyRightToLeft();
             ApplyStringResources();
@@ -277,8 +401,6 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             }
         }
 
-        private MvvmParentForm? TryGetCreateParent() => mvvmParent ??= ViewFactory.TryGetForm(this) as MvvmParentForm;
-
         #endregion
 
         #region Explicit Interface Implementations
@@ -287,7 +409,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             Justification = "Without the base qualifier executing in Mono causes StackOverflowException. See https://github.com/mono/mono/issues/21129")]
         void IDisposable.Dispose()
         {
-            InvokeIfRequired(mvvmParent is IDisposable parent ? parent.Dispose : base.Dispose);
+            InvokeOnUIThread(mvvmParent is IDisposable parent ? parent.Dispose : base.Dispose);
         }
 
         void IView.ShowDialog(IntPtr ownerHandle)
@@ -324,7 +446,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             } while (parent.IsRtlChanging);
         }
 
-        void IView.Show() => InvokeIfRequired(() =>
+        void IView.Show() => InvokeOnUIThread(() =>
         {
             Form? parent = TryGetCreateParent() ?? ParentForm;
             if (parent == null)

@@ -205,6 +205,9 @@ csharp_style_prefer_method_group_conversion = true:silent
 csharp_style_prefer_top_level_statements = true:silent
 csharp_style_prefer_primary_constructors = true:suggestion
 
+# CA2208: Instantiate argument exceptions correctly
+dotnet_diagnostic.CA2208.severity = error
+
 [*.{cs,vb}]
 dotnet_style_operator_placement_when_wrapping = beginning_of_line
 tab_width = 4
@@ -230,3 +233,9 @@ dotnet_style_qualification_for_field = false:suggestion
 dotnet_style_qualification_for_property = false:suggestion
 dotnet_style_qualification_for_method = false:suggestion
 dotnet_style_qualification_for_event = false:suggestion
+[*]
+vsspell_section_id = 3b359db5b17e4e37ae6ba5898a10745c
+vsspell_additional_dictionary_folders_3b359db5b17e4e37ae6ba5898a10745c = .\
+vsspell_dictionary_languages_3b359db5b17e4e37ae6ba5898a10745c = en-US
+vsspell_ignored_words_3b359db5b17e4e37ae6ba5898a10745c = File:IgnoredWords.dic
+

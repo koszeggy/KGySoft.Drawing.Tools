@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: PalettePanel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -20,6 +20,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+
+using KGySoft.Drawing.ImagingTools.WinApi;
+using KGySoft.WinForms;
+using KGySoft.WinForms.Controls;
 
 #endregion
 
@@ -46,16 +50,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Instance Fields
 
-        private readonly int scrollbarWidth;
-
         private IList<Color>? palette;
         private int selectedColorIndex = -1;
         private int firstVisibleColor;
         private int visibleRowCount;
         private int counter;
-        private PointF scale = new PointF(1f, 1f);
+        private PointF scale = new PointF(1f, 1f); // the current scale of the palette entries, has nothing to do with DPI
         private Point scaledDistance = distanceUnit;
         private Point scaledPadding = paddingUnit;
+        private int scrollbarWidth;
         private int scrollFraction;
         private bool isRightToLeft;
 
@@ -170,8 +173,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             DoubleBuffered = true;
             SetStyle(ControlStyles.Selectable, true);
-            scrollbarWidth = OSUtils.IsMono ? this.ScaleWidth(16) : SystemInformation.VerticalScrollBarWidth;
-            sbPalette.Width = scrollbarWidth;
         }
 
         #endregion
@@ -180,14 +181,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
         #region Protected Methods
 
-        protected override void Dispose(bool disposing)
+        protected override void OnHandleCreated(EventArgs e)
         {
-            if (disposing)
-                components?.Dispose();
-
-            sbPalette.ValueChanged -= sbPalette_ValueChanged;
-            timerSelection.Tick -= timerSelection_Tick;
-            base.Dispose(disposing);
+            base.OnHandleCreated(e);
+            ResetScrollbar();
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -199,7 +196,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             }
 
             var clientSize = ClientSize;
-            float minScale = e.Graphics.GetScale().X;
+            float minScale = this.GetScale().X;
             float maxScale = Math.Max(Math.Min(clientSize.Width / 240f, clientSize.Height / (distanceUnit.Y + paddingUnit.Y * 2f)), 0.25f);
             int colorRows = Math.Min(16, (int)Math.Ceiling(palette!.Count / 16d));
             float actualScale = maxScale <= minScale
@@ -389,9 +386,40 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             Invalidate();
         }
 
+        protected override void WndProc(ref Message m)
+        {
+            switch (m.Msg)
+            {
+                case Constants.WM_DPICHANGED_AFTERPARENT:
+                    base.WndProc(ref m);
+                    ResetScrollbar();
+                    return;
+
+                default:
+                    base.WndProc(ref m);
+                    return;
+            }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+                components?.Dispose();
+
+            sbPalette.ValueChanged -= sbPalette_ValueChanged;
+            timerSelection.Tick -= timerSelection_Tick;
+            base.Dispose(disposing);
+        }
+
         #endregion
 
         #region Private Methods
+
+        private void ResetScrollbar()
+        {
+            scrollbarWidth = this.GetScrollBarSize().Width;
+            sbPalette.Width = scrollbarWidth;
+        }
 
         private void ResetLayout()
         {

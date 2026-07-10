@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ResizeBitmapViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -65,6 +65,25 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             #region Methods
 
+            #region Public Methods
+
+            public override void SetCompleted()
+            {
+                sourceBitmapData?.Dispose();
+                sourceBitmapData = null;
+                if (isSourceCloned)
+                    sourceBitmap?.Dispose();
+                else if (sourceBitmap != null)
+                    Monitor.Exit(sourceBitmap);
+                sourceBitmap = null;
+
+                targetBitmapData?.Dispose();
+                targetBitmapData = null;
+                base.SetCompleted();
+            }
+
+            #endregion
+
             #region Internal Methods
 
             internal override void Initialize(Bitmap source, bool isInUse)
@@ -112,21 +131,6 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 Bitmap? bmp = targetBitmap;
                 targetBitmap = null;
                 return bmp;
-            }
-
-            internal override void SetCompleted()
-            {
-                sourceBitmapData?.Dispose();
-                sourceBitmapData = null;
-                if (isSourceCloned)
-                    sourceBitmap?.Dispose();
-                else if (sourceBitmap != null)
-                    Monitor.Exit(sourceBitmap);
-                sourceBitmap = null;
-
-                targetBitmapData?.Dispose();
-                targetBitmapData = null;
-                base.SetCompleted();
             }
 
             #endregion

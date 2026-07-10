@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: DrawToolTipEventArgsExtensions.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -38,7 +38,7 @@ namespace KGySoft.Drawing.ImagingTools.View
             ControlPaint.DrawBorder(e.Graphics, e.Bounds, frameColor, ButtonBorderStyle.Solid);
 
             var flags = TextFormatFlags.HidePrefix | TextFormatFlags.VerticalCenter | TextFormatFlags.LeftAndRightPadding;
-            if (Res.DisplayLanguage.TextInfo.IsRightToLeft)
+            if (Res.IsRightToLeft)
                 flags |= TextFormatFlags.RightToLeft | TextFormatFlags.Right;
             
             e.DrawText(flags);

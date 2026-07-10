@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: Configuration.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -20,6 +20,7 @@ using System;
 using System.ComponentModel; 
 #endif
 using System.Configuration;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 #if NETFRAMEWORK
 using System.Net; 
@@ -29,8 +30,17 @@ using System.Runtime.CompilerServices;
 
 using KGySoft.CoreLibraries; 
 using KGySoft.Drawing.ImagingTools.Properties;
+using KGySoft.WinForms;
 
 using Microsoft.Win32;
+
+#endregion
+
+#region Suppressions
+
+#if !NETFRAMEWORK
+#pragma warning disable IDE0044 // Make field readonly - false alarm, allowHttps is set also from InitSecurityProtocol, which is not compiled on .NET Core targets.
+#endif
 
 #endregion
 
@@ -83,11 +93,10 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Fields
 
-        private static readonly bool allowHttps;
-
+        private static bool allowHttps;
+        private static bool forceAppSettings;
         private static Uri? baseUri;
         private static RegistryKey? registryKey;
-        private static bool forceAppSettings;
 
         #endregion
 
@@ -96,9 +105,20 @@ namespace KGySoft.Drawing.ImagingTools
         #region Internal Properties
 
         internal static bool UseOSLanguage { get => Get<bool>(); set => Set(value); }
-        internal static CultureInfo DisplayLanguage { get => Get<CultureInfo>() ?? Res.DefaultLanguage; set => Set(value); }
+        internal static CultureInfo DisplayLanguage { get => Get(Res.DefaultLanguage); set => Set(value); }
         internal static string? ResXResourcesCustomPath { get => Get<string?>(); set => Set(value); }
+        internal static bool SmoothZoomingDefault { get => Get(true); set => Set(value); }
+        internal static bool SmoothZoomingMetafile { get => Get<bool>(); set => Set(value); }
+        internal static bool SmoothZoomingMultiResIcon { get => Get(true); set => Set(value); }
+        internal static bool SmoothZoomingBitmap { get => Get<bool>(); set => Set(value); }
+        internal static bool AutoZoomDefault { get => Get<bool>(); set => Set(value); }
+        internal static bool AutoZoomMultiResIcon { get => Get(true); set => Set(value); }
+        internal static bool AutoZoomBitmap { get => Get<bool>(); set => Set(value); }
+        internal static bool AutoShrinkLargeBitmap { get => Get(true); set => Set(value); }
+        internal static bool CompoundView { get => Get(true); set => Set(value); }
         internal static Uri BaseUri => baseUri ??= new Uri(ResourceRepositoryLocation);
+        internal static string? PreferredClipboardFormat { get => Get<string?>(); set => Set(value); }
+        internal static bool TryDetectClipboardAlpha { get => Get<bool>(); set => Set(value); }
 
         #endregion
 
@@ -134,9 +154,9 @@ namespace KGySoft.Drawing.ImagingTools
 
         static Configuration()
         {
-            allowHttps = !(OSUtils.IsMono && OSUtils.IsWindows);
+            allowHttps = !OSHelper.IsWindowsMono;
 #if NET35
-            allowHttps &= OSUtils.IsWindows8OrLater;
+            allowHttps &= OSHelper.IsWindows8OrLater;
 #endif
 
             // To be able to resolve UserSettingsGroup with other framework version
@@ -149,17 +169,14 @@ namespace KGySoft.Drawing.ImagingTools
 #if NETFRAMEWORK
             try
             {
-                // To be able to use HTTP requests with TLS 1.2 security protocol (may not work on Windows XP)
-                ServicePointManager.SecurityProtocol |=
-#if NET35 || NET40
-                    (SecurityProtocolType)3072;
-#else
-                    SecurityProtocolType.Tls12;
-#endif
+                InitSecurityProtocol();
             }
-            catch (NotSupportedException)
+            catch (TypeInitializationException)
             {
-                allowHttps = false;
+                // May occur on Mono when app.config contains DpiAwareness settings:
+                // The initializer for 'System.Net.ServicePointManager' threw an exception.
+                //  ---> System.Configuration.ConfigurationErrorsException: Error Initializing the configuration system.
+                //  ---> System.Configuration.ConfigurationErrorsException: Unrecognized configuration section <System.Windows.Forms.ApplicationConfigurationSection>
             }
 #endif
         }
@@ -174,13 +191,16 @@ namespace KGySoft.Drawing.ImagingTools
         {
             if (forceAppSettings)
                 Settings.Default.Save();
-            registryKey?.Flush();
+            registryKey?.Close();
             Release();
         }
 
         internal static void Release()
         {
-            registryKey?.Close();
+            // Disposing the registry key is actually the same as Close. There is no way to discard the changes of Registry keys
+            // (even though Release should be called when SaveSettings was not called, but it discards the changes of Settings only).
+            // Not calling Dispose here does not help: even though RegistryKey has no finalizer, the wrapped SafeRegistryHandle does have.
+            (registryKey as IDisposable)?.Dispose(); // the cast is needed for .NET Framework 3.5
             registryKey = null;
             forceAppSettings = false;
         }
@@ -189,45 +209,72 @@ namespace KGySoft.Drawing.ImagingTools
 
         #region Private Methods
 
-        private static T? Get<T>([CallerMemberName]string propertyName = null!)
+#if NETFRAMEWORK
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static void InitSecurityProtocol()
         {
-            T? result = default;
-            if (!forceAppSettings && TryGetFromRegistry(propertyName, out result))
+            try
+            {
+                // To be able to use HTTP requests with TLS 1.2 security protocol (may not work on Windows XP)
+                ServicePointManager.SecurityProtocol |=
+#if NET35 || NET40
+                    (SecurityProtocolType)3072;
+#else
+                    SecurityProtocolType.Tls12;
+#endif
+            }
+            catch (NotSupportedException)
+            {
+                allowHttps = false;
+            }
+        }
+#endif
+
+        private static T Get<T>(T defaultValue = default!, [CallerMemberName]string propertyName = null!)
+        {
+            if (!forceAppSettings && TryGetFromRegistry(propertyName, out T? result))
                 return result;
 
-            if (Equals(result, default(T)))
-            {
-                result = GetFromSettings<T>(propertyName);
+            if (!TryGetFromSettings(propertyName, out result))
+                return defaultValue;
 
-                // If found in settings and registry is accessible, migrating to registry
-                if (!forceAppSettings)
-                    SetInRegistry(result, propertyName);
-            }
-
+            // If found in settings and registry is accessible, migrating to registry
+            if (!forceAppSettings)
+                SetInRegistry(result, propertyName);
             return result;
+
         }
 
         private static void Set(object? value, [CallerMemberName]string propertyName = null!)
         {
+            // NOTE: Order is important. Not an if-else, because forceAppSettings can turn to true if RegistryKey is not accessible
             if (!forceAppSettings)
                 SetInRegistry(value, propertyName);
             if (forceAppSettings)
                 SetInSettings(value, propertyName);
         }
 
-        private static T? GetFromSettings<T>([CallerMemberName]string propertyName = null!)
+        private static bool TryGetFromSettings<T>(string propertyName, [NotNullWhen(true)]out T? value)
         {
             try
             {
-                return (T)Settings.Default[propertyName];
+                if (Settings.Default[propertyName] is T result)
+                {
+                    value = result;
+                    return true;
+                }
+
+                value = default;
+                return false;
             }
             catch (Exception e) when (!e.IsCritical())
             {
-                return default;
+                value = default;
+                return false;
             }
         }
 
-        private static void SetInSettings(object? value, [CallerMemberName]string propertyName = null!)
+        private static void SetInSettings(object? value, string propertyName)
         {
             try
             {
@@ -238,7 +285,7 @@ namespace KGySoft.Drawing.ImagingTools
             }
         }
 
-        private static bool TryGetFromRegistry<T>(string propertyName, out T? value)
+        private static bool TryGetFromRegistry<T>(string propertyName, [NotNullWhen(true)]out T? value)
         {
             try
             {

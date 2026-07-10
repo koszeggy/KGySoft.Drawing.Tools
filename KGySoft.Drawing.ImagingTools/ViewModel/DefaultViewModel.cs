@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: DefaultViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -15,10 +15,11 @@
 
 #region Usings
 
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
-using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.Reflection;
 
 #endregion
 
@@ -30,7 +31,9 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Internal Properties
         
-        internal string[]? CommandLineArguments { get => Get<string[]?>(); init => Set(value); }
+        [AllowNull]
+        internal string[] CommandLineArguments { get => Get(Reflector.EmptyArray<string>()); init => Set(value ?? Reflector.EmptyArray<string>()); }
+        
         internal string? FileName { get => Get<string?>(); set => Set(value); }
 
         #endregion
@@ -43,77 +46,44 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #endregion
 
-        #region Constructors
-
-        internal DefaultViewModel() => SmoothZooming = true;
-
-        #endregion
-
         #region Methods
 
         #region Internal Methods
 
         internal override void ViewLoaded()
         {
-            string[]? args = CommandLineArguments;
-            if (args.IsNullOrEmpty() || !ProcessArgs(args!))
-                UpdateInfo();
+            string[] args = CommandLineArguments;
+            UpdateInfo();
+            ProcessArgs(args);
             base.ViewLoaded();
         }
 
-        internal bool ConfirmIfModified() => !IsModified || Confirm(Res.ConfirmMessageDiscardChanges, false);
+        internal bool ConfirmIfModified() => !IsModified || Confirm(Res.ConfirmMessageDiscardChangesId, [], false);
 
         #endregion
 
         #region Protected Methods
 
-        protected override void OpenFile()
+        protected override bool OnFileOpening() => ConfirmIfModified();
+        protected override void OnFileOpened(string path) => FileName = Path.GetFileName(path);
+
+        protected override void OnFileSaved(string fileName, string selectedFormat)
         {
-            if (!ConfirmIfModified())
+            // just a single frame was saved
+            if (ImageInfo.HasFrames && !IsCompoundView)
                 return;
-            base.OpenFile();
-        }
-
-        protected override bool OpenFile(string path)
-        {
-            if (!base.OpenFile(path))
-                return false;
-            FileName = Path.GetFileName(path);
-            return true;
-        }
-
-        protected override bool SaveFile(string fileName, string selectedFormat)
-        {
-            bool success = base.SaveFile(fileName, selectedFormat);
-
-            // was not saved or just a single frame was saved
-            if (!success || ImageInfo.HasFrames && !IsCompoundView)
-                return false;
 
             // not clearing the state if the compound image was not saved by its primary format
-            if (ImageInfo.HasFrames)
+            if (ImageInfo.HasFrames
+                && (ImageInfo.Type == ImageInfoType.Pages && selectedFormat != "*.tiff"
+                    || ImageInfo.Type is ImageInfoType.MultiRes or ImageInfoType.Icon && selectedFormat != "*.ico"
+                    || ImageInfo.Type == ImageInfoType.Animation && selectedFormat != "*.gif"))
             {
-                switch (ImageInfo.Type)
-                {
-                    case ImageInfoType.Pages:
-                        if (selectedFormat != "*.tiff")
-                            return false;
-                        break;
-                    case ImageInfoType.MultiRes:
-                    case ImageInfoType.Icon:
-                        if (selectedFormat != "*.ico")
-                            return false;
-                        break;
-                    case ImageInfoType.Animation:
-                        if (selectedFormat != "*.gif")
-                            return false;
-                        break;
-                }
+                return;
             }
 
             FileName = fileName;
             SetModified(false);
-            return true;
         }
 
         protected override void Clear()
@@ -128,18 +98,16 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         #region Private Methods
 
-        private bool ProcessArgs(string[] args)
+        private void ProcessArgs(string[] args)
         {
             if (args.Length == 0)
-                return false;
+                return;
+            
             string file = args[0];
             if (!File.Exists(file))
-            {
-                ShowError(Res.ErrorMessageFileDoesNotExist(file));
-                return false;
-            }
-
-            return OpenFile(file);
+                ShowError(Res.ErrorMessageFileDoesNotExistId, file);
+            else
+                OpenFile(file);
         }
 
         #endregion

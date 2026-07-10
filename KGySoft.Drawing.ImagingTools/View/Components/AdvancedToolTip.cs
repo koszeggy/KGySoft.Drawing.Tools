@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: AdvancedToolTip.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -15,7 +15,6 @@
 
 #region Usings
 
-using System;
 using System.ComponentModel;
 using System.Windows.Forms;
 
@@ -24,7 +23,7 @@ using System.Windows.Forms;
 namespace KGySoft.Drawing.ImagingTools.View.Components
 {
     /// <summary>
-    /// A ToolTip that supports RTL correctly
+    /// A ToolTip that supports RTL and theming correctly
     /// </summary>
     /// <seealso cref="ToolTip" />
     internal class AdvancedToolTip : ToolTip
@@ -49,7 +48,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
 
         #region Internal Methods
 
-        internal void ResetAppearance() => OwnerDraw = Res.DisplayLanguage.TextInfo.IsRightToLeft
+        internal void ResetAppearance() => OwnerDraw = Res.IsRightToLeft
             || ThemeColors.IsSet(ThemeColor.ToolTip) || ThemeColors.IsSet(ThemeColor.ToolTipBorder) || ThemeColors.IsSet(ThemeColor.ToolTipText);
 
         #endregion

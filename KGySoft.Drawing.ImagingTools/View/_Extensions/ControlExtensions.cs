@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ControlExtensions.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -15,14 +15,24 @@
 
 #region Usings
 
+using KGySoft.WinForms;
+
+#region Used Namespaces
+
 using System;
-using System.Drawing;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.View.Controls;
-using KGySoft.Drawing.ImagingTools.View.UserControls;
 using KGySoft.Drawing.ImagingTools.WinApi;
-using KGySoft.Reflection;
+using KGySoft.WinForms.Controls;
+
+#endregion
+
+#region Used Aliases
+
+using AdvancedTextBox = KGySoft.WinForms.Controls.AdvancedTextBox;
+
+#endregion
 
 #endregion
 
@@ -50,101 +60,6 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         #region Internal Methods
 
-        /// <summary>
-        /// Sets the double buffering state of a control
-        /// </summary>
-        /// <param name="control">The control to set.</param>
-        /// <param name="useDoubleBuffering"><see langword="true"/>, if <paramref name="control"/> should use double buffering; otherwise, <see langword="false"/>.</param>
-        internal static void SetDoubleBuffered(this Control control, bool useDoubleBuffering)
-        {
-            if (control == null)
-                throw new ArgumentNullException(nameof(control));
-            Reflector.SetProperty(control, "DoubleBuffered", useDoubleBuffering);
-        }
-
-        internal static PointF GetScale(this Control control)
-        {
-            if (control == null)
-                throw new ArgumentNullException(nameof(control));
-            return OSUtils.GetScale(control.Handle);
-        }
-
-        internal static Size ScaleSize(this Control control, Size size) => size.Scale(control.GetScale());
-        internal static int ScaleWidth(this Control control, int width) => width.Scale(control.GetScale().X);
-        internal static int ScaleHeight(this Control control, int height) => height.Scale(control.GetScale().Y);
-
-        /// <summary>
-        /// Applies fixed string resources (which do not change unless language is changed) to a control.
-        /// </summary>
-        internal static void ApplyStringResources(this Control control, ToolTip? toolTip = null)
-        {
-            #region Local Methods
-
-            static void ApplyToolTip(Control control, string name, ToolTip toolTip)
-            {
-                string? value = Res.GetStringOrNull(name + "." + ToolTipPropertyName);
-                toolTip.SetToolTip(control, value);
-            }
-
-            static void ApplyToolStripResources(ToolStripItemCollection items)
-            {
-                foreach (ToolStripItem item in items)
-                {
-                    // to self
-                    Res.ApplyStringResources(item, item.Name);
-
-                    // to children
-                    if (item is ToolStripDropDownItem dropDownItem)
-                        ApplyToolStripResources(dropDownItem.DropDownItems);
-                }
-            }
-
-            #endregion
-
-            string name = control.Name;
-            if (String.IsNullOrEmpty(name))
-                name = control.GetType().Name;
-
-            // custom localization
-            if (control is ICustomLocalizable customLocalizable)
-            {
-                customLocalizable.ApplyStringResources(toolTip);
-                return;
-            }
-
-            // to self
-            Res.ApplyStringResources(control, name);
-
-            // applying tool tip
-            if (toolTip != null)
-                ApplyToolTip(control, name, toolTip);
-
-            // to children
-            switch (control)
-            {
-                case ToolStrip toolStrip:
-                    ApplyToolStripResources(toolStrip.Items);
-                    break;
-
-                case DataGridView dataGridView:
-                    foreach (DataGridViewColumn item in dataGridView.Columns)
-                        Res.ApplyStringResources(item, item.Name);
-                    break;
-
-                default:
-                    foreach (Control child in control.Controls)
-                    {
-                        // MvvmBaseUserControl triggers ApplyStringResources on its own, so skipping it as a child control here
-                        if (child is MvvmBaseUserControl)
-                            continue;
-
-                        child.ApplyStringResources(toolTip);
-                    }
-
-                    break;
-            }
-        }
-
         internal static void ApplyTheme(this Control control)
         {
 #if NET9_0_OR_GREATER && SYSTEM_THEMING
@@ -160,7 +75,7 @@ namespace KGySoft.Drawing.ImagingTools.View
                         return;
 
                     // setting the caption theme
-                    if (ThemeColors.IsBaseThemeEverChanged && OSUtils.IsWindows10OrLater)
+                    if (ThemeColors.IsBaseThemeEverChanged && OSHelper.IsWindows10OrLater)
                     {
                         try
                         {
@@ -176,39 +91,38 @@ namespace KGySoft.Drawing.ImagingTools.View
                     form.ForeColor = ThemeColors.ControlText;
                     break;
 
-                case TextBoxBase textBox:
+                case AdvancedTextBox textBox:
                     textBox.ApplyVisualStyleTheme();
-                    if (!textBox.Enabled)
-                    {
-                        textBox.BackColor = ThemeColors.Control;
-                        textBox.ForeColor = ThemeColors.ControlTextDisabled;
-                    }
-                    else if (textBox.ReadOnly)
-                    {
-                        textBox.BackColor = ThemeColors.Control;
-                        textBox.ForeColor = ThemeColors.ControlText;
-                    }
-                    else
-                    {
-                        textBox.BackColor = ThemeColors.Window;
-                        textBox.ForeColor = ThemeColors.WindowText;
-                    }
+                    textBox.DisabledForeColor = ThemeColors.WindowTextDisabled;
+                    textBox.DisabledBackColor = ThemeColors.Control;
+                    textBox.EnabledForeColor = textBox.ReadOnly ? ThemeColors.ControlText : ThemeColors.WindowText;
+                    textBox.EnabledBackColor = ThemeColors.Window;
                     break;
 
-                case Button button:
-                    // TODO: Set FlatStyle to Flat if custom colors are set; otherwise, set it to System and call ApplyVisualStyleTheme
+                case AdvancedButton button:
+                    button.DisabledForeColor = ThemeColors.ControlTextDisabled;
                     button.ApplyVisualStyleTheme();
                     break;
 
-                case ButtonBase buttonBase and (CheckBox or RadioButton):
-                    // ISSUE: The text of FlatStyle.System appearance is always black with visual styles, even in dark mode. TODO: Use KGySoft.WinForms.Controls.AdvancedCheckBox/RadioButton
-                    //buttonBase.FlatStyle = ThemeColors.IsDarkBaseTheme ? FlatStyle.Standard : FlatStyle.System;
-                    buttonBase.ApplyVisualStyleTheme();
+                case AdvancedCheckBox checkBox:
+                    checkBox.DisabledForeColor = ThemeColors.ControlTextDisabled;
+                    checkBox.ApplyVisualStyleTheme();
                     break;
 
-                case ComboBox comboBox:
-                    comboBox.BackColor = ThemeColors.Window;
-                    comboBox.ForeColor = ThemeColors.WindowText;
+                case AdvancedRadioButton radioButton:
+                    radioButton.DisabledForeColor = ThemeColors.ControlTextDisabled;
+                    radioButton.ApplyVisualStyleTheme();
+                    break;
+
+                case AdvancedLabel label:
+                    label.DisabledForeColor = ThemeColors.ControlTextDisabled;
+                    break;
+
+                case AdvancedComboBox comboBox:
+                    comboBox.EnabledBackColor = ThemeColors.Window;
+                    comboBox.EnabledForeColor = ThemeColors.WindowText;
+                    comboBox.DisabledBackColor = ThemeColors.Control;
+                    comboBox.DisabledForeColor = ThemeColors.WindowTextDisabled;
                     comboBox.ApplyVisualStyleTheme();
                     break;
 
@@ -218,17 +132,18 @@ namespace KGySoft.Drawing.ImagingTools.View
 
                 case AdvancedDataGridView dataGridView:
                     dataGridView.ApplyTheme();
+                    dataGridView.ApplyVisualStyleTheme();
                     break;
 
                 case ScrollBar scrollBar:
                     scrollBar.ApplyVisualStyleTheme();
                     break;
 
-                case ProgressBar progressBar:
-                    // Makes a difference only when visual styles are not enabled
+                case AdvancedProgressBar progressBar:
+                    // Makes a difference only when Style is not System
                     progressBar.BackColor = ThemeColors.ProgressBarBackground;
                     progressBar.ForeColor = ThemeColors.ProgressBar;
-                    progressBar.ApplyVisualStyleTheme();
+                    progressBar.Style = ThemeColors.IsSet(ThemeColor.ProgressBar) || ThemeColors.IsSet(ThemeColor.ProgressBarBackground) ? AdvancedProgressBarStyle.ThemedShiny : AdvancedProgressBarStyle.System;
                     break;
 
 #if !SYSTEM_THEMING
@@ -242,13 +157,34 @@ namespace KGySoft.Drawing.ImagingTools.View
                 child.ApplyTheme();
         }
 
+        internal static IntPtr GetHandleIfCreated(this Control c) => c.IsHandleCreated ? c.Handle : IntPtr.Zero;
+
+        /// <summary>
+        /// This method is to prevent accidentally disappearing controls after a faulty layout change.
+        /// May occur on some platforms after changing DPI or RTL.
+        /// </summary>
+        internal static void EnsureSize(this Control c)
+        {
+            if (c.Dock is DockStyle.Left or DockStyle.Right)
+            {
+                int width = c.Width;
+                c.Width = 0;
+                c.Width = width;
+                return;
+            }
+
+            int height = c.Height;
+            c.Height = 0;
+            c.Height = height;
+        }
+
         #endregion
-        
+
         #region Private Methods
-        
+
         private static void ApplyVisualStyleTheme(this Control control)
         {
-            if (!OSUtils.IsWindows10OrLater) // TODO: || !VisualStyleHelper.InitializedWithVisualStyles
+            if (!OSHelper.IsWindows10OrLater) // TODO: || !VisualStyleHelper.InitializedWithVisualStyles
                 return;
 
             const string darkTheme = "DarkMode_Explorer";
@@ -259,7 +195,7 @@ namespace KGySoft.Drawing.ImagingTools.View
             control.HandleCreated += Control_HandleCreated;
             control.Disposed -= Control_Disposed;
             control.Disposed += Control_Disposed;
-            if (!control.IsHandleCreated || !Application.RenderWithVisualStyles)
+            if (!control.IsHandleCreated || !ThemeColors.RenderWithVisualStyles)
                 return;
 
             switch (control)
@@ -275,7 +211,7 @@ namespace KGySoft.Drawing.ImagingTools.View
                     UxTheme.SetWindowTheme(control.Handle, ThemeColors.IsDarkBaseTheme ? darkTheme : lightTheme, null);
                     break;
 
-                case ButtonBase or ScrollBar:
+                case ButtonBase or ScrollBar or AdvancedDataGridView: // AdvancedDataGridView: for the checkbox columns
                     UxTheme.SetWindowTheme(control.Handle, ThemeColors.IsDarkBaseTheme ? darkTheme : null, null);
                     break;
 
@@ -293,14 +229,6 @@ namespace KGySoft.Drawing.ImagingTools.View
                         if (User32.GetComboBoxInfo(handle, ref cInfo))
                             UxTheme.SetWindowTheme(cInfo.hwndList, ThemeColors.IsDarkBaseTheme ? darkTheme : null, null); 
                     }
-                    break;
-
-                case ProgressBar:
-                    // When dark theme is enabled, turning off visual styles for the progress bar, so custom colors can be applied.
-                    if (ThemeColors.IsDarkBaseTheme)
-                        UxTheme.SetWindowTheme(control.Handle, " ", " ");
-                    else
-                        UxTheme.SetWindowTheme(control.Handle, null, null);
                     break;
             }
         }

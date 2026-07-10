@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ViewFactory.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -63,6 +63,12 @@ namespace KGySoft.Drawing.ImagingTools.View
                 LanguageSettingsViewModel languageSettingsViewModel => new LanguageSettingsControl(languageSettingsViewModel),
                 EditResourcesViewModel editResourcesViewModel => new EditResourcesControl(editResourcesViewModel),
                 DownloadResourcesViewModel downloadResourcesViewModel => new DownloadResourcesControl(downloadResourcesViewModel),
+                PasteSpecialViewModel pasteSpecialViewModel => new PasteSpecialDialog(pasteSpecialViewModel),
+                ErrorMessageViewModel errorMessageViewModel => new ErrorMessageDialog(errorMessageViewModel),
+                InfoMessageViewModel infoMessageViewModel => new InfoMessageDialog(infoMessageViewModel),
+                WarningMessageViewModel warningMessageViewModel => new WarningMessageDialog(warningMessageViewModel),
+                ConfirmMessageViewModel confirmMessageViewModel => new ConfirmMessageDialog(confirmMessageViewModel),
+                CancellableConfirmMessageViewModel cancellableConfirmMessageViewModel => new CancellableConfirmMessageDialog(cancellableConfirmMessageViewModel),
                 _ => throw new InvalidOperationException(Res.InternalError($"Unexpected viewModel type: {viewModel.GetType()}"))
             };
         }

@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: DebuggerHelper.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -23,7 +23,9 @@ using System.Drawing.Imaging;
 using System.Linq;
 using System.Reflection;
 
+using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.Model;
+using KGySoft.Drawing.ImagingTools.Reflection;
 using KGySoft.Drawing.ImagingTools.View;
 using KGySoft.Drawing.ImagingTools.ViewModel;
 using KGySoft.Reflection;
@@ -167,6 +169,27 @@ namespace KGySoft.Drawing.DebuggerVisualizers
                 return vm.GetEditedModel();
 
             return null;
+        }
+
+        /// <summary>
+        /// Creates a <see cref="ColorPalette"/> instance from the specified <paramref name="entries"/> and <paramref name="flags"/>.
+        /// </summary>
+        /// <param name="entries">The desired entries of the <see cref="ColorPalette"/> to create.</param>
+        /// <param name="flags">The desired value of the <see cref="ColorPalette.Flags"/> property of the <see cref="ColorPalette"/> to create. This parameter is optional.
+        /// <br/>Default value: The bitwise zero value of <see cref="PaletteFlags"/>.</param>
+        /// <returns>A new <see cref="ColorPalette"/> instance with the specified entries and flags.</returns>
+        public static ColorPalette CreateColorPalette(Color[] entries, PaletteFlags flags = default)
+        {
+            if (entries == null)
+                throw new ArgumentNullException(nameof(entries), PublicResources.ArgumentNull);
+            if (entries.Length == 0)
+                throw new ArgumentException(PublicResources.ArgumentEmpty, nameof(entries));
+            if (entries.Length > 256)
+                throw new ArgumentOutOfRangeException(nameof(entries));
+            if (flags != default && !flags.AllFlagsDefined())
+                throw new ArgumentOutOfRangeException(nameof(flags), PublicResources.FlagsEnumOutOfRange(flags));
+
+            return Accessors.CreateColorPalette(entries, flags);
         }
 
         /// <summary>

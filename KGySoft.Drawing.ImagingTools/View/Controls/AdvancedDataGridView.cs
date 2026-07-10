@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: AdvancedDataGridView.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -19,17 +19,13 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Linq;
-using System.Reflection;
 using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
-#if NETFRAMEWORK
-using KGySoft.CoreLibraries;
-#endif
+using KGySoft.Drawing.ImagingTools.Reflection;
 using KGySoft.Drawing.ImagingTools.View.Components;
 using KGySoft.Drawing.ImagingTools.WinApi;
-using KGySoft.Reflection;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -40,31 +36,31 @@ using KGySoft.Reflection;
 #pragma warning disable CS8602 // Dereference of a possibly null reference. - Columns items are never null
 #endif
 
+#if NETFRAMEWORK
+// ReSharper disable AssignNullToNotNullAttribute - Nullability annotation is not the same on old frameworks
+#endif
+
 #endregion
 
 namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
     /// <summary>
-    /// Just a DataGridView that
-    /// - provides some default styles/colors with a few fixed issues
-    /// - scales the columns automatically
+    /// Changes to the original:
+    /// - provides some default styles/colors with a few fixed issues (e.g. fixed foreground/background color pairs)
+    /// - scales the columns and rows automatically
     /// - provides scaling error/warning/info icons, which appear also on Linux/Mono
     /// - supports dark mode
     /// </summary>
     internal class AdvancedDataGridView : DataGridView
     {
-        #region Fields
+        #region Constants
 
-        #region Static Fields
-
-        private static FieldAccessor? toolTipControlField;
-        private static FieldAccessor? toolTipControlToolTipField;
-
-        private static bool toolAccessorsInitialized;
+        // dynamic height is font-dependent, but for checkbox columns we also need a fixed minimum size (which is only DPI-dependent)
+        private const int minRowHeightReference = 20;
 
         #endregion
 
-        #region Instance Fields
+        #region Fields
 
         private readonly DataGridViewCellStyle defaultDefaultCellStyle;
         private readonly DataGridViewCellStyle defaultHeadersDefaultCellStyle;
@@ -76,14 +72,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         private bool isCustomAlternatingRowsDefaultCellStyle;
         private bool isCustomGridColor;
         private bool isCustomBackgroundColor;
+        private bool isRightToLeft;
+        private bool isToolTipInitialized;
+
         private BorderStyle borderStyle = BorderStyle.FixedSingle;
 
-        private bool isRightToLeft;
         private Bitmap? errorIcon;
         private Bitmap? warningIcon;
         private Bitmap? infoIcon;
-
-        #endregion
+        private Font? clonedFont;
 
         #endregion
 
@@ -137,7 +134,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             {
                 isCustomAlternatingRowsDefaultCellStyle = value != null;
                 base.AlternatingRowsDefaultCellStyle = isCustomAlternatingRowsDefaultCellStyle ? value
-                    : SystemInformation.HighContrast ? null
+                    : ThemeColors.HighContrast ? null
                     : defaultAlternatingRowsDefaultCellStyle;
             }
         }
@@ -176,6 +173,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             set => base.RowHeadersBorderStyle = value;
         }
 
+        [DefaultValue(DataGridViewColumnHeadersHeightSizeMode.AutoSize)]
+        public new DataGridViewColumnHeadersHeightSizeMode ColumnHeadersHeightSizeMode
+        {
+            get => base.ColumnHeadersHeightSizeMode;
+            set => base.ColumnHeadersHeightSizeMode = value;
+        }
+
         [DefaultValue(BorderStyle.FixedSingle)]
         public new BorderStyle BorderStyle
         {
@@ -190,6 +194,32 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             }
         }
 
+        [AllowNull]
+        public override Font Font
+        {
+            get => base.Font;
+            set
+            {
+                if (value is null || !Equals(base.Font, value))
+                {
+                    base.Font = value;
+                    return;
+                }
+
+                // Needed to prevent possible exception on some platforms when the framework disposes the self font internally.
+                // NOTE: could be refactored the same way as other advanced controls in the KGySoft.WinForms package.
+                clonedFont?.Dispose();
+                clonedFont = (Font)value.Clone();
+                base.Font = clonedFont;
+            }
+        }
+
+        #endregion
+
+        #region Internal Properties
+        
+        internal bool FocusCuesVisible => base.ShowFocusCues;
+
         #endregion
 
         #region Private Properties
@@ -202,68 +232,21 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         {
             get
             {
-                // Mono has a ToolTip tooltip_window field
-                if (OSUtils.IsMono)
+                if (!isToolTipInitialized)
                 {
-                    if (!toolAccessorsInitialized)
+                    this.TrySetToolTip(() => new AdvancedToolTip()
                     {
-                        try
-                        {
-                            FieldInfo? fld = typeof(DataGridView).GetFields(BindingFlags.Instance | BindingFlags.NonPublic).FirstOrDefault(f => f.Name.Contains("tooltip_window", StringComparison.Ordinal));
-                            if (fld is not null)
-                            {
-                                toolTipControlField = FieldAccessor.GetAccessor(fld);
-                                toolTipControlField.Set(this, CreateAdvancedToolTip());
-                            }
-                        }
-                        catch (Exception e) when (!e.IsCritical())
-                        {
-                            toolTipControlField = null;
-                        }
-                        finally
-                        {
-                            toolAccessorsInitialized = true;
-                        }
-                    }
+                        ShowAlways = true,
+                        InitialDelay = 0,
+                        UseFading = false,
+                        UseAnimation = false,
+                        AutoPopDelay = Int16.MaxValue,
+                    });
 
-                    return toolTipControlField?.GetInstanceValue<DataGridView, ToolTip>(this) as AdvancedToolTip;
+                    isToolTipInitialized = true;
                 }
 
-                // Assuming Windows implementation here: DataGridView.*toolTipControl*.*toolTip*
-                if (!toolAccessorsInitialized)
-                {
-                    try
-                    {
-                        FieldInfo? fld = typeof(DataGridView).GetFields(BindingFlags.Instance | BindingFlags.NonPublic).FirstOrDefault(f => f.Name.Contains("toolTipControl", StringComparison.Ordinal));
-                        if (fld is not null)
-                        {
-                            toolTipControlField = FieldAccessor.GetAccessor(fld);
-                            var toolTipControl = toolTipControlField.Get(this);
-                            if (toolTipControl != null)
-                            {
-                                FieldInfo? toolTipField = toolTipControl.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic).FirstOrDefault(f => f.Name.Contains("toolTip", StringComparison.OrdinalIgnoreCase));
-                                if (toolTipField is not null)
-                                {
-                                    toolTipControlToolTipField = FieldAccessor.GetAccessor(toolTipField);
-                                    toolTipControlToolTipField.Set(toolTipControl, CreateAdvancedToolTip());
-                                }
-                                else
-                                    toolTipControlField = null;
-                            }
-                        }
-                    }
-                    catch (Exception e) when (!e.IsCritical())
-                    {
-                        toolTipControlField = null;
-                        toolTipControlToolTipField = null;
-                    }
-                    finally
-                    {
-                        toolAccessorsInitialized = true;
-                    }
-                }
-
-                return toolTipControlToolTipField?.Get(toolTipControlField?.Get(this)) as AdvancedToolTip;
+                return this.TryGetToolTip() as AdvancedToolTip;
             }
         }
 
@@ -302,6 +285,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             RowHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
             ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
             base.BackgroundColor = ThemeColors.Workspace;
+            ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 
             ToolTip?.ResetAppearance();
         }
@@ -309,21 +293,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         #endregion
 
         #region Methods
-
-        #region Static Methods
-
-        private static AdvancedToolTip CreateAdvancedToolTip() => new()
-        {
-            ShowAlways = true,
-            InitialDelay = 0,
-            UseFading = false,
-            UseAnimation = false,
-            AutoPopDelay = 0,
-        };
-
-        #endregion
-
-        #region Instance Methods
 
         #region Internal Methods
 
@@ -336,12 +305,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             {
                 defaultDefaultCellStyle.BackColor = ThemeColors.Window;
                 defaultDefaultCellStyle.ForeColor = ThemeColors.WindowText;
+                defaultDefaultCellStyle.SelectionBackColor = ThemeColors.Highlight;
+                defaultDefaultCellStyle.SelectionForeColor = ThemeColors.HighlightText;
             }
 
-            bool isHighContrast = SystemInformation.HighContrast;
             if (!isCustomAlternatingRowsDefaultCellStyle)
             {
-                if (isHighContrast)
+                if (ThemeColors.HighContrast)
                     base.AlternatingRowsDefaultCellStyle = null;
                 else
                 {
@@ -353,7 +323,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             if (!isCustomColumnHeadersDefaultCellStyle || !isCustomRowHeadersDefaultCellStyle)
             {
-                EnableHeadersVisualStyles = !ThemeColors.IsThemingEnabled && !SystemInformation.HighContrast;
+                EnableHeadersVisualStyles = !ThemeColors.IsThemingEnabled && !ThemeColors.HighContrast;
                 defaultHeadersDefaultCellStyle.BackColor = ThemeColors.Control;
                 defaultHeadersDefaultCellStyle.ForeColor = ThemeColors.ControlText;
             }
@@ -370,6 +340,21 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             ToolTip?.ResetAppearance();
         }
 
+        internal void AdjustSizes(PointF factor)
+        {
+            RowHeadersWidth = (int)(RowHeadersWidth * factor.X);
+            foreach (DataGridViewColumn column in Columns)
+                column.Width = (int)(column.Width * factor.X);
+            foreach (DataGridViewRow row in Rows)
+                row.Height = (int)(row.Height * factor.Y);
+
+            // Unfortunately this does not work, because the base DataGridView immediately overwrites the size
+            // Forcing by Minimum/MaximumSize also does not work because the painted area still counts with the system DPI size
+            //var scrollbarSize = this.GetScrollBarSize();
+            //VerticalScrollBar.Width = scrollbarSize.Width;
+            //HorizontalScrollBar.Height = scrollbarSize.Height;
+        }
+
         #endregion
 
         #region Protected Methods
@@ -377,9 +362,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         protected override void OnHandleCreated(EventArgs e)
         {
             base.OnHandleCreated(e);
+            RowTemplate.Height = GetColumnHeadersHeight();
 
             // Trying to avoid double invocation of ApplyTheme
-            if (ThemeColors.IsThemeEverChanged && !SystemInformation.HighContrast)
+            if (ThemeColors.IsThemeEverChanged && !ThemeColors.HighContrast)
                 return;
 
             ApplyTheme();
@@ -391,7 +377,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
 
             // Unfortunately OnSystemColorsChanged is not called when the dark/light theme changes so we have an ApplyTheme call also in ThemeColors.
             // Which also means that we can ignore the base invocation if theming will be applied anyway.
-            if (ThemeColors.IsThemeEverChanged && !SystemInformation.HighContrast)
+            if (ThemeColors.IsThemeEverChanged && !ThemeColors.HighContrast)
                 return;
 
             ApplyTheme();
@@ -400,10 +386,15 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
         {
             base.ScaleControl(factor, specified);
-            if (factor.Width.Equals(1f))
-                return;
-            foreach (DataGridViewColumn column in Columns)
-                column.Width = (int)(column.Width * factor.Width);
+
+            // We are here when the framework scales the control by its own platform-dependent logic.
+            // Allowing it only when the handle is not created yet, which occurs when initializing the font for the first time.
+            // Once the handle is created, this method is typically called on DPI change, but the behavior depends on the platform target and configurations.
+            // For example, .NET Framework 4.7.2 behavior is good when app.config has NO PerMonitorV2 awareness, but is a mess when PerMonitorV2 DpiAwareness is set.
+            // Considering that as a debugger visualizer, we depend on the configuration of devenv.exe, we must be prepared for any case.
+            // NOTE: This logic is alright for this project, but may not suffice for a general AdvancedDataGridView.
+            if (!factor.Width.Equals(1f) && !IsHandleCreated)
+                AdjustSizes(factor.ToPointF());
         }
 
         protected override void OnRightToLeftChanged(EventArgs e)
@@ -463,7 +454,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                         rect->Bottom -= 1;
                     }
 
-                    break;
+                    return;
 
                 case Constants.WM_NCPAINT:
                     if (!ThemeColors.IsDarkBaseTheme || BorderStyle != BorderStyle.FixedSingle)
@@ -472,9 +463,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     PaintDarkNCArea(m.WParam);
                     break;
 
+                case Constants.WM_DPICHANGED_BEFOREPARENT:
+                    base.WndProc(ref m);
+                    ReleaseIcons();
+                    return;
+
                 default:
                     base.WndProc(ref m);
-                    break;
+                    return;
             }
         }
 
@@ -495,13 +491,19 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             e.Graphics.FillRectangle(ThemeColors.Workspace.GetBrush(), rect);
         }
 
+        protected override void OnFontChanged(EventArgs e)
+        {
+            base.OnFontChanged(e);
+            if (ColumnHeadersHeightSizeMode == DataGridViewColumnHeadersHeightSizeMode.AutoSize)
+                RowTemplate.Height = GetColumnHeadersHeight();
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                errorIcon?.Dispose();
-                warningIcon?.Dispose();
-                infoIcon?.Dispose();
+                ReleaseIcons();
+                clonedFont?.Dispose();
             }
 
             base.Dispose(disposing);
@@ -526,7 +528,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 bounds.Top + ((bounds.Height >> 1) - (size.Height >> 1)),
                 size.Width, size.Height);
 
-            Rectangle iconBounds = Rectangle.Intersect(bounds, iconRect);
+            Rectangle iconBounds = bounds.IntersectSafe(iconRect);
             if (iconBounds.IsEmpty)
                 return;
 
@@ -547,7 +549,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             if (Rows[e.RowIndex].DataBoundItem is not IValidatingObject validatingObject)
                 return String.IsNullOrEmpty(e.ErrorText) ? null : ErrorIcon;
 
-            if (!OSUtils.IsWindows)
+            if (!OSHelper.IsWindows)
                 EnsureValidationText(e, validatingObject);
 
             ValidationResultsCollection validationResults = validatingObject.ValidationResults;
@@ -605,14 +607,24 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
             }
         }
 
+        private int GetColumnHeadersHeight() => Math.Max(ColumnHeadersHeight, this.ScaleHeight(minRowHeightReference));
+
+        private void ReleaseIcons()
+        {
+            errorIcon?.Dispose();
+            warningIcon?.Dispose();
+            infoIcon?.Dispose();
+            errorIcon = null;
+            warningIcon = null;
+            infoIcon = null;
+        }
+
         private bool ShouldSerializeDefaultCellStyle() => isCustomDefaultCellStyle;
         private bool ShouldSerializeAlternatingRowsDefaultCellStyle() => isCustomColumnHeadersDefaultCellStyle;
         private bool ShouldSerializeColumnHeadersDefaultCellStyle() => isCustomColumnHeadersDefaultCellStyle;
         private bool ShouldSerializeRowHeadersDefaultCellStyle() => isCustomRowHeadersDefaultCellStyle;
         private bool ShouldSerializeGridColor() => isCustomGridColor;
         private bool ShouldSerializeBackgroundColor() => isCustomBackgroundColor;
-
-        #endregion
 
         #endregion
 

@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: MvvmParentForm.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -17,11 +17,12 @@
 
 using System;
 using System.Drawing;
-using System.Threading;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.View.UserControls;
 using KGySoft.Drawing.ImagingTools.ViewModel;
+using KGySoft.WinForms;
+using KGySoft.WinForms.Forms;
 
 #endregion
 
@@ -31,10 +32,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
     {
         #region Fields
 
-        private readonly ManualResetEventSlim handleCreated;
         private readonly MvvmBaseUserControl mvvmChild;
 
-        private bool isLoaded;
+        private bool isShown;
         private Point location;
         private Func<MvvmParentForm, Keys, bool>? processKeyCallback;
 
@@ -62,8 +62,16 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         internal MvvmParentForm(MvvmBaseUserControl mvvmChild)
         {
+#if NETFRAMEWORK
+            // In every child user control the AutoScaleMode is Font, which ensures the correct scaling of the controls themselves.
+            // Still, the container control is not scaled on real Windows in .NET Framework and Framework Mono (but scaled in Wine), so doing that here manually.
+            // NOTE: Setting None in user controls and Font for the parent form is wrong for two reasons:
+            // - The scaling of the controls is quite random in many cases in that case
+            // - The user controls must be scaled because as an embedded visualizer in VS2022+ the controls have no parent form
+            if (!OSHelper.IsWine)
+                mvvmChild.Size = mvvmChild.ScaleSize(mvvmChild.Size);
+#endif
             this.mvvmChild = mvvmChild;
-            handleCreated = new ManualResetEventSlim();
             ApplyRightToLeft();
             InitializeForm();
 
@@ -71,10 +79,10 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // Note that we should set the Font for the Form only, because setting it also for the user controls would cause double scaling.
             // Not setting it for the user controls is alright even when docking them into a WPF host, because its default font is correct.
             // Also note that setting it in BaseForm would sometimes cause wrong scaling when opening a view from Visual Studio extension.
-            if (!IsDesignMode && !OSUtils.IsMono && SystemFonts.MessageBoxFont is Font font)
+            if (!IsDesignMode && !OSHelper.IsMono && !OSHelper.IsWine && SystemFonts.MessageBoxFont is Font font)
                 base.Font = font;
 
-            StartPosition = OSUtils.IsMono && OSUtils.IsWindows ? FormStartPosition.WindowsDefaultLocation : FormStartPosition.CenterParent;
+            StartPosition = OSHelper.IsWindowsMono ? FormStartPosition.WindowsDefaultLocation : FormStartPosition.CenterParent;
         }
 
         #endregion
@@ -98,12 +106,13 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
         protected override void OnLoad(EventArgs e)
         {
             // Not Using tool window appearance on Linux because looks bad an on high DPI the close is too small
-            if (OSUtils.IsMono && OSUtils.IsLinux && FormBorderStyle == FormBorderStyle.SizableToolWindow)
+            if (OSHelper.IsLinuxMono && FormBorderStyle == FormBorderStyle.SizableToolWindow)
             {
                 FormBorderStyle = FormBorderStyle.Sizable;
                 MinimizeBox = false;
             }
 
+            bool isLoaded = IsLoaded;
             base.OnLoad(e);
 
             // Loaded can be true if handle was recreated
@@ -118,15 +127,35 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 return;
             }
 
-            isLoaded = true;
-            ApplyStringResources();
             ApplyBindings();
+
+            // adjusting desired size for fixed size windows
+            Size? desiredClientSize = mvvmChild.GetDesiredSize(this.GetScale());
+            if (desiredClientSize != null)
+                ClientSize = desiredClientSize.Value;
+
+            // fine-tuning view-specific sizes (makes sense even with no high DPI, if a message box was applied)
+            mvvmChild.AdjustSizes(null);
         }
 
-        protected override void OnHandleCreated(EventArgs e)
+        protected override void OnShown(EventArgs e)
         {
-            base.OnHandleCreated(e);
-            handleCreated.Set();
+            base.OnShown(e);
+            if (!isShown)
+                mvvmChild.OnHostShown();
+            isShown = true;
+        }
+
+        protected override void OnDeviceScaleGetNewSize(DeviceScaleGetNewSizeEventArgs e)
+        {
+            MinimumSize = Size.Empty; // to allow shrinking near upscaled minimum size (restored in mvvmChild.AdjustSizes)
+            Size? desiredClientSize = mvvmChild.GetDesiredSize(e.NewScale);
+            e.Handled = desiredClientSize != null;
+            if (desiredClientSize == null)
+                return;
+
+            var scaleDiff = new PointF(e.NewScale.X / e.PreviousScale.X, e.NewScale.Y / e.PreviousScale.Y);
+            e.DesiredSize = desiredClientSize.Value + (Size - ClientSize).Scale(scaleDiff);
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -151,23 +180,17 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
-        protected virtual void ApplyStringResources() => this.ApplyStringResources(null);
+        protected override void ApplyStringResources()
+        {
+            // Unlike in MvvmBaseUserControl, not calling LocalizationHelper.ApplyStringResources to prevent double localization, just localizing self properties.
+            // Also, using MvvmChild as the context root, so the theming-capable AdvancedToolTip will be used instead of BaseForm.ToolTip
+            LocalizationHelper.LocalizeStringProperties(this, Name, new LocalizationContext(MvvmChild));
+        }
 
         protected virtual void ApplyBindings()
         {
             InitPropertyBindings();
             InitCommandBindings();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (IsDisposed)
-                return;
-
-            if (disposing)
-                handleCreated.Dispose();
-
-            base.Dispose(disposing);
         }
 
         #endregion
@@ -192,13 +215,14 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
                 MinimizeBox = false;
             if (properties.BorderStyle is FormBorderStyle.FixedDialog)
                 MinimizeBox = MaximizeBox = false;
-            if (!properties.MinimumSize.IsEmpty)
-                MinimumSize = properties.MinimumSize;
             if (properties.ClosingCallback is FormClosingEventHandler handler)
                 FormClosing += handler; // removed in base.Dispose
             ClientSize = clientSize;
-            AutoScaleMode = AutoScaleMode.Font;
             RightToLeftLayout = true;
+
+            // NOTE: Not setting AutoScaleDimensions along with Font, so the initial size will not change (in .NET Core+ it would cause double scaling).
+            // It still matters when the DPI changes after showing the form.
+            AutoScaleMode = AutoScaleMode.Font;
             ResumeLayout();
 
             // removed in BaseUserControl.Dispose
@@ -220,11 +244,11 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         private void ApplyRightToLeft()
         {
-            RightToLeft rtl = Res.DisplayLanguage.TextInfo.IsRightToLeft ? RightToLeft.Yes : RightToLeft.No;
+            RightToLeft rtl = Res.IsRightToLeft ? RightToLeft.Yes : RightToLeft.No;
             if (RightToLeft == rtl)
                 return;
 
-            if (!OSUtils.IsMono && IsHandleCreated)
+            if (!OSHelper.IsFrameworkMono && IsHandleCreated)
                 IsRtlChanging = true;
 
             RightToLeft = rtl;
@@ -232,7 +256,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
             // Modal forms on Windows: when changing RTL, the DialogResult is set to Cancel in older framework targets, causing the dialog to close.
             // To make it work the same way on all platforms, we set it to Retry, signaling the check in OnClosing that the dialog should be reopened.
             // Without the reopening, the dialog would turn into a non-modal form, allowing the user to interact with the caller form.
-            if (Modal && !OSUtils.IsMono && OSUtils.IsWindows)
+            if (Modal && !OSHelper.IsFrameworkMono)
                 DialogResult = DialogResult.Retry;
         }
 
@@ -240,7 +264,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Forms
 
         #region Command Handlers
 
-        private void OnDisplayLanguageChangedCommand() => mvvmChild.InvokeIfRequired(() =>
+        private void OnDisplayLanguageChangedCommand() => InvokeOnUIThread(() =>
         {
             ApplyRightToLeft();
             ApplyStringResources();

@@ -15,12 +15,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.cmbPixelFormat = new System.Windows.Forms.ComboBox();
-            this.gbPixelFormat = new KGySoft.Drawing.ImagingTools.View.Controls.CheckGroupBox();
+            this.cmbPixelFormat = new KGySoft.WinForms.Controls.AdvancedComboBox();
+            this.gbPixelFormat = new KGySoft.WinForms.Controls.CheckGroupBox();
             this.quantizerSelector = new KGySoft.Drawing.ImagingTools.View.UserControls.QuantizerSelectorControl();
-            this.gbQuantizer = new KGySoft.Drawing.ImagingTools.View.Controls.CheckGroupBox();
+            this.gbQuantizer = new KGySoft.WinForms.Controls.CheckGroupBox();
             this.dithererSelector = new KGySoft.Drawing.ImagingTools.View.UserControls.DithererSelectorControl();
-            this.gbDitherer = new KGySoft.Drawing.ImagingTools.View.Controls.CheckGroupBox();
+            this.gbDitherer = new KGySoft.WinForms.Controls.CheckGroupBox();
             this.pnlSettings.SuspendLayout();
             this.gbPixelFormat.SuspendLayout();
             this.gbQuantizer.SuspendLayout();
@@ -38,9 +38,8 @@
             // 
             this.cmbPixelFormat.Dock = System.Windows.Forms.DockStyle.Top;
             this.cmbPixelFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbPixelFormat.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.cmbPixelFormat.FormattingEnabled = true;
-            this.cmbPixelFormat.Location = new System.Drawing.Point(3, 18);
+            this.cmbPixelFormat.Location = new System.Drawing.Point(3, 16);
             this.cmbPixelFormat.Name = "cmbPixelFormat";
             this.cmbPixelFormat.Size = new System.Drawing.Size(372, 21);
             this.cmbPixelFormat.TabIndex = 0;
@@ -49,7 +48,6 @@
             // 
             this.gbPixelFormat.Controls.Add(this.cmbPixelFormat);
             this.gbPixelFormat.Dock = System.Windows.Forms.DockStyle.Top;
-            this.gbPixelFormat.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.gbPixelFormat.Location = new System.Drawing.Point(0, 0);
             this.gbPixelFormat.Name = "gbPixelFormat";
             this.gbPixelFormat.Size = new System.Drawing.Size(378, 43);
@@ -60,16 +58,15 @@
             // quantizerSelector
             // 
             this.quantizerSelector.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.quantizerSelector.Location = new System.Drawing.Point(3, 18);
+            this.quantizerSelector.Location = new System.Drawing.Point(3, 16);
             this.quantizerSelector.Name = "quantizerSelector";
-            this.quantizerSelector.Size = new System.Drawing.Size(372, 91);
+            this.quantizerSelector.Size = new System.Drawing.Size(372, 93);
             this.quantizerSelector.TabIndex = 0;
             // 
             // gbQuantizer
             // 
             this.gbQuantizer.Controls.Add(this.quantizerSelector);
             this.gbQuantizer.Dock = System.Windows.Forms.DockStyle.Top;
-            this.gbQuantizer.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.gbQuantizer.Location = new System.Drawing.Point(0, 43);
             this.gbQuantizer.Name = "gbQuantizer";
             this.gbQuantizer.Size = new System.Drawing.Size(378, 112);
@@ -80,16 +77,15 @@
             // dithererSelector
             // 
             this.dithererSelector.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dithererSelector.Location = new System.Drawing.Point(3, 18);
+            this.dithererSelector.Location = new System.Drawing.Point(3, 16);
             this.dithererSelector.Name = "dithererSelector";
-            this.dithererSelector.Size = new System.Drawing.Size(372, 91);
+            this.dithererSelector.Size = new System.Drawing.Size(372, 93);
             this.dithererSelector.TabIndex = 0;
             // 
             // gbDitherer
             // 
             this.gbDitherer.Controls.Add(this.dithererSelector);
             this.gbDitherer.Dock = System.Windows.Forms.DockStyle.Top;
-            this.gbDitherer.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.gbDitherer.Location = new System.Drawing.Point(0, 155);
             this.gbDitherer.Name = "gbDitherer";
             this.gbDitherer.Size = new System.Drawing.Size(378, 112);
@@ -101,8 +97,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Size = new System.Drawing.Size(384, 421);
             this.Name = "ColorSpaceControl";
+            this.Size = new System.Drawing.Size(384, 421);
             this.pnlSettings.ResumeLayout(false);
             this.gbPixelFormat.ResumeLayout(false);
             this.gbPixelFormat.PerformLayout();
@@ -116,11 +112,11 @@
 
         #endregion
 
-        private Controls.CheckGroupBox gbDitherer;
+        private KGySoft.WinForms.Controls.CheckGroupBox gbDitherer;
         private UserControls.DithererSelectorControl dithererSelector;
-        private Controls.CheckGroupBox gbQuantizer;
+        private KGySoft.WinForms.Controls.CheckGroupBox gbQuantizer;
         private UserControls.QuantizerSelectorControl quantizerSelector;
-        private Controls.CheckGroupBox gbPixelFormat;
-        private System.Windows.Forms.ComboBox cmbPixelFormat;
+        private KGySoft.WinForms.Controls.CheckGroupBox gbPixelFormat;
+        private KGySoft.WinForms.Controls.AdvancedComboBox cmbPixelFormat;
     }
 }

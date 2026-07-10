@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ResizeBitmapControl.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -18,9 +18,11 @@
 using System;
 using System.Drawing;
 using System.Globalization;
+using System.Windows.Forms;
 
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.ImagingTools.ViewModel;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -28,6 +30,24 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
     internal partial class ResizeBitmapControl : TransformBitmapControlBase
     {
+        #region Constants
+
+        // Adjusted for Segoe UI 9 font on 100% DPI
+        private const int tableRowRefHeight = 25;
+        private const int textBoxRefWidth = 72;
+        private const float panelColumnRefWidth = 100f;
+
+        #endregion
+
+        #region Fields
+
+        private static readonly Padding settingsPanelRefPadding = new Padding(5);
+        private static readonly Padding tableDefaultItemRefMargin = new Padding(3);
+        private static readonly Padding labelRefPadding = new Padding(0, 2, 0, 0);
+        private static readonly Padding labelRefMargin = new Padding(4, 0, 4, 0);
+
+        #endregion
+
         #region Properties
 
         private new ResizeBitmapViewModel ViewModel => (ResizeBitmapViewModel)base.ViewModel!;
@@ -72,7 +92,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             // Fixing high DPI appearance on Mono
             PointF scale;
-            if (OSUtils.IsMono && (scale = this.GetScale()) != new PointF(1f, 1f))
+            if (OSHelper.IsFrameworkMono && (scale = this.GetScale()) != new PointF(1f, 1f))
                 tblNewSize.ColumnStyles[0].Width = (int)(100 * scale.X);
 
             if (!IsLoaded)
@@ -88,6 +108,49 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             InitPropertyBindings();
             base.ApplyViewModel();
+        }
+
+        protected override void ApplySizeAdjustments(PointF? dynamicSizesScale)
+        {
+            base.ApplySizeAdjustments(dynamicSizesScale);
+            PointF scale = this.GetScale();
+            pnlSettings.Padding = settingsPanelRefPadding.Scale(scale);
+            tblNewSize.ColumnStyles[0].Width = panelColumnRefWidth * scale.X;
+
+            foreach (Control control in tblNewSize.Controls)
+            {
+                switch (control)
+                {
+                    // CheckBox/RadioButton
+                    case ButtonBase:
+                        control.Margin = tableDefaultItemRefMargin.Scale(scale);
+                        break;
+
+                    case Label:
+                        control.Margin = labelRefMargin.Scale(scale);
+                        control.Padding = labelRefPadding.Scale(scale);
+                        break;
+
+                    case Panel panel:
+                        foreach (Control childControl in panel.Controls)
+                        {
+                            switch (childControl)
+                            {
+                                case Label:
+                                    childControl.Padding = labelRefPadding.Scale(scale);
+                                    break;
+
+                                case TextBox:
+                                    childControl.Width = textBoxRefWidth.Scale(scale.X);
+                                    break;
+                            }
+                        }
+
+                        break;
+                }
+            }
+
+            pnlSettings.Height = (tableRowRefHeight * tblNewSize.RowCount + settingsPanelRefPadding.Vertical).Scale(scale.Y);
         }
 
         protected override void Dispose(bool disposing)

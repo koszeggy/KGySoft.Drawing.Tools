@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: DebuggerTestViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -21,6 +21,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
@@ -43,24 +44,22 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Test.ViewModel
         #region Static Fields
 
         private static readonly HashSet<string>[] radioGroups =
-        {
-            new HashSet<string>
-            {
+        [
+            [
                 nameof(ColorSpaceSrgb),
                 nameof(ColorSpaceLinear),
-                nameof(ColorSpaceAdobe),
-            },
-            new HashSet<string>
-            {
+                nameof(ColorSpaceAdobe)
+            ],
+            [
                 nameof(IsSKBitmap),
                 nameof(IsSKPixmap),
                 nameof(IsSKImage),
                 nameof(IsSKSurface),
                 nameof(IsSKColor),
                 nameof(IsSKPMColor),
-                nameof(IsSKColorF),
-            }
-        };
+                nameof(IsSKColorF)
+            ]
+        ];
 
         private static readonly Dictionary<Type, DebuggerVisualizerAttribute> debuggerVisualizers = SkiaSharpDebuggerHelper.GetDebuggerVisualizers();
 
@@ -271,7 +270,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Test.ViewModel
             return null;
         }
 
-        private ImageSource? GetPreviewImage(object? obj)
+        private WriteableBitmap? GetPreviewImage(object? obj)
         {
             try
             {
@@ -475,7 +474,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.SkiaSharp.Test.ViewModel
 
             try
             {
-                DebuggerVisualizerHelper.ShowExtensionVisualizer(provider, testObject, default, o => TestObject = o);
+                DebuggerVisualizerHelper.ShowExtensionVisualizer(provider, targetType, testObject, default, o => TestObject = o);
             }
             catch (Exception e) when (e is not StackOverflowException)
             {

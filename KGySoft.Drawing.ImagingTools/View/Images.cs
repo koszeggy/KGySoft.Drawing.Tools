@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: Images.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -17,8 +17,9 @@
 
 using System;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Globalization;
+
+using KGySoft.WinForms;
 
 #endregion
 
@@ -42,6 +43,11 @@ namespace KGySoft.Drawing.ImagingTools.View
         private static Bitmap? save;
         private static Bitmap? open;
         private static Bitmap? clear;
+        private static Bitmap? copy;
+        private static Bitmap? paste;
+        private static Bitmap? pasteBitmap;
+        private static Bitmap? pasteVector;
+        private static Bitmap? pasteSpecial;
         private static Bitmap? prev;
         private static Bitmap? next;
         private static Bitmap? palette;
@@ -74,6 +80,11 @@ namespace KGySoft.Drawing.ImagingTools.View
         internal static Bitmap Save => save ??= GetResource(nameof(Save));
         internal static Bitmap Open => open ??= GetResource(nameof(Open));
         internal static Bitmap Clear => clear ??= GetResource(nameof(Clear));
+        internal static Bitmap Copy => copy ??= GetResource(nameof(Copy));
+        internal static Bitmap Paste => paste ??= GetResource(nameof(Paste));
+        internal static Bitmap PasteBitmap => pasteBitmap ??= GetResource(nameof(PasteBitmap));
+        internal static Bitmap PasteVector => pasteVector ??= GetResource(nameof(PasteVector));
+        internal static Bitmap PasteSpecial => pasteSpecial ??= GetResource(nameof(PasteSpecial));
         internal static Bitmap Prev => prev ??= GetResource(nameof(Prev));
         internal static Bitmap Next => next ??= GetResource(nameof(Next));
         internal static Bitmap Palette => palette ??= GetResource(nameof(Palette));
@@ -90,48 +101,44 @@ namespace KGySoft.Drawing.ImagingTools.View
         internal static Bitmap Colors => colors ??= GetResource(nameof(Colors));
         internal static Bitmap Compare => compare ??= GetResource(nameof(Compare));
 
+        internal static Icon OpenIcon => GetResourceIcon(nameof(Open));
+        internal static Icon PasteSpecialIcon => GetResourceIcon(nameof(PasteSpecial));
+
         #endregion
 
         #region Methods
 
         #region Internal Methods
 
-        internal static Bitmap ToScaledBitmap(this Icon icon, PointF? scale = null)
+        internal static Bitmap ToScaledBitmap(this Icon icon, PointF scale)
         {
             if (icon == null)
                 throw new ArgumentNullException(nameof(icon), PublicResources.ArgumentNull);
             using (icon)
             {
-                using var resizedIcon = icon.Resize(referenceSize.Scale(scale ?? OSUtils.SystemScale));
+                using var resizedIcon = icon.Resize(referenceSize.Scale(scale));
                 return resizedIcon.ExtractBitmap(0)!;
             }
         }
 
-        internal static Icon ToScaledIcon(this Icon icon, PointF? scale = null, bool div16Scaling = true)
+        internal static Bitmap AsBitmap(this Icon icon, bool disposeIcon)
         {
             if (icon == null)
                 throw new ArgumentNullException(nameof(icon), PublicResources.ArgumentNull);
-
-            using (icon)
+            try
             {
-                Size size = referenceSize.Scale(scale ?? OSUtils.SystemScale);
-                Icon result = icon.Resize(size);
-                int mod;
-                if (!div16Scaling || !OSUtils.IsWindows || (mod = result.Width & 0xF) == 0)
-                    return result;
+                if (OSHelper.IsWindowsVistaOrLater && OSHelper.IsRealWindows)
+                    return icon.ToMultiResBitmap();
 
-#if !NET35
-                if (OSUtils.IsWindows8OrLater)
-                    return result;
-#endif
-
-                // .NET 3.5 or Windows XP-Windows 7 with legacy scaling: we need to make sure that icon size is dividable by 16
-                // so it will not be corrupted (eg. ErrorProvider)
-                using Bitmap iconImage = icon.ExtractBitmap(result.Size)!;
-                result.Dispose();
-
-                // returning a larger icon without scaling so apparently it will have the same size as the original one
-                return iconImage.ToIcon(size.Width + (16 - mod), ScalingMode.NoScaling);
+                // On Windows XP the multi resolution bitmap can be ugly if it has not completely transparent pixels,
+                // and on Wine always the largest image is rendered, no matter the target rectangle size.
+                // Framework Mono is mainly alright, though it may never render the largest icons.
+                return icon.ToScaledBitmap(ScaleHelper.SystemScale);
+            }
+            finally
+            {
+                if (disposeIcon)
+                    icon.Dispose();
             }
         }
 
@@ -139,15 +146,8 @@ namespace KGySoft.Drawing.ImagingTools.View
 
         #region Private Methods
 
-        private static Bitmap GetResource(string resourceName)
-        {
-            var icon = (Icon)Properties.Resources.ResourceManager.GetObject(resourceName, CultureInfo.InvariantCulture)!;
-            if (OSUtils.IsVistaOrLater)
-                return icon.ToMultiResBitmap();
-
-            // In Windows XP the multi resolution bitmap can be ugly if it has not completely transparent pixels
-            return icon.ToScaledBitmap();
-        }
+        private static Bitmap GetResource(string resourceName) => GetResourceIcon(resourceName).AsBitmap(false);
+        private static Icon GetResourceIcon(string resourceName) => (Icon)Properties.Resources.ResourceManager.GetObject(resourceName, CultureInfo.InvariantCulture)!;
 
         #endregion
 

@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: EditResourcesViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -14,6 +14,8 @@
 #endregion
 
 #region Usings
+
+using KGySoft.WinForms;
 
 #region Used Namespaces
 
@@ -212,7 +214,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             if (!TryReadResources(library, out IList<ResourceEntry>? set, out Exception? error))
             {
-                if (!Confirm(Res.ConfirmMessageTryRegenerateResource(ToFileName(library), error.Message)))
+                if (!Confirm(Res.ConfirmMessageTryRegenerateResourceId, [ToFileName(library), error.Message]))
                 {
                     ApplyFilter(Reflector.EmptyArray<ResourceEntry>());
                     return;
@@ -224,14 +226,14 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 }
                 catch (Exception e) when (!e.IsCritical())
                 {
-                    ShowError(Res.ErrorMessageFailedToRegenerateResource(ToFileName(library), error.Message));
+                    ShowError(Res.ErrorMessageFailedToRegenerateResourceId, ToFileName(library), error.Message);
                     ApplyFilter(Reflector.EmptyArray<ResourceEntry>());
                     return;
                 }
 
                 if (!TryReadResources(library, out set, out error))
                 {
-                    ShowError(Res.ErrorMessageFailedToRegenerateResource(ToFileName(library), error.Message));
+                    ShowError(Res.ErrorMessageFailedToRegenerateResourceId, ToFileName(library), error.Message);
                     ApplyFilter(Reflector.EmptyArray<ResourceEntry>());
                     return;
                 }
@@ -375,7 +377,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
                 if (TrySaveResources(set.Key, set.Value.ResourceSet, out Exception? error))
                     continue;
 
-                ShowError(Res.ErrorMessageFailedToSaveResource(ToFileName(set.Key), error.Message));
+                ShowError(Res.ErrorMessageFailedToSaveResourceId, ToFileName(set.Key), error.Message);
                 return false;
             }
 
@@ -454,7 +456,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             try
             {
                 // is the file exists, we try to select it in Explorer
-                if (OSUtils.IsWindows && File.Exists(ToFileNameWithPath(SelectedLibrary)))
+                if (OSHelper.IsWindows && File.Exists(ToFileNameWithPath(SelectedLibrary)))
                 {
                     if (Shell32.OpenFolderAndSelectItems(Res.ResourcesDir, ToFileName(SelectedLibrary)))
                         return;
@@ -469,7 +471,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
             catch (Exception e) when (!e.IsCritical())
             {
-                ShowError(Res.ErrorMessageCannotOpenFolder(e.Message));
+                ShowError(Res.ErrorMessageCannotOpenFolderId, e.Message);
             }
         }
 

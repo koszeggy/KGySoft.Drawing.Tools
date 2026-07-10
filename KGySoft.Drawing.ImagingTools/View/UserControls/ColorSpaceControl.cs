@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ColorSpaceControl.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -21,6 +21,7 @@ using System.Linq;
 using System.Windows.Forms;
 
 using KGySoft.Drawing.ImagingTools.ViewModel;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -28,6 +29,12 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
     internal sealed partial class ColorSpaceControl : TransformBitmapControlBase
     {
+        #region Constants
+
+        private const int gbPixelFormatRefHeight = 50; // Adjusted for Segoe UI 9 font on 100% DPI.
+
+        #endregion
+
         #region Properties
 
         private new ColorSpaceViewModel ViewModel => (ColorSpaceViewModel)base.ViewModel!;
@@ -68,11 +75,18 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             properties.Icon = Properties.Resources.Quantize;
         }
 
+        protected override void OnCreateControl()
+        {
+            base.OnCreateControl();
+            quantizerSelector.AdjustSizes(null);
+            dithererSelector.AdjustSizes(null);
+        }
+
         protected override void OnLoad(EventArgs e)
         {
-            // Mono/Windows: ignoring because ToolTips throw an exception if set for an embedded control and
+            // Framework Mono/Windows: ignoring because ToolTips throw an exception if set for an embedded control and
             // since they don't appear for negative padding there is simply no place for them.
-            if (!IsLoaded && !(OSUtils.IsMono && OSUtils.IsWindows))
+            if (!IsLoaded && !OSHelper.IsWindowsMono)
             {
                 ValidationMapping[nameof(ViewModel.PixelFormat)] = gbPixelFormat.CheckBox;
                 ValidationMapping[nameof(ViewModel.QuantizerSelectorViewModel.Quantizer)] = gbQuantizer.CheckBox;
@@ -93,6 +107,13 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             InitCommandBindings();
             InitPropertyBindings();
             base.ApplyViewModel();
+        }
+
+        protected override void ApplySizeAdjustments(PointF? dynamicSizesScale)
+        {
+            // Adjusting only pixel format here. Others are either in the base or in their own user controls.
+            base.ApplySizeAdjustments(dynamicSizesScale);
+            gbPixelFormat.Height = this.ScaleHeight(gbPixelFormatRefHeight);
         }
 
         protected override void Dispose(bool disposing)

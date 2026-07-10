@@ -23,20 +23,20 @@
             this.colTranslatedText = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.bindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.pnlFilter = new KGySoft.Drawing.ImagingTools.View.Controls.AutoMirrorPanel();
-            this.txtFilter = new System.Windows.Forms.TextBox();
-            this.lblFilter = new System.Windows.Forms.Label();
+            this.txtFilter = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox();
+            this.lblFilter = new KGySoft.WinForms.Controls.AdvancedLabel();
             this.gbResourceFile = new System.Windows.Forms.GroupBox();
             this.pnlResourceFile = new System.Windows.Forms.Panel();
-            this.cmbResourceFiles = new System.Windows.Forms.ComboBox();
-            this.btnGoToFile = new System.Windows.Forms.Button();
-            this.chbHideDependencies = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
+            this.cmbResourceFiles = new KGySoft.WinForms.Controls.AdvancedComboBox();
+            this.btnGoToFile = new KGySoft.WinForms.Controls.AdvancedButton();
+            this.chbHideDependencies = new KGySoft.WinForms.Controls.AdvancedCheckBox();
             this.splitterEditResources = new System.Windows.Forms.Splitter();
             this.pnlEditResourceEntry = new System.Windows.Forms.TableLayoutPanel();
             this.gbOriginalText = new System.Windows.Forms.GroupBox();
             this.txtOriginalText = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox();
             this.gbTranslatedText = new System.Windows.Forms.GroupBox();
             this.txtTranslatedText = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox();
-            this.okCancelApplyButtons = new KGySoft.Drawing.ImagingTools.View.UserControls.OkCancelButtons();
+            this.okCancelApplyButtons = new KGySoft.WinForms.Controls.OkCancelButtons();
             this.gbResourceEntries.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridResources)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource)).BeginInit();
@@ -66,7 +66,6 @@
             this.gridResources.AllowUserToAddRows = false;
             this.gridResources.AllowUserToDeleteRows = false;
             this.gridResources.AutoGenerateColumns = false;
-            this.gridResources.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.gridResources.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colResourceKey,
             this.colOriginalText,
@@ -76,6 +75,7 @@
             this.gridResources.Location = new System.Drawing.Point(3, 40);
             this.gridResources.MultiSelect = false;
             this.gridResources.Name = "gridResources";
+            this.gridResources.RowTemplate.Height = 20;
             this.gridResources.Size = new System.Drawing.Size(573, 102);
             this.gridResources.TabIndex = 3;
             // 
@@ -131,7 +131,7 @@
             this.lblFilter.Location = new System.Drawing.Point(0, 2);
             this.lblFilter.Name = "lblFilter";
             this.lblFilter.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
-            this.lblFilter.Size = new System.Drawing.Size(39, 15);
+            this.lblFilter.Size = new System.Drawing.Size(39, 20);
             this.lblFilter.TabIndex = 0;
             this.lblFilter.Text = "lblFilter";
             // 
@@ -162,7 +162,6 @@
             // 
             this.cmbResourceFiles.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cmbResourceFiles.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbResourceFiles.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.cmbResourceFiles.FormattingEnabled = true;
             this.cmbResourceFiles.Location = new System.Drawing.Point(0, 0);
             this.cmbResourceFiles.Name = "cmbResourceFiles";
@@ -185,7 +184,6 @@
             this.chbHideDependencies.Checked = true;
             this.chbHideDependencies.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chbHideDependencies.Dock = System.Windows.Forms.DockStyle.Top;
-            this.chbHideDependencies.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.chbHideDependencies.Location = new System.Drawing.Point(3, 16);
             this.chbHideDependencies.Name = "chbHideDependencies";
             this.chbHideDependencies.Size = new System.Drawing.Size(573, 17);
@@ -198,7 +196,7 @@
             this.splitterEditResources.BackColor = System.Drawing.SystemColors.Control;
             this.splitterEditResources.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.splitterEditResources.Location = new System.Drawing.Point(3, 205);
-            this.splitterEditResources.MinExtra = 50;
+            this.splitterEditResources.MinExtra = 100;
             this.splitterEditResources.MinSize = 50;
             this.splitterEditResources.Name = "splitterEditResources";
             this.splitterEditResources.Size = new System.Drawing.Size(579, 3);
@@ -234,9 +232,9 @@
             // 
             // txtOriginalText
             // 
-            this.txtOriginalText.BackColor = System.Drawing.SystemColors.Control;
             this.txtOriginalText.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtOriginalText.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.txtOriginalText.EnabledBackColor = System.Drawing.SystemColors.Control;
+            this.txtOriginalText.EnabledForeColor = System.Drawing.SystemColors.ControlText;
             this.txtOriginalText.Location = new System.Drawing.Point(3, 16);
             this.txtOriginalText.Multiline = true;
             this.txtOriginalText.Name = "txtOriginalText";
@@ -244,7 +242,6 @@
             this.txtOriginalText.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtOriginalText.Size = new System.Drawing.Size(277, 79);
             this.txtOriginalText.TabIndex = 0;
-            this.txtOriginalText.WordWrap = false;
             // 
             // gbTranslatedText
             // 
@@ -267,7 +264,6 @@
             this.txtTranslatedText.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtTranslatedText.Size = new System.Drawing.Size(278, 79);
             this.txtTranslatedText.TabIndex = 1;
-            this.txtTranslatedText.WordWrap = false;
             // 
             // okCancelApplyButtons
             // 
@@ -288,6 +284,7 @@
             this.Controls.Add(this.splitterEditResources);
             this.Controls.Add(this.pnlEditResourceEntry);
             this.Controls.Add(this.okCancelApplyButtons);
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "EditResourcesControl";
             this.Padding = new System.Windows.Forms.Padding(3);
             this.Size = new System.Drawing.Size(585, 350);
@@ -310,7 +307,7 @@
 
         #endregion
 
-        private UserControls.OkCancelButtons okCancelApplyButtons;
+        private KGySoft.WinForms.Controls.OkCancelButtons okCancelApplyButtons;
         private System.Windows.Forms.GroupBox gbResourceEntries;
         private Controls.AdvancedDataGridView gridResources;
         private System.Windows.Forms.TableLayoutPanel pnlEditResourceEntry;
@@ -321,15 +318,15 @@
         private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox txtTranslatedText;
         private System.Windows.Forms.BindingSource bindingSource;
         private System.Windows.Forms.GroupBox gbResourceFile;
-        private System.Windows.Forms.ComboBox cmbResourceFiles;
+        private KGySoft.WinForms.Controls.AdvancedComboBox cmbResourceFiles;
         private System.Windows.Forms.DataGridViewTextBoxColumn colResourceKey;
         private System.Windows.Forms.DataGridViewTextBoxColumn colOriginalText;
         private System.Windows.Forms.DataGridViewTextBoxColumn colTranslatedText;
         private Controls.AutoMirrorPanel pnlFilter;
-        private System.Windows.Forms.TextBox txtFilter;
-        private System.Windows.Forms.Label lblFilter;
-        private Controls.AdvancedCheckBox chbHideDependencies;
+        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox txtFilter;
+        private KGySoft.WinForms.Controls.AdvancedLabel lblFilter;
+        private KGySoft.WinForms.Controls.AdvancedCheckBox chbHideDependencies;
         private System.Windows.Forms.Panel pnlResourceFile;
-        private System.Windows.Forms.Button btnGoToFile;
+        private KGySoft.WinForms.Controls.AdvancedButton btnGoToFile;
     }
 }

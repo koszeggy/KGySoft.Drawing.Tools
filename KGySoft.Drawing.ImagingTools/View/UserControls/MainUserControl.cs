@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: MainUserControl.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -39,6 +39,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
             BorderStyle = FormBorderStyle.Sizable,
             Icon = Properties.Resources.ImagingTools,
             MinimumSize = new Size(200, 200),
+            ClosingCallback = (_, _) => ViewModel.CancelPendingTask()
         };
 
         internal new DefaultViewModel ViewModel => (DefaultViewModel)base.ViewModel!;

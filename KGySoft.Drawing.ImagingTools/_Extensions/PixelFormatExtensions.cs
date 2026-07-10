@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: PixelFormatExtensions.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -33,11 +33,8 @@ namespace KGySoft.Drawing.ImagingTools
 
         internal static bool CanBeDithered(this PixelFormat dstFormat) => dstFormat.ToBitsPerPixel() <= 16 && dstFormat != PixelFormat.Format16bppGrayScale;
 
-        // ReSharper disable BitwiseOperatorOnEnumWithoutFlags
-        internal static bool HasAlpha(this PixelFormat pixelFormat) => (pixelFormat & PixelFormat.Alpha) == PixelFormat.Alpha;
-        internal static bool IsIndexed(this PixelFormat pixelFormat) => (pixelFormat & PixelFormat.Indexed) == PixelFormat.Indexed;
+        // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
         internal static bool IsWide(this PixelFormat pixelFormat) => (pixelFormat & PixelFormat.Extended) == PixelFormat.Extended;
-        // ReSharper restore BitwiseOperatorOnEnumWithoutFlags
 
         #endregion
     }

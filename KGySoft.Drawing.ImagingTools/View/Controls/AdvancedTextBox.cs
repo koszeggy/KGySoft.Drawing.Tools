@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: AdvancedTextBox.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -26,11 +26,9 @@ using KGySoft.Drawing.ImagingTools.WinApi;
 namespace KGySoft.Drawing.ImagingTools.View.Controls
 {
     /// <summary>
-    /// Just a TextBox that
-    /// - allows Ctrl+A even if auto appending is enabled
-    /// - fixes the rendering in dark mode when Multiline is true
+    /// Just a TextBox that fixes the rendering in dark mode when Multiline is true
     /// </summary>
-    internal class AdvancedTextBox : TextBox
+    internal class AdvancedTextBox : KGySoft.WinForms.Controls.AdvancedTextBox
     {
         #region Fields
 
@@ -41,18 +39,6 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
         #region Methods
 
         #region Protected Methods
-
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        {
-            switch (keyData)
-            {
-                case Keys.Control | Keys.A when ShortcutsEnabled:
-                    SelectAll();
-                    return true;
-                default:
-                    return base.ProcessCmdKey(ref msg, keyData);
-            }
-        }
 
         protected override void WndProc(ref Message m)
         {
@@ -65,9 +51,9 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                     base.WndProc(ref m);
 
                     // Stopping buffered animations in dark mode to avoid flickering, which is especially apparent when it's embedded into a WPF control (modern visualizers).
-                    if (Application.RenderWithVisualStyles)
+                    if (ThemeColors.RenderWithVisualStyles)
                         UxTheme.BufferedPaintStopAllAnimations(Handle);
-                    PaintDarkNCArea(m.WParam);
+                    PaintDarkNCArea(m.HWnd, m.WParam);
                     break;
 
                 default:
@@ -123,9 +109,8 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 User32.InvalidateNC(Handle);
         }
 
-        private void PaintDarkNCArea(IntPtr hRgn)
+        private void PaintDarkNCArea(IntPtr hWnd, IntPtr hRgn)
         {
-            var hWnd = Handle;
             IntPtr hDC = User32.GetNonClientDC(hWnd, hRgn);
             try
             {
@@ -134,13 +119,18 @@ namespace KGySoft.Drawing.ImagingTools.View.Controls
                 var rect = new Rectangle(0, 0, Width - 1, Height - 1);
                 g.DrawRectangle(color.GetPen(), rect);
                 rect.Inflate(-1, -1);
-                color = Color.FromArgb(unchecked((int)0xFF383838));
-                g.DrawRectangle(color.GetPen(), rect);
+                g.DrawRectangle(ThemeColors.MultilineTextBoxBorder.GetPen(), rect);
+            }
+            catch (InvalidOperationException)
+            {
+                // In rare cases 'Object is currently in use elsewhere' exception comes for the DrawRectangle call
+                // (e.g. when using as an embedded visualizer, and we activate the hidden window from the taskbar)
+                User32.InvalidateNC(hWnd);
+                return;
             }
             finally
             {
-                if (hRgn == (IntPtr)1)
-                    User32.ReleaseDC(hWnd, hDC);
+                User32.ReleaseDC(hWnd, hDC);
             }
 
             // Invalidating the ClientArea because sometimes the NC repaint corrupts the content

@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: AdjustColorsControlBase.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -17,9 +17,11 @@
 
 using System;
 using System.Drawing;
+using System.Windows.Forms;
 
 using KGySoft.CoreLibraries;
 using KGySoft.Drawing.ImagingTools.ViewModel;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -27,6 +29,21 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 {
     internal partial class AdjustColorsControlBase : TransformBitmapControlBase
     {
+        #region Constants
+
+        // Adjusted for Segoe UI 9 font on 100% DPI
+        private const int tableRefHeight = 25;
+        private const int sliderRefHeight = 30;
+        private const int labelRefWidth = 36;
+
+        #endregion
+
+        #region Fields
+
+        private static readonly Padding tableDefaultItemRefMargin = new Padding(3);
+
+        #endregion
+
         #region Properties
 
         private new AdjustColorsViewModelBase ViewModel => (AdjustColorsViewModelBase)base.ViewModel!;
@@ -71,7 +88,7 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
         {
             // Fixing high DPI appearance on Mono
             PointF scale;
-            if (OSUtils.IsMono && (scale = this.GetScale()) != new PointF(1f, 1f))
+            if (OSHelper.IsFrameworkMono && (scale = this.GetScale()) != new PointF(1f, 1f))
             {
                 pnlCheckBoxes.Height = (int)(25 * scale.Y);
                 btnReset.Width = (int)(64 * scale.X);
@@ -83,12 +100,27 @@ namespace KGySoft.Drawing.ImagingTools.View.UserControls
 
         protected override void ApplyViewModel()
         {
-            if (OSUtils.IsMono)
+            if (OSHelper.IsFrameworkMono)
                 pnlCheckBoxes.Height = this.ScaleHeight(25);
             InitCommandBindings();
             InitPropertyBindings();
             base.ApplyViewModel();
         }
+
+        protected override void ApplySizeAdjustments(PointF? dynamicSizesScale)
+        {
+            base.ApplySizeAdjustments(dynamicSizesScale);
+            PointF scale = this.GetScale();
+
+            foreach (Control control in pnlCheckBoxes.Controls)
+                control.Margin = tableDefaultItemRefMargin.Scale(scale);
+
+            pnlCheckBoxes.Height = tableRefHeight.Scale(scale.Y);
+            pnlSettings.Height = (tableRefHeight + sliderRefHeight).Scale(scale.Y);
+            lblValue.Width = labelRefWidth.Scale(scale.X);
+            lblValue.EnsureSize();
+        }
+
 
         protected override void Dispose(bool disposing)
         {

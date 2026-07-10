@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: Constants.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -22,20 +22,20 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
 
         internal const int S_OK = 0;
 
-        internal const int WS_BORDER = 0x00800000;
-
         internal const int WM_PAINT = 0x0F;
         internal const int WM_MOUSEACTIVATE = 0x021;
         internal const int WM_INITDIALOG = 0x0110;
-        internal const int WM_MOUSEHWHEEL = 0x020E;
         internal const int WM_GETFONT = 0x0031;
-#if !NET5_0_OR_GREATER
-        internal const int WM_NCHITTEST = 0x0084;
-#endif
         internal const int WM_NCCALCSIZE = 0x0083;
         internal const int WM_NCPAINT = 0x0085;
         internal const int WM_NCACTIVATE = 0x0086;
+        internal const int WM_DPICHANGED = 0x02E0;
+        internal const int WM_DPICHANGED_BEFOREPARENT = 0x02E2;
+        internal const int WM_DPICHANGED_AFTERPARENT = 0x02E3;
+        internal const int WM_DRAWCLIPBOARD = 0x0308;
+        internal const int WM_CHANGECBCHAIN = 0x030D;
         internal const int WM_THEMECHANGED = 0x031A;
+        internal const int WM_CLIPBOARDUPDATE = 0x031D;
 
         internal const nint MA_ACTIVATEANDEAT = 2;
         internal const nint MA_ACTIVATE = 1;
@@ -52,14 +52,35 @@ namespace KGySoft.Drawing.ImagingTools.WinApi
 
         internal const int WH_CALLWNDPROCRET = 12;
 
-        internal const int IDOK = 1;
-        internal const int IDCANCEL = 2;
+        internal const uint GMEM_MOVEABLE = 2;
+        internal const uint GMEM_SHARE = 0x2000;
+
+        internal const short MM_ANISOTROPIC = 8;
+        
+        internal const uint SRCCOPY = 0x00CC0020;
+
+        internal const int STREAM_SEEK_SET = 0;
+
+        //// Needed for classic MessageBoxes. Restore if reverting from TaskDialogs
+        //internal const int IDOK = 1;
+        //internal const int IDCANCEL = 2;
+
+        // ReSharper restore InconsistentNaming
 
         internal const string ClassNameDialogBox = "#32770";
         internal const string ClassNameButton = "Button";
         internal const string ClassNameStatic = "Static";
 
-        // ReSharper restore InconsistentNaming
+        internal const int MaxArrayLength = 0x7FFFFFC7;
+
+        internal const int DIB_RGB_COLORS = 0;
+        
+        internal const uint BI_RGB = 0;
+        internal const uint BI_BITFIELDS = 3;
+
+        internal const uint LCS_sRGB = 0x73524742;
+        internal const uint LCS_GM_GRAPHICS = 2;
+
         #endregion
     }
 }

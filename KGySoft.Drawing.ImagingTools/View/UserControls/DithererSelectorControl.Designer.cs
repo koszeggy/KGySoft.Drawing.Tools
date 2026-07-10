@@ -15,16 +15,16 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.cmbDitherer = new System.Windows.Forms.ComboBox();
+            this.cmbDitherer = new KGySoft.WinForms.Controls.AdvancedComboBox();
             this.tblStrength = new System.Windows.Forms.TableLayoutPanel();
-            this.lblStrength = new System.Windows.Forms.Label();
-            this.lblStrengthValue = new System.Windows.Forms.Label();
+            this.lblStrength = new KGySoft.WinForms.Controls.AdvancedLabel();
+            this.lblStrengthValue = new KGySoft.WinForms.Controls.AdvancedLabel();
             this.tbStrength = new System.Windows.Forms.TrackBar();
-            this.chbSerpentineProcessing = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
-            this.chbByBrightness = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox();
+            this.chbSerpentineProcessing = new KGySoft.WinForms.Controls.AdvancedCheckBox();
+            this.chbByBrightness = new KGySoft.WinForms.Controls.AdvancedCheckBox();
             this.tblSeed = new System.Windows.Forms.TableLayoutPanel();
-            this.lblSeed = new System.Windows.Forms.Label();
-            this.txtSeed = new System.Windows.Forms.TextBox();
+            this.lblSeed = new KGySoft.WinForms.Controls.AdvancedLabel();
+            this.txtSeed = new KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox();
             this.tblStrength.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbStrength)).BeginInit();
             this.tblSeed.SuspendLayout();
@@ -34,7 +34,6 @@
             // 
             this.cmbDitherer.Dock = System.Windows.Forms.DockStyle.Top;
             this.cmbDitherer.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbDitherer.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.cmbDitherer.FormattingEnabled = true;
             this.cmbDitherer.Location = new System.Drawing.Point(0, 0);
             this.cmbDitherer.Name = "cmbDitherer";
@@ -62,24 +61,23 @@
             // 
             this.lblStrength.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblStrength.AutoSize = true;
-            this.lblStrength.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.lblStrength.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lblStrength.Location = new System.Drawing.Point(3, 4);
+            this.lblStrength.Location = new System.Drawing.Point(3, 0);
             this.lblStrength.Name = "lblStrength";
-            this.lblStrength.Size = new System.Drawing.Size(57, 13);
+            this.lblStrength.Size = new System.Drawing.Size(114, 22);
             this.lblStrength.TabIndex = 0;
             this.lblStrength.Text = "lblStrength";
+            this.lblStrength.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblStrengthValue
             // 
             this.lblStrengthValue.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblStrengthValue.AutoSize = true;
-            this.lblStrengthValue.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.lblStrengthValue.Location = new System.Drawing.Point(243, 4);
+            this.lblStrengthValue.Location = new System.Drawing.Point(243, 0);
             this.lblStrengthValue.Name = "lblStrengthValue";
-            this.lblStrengthValue.Size = new System.Drawing.Size(13, 13);
+            this.lblStrengthValue.Size = new System.Drawing.Size(65, 22);
             this.lblStrengthValue.TabIndex = 2;
             this.lblStrengthValue.Text = "0";
+            this.lblStrengthValue.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // tbStrength
             // 
@@ -96,7 +94,6 @@
             // chbSerpentineProcessing
             // 
             this.chbSerpentineProcessing.Dock = System.Windows.Forms.DockStyle.Top;
-            this.chbSerpentineProcessing.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.chbSerpentineProcessing.Location = new System.Drawing.Point(0, 43);
             this.chbSerpentineProcessing.Name = "chbSerpentineProcessing";
             this.chbSerpentineProcessing.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
@@ -110,7 +107,6 @@
             this.chbByBrightness.Checked = true;
             this.chbByBrightness.CheckState = System.Windows.Forms.CheckState.Indeterminate;
             this.chbByBrightness.Dock = System.Windows.Forms.DockStyle.Top;
-            this.chbByBrightness.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.chbByBrightness.Location = new System.Drawing.Point(0, 65);
             this.chbByBrightness.Name = "chbByBrightness";
             this.chbByBrightness.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
@@ -140,13 +136,12 @@
             // 
             this.lblSeed.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblSeed.AutoSize = true;
-            this.lblSeed.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.lblSeed.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lblSeed.Location = new System.Drawing.Point(3, 4);
+            this.lblSeed.Location = new System.Drawing.Point(3, 0);
             this.lblSeed.Name = "lblSeed";
-            this.lblSeed.Size = new System.Drawing.Size(42, 13);
+            this.lblSeed.Size = new System.Drawing.Size(114, 22);
             this.lblSeed.TabIndex = 0;
             this.lblSeed.Text = "lblSeed";
+            this.lblSeed.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // txtSeed
             // 
@@ -178,15 +173,15 @@
         }
 
         #endregion
-        private System.Windows.Forms.ComboBox cmbDitherer;
+        private KGySoft.WinForms.Controls.AdvancedComboBox cmbDitherer;
         private System.Windows.Forms.TableLayoutPanel tblStrength;
-        private System.Windows.Forms.Label lblStrength;
-        private System.Windows.Forms.Label lblStrengthValue;
+        private KGySoft.WinForms.Controls.AdvancedLabel lblStrength;
+        private KGySoft.WinForms.Controls.AdvancedLabel lblStrengthValue;
         private System.Windows.Forms.TrackBar tbStrength;
-        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox chbSerpentineProcessing;
-        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedCheckBox chbByBrightness;
+        private KGySoft.WinForms.Controls.AdvancedCheckBox chbSerpentineProcessing;
+        private KGySoft.WinForms.Controls.AdvancedCheckBox chbByBrightness;
         private System.Windows.Forms.TableLayoutPanel tblSeed;
-        private System.Windows.Forms.Label lblSeed;
-        private System.Windows.Forms.TextBox txtSeed;
+        private KGySoft.WinForms.Controls.AdvancedLabel lblSeed;
+        private KGySoft.Drawing.ImagingTools.View.Controls.AdvancedTextBox txtSeed;
     }
 }

@@ -1,0 +1,347 @@
+﻿#region Copyright
+
+///////////////////////////////////////////////////////////////////////////////
+//  File: MvvmTaskDialogBase.cs
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
+//
+//  You should have received a copy of the LICENSE file at the top-level
+//  directory of this distribution.
+//
+//  Please refer to the LICENSE file if you want to use this source code.
+///////////////////////////////////////////////////////////////////////////////
+
+#endregion
+
+#region Usings
+
+#region Used Namespaces
+
+using System;
+using System.Drawing;
+using System.Threading;
+using System.Windows.Forms;
+
+using KGySoft.ComponentModel;
+using KGySoft.CoreLibraries;
+using KGySoft.Drawing.ImagingTools.ViewModel;
+using KGySoft.Drawing.ImagingTools.WinApi;
+using KGySoft.WinForms;
+using KGySoft.WinForms.Components;
+
+#endregion
+
+#region Used Aliases
+
+using TaskDialog = KGySoft.WinForms.Components.TaskDialog;
+using TaskDialogButton = KGySoft.WinForms.Components.TaskDialogButton;
+
+#endregion
+
+#endregion
+
+namespace KGySoft.Drawing.ImagingTools.View
+{
+    internal abstract class MvvmTaskDialogBase : IView, IWin32Window
+    {
+        #region Fields
+
+        private readonly SynchronizationContext context = SynchronizationContext.Current!;
+        private readonly int threadId = ThreadHelper.ManagedThreadId;
+
+        private bool isDisposed;
+
+        #endregion
+
+        #region Properties
+
+        #region Public Properties
+
+        public bool IsDisposed => isDisposed;
+        public IntPtr Handle => TaskDialog.Handle;
+
+        #endregion
+
+        #region Protected Properties
+
+        protected TaskDialog TaskDialog { get; }
+        protected ViewModelBase ViewModel { get; }
+        protected WinFormsCommandBindingsCollection CommandBindings { get; } = new();
+
+        /// <summary>
+        /// Gets the standard buttons of this task dialog. They actually will be created as custom buttons to be able to
+        /// use localization from this project, and to use enabled/disabled state, so they cannot be mixed with command link buttons.
+        /// Can return <see cref="TaskDialogStandardButtons.None"/> to create the buttons in a derived class, but if the button has name,
+        /// language change will automatically apply the Text for manually created buttons as well (not the descriptions though).
+        /// </summary>
+        protected virtual TaskDialogStandardButtons Buttons => TaskDialogStandardButtons.None;
+        protected virtual int DefaultButtonIndex => 0;
+
+        #endregion
+
+        #endregion
+
+        #region Constructors
+
+        protected MvvmTaskDialogBase(ViewModelBase viewModel)
+        {
+            ViewModel = viewModel;
+            TaskDialog = new TaskDialog
+            {
+                ForceCompatibilityMode = true, // for theme changes and the extra features
+                Options = TaskDialogOptions.AllowCancel | TaskDialogOptions.ForceShowSysMenu
+            };
+
+            // not in InitCommandBindings, because without this we cannot init the other commands
+            TaskDialog.Created += TaskDialog_Created;
+            InitButtons();
+            ApplyStringResources();
+        }
+
+        #endregion
+
+        #region Methods
+
+        #region Public Methods
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        public void ShowDialog(IntPtr ownerWindowHandle = default)
+        {
+            if (ownerWindowHandle == IntPtr.Zero && OSHelper.IsWindows)
+                ownerWindowHandle = User32.GetActiveWindow();
+            Execute(ownerWindowHandle == IntPtr.Zero ? null : new OwnerWindowHandle(ownerWindowHandle));
+        }
+
+        public void ShowDialog(IView? owner)
+        {
+            if (owner is not IWin32Window ownerWindow)
+            {
+                ShowDialog();
+                return;
+            }
+
+            // Trying to obtain the form of the owner if owner is just a control.
+            // This provides better dialog handling, such bringing the form on top or blinking the form when the owner is clicked.
+            Control? ownerControl = owner as Control ?? Control.FromHandle(ownerWindow.Handle);
+            if (ownerControl != null)
+            {
+                ownerControl = ownerControl as Form ?? ownerControl.FindForm();
+                if (ownerControl != null)
+                {
+                    Execute(ownerControl);
+                    return;
+                }
+            }
+
+            // No Form was found. Maybe the owner is embedded into a WPF host. Using just Execute(ownerWindow) provides
+            // a poor experience as described above, so trying to get the active handle of the thread in the first place.
+            IntPtr activeWindowHandle = OSHelper.IsWindows ? User32.GetActiveWindow() : IntPtr.Zero;
+            Execute(activeWindowHandle == IntPtr.Zero ? ownerWindow : new OwnerWindowHandle(activeWindowHandle));
+        }
+
+        public void Show() => Execute(null);
+
+        #endregion
+
+        #region Protected Methods
+
+        protected virtual void ApplyViewModel()
+        {
+            ViewModel.ShowInfoCallback = (id, args) => Dialogs.InfoMessage(this, id, args);
+            ViewModel.ShowWarningCallback = (id, args) => Dialogs.WarningMessage(this, id, args);
+            ViewModel.ShowErrorCallback = (id, args) => Dialogs.ErrorMessage(this, id, args);
+            ViewModel.ConfirmCallback = (id, args, isYesDefault) => Dialogs.ConfirmMessage(this, id, args, isYesDefault);
+            ViewModel.CancellableConfirmCallback = (id, args, defaultButton) => Dialogs.CancellableConfirmMessage(this, id, args, defaultButton);
+            ViewModel.ShowChildViewCallback = ShowChildView;
+            ViewModel.SynchronizedInvokeCallback = InvokeOnUIThread;
+            ViewModel.CloseViewCallback = () => InvokeOnUIThread(TaskDialog.Close);
+
+            InitCommandBindings();
+
+            ViewModel.ViewLoaded();
+        }
+
+        protected virtual void ApplyStringResources()
+        {
+            foreach (TaskDialogButton button in TaskDialog.Buttons)
+            {
+                if (button.Name is string { Length: > 0 } name)
+                    button.Text = Res.Get($"{name}.Text");
+            }
+        }
+
+        protected void ApplyTheme()
+        {
+            // NOTE: this executes only on Dark<->Light/HighContrast theme change, and not when switching from light to high contrast theme, for example.
+            if (TaskDialog.Handle == IntPtr.Zero || IsDisposed || !ThemeColors.IsBaseThemeEverChanged)
+                return;
+
+            Control? form = Control.FromHandle(TaskDialog.Handle);
+            if (form == null)
+                return;
+
+            // Form header, parent colors, theme for children.
+            // Should be called also when switching to themed high contrast theme, for example, so the dark UxTheme is removed from the child controls
+            form.ApplyTheme();
+
+            if (ThemeColors.IsDarkBaseTheme)
+            {
+                // These controls have explicitly set colors that we need to override. As TaskDialogForm subscribes earlier to theme changes
+                // (from its constructor), we can be sure that these execute after TaskDialogForm applied the theme.
+                // TODO: other explicitly set colors by TaskDialogForm for pnlDividerControlsBottom, pnlDividerFooterTop, pnlDividerFooterBottom, pnlDividerDetailsFooterTop, lblMainInstruction, pnlCommandLinks
+                form.Controls["pnlDividerMainBottom"]?.BackColor = ThemeColors.TaskDialogDivider;
+                Control? pnlMain = form.Controls["pnlMain"];
+                Debug.Assert(pnlMain != null);
+                if (pnlMain != null)
+                {
+                    pnlMain.BackColor = ThemeColors.Window;
+                    pnlMain.ForeColor = ThemeColors.WindowText;
+                    pnlMain.Controls["pnlMainIcon"]?.Controls["pnlMainIconBackground"]?.BackColor = ThemeColors.Window;
+                }
+
+                return;
+            }
+
+            // If the current theme is not dark, we must reset the colors that are not set by TaskDialogForm, so further visual style changes without theme change will work properly.
+            form.BackColor = form.ForeColor = Color.Empty;
+            // TODO: other explicitly set colors by ControlExtensions.ApplyTheme for AdvancedButton (disabled color), AdvancedRadioButton (disabled color), AdvancedProgressBar
+        }
+
+        /// <summary>
+        /// Can be used if <see cref="Buttons"/> is not <see cref="TaskDialogStandardButtons.None"/>, so standard buttons are actually mapped to custom buttons.
+        /// </summary>
+        protected TaskDialogButton? GetButton(TaskDialogStandardButton standardButton)
+        {
+            if (standardButton == TaskDialogStandardButton.None)
+                return null;
+
+            string name = $"btn{standardButton}";
+            return TaskDialog.Buttons[name];
+        }
+
+        protected void InvokeOnUIThread(Action action)
+        {
+            if (IsDisposed)
+                return;
+
+            try
+            {
+                // no invoke is required (not using owner.InvokeRequired because that may return false if handle is not created yet)
+                if (threadId == ThreadHelper.ManagedThreadId)
+                {
+                    action.Invoke();
+                    return;
+                }
+
+                // invoking from a foreign thread
+                context.Send(_ => action.Invoke(), null);
+            }
+            catch (ObjectDisposedException)
+            {
+                // it can happen that IsDisposed returned false, but actual Send is started to execute only after disposing has started
+            }
+        }
+
+        protected virtual void OnClosed(TaskDialogResult result)
+        {
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (isDisposed)
+                return;
+            isDisposed = true;
+            TaskDialog.Created -= TaskDialog_Created; // though disposing the TaskDialog removes the subscriptions
+            if (disposing)
+            {
+                TaskDialog.Dispose();
+                CommandBindings.Dispose();
+            }
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void InitButtons()
+        {
+            TaskDialogStandardButtons buttons = Buttons;
+            if (buttons == TaskDialogStandardButtons.None)
+                return;
+
+            // We could just use TaskDialog.StandardButtons = TaskDialogStandardButtonFlags.OK | TaskDialogStandardButtonFlags.Cancel,
+            // but then the localization comes from the KGySoft.WinForms library rather than this one, and we cannot set the Enabled state either.
+            // Adding the buttons as custom ones. This makes possible to use local resources instead of the ones in KGySoft.WinForms
+            foreach (TaskDialogStandardButtons flag in buttons.GetFlags())
+            {
+                string name = $"btn{flag}";
+                TaskDialog.Buttons.Add(new TaskDialogButton(name, Res.Get($"{name}.Text")));
+            }
+
+            int defaultIndex = DefaultButtonIndex;
+            if ((uint)defaultIndex < TaskDialog.Buttons.Count)
+                TaskDialog.Buttons[defaultIndex].IsDefault = true;
+        }
+
+        private void Execute(IWin32Window? owner)
+        {
+            // If the owner is null here, the dialog is shown as a non-modal window. The call is still blocking until the dialog is closed.
+            TaskDialogResult result = TaskDialog.Show(owner);
+            ViewModel.ViewUnloading();
+            OnClosed(result);
+        }
+
+        private void InitCommandBindings()
+        {
+            CommandBindings.Add(OnThemeChangedCommand)
+                .AddSource(typeof(ThemeColors), nameof(ThemeColors.ThemeChanged));
+            CommandBindings.Add(OnDisplayLanguageChangedCommand)
+                .AddSource(typeof(Res), nameof(Res.DisplayLanguageChanged));
+        }
+
+        private void ApplyRightToLeft()
+        {
+            if (IsDisposed)
+                return;
+            if (Res.IsRightToLeft)
+                TaskDialog.Options |= TaskDialogOptions.RightToLeftLayout;
+            else
+                TaskDialog.Options &= ~TaskDialogOptions.RightToLeftLayout;
+        }
+
+        private void ShowChildView(IViewModel vm) => ViewFactory.ShowDialog(vm, this);
+
+        #endregion
+
+        #region Command Handlers
+
+        private void OnThemeChangedCommand() => InvokeOnUIThread(ApplyTheme);
+
+        private void OnDisplayLanguageChangedCommand() => InvokeOnUIThread(() =>
+        {
+            ApplyRightToLeft();
+            ApplyStringResources();
+        });
+
+        #endregion
+
+        #region Event Handlers
+
+        private void TaskDialog_Created(object? sender, EventArgs e)
+        {
+            ApplyTheme();
+            ApplyViewModel();
+            ViewModel.ViewShown(); // though actually it's not shown yet
+        }
+
+
+        #endregion
+
+        #endregion
+    }
+}

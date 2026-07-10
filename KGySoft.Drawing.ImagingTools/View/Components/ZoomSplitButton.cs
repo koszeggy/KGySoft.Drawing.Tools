@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ZoomSplitButton.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -19,6 +19,8 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+
+using KGySoft.WinForms;
 
 #endregion
 
@@ -96,7 +98,7 @@ namespace KGySoft.Drawing.ImagingTools.View.Components
             base.OnParentChanged(oldParent, newParent);
 
             // Mono: without this the new parent's renderer will not be applied to the dropdown menu strip
-            if (OSUtils.IsMono && newParent != null && AutoZoomMenuItem.Owner != null)
+            if (OSHelper.IsFrameworkMono && newParent != null && AutoZoomMenuItem.Owner != null)
                 AutoZoomMenuItem.Owner.Renderer = newParent.Renderer;
         }
 

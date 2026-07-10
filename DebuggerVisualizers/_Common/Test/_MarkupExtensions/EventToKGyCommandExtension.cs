@@ -4,7 +4,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: EventToCommandExtension.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -49,6 +49,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test
 
                 #region Public Properties
 
+                public object? Sender { get; set; }
                 public object Source { get; set; } = default!;
                 public string TriggeringEvent { get; set; } = default!;
                 public TEventArgs EventArgs { get; set; } = default!;
@@ -121,7 +122,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.Test
                 ICommandState state = State; // now it will not be null even if binding could not be resolved in constructor
                 object? parameter = owner.Parameter?.Evaluate(src);
                 if (state.Enabled)
-                    command.Execute(new CommandSource { EventArgs = e, Source = source, TriggeringEvent = eventName }, state, null, parameter);
+                    command.Execute(new CommandSource { Sender = sender, EventArgs = e, Source = source, TriggeringEvent = eventName }, state, null, parameter);
             }
 
             #endregion

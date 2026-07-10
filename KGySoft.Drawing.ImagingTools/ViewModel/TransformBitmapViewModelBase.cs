@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: TransformBitmapViewModelBase.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -22,8 +22,8 @@ using System.Threading;
 
 using KGySoft.ComponentModel;
 using KGySoft.CoreLibraries;
-using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Threading;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -49,7 +49,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
         #region Fields
 
         private readonly Bitmap originalImage;
-        private readonly object syncRoot = new object();
+        private readonly Lock syncRoot = new();
 
         private volatile GenerateTaskBase? activeTask;
         private bool keepResult;
@@ -228,13 +228,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
             if (disposing)
             {
-                if (activeTask != null)
-                {
-                    CancelRunningGenerate();
-                    WaitForPendingGenerate();
-                }
-
-                Debug.Assert(activeTask == null);
+                CancelRunningGenerate();
                 Image? preview = PreviewImageViewModel.PreviewImage;
                 PreviewImageViewModel.Dispose();
 
@@ -261,7 +255,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             // (It wouldn't cause deadlocks because here every TryInvokeSync is after completing the task.)
             // But many threads can be queued, which all stop here before acquiring the lock. To prevent spawning too many threads we
             // don't use a regular lock here but a bit active spinning that can exit without taking the lock if the task gets outdated.
-            while (!Monitor.TryEnter(syncRoot, 1))
+            while (!syncRoot.TryEnter(1))
             {
 
                 if (!IsDisposed && MatchesSettings(task))
@@ -367,7 +361,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
             finally
             {
-                Monitor.Exit(syncRoot);
+                syncRoot.Exit();
             }
         }
 
@@ -385,17 +379,11 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             }
         }
 
-        private void CancelRunningGenerate()
-        {
-            GenerateTaskBase? runningTask = activeTask;
-            if (runningTask == null)
-                return;
-            runningTask.IsCanceled = true;
-        }
+        private void CancelRunningGenerate() => activeTask?.Cancel();
 
         private void WaitForPendingGenerate()
         {
-            // In a non-UI thread it should be in a lock
+            // Should not be called from a non-UI thread, and otherwise it should be in a lock
             GenerateTaskBase? runningTask = activeTask;
             if (runningTask == null)
                 return;
@@ -435,9 +423,7 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
 
         private void OnCancelCommand()
         {
-            // canceling any pending generate and waiting for finishing so no "image is locked elsewhere" will come from the main form for the original image
             CancelRunningGenerate();
-            WaitForPendingGenerate();
             SetModified(false);
             CloseViewCallback?.Invoke();
         }

@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ImageReplacementSerializationInfo.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -50,7 +50,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization
 
         public void Dispose()
         {
-            imageInfo?.Dispose();
+            // Not disposing imageInfo here, it should be done by the caller if the replacement image is not used anymore.
 #if NET35
             (reader as IDisposable)?.Dispose();
 #else
@@ -91,7 +91,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Serialization
                     // the stream content before the original start position
                     using (var inner = new MemoryStream())
                     {
-                        imageInfo.Frames!.Select(f => f.Image!).SaveAsMultipageTiff(inner);
+                        imageInfo.Frames!.Select(f => (Image)f.Image!).SaveAsMultipageTiff(inner);
                         bw.Write((int)inner.Length);
                         bw.Flush();
                         inner.WriteTo(bw.BaseStream);

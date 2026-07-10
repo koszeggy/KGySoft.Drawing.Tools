@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: Program.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -20,6 +20,7 @@ using System.Windows.Forms;
 
 using KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test.View;
 using KGySoft.Drawing.ImagingTools;
+using KGySoft.WinForms.Forms;
 
 #endregion
 
@@ -35,6 +36,7 @@ namespace KGySoft.Drawing.DebuggerVisualizers.GdiPlus.Test
             DrawingModule.Initialize();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            Dialogs.UseTaskDialogs = true;
             ThemeColors.SetBaseTheme(DefaultTheme.System);
             Application.Run(new DebuggerTestForm());
         }

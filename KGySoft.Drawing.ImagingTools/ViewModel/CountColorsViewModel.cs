@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: CountColorsViewModel.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -21,8 +21,8 @@ using System.Threading;
 
 using KGySoft.ComponentModel;
 using KGySoft.Drawing.Imaging;
-using KGySoft.Drawing.ImagingTools.Model;
 using KGySoft.Threading;
+using KGySoft.WinForms;
 
 #endregion
 
@@ -100,9 +100,8 @@ namespace KGySoft.Drawing.ImagingTools.ViewModel
             if (t == null)
                 return;
 
-            t.IsCanceled = true;
+            t.Cancel();
             SetModified(false);
-            t.WaitForCompletion();
         }
 
         #endregion

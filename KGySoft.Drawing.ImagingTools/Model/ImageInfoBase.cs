@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  File: ImageInfoBase.cs
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright (C) KGy SOFT, 2005-2025 - All Rights Reserved
+//  Copyright (C) KGy SOFT, 2005-2026 - All Rights Reserved
 //
 //  You should have received a copy of the LICENSE file at the top-level
 //  directory of this distribution.
@@ -39,10 +39,10 @@ namespace KGySoft.Drawing.ImagingTools.Model
         #region Public Properties
 
         /// <summary>
-        /// Gets or sets the image to be displayed or saved
-        /// when debugging the corresponding <see cref="System.Drawing.Image"/> or <see cref="Icon"/> instance.
+        /// Gets or sets an <see cref="System.Drawing.Icon"/> instance associated with this <see cref="ImageInfoBase"/> instance.
+        /// If this instance is an <see cref="ImageInfo"/>, this property may contain a multi resolution <see cref="System.Drawing.Icon"/>.
         /// </summary>
-        public Image? Image { get => Get<Image?>(); set => Set(value); }
+        public Icon? Icon { get => Get<Icon?>(); set => Set(value); }
 
         /// <summary>
         /// Gets or sets the horizontal resolution to be displayed
@@ -91,42 +91,32 @@ namespace KGySoft.Drawing.ImagingTools.Model
 
         #endregion
 
-        #region Construction and Destruction
-
-        #region Constructors
-
-        private protected ImageInfoBase()
-        {
-        }
-
-        private protected ImageInfoBase(ImageInfoBase other)
-        {
-            if (other == null)
-                throw new ArgumentNullException(nameof(other), PublicResources.ArgumentNull);
-
-            if (other.Image is Image image)
-                Image = (Image)image.Clone();
-            if (other.Palette.Length > 0)
-                Palette = (Color[])Palette.Clone();
-            HorizontalRes = other.HorizontalRes;
-            VerticalRes = other.VerticalRes;
-            PixelFormat = other.PixelFormat;
-            RawFormat = other.RawFormat;
-        }
-
-        #endregion
-
-        #region Destructor
-
-
-        /// <inheritdoc/>
-        ~ImageInfoBase() => Dispose(false);
-
-        #endregion
-
-        #endregion
-
         #region Methods
+
+        #region Public Methods
+
+        /// <summary>
+        /// Gets or creates the image of this <see cref="ImageInfoBase"/>.
+        /// </summary>
+        /// <returns>An <see cref="System.Drawing.Image"/> that represents the image of this <see cref="ImageInfoBase"/> instance.</returns>
+        /// <exception cref="InvalidOperationException">The object is in an invalid state (the <see cref="ValidatingObjectBase.IsValid"/> property returns <see langword="false"/>).</exception>
+        public abstract Image? GetCreateImage();
+
+        /// <summary>
+        /// Gets or creates the icon of this <see cref="ImageInfoBase"/>.
+        /// </summary>
+        /// <returns>An <see cref="System.Drawing.Icon"/> that represents the icon of this <see cref="ImageInfo"/> instance.</returns>
+        /// <exception cref="InvalidOperationException">The object is in an invalid state (the <see cref="ValidatingObjectBase.IsValid"/> property returns <see langword="false"/>).</exception>
+        public abstract Icon? GetCreateIcon();
+
+        #endregion
+
+        #region Internal Methods
+
+        internal Bitmap? GetCreateBitmap() => GetCreateImage() as Bitmap;
+        internal abstract Image? GetImage();
+
+        #endregion
 
         #region Protected Methods
 
@@ -138,8 +128,10 @@ namespace KGySoft.Drawing.ImagingTools.Model
         {
             if (IsDisposed)
                 return;
+
             if (disposing)
-                Image?.Dispose();
+                Icon?.Dispose();
+
             base.Dispose(disposing);
         }
 
@@ -158,6 +150,22 @@ namespace KGySoft.Drawing.ImagingTools.Model
             PixelFormat = image.PixelFormat;
             Palette = image is Metafile ? Reflector.EmptyArray<Color>() : image.Palette.Entries;
             RawFormat = image.RawFormat.Guid;
+        }
+
+        private protected void InitIconMeta(IconInfo iconInfo)
+        {
+            PixelFormat = iconInfo.BitsPerPixel switch
+            {
+                1 => PixelFormat.Format1bppIndexed,
+                4 => PixelFormat.Format4bppIndexed,
+                8 => PixelFormat.Format8bppIndexed,
+                24 => PixelFormat.Format24bppRgb,
+                _ => PixelFormat.Format32bppArgb
+            };
+
+            Palette = iconInfo.Palette;
+            Size = iconInfo.Size;
+            RawFormat = iconInfo.IsCompressed ? ImageFormat.Png.Guid : ImageFormat.Bmp.Guid;
         }
 
         #endregion
