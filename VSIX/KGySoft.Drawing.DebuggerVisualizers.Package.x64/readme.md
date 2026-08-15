@@ -1,6 +1,6 @@
 ## KGy SOFT Image Debugger Visualizers
 
-**VS 2022-2026**: See the [64-bit installer](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) (for version 17.9 Preview 1 or higher only; offers modern, non-dialog embeddable visualizers)
+**VS 2022-2026**: See the [64-bit installer](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) (for version 17.11 or higher only; offers modern, non-dialog embeddable visualizers)
 
 **VS 2013-2019**: See the [32-bit installer](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers) (classic visualizers)
 

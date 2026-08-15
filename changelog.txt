@@ -6,6 +6,18 @@
 ===============================================================================
 
 ~~~~~~~~~
+! v6.0.1:
+~~~~~~~~~
+
+! KGySoft.Drawing.DebuggerVisualizers.Package.x64.dll
+=====================================================
+! Making the package compatible with Visual Studio 2026 18.9.0. Indicated as a breaking change, because the package
+  used to be compatible with Visual Studio 17.9, but from now on it requires at least Visual Studio 17.11.
+  For older 64-bit Visual Studio versions you still can use the classic visualizers by manual install:
+  https://github.com/koszeggy/KGySoft.Drawing.Tools#installing-debugger-visualizers
+
+
+~~~~~~~~~
 ! v6.0.0:
 ~~~~~~~~~
 

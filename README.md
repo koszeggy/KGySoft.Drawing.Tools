@@ -88,7 +88,7 @@ Imaging Tools is packed with several debugger visualizers for Visual Studio (com
   <br/><em>Debugger Visualizer Usage</em>
 </p>
 
-Either click the magnifier icon or choose a debugger visualizer from the drop down list (if more visualizers are applicable). Starting with Visual Studio 2022 version 17.9 Preview 1 a new type of visualizers are available that can remain open while stepping through the code. These debugger visualizers can be installed from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) only.
+Either click the magnifier icon or choose a debugger visualizer from the drop down list (if more visualizers are applicable). Starting with Visual Studio 2022 version 17.11 a new type of visualizers are available that can remain open while stepping through the code. These debugger visualizers can be installed from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=KGySoft.drawing-debugger-visualizers-x64) only.
 
 <p align="center">
   <img alt="Debugging a Graphics instance" src="https://github.com/user-attachments/assets/7659a0a1-7a66-40a1-8fd7-9222823e52f0"/>
